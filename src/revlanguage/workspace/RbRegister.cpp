@@ -104,6 +104,9 @@
 #include "Move_Scale.h"
 #include "Move_Slide.h"
 
+/* Compound Moves on Real Values */
+//#include "Move_ScalerUpDown.h"
+
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
 #include "Move_RandomIntegerWalk.h"
@@ -508,6 +511,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvScale",               new Move_Scale() );
         addTypeWithConstructor("mvSlide",               new Move_Slide() );
         addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
+		
+		// compound moves on real values
+//        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
         
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mScale",                new Move_Scale() );
@@ -790,6 +796,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // 1/x distribution
         addDistribution( "dnOneOverX",      new Dist_oneOverX() );
         addDistribution( "oneOverX",        new Dist_oneOverX() );
+        
+        addDistribution( "dnLogUniform",    new Dist_oneOverX() );
         
         // uniform distribution
         addDistribution( "dnUnif",          new Dist_unif() );
