@@ -5,13 +5,17 @@
 \node [font=\Large]                  at (tp_dec.text)[above=2.0]     {root};
 \node [font=\Large]                  at (tp_dec.two)[above=2.0]      {internal};
 \node [font=\Large]                  at (tp_dec.three)[above=1.9]    {tip};
-\node [obnode]     (tn_dec)          at ($(tp_dec.three)-(0,1.2)$)       {$X_{ij}$};
-\node [snode]      (in_dec)          at ($(tp_dec.two)-(0,1.2)$)         {$X_{ij}$};
-\node [snode]      (rn_dec)          at ($(tp_dec.text)-(0,1.2)$)        {$X_{ij}$};
-\node [font=\scriptsize,snode] (pin_dec) at ($(in_dec)+(0,2)$)               {$X_{\tilde{p}(i)j}$};
-\node [font=\scriptsize,snode] (ptn_dec) at ($(tn_dec)+(0,2)$)               {$X_{\tilde{p}(i)j}$};
-\draw [taro] (ptn_dec) -- (tn_dec) ;
-\draw [taro] (pin_dec) -- (in_dec) ;
+\node [obnode]     (tn_dec)          at ($(tp_dec.three)-(0,1.2)$)       {$X_{i}^{\text{an}}$};
+\node [snode]      (in_dec)          at ($(tp_dec.two)-(0,1.2)$)         {$X_{i}^{\text{an}}$};
+\node [snode]      (rn_dec)          at ($(tp_dec.text)-(0,1.2)$)        {$X_{i}^{\text{an}}$};
+\node [snode]      (tn_clado)        at ($(tn_dec)-(-1,-2)$)              {$X_{i}^{\text{cl}}$};
+\node [snode]      (in_clado)        at ($(in_dec)-(-1,-2)$)             {$X_{i}^{\text{cl}}$};
+\node [font=\scriptsize,snode] (ptn_dec) at ($(tn_clado)-(2,0)$)        {$X_{\tilde{p}(i)j}^{\text{an}}$};
+\node [font=\scriptsize,snode] (pin_dec) at ($(in_clado)-(2,0)$)       {$X_{\tilde{p}(i)j}^{\text{an}}$};
+\draw [taro] (ptn_dec) -- (tn_clado) ;
+\draw [taro] (pin_dec) -- (in_clado) ;
+\draw [taro] (in_clado) -- (in_dec) ;
+\draw [taro] (tn_clado) -- (tn_dec) ;
 \node at ($(tp_dec.two)-(-2.0,2.6)$) {$i \in$ internals};
 \node at ($(tp_dec.three)-(-2.25,2.6)$) {$i \in$ tips};
 \node at ($(tp_dec.text)-(-2.25,2.6)$) {$i =$ root};
@@ -35,9 +39,9 @@
 % P_C
 \node [snode]      (pn_c)            at ($(qn_dec)-(-5,0)$)      {$P_{C}$};
 \node [constnode]  (pn_c_pr)          at ($(pn_c)-(0,2)$)       {$c$};
-\draw [taro] (pn_c) -- (in_dec) ;
+\draw [taro] (pn_c) -- (in_clado) ;
 \draw [taro] (pn_c) edge[bend left](rn_dec);
-\draw [taro] (pn_c) edge[bend right](tn_dec);
+\draw [taro] (pn_c) edge[bend right](tn_clado);
 \draw [taro] (pn_c_pr) -- (pn_c);
 % attach psi
 \node[constnode] (topo) at (-4,0) {\Large T};

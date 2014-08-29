@@ -207,7 +207,7 @@ Unfortunately, since this sort of model scales poorly, DEC models remain the onl
 \begin{figure}[H]
 \centering
 \includegraphics[width=5in]{figures/bg_dec_dag}
-\caption{Graphical model of DEC.}
+\caption{Graphical model of DEC. The tree plate's topology is fixed by $T$, where each internal node has both an anagenic and cladogenic random variable ($X_i^{\text{an}}$ and $X_i^{\text{cl}}$, resp.) that represents an ancestral species before and after it speciated. Anagenic change is modeled by a continuous time Markov process, where $Q_{DE}$ is the instantaneous rate matrix of area gain and loss, as parameterized by $\lambda$. The geographic distance rate modifier function, $\eta$, takes in the geographical distances and strata as $G$, and the distance power parameter, $\beta$. Cladogenic change is modeled by $P_C$, a Dirichlet-distributed simplex with a flat prior.}
 \end{figure}
 
 Let's consider what happens to the size of \textbf{Q} when the number of areas, $N$, becomes large.
@@ -243,7 +243,7 @@ Second, the Hawaiian archipelago can be broken into naturally discrete areas and
 Third, it has previously been analyzed, which provides some basis for comparison to other methods.
 To simplify things, this model will assume we live in a gentler world where presence-absence characters are known without error.
 
-For larger datasets to play with, see {\tt data/sim\_aus\_50tip\_33area.nex} and {\tt data/sim\_aus\_50tip\_33area.atlas.txt} for a simulated model where all cladogenic events were sympatric (wide or narrow). 
+For larger datasets to play with, see {\tt input/sim\_aus\_50tip\_33area.*} for a simulated model where all cladogenic events were sympatric (wide and narrow only). 
 
 \subsection{Nexus file}
 
@@ -259,19 +259,19 @@ begin data;
   dimensions ntax=19 nchar=4;
   format datatype=standard symbols = "01";
   matrix
-    P_fauriei2          0100
-    P_grandiflora_Kal2  1000
+    P_mariniana_Kokee2  1000
+    P_mariniana_Oahu    0100
     ...
-    P_wawraeDL7428      1000	
+    P_hexandra_Oahu     0100
   ;
 end;
 
 Begin trees;
-	TREE tree1 = ((((((((P_hawaiiensis_WaikamoiL1:1.0853
-	,P_mauiensis_Eke:1.0853)N2:0.7964,(P_fauriei2:1.3826,
-	P_hathewayi_1:1.3826)N5:0.4991)N6:0.1986,(
+	TREE tree1 = ((((((((P_hawaiiensis_WaikamoiL1:0.9656850499,
+	P_mauiensis_Eke:0.9656850499):0.7086257935,(P_fauriei2:1.23
+	0218511,P_hathewayi_1:1.230218511):0.4440923324):0.17671155
 	...
-	2.6568)N33:0.5204,P_hexandra_Oahu:3.1772)N35:2.6659)N36;
+	89):0.4630447802,P_hexandra_Oahu:2.826939991):2.372081244);
 End;
 \end{lstlisting}
 \end{framed}
@@ -388,16 +388,17 @@ Open the RevBayes console
 
 \begin{snugshade}
 \begin{lstlisting}
-$ rb-extended
+$ revbayes
 \end{lstlisting}
 \end{snugshade}
 
 First, we'll assign all our input files to {\tt String} variables.
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > in_fp   <- "/filepath/to/your/input/files/"
+RevBayes > fp      <- "./scripts/"
 RevBayes > data_fn <- "psychotria_range.nex"
 RevBayes > area_fn <- "hawaii_dynamic.atlas.txt"
+RevBayes > out_str <- "bg_2rate"
 \end{lstlisting}
 \end{snugshade}
 
@@ -405,9 +406,9 @@ Then we'll create our range data, tree, and atlas objects
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > data  <- readCharacterData(in_fp + data_fn)
-RevBayes > tree  <- readTrees(in_fp + data_fn)[1]
-RevBayes > atlas <- readAtlas(in_fp + area_fn)
+RevBayes > data  <- readCharacterData(fp + data_fn)
+RevBayes > tree  <- readTrees(fp + data_fn)[1]
+RevBayes > atlas <- readAtlas(fp + area_fn)
 \end{lstlisting}
 \end{snugshade}
 
@@ -461,7 +462,7 @@ In addition, we'll inform the function of the number of areas in our analysis an
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > Q := fnBiogeoDE(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+RevBayes > Q := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
 \end{lstlisting}
 \end{snugshade}
 
@@ -602,14 +603,14 @@ RevBayes > mnCharHistoryNewick
    style = events|counts
    , String type = biogeo
    )
-RevBayes > monitors[3] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=M, tree=tree, printgen=100, style="events")
-RevBayes > monitors[4] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=M, tree=tree, printgen=100, style="counts")
+RevBayes > monitors[3] <- mnCharHistoryNewick(filename=fp+out_str+".events.txt", ctmc=M, tree=tree, printgen=100, style="events")
+RevBayes > monitors[4] <- mnCharHistoryNewick(filename=fp+out_str+".counts.txt", ctmc=M, tree=tree, printgen=100, style="counts")
 \end{lstlisting}
 \end{snugshade}
 
 As our last monitor, the {\tt Mntr\_CharacterHistoryNhxFile} records character history values throughout the MCMC analysis, then stores some simple posterior summary statistics as a Nexus file.
 These summary statistics could be computed from the previously mentioned {\tt Monitor} output files, but {\tt mnCharHistoryNhx} provides a simple way to produce Phylowood-compatible files.
-We will also discuss this file's format in more detail in Section \ref{sec:posterior}.
+We will also discuss this file's format in more detail later in the tutorial.
 
 \begin{snugshade}
 \begin{lstlisting}
@@ -619,7 +620,22 @@ RevBayes > mnCharHistoryNhx
    Probability burnin, String separator, Bool posterior, Bool likelihood, Bool
    prior, String type = biogeo
    )
-RevBayes > monitors[5] <- mnCharHistoryNhx(filename="psychotria.nhx.txt", ctmc=M, tree=tree, atlas=atlas, samplegen=100, maxgen=nGens, burnin=0.25)
+RevBayes > monitors[5] <- mnCharHistoryNhx(filename=fp+out_str+".nhx.txt", ctmc=M, tree=tree, atlas=atlas, samplegen=100, maxgen=25000, burnin=0.2)
+\end{lstlisting}
+\end{snugshade}
+
+Before we run the MCMC, we'd like to get the node index of the ancestor 
+When analysing the output, we'll take some special interest in the branch for the most recent common ancestor of {\it P. kaduana} and {\it P. hatheway}.
+We will identify this lineage by its index, 23, which is meaningful only for a fixed tree topology,
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > names = tree.names()
+RevBayes > names[15]
+   P_kaduana_PuuKukuiAS
+RevBayes > names[16]
+   P_hathewayi_1
+RevBayes > mrcaIndex(tree=tree,clade=clade(names[15],names[16]))
+   23
 \end{lstlisting}
 \end{snugshade}
 
@@ -645,28 +661,24 @@ After burn-in is complete, we call {\tt run()}, where we begin recording valid p
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > my_mcmc.burnin(generations=1000, tuningInterval=100)
-RevBayes > my_mcmc.run(generations=10000)
+RevBayes > my_mcmc.burnin(generations=1000, tuningInterval=50)
+RevBayes > my_mcmc.run(generations=25000)
 \end{lstlisting}
 \end{snugshade}
 
-Everything we've done is contained in the file {\tt biogeography\_M1.Rev}.
+Everything we've done is contained in the file {\tt biogeography\_DEC\_2rate.Rev}.
 You can modify this file as you like then re-run the analysis by typing
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > source("biogeography_2rate.Rev")
+RevBayes > source("biogeography_DEC_2rate.Rev")
 \end{lstlisting}
 \end{snugshade}
 
 \subsection{Model selection using Bayes factors}
 
 Bayes factors (BFs) are used to select which of two models better describes the observed data, $\mathbf{X}_{obs}$, and are computed as the ratio of marginal likelihoods for those two models.
-One might prefer to analytically compute the marginal likelihood as 
-\[
-\text{Prob}(\mathbf{X}_{obs} \mid M) = \int_{\mathbf{X}_{aug}} \int_{\theta} \text{Prob}(\mathbf{X}_{obs}, \mathbf{X}_{aug}, \theta \mid M) \, d\theta \, d\mathbf{X}_{aug}
-\]
-but the marginal likelihood is the same intractable quantity we intentionally avoid computing when using MCMC in a Bayesian context.
+One might prefer to analytically compute the marginal likelihood, but it's the same intractable quantity we intentionally avoid computing when using MCMC in a Bayesian context.
 Instead, we must estimate the marginal likelihood from our posterior distribution samples.
 Here, we will use thermodynamic integration \citep{lartillot06} and stepping-stone approximation \citep{xie10}.
 The exact details of these techniques will not be covered here, but there is an important practical point to mention: both methods rely on computing a number of ``power posterior'' distributions.
@@ -677,35 +689,39 @@ Rather than specifying the model manually, we will load (source) the model defin
 For faster results, we will use two separate RevBayes sessions, one for each model.
 For each session, the power posterior analysis run for 1000 generations during burn-in then 1000 generations per each of 30 power posterior categories.
 
+First session:
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > source("biogeography_1rate.Rev")
-RevBayes > pow_p <- powerPosterior(my_model, moves, out_fp+out_pp_fn, cats=30) 
+RevBayes > source("./scripts/biogeography_DEC_1rate.Rev")
+RevBayes > pp_fn <- out_fp + out_str + ".pp.txt"
+RevBayes > pow_p <- powerPosterior(my_model, moves, pp_fn, cats=30) 
 RevBayes > pow_p.burnin(generations=1000,tuningInterval=100)
-RevBayes > pow_p.run(generations=1000)
+RevBayes > pow_p.run(generations=5000)
 \end{lstlisting}
 \end{snugshade}
 
+Second session:
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > source("biogeography_2rate.Rev")
-RevBayes > pow_p <- powerPosterior(my_model, moves, out_fp+out_pp_fn, cats=30) 
+RevBayes > source("./scripts/biogeography_DEC_2rate.Rev")
+RevBayes > pp_fn <- out_fp + out_str + ".pp.txt"
+RevBayes > pow_p <- powerPosterior(my_model, moves, pp_fn, cats=30) 
 RevBayes > pow_p.burnin(generations=1000,tuningInterval=100)
-RevBayes > pow_p.run(generations=1000)  
+RevBayes > pow_p.run(generations=5000)  
 \end{lstlisting}
 \end{snugshade}
 
-Each power posterior analysis will write their contents to the file given in {\tt out\_pp\_fn}.
-These files are {\tt pp\_1rate\_out.txt} and {\tt pp\_2rate\_out.txt} for the simple and complex models, respectively.
+Each power posterior analysis will write their contents to the file given in {\tt pp\_fn}.
+These files are {\tt bg\_1rate.pp.txt} and {\tt bg\_2rate.pp.txt} for the simple and complex models, respectively.
 This may take a few minutes.
 When complete, the power posterior files may then be used to compute marginal likelihoods.
 For example, from the RevBayes session analyzing the simple one-rate model
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > ss <- steppingStoneSampler(file=out_fn)
+RevBayes > ss <- steppingStoneSampler(file=pp_fn)
 RevBayes > ss.marginal() 
-RevBayes > ps <- pathSampler(file=out_fp+out_fn)
+RevBayes > ps <- pathSampler(file=pp_fn)
 RevBayes > ps.marginal() 
 \end{lstlisting}
 \end{snugshade}
@@ -719,28 +735,15 @@ Finally, we can compute the Bayes factor, which is simply the ratio of marginal 
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > exp(-44.7692) / exp(-49.5586)
-   120.229
+RevBayes > exp(-51.7202)/exp(-52.3158)
+   1.81412
 \end{lstlisting}
 \end{snugshade}
 
 A value of one would mean both models had equal marginal likelihoods.
 A value less than one would indicate the first model, the simple model, had a larger marginal likelihood, and was therefore favored by model testing.
 But that's not the case, the value is greater than one, and the complex two-rate model is favored.
-Similar to frequentist interpretations of significance for p-values, there is no universal and objective criterion of significance with Bayes Factors, but most would agree a factor of 10 (or 0.1) indicates strong support for one model over the other.
-
-In the next section, we'll take some special interest in the 19th branch, the most recent common ancestor of {\it P. mauiensis} and {\it P. hawaiiensis}.
-\begin{snugshade}
-\begin{lstlisting}
-RevBayes > names = tree.names()
-RevBayes > names[15]
-   P_kaduana_PuuKukuiAS
-RevBayes > names[16]
-   P_hathewayi_1
-RevBayes > mrcaIndex(tree=tree,clade=clade(names[15],names[16]))
-   23
-\end{lstlisting}
-\end{snugshade}
+Similar to frequentist interpretations of significance for p-values, there is no universal and objective criterion of significance with Bayes factors, but most would agree a factor of 1.8 (or 1.0/1.8) indicates weak support for one model over the other.
 
 \section{Output}
 
