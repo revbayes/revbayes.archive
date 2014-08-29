@@ -6,7 +6,7 @@ def read_events(fn):
     f.close()
     return(lines)
 
-def get_events(fn='../data/bg_2rate.events.txt'):
+def get_events(fn='../output/bg_2rate.events.txt'):
     lines=read_events(fn)
     events = {}
     for l in lines:
@@ -129,7 +129,7 @@ def get_clado_state(d,minSize=1,freqs=True):
         return
 
     num_char = len(d['nd'][0])
-    v = {'s':0.,'a':0.,'p':0.,'w':0.}
+    v = {'s':0.,'n':0.,'a':0.,'w':0.}
    
     n = 0
     for i,x in enumerate(d['cs']):

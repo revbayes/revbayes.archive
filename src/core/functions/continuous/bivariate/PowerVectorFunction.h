@@ -1,14 +1,37 @@
-//
-//  PowerVectorFunction.h
-//  RevBayes-development
-//
-//  Created by Sebastian Hoehna on 8/29/14.
-//  Copyright (c) 2014 hoehna. All rights reserved.
-//
 
-#ifndef __RevBayes_development__PowerVectorFunction__
-#define __RevBayes_development__PowerVectorFunction__
+#ifndef PowerVectorFunction_H
+#define PowerVectorFunction_H
 
-#include <iostream>
+#include "TypedFunction.h"
+#include "TypedDagNode.h"
 
-#endif /* defined(__RevBayes_development__PowerVectorFunction__) */
+namespace RevBayesCore {
+    
+    
+    /**
+     * The power function for a vector, f(a,b) = a^b.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-08-29, version 1.0
+     *
+     */
+    class PowerVectorFunction : public TypedFunction<std::vector<double> > {
+        
+    public:
+        PowerVectorFunction(const TypedDagNode<std::vector<double> > *b, const TypedDagNode<double> *e);
+        
+        PowerVectorFunction*                        clone(void) const;                                                  //!< Create a clon.
+        void                                        update(void);                                                       //!< Recompute the value
+        
+    protected:
+        void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Implementation of swaping parameters
+        
+    private:
+        const TypedDagNode<std::vector<double> >*   base;
+        const TypedDagNode<double>*                 exponent;
+    };
+}
+
+#endif
