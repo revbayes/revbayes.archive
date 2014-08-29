@@ -234,22 +234,26 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
     // Get some help
     std::string qs(symbol);
     if ( this->helpEntity->isHelpAvailableForQuery(qs))
-        {
+    {
         std::string hStr = this->helpEntity->getHelp( qs, 100);
         UserInterface::userInterface().output(hStr, false);
-        }
-    else {
+    }
+    else
+    {
         
         RBOUT("Help is not available for \"" + symbol + "\"");
 
         std::vector<Function *> functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol );
-        if ( functions.size() != 0 ) {
+        if ( functions.size() != 0 )
+        {
             RBOUT( "Usage:" );
-            for ( std::vector<Function *>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
+            for ( std::vector<Function *>::const_iterator i=functions.begin(); i!=functions.end(); i++ )
+            {
                 RBOUT( (*i)->callSignature() );
                 delete *i;
             }
         }
+        
     }
 
     // Return success
