@@ -1321,7 +1321,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn );
-    if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
+    if ( (myFileManager.getFileName() == "" && myFileManager.getFilePath() == "") || myFileManager.testFile() == false )
     {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
