@@ -797,6 +797,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnOneOverX",      new Dist_oneOverX() );
         addDistribution( "oneOverX",        new Dist_oneOverX() );
         
+        addDistribution( "dnLogUniform",    new Dist_oneOverX() );
+        
         // uniform distribution
         addDistribution( "dnUnif",          new Dist_unif() );
         addDistribution( "dnUnif",          new Dist_positiveUnif() );
