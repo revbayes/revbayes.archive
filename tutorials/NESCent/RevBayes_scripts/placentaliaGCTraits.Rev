@@ -23,6 +23,7 @@ nTaxa <- seqData.ntaxa()
 names <- seqData.names()
 nSites <- seqData.nchar()[1]
 
+
 ######### 
 # tree  
 #########
@@ -35,13 +36,6 @@ extinction ~ exponential(0.1)
 # rough estimate of sampling fraction: 40 placental mammals out of the ~4000 currently existing out there
 sampling_fraction := 0.01
 
-# rescaling moves on speciation and extinction rates
-index <- 1
-moves[index] <- mScale(speciation, lambda=1, tune=true, weight=3.0)
-index <- index + 1
-moves[index] <- mScale(extinction, lambda=1, tune=true, weight=3.0)
-index <- index + 1
-
 psi ~ cBDP(lambda=speciation, mu=extinction, rho=sampling_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
 
 # work under fixed, externally provided, tree topology
@@ -49,22 +43,9 @@ treeArray <- readTrees("data/chronoplac40.tree")
 fixedTree <- treeArray[1]
 psi.setValue(fixedTree)
 
-# moves on the tree: only relative dates
-moves[index] <- mSubtreeScale(psi, weight=5.0)
-index <- index + 1
-moves[index] <- mNodeTimeSlideUniform(psi, weight=10.0)
-index <- index + 1
-
-# if we wanted to, we could also move the tree topology
-# and integrate over the posterior induced by the sequence data
-# but mixing is currently a bit challenging 
-# moves[index] <- mNNI(psi, weight=5.0)
-# index <- index + 1
-# moves[index] <- mFNPR(psi, weight=5.0)
-# index <- index + 1
 
 ######### 
-# traits
+# rate and trait evolution
 #########
 
 # covariance matrix of dimension nTraits + 2
@@ -74,33 +55,15 @@ index <- index + 1
 # covariance matrix is inverse Wishart of parameters kappa * Identity and df = nTraits+3 degrees of freedom
 # where kappa is itself a scaling factor
 
-kappa ~ exponential(1.0)
+kappa ~ dnLogUniform(min=0.001,max=1000)
 kappa.setValue(0.1)
 df <- nTraits+4
 covdim <- nTraits+2
 
 Sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
 
-# moves on kappa
-moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
-index <- index + 1
-
 # multivariate Brownian process along the tree
 X ~ mvtBrownian(psi,sigma=Sigma)
-
-# conjugate Gibbs move on covariance matrix
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
-index <- index + 1
-
-# moves on the Brownian process
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=10,tune=true,weight=100) 
-index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
-index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=1,tune=true,weight=1) 
-index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
-index <- index + 1
 
 # first and second components of the Brownian model map to substitution rate and gc content (see below)
 # other copmonents of the Brownian process correspond to life-history traits
@@ -143,10 +106,6 @@ for (i in 1:covdim)	{
 bf <- v(1,1,1,1)
 pi ~ dirichlet(bf)
 
-# moves on pi
-moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
-index <- index + 1
-
 # first component of the Brownian model gives the *log* of the substitution rate
 branchrates := expbranchtree(tree=psi,process=X,traitindex=1)
 
@@ -157,10 +116,6 @@ branchGC := tanhBranchTree(tree=psi,process=X,traitindex=2)
 
 # the transition / transversion ratio
 tstv ~ exponential(0.1)
-
-# a move on this transition transversion rate
-moves[index] <- mScale(tstv, lambda=2.0, tune=true, weight=3.0)
-index <- index + 1
 
 # each branch has its own substitution matrix, which is a T92 matrix
 # defined by a transition/transversion ratio and an equilibrium GC
@@ -175,8 +130,68 @@ seq ~ substModel(tree=psi, Q=branchMatrices, rootFrequencies=pi, branchRates=bra
 # condition on sequence alignment
 seq.clamp(seqData)
 
-# create model
+
+# finally, create model
 mymodel <- model(kappa)
+
+
+######### 
+# moves
+#########
+
+# initialize index
+index <- 1
+
+# rescaling moves on speciation and extinction rates
+moves[index] <- mScale(speciation, lambda=1, tune=true, weight=3.0)
+index <- index + 1
+moves[index] <- mScale(extinction, lambda=1, tune=true, weight=3.0)
+index <- index + 1
+
+# moves on the tree: only relative dates
+moves[index] <- mSubtreeScale(psi, weight=5.0)
+index <- index + 1
+moves[index] <- mNodeTimeSlideUniform(psi, weight=10.0)
+index <- index + 1
+
+# if we wanted to, we could also move the tree topology
+# and integrate over the posterior induced by the sequence data
+# but mixing is currently a bit challenging 
+# moves[index] <- mNNI(psi, weight=5.0)
+# index <- index + 1
+# moves[index] <- mFNPR(psi, weight=5.0)
+# index <- index + 1
+
+# moves on kappa
+moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+# conjugate Gibbs move on covariance matrix
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+index <- index + 1
+
+# moves on the Brownian process
+moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=10,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=1,tune=true,weight=1) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
+index <- index + 1
+
+# moves on pi
+moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+
+# a move on transition transversion rate
+moves[index] <- mScale(tstv, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+
+######### 
+# monitors
+#########
 
 # screen monitor
 monitors[1] <- screenmonitor(printgen=10, correl, meanX)
@@ -198,7 +213,12 @@ monitors[6] <- filemonitor(filename="output/placgc.trees",printgen=10, separator
 
 # a model monitor
 monitors[7] <- modelmonitor(filename="output/placgc.log",printgen=10, separator = "	")
+
  
+######### 
+# mcmc
+#########
+
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 mymcmc.burnin(generations=100,tuningInterval=100)
