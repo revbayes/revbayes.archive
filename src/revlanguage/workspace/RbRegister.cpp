@@ -374,6 +374,7 @@
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
+#include "Func_powerVector.h"
 #include "Func_round.h"
 #include "Func_simplex.h"
 #include "Func_sum.h"
@@ -1087,6 +1088,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // exponentiation
         addFunction( "_exp",      new Func_power() );
+        addFunction( "_exp",      new Func_powerVector() );
         
         // index operator '[]'
         addFunction( "[]",         new Func__vectorIndexOperator<Natural>()                    );
@@ -1150,6 +1152,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
 		// power function
         addFunction( "power",     new Func_power() );
+        addFunction( "power",     new Func_powerVector() );
 
         // powermix function (TODO: remove when user functions work)
         addFunction( "powermix",  new Func_powermix() );
