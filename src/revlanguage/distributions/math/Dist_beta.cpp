@@ -67,7 +67,7 @@ const std::string& Dist_beta::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_beta::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Probability>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
