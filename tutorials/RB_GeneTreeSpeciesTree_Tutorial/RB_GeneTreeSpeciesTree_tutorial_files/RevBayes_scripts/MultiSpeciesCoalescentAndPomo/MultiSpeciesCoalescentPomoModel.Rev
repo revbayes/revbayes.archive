@@ -160,6 +160,6 @@ p_inv.setValue(0.000001)
 
 # To link all the parts of the model together we use the phyloCTMC object.
 
-aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
+aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Pomo")
 
 aln.clamp(pomo_concatenate)
