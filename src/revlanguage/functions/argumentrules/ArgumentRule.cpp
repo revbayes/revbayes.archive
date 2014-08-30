@@ -12,6 +12,22 @@ using namespace RevLanguage;
 /**
  * Construct rule without default value; use "" for no label.
  */
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvalutationType et, DagNodeType dt) :
+    argTypeSpecs( 1, argTypeSp ),
+    defaultVar( NULL ),
+    evalType( et ),
+    nodeType( dt ),
+    label(argName),
+    hasDefaultVal( false )
+{
+    
+}
+
+
+
+/**
+ * Construct rule without default value; use "" for no label.
+ */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvalutationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( new Variable( defVal ) ),
@@ -19,6 +35,21 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
     nodeType( dt ),
     label(argName),
     hasDefaultVal( true )
+{
+    
+}
+
+
+/**
+ * Construct rule without default value; use "" for no label.
+ */
+ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvalutationType et, DagNodeType dt) :
+    argTypeSpecs( argTypeSp ),
+    defaultVar( NULL ),
+    evalType( et ),
+    nodeType( dt ),
+    label(argName),
+    hasDefaultVal( false )
 {
     
 }
