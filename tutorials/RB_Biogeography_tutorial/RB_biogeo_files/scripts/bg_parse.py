@@ -31,9 +31,17 @@ def get_events(fn='../output/bg_2rate.events.txt'):
                 k,v = toks[j].split('=')
                 if not events[ taxon_index ].has_key( k ):
                     events[ taxon_index ][ k ] = []
-                if k == 'nd' or k == 'ch0' or k == 'ch1':
+                if k == 'nd' or k == 'ch0' or k == 'ch1' or k == 'pa':
                     v = [ int(b) for b in v ]
                 elif k == 'cs':
+                    if v == 's':
+                        v = 'subset_sympatry'
+                    elif v == 'n':
+                        v = 'narrow_sympatry'
+                    elif v == 'w':
+                        v = 'widespread_sympatry'
+                    elif v == 'a':
+                        v = 'allopatry'
                     v = v
                 elif k == 'bn':
                     v = int(v)
@@ -129,10 +137,11 @@ def get_clado_state(d,minSize=1,freqs=True):
         return
 
     num_char = len(d['nd'][0])
-    v = {'s':0.,'n':0.,'a':0.,'w':0.}
+    v = {'subset_sympatry':0.,'narrow_sympatry':0.,'allopatry':0.,'widespread_sympatry':0.}
    
     n = 0
     for i,x in enumerate(d['cs']):
+
         if sum(d['nd'][i]) >= minSize:
             n += 1
             v[x] += 1
@@ -164,7 +173,6 @@ def get_clado_prob(d,freqs=True):
                 v[nd_s] = {}
             y = d['ch0'][k]
             z = d['ch1'][k]
-            print(y,z,d['nd'][k])
             ch0_s = "".join([str(x) for x in y])
             ch1_s = "".join([str(x) for x in z])
             y_tmp = y
