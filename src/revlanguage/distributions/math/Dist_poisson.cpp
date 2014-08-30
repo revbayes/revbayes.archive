@@ -99,7 +99,7 @@ const MemberRules& Dist_poisson::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distPoisMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() ) );
+        distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

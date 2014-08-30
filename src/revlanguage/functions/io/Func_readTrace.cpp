@@ -181,9 +181,11 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if (!rulesSet) {
-        argumentRules.push_back( new ArgumentRule( "file", true, RlString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "delimiter", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
+    if (!rulesSet)
+    {
+        
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     

@@ -82,10 +82,11 @@ const MemberRules& PathSampler::getMemberRules(void) const {
     
     if ( !rulesSet )
     {
-        samplerMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        samplerMemberRules.push_back( new ArgumentRule("powerColumnName", true, RlString::getClassTypeSpec() ) );
-        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", true, RlString::getClassTypeSpec() ) );
-        samplerMemberRules.push_back( new ArgumentRule("delimiter", true, RlString::getClassTypeSpec(), new RlString( "\t" ) ) );
+        
+        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         
         rulesSet = true;
     }

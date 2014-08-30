@@ -102,8 +102,8 @@ const MemberRules& Dist_uniformTopology::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distUniformTopologyMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
-        distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
+        distUniformTopologyMemberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
+        distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

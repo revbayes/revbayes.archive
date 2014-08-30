@@ -107,10 +107,11 @@ const MethodTable& Trace::getMethods(void) const {
     static MethodTable methods = MethodTable();
     static bool          methodsSet = false;
     
-    if ( methodsSet == false ) {
+    if ( methodsSet == false )
+    {
         
         ArgumentRules* summarizeArgRules = new ArgumentRules();
-        summarizeArgRules->push_back( new ArgumentRule("burnin", true, Natural::getClassTypeSpec(), new Natural(0)) );
+        summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
         methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
         
         // necessary call for proper inheritance

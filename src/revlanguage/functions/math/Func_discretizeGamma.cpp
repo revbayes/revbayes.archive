@@ -46,17 +46,19 @@ RevPtr<Variable> Func_discretizeGamma::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_discretizeGamma::getArgumentRules( void ) const {
+const ArgumentRules& Func_discretizeGamma::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "shape", true, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "rate", true, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "num_cats", true, Integer::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "median", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "shape"   , RealPos::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "rate"    , RealPos::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "num_cats", Integer::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "median"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     

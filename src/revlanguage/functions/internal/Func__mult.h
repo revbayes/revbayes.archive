@@ -89,10 +89,11 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__mult<firstValType, secondVa
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "first", true, firstValType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "second", true, secondValType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "first" , firstValType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "second", secondValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

@@ -83,8 +83,8 @@ const MemberRules& Dist_beta::getMemberRules(void) const {
     
     if ( !rulesSet ) 
     {
-        distUnifMemberRules.push_back( new ArgumentRule( "alpha", true, RealPos::getClassTypeSpec() ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "beta"  , true, RealPos::getClassTypeSpec() ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "beta" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

@@ -72,7 +72,7 @@ const MemberRules& Dist_dirichlet::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "alpha", true, ModelVector<RealPos>::getClassTypeSpec() ) );
+        distExpMemberRules.push_back( new ArgumentRule( "alpha", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

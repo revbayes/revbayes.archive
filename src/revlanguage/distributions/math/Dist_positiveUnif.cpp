@@ -70,8 +70,8 @@ const MemberRules& Dist_positiveUnif::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", true, RealPos::getClassTypeSpec()   , new Real(0.0) ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper"  , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         rulesSet = true;
     }

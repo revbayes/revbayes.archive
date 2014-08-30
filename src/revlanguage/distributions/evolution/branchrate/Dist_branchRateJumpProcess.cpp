@@ -117,10 +117,10 @@ const MemberRules& Dist_branchRateJumpProcess::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "valueDistribution",  true, Distribution::getClassTypeSpec() ) );
-        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "tree",               true, TimeTree::getClassTypeSpec() ) );
-        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "lambda",             true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "rho",                true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "valueDistribution",  Distribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "tree",               TimeTree::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "lambda",             RealPos::getClassTypeSpec()     , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "rho",                Probability::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
         
         rulesSet = true;
     }

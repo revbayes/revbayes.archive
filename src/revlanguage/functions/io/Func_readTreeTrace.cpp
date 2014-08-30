@@ -106,7 +106,8 @@ void Func_readTreeTrace::formatError(RevBayesCore::RbFileManager& fm, std::strin
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
+const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -114,11 +115,11 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
     if (!rulesSet)
     {
     
-        argumentRules.push_back( new ArgumentRule( "file", true, RlString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "separator", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
-        std::vector<RlString> options;
-        options.push_back( RlString("clock") );
-        options.push_back( RlString("non-clock") );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        std::vector<std::string> options;
+        options.push_back( "clock" );
+        options.push_back( "non-clock" );
         argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options ) );
         rulesSet = true;
     }

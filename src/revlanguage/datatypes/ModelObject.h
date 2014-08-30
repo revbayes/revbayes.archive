@@ -523,14 +523,14 @@ RevLanguage::MethodTable RevLanguage::ModelObject<rbType>::makeMethods(void) con
     MethodTable methods;
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+    clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
     
     ArgumentRules* redrawArgRules = new ArgumentRules();
     methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
     
     ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+    setValueArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
     
     ArgumentRules* unclampArgRules = new ArgumentRules();

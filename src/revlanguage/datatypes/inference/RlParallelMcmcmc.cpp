@@ -128,21 +128,23 @@ const MemberRules& ParallelMcmcmc::getMemberRules(void) const {
     static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        memberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("numChains", true, Natural::getClassTypeSpec(), new Natural(4) ) );
-        memberRules.push_back( new ArgumentRule("numProcessors", true, Natural::getClassTypeSpec(), new Natural(4) ) );
-        memberRules.push_back( new ArgumentRule("swapInterval", true, Natural::getClassTypeSpec(), new Natural(100)) );
-        memberRules.push_back( new ArgumentRule("deltaHeat", true, Real::getClassTypeSpec(), new Real(0.2) ) );
-        memberRules.push_back( new ArgumentRule("sigmaHeat", true, Real::getClassTypeSpec(), new Real(1.0) ) );
-        memberRules.push_back( new ArgumentRule("startHeat", true, Real::getClassTypeSpec(), new Real(1.0)) );
+    if ( !rulesSet )
+    {
         
-        std::vector<RlString> options;
-        options.push_back( RlString("sequential") );
-        options.push_back( RlString("random") );
-        options.push_back( RlString("single") );
+        memberRules.push_back( new ArgumentRule("model"        , Model::getClassTypeSpec()                   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule("monitors"     , WorkspaceVector<Monitor>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("moves"        , WorkspaceVector<Move>::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("numChains"    , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
+        memberRules.push_back( new ArgumentRule("numProcessors", Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
+        memberRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)) );
+        memberRules.push_back( new ArgumentRule("deltaHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.2) ) );
+        memberRules.push_back( new ArgumentRule("sigmaHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        memberRules.push_back( new ArgumentRule("startHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0)) );
+        
+        std::vector<std::string> options;
+        options.push_back( "sequential" );
+        options.push_back( "random" );
+        options.push_back( "single" );
         
         memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
         
@@ -161,12 +163,12 @@ const MethodTable& ParallelMcmcmc::getMethods(void) const {
     
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
-        runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
+        runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
-        burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
+        burninArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* operatorSummaryArgRules = new ArgumentRules();

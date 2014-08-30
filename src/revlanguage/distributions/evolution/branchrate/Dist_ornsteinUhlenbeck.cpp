@@ -66,10 +66,11 @@ const MemberRules& Dist_ornsteinUhlenbeck::getMemberRules(void) const {
     
     if ( !rulesSet )
     {
-        dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "sigma", true, RealPos::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "mean", true, Real::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "phi", true, RealPos::getClassTypeSpec() ) );
+        
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "mean" , Real::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "phi"  , RealPos::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

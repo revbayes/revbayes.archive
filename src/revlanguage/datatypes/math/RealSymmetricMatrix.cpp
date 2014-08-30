@@ -103,8 +103,8 @@ RevLanguage::MethodTable RealSymmetricMatrix::makeMethods( void ) const
     MethodTable methods = MethodTable();
     
     ArgumentRules* covArgRules = new ArgumentRules();
-    covArgRules->push_back(new ArgumentRule("i", false, Natural::getClassTypeSpec()));
-    covArgRules->push_back(new ArgumentRule("j", false, Natural::getClassTypeSpec()));
+    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
     
     methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );

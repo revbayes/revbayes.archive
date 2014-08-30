@@ -59,9 +59,9 @@ const MemberRules& Dist_offsetLnorm::getMemberRules(void) const {
     
     if ( !rulesSet ) 
     {
-        distLnormMemberRules.push_back( new ArgumentRule( "mean",   true, Real::getClassTypeSpec(),    new Real(0.0) ) );
-        distLnormMemberRules.push_back( new ArgumentRule( "sd"  ,   true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        distLnormMemberRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
+        distLnormMemberRules.push_back( new ArgumentRule( "mean",   Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY,    new Real(0.0) ) );
+        distLnormMemberRules.push_back( new ArgumentRule( "sd"  ,   RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY,    new RealPos(1.0) ) );
+        distLnormMemberRules.push_back( new ArgumentRule( "offset", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

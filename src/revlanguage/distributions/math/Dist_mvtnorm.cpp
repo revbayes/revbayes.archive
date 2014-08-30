@@ -69,17 +69,19 @@ const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Dist_mvtnorm::getMemberRules(void) const {
     
-    static MemberRules distExpMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "mean", true, ModelVector<Real>::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "precision", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        distMemberRules.push_back( new ArgumentRule( "mean"     , ModelVector<Real>::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "precision", RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return distMemberRules;
 }
 
 

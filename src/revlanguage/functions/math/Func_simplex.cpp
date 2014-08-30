@@ -54,8 +54,8 @@ const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "x1", false, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "x2", false, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x1", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x2", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new Ellipsis ( RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }

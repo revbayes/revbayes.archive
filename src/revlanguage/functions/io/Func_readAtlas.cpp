@@ -69,9 +69,12 @@ const ArgumentRules& Func_readAtlas::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if (!rulesSet) {
-        argumentRules.push_back( new ArgumentRule( "file", true, RlString::getClassTypeSpec() ) );
+    if (!rulesSet)
+    {
+    
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
+    
     }
     
     return argumentRules;

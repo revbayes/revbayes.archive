@@ -69,7 +69,7 @@ const MemberRules& Move_NarrowExchange::getMemberRules(void) const {
     
     if ( !rulesSet ) 
     {
-        narrowMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
+        narrowMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

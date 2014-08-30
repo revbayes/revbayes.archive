@@ -48,7 +48,7 @@ const ArgumentRules& Func_system::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "", true, RlString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

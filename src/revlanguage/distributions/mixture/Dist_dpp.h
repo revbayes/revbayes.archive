@@ -145,9 +145,9 @@ const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getMemberRules(v
     if ( !rulesSet )
     {
     
-        distDPPMemberRules.push_back( new ArgumentRule( "concentration",     true, RealPos::getClassTypeSpec() ) );
-        distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution",  true, TypedDistribution<valType>::getClassTypeSpec() ) );
-        distDPPMemberRules.push_back( new ArgumentRule( "numElements",       true, Natural::getClassTypeSpec() ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "concentration"   , RealPos::getClassTypeSpec()                   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "numElements"     , Natural::getClassTypeSpec()                   , ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
