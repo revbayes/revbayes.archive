@@ -24,11 +24,13 @@ namespace RevLanguage {
         enum DagNodeType { STOCHASTIC, DETERMINISTIC, ANY };
         
         ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp,
-                     EvalutationType et=BY_CONSTANT_REFERENCE, DagNodeType dt=ANY,
-                     RevObject *defVal=NULL);                                                                               //!< Constructor of rule without default value
+                     EvalutationType et=BY_CONSTANT_REFERENCE, DagNodeType dt=ANY);                                                                               //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp,
+                     EvalutationType et, DagNodeType dt, RevObject *defVal);                                                                               //!< Constructor of rule without default value
         ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp,
-                     EvalutationType et=BY_CONSTANT_REFERENCE, DagNodeType dt=ANY,
-                     RevObject *defVal=NULL);                                                                               //!< Constructor of rule without default value
+                     EvalutationType et=BY_CONSTANT_REFERENCE, DagNodeType dt=ANY);                                                                               //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp,
+                     EvalutationType et, DagNodeType dt, RevObject *defVal);                                                                               //!< Constructor of rule without default value
         virtual                            ~ArgumentRule(void) {}
         
         // Basic utility functions

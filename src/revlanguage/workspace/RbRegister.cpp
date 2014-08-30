@@ -399,164 +399,164 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
     
     try
     {
-        /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
-        
-        /* Add base types (in folder "datatypes") */
-        addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
-
-        /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        addType( new Complex()                  );
-        addType( new Integer()                  );
-        addType( new Natural()                  );
-        addType( new Probability()              );
-        addType( new Real()                     );
-        addType( new RealPos()                  );
-        addType( new RlBoolean()                );
-        addType( new RlString()                 );
-        
-        /* Add container types (in folder "datatypes/container") (alphabetic order) */
-
-        // Note: Only these types of containers can be created implicitly by assignment
-        // or explicitly using the v function or the "[ x1, x2, ... ]" syntax.
-
-        // Model vectors
-        addType( new ModelVector<Integer>()          );
-        addType( new ModelVector<Natural>()          );
-        addType( new ModelVector<Real>()             );
-        addType( new ModelVector<RealPos>()          );
-        addType( new ModelVector<Probability>()      );
-        addType( new ModelVector<RlBoolean>()        );
-        addType( new ModelVector<RlString>()         );
-        addType( new ModelVector<Simplex>()          );
-        addType( new ModelVector<ModelVector<RealPos> >()   );
-        addType( new ModelVector<ModelVector<Real> >()      );
-        addType( new ModelVector<ModelVector<Natural> >()   );
-        addType( new ModelVector<ModelVector<Integer> >()   );
-        addType( new ModelVector<TimeTree>());
-        addType( new ModelVector<Taxon>());
-
-        
-        // Model vectors of abstract elements
-        addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
-        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
-        addType( new ModelVectorAbstractElement<RateMatrix>() );
-
-        // Workspace vectors
-        addType( new WorkspaceVector<Mcmc>()         );
-        addType( new WorkspaceVector<Model>()        );
-        addType( new WorkspaceVector<Monitor>()      );
-        addType( new WorkspaceVector<Move>()         );
-
-        // RevObject vectors
-        addType( new RevObjectVector<Function>()     );
-        addType( new RevObjectVector<Distribution>() );
-        addType( new RevObjectVector<RevObject>()    );
-
-        /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
-        
-        /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
-        addType( new AminoAcidState()   );
-        addType( new DnaState()         );
-        addType( new RnaState()         );
-        addType( new StandardState()    );
-        
-        /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
-        addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
-        addType( new RevAbstractType( AbstractDiscreteCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
-        addType( new DiscreteCharacterData<AminoAcidState>()    );
-        addType( new DiscreteCharacterData<DnaState>()          );
-        addType( new DiscreteCharacterData<RnaState>()          );
-        addType( new DiscreteCharacterData<StandardState>()     );
-
-        /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
-        addTypeWithConstructor( "clade",            new Clade() );
-        
-        /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
-        addTypeWithConstructor( "taxon",            new Taxon() );
-
-
-        /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
-        addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
-        addTypeWithConstructor( "model",                  new Model()                                   );
-        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
-        addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
-        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()                          );
-        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
-        ////////////////////////////////////////////////////////////////////////////////
-
-        addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
-        addTypeWithConstructor("mnFile",                new Mntr_File());
-        addTypeWithConstructor("mnModel",               new Mntr_Model());
-        addTypeWithConstructor("mnScreen",              new Mntr_Screen());
-        addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
-        addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
-
-        // Nonstandard constructor names (for backward compatibility)
-        addTypeWithConstructor("extNewickmonitor", new Mntr_ExtendedNewickFile());
-        addTypeWithConstructor("filemonitor",      new Mntr_File());
-        addTypeWithConstructor("modelmonitor",     new Mntr_Model());
-        addTypeWithConstructor("screenmonitor",    new Mntr_Screen());
-        
-        
-        ///////////////////////////////////////////////////////////////////////////////////
-        /* Add moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
-        ///////////////////////////////////////////////////////////////////////////////////
-        
-        /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
-        
-        /* Moves on real values */
-        addTypeWithConstructor("mvScale",               new Move_Scale() );
-        addTypeWithConstructor("mvSlide",               new Move_Slide() );
-        addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
-		
-		// compound moves on real values
-        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
-        
-        // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mScale",                new Move_Scale() );
-        addTypeWithConstructor("mSlide",                new Move_Slide() );
-        addTypeWithConstructor("mSlice",                new Move_SliceSampling() );
-        
-        /* Moves on integer values */
-        addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
-        addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
-
-        addTypeWithConstructor("mRandomIntegerWalk",    new Move_RandomIntegerWalk() );
-        addTypeWithConstructor("mRandomGeometricWalk",  new Move_RandomGeometricWalk() );
-
-
-        /* Moves on simplices */
-        addTypeWithConstructor("mvSimplex",             new Move_Simplex() );
-        addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );
-
-        // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mSimplex",              new Move_Simplex() );
-        addTypeWithConstructor("mSimplexElementScale",  new Move_SimplexSingleElementScale() );
-        
-
-        /* Moves on vectors of real values */
-        addTypeWithConstructor("mvRlcRateScale",                new Move_RLCRateScale() );
-        addTypeWithConstructor("mvSingleElementScale",          new Move_SingleElementScale() );
-        addTypeWithConstructor("mvSwitchRateJump",              new Move_SwitchRateJump() );
-        addTypeWithConstructor("mvVectorScale",                 new Move_VectorScale() );
-        addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
-        addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
-        
-        /* Moves on matrices of real values */
-        addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
-
-        /* Moves on matrices of real values */
-        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
-        addTypeWithConstructor("mvCovarianceMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
-
-        /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
-        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
+//        /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
+//        
+//        /* Add base types (in folder "datatypes") */
+//        addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
+//
+//        /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
+//        addType( new Complex()                  );
+//        addType( new Integer()                  );
+//        addType( new Natural()                  );
+//        addType( new Probability()              );
+//        addType( new Real()                     );
+//        addType( new RealPos()                  );
+//        addType( new RlBoolean()                );
+//        addType( new RlString()                 );
+//        
+//        /* Add container types (in folder "datatypes/container") (alphabetic order) */
+//
+//        // Note: Only these types of containers can be created implicitly by assignment
+//        // or explicitly using the v function or the "[ x1, x2, ... ]" syntax.
+//
+//        // Model vectors
+//        addType( new ModelVector<Integer>()          );
+//        addType( new ModelVector<Natural>()          );
+//        addType( new ModelVector<Real>()             );
+//        addType( new ModelVector<RealPos>()          );
+//        addType( new ModelVector<Probability>()      );
+//        addType( new ModelVector<RlBoolean>()        );
+//        addType( new ModelVector<RlString>()         );
+//        addType( new ModelVector<Simplex>()          );
+//        addType( new ModelVector<ModelVector<RealPos> >()   );
+//        addType( new ModelVector<ModelVector<Real> >()      );
+//        addType( new ModelVector<ModelVector<Natural> >()   );
+//        addType( new ModelVector<ModelVector<Integer> >()   );
+//        addType( new ModelVector<TimeTree>());
+//        addType( new ModelVector<Taxon>());
+//
+//        
+//        // Model vectors of abstract elements
+//        addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
+//        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
+//        addType( new ModelVectorAbstractElement<RateMatrix>() );
+//
+//        // Workspace vectors
+//        addType( new WorkspaceVector<Mcmc>()         );
+//        addType( new WorkspaceVector<Model>()        );
+//        addType( new WorkspaceVector<Monitor>()      );
+//        addType( new WorkspaceVector<Move>()         );
+//
+//        // RevObject vectors
+//        addType( new RevObjectVector<Function>()     );
+//        addType( new RevObjectVector<Distribution>() );
+//        addType( new RevObjectVector<RevObject>()    );
+//
+//        /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
+//        
+//        /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
+//        addType( new AminoAcidState()   );
+//        addType( new DnaState()         );
+//        addType( new RnaState()         );
+//        addType( new StandardState()    );
+//        
+//        /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
+//        addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
+//        addType( new RevAbstractType( AbstractDiscreteCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
+//        addType( new DiscreteCharacterData<AminoAcidState>()    );
+//        addType( new DiscreteCharacterData<DnaState>()          );
+//        addType( new DiscreteCharacterData<RnaState>()          );
+//        addType( new DiscreteCharacterData<StandardState>()     );
+//
+//        /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
+//        addTypeWithConstructor( "clade",            new Clade() );
+//        
+//        /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
+//        addTypeWithConstructor( "taxon",            new Taxon() );
+//
+//
+//        /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
+//        addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
+//        addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
+//        addTypeWithConstructor( "model",                  new Model()                                   );
+//        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
+//        addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
+//        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()                          );
+//        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
+//
+//
+//        ////////////////////////////////////////////////////////////////////////////////
+//        /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
+//        ////////////////////////////////////////////////////////////////////////////////
+//
+//        addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
+//        addTypeWithConstructor("mnFile",                new Mntr_File());
+//        addTypeWithConstructor("mnModel",               new Mntr_Model());
+//        addTypeWithConstructor("mnScreen",              new Mntr_Screen());
+//        addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
+//        addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
+//
+//        // Nonstandard constructor names (for backward compatibility)
+//        addTypeWithConstructor("extNewickmonitor", new Mntr_ExtendedNewickFile());
+//        addTypeWithConstructor("filemonitor",      new Mntr_File());
+//        addTypeWithConstructor("modelmonitor",     new Mntr_Model());
+//        addTypeWithConstructor("screenmonitor",    new Mntr_Screen());
+//        
+//        
+//        ///////////////////////////////////////////////////////////////////////////////////
+//        /* Add moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
+//        ///////////////////////////////////////////////////////////////////////////////////
+//        
+//        /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
+//        
+//        /* Moves on real values */
+//        addTypeWithConstructor("mvScale",               new Move_Scale() );
+//        addTypeWithConstructor("mvSlide",               new Move_Slide() );
+//        addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
+//		
+//		// compound moves on real values
+//        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
+//        
+//        // nonstandard forms (for backward compatibility)
+//        addTypeWithConstructor("mScale",                new Move_Scale() );
+//        addTypeWithConstructor("mSlide",                new Move_Slide() );
+//        addTypeWithConstructor("mSlice",                new Move_SliceSampling() );
+//        
+//        /* Moves on integer values */
+//        addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
+//        addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
+//
+//        addTypeWithConstructor("mRandomIntegerWalk",    new Move_RandomIntegerWalk() );
+//        addTypeWithConstructor("mRandomGeometricWalk",  new Move_RandomGeometricWalk() );
+//
+//
+//        /* Moves on simplices */
+//        addTypeWithConstructor("mvSimplex",             new Move_Simplex() );
+//        addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );
+//
+//        // nonstandard forms (for backward compatibility)
+//        addTypeWithConstructor("mSimplex",              new Move_Simplex() );
+//        addTypeWithConstructor("mSimplexElementScale",  new Move_SimplexSingleElementScale() );
+//        
+//
+//        /* Moves on vectors of real values */
+//        addTypeWithConstructor("mvRlcRateScale",                new Move_RLCRateScale() );
+//        addTypeWithConstructor("mvSingleElementScale",          new Move_SingleElementScale() );
+//        addTypeWithConstructor("mvSwitchRateJump",              new Move_SwitchRateJump() );
+//        addTypeWithConstructor("mvVectorScale",                 new Move_VectorScale() );
+//        addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
+//        addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
+//        
+//        /* Moves on matrices of real values */
+//        addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
+//
+//        /* Moves on matrices of real values */
+//        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
+//        addTypeWithConstructor("mvCovarianceMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
+//
+//        /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
+//        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
+//        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
