@@ -5,7 +5,6 @@
 #include "Dist_bdp.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
