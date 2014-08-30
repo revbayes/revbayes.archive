@@ -47,6 +47,7 @@ namespace RevBayesCore {
         BiogeographicTreeHistoryCtmc*                       clone(void) const;                                                           //!< Create an independent clone
         void                                                initializeValue(void);
         void                                                redrawValue(void);
+        virtual void                                        simulate(void);
         
         // These will be migrated to PathRejectionSampleProposal and NodeRejectionSampleProposal
         bool                                                samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
@@ -61,10 +62,11 @@ namespace RevBayesCore {
         void                                                setDistancePower(const TypedDagNode<double>* dp);
         void                                                setCladogenicStateFrequencies(const TypedDagNode<std::vector<double> >* csf);
 
-        // ambiguous characters at tips
+        // special tip/root state flags
         const std::vector<double>&                          getTipProbs(const TopologyNode& nd);
         const std::vector<std::vector<double> >&            getTipProbs(void);
         void                                                setTipProbs(const AbstractCharacterData* d);
+        const bool                                          getUseTail(void) const;
         
         
         // cladogenic state information
@@ -75,14 +77,10 @@ namespace RevBayesCore {
         int                                                 getCladogenicState(const TopologyNode& nd);
         void                                                setCladogenicState(const TopologyNode& nd, int s);
         virtual const std::vector<double>&                  getCladogenicStateFrequencies(void);
+        const bool                                          useCladogenicEvents(void) const;
         
         // epoch info
         const std::vector<double>&                          getEpochs(void) const;
-        
-        
-        virtual void                                        simulate(void);
-        const bool                                          useCladogenicEvents(void) const;
-        const bool                                          getUseTail(void) const;
         
         // Parameter management functions
         std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
@@ -323,6 +321,12 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             double tr = rm.getRate(node, currState, *it_h, counts, currAge);
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
             lnL += -(sr * da) + log(tr);
+//            if ( lnL < -1E20 )
+//            {
+//                bh->print();
+//                std::cout << "";
+//                std::cerr << "error\n";
+//            }
 
             // update counts
             counts[currState[idx]->getState()] -= 1;

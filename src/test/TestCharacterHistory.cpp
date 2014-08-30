@@ -153,10 +153,10 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::cout << old_seed[0] << " " << old_seed[1] << "\n";
-//    std::vector<unsigned> seed;
-//    seed.push_back(1+1); seed.push_back(1);
+    std::vector<unsigned> seed;
+    seed.push_back(1+1); seed.push_back(1);
 //    old_seed = seed;
-//    GLOBAL_RNG->setSeed(seed);
+    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
     
@@ -168,8 +168,8 @@ bool TestCharacterHistory::run_exp(void) {
     bool forbidExtinction           = true;
     bool useCladogenesis            = true;
     bool useDistances               = true;
-    bool useAdjacency               = !true;
-    bool useAvailable               = !true;
+    bool useAdjacency               = true;
+    bool useAvailable               = true;
     bool useRootFreqs               = !true;
     
     
@@ -178,9 +178,9 @@ bool TestCharacterHistory::run_exp(void) {
     // binary characters
     std::string fn = "";
 //    fn = "vireya.nex";
-//    fn = "psychotria_range.nex";
+    fn = "psychotria_range.nex";
 //    fn = "16tip_100areas.nex";
-    fn = "sim_aus_50tip_33area.nex";
+//    fn = "sim_aus_50tip_33area.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -198,9 +198,9 @@ bool TestCharacterHistory::run_exp(void) {
 //    afn = "malesia_static.atlas.txt";
 //    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
-//    afn = "hawaii_dynamic_ss.atlas.txt";
+    afn = "hawaii_dynamic_ss.atlas.txt";
 //    afn = "100area.atlas.txt";
-    afn = "sim_aus_50tip_33area.atlas.txt";
+//    afn = "sim_aus_50tip_33area.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -416,7 +416,7 @@ bool TestCharacterHistory::run_exp(void) {
         //        moves.push_back( new MetropolisHastingsMove( new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), numNodes*2, false));
         //        moves.push_back( new MetropolisHastingsMove( new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3), numNodes, false));
     }
-    else if (useCladogenesis || true)
+    else if (useCladogenesis)
     {
         // path
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2), 0.2, false, numNodes * 2));
@@ -434,7 +434,7 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes * 2));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
         
-//        // node
+        // node
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes*2));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
 
@@ -487,7 +487,7 @@ bool TestCharacterHistory::run_exp(void) {
     //////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-//    myMcmc.setScheduleType("single");
+    myMcmc.setScheduleType("single");
     myMcmc.run(mcmcGenerations);
     myMcmc.printOperatorSummary();
     
