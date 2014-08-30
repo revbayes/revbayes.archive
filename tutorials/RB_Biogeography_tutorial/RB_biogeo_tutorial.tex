@@ -84,8 +84,8 @@ To examine the posterior, we'll use Python scripts, Tracer by Andrew Rambaut, to
 \subsection{Handy links for this lab}
 
 \begin{tabular}{ll}
-Lab zip file & \url{https://github.com/revbayes/revbayes/raw/development/tutorials/RB\_Biogeography\_tutorial/RB\_biogeo\_files.zip} \\
 RevBayes & \url{https://github.com/revbayes/revbayes} \\
+Lab zip file & \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB\_Biogeography\_tutorial/RB\_biogeo\_files.zip}{{\tt https://github.com/revbayes/revbayes/.../RB\_biogeo\_files.zip}} \\
 Phylowood software & \url{http://mlandis.github.io/phylowood} \\
 Phylowood manual & \url{https://github.com/mlandis/phylowood/wiki} \\
 Tracer & \url{http://tree.bio.ed.ac.uk/software/tracer}
@@ -387,9 +387,10 @@ $ revbayes
 First, we'll assign all our input files to {\tt String} variables.
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > fp      <- "./scripts/"
+RevBayes > in_fp   <- "./input/"
 RevBayes > data_fn <- "psychotria_range.nex"
 RevBayes > area_fn <- "hawaii_dynamic.atlas.txt"
+RevBayes > out_fp  <- "./output/"
 RevBayes > out_str <- "bg_2rate"
 \end{lstlisting}
 \end{snugshade}
@@ -398,9 +399,9 @@ Then we'll create our range data, tree, and atlas objects
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > data  <- readCharacterData(fp + data_fn)
-RevBayes > tree  <- readTrees(fp + data_fn)[1]
-RevBayes > atlas <- readAtlas(fp + area_fn)
+RevBayes > data  <- readCharacterData(in_fp + data_fn)
+RevBayes > tree  <- readTrees(in_fp + data_fn)[1]
+RevBayes > atlas <- readAtlas(in_fp + area_fn)
 \end{lstlisting}
 \end{snugshade}
 
@@ -663,7 +664,7 @@ You can modify this file as you like then re-run the analysis by typing
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > source("biogeography_DEC_2rate.Rev")
+RevBayes > source("./scripts/biogeography_DEC_2rate.Rev")
 \end{lstlisting}
 \end{snugshade}
 
@@ -811,7 +812,7 @@ Next, click the Estimates tab then select the three {\tt csf} parameters.
 Recording stochastic mappings in a Tracer-compatible format requires some summarization.
 This monitor generates a tab-delimited file where the number of events of each type for each branch is recorded.
 
-\noindent \\ \impmark Open {\tt bg\_2rate.counts.txt} in a text editor.
+\noindent \\ \impmark Open {\tt ./output/bg\_2rate.counts.txt} in a text editor.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
@@ -839,12 +840,15 @@ Open Tracer, select the fields for the posterior probability and the number of g
 \caption{Joint-marginal distribution of posterior and number dispersal events summed over the tree.}
 \end{figure}
 
+One interesting facet of this output is there are never fewer than six events.
+In fact, since we assume a stratified geography and that only one event may occur per instant, it is impossible to describe the data we see at the tips with fewer than six gain events.
+That is, six gain events is part of the maximum parsimony solution.
 
 \subsection{Biogeographic event histories from {\tt mnCharHistoryNewick}}
 
 For more detailed data exploration, this analysis also provides annotated Newick strings with the complete character mappings for the tree.
 
-\noindent \\ \impmark Open {\tt bg\_2rate.events.txt} in a text editor.
+\noindent \\ \impmark Open {\tt ./output/bg\_2rate.events.txt} in a text editor.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
@@ -888,11 +892,11 @@ To manipulate this data format, we'll use Python scripts. Below are a few exampl
 ...
 
 >>> from bg_parse import *
->>> dd=get_events()
+>>> dd=get_events(fn="../output/bg_2rate.events")
 \end{lstlisting}
 \end{snugshade}
 
-By default, {\tt get\_events()} extracts a dictionary where each node index maps to a branch's character history as reported in {\tt ../input/bg\_2rate.events.txt}. 
+By default, {\tt get\_events()} extracts a dictionary where each node index maps to a branch's character history as reported in {\tt ./input/bg\_2rate.events.txt}. 
 Each branch is a dictionary whose keys are various parts of the MCMC state and whose values the MCMC samples.
 \begin{snugshade}
 \begin{lstlisting}
@@ -907,7 +911,7 @@ To get the $n=1$ highest-valued sample for a branch by its posterior value
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_best(dd[23],n=1,p='posterior')
-{'prior': [4.48225], 'iteration': [14890], 'bn': [22], 'nd': [[0, 1, 1, 0]], 'ch0': [[0, 1, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-34.7139], 'pa': ['0100'], 'cs': ['p'], 'ev': [[{'age': 1.5637, 'state': 1, 'idx': 2, 'time': 0.8611}]], 'likelihood': [-39.1962]}
+{'prior': [4.48225], 'iteration': [14890], 'bn': [22], 'nd': [[0, 1, 1, 0]], 'ch0': [[0, 1, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-34.7139], 'pa': [[0, 1, 0, 0]], 'cs': ['p'], 'ev': [[{'age': 1.5637, 'state': 1, 'idx': 2, 'time': 0.8611}]], 'likelihood': [-39.1962]}
 \end{lstlisting}
 \end{snugshade}
 
@@ -942,9 +946,9 @@ Depending on your question, different aspects of the posterior cladogenic state 
 Narrow sympatry is the favored ancestral state, but wide sympatry is favored for ranges of size $n>1$.
 However, when we look at the 100 most probable samples, subset sympatry becomes most favored.
 
-More script functions are found in {\tt bg\_parse.py}.
+More script functions are found in {\tt ./scripts/bg\_parse.py}.
 
-\subsection{New Hampshire extended format file (\texttt{my\_run.nhx})}
+\subsection{New Hampshire extended format file (\texttt{./output/bg\_2rate.nhx})}
 
 Because this data is very high-dimensional, we'll use an external data exploration tool to look at range evolution.
 
@@ -966,7 +970,7 @@ Phylowood generates interactive animations to explore biogeographic reconstructi
 
 \noindent \\ \impmark Open \texttt{http://mlandis.github.io/phylowood}.
 
-\noindent \\ \impmark Drag and drop \texttt{bg\_2rate.nhx.txt} into the text field.
+\noindent \\ \impmark Drag and drop \texttt{./output/bg\_2rate.nhx.txt} into the text field.
 
 \begin{figure}[H]
 \centering
