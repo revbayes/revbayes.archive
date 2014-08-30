@@ -5,7 +5,6 @@
 #include "ModelVector.h"
 #include "MultispeciesCoalescent.h"
 #include "Natural.h"
-#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
