@@ -1,3 +1,15 @@
+################################################################################
+#
+# RevBayes Exercise: Bayesian inference of biogeography
+# 
+# This file: Specifies the full DEC model with parameters and moves 
+#            with equal rates of area gain and loss.
+#
+# authors: Michael Landis
+#
+################################################################################
+
+
 ############
 # Settings #
 ############
@@ -68,10 +80,10 @@ moves[3] <- mvScale(x=dp, lambda=0.5, tune=false, weight=5.0)
 moves[4] <- mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
 
 # data augmentation moves
-moves[4] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-moves[5] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-moves[6] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
-moves[7] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+moves[4] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.1, type="biogeo", weight=2.0*n_nodes)
+moves[5] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.1, type="biogeo", weight=2.0*n_nodes)
+moves[6] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.5, type="biogeo", weight=n_nodes)
+moves[7] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.5, type="biogeo", weight=n_nodes)
 
 
 
