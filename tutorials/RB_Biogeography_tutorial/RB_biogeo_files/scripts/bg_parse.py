@@ -1,13 +1,41 @@
+################################################################################
+#
+# bg_parse.py
+# 
+# This file is used to extract information from the posterior from the
+# 		mnCharacterHistoryNewick monitor in RevBayes for style="events".
+#
+# authors: Michael Landis
+#
+################################################################################
+
+
 import re
 
-def read_events(fn):
+def get_events(fn='../output/bg_2rate.events.txt'):
+    """ Extract events from mnCharacterHistoryNewick(...,style="events") file
+   
+        Returns a dictionary of character histories. The dictionary keys match
+            branch indexes you get from the RevBayes function. In RevBayes, to
+            get the branch index for the MRCA of e.g. "wolf" and "coyote"
+
+                RevBayes > names <- my_tree.names()
+                RevBayes > mrcaIndex(tree=my_tree, clade=clade("wolf", "coyote"))
+                    16 
+        
+        Then, access the character history for the branch from Python using
+
+            > my_histories = get_events(fn='my_events.txt')
+            > my_histories[16]      # Warning, lots of output
+
+        
+        Keywords
+            fn : the full filepath to your events file
+
+    """
     f = open(fn,'r')
     lines = f.readlines()
     f.close()
-    return(lines)
-
-def get_events(fn='../output/bg_2rate.events.txt'):
-    lines=read_events(fn)
     events = {}
     for l in lines:
         y = l.split('\t')
@@ -31,9 +59,17 @@ def get_events(fn='../output/bg_2rate.events.txt'):
                 k,v = toks[j].split('=')
                 if not events[ taxon_index ].has_key( k ):
                     events[ taxon_index ][ k ] = []
-                if k == 'nd' or k == 'ch0' or k == 'ch1':
+                if k == 'nd' or k == 'ch0' or k == 'ch1' or k == 'pa':
                     v = [ int(b) for b in v ]
                 elif k == 'cs':
+                    if v == 's':
+                        v = 'subset_sympatry'
+                    elif v == 'n':
+                        v = 'narrow_sympatry'
+                    elif v == 'w':
+                        v = 'widespread_sympatry'
+                    elif v == 'a':
+                        v = 'allopatry'
                     v = v
                 elif k == 'bn':
                     v = int(v)
@@ -52,6 +88,21 @@ def get_events(fn='../output/bg_2rate.events.txt'):
     return events
 
 def get_best(d,n=5,f=None,p='posterior'):
+    """ Get the best sampled histories from a branch history dictionary. 
+            e.g. for my_data[16]
+
+                > get_best(d=my_data[16])
+
+        Returns the n best samples according the criterion p (posterior, prior, likelihood).
+            Or, best proportion of samples by frequency f, if f is defined.
+
+        Keywords
+            d : The branch history dictionary for a single branch.
+            n : The count of best samples to find.
+            f : The proportion of the best samples to find. (Overrides n.)
+            p : The criteria used to define "best", which can be
+                    "posterior", "prior", or "likelihood"
+    """
     if p not in ['posterior','prior','likelihood']:
         print('WARNING: p=\'' + p + '\' invalid, set p=\'posterior\'')
         p = 'posterior'
@@ -74,6 +125,17 @@ def get_best(d,n=5,f=None,p='posterior'):
     return(ret)
 
 def get_gain_loss(d, freqs=True):
+    """ Get the mean posterior number of area gain and loss events per area.
+
+        Returns a 2d-vector, where the first index is what type of state was
+            acquired (e.g. 0: loss, 1: gain) and the second index is what
+            character (e.g. area) underwent that change.
+
+        Keywords
+            d     : The branch history dictionary for a single branch.
+            freqs : If False, the numbers are raw counts
+                        (i.e. not divided by the number of samples)
+    """
     num_char = len(d['nd'][0])
     v = []
     for i in range(2):
@@ -96,7 +158,19 @@ def get_gain_loss(d, freqs=True):
 
 
 def get_area_pair(d,k='nd',freqs=True):
-    
+    """ Get the posterior that two areas were occupied at a given node.
+
+        Returns a 2d-vector, indexed by the areas' indices. The diagonal
+            elements are the marginal probability of that area being
+            in the node's range. The off-diagonal elements give the
+            marginal probability the pair of areas we co-occupied by
+            that node's range.
+        
+        Keywords
+            d     : The branch history dictionary for a single branch.
+            freqs : If False, the numbers are raw counts
+                        (i.e. not divided by the number of samples)
+    """
     num_char = len(d[k][0])
     v = []
     for i in range(num_char):
@@ -123,16 +197,34 @@ def get_area_pair(d,k='nd',freqs=True):
     return(v)
 
 def get_clado_state(d,minSize=1,freqs=True):
+    """ Get the posterior for cladogenic state.
 
+        Returns a dictionary for whose keys are the possible cladogenic states. States
+            are defined as:
+            'narrow_sympatry'       10000 -> 10000 | 10000 -> 'narrow_sympatry'
+            'subset_sympatry'       11110 -> 10000 | 11110 -> 'subset_sympatry'
+            'allopatry'             11110 -> 11000 | 00110 -> 'allopatry'
+            'widespread_sympatry'   11110 -> 11110 | 11110 -> 'widespread_sympatry'
+
+            Dictionary values give the frequency that cladogenic state for the branch
+                was found in the posterior distribution. Use get_clado_prob()
+                for more detailed information.
+        
+        Keywords
+            d     : The branch history dictionary for a single branch.
+            freqs : If False, the numbers are raw counts
+                        (i.e. not divided by the number of samples)
+    """
     if not d.has_key('ch0') or not d.has_key('ch1'):
         print('ERROR: no cladogenic state recorded')
         return
 
     num_char = len(d['nd'][0])
-    v = {'s':0.,'n':0.,'a':0.,'w':0.}
+    v = {'subset_sympatry':0.,'narrow_sympatry':0.,'allopatry':0.,'widespread_sympatry':0.}
    
     n = 0
     for i,x in enumerate(d['cs']):
+
         if sum(d['nd'][i]) >= minSize:
             n += 1
             v[x] += 1
@@ -147,7 +239,35 @@ def get_clado_state(d,minSize=1,freqs=True):
 
 
 def get_clado_prob(d,freqs=True):
-    
+    """ Get the posterior for cladogenic configuration probs (incomplete)
+
+        Returns a dictionary for whose keys are the possible cladogenic states. States
+            are defined as:
+            'narrow_sympatry'       10000 -> 10000|10000 -> 20000
+            'subset_sympatry'       11110 -> 10000|21110 -> 21110
+            'allopatry'             11110 -> 11000|00110 -> 11330
+            'widespread_sympatry'   11110 -> 11110|11110 -> 22220
+
+            1 means only one descendant lineage retained the area
+            2 means both descendant lineages retained thea area
+            3 means only the second descedant lineage retained the area
+
+            Dictionary values give the frequency that each particular cladogenic state for the branch
+                was found in the posterior distribution.
+
+        Example:
+            > get_clado_prob(dd[23]).keys()
+                ['0110', '0010', '0100', '1110', '1100', '1010', '1000']
+            > get_clado_prob(dd[23])['0110']
+                {'0120': 0.1236,
+                 '0130': 0.0200,
+                 '0220': 0.2788}
+        
+        Keywords
+            d     : The branch history dictionary for a single branch.
+            freqs : If False, the numbers are raw counts
+                        (i.e. not divided by the number of samples)
+    """
     if not d.has_key('ch0') or not d.has_key('ch1'):
         print('ERROR: no cladogenic state recorded')
         return
@@ -157,23 +277,36 @@ def get_clado_prob(d,freqs=True):
     v = {}
     n = 0
     for k in range(len(d['nd'])):
-        if d['cs'][k] == 'a':
+        if d['cs'][k] == 'allopatry':
             n += 1
             nd_s = "".join([str(x) for x in d['nd'][k]])
             if not v.has_key(nd_s):
                 v[nd_s] = {}
             y = d['ch0'][k]
             z = d['ch1'][k]
-            print(y,z,d['nd'][k])
             ch0_s = "".join([str(x) for x in y])
             ch1_s = "".join([str(x) for x in z])
             y_tmp = y
             z_tmp = z
             if ch0_s < ch1_s:
-                y_tmp = [ a*2 for a in y_tmp ]
+                y_tmp = [ a*3 for a in y_tmp ]
             else:
-                z_tmp = [ a*2 for a in z_tmp ]
+                z_tmp = [ a*3 for a in z_tmp ]
             b = [ sum(a) for a in zip(y_tmp,z_tmp) ]
+            b_s = "".join([str(x) for x in b])
+            if not v[nd_s].has_key(b_s):
+                v[nd_s][b_s] = 0.
+            v[nd_s][b_s] += 1.
+        else:
+            n += 1
+            nd_s = "".join([str(x) for x in d['nd'][k]])
+            if not v.has_key(nd_s):
+                v[nd_s] = {}
+            y = d['ch0'][k]
+            z = d['ch1'][k]
+            ch0_s = "".join([str(x) for x in y])
+            ch1_s = "".join([str(x) for x in z])
+            b = [ sum(a) for a in zip(y,z) ]
             b_s = "".join([str(x) for x in b])
             if not v[nd_s].has_key(b_s):
                 v[nd_s][b_s] = 0.

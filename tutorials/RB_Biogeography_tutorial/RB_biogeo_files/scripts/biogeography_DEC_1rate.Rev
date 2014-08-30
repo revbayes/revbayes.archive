@@ -1,3 +1,15 @@
+################################################################################
+#
+# RevBayes Exercise: Bayesian inference of biogeography
+# 
+# This file: Specifies the full DEC model with parameters and moves 
+#            with equal rates of area gain and loss.
+#
+# authors: Michael Landis
+#
+################################################################################
+
+
 ############
 # Settings #
 ############
