@@ -1,12 +1,23 @@
 ############
 # Settings #
 ############
+################################################################################
+#
+# RevBayes Exercise: Bayesian inference of biogeography
+# 
+# This file: Specifies the full DEC model with parameters and moves 
+#            with different rates of area gain and loss.
+#
+# authors: Michael Landis
+#
+################################################################################
+
 
 # analysis input/output
 in_fp           <- "./input/"
 data_fn         <- "psychotria_range.nex"
 area_fn         <- "hawaii_dynamic.atlas.txt"
-out_fp          <- "./"
+out_fp          <- "./output/"
 out_str         <- "bg_2rate"
 
 # input objects
