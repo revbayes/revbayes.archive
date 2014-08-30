@@ -101,14 +101,17 @@ void ScalerUpDownMove::swapNode(DagNode *oldN, DagNode *newN) {
 
 
 void ScalerUpDownMove::tune( void ){
-    double rate = numAccepted / double(numTried);
-	double target = 0.44;
-    if ( rate > target ){
-        scaleFactor *= (1.0 + ((rate-target)/(1.0 - target) ));
-    }
-    else{
-        scaleFactor /= (2.0 - rate/target );
-    }
+
+	if(0){
+		double rate = numAccepted / double(numTried);
+		double target = 0.234;
+		if ( rate > target ){
+			scaleFactor *= (1.0 + ((rate-target)/(1.0 - target) ));
+		}
+		else{
+			scaleFactor /= (2.0 - rate/target );
+		}
+	}
 }
 
 

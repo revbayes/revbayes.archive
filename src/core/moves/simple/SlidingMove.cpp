@@ -103,20 +103,21 @@ void SlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
 void SlidingMove::tune( void ) 
 {
     double rate = numAccepted / double(numTried);
-    
-    if ( rate > 0.44 ) 
-    {
-        double min = variable->getMin();
-        double max = variable->getMax();
-        if ( delta < (max-min)/3.0 ) // safety check that delta isn't increasing to propose values outside the boundary too often
-        {
-            delta *= (1.0 + ((rate-0.44)/0.56) );
-        }
-    }
-    else 
-    {
-        delta /= (2.0 - (0.44-rate)/0.44);
-    }
+    if(0){
+		if ( rate > 0.44 )
+		{
+			double min = variable->getMin();
+			double max = variable->getMax();
+			if ( delta < (max-min)/3.0 ) // safety check that delta isn't increasing to propose values outside the boundary too often
+			{
+				delta *= (1.0 + ((rate-0.44)/0.56) );
+			}
+		}
+		else 
+		{
+			delta /= (2.0 - (0.44-rate)/0.44);
+		}
+	}
 }
 
 
