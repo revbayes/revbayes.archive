@@ -12,7 +12,7 @@ using namespace RevLanguage;
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvalutationType et, DagNodeType dt) :
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvaluationType et, DagNodeType dt) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( NULL ),
     evalType( et ),
@@ -28,7 +28,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvalutationType et, DagNodeType dt, RevObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( new Variable( defVal ) ),
     evalType( et ),
@@ -43,7 +43,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvalutationType et, DagNodeType dt) :
+ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvaluationType et, DagNodeType dt) :
     argTypeSpecs( argTypeSp ),
     defaultVar( NULL ),
     evalType( et ),
@@ -58,7 +58,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvalutationType et, DagNodeType dt, RevObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
     defaultVar( new Variable( defVal ) ),
     evalType( et ),
@@ -99,9 +99,11 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
     //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
     //    if ( isConstant() || !theVar->isAssignable() )
-//    if ( isConstant() )
-//        once = true;
-
+    if ( evalType == BY_VALUE )
+    {
+        once = true;
+    }
+    
     RevPtr<Variable> theVar = arg.getVariable();
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
@@ -112,7 +114,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             theVar->setRevObjectTypeSpec( *it );
             
             if ( !isEllipsis() )
-                return Argument( theVar, getArgumentLabel(), isConstant() );
+                return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
             else
                 return Argument( theVar, arg.getLabel(), true );
         }
@@ -127,7 +129,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             theVar->setRevObject( convertedObject );
             theVar->setRevObjectTypeSpec( *it );
             if ( !isEllipsis() )
-                return Argument( theVar, getArgumentLabel(), isConstant() );
+                return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
             else
                 return Argument( theVar, arg.getLabel(), true );
         }
@@ -141,7 +143,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 convertedVar->setRevObjectTypeSpec( *it );
 
                 if ( !isEllipsis() )
-                    return Argument( convertedVar, getArgumentLabel(), isConstant() );
+                    return Argument( convertedVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
                 else
                     return Argument( convertedVar, arg.getLabel(), true );
             }
@@ -153,7 +155,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 conversionVar->setRevObjectTypeSpec( *it );
                 
                 if ( !isEllipsis() )
-                    return Argument( conversionVar, getArgumentLabel(), isConstant() );
+                    return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
                 else
                     return Argument( conversionVar, arg.getLabel(), true );
             }
@@ -165,7 +167,8 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 }
 
 
-const std::string& ArgumentRule::getArgumentLabel(void) const {
+const std::string& ArgumentRule::getArgumentLabel(void) const
+{
     return label;
 }
 
@@ -184,6 +187,13 @@ const Variable& ArgumentRule::getDefaultVariable( void ) const {
     }
     
     return *defaultVar;
+}
+
+
+ArgumentRule::EvaluationType ArgumentRule::getEvaluationType( void ) const
+{
+    
+    return evalType;
 }
 
 
@@ -212,9 +222,10 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
 //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
 //    if ( isConstant() || !var->isAssignable() )
 //    if ( isConstant() )
-//    {
-//        once = true;
-//    }
+    if ( evalType == BY_VALUE )
+    {
+        once = true;
+    }
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
@@ -237,13 +248,6 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
     }
     
     return false;
-}
-
-
-bool RevLanguage::ArgumentRule::isConstant( void ) const
-{
-    return false;
-//    return isConst;
 }
 
 
