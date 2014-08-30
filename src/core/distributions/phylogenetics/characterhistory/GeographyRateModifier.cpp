@@ -218,6 +218,10 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
                 {
                     d = geographicDistancePowers[idx_e];
                 }
+                else if (useDistanceDependence)
+                {
+                    d = 1e-10;
+                }
                 
                 sum += d;
                 
@@ -246,12 +250,10 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     // force extinction if unavailable and present
     if (r == 0.0 && s == 0)
     {
-        
         r = 1e10;
     }
     else if (r == 0.0 && s == 1)
     {
-        
         r = 1e-10;
     }
     
