@@ -708,7 +708,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;
-        pArgs.push_back( Argument( theVar, theRule.getArgumentLabel(), theRule.isConstant() ) );
+        pArgs.push_back( Argument( theVar, theRule.getArgumentLabel(), theRule.getEvaluationType() != ArgumentRule::BY_CONSTANT_REFERENCE ) );
     }
 
     argsProcessed = true;
