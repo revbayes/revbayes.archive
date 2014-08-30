@@ -911,7 +911,7 @@ To get the $n=1$ highest-valued sample for a branch by its posterior value
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_best(dd[23],n=1,p='posterior')
-{'prior': [4.48225], 'iteration': [14890], 'bn': [22], 'nd': [[0, 1, 1, 0]], 'ch0': [[0, 1, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-34.7139], 'pa': [[0, 1, 0, 0]], 'cs': ['p'], 'ev': [[{'age': 1.5637, 'state': 1, 'idx': 2, 'time': 0.8611}]], 'likelihood': [-39.1962]}
+{'prior': [4.48225], 'iteration': [14890], 'bn': [22], 'nd': [[0, 1, 1, 0]], 'ch0': [[0, 1, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-34.7139], 'pa': [[0, 1, 0, 0]], 'cs': ['subset_sympatry'], 'ev': [[{'age': 1.5637, 'state': 1, 'idx': 2, 'time': 0.8611}]], 'likelihood': [-39.1962]}
 \end{lstlisting}
 \end{snugshade}
 
@@ -928,17 +928,17 @@ To get the probability that area $i$ and area $j$ are both part of the species r
 showing area 3 was occupied nearly with probability 0.71 and both areas 2 and 3 were occupied with probability 0.44.
 Note, Hawaii was submerged until approximately 0.5 million years ago, and thus the probability of being in that area is 0.0.
 
-If the range is size one during a speciation event, the cladogenic event state is always narrow sympatric, ``n''.
+If the range is size one during a speciation event, the cladogenic event state is always narrow sympatric, {\tt `narrow\_sympatry'}.
 But given the opportunity for non-sympatric events, i.e. that the range is larger than size one, we can get the probability of cladogenic state using
 For the probability for cladogenic event state given the range was larger than size one
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_clado_state(dd[23])
-{'a': 0.0224, 's': 0.1463, 'w': 0.3183, 'n': 0.5130}
+{'allopatry': 0.0224, 'subset_sympatry': 0.1463, 'widespread_sympatry': 0.3183, 'narrow_sympatry': 0.5130}
 >>> get_clado_state(dd[23],minSize=2)
-{'a': 0.0460, 's': 0.3005, 'w': 0.6535, 'n': 0.0000}
+{'allopatry': 0.0460, 'subset_sympatry': 0.3005, 'widespread_sympatry': 0.6535, 'narrow_sympatry': 0.0000}
 >>> get_clado_state(get_best(dd[23],n=100),minSize=2)
-{'a': 0.1290, 's': 0.6774, 'w': 0.1936, 'n': 0.0000}
+{'allopatry': 0.1290, 'subset_sympatry': 0.6774, 'widespread_sympatry': 0.1936, 'narrow_sympatry': 0.0000}
 \end{lstlisting}
 \end{snugshade}
 
