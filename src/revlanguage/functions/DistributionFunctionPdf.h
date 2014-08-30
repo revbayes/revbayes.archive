@@ -71,12 +71,12 @@ namespace RevLanguage {
 template <class valueType>
 RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf( TypedDistribution<valueType> *d ) : Function(), templateObject( d ) {
     
-    argRules.push_back( new ArgumentRule("x", true, valueType::getClassTypeSpec()));
+    argRules.push_back( new ArgumentRule("x", valueType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObject->getMemberRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
     }
-    argRules.push_back( new ArgumentRule("log", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true)) );
+    argRules.push_back( new ArgumentRule("log", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
 }
 
 

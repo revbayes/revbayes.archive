@@ -52,15 +52,17 @@ RevPtr<Variable> Func_seed::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_seed::getArgumentRules( void ) const {
+const ArgumentRules& Func_seed::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "seed1", true, Natural::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "seed2", true, Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "seed1", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "seed2", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

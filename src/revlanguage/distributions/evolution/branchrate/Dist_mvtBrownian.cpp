@@ -64,15 +64,17 @@ const TypeSpec& Dist_mvtBrownian::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_mvtBrownian::getMemberRules(void) const {
+const MemberRules& Dist_mvtBrownian::getMemberRules(void) const
+{
     
     static MemberRules dist;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "sigma", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+        
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()           , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "sigma", RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
 //        dist.push_back( new ArgumentRule( "rootval", true, Vector<Real>::getClassTypeSpec() ) );
         rulesSet = true;
     }

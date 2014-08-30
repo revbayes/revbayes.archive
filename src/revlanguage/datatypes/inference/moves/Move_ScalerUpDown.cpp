@@ -81,10 +81,10 @@ const MemberRules& Move_ScalerUpDown::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_1", true, Real::getClassTypeSpec() ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_2", true, Real::getClassTypeSpec() ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "scale", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( false ) ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "scale"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

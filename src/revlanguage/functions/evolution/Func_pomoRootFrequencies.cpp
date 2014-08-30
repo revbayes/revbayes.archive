@@ -65,10 +65,10 @@ const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const {
     {
         //Four arguments, root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size
 
-        argumentRules.push_back( new ArgumentRule( "root_base_frequencies", true, Simplex::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "root_polymorphism_proportion"    , true, Real::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "mutation_rate_matrix"    , true, RateMatrix::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe"    , true, Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "root_base_frequencies"       , Simplex::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "root_polymorphism_proportion", Real::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE) );
+        argumentRules.push_back( new ArgumentRule( "mutation_rate_matrix"        , RateMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe"                   , Natural::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE) );
         
         rulesSet = true;
     }

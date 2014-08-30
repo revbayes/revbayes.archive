@@ -44,12 +44,12 @@ const ArgumentRules& Func_phyloRateMultiplier::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        
-        argumentRules.push_back( new ArgumentRule( "tree",      true, TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "rates",     true, ModelVector<RealPos>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "baseRate",  true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "tree"    , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "rates"   , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "baseRate", RealPos::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         rulesSet = true;
     }

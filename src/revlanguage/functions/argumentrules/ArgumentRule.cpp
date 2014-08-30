@@ -8,27 +8,15 @@
 
 using namespace RevLanguage;
 
-/**
- * Construct rule without default value; use "" for no label.
- */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp) :
-    argTypeSpecs( 1, argTypeSp ),
-    defaultVar( NULL ),
-    isConst( c ),
-    label(argName),
-    hasDefaultVal(false)
-{
-
-}
-
 
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RevObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvalutationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( new Variable( defVal ) ),
-    isConst( c ),
+    evalType( et ),
+    nodeType( dt ),
     label(argName),
     hasDefaultVal( true )
 {
@@ -39,24 +27,11 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& a
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp) :
-    argTypeSpecs( argTypeSp ),
-    defaultVar( NULL ),
-    isConst( c ),
-    label(argName),
-    hasDefaultVal(false)
-{
-    
-}
-
-
-/**
- * Construct rule without default value; use "" for no label.
- */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RevObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvalutationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
     defaultVar( new Variable( defVal ) ),
-    isConst( c ),
+    evalType( et ),
+    nodeType( dt ),
     label(argName),
     hasDefaultVal( true )
 {
@@ -236,8 +211,8 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
 
 bool RevLanguage::ArgumentRule::isConstant( void ) const
 {
-    
-    return isConst;
+    return false;
+//    return isConst;
 }
 
 

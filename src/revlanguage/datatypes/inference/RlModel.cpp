@@ -64,8 +64,10 @@ const MemberRules& Model::getMemberRules(void) const {
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        modelMemberRules.push_back( new ArgumentRule("x", true, RevObject::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        modelMemberRules.push_back( new ArgumentRule("x", RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         modelMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         
         rulesSet = true;

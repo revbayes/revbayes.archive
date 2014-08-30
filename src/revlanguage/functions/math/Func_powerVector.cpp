@@ -43,8 +43,8 @@ const ArgumentRules& Func_powerVector::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "base", true, ModelVector<Real>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "exponent", true, Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "base"    , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "exponent", Real::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

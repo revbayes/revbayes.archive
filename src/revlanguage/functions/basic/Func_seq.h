@@ -106,9 +106,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "from", true, valType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "to",   true, valType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "by",   true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "from", valType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "to"  , valType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "by"  , valType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

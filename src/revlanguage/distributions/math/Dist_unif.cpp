@@ -63,15 +63,18 @@ const TypeSpec& Dist_unif::getClassTypeSpec(void) {
 
 
 
-/** Return member rules (no members) */
-const MemberRules& Dist_unif::getMemberRules(void) const {
+/** Return member rules */
+const MemberRules& Dist_unif::getMemberRules(void) const
+{
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", true, Real::getClassTypeSpec() ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper"  , true, Real::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

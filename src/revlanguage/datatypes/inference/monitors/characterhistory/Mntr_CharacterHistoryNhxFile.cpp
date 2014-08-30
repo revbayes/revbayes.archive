@@ -90,22 +90,24 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getMemberRules(void) const {
     static MemberRules Mntr_CharacterHistoryNhxFileMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("ctmc", true, AbstractCharacterData::getClassTypeSpec() ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("tree", true, TimeTree::getClassTypeSpec() ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("atlas", true, RlAtlas::getClassTypeSpec() ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("samplegen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("maxgen", true, Natural::getClassTypeSpec() ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("burnin", true, Probability::getClassTypeSpec(), new Probability(0.2) ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+    if ( !rulesSet )
+    {
         
-        std::vector<RlString> options;
-//        options.push_back( RlString("std") );
-        options.push_back( RlString("biogeo") );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("ctmc"      , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("tree"      , TimeTree::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("atlas"     , RlAtlas::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("samplegen" , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Natural(1) ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("maxgen"    , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("burnin"    , Probability::getClassTypeSpec()          , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Probability(0.2) ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlString(" ") ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec()            , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec()            , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec()            , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        
+        std::vector<std::string> options;
+//        options.push_back( "std" );
+        options.push_back( "biogeo" );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );
         
         rulesSet = true;

@@ -51,11 +51,11 @@ const ArgumentRules& Func_averageRateOnBranch::getArgumentRules( void ) const
     if ( !rulesSet ) {
         
         
-        argumentRules.push_back( new ArgumentRule( "nodeRates",     true, ModelVector<RealPos>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "tree",      true, TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "rootRate",  true, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "scaleValue",  true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        argumentRules.push_back( new ArgumentRule( "index",  true, Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "nodeRates" , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "tree"      , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "rootRate"  , RealPos::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "scaleValue", RealPos::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "index"     , Integer::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

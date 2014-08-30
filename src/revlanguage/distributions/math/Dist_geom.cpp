@@ -94,17 +94,17 @@ const TypeSpec& Dist_geom::getClassTypeSpec(void)
 const MemberRules& Dist_geom::getMemberRules(void) const 
 {
     
-    static MemberRules distGeomMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distGeomMemberRules.push_back( new ArgumentRule( "p", true, Probability::getClassTypeSpec() ) );
+        distMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }
     
-    return distGeomMemberRules;
+    return distMemberRules;
 }
 
 

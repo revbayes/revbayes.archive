@@ -89,7 +89,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_workspaceVector<valType>::ge
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "", true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE ) );
         argumentRules.push_back( new Ellipsis (     valType::getClassTypeSpec() ) );
         rulesSet = true;
     }

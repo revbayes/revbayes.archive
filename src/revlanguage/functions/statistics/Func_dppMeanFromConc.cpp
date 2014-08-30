@@ -47,15 +47,17 @@ RevPtr<Variable> Func_dppMeanFromConc::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const {
+const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "concentration", true, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "num_elements", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "num_elements" , RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
