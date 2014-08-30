@@ -105,7 +105,7 @@
 #include "Move_Slide.h"
 
 /* Compound Moves on Real Values */
-//#include "Move_ScalerUpDown.h"
+#include "Move_ScalerUpDown.h"
 
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
@@ -266,6 +266,7 @@
 #include "Func_seq.h"
 #include "Func_setwd.h"
 #include "Func_structure.h"
+#include "Func_system.h"
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
 
@@ -514,7 +515,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
 		
 		// compound moves on real values
-//        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
+        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
         
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mScale",                new Move_Scale() );
@@ -888,6 +889,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "setwd",                    new Func_setwd()                    );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
+        addFunction( "system",                   new Func_system()                   );
         addFunction( "type",                     new Func_type()                     );
 
         // vector functions
