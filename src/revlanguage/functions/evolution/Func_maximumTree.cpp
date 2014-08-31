@@ -57,8 +57,7 @@ const ArgumentRules& Func_maximumTree::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "geneTrees", true, ModelVector< TimeTree >::getClassTypeSpec() ) );
-        
+        argumentRules.push_back( new ArgumentRule( "geneTrees", ModelVector< TimeTree >::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

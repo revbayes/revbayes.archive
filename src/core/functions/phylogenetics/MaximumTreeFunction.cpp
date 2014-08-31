@@ -58,15 +58,11 @@ void MaximumTreeFunction::swapParameterInternal(const DagNode *oldP, const DagNo
  |   I have rewritten the algorithm also to show alternative techniques that
  |   could be used in this and other BEST algorithms.
  |
- |   @param      geneTrees       The gene trees (in)
- |   @param      depthMatrix     The minimum depth matrix, upper triangular array (out)
- |   @returns    Returns ERROR or NO_ERROR
  ----------------------------------------------------------------------*/
 
 void MaximumTreeFunction::getMinDepthMatrix (  )
 {
     
-    std::cout << "getMinDepthMatrix "<< std::endl;
     depthMatrix.clear();
 
     // First we get the list of all species present in the gene trees
@@ -75,10 +71,11 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
     std::set<std::string> speciesNames ;
     for (size_t i = 0; i < speciesNamesV.size(); ++i )
     {
-        std::cout << " speciesNamesV[i]: "<<  speciesNamesV[i] <<std::endl;
         speciesNames.insert ( speciesNamesV[i] );
     }
-    std::cout << "getMinDepthMatrix 2"<< std::endl;
+    if (speciesNames.size() <= 1  ) {
+        throw RbException( "Not enough species in the first gene tree. Are you sure you provided species information?" );
+    }
 
     std::set<std::string>::iterator it;
     double age;
@@ -95,10 +92,8 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
                 maxDepth = age;
         }
     }
-    std::cout << "getMinDepthMatrix 3"<< std::endl;
 
     numSpecies = speciesNames.size();
-    std::cout << "speciesNames.size() "<< speciesNames.size() << std::endl;
 
     speciesToIndex.clear();
     speciesNamesV.clear();
@@ -113,14 +108,12 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
         speciesToIndex[*it] = index;
         index = index + 1;
     }
-    std::cout << "getMinDepthMatrix 4"<< std::endl;
 
     // Set initial max depth for upper triangular matrix
     size_t numUpperTriang = (numSpecies * (numSpecies - 1)) / 2;
     for (size_t i=0; i<numUpperTriang; i++)
         depthMatrix.push_back( maxDepth );
     
-    std::cout << "depthMatrix.size() : "<< depthMatrix.size() << std::endl;
 
     
     speciesPairSets.clear();
@@ -130,7 +123,6 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
         }
     }
     
-    std::cout << "getMinDepthMatrix 5"<< std::endl;
 
     // Now we are ready to cycle over gene trees
     std::vector < boost::dynamic_bitset<> > allBitsets;
@@ -160,7 +152,6 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
                 nodeAgesToSpeciesBitset[ age ] = nodeBitset;
             }
         }
-        std::cout << "getMinDepthMatrix 6"<< std::endl;
 
         // Now we have bitsets and ages for all nodes in the gene tree
         // nodeAgesToSpeciesBitset is ordered according to node age, which is useful for the next loop.
@@ -180,13 +171,9 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
                 //if not...
                 jt++;
             }
-            std::cout << "getMinDepthMatrix 7"<< std::endl;
 
          }
     }   // Next gene tree
-    std::cout << "depthMatrix.size() : "<< depthMatrix.size() << std::endl;
-
-    std::cout << "getMinDepthMatrix 8"<< std::endl;
 
         return ;
 }
@@ -209,17 +196,13 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
  ----------------------------------------------------------------------*/
 TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
     
-    std::cout << "getSpeciesTreeFromMinDepths "<<std::endl;
     //We need to go through depthMatrix from smallest to largest.
     boost::dynamic_bitset<> speciesAbsent = boost::dynamic_bitset<> ( numSpecies ) ;
     for (size_t i = 0; i < numSpecies ; ++i)
     {
         speciesAbsent[i] = 0;
     }
-    std::cout << "getSpeciesTreeFromMinDepths b"<<std::endl;
-    
-    std::cout << "depthMatrix.size() : "<< depthMatrix.size() << std::endl;
-
+    std::cout << "numSpecies" << numSpecies <<std::endl;
     //std::map< double, std::pair< std::string, std::string >  > depthToPairs ;
     std::map< double, boost::dynamic_bitset< > > depthToPairs ;
 
@@ -227,10 +210,8 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
         boost::dynamic_bitset< > currentPair = speciesAbsent;
         currentPair[ speciesToIndex[speciesPairSets[i].first] ] = 1;
         currentPair[ speciesToIndex[speciesPairSets[i].second] ] = 1;
-        std::cout << "depthMatrix[i]: "<< depthMatrix[i] << std::endl;
         depthToPairs[ depthMatrix[i] ] = currentPair;
     }
-    std::cout << "getSpeciesTreeFromMinDepths c"<<std::endl;
 
     //Now we do the loop
     std::map< double, boost::dynamic_bitset< >  >::iterator it;
@@ -242,7 +223,6 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
             bitSpeciesDone[i] = 1;
         }
     }
-    std::cout << "getSpeciesTreeFromMinDepths v"<<std::endl;
 
     double currentBl = depthToPairs.begin()->first;
     it = depthToPairs.begin();
@@ -259,12 +239,13 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
     TopologyNode* Root = new TopologyNode ("");
     node1->setParent ( Root );
     node2->setParent ( Root );
+    Root->addChild(node1);
+    Root->addChild(node2);
     nodeToBl[node1] = currentBl;
     nodeToBl[node2] = currentBl;
     std::map< double, boost::dynamic_bitset< >  >::iterator currentBestPair;
     double currentMinDepth;
     double totalDepth = currentBl;
-    std::cout << "getSpeciesTreeFromMinDepths bef while "<<std::endl;
 
     while ( speciesDone.size() < numSpecies ) {
         currentMinDepth = std::numeric_limits<double>::max();
@@ -279,22 +260,15 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
             if ( it->first > currentMinDepth ) {
                 break;
             }
-            if (found)
-                std::cout << "FOUND one" <<std::endl;
-            else
-                std::cout << "NOT FOUND; " << speciesDone.size() <<std::endl;
         }
-        std::cout << "getSpeciesTreeFromMinDepths aft for; speciesDone.size(): "<< speciesDone.size() <<std::endl;
 
         //We have found the best pair to introduce
         //We get the species that will be added to the current species tree
         //And the other species already in the current species tree as well
         boost::dynamic_bitset< > spToAdd = currentBestPair->second ;
         spToAdd -= bitSpeciesDone;
-        std::cout << "spToAdd: "<< spToAdd <<std::endl;
         boost::dynamic_bitset< > spAlreadyThere = currentBestPair->second ;
         spAlreadyThere -= spToAdd;
-        std::cout << "spAlreadyThere: " <<spAlreadyThere <<std::endl;
         size_t spToAddId = spToAdd.find_first();
         size_t spAlreadyThereId = spAlreadyThere.find_first();
         currentBl = currentBestPair->first;
@@ -318,13 +292,13 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
         if (parentDepth >= currentBl) {
             double dist = nodeToBl[futureSibling] ;
             double newBl = currentBl - (parentDepth - dist);
+            futureParent->removeChild(futureSibling);
             futureSibling->setParent( nodeR );
             nodeR->addChild(futureSibling);
             nodeToBl[futureSibling] = newBl;
             nodeToBl[nodeR] = dist - newBl;
             nodeR->setParent(futureParent);
             futureParent->addChild(nodeR);
-            std::cout << "1 Root->getNumberOfChildren(): " << Root->getNumberOfChildren() <<std::endl;
         }
         else {
             Root->setParent( nodeR );
@@ -332,14 +306,11 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
             nodeToBl[Root] = currentBl - totalDepth;
             totalDepth = currentBl;
             Root = nodeR;
-            std::cout << "2 Root->getNumberOfChildren(): " << Root->getNumberOfChildren() <<std::endl;
         }
         bitSpeciesDone[spToAddId] = 1;
         speciesDone.push_back( speciesNamesV[spToAddId] );
         depthToPairs.erase( currentBestPair );
-        std::cout << "totalDepth: "<< totalDepth << std::endl;
     }
-    std::cout << "getSpeciesTreeFromMinDepths aft while: speciesDone.size(): "<< speciesDone.size() <<std::endl;
 
     
     //In principle we have just built a proper ultrametric tree.
