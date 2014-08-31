@@ -147,7 +147,7 @@ void ExtendedNewickTreeMonitor::openStream(void) {
 void ExtendedNewickTreeMonitor::printHeader() {
     
     // print one column for the iteration number
-    outStream << "Iteration";
+    outStream << "Cycle";
     
     if ( posterior ) {
         // add a separator before every new element

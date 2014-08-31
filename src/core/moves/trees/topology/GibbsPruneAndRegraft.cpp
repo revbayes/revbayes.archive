@@ -71,7 +71,7 @@ double GibbsPruneAndRegraft::performSimpleMove( void )
     
     // potential affected nodes for likelihood computation
     std::set<DagNode *> affected;
-    variable->getAffectedNodes( affected );
+    variable->getAffectedStochasticNodes( affected );
     
     double backwardLikelihood = variable->getLnProbability();
     for (std::set<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it) 

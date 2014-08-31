@@ -448,7 +448,7 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
         {
             
             // do not add the iteration number as a trace
-            if ( columns[0] == "Iteration" )
+            if ( columns[0] == "Cycle" )
             {
                 startIndex = 1;
             }

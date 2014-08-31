@@ -216,7 +216,7 @@ void FileMonitor::openStream(void)
 void FileMonitor::printHeader() {
   
     // print one column for the iteration number
-    outStream << "Iteration";
+    outStream << "Cycle";
     
     if ( posterior )
     {

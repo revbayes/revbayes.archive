@@ -250,7 +250,7 @@ double AdmixtureNearestNeighborInterchangeAndRateShift::performMove( double &pro
         }
     
         std::set<DagNode* > affectedNodes;
-        variable->getAffectedNodes(affectedNodes);
+        variable->getAffectedStochasticNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();

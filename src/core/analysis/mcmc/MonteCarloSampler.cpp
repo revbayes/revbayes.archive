@@ -111,22 +111,22 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
     }
     
     /* Let user know what we are doing */
-    std::cout << "\nRunning MCMC burnin simulation for " << generations << " iterations" << std::endl;
+    std::cout << "\nRunning MCMC burnin simulation for " << generations << " cycles" << std::endl;
     
     if ( scheduleType == "single" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
-        std::cout << "single move picked randomly per iteration" << std::endl;
+        std::cout << "single move picked randomly per cycle" << std::endl;
     }
     else if ( scheduleType == "random" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
     }
     else if ( scheduleType == "sequential" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
     }
 
     // Print progress bar (68 characters wide)
@@ -699,7 +699,7 @@ void MonteCarloSampler::setScheduleType(const std::string &s)
 }
 
 
-void MonteCarloSampler::startMonitors( void ) {
+void MonteCarloSampler::startMonitors( size_t numCycles ) {
     
     /* Open the output file and print headers */
     for (size_t i=0; i<monitors.size(); i++)
@@ -711,6 +711,7 @@ void MonteCarloSampler::startMonitors( void ) {
         // if this chain is active, print the header
         if (chainActive) // surprised this works properly...
         {
+            monitors[i].setNumCycles( numCycles );
             monitors[i].openStream();
             monitors[i].printHeader();
             

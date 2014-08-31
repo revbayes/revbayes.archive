@@ -239,17 +239,22 @@ RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>
 
 
 /** 
- * Get the affected nodes.
- * This call is started by the parent and since we don't have one this is a dummy implementation!
+ * Get the affected stochastic nodes. We keep track of who issued the call (affecter). The
+ * implementation simply inserts this node in the set of affected nodes. The call is not
+ * passed on to the children, because the likelihood of descendant stochastic nodes is not
+ * affected unless the call comes from this node. In the latter case, the call originates
+ * in the getAffectedStochasticNodes of this node, and passes on directly to the children
+ * without inserting this node in the set of affected nodes. See the DagNode base class for
+ * the implementation of getAffectedStochasticNodes(...).
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::StochasticNode<valueType>::getAffected( std::set<DagNode*>& affected, DagNode* affecter )
 {
     
-    // insert this node as one of the affected
+    // Insert this node as one of the affected
     affected.insert( this );
     
-    // call for potential specialized handling (e.g. internal flags)
+    // Call the distribution for potential specialized handling (e.g. internal flags)
     distribution->getAffected( affected, affecter );
     
 }

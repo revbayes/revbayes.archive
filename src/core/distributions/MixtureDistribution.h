@@ -121,7 +121,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::getAffected(std::set<DagNod
     // only delegate when the toucher was our parameters
     if ( affecter == parameterValues )
     {
-        this->dagNode->getAffectedNodes( affected );
+        this->dagNode->getAffectedStochasticNodes( affected );
     }
 }
 

@@ -89,7 +89,7 @@ double AutocorrelatedLognormalRateBranchwiseVarDistribution::computeLnProbabilit
 void AutocorrelatedLognormalRateBranchwiseVarDistribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
     // only delegate when the toucher was the root rate
     if ( affecter == rootRate )
-        this->dagNode->getAffectedNodes( affected );
+        this->dagNode->getAffectedStochasticNodes( affected );
 }
 
 

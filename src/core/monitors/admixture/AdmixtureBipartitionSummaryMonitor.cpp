@@ -453,7 +453,7 @@ void AdmixtureBipartitionSummaryMonitor::openStream(void) {
 void AdmixtureBipartitionSummaryMonitor::printHeader() {
     
     // print one column for the iteration number
-    outStream << "Iteration";
+    outStream << "Cycle";
     
     if ( posterior ) {
         // add a separator before every new element
