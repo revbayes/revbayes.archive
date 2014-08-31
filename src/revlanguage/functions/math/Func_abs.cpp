@@ -47,9 +47,10 @@ const ArgumentRules& Func_abs::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

@@ -69,8 +69,10 @@ const MemberRules& Move_SPRNonclock::getMemberRules(void) const {
     static MemberRules SPRMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        SPRMemberRules.push_back( new ArgumentRule( "tree", false, Topology::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+    
+        SPRMemberRules.push_back( new ArgumentRule( "tree", Topology::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

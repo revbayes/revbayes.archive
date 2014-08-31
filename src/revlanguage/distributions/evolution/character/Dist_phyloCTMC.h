@@ -449,34 +449,34 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMember
     
     if ( !rulesSet ) 
     {
-        distMemberRules.push_back( new ArgumentRule( "tree"           , true, treeType::getClassTypeSpec() ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"           , treeType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "Q"              , true, rateMatrixTypes ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         // optional argument for the root frequencies
-        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", true, Simplex::getClassTypeSpec(), NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "branchRates"    , true, branchRateTypes, new RealPos(1.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        distMemberRules.push_back( new ArgumentRule( "siteRates"    , true, ModelVector<RealPos>::getClassTypeSpec(), defaultSiteRates ) );
-        distMemberRules.push_back( new ArgumentRule( "pInv"    , true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        distMemberRules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
         
-        distMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec(), new Natural(10) ) );
+        distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
-        std::vector<RlString> options;
-        options.push_back( RlString("DNA") );
-        options.push_back( RlString("RNA") );
-        options.push_back( RlString("AA") );
-        options.push_back( RlString("Pomo") );
-        options.push_back( RlString("Protein") );
-        options.push_back( RlString("Standard") );
+        std::vector<std::string> options;
+        options.push_back( "DNA" );
+        options.push_back( "RNA" );
+        options.push_back( "AA" );
+        options.push_back( "Pomo" );
+        options.push_back( "Protein" );
+        options.push_back( "Standard" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         
         rulesSet = true;

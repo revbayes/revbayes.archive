@@ -137,8 +137,8 @@ const RevLanguage::MemberRules& RevLanguage::Dist_rlmixture<valType>::getMemberR
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "values",          true, ModelVectorAbstractElement<valType>::getClassTypeSpec() ) );
-        distMemberRules.push_back( new ArgumentRule( "probabilities",   true, Simplex::getClassTypeSpec() ) );
+        distMemberRules.push_back( new ArgumentRule( "values"       , ModelVectorAbstractElement<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "probabilities", Simplex::getClassTypeSpec()                            , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

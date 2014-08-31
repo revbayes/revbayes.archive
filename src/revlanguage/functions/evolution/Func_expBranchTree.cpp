@@ -44,16 +44,17 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
  
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree"      , RevLanguage::TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
         std::vector<TypeSpec> types;
         types.push_back(MultivariateRealNodeValTree::getClassTypeSpec());
         types.push_back(RealNodeValTree::getClassTypeSpec());
-        argumentRules.push_back(new ArgumentRule("process", true, types));
-        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec(), new Real(0) ) );
-        argumentRules.push_back( new ArgumentRule( "traitindex", true, Natural::getClassTypeSpec() , new Natural(0)) );
+        argumentRules.push_back( new ArgumentRule( "process"   , types                      , ArgumentRule::BY_CONSTANT_REFERENCE) );
+        argumentRules.push_back( new ArgumentRule( "offset"    , Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0) ) );
+        argumentRules.push_back( new ArgumentRule( "traitindex", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0)) );
         
         rulesSet = true;
     }

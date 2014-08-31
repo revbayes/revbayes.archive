@@ -405,7 +405,7 @@ MethodTable RevObject::makeMethods(void) const
     methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
     
     // Add the 'get("name")' method
-    getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
+    getArgRules->push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
     
     return methods;

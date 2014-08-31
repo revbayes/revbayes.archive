@@ -61,9 +61,9 @@ const ArgumentRules& Func_pomo::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "mutationRates", true, RateMatrix::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "fitness"  , true, ModelVector<Real>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe"    , true, Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "mutationRates", RateMatrix::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "fitness"      , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe"    , Natural::getClassTypeSpec()          , ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
         rulesSet = true;
     }

@@ -66,10 +66,11 @@ const ArgumentRules& Func_range::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if (!rulesSet) {
+    if (!rulesSet)
+    {
         
-        argumentRules.push_back( new ArgumentRule( "first", true, Integer::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "last",  true, Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "first", Integer::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "last" , Integer::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

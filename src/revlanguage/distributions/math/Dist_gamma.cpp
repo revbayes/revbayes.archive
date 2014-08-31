@@ -71,8 +71,8 @@ const MemberRules& Dist_gamma::getMemberRules(void) const {
     
     if ( !rulesSet ) 
     {
-        distGammaMemberRules.push_back( new ArgumentRule( "shape", true, RealPos::getClassTypeSpec() ) );
-        distGammaMemberRules.push_back( new ArgumentRule( "rate" , true, RealPos::getClassTypeSpec() ) );
+        distGammaMemberRules.push_back( new ArgumentRule( "shape", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distGammaMemberRules.push_back( new ArgumentRule( "rate" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

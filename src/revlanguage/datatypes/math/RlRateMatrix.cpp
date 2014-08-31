@@ -116,7 +116,7 @@ MethodTable RateMatrix::makeMethods( void ) const
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
     

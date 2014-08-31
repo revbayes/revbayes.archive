@@ -54,8 +54,8 @@ const ArgumentRules& Func_mrcaIndex::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "clade", true, Clade::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

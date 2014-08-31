@@ -22,7 +22,7 @@
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
 #include "NucleotideBranchHeterogeneousCharEvoModel.h"
-#include "PolymorphicStateConverter.h"
+#include "PomoStateConverter.h"
 #include "PomoRootFrequenciesFunction.h"
 #include "PomoRateMatrixFunction.h"
 #include "RateMatrix_Pomo.h"
@@ -188,10 +188,10 @@ bool TestPomoModel::run( void ) {
     std::cout << trees[0]->getNewickRepresentation() << std::endl;*/
 
     
-    //Now the data needs to be converted into PolymorphicStates
+    //Now the data needs to be converted into PomoStates
     std::vector< AbstractCharacterData*> simSeqsPol;
     AbstractCharacterData* concatenatedSimSeqsPol = NULL;
-    PolymorphicStateConverter* psc = new PolymorphicStateConverter();
+    PomoStateConverter* psc = new PomoStateConverter();
     std::cout << "Number of sequence data sets: "<< simSeqs.size() <<std::endl;
     std::cout << "Each data set has length "<< simSeqs[0]->getValue().getNumberOfCharacters() <<std::endl;
     for (size_t i = 0; i<simSeqs.size(); ++i) {
@@ -298,7 +298,7 @@ bool TestPomoModel::run( void ) {
         std::cout <<concatenatedSimSeqsPol->getTaxonNameWithIndex(i) << " : "<< concatenatedSimSeqsPol->getTaxonData(i).getCharacter(0) << " : "<< concatenatedSimSeqsPol->getTaxonData(i).getCharacter(0).getNumberOfStates() <<std::endl;
     }
         
-    GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree>(tau, 58, true, concatenatedSimSeqsPol->getNumberOfCharacters());
+    GeneralBranchHeterogeneousCharEvoModel<PomoState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<PomoState, TimeTree>(tau, 58, true, concatenatedSimSeqsPol->getNumberOfCharacters());
     phyloCTMC->setClockRate( clockRate );
     phyloCTMC->setRootFrequencies( rf );
     phyloCTMC->setRateMatrix( q );

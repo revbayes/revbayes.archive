@@ -65,9 +65,11 @@ const MemberRules& Move_DPPScaleCatValsMove::getMemberRules(void) const {
     static MemberRules dppMove;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        dppMove.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
-        dppMove.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
+    if ( !rulesSet )
+    {
+        
+        dppMove.push_back( new ArgumentRule( "x"     , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        dppMove.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(1.0) ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

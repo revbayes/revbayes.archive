@@ -69,11 +69,11 @@ const MemberRules& Dist_binomial::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
-        {
-        distBinMemberRules.push_back( new ArgumentRule( "p", true, Probability::getClassTypeSpec() ) );
-        distBinMemberRules.push_back( new ArgumentRule( "n", true, Natural::getClassTypeSpec() ) );
+    {
+        distBinMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distBinMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
-        }
+    }
     
     return distBinMemberRules;
 }

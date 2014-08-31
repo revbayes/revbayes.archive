@@ -147,7 +147,7 @@ RevLanguage::MethodTable TimeTree::makeMethods( void ) const
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
 
     ArgumentRules* rescaleArgRules = new ArgumentRules();
-    rescaleArgRules->push_back( new ArgumentRule( "factor", true, RealPos::getClassTypeSpec() ) );
+    rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
     
     // Insert inherited methods
