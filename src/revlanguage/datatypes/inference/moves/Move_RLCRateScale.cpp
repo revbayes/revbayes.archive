@@ -118,9 +118,10 @@ const MemberRules& Move_RLCRateScale::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", false, RealPos::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "tune", false, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

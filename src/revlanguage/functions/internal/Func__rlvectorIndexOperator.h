@@ -78,8 +78,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__rlvectorIndexOperator<valTy
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "v", true, WorkspaceVector<valType>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "index", true, Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "v"    , WorkspaceVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()                 , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

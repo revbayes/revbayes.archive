@@ -66,21 +66,23 @@ const TypeSpec& Move_WeightedNodeTimeSlide::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Move_WeightedNodeTimeSlide::getMemberRules(void) const {
     
-    static MemberRules nniMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
-        nniMemberRules.push_back( new ArgumentRule( "blocks", true, Natural::getClassTypeSpec(), new Natural(8) ) );
+    if ( !rulesSet )
+    {
+        
+        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "blocks", Natural::getClassTypeSpec() , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Natural(8) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return nniMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */

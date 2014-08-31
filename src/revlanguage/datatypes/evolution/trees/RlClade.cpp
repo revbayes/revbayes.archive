@@ -111,7 +111,7 @@ const MemberRules& Clade::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        modelMemberRules.push_back( new ArgumentRule("taxonName", true, RlString::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         modelMemberRules.push_back( new Ellipsis(RlString::getClassTypeSpec() ) );
         
         rulesSet = true;

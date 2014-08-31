@@ -66,18 +66,19 @@ const TypeSpec& Dist_oneOverX::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Dist_oneOverX::getMemberRules(void) const {
     
-    static MemberRules distOneOverXMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distOneOverXMemberRules.push_back( new ArgumentRule( "min", true, RealPos::getClassTypeSpec()   , new Real(1.0E-10) ) );
-        distOneOverXMemberRules.push_back( new ArgumentRule( "max", true, RealPos::getClassTypeSpec()   , new Real(1.0E4) ) );
+        
+        distMemberRules.push_back( new ArgumentRule( "min", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "max", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }
     
-    return distOneOverXMemberRules;
+    return distMemberRules;
 }
 
 

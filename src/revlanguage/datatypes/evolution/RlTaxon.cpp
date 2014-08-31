@@ -88,19 +88,20 @@ RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string cons
 /** Return member rules (no members) */
 const MemberRules& Taxon::getMemberRules(void) const {
     
-    static MemberRules modelMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        modelMemberRules.push_back( new ArgumentRule("taxonName", true, RlString::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("speciesName", true, RlString::getClassTypeSpec() ) );
+        
+        memberRules.push_back( new ArgumentRule("taxonName"  , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("speciesName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
       //  modelMemberRules.push_back( new ArgumentRule("date", true, RlDate::getClassTypeSpec() ) );
                 
         rulesSet = true;
     }
     
-    return modelMemberRules;
+    return memberRules;
 }
 
 

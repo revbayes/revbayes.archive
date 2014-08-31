@@ -34,9 +34,9 @@ const ArgumentRules& Func_t92GCBranchTree::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "branchGC", true, RevLanguage::ModelVector<Probability>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "tstv", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree"    , RevLanguage::TimeTree::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "branchGC", RevLanguage::ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "tstv"    , RealPos::getClassTypeSpec()                              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

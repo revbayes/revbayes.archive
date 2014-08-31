@@ -101,11 +101,12 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "", true, RevObject::getClassTypeSpec() ) );
+        
+        argumentRules.push_back( new ArgumentRule( "", RevObject::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "filename", true, RlString::getClassTypeSpec(), new RlString("") ) );
-        argumentRules.push_back( new ArgumentRule( "append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        argumentRules.push_back( new ArgumentRule( "separator", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
+        argumentRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
+        argumentRules.push_back( new ArgumentRule( "append"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     

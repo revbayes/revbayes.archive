@@ -101,9 +101,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ifelse<valType>::getArgument
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "condition", true, RlBoolean::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "a", true, valType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "b", true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "condition", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "a"        , valType::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "b"        , valType::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

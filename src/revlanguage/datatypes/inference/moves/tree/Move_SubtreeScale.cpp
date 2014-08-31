@@ -64,20 +64,22 @@ const TypeSpec& Move_SubtreeScale::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Move_SubtreeScale::getMemberRules(void) const {
     
-    static MemberRules nniMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return nniMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */

@@ -13,7 +13,7 @@
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
-#include "pomoStateConverter.h"
+#include "PomoStateConverter.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -66,9 +66,9 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "aln", true, AbstractDiscreteCharacterData::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe"    , true, Natural::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "taxa"  , true, ModelVector<Taxon>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                      , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
 
         rulesSet = true;
     }

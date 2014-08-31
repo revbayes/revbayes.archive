@@ -68,7 +68,7 @@ const ArgumentRules& Func_setwd::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "wd", true, RlString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "wd", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

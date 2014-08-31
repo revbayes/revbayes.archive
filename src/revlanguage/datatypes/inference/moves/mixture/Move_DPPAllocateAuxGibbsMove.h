@@ -28,7 +28,7 @@ namespace RevLanguage {
         Move_DPPAllocateAuxGibbsMove(void);                                                                                                                   //!< Default constructor
         
         // Basic utility functions
-        virtual Move_DPPAllocateAuxGibbsMove*                        clone(void) const;                                                                              //!< Clone the object
+        virtual Move_DPPAllocateAuxGibbsMove*       clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
@@ -120,9 +120,11 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getMemberRules(void) c
     static MemberRules dppMove;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        dppMove.push_back( new ArgumentRule( "x", false, ModelVector<valType>::getClassTypeSpec() ) );
-        dppMove.push_back( new ArgumentRule( "numAux", true, Integer::getClassTypeSpec() , new Integer(4) ) );
+    if ( !rulesSet )
+    {
+        
+        dppMove.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

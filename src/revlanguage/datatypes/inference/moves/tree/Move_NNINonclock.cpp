@@ -69,8 +69,10 @@ const MemberRules& Move_NNINonclock::getMemberRules(void) const {
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "tree", false, Topology::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        nniMemberRules.push_back( new ArgumentRule( "tree", Topology::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

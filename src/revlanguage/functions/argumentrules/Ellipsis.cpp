@@ -22,12 +22,12 @@
 
 
 /** Constructor allowing all types; ref MemberObject whether arguments should be values or references */
-RevLanguage::Ellipsis::Ellipsis( void ) : ArgumentRule("", true, RevObject::getClassTypeSpec() ) {
+RevLanguage::Ellipsis::Ellipsis( void ) : ArgumentRule("", RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) {
 }
 
 
 /** Constructor requiring a certain type specification */
-RevLanguage::Ellipsis::Ellipsis(const TypeSpec& typeSp ) : ArgumentRule("", true, typeSp) {
+RevLanguage::Ellipsis::Ellipsis(const TypeSpec& typeSp ) : ArgumentRule("", typeSp, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) {
 }
 
 

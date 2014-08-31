@@ -108,15 +108,17 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        memberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
 
-        std::vector<RlString> options;
-        options.push_back( RlString("sequential") );
-        options.push_back( RlString("random") );
-        options.push_back( RlString("single") );
+        std::vector<std::string> options;
+        options.push_back( "sequential" );
+        options.push_back( "random" );
+        options.push_back( "single" );
         
         memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
         
@@ -133,15 +135,17 @@ const MethodTable& Mcmc::getMethods(void) const {
     static MethodTable   methods    = MethodTable();
     static bool          methodsSet = false;
     
-    if ( methodsSet == false ) {
+    if ( methodsSet == false )
+    {
+        
         ArgumentRules* runArgRules = new ArgumentRules();
-        runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        runArgRules->push_back( new ArgumentRule("underPrior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+        runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
-        burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
+        burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* operatorSummaryArgRules = new ArgumentRules();

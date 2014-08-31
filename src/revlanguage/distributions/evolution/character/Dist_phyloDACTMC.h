@@ -159,25 +159,25 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getClassTy
 template <class treeType>
 const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemberRules(void) const {
     
-    static MemberRules distCharStateEvolutionMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
         
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"               , true, treeType::getClassTypeSpec() ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"                  , true, RateMap::getClassTypeSpec() ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "C"                  , true, Simplex::getClassTypeSpec(), NULL ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"               , treeType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"                  , RateMap::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "C"                  , Simplex::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         
-        std::vector<RlString> options;
-        options.push_back( RlString("biogeo") );
-        distCharStateEvolutionMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );
+        std::vector<std::string> options;
+        options.push_back( "biogeo" );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );
         rulesSet = true;
     }
     
-    return distCharStateEvolutionMemberRules;
+    return distMemberRules;
 }
 
 //template <class treeType>

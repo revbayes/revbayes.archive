@@ -70,10 +70,11 @@ const MemberRules& Dist_uniformTimeTree::getMemberRules(void) const {
     static MemberRules distUTTDMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
 
-        distUTTDMemberRules.push_back( new ArgumentRule( "originTime", true, RealPos::getClassTypeSpec() ) );
-        distUTTDMemberRules.push_back( new ArgumentRule( "taxonNames", true, ModelVector<RlString>::getClassTypeSpec() ) );
+        distUTTDMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distUTTDMemberRules.push_back( new ArgumentRule( "taxonNames", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

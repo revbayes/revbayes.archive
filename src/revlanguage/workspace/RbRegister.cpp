@@ -105,7 +105,7 @@
 #include "Move_Slide.h"
 
 /* Compound Moves on Real Values */
-//#include "Move_ScalerUpDown.h"
+#include "Move_ScalerUpDown.h"
 
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
@@ -266,6 +266,7 @@
 #include "Func_seq.h"
 #include "Func_setwd.h"
 #include "Func_structure.h"
+#include "Func_system.h"
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
 
@@ -375,6 +376,7 @@
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
+#include "Func_powerVector.h"
 #include "Func_round.h"
 #include "Func_simplex.h"
 #include "Func_sum.h"
@@ -514,7 +516,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
 		
 		// compound moves on real values
-//        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
+        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
         
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mScale",                new Move_Scale() );
@@ -888,6 +890,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "setwd",                    new Func_setwd()                    );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
+        addFunction( "system",                   new Func_system()                   );
         addFunction( "type",                     new Func_type()                     );
 
         // vector functions
@@ -1089,6 +1092,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // exponentiation
         addFunction( "_exp",      new Func_power() );
+        addFunction( "_exp",      new Func_powerVector() );
         
         // index operator '[]'
         addFunction( "[]",         new Func__vectorIndexOperator<Natural>()                    );
@@ -1152,6 +1156,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
 		// power function
         addFunction( "power",     new Func_power() );
+        addFunction( "power",     new Func_powerVector() );
 
         // powermix function (TODO: remove when user functions work)
         addFunction( "powermix",  new Func_powermix() );
