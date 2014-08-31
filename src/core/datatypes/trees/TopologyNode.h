@@ -37,6 +37,7 @@
 #define TopologyNode_H
 
 #include "Clade.h"
+#include "Taxon.h"
 
 #include <vector>
 #include <map>
@@ -53,6 +54,7 @@ namespace RevBayesCore {
     public:
         TopologyNode(size_t indx=0);                                                                                                       //!< Default constructor with optional index
         TopologyNode(const std::string& n, size_t indx=0);                                                                                 //!< Constructor with name and optional index
+        TopologyNode(const Taxon& t, size_t indx=0);                                                                                 //!< Constructor with taxon and optional index
         TopologyNode(const TopologyNode &n);                                                                                            //!< Copy constructor
         virtual                                    ~TopologyNode(void);                                                                 //!< Destructor
         TopologyNode&                               operator=(const TopologyNode& n);
@@ -93,7 +95,10 @@ namespace RevBayesCore {
         //!< Get the number of nodes contained in this subtree.
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
+        std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
         void                                        getTaxaStringVector(std::vector<std::string> &taxa) const;                          //!< Fill the vector of taxa as strings
+        void                                        getTaxa(std::vector<Taxon> &taxa) const;                          //!< Fill the vector of taxa
+        Taxon                                       getTaxon() const;                                                //!< Fill the vector of taxa
         double                                      getTime(void) const;                                                                //!< Get the time of the node
         double                                      getTmrca(const TopologyNode &n) const;
         void                                        initiateFlaggingForNewickRecomputation(void);
@@ -103,6 +108,9 @@ namespace RevBayesCore {
         void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
+        void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
+        void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
+
         void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                        //!< Sets the node's parent
         
     protected:
@@ -116,8 +124,7 @@ namespace RevBayesCore {
         std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around.
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
-        
-        std::string                                 name;                                                                               //!< Name of the node, i.e. identifier/taxon name
+        Taxon                                       taxon;                                                                              //!< Taxon of the node, i.e. identifier/taxon name, plus species it comes from
         size_t                                      index;                                                                              //!< Node index
         bool                                        interiorNode;
         bool                                        rootNode;
