@@ -55,7 +55,8 @@ namespace RevBayesCore {
         void                                                simulateTree(void);
         
         // members
-        std::map<std::string, std::string>                  gene2species;
+   //     std::map<std::string, std::string>                  gene2species;
+        std::vector<Taxon>                                  taxa;
         const TypedDagNode<TimeTree>*                       speciesTree;
         const TypedDagNode<std::vector<double> >*           Nes;
         const TypedDagNode<double >*                        Ne;

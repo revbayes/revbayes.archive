@@ -18,6 +18,7 @@
 #include "Tree.h"
 #include "RbException.h"
 #include "RbOptions.h"
+#include "Taxon.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 
@@ -162,6 +163,14 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 std::vector<std::string> Tree::getTipNames() const {
 
     return topology->getTipNames();
+}
+
+std::vector<Taxon> Tree::getTaxa() const {
+    return topology->getTaxa();
+}
+
+std::vector<std::string> Tree::getSpeciesNames() const {
+    return topology->getSpeciesNames();
 }
 
 TopologyNode& Tree::getNode(size_t idx) {

@@ -125,7 +125,32 @@ std::vector<std::string> Topology::getTipNames( void ) const
     return names;
 }
 
-/* fill the nodes vector by a phylogenetic traversal recursively starting with this node. 
+
+std::vector< Taxon > Topology::getTaxa( void ) const
+{
+    std::vector< Taxon > taxa;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        taxa.push_back( n.getTaxon() );
+    }
+    
+    return taxa;
+}
+
+std::vector<std::string> Topology::getSpeciesNames() const
+{
+    std::vector< std::string > snames;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        snames.push_back( n.getTaxon().getSpeciesName() );
+    }
+    
+    return snames;
+}
+
+/* fill the nodes vector by a phylogenetic traversal recursively starting with this node.
  * The tips fill the slots 0,...,n-1 followed by the internal nodes and then the root.
  */
 void Topology::fillNodesByPhylogeneticTraversal(TopologyNode* node) {
