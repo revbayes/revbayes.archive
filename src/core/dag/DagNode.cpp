@@ -196,18 +196,33 @@ size_t DagNode::decrementReferenceCount( void ) const
 
 
 /**
- * Get all affected nodes this DAGNode.
- * This means we call getAffected() of all children. getAffected() is pure virtual.
+ * Get the stochastic nodes affected by an upstream change of a DAG node. The default
+ * behavior, which is appropriate for all DAG nodes except stochastic nodes, is to
+ * pass on the call to our children through their getAffected() function, updating
+ * the affecter when passing the call on, so that the stochastic nodes at the end
+ * of the chain will know through which immediate parent the call came.
  */
-void DagNode::getAffectedNodes(std::set<DagNode *> &affected)
+void DagNode::getAffected( std::set<DagNode*>& affected, DagNode* affecter )
 {
-    
-    // get all my affected children
-    for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    // Dispatch the call to our children
+    for ( std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it )
     {
-        (*i)->getAffected(affected, this);
+        (*it)->getAffected( affected, this );
     }
-    
+}
+
+
+/**
+ * Get the downstream stochastic nodes whose probability will be affected by a change of this
+ * node. We simply pass on the call to our children through their getAffected() function.
+ */
+void DagNode::getAffectedStochasticNodes( std::set<DagNode*>& affected )
+{
+    // Dispatch the call to our children
+    for ( std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it )
+    {
+        (*it)->getAffected( affected, this );
+    }
 }
 
 

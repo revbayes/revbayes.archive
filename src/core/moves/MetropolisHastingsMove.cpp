@@ -31,7 +31,7 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
     
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        (*it)->getAffectedNodes( affectedNodes );
+        (*it)->getAffectedStochasticNodes( affectedNodes );
     }
     
 }
@@ -356,7 +356,7 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
     affectedNodes.clear();
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        (*it)->getAffectedNodes( affectedNodes );
+        (*it)->getAffectedStochasticNodes( affectedNodes );
     }
     
     proposal->swapNode(oldN, newN);

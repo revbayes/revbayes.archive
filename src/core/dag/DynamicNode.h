@@ -36,8 +36,6 @@ namespace RevBayesCore {
 
         // pure virtual methods
         virtual DynamicNode<valueType>*                     clone(void) const = 0;
-        virtual double                                      getLnProbability(void) = 0;
-        virtual double                                      getLnProbabilityRatio(void) = 0;
 
         // public methods
         virtual DagNode*                                    cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;                   //!< Clone the entire DAG which is connected to this node

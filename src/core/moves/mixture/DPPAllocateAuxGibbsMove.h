@@ -186,7 +186,7 @@ template <class valueType>
 double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove(void) {
 	
 	std::set<DagNode*> affected;
-	variable->getAffectedNodes( affected );
+	variable->getAffectedStochasticNodes( affected );
 	double lnProb = 0.0;
 	for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
 		double lp = (*it)->getLnProbability();

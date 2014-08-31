@@ -62,7 +62,7 @@ namespace RevBayesCore {
         void                                                setChainHeat(double v);                                                                 //!< Set the heating temparature of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
-        void                                                startMonitors(void);                                                                    //!< Start the monitors
+        void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
         
     protected:
         

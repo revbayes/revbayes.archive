@@ -10,25 +10,25 @@ using namespace RevBayesCore;
 
 
 
-Monitor::Monitor(unsigned long g) : printgen( g ), model( NULL ) {
+Monitor::Monitor(unsigned long g) : printgen( g ), model( NULL ), numCycles( 0 ) {
     
 }
 
-Monitor::Monitor(unsigned long g, DagNode *n) : printgen( g ), model( NULL ) {
+Monitor::Monitor(unsigned long g, DagNode *n) : printgen( g ), model( NULL ), numCycles( 0 ) {
     
     nodes.push_back( n );
 }
 
-Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) : printgen( g ), model( NULL ) {
+Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) : printgen( g ), model( NULL ), numCycles( 0 ) {
     for (std::set<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
         nodes.push_back(*it);
 }
 
-Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) : printgen( g ), nodes( n ), model( NULL ) {
+Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) : printgen( g ), nodes( n ), model( NULL ), numCycles( 0 ) {
     
 }
 
-Monitor::Monitor(const Monitor &i) : nodes( i.nodes ), model( i.model ) {
+Monitor::Monitor(const Monitor &i) : nodes( i.nodes ), model( i.model ), numCycles( i.numCycles ) {
     
     // set the print gen
     printgen = i.printgen;
@@ -52,6 +52,9 @@ Monitor& Monitor::operator=(const Monitor &i) {
         
         // set the printgen
         printgen = i.printgen;
+        
+        // set number of cycles
+        numCycles = i.numCycles;
         
         model = i.model;
     }

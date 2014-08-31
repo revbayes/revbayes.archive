@@ -127,7 +127,7 @@ double AdmixtureShiftTreeRates::performMove( double &probRatio ) {
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
         std::set<DagNode* > affectedNodes;
-        treeRate->getAffectedNodes(affectedNodes);
+        treeRate->getAffectedStochasticNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             probRatio += theNode->getLnProbabilityRatio();

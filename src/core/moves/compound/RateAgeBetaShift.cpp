@@ -129,7 +129,7 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     }
     
     std::set<DagNode*> affected;
-    tree->getAffectedNodes( affected );
+    tree->getAffectedStochasticNodes( affected );
     double lnProbRatio = 0;
     for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
     {

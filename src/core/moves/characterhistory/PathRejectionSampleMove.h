@@ -160,7 +160,7 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
     {
         
         std::set<DagNode* > affectedNodes;
-        tau->getAffectedNodes(affectedNodes);
+        tau->getAffectedStochasticNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i)
         {
             DagNode* theAffectedNode = *i;

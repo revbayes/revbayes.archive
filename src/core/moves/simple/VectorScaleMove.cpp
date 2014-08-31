@@ -112,7 +112,7 @@ double VectorScaleMove::performMove( double &probRatio ) {
         
         if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) 
         {
-            theNode->getAffectedNodes(affectedNodes);
+            theNode->getAffectedStochasticNodes(affectedNodes);
         }
     }
     

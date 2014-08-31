@@ -102,7 +102,7 @@ double SingleElementScaleMove::performMove( double& probRatio ) {
     {
         
         std::set<DagNode* > affectedNodes;
-        theNode->getAffectedNodes(affectedNodes);
+        theNode->getAffectedStochasticNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) 
         {
             DagNode* theAffectedNode = *i;

@@ -211,7 +211,7 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::swapNode(DagNode *oldN, DagNode 
 double RevBayesCore::DPPScaleCatAllocateAuxGibbs::getCurrentLnProbabilityForMove(void) {
 	
 	std::set<DagNode*> affected;
-	variable->getAffectedNodes( affected );
+	variable->getAffectedStochasticNodes( affected );
 	double lnProb = 0.0;
 	for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
 		double lp = (*it)->getLnProbability();
