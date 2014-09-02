@@ -269,12 +269,9 @@ At this stage of the tutorial, we will again ignore phylogenetic uncertainty.
 
 A multivariate Brownian process $X(t)$, of dimension $K$ (here $K=3$),
 is entirely parameterized by its starting value ($X(0)$ at the root of the phylogeny, which a vector of dimension $K$) and a $K \times K$ symmetric positive matrix (the covariance matrix), which we will call $\Sigma$.
-%(we use capital letters for the now vector-valued $X$ and matrix-valued $\Sigma$
-%to distinguish them from their scalar counterparts of the previous section).
 A positive entry between two traits, say $\Sigma_{12} > 0$, means that when trait 1 increases, trait 2 also tends to increase. Conversely, a negative entry means that the two traits tend to undergo variation in opposite directions.
 As for the diagonal entries (e.g. $\Sigma_{11}$), they represent the variance per unit of time (i.e. the rate of evolution) of each trait considered marginally,
 thus very much like $\sigma^2$ (\emph{not} $\sigma$) in the univariate model of the previous section.
-%In fact, when $K=1$, the matrix becomes a scalar and is therefore really equivalent to the scalar parameter $\sigma^2$ of the univariate model (note the little difference: $\Sigma$ is the covariance, whereas $\sigma$ the standard deviation -- at least, this is the usual practice).
 
 On $\Sigma$, we will assume an inverse-Wishart prior:
 \begin{eqnarray*}
@@ -410,8 +407,8 @@ we can also get all correlation coefficients into a single vector (you can skip 
 # initialize a running index
 corrindex <- 1
 # loop over all pairs of traits
-for (i in 1:nTraits)    {
-    for (j in i+1:nTraits) {
+for (i in 1:(nTraits-1))    {
+    for (j in (i+1):nTraits) {
         correl[corrindex] := Sigma.correlation(i,j)
         corrindex <- corrindex + 1
     }
@@ -443,25 +440,25 @@ monitors[1] <- screenmonitor(printgen=10, correl, meanX)
 a file monitor that does the same thing, but directly into a file:
 \\
 \cmd{
-monitors[2] <- filemonitor(filename="output/placmass.trace", printgen=10, separator = "       ", correl, meanX)
+monitors[2] <- filemonitor(filename="output/plactraits.trace", printgen=10, separator = "       ", correl, meanX)
 }
 \item
 a file monitor for $\Sigma$:
 \\
 \cmd{
-monitors[2] <- filemonitor(filename="output/plactraits.cov", printgen=10, separator = "  ", Sigma)
+monitors[3] <- filemonitor(filename="output/plactraits.cov", printgen=10, separator = "  ", Sigma)
 }
 \item
 a file monitor for the ancestral reconstruction of traits:
 \\
 \cmd{
-monitors[3] <- filemonitor(filename="output/plactraits.traits", printgen=10, separator = "       ", X)
+monitors[4] <- filemonitor(filename="output/plactraits.traits", printgen=10, separator = "       ", X)
 }
 \item
 and a general model monitor:
 \\
 \cmd{
-monitors[4] <- modelmonitor(filename="output/plactraits.log", printgen=10, separator = " ")
+monitors[5] <- modelmonitor(filename="output/plactraits.log", printgen=10, separator = " ")
 }
 \end{itemize}
 We can finally create the mcmc and run it:
