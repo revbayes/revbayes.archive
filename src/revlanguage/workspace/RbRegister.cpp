@@ -70,6 +70,8 @@
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
+#include "RlRootedTripletDistribution.h"
+
 
 /* Taxon types (in folder "datatypes/evolution") */
 #include "RlTaxon.h"
@@ -471,6 +473,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
+        addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
+
         
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
         addTypeWithConstructor( "taxon",            new Taxon() );
