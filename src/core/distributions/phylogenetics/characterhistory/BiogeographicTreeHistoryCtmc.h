@@ -361,6 +361,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
             lnL += -sr * ( (1.0 - t) * branchLength );
         }
+        
+        
         return lnL;
     }
     
@@ -568,6 +570,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
         int samplePathHistoryCount = 0;
         do
         {
+            
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
