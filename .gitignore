@@ -60,3 +60,5 @@ examples/brown4.prec
 examples/placclock.Rev
 examples/placcoevol1.log
 examples/placcoevol1.prec
+*.aux
+*.synctex.gz
