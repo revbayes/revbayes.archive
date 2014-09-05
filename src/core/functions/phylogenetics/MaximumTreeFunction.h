@@ -5,7 +5,7 @@
  * compute the maximum species tree (Liu, 2006) from a set of gene trees.
  * This tree is consistent under the multispecies coalescent with a single effective population size.
  *
- * @brief Declaration of the GTR rate matrix function.
+ * @brief Declaration of the Maximum Tree function.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$

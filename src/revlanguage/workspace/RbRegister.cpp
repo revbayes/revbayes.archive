@@ -276,6 +276,7 @@
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_averageRateOnBranch.h"
 #include "Func_clade.h"
+#include "Func_constructRootedTripletDistribution.h"
 #include "Func_expBranchTree.h"
 #include "Func_tanhBranchTree.h"
 #include "Func_t92GCBranchTree.h"
@@ -473,7 +474,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
-        addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
+       // addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
 
         
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
@@ -916,6 +917,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
         addFunction( "clade",                       new Func_clade()                    );
+        addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
         addFunction( "maximumTree",                 new Func_maximumTree()             );
         addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
