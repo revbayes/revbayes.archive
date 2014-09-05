@@ -12,7 +12,7 @@
 #include "SimpleMove.h"
 #include "StochasticNode.h"
 
-#include "RealMatrix.h"
+#include "MatrixReal.h"
 #include "MultivariatePhyloProcess.h"
 #include <ostream>
 #include <string>
@@ -51,6 +51,7 @@ namespace RevBayesCore {
         
         double                                  performSimpleMove(void);                                                            //!< Perform move
         void                                    recursiveTranslate(const TopologyNode& from, int component, double slide);
+        void                                    recursiveTouch(const TopologyNode& from);
         void                                    printParameterSummary(std::ostream &o) const;
         void                                    rejectSimpleMove(void);
         void                                    acceptSimpleMove(void);
@@ -62,7 +63,7 @@ namespace RevBayesCore {
         StochasticNode<MultivariatePhyloProcess>*   variable;
 
         double                                      lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
-        MultivariatePhyloProcess&                   storedValue;                                                                        //!< The stored value of the last modified element.
+        MultivariatePhyloProcess                    storedValue;                                                                        //!< The stored value of the last modified element.
         
     };
     

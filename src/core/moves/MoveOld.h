@@ -24,7 +24,7 @@ namespace RevBayesCore {
         void                                                    accept(void);                                                                           //!< Accept the InferenceMove
         void                                                    autoTune(void);                                                                         //!< automatically tune this move
         double                                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
-        const std::set<DagNode*>&                               getDagNodes(void) const;                                                                //!< Get the nodes vector
+        virtual const std::set<DagNode*>&                       getDagNodes(void) const;                                                                //!< Get the nodes vector
         double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
         virtual bool                                            isActive(unsigned long g) const;                                                        //!< Is this move active at the iteration?
         virtual bool                                            isGibbs(void) const;                                                                    //!< Is this a Gibbs move?

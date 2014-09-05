@@ -63,6 +63,7 @@ std::set<const DagNode*> InverseWishartDistribution::getParameters( void ) const
 {
     std::set<const DagNode*> parameters;
     
+    parameters.insert( sigma0 );
     parameters.insert( kappa );
     parameters.insert( dim );
     parameters.insert( df );
@@ -101,6 +102,8 @@ double InverseWishartDistribution::computeLnProbability(void)  {
         ret = RbStatistics::InverseWishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
     }
 
+//    std::cerr << "inv wish lnprob : " << ret - bklnProb << '\n';
+//    bklnProb = ret;
     return ret;
 }
 
@@ -109,12 +112,18 @@ void InverseWishartDistribution::redrawValue(void)  {
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     if (sigma0) {
-        getValue() = RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng);
+        setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng) );
     }
     else    {
-        getValue() = RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng);        
+        setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng) );
     }
-
+    /*
+    for (size_t i=0; i<getValue().getDim(); i++)   {
+        for (size_t j=0; j<getValue().getDim(); j++)   {
+            getValue()[i][j] = (i == j) ? 1.0 : 0.0;
+        }
+    }
+    */
     // this will calculate the eigenvalues and eigenvectors
     getValue().update();
 

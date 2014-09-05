@@ -90,8 +90,8 @@ rootval[2] <- 0
 br ~ mvtBrownian(tau,sigma=sigma)
 
 mean1 := br.mean(1)
-
-br.clampAt(contData)
+"mean"
+mean1
 
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
@@ -120,6 +120,7 @@ mitSeq.clamp(mitData)
 mymodel <- model(nucpi)
 
 monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, mean1, br)
+#monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
 monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, br)
 monitors[3] <- filemonitor(filename="brown.tree",printgen=10, separator = "	", tau)
 monitors[4] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")

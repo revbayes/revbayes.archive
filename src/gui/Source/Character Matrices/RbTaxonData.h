@@ -6,12 +6,12 @@
 
 @interface RbTaxonData : NSObject <NSCoding> {
 
-	NSMutableArray*      data;
-    int                  dataType;
-	NSString*            taxonName;
+	NSMutableArray*       data;
+    int                   dataType;
+	NSString*             taxonName;
 }
 
-@property (readwrite) int dataType;
+@property (nonatomic) int dataType;
 
 - (void)cleanName:(NSString*)nameStr;
 - (RbDataCell*)dataCellIndexed:(int)idx;

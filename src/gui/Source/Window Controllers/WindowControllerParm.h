@@ -4,10 +4,10 @@
 
 @interface WindowControllerParm : NSWindowController {
 
-	IBOutlet NSButton*       cancelButton;
-	IBOutlet NSButton*       helpButton;
-	IBOutlet NSButton*       okButton;
-    id                       myParm;
+	IBOutlet NSButton*   cancelButton;
+	IBOutlet NSButton*   helpButton;
+	IBOutlet NSButton*   okButton;
+    id                   myParm;
 }
 
 - (IBAction)cancelAction:(id)sender;

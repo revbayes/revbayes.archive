@@ -16,10 +16,8 @@ filenames <- v("data/conifer_atpb.nex", "data/conifer_rbcL.nex")
 
 n_parts <- filenames.size()
 for (i in 1:n_parts){
-  D <- readCharacterData(filenames[i])
-  data[i] <- D[1]
-  ns <- data[i].nchar()
-  n_sites[i] <- ns[1]
+  data[i] <- readCharacterData(filenames[i])[1]
+  n_sites[i] <- data[i].nchar(1)
 }
 
 # Get some useful variables from the data. We need these later on.
@@ -32,23 +30,23 @@ n_branches <- 2 * n_species - 3
 #   Loop over each partition   #
 #################################
   
-mv_it <- 0
+mi <- 0
 for (i in 1:n_parts){
 
   er_prior[i] <- v(1,1,1,1,1,1)
   er[i] ~ dnDirichlet(er_prior[i])
-  moves[mv_it++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
+  moves[mi++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
 
   sf_prior[i] <- v(1,1,1,1)
   sf[i] ~ dnDirichlet(sf_prior[i])
-  moves[mv_it++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
+  moves[mi++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
 
   Q[i] := gtr(er[i],sf[i]) 
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := fnNormalizedQuantile( dnGamma(shape[i], shape[i]) , 4 )
-  moves[mv_it++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=2.0)
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  moves[mi++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
 
 }
 
@@ -57,7 +55,7 @@ for (i in 1:n_parts){
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[mv_it++] <- mvNNI(topology, weight=10.0)
+moves[mi++] <- mvNNI(topology, weight=10.0)
 
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
@@ -66,8 +64,11 @@ for (i in 1:n_branches) {
   br_lens[i] ~ dnExponential(1.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
-  moves[mv_it++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
+  moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
+
+nb <- n_branches * 1.0
+tree_length := mean(br_lens) * nb
 
 
 # Build the tree by combining the topology with the branch length.

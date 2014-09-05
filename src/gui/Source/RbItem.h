@@ -4,29 +4,29 @@
 
 @interface RbItem : NSWindowController {
 
-    BOOL                 hasInspectorInfo;
-    BOOL                 isSelected;
-	BOOL                 isCursorOver;
-	NSPoint              itemLocation;
-	NSSize               itemSize;
-	NSImage*             itemImage[8];
-    BOOL                 isResolved;
-    BOOL                 showTip;
-	BOOL                 isPlate;
-    BOOL                 saveAsModelTemplate;
-	float                currentScaleFactor;
+    BOOL                      hasInspectorInfo;
+    BOOL                      isSelected;
+	BOOL                      isCursorOver;
+	NSPoint                   itemLocation;
+	NSSize                    itemSize;
+	NSImage*                  itemImage[8];
+    BOOL                      isResolved;
+    BOOL                      showTip;
+	BOOL                      isPlate;
+    BOOL                      saveAsModelTemplate;
+	float                     currentScaleFactor;
 }
 
-@property (readwrite) BOOL hasInspectorInfo;
-@property (readwrite) BOOL isSelected;
-@property (readwrite) BOOL isCursorOver;
-@property (readwrite) NSPoint itemLocation;
-@property (readwrite) NSSize itemSize;
-@property (readwrite) BOOL isResolved;
-@property (readwrite) BOOL showTip;
-@property (readwrite) BOOL isPlate;
-@property (readwrite) BOOL saveAsModelTemplate;
-@property (readwrite) float currentScaleFactor;
+@property (nonatomic) BOOL    hasInspectorInfo;
+@property (nonatomic) BOOL    isSelected;
+@property (nonatomic) BOOL    isCursorOver;
+@property (nonatomic) NSPoint itemLocation;
+@property (nonatomic) NSSize  itemSize;
+@property (nonatomic) BOOL    isResolved;
+@property (nonatomic) BOOL    showTip;
+@property (nonatomic) BOOL    isPlate;
+@property (nonatomic) BOOL    saveAsModelTemplate;
+@property (nonatomic) float   currentScaleFactor;
 
 - (void)flipSelected;
 - (void)initializeImage;

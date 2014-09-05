@@ -10,7 +10,8 @@
 #define __revbayes__ExponentialBranchTree__
 
 #include <iostream>
-
+#include <stdlib.h>
+#include <cstdlib>
 
 #include "RateMatrix.h"
 #include "TypedDagNode.h"
@@ -39,10 +40,19 @@ namespace RevBayesCore {
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                                //!< Implementation of swaping parameters
         
         void                                                recursiveUpdate(const TopologyNode& n);
-        
- //        void                                                touch(DagNode* toucher);
 
+        /*
+        void                                                touch(DagNode *toucher);
+        void                                                restore(DagNode *restorer);
+        */
+        
     private:
+
+        
+        void                                                flagNodes();
+        void                                                corruptAll();
+        void                                                recursiveCorruptAll(const TopologyNode& n);
+        
         
         // members
         const TypedDagNode< TimeTree >*                     tau;

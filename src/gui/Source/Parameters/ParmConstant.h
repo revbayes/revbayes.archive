@@ -35,7 +35,7 @@
     NSMutableArray*                           savedConstantValues;
 }
 
-@property (readwrite) BOOL appliesToNode;
+@property (nonatomic) BOOL                    appliesToNode;
 
 - (Value*)allocateValue;
 - (IBAction)changeDimensionsActionField:(id)sender;

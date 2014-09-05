@@ -10,6 +10,7 @@
 
 @synthesize info;
 @synthesize initializedDownPass;
+@synthesize root;
 
 - (void)addTaxonToRandomBranch {
 
@@ -669,11 +670,6 @@
 - (void)setNodesToArray:(NSMutableArray*)n {
 
     nodes = n;
-}
-
-- (void)setRoot:(Node*)r {
-
-    root = r;
 }
 
 @end
