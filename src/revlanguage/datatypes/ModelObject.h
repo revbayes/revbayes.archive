@@ -21,8 +21,7 @@
 #include "MethodTable.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
-#include "UserFunctionArgs.h"
-#include "UserFunctionCall.h"
+#include "UserFunction.h"
 
 namespace RevLanguage {
     
@@ -34,25 +33,33 @@ namespace RevLanguage {
 
         ModelObject&                            operator=(const ModelObject& x);                                            //!< Assignment operator
         
-        // the value type definition
+        // The value type definition
         typedef rbType valueType;
        
         // Basic utility functions you have to override
         virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
+        static const std::string&               getClassType(void);                                                         //!< Get Rev type (static)
+        static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get Rev type spec (static)
+        virtual const TypeSpec&                 getTypeSpec(void) const = 0;                                                //!< Get Rev type spec (instance)
     
         // Utility functions you might want to override
         virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual RevPtr<Variable>                getMember(const std::string& name) const;                                   //!< Get member variable
-        virtual const MethodTable&              getMethods(void) const;                                                     //!< Get member methods (const)
+        virtual const MethodTable&              getMethods(void) const = 0;                                                 //!< Get member methods
+        virtual MethodTable                     makeMethods(void) const;                                                    //!< Make member methods
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
+        RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
+        bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
-        void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
-        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
+        bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
+        void                                    makeConstantValue(void);                                                    //!< Convert to constant object
+        void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert to conversion object
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
-        virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
+        void                                    makeUserFunctionValue(UserFunction* fxn);                                   //!< Convert to user-defined Rev function object
+        virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
@@ -70,12 +77,7 @@ namespace RevLanguage {
         ModelObject(const ModelObject &v);
         
         RevBayesCore::TypedDagNode<rbType>*     dagNode;
-        mutable MethodTable                     methods;
 
-    private:
-        
-        void                                    initMethods(void);
-        
     };
     
 }
@@ -86,65 +88,56 @@ namespace RevLanguage {
 #include "ArgumentRules.h"
 #include "Cloner.h"
 #include "ConstantNode.h"
-#include "DeterministicNode.h"
+#include "ConverterNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
+#include "NAValueNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
-#include "TypedUserFunction.h"
+#include "UserFunctionNode.h"
 #include "Variable.h"
+#include "Workspace.h"
 
 #include <cassert>
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject() : RevObject(), 
-    dagNode( NULL ),
-    methods() 
+RevLanguage::ModelObject<rbType>::ModelObject() :
+    RevObject(),
+    dagNode( NULL )
 {
-    
-//    initMethods();
-    
 }
 
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : RevObject(), 
-    dagNode( new RevBayesCore::ConstantNode<rbType>("",v) ),
-    methods() 
+RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
+    RevObject(),
+    dagNode( new RevBayesCore::ConstantNode<rbType>("",v) )
 {
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
     
-//    initMethods();
-    
 }
 
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) : RevObject(), 
-    dagNode( v ),
-    methods() 
+RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) :
+    RevObject(),
+    dagNode( v )
 {
-    
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    
-//    initMethods();
-    
 }
 
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) : RevObject(), 
-    dagNode( NULL ),
-    methods() 
+RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
+    RevObject(),
+    dagNode( NULL )
 {
-    
     if ( v.dagNode != NULL )
     {
         
@@ -153,11 +146,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) : RevObject(
         // increment the reference count to the value
         dagNode->incrementReferenceCount();
     }
-    
-//    initMethods();
-    
 }
-
 
 
 template <typename rbType>
@@ -203,6 +192,31 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
     }
     
     return *this;
+}
+
+
+/**
+ * Clone the model DAG connected to this object. This function is used
+ * by the DAG node cloneDAG function, for DAG node types belonging to the
+ * RevLanguage layer and handling Rev objects.
+ *
+ * @todo This is a temporary hack that makes different Rev objects sharing
+ *       the same internal DAG node keeping their value. Replace with code
+ *       that actually clones the model DAG with the included Rev objects
+ *       (and possibly also the included variables).
+ */
+template<typename rbType>
+RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
+{
+    ModelObject<rbType>* theClone = clone();
+
+    theClone->setDagNode( NULL );
+    
+    RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
+    
+    theClone->setDagNode( theNodeClone );
+    
+    return theClone;
 }
 
 
@@ -277,7 +291,31 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::exe
         return NULL;
     }
     
+    if ( dagNode->isStochastic() )
+    {
+        
+    }
+    
     return RevObject::executeMethod( name, args );
+}
+
+
+template <typename rbType>
+const std::string& RevLanguage::ModelObject<rbType>::getClassType(void) {
+    
+    static std::string revType = "ModelObject";
+    
+	return revType;
+}
+
+
+/** Get class type spec describing type of object */
+template <typename rlType>
+const RevLanguage::TypeSpec& RevLanguage::ModelObject<rlType>::getClassTypeSpec(void) {
+    
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
+    
+	return revTypeSpec;
 }
 
 
@@ -314,45 +352,11 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::get
 }
 
 
-/* Get method specifications */
-template <typename rbType>
-const RevLanguage::MethodTable&  RevLanguage::ModelObject<rbType>::getMethods(void) const {
-    
-//    static MethodTable methods      = MethodTable();
-    // Sebastian: Static variables don't work because derived classes, e.g. PosReal from Real
-    // require different types but only one static variable will be set for both classes!!!
-//    static bool        methodsSet   = false;
-    
-//    if ( methodsSet == false ) 
-//    {
-    
-    methods = MethodTable();
-        ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
-        
-        ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
-    
-        ArgumentRules* setValueArgRules = new ArgumentRules();
-        setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
-        
-        ArgumentRules* unclampArgRules = new ArgumentRules();
-        methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-//        methodsSet = true;
-//    }
-    
-    return methods;
-}
-
-
-
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
+    
+    if ( dagNode == NULL )
+        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     
     return dagNode->getValue();
 }
@@ -396,39 +400,23 @@ bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const
             return true;
         }
     } 
-//    else 
-//    {
-//        <#statements-if-false#>
-//    }
     
     return false;
 }
 
 
+/**
+ * Is the object or any of its upstream members or elements
+ * modifiable by the user through assignment? We simply ask
+ * our DAG node.
+ */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::initMethods( void )
+bool RevLanguage::ModelObject<rbType>::isAssignable( void ) const
 {
+    if ( dagNode == NULL )
+        return false;
     
-    ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-    methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
-    
-    ArgumentRules* redrawArgRules = new ArgumentRules();
-    methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
-    
-    ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-    methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
-    
-    ArgumentRules* unclampArgRules = new ArgumentRules();
-    methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
-    
-    // necessary call for proper inheritance
-    methods.setParentTable( &RevObject::getMethods() );
-
-    // necessary call for proper inheritance
-    methods.setParentTable( &RevObject::getMethods() );
-
+    return dagNode->isAssignable();
 }
 
 
@@ -436,6 +424,13 @@ template <typename rbType>
 bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
     
     return dagNode->isConstant();
+}
+
+
+template <typename rbType>
+bool RevLanguage::ModelObject<rbType>::isNAObject( void ) const {
+    
+    return dagNode->isNAValue();
 }
 
 
@@ -467,17 +462,28 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 }
 
 
-/** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
+/**
+ * Convert a model object to a conversion object, the value of which is determined by a type
+ * conversion from a specified variable.
+ */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+void RevLanguage::ModelObject<rbType>::makeConversionValue( RevPtr<Variable> var )
 {
-    TypedUserFunction< rbType >*  fxn      = new TypedUserFunction< rbType >( call );
-    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, args );
-    
-    if ( dagNode != NULL && dagNode->decrementReferenceCount() == 0 )
-        delete dagNode;
+    // Create the converter node
+    ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var, getTypeSpec() );
 
-    dagNode = detNode;
+    // Signal replacement and delete the value if there are no other references to it.
+    if ( dagNode != NULL )
+    {
+        dagNode->replace( newNode );
+        if ( dagNode->decrementReferenceCount() == 0 )
+            delete dagNode;
+    }
+    
+    // Shift the actual node
+    dagNode = newNode;
+    
+    // Increment the reference counter
     dagNode->incrementReferenceCount();
 }
 
@@ -499,21 +505,88 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
 }
 
 
-/** Print structure info for user */
+/**
+ * In this function we make member methods that belong to this level to serve
+ * derived classes when they construct their static member method tables.
+ * Using this mechanism, we ensure that the methods constructed at this
+ * level for each derived class can use the appropriate type specification
+ * for the derived class in its argument rules, if necessary. See the setValue
+ * function for an example.
+ *
+ * This mechanism makes it impossible for derived classes to construct their
+ * static method tables from the call to our getMethods(), which is therefore
+ * declared abstract.
+ */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o ) const
+RevLanguage::MethodTable RevLanguage::ModelObject<rbType>::makeMethods(void) const
 {
-    RevObject::printStructure( o );
-
-    dagNode->printStructureInfo( o );
+    MethodTable methods;
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
+    
+    ArgumentRules* redrawArgRules = new ArgumentRules();
+    methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
+    
+    ArgumentRules* setValueArgRules = new ArgumentRules();
+    setValueArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+    
+    ArgumentRules* unclampArgRules = new ArgumentRules();
+    methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
+    
+    methods.insertInheritedMethods( RevObject::makeMethods() );
+    
+    return methods;
 }
 
 
- /** Print value for user */
+/** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const {
+void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn )
+{
+    UserFunctionNode< ModelObject<rbType> >*  detNode = new UserFunctionNode< ModelObject<rbType> >( "", fxn );
     
-    dagNode->printValue(o,"");
+    // Signal replacement and delete the value if there are no other references to it.
+    if ( dagNode != NULL )
+    {
+        dagNode->replace( detNode );
+        if ( dagNode->decrementReferenceCount() == 0 )
+            delete dagNode;
+    }
+    
+    // Shift the actual node
+    dagNode = detNode;
+    
+    // Increment the reference counter
+    dagNode->incrementReferenceCount();
+}
+
+
+/** Print structure info for user */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o, bool verbose ) const
+{
+    RevObject::printStructure( o, verbose );
+
+    dagNode->printStructureInfo( o, verbose );
+
+    printMemberInfo( o );
+}
+
+
+/**
+ * Print value for user. The DAG node pointer may be NULL, in which
+ * case we print "NA".
+ */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
+{
+    if ( dagNode == NULL )
+        o << "NA";
+    else
+        dagNode->printValue(o, "" );
 }
 
 
@@ -522,25 +595,52 @@ void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
     
     RevBayesCore::DagNode* newParent = newVar->getDagNode();
     
-    while ( dagNode->getNumberOfChildren() > 0 )
+    if ( dagNode != NULL )
     {
-        dagNode->getFirstChild()->swapParent(dagNode, newParent);
+        while ( dagNode->getNumberOfChildren() > 0 )
+        {
+            dagNode->getFirstChild()->swapParent(dagNode, newParent);
+        }
     }
-    
 }
 
 
+/** Copy name of variable onto DAG node, if it is not NULL */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setName(std::string const &n) {
-    
-    if ( dagNode == NULL )
-    {
-        throw RbException("Null-pointer-exception: Cannot set name of value.");
-    } 
-    else 
-    {
+void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
+{
+    if ( dagNode != NULL )
         dagNode->setName( n );
+}
+
+
+/**
+ * Set dag node. We also accommodate the possibility of setting the DAG node
+ * to null.
+ */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
+    
+    // Take care of the old value node
+    if ( dagNode != NULL )
+    {
+        if ( newNode != NULL )
+            newNode->setName( dagNode->getName() );
+        dagNode->replace(newNode);
+        
+        if ( dagNode->decrementReferenceCount() == 0 )
+        {
+            delete dagNode;
+        }
+        
     }
+    
+    // Set the new value node
+    dagNode = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
+    
+    // Increment the reference count to the new value node
+    if ( dagNode != NULL )
+        dagNode->incrementReferenceCount();
     
 }
 
@@ -553,12 +653,12 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
     if ( dagNode == NULL )
     {
         newNode = new RevBayesCore::ConstantNode<rbType>("",x);
-    } 
-    else 
+    }
+    else
     {
         newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(),x);
         dagNode->replace(newNode);
-
+        
         if ( dagNode->decrementReferenceCount() == 0 )
         {
             delete dagNode;
@@ -573,31 +673,5 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
     
 }
 
-
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
-    
-    assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newNode) != NULL );
-    
-    // Take care of the old value node
-    if ( dagNode != NULL )
-    {
-        newNode->setName( dagNode->getName() );
-        dagNode->replace(newNode);
-        
-        if ( dagNode->decrementReferenceCount() == 0 )
-        {
-            delete dagNode;
-        }
-        
-    }
-    
-    // Set the new value node
-    dagNode = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
-    
-    // Increment the reference count to the new value node
-    dagNode->incrementReferenceCount();
-    
-}
 
 #endif

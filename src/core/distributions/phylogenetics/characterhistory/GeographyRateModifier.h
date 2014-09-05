@@ -26,7 +26,7 @@ namespace RevBayesCore
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
         double                              computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
-        double                              computeRateModifier_test(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
+//        double                              computeRateModifier_test(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
         double                              computeSiteRateModifier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
         double                              computeSiteRateModifier(const TopologyNode& node, unsigned curState, unsigned newState, unsigned charIdx=0, double age=0.0);
         void                                setDistancePower(double dp, bool upd=true);
@@ -96,6 +96,8 @@ namespace RevBayesCore
         std::set<CharacterEvent*> absent;
         
     };
+    
+    std::ostream& operator<<(std::ostream& o, const GeographyRateModifier& x);
 }
 
 #endif /* defined(__rb_mlandis__GeographyRateModifier__) */

@@ -27,7 +27,7 @@ namespace RevLanguage {
         Dist_exponential( void );                                                                                                                //!< Default constructor
         
         // Basic utility functions
-        Dist_exponential*                        clone(void) const;                                                                              //!< Clone the object
+        Dist_exponential*                               clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance

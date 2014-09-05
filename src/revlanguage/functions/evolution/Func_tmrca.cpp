@@ -11,7 +11,6 @@
 #include "ModelVector.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
-#include "RateMatrix.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "TmrcaStatistic.h"
@@ -48,15 +47,17 @@ RevPtr<Variable> Func_tmrca::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_tmrca::getArgumentRules( void ) const {
+const ArgumentRules& Func_tmrca::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "clade", true, Clade::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

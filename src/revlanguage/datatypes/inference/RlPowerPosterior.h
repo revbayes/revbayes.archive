@@ -55,6 +55,8 @@ namespace RevLanguage {
         RevPtr<const Variable>                      powers;
         RevPtr<const Variable>                      filename;
         RevPtr<const Variable>                      cats;
+        RevPtr<const Variable>                      alphaVal;
+        RevPtr<const Variable>                      sampFreq;
         
     };
     

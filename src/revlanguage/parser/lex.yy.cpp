@@ -361,8 +361,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 55
-#define YY_END_OF_BUFFER 56
+#define YY_NUM_RULES 56
+#define YY_END_OF_BUFFER 57
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -370,27 +370,27 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_accept[173] =
+static yyconst flex_int16_t yy_accept[181] =
     {   0,
-        0,    0,   56,   54,   51,   52,   54,   54,   28,   41,
-       54,   54,   54,   54,   54,   25,   54,   53,   47,   40,
-       45,   26,   26,   26,   26,   54,   26,   26,   26,   26,
-       26,   26,   26,   26,   26,   26,   26,   26,   42,   31,
-       51,   50,    0,   27,   28,   43,   36,   38,   34,   39,
-       35,   23,   37,   22,   25,    0,   30,   29,    0,   48,
-       49,   46,   26,   26,   26,   26,   26,    0,   26,   26,
-       26,   26,   26,   26,   26,   26,   26,    5,    4,   26,
-       26,   26,   26,   26,   26,   26,   44,    0,   22,    0,
-        0,   24,   33,   32,   26,   26,   26,   26,   26,   26,
+        0,    0,   57,   55,   52,   53,   55,   55,   29,   42,
+       55,   55,   55,   55,   55,   26,   55,   54,   48,   41,
+       46,   27,   27,   27,   27,   55,   27,   27,   27,   27,
+       27,   27,   27,   27,   27,   27,   27,   27,   43,   32,
+       52,   51,    0,   28,   29,   44,   37,   39,   35,   40,
+       36,   24,   38,   23,   26,    0,   31,   30,    0,   49,
+       50,   47,   27,   27,   27,   27,   27,    0,   27,   27,
+       27,   27,   27,   27,   27,   27,   27,    6,    5,   27,
+       27,   27,   27,   27,   27,   27,   45,    0,   23,    0,
+        0,   25,   34,   33,   27,   27,   27,   27,   27,   27,
 
-       26,   26,   26,   26,    3,   26,   26,   26,   26,   26,
-       26,   26,   26,    0,   23,    0,    0,   22,   26,   14,
-       16,   26,   26,   26,   26,   26,    6,   26,   26,   26,
-        8,   11,   26,   26,   13,   26,    0,   22,   15,    9,
-        2,   17,   26,   26,   12,   26,   26,   26,   26,    7,
-       26,   26,   26,   26,   10,   26,   26,   18,   26,   21,
-       26,   26,    1,   26,   26,   26,   26,   19,   26,   26,
-       20,    0
+       27,   27,   27,   27,    4,   27,   27,   27,   27,   27,
+       27,   27,   27,    0,   24,    0,    0,   23,   27,   15,
+       17,   27,   27,   27,   27,   27,    7,   27,   27,    9,
+       12,   27,   27,   27,   27,   14,   27,    0,   23,   16,
+       10,    3,   18,   27,   27,   13,   27,   27,   27,   27,
+       27,    8,   27,   27,   27,   27,   27,   11,   27,   27,
+       19,   27,   27,   27,   27,   27,    1,   27,   27,   27,
+       27,    2,   22,   27,   27,   20,   27,   27,   21,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -407,8 +407,8 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,   29,    1,   30,   31,   32,   33,
 
        34,   35,   20,   36,   37,   20,   38,   39,   40,   41,
-       42,   20,   20,   43,   44,   45,   46,   20,   47,   48,
-       49,   20,    1,   50,    1,   51,    1,    1,    1,    1,
+       42,   43,   20,   44,   45,   46,   47,   20,   48,   49,
+       50,   20,    1,   51,    1,   52,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -425,126 +425,130 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[52] =
+static yyconst flex_int32_t yy_meta[53] =
     {   0,
         1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    3,    1,    1,    1,    1,    1,    4,    4,
         4,    4,    4,    4,    4,    4,    4,    4,    4,    4,
         4,    4,    4,    4,    4,    4,    4,    4,    4,    4,
-        4,    4,    4,    4,    4,    4,    4,    4,    4,    1,
-        1
+        4,    4,    4,    4,    4,    4,    4,    4,    4,    4,
+        1,    1
     } ;
 
-static yyconst flex_int16_t yy_base[177] =
+static yyconst flex_int16_t yy_base[185] =
     {   0,
-        0,    0,  214,  215,  211,  215,  195,  206,    0,  203,
-      192,   43,   44,  195,  190,   42,  189,  215,   48,  188,
-      187,    0,  184,  174,  176,  171,  156,   17,   23,  159,
-       32,   32,  151,   34,  162,  150,  151,  157,  142,  215,
-      189,  215,  185,  215,    0,  215,  215,  215,  215,  215,
-      215,   56,  215,   58,   70,   75,  215,  182,  178,  215,
-      215,  215,    0,  164,  163,  157,    0,  155,  149,  152,
-      140,  135,  138,  134,  138,  133,  134,    0,    0,  129,
-      125,  133,  126,  128,  123,  131,  215,   84,   74,   89,
-      154,  153,  215,  215,  139,  141,  142,  132,  117,  116,
+        0,    0,  223,  224,  220,  224,  204,  215,    0,  212,
+      201,   44,   45,  204,  199,   43,  198,  224,   49,  197,
+      196,    0,  193,  183,  185,  180,  164,   18,   24,  168,
+       33,   32,   34,  162,  171,  158,  159,  166,  150,  224,
+      198,  224,  194,  224,    0,  224,  224,  224,  224,  224,
+      224,   57,  224,   58,   72,   77,  224,  191,  187,  224,
+      224,  224,    0,  173,  172,  166,    0,  164,  158,  161,
+      149,  143,  147,  142,  147,  141,  143,    0,    0,  134,
+      143,  139,  134,  137,  131,  140,  224,   85,   63,   90,
+      163,  162,  224,  224,  148,  150,  151,  141,  125,  124,
 
-      125,  128,  123,  112,    0,  123,  124,  108,  113,  105,
-      118,  115,  109,  134,  133,   96,  132,  131,  122,    0,
-        0,  104,   97,   95,   96,   98,    0,  103,   91,  104,
-        0,    0,   91,   97,    0,   98,  118,  117,    0,    0,
-        0,    0,   89,   91,    0,   90,   87,   84,   94,    0,
-       86,   90,   79,   86,    0,   71,   66,    0,   62,    0,
-       56,   63,    0,   59,   45,   54,   37,    0,   38,   38,
-        0,  215,  109,  113,  115,   62
+      134,  137,  132,  120,    0,  132,  117,  123,   50,  114,
+      128,  125,  119,  144,  143,   92,  142,  141,  132,    0,
+        0,  114,  106,  104,  105,  108,    0,  113,  100,    0,
+        0,  111,  110,   99,  106,    0,  107,  127,  126,    0,
+        0,    0,    0,   98,  100,    0,   99,  102,  102,   92,
+      102,    0,   94,   98,   87,   81,   81,    0,   81,   84,
+        0,   83,   79,   88,   75,   83,    0,   85,   85,   80,
+       67,    0,    0,   72,   43,    0,   51,   40,    0,  224,
+      106,  110,  112,   65
     } ;
 
-static yyconst flex_int16_t yy_def[177] =
+static yyconst flex_int16_t yy_def[185] =
     {   0,
-      172,    1,  172,  172,  172,  172,  172,  173,  174,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  175,  175,  175,  175,  176,  175,  175,  175,  175,
-      175,  175,  175,  175,  175,  175,  175,  175,  172,  172,
-      172,  172,  173,  172,  174,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  175,  175,  175,  175,  175,  176,  175,  175,
-      175,  175,  175,  175,  175,  175,  175,  175,  175,  175,
-      175,  175,  175,  175,  175,  175,  172,  172,  172,  172,
-      172,  172,  172,  172,  175,  175,  175,  175,  175,  175,
+      180,    1,  180,  180,  180,  180,  180,  181,  182,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  183,  183,  183,  183,  184,  183,  183,  183,  183,
+      183,  183,  183,  183,  183,  183,  183,  183,  180,  180,
+      180,  180,  181,  180,  182,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  183,  183,  183,  183,  183,  184,  183,  183,
+      183,  183,  183,  183,  183,  183,  183,  183,  183,  183,
+      183,  183,  183,  183,  183,  183,  180,  180,  180,  180,
+      180,  180,  180,  180,  183,  183,  183,  183,  183,  183,
 
-      175,  175,  175,  175,  175,  175,  175,  175,  175,  175,
-      175,  175,  175,  172,  172,  172,  172,  172,  175,  175,
-      175,  175,  175,  175,  175,  175,  175,  175,  175,  175,
-      175,  175,  175,  175,  175,  175,  172,  172,  175,  175,
-      175,  175,  175,  175,  175,  175,  175,  175,  175,  175,
-      175,  175,  175,  175,  175,  175,  175,  175,  175,  175,
-      175,  175,  175,  175,  175,  175,  175,  175,  175,  175,
-      175,    0,  172,  172,  172,  172
+      183,  183,  183,  183,  183,  183,  183,  183,  183,  183,
+      183,  183,  183,  180,  180,  180,  180,  180,  183,  183,
+      183,  183,  183,  183,  183,  183,  183,  183,  183,  183,
+      183,  183,  183,  183,  183,  183,  183,  180,  180,  183,
+      183,  183,  183,  183,  183,  183,  183,  183,  183,  183,
+      183,  183,  183,  183,  183,  183,  183,  183,  183,  183,
+      183,  183,  183,  183,  183,  183,  183,  183,  183,  183,
+      183,  183,  183,  183,  183,  183,  183,  183,  183,    0,
+      180,  180,  180,  180
     } ;
 
-static yyconst flex_int16_t yy_nxt[267] =
+static yyconst flex_int16_t yy_nxt[277] =
     {   0,
         4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
        14,   15,   16,   17,   18,   19,   20,   21,   22,   22,
        22,   23,   22,   24,   22,   22,   25,   22,   26,   22,
-       27,   28,   29,   30,   31,   22,   32,   22,   22,   33,
-       34,   22,   35,   36,   37,   22,   38,   22,   22,   39,
-       40,   48,   54,   50,   55,   70,   72,   58,   71,   49,
-       51,   75,   56,   59,   60,   67,   78,   81,   52,  171,
-       89,   73,   79,   76,  170,   56,   88,   77,   90,   82,
-       54,  169,   55,   91,   91,  168,   89,   92,  167,   88,
-       56,   90,  114,  114,  116,  166,  115,  117,  117,  165,
+       27,   28,   29,   30,   31,   22,   32,   22,   22,   22,
+       33,   22,   34,   35,   36,   37,   22,   38,   22,   22,
+       39,   40,   48,   54,   50,   55,   70,   72,   58,   71,
+       49,   51,   75,   56,   59,   60,   78,   80,   67,   52,
+       89,  179,   79,   73,   76,   89,   56,   88,   90,   77,
+       81,  132,   54,  116,   55,   91,   91,  178,  177,   92,
+       88,   90,   56,  114,  114,  133,  116,  115,  117,  117,
 
-      164,  118,  163,   56,  137,  137,  162,  116,  138,   43,
-       43,   43,   43,   45,  161,   45,   45,   63,   63,  160,
-      159,  158,  157,  156,  155,  154,  153,  152,  151,  138,
-      138,  150,  149,  148,  147,  146,  145,  144,  143,  142,
-      141,  140,  139,  118,  118,  115,  115,  136,  135,  134,
-      133,  132,  131,  130,  129,  128,  127,  126,  125,  124,
-      123,  122,  121,  120,  119,   92,   92,  113,  112,  111,
-      110,  109,  108,  107,  106,  105,  104,  103,  102,  101,
-      100,   99,   98,   68,   97,   96,   95,   94,   93,   44,
-       41,   87,   86,   85,   84,   83,   80,   74,   69,   68,
+      138,  138,  118,  176,  139,   56,   43,   43,   43,   43,
+       45,  175,   45,   45,   63,   63,  174,  173,  172,  171,
+      170,  169,  168,  167,  166,  165,  164,  163,  162,  161,
+      160,  159,  158,  157,  156,  155,  154,  153,  139,  139,
+      152,  151,  150,  149,  148,  147,  146,  145,  144,  143,
+      142,  141,  140,  118,  118,  115,  115,  137,  136,  135,
+      134,  131,  130,  129,  128,  127,  126,  125,  124,  123,
+      122,  121,  120,  119,   92,   92,  113,  112,  111,  110,
+      109,  108,  107,  106,  105,  104,  103,  102,  101,  100,
+       99,   98,   68,   97,   96,   95,   94,   93,   44,   41,
 
-       66,   65,   64,   62,   61,   57,   53,   52,   47,   46,
-       44,   42,   41,  172,    3,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172
+       87,   86,   85,   84,   83,   82,   74,   69,   68,   66,
+       65,   64,   62,   61,   57,   53,   52,   47,   46,   44,
+       42,   41,  180,    3,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180
     } ;
 
-static yyconst flex_int16_t yy_chk[267] =
+static yyconst flex_int16_t yy_chk[277] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,   12,   16,   13,   16,   28,   29,   19,   28,   12,
-       13,   31,   16,   19,   19,  176,   32,   34,   52,  170,
-       54,   29,   32,   31,  169,   16,   52,   31,   54,   34,
-       55,  167,   55,   56,   56,  166,   89,   56,  165,   52,
-       55,   54,   88,   88,   89,  164,   88,   90,   90,  162,
+        1,    1,   12,   16,   13,   16,   28,   29,   19,   28,
+       12,   13,   31,   16,   19,   19,   32,   33,  184,   52,
+       54,  178,   32,   29,   31,   89,   16,   52,   54,   31,
+       33,  109,   55,   89,   55,   56,   56,  177,  175,   56,
+       52,   54,   55,   88,   88,  109,   89,   88,   90,   90,
 
-      161,   90,  159,   55,  116,  116,  157,   89,  116,  173,
-      173,  173,  173,  174,  156,  174,  174,  175,  175,  154,
-      153,  152,  151,  149,  148,  147,  146,  144,  143,  138,
-      137,  136,  134,  133,  130,  129,  128,  126,  125,  124,
+      116,  116,   90,  174,  116,   55,  181,  181,  181,  181,
+      182,  171,  182,  182,  183,  183,  170,  169,  168,  166,
+      165,  164,  163,  162,  160,  159,  157,  156,  155,  154,
+      153,  151,  150,  149,  148,  147,  145,  144,  139,  138,
+      137,  135,  134,  133,  132,  129,  128,  126,  125,  124,
       123,  122,  119,  118,  117,  115,  114,  113,  112,  111,
-      110,  109,  108,  107,  106,  104,  103,  102,  101,  100,
-       99,   98,   97,   96,   95,   92,   91,   86,   85,   84,
-       83,   82,   81,   80,   77,   76,   75,   74,   73,   72,
-       71,   70,   69,   68,   66,   65,   64,   59,   58,   43,
-       41,   39,   38,   37,   36,   35,   33,   30,   27,   26,
+      110,  108,  107,  106,  104,  103,  102,  101,  100,   99,
+       98,   97,   96,   95,   92,   91,   86,   85,   84,   83,
+       82,   81,   80,   77,   76,   75,   74,   73,   72,   71,
+       70,   69,   68,   66,   65,   64,   59,   58,   43,   41,
 
-       25,   24,   23,   21,   20,   17,   15,   14,   11,   10,
-        8,    7,    5,    3,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172
+       39,   38,   37,   36,   35,   34,   30,   27,   26,   25,
+       24,   23,   21,   20,   17,   15,   14,   11,   10,    8,
+        7,    5,    3,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180,  180,  180,  180,  180,
+      180,  180,  180,  180,  180,  180
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -618,7 +622,7 @@ size_t yycolumn;
 
 #define YY_USER_ACTION yycolumn += yyleng;
 
-#line 622 "./lex.yy.cpp"
+#line 626 "./lex.yy.cpp"
 
 #define INITIAL 0
 
@@ -802,7 +806,7 @@ YY_DECL
     
 #line 65 "./lex.l"
 
-#line 806 "./lex.yy.cpp"
+#line 810 "./lex.yy.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -855,13 +859,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 173 )
+				if ( yy_current_state >= 181 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 215 );
+		while ( yy_base[yy_current_state] != 224 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -900,9 +904,9 @@ YY_RULE_SETUP
 #line 72 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'class'\n");
+                                            printf("Flex found 'procedure'\n");
 #endif
-                                            return CLASS;
+                                            return PROCEDURE;
                                         }
 	YY_BREAK
 case 3:
@@ -910,9 +914,9 @@ YY_RULE_SETUP
 #line 78 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'for'\n");
+                                            printf("Flex found 'class'\n");
 #endif
-                                            return FOR;
+                                            return CLASS;
                                         }
 	YY_BREAK
 case 4:
@@ -920,9 +924,9 @@ YY_RULE_SETUP
 #line 84 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'in'\n");
+                                            printf("Flex found 'for'\n");
 #endif
-                                            return IN;
+                                            return FOR;
                                         }
 	YY_BREAK
 case 5:
@@ -930,9 +934,9 @@ YY_RULE_SETUP
 #line 90 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'if'\n");
+                                            printf("Flex found 'in'\n");
 #endif
-                                            return IF;
+                                            return IN;
                                         }
 	YY_BREAK
 case 6:
@@ -940,9 +944,9 @@ YY_RULE_SETUP
 #line 96 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'else'\n");
+                                            printf("Flex found 'if'\n");
 #endif
-                                            return ELSE;
+                                            return IF;
                                         }
 	YY_BREAK
 case 7:
@@ -950,9 +954,9 @@ YY_RULE_SETUP
 #line 102 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'while'\n");
+                                            printf("Flex found 'else'\n");
 #endif
-                                            return WHILE;
+                                            return ELSE;
                                         }
 	YY_BREAK
 case 8:
@@ -960,9 +964,9 @@ YY_RULE_SETUP
 #line 108 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'next'\n");
+                                            printf("Flex found 'while'\n");
 #endif
-                                            return NEXT;
+                                            return WHILE;
                                         }
 	YY_BREAK
 case 9:
@@ -970,9 +974,9 @@ YY_RULE_SETUP
 #line 114 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'break'\n");
+                                            printf("Flex found 'next'\n");
 #endif
-                                            return BREAK;
+                                            return NEXT;
                                         }
 	YY_BREAK
 case 10:
@@ -980,9 +984,9 @@ YY_RULE_SETUP
 #line 120 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'return'\n");
+                                            printf("Flex found 'break'\n");
 #endif
-                                            return RETURN;
+                                            return BREAK;
                                         }
 	YY_BREAK
 case 11:
@@ -990,9 +994,9 @@ YY_RULE_SETUP
 #line 126 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'null'\n");
+                                            printf("Flex found 'return'\n");
 #endif
-                                            return RBNULL;
+                                            return RETURN;
                                         }
 	YY_BREAK
 case 12:
@@ -1000,9 +1004,9 @@ YY_RULE_SETUP
 #line 132 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'false'\n");
+                                            printf("Flex found 'null'\n");
 #endif
-                                            return FALSE;
+                                            return RBNULL;
                                         }
 	YY_BREAK
 case 13:
@@ -1010,9 +1014,9 @@ YY_RULE_SETUP
 #line 138 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'true'\n");
+                                            printf("Flex found 'false'\n");
 #endif
-                                            return TRUE;
+                                            return FALSE;
                                         }
 	YY_BREAK
 case 14:
@@ -1020,9 +1024,9 @@ YY_RULE_SETUP
 #line 144 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'NULL'\n");
+                                            printf("Flex found 'true'\n");
 #endif
-                                            return RBNULL;
+                                            return TRUE;
                                         }
 	YY_BREAK
 case 15:
@@ -1030,9 +1034,9 @@ YY_RULE_SETUP
 #line 150 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'FALSE'\n");
+                                            printf("Flex found 'NULL'\n");
 #endif
-                                            return FALSE;
+                                            return RBNULL;
                                         }
 	YY_BREAK
 case 16:
@@ -1040,9 +1044,9 @@ YY_RULE_SETUP
 #line 156 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'TRUE'\n");
+                                            printf("Flex found 'FALSE'\n");
 #endif
-                                            return TRUE;
+                                            return FALSE;
                                         }
 	YY_BREAK
 case 17:
@@ -1050,9 +1054,9 @@ YY_RULE_SETUP
 #line 162 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'const'\n");
+                                            printf("Flex found 'TRUE'\n");
 #endif
-                                            return MOD_CONST;
+                                            return TRUE;
                                         }
 	YY_BREAK
 case 18:
@@ -1060,9 +1064,9 @@ YY_RULE_SETUP
 #line 168 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'dynamic'\n");
+                                            printf("Flex found 'const'\n");
 #endif
-                                            return MOD_DYNAMIC;
+                                            return MOD_CONST;
                                         }
 	YY_BREAK
 case 19:
@@ -1070,9 +1074,9 @@ YY_RULE_SETUP
 #line 174 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'stochastic'\n");
+                                            printf("Flex found 'dynamic'\n");
 #endif
-                                            return MOD_STOCHASTIC;
+                                            return MOD_DYNAMIC;
                                         }
 	YY_BREAK
 case 20:
@@ -1080,9 +1084,9 @@ YY_RULE_SETUP
 #line 180 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'deterministic'\n");
+                                            printf("Flex found 'stochastic'\n");
 #endif
-                                            return MOD_DETERMINISTIC;
+                                            return MOD_STOCHASTIC;
                                         }
 	YY_BREAK
 case 21:
@@ -1090,9 +1094,9 @@ YY_RULE_SETUP
 #line 186 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'mutable'\n");
+                                            printf("Flex found 'deterministic'\n");
 #endif
-                                            return MOD_MUTABLE;
+                                            return MOD_DETERMINISTIC;
                                         }
 	YY_BREAK
 case 22:
@@ -1100,18 +1104,14 @@ YY_RULE_SETUP
 #line 192 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found real %s -- ", yytext);
+                                            printf("Flex found 'protected'\n");
 #endif
-                                            yylval.realValue = strtod(yytext,NULL); 
-#ifdef DEBUG_BISON_FLEX
-                                            printf("double value = %f\n",yylval.realValue);
-#endif
-                                            return REAL;
+                                            return PROTECTED;
                                         }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 202 "./lex.l"
+#line 198 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found real %s -- ", yytext);
@@ -1125,7 +1125,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 212 "./lex.l"
+#line 208 "./lex.l"
+{
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found real %s -- ", yytext);
+#endif
+                                            yylval.realValue = strtod(yytext,NULL); 
+#ifdef DEBUG_BISON_FLEX
+                                            printf("double value = %f\n",yylval.realValue);
+#endif
+                                            return REAL;
+                                        }
+	YY_BREAK
+case 25:
+YY_RULE_SETUP
+#line 218 "./lex.l"
 { 
                                             /* Treat ints with exponents as floating point values */
 #ifdef DEBUG_BISON_FLEX
@@ -1138,9 +1152,9 @@ YY_RULE_SETUP
                                             return REAL;
                                         }
 	YY_BREAK
-case 25:
+case 26:
 YY_RULE_SETUP
-#line 223 "./lex.l"
+#line 229 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found int %s -- ", yytext);
@@ -1152,9 +1166,9 @@ YY_RULE_SETUP
                                             return INT;
                                         }
 	YY_BREAK
-case 26:
+case 27:
 YY_RULE_SETUP
-#line 233 "./lex.l"
+#line 239 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found id (name) %s -- ", yytext);
@@ -1166,10 +1180,10 @@ YY_RULE_SETUP
                                             return NAME;
                                         }
 	YY_BREAK
-case 27:
-/* rule 27 can match eol */
+case 28:
+/* rule 28 can match eol */
 YY_RULE_SETUP
-#line 243 "./lex.l"
+#line 249 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found string %s -- ", yytext);
@@ -1183,9 +1197,9 @@ YY_RULE_SETUP
                                             return STRING;
                                         }
 	YY_BREAK
-case 28:
+case 29:
 YY_RULE_SETUP
-#line 255 "./lex.l"
+#line 261 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found comment '%s', ignored\n", yytext);
@@ -1193,9 +1207,9 @@ YY_RULE_SETUP
                                             /* Ignore comment */
                                         }
 	YY_BREAK
-case 29:
+case 30:
 YY_RULE_SETUP
-#line 261 "./lex.l"
+#line 267 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '<-'\n");
@@ -1203,9 +1217,9 @@ YY_RULE_SETUP
                                             return ARROW_ASSIGN;
                                         }
 	YY_BREAK
-case 30:
+case 31:
 YY_RULE_SETUP
-#line 267 "./lex.l"
+#line 273 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found ':='\n");
@@ -1213,9 +1227,9 @@ YY_RULE_SETUP
                                             return EQUATION_ASSIGN;
                                         }
 	YY_BREAK
-case 31:
+case 32:
 YY_RULE_SETUP
-#line 273 "./lex.l"
+#line 279 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '~'\n");
@@ -1223,9 +1237,9 @@ YY_RULE_SETUP
                                             return TILDE_ASSIGN;
                                         }
 	YY_BREAK
-case 32:
+case 33:
 YY_RULE_SETUP
-#line 279 "./lex.l"
+#line 285 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '<<-'\n");
@@ -1233,9 +1247,9 @@ YY_RULE_SETUP
                                             return CONTROL_ASSIGN;
                                         }
 	YY_BREAK
-case 33:
+case 34:
 YY_RULE_SETUP
-#line 285 "./lex.l"
+#line 291 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '<-&'\n");
@@ -1243,9 +1257,9 @@ YY_RULE_SETUP
                                             return REFERENCE_ASSIGN;
                                         }
 	YY_BREAK
-case 34:
+case 35:
 YY_RULE_SETUP
-#line 291 "./lex.l"
+#line 297 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '+='\n");
@@ -1253,9 +1267,9 @@ YY_RULE_SETUP
                                             return ADDITION_ASSIGN;
                                         }
 	YY_BREAK
-case 35:
+case 36:
 YY_RULE_SETUP
-#line 297 "./lex.l"
+#line 303 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '-='\n");
@@ -1263,9 +1277,9 @@ YY_RULE_SETUP
                                             return SUBTRACTION_ASSIGN;
                                         }
 	YY_BREAK
-case 36:
+case 37:
 YY_RULE_SETUP
-#line 303 "./lex.l"
+#line 309 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '*='\n");
@@ -1273,9 +1287,9 @@ YY_RULE_SETUP
                                             return MULTIPLICATION_ASSIGN;
                                         }
 	YY_BREAK
-case 37:
+case 38:
 YY_RULE_SETUP
-#line 309 "./lex.l"
+#line 315 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '/='\n");
@@ -1283,9 +1297,9 @@ YY_RULE_SETUP
                                             return DIVISION_ASSIGN;
                                         }
 	YY_BREAK
-case 38:
+case 39:
 YY_RULE_SETUP
-#line 315 "./lex.l"
+#line 321 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '++'\n");
@@ -1293,9 +1307,9 @@ YY_RULE_SETUP
                                             return INCREMENT;
                                         }
 	YY_BREAK
-case 39:
+case 40:
 YY_RULE_SETUP
-#line 321 "./lex.l"
+#line 327 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '--'\n");
@@ -1303,9 +1317,9 @@ YY_RULE_SETUP
                                             return DECREMENT;
                                         }
 	YY_BREAK
-case 40:
+case 41:
 YY_RULE_SETUP
-#line 327 "./lex.l"
+#line 333 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '='\n");
@@ -1313,9 +1327,9 @@ YY_RULE_SETUP
                                             return EQUAL;
                                         }
 	YY_BREAK
-case 41:
+case 42:
 YY_RULE_SETUP
-#line 333 "./lex.l"
+#line 339 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '&'\n");
@@ -1323,9 +1337,9 @@ YY_RULE_SETUP
                                             return AND;
                                         }
 	YY_BREAK
-case 42:
+case 43:
 YY_RULE_SETUP
-#line 339 "./lex.l"
+#line 345 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '|'\n");
@@ -1333,9 +1347,9 @@ YY_RULE_SETUP
                                             return OR;
                                         }
 	YY_BREAK
-case 43:
+case 44:
 YY_RULE_SETUP
-#line 345 "./lex.l"
+#line 351 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '&&'\n");
@@ -1343,9 +1357,9 @@ YY_RULE_SETUP
                                             return AND;
                                         }
 	YY_BREAK
-case 44:
+case 45:
 YY_RULE_SETUP
-#line 351 "./lex.l"
+#line 357 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '||'\n");
@@ -1353,9 +1367,9 @@ YY_RULE_SETUP
                                             return OR;
                                         }
 	YY_BREAK
-case 45:
+case 46:
 YY_RULE_SETUP
-#line 357 "./lex.l"
+#line 363 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '>'\n");
@@ -1363,9 +1377,9 @@ YY_RULE_SETUP
                                             return GT;
                                         }
 	YY_BREAK
-case 46:
+case 47:
 YY_RULE_SETUP
-#line 363 "./lex.l"
+#line 369 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '>='\n");
@@ -1373,9 +1387,9 @@ YY_RULE_SETUP
                                             return GE;
                                         }
 	YY_BREAK
-case 47:
+case 48:
 YY_RULE_SETUP
-#line 369 "./lex.l"
+#line 375 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '<'\n");
@@ -1383,9 +1397,9 @@ YY_RULE_SETUP
                                             return LT;
                                         }
 	YY_BREAK
-case 48:
+case 49:
 YY_RULE_SETUP
-#line 375 "./lex.l"
+#line 381 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '<='\n");
@@ -1393,9 +1407,9 @@ YY_RULE_SETUP
                                             return LE;
                                         }
 	YY_BREAK
-case 49:
+case 50:
 YY_RULE_SETUP
-#line 381 "./lex.l"
+#line 387 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '=='\n");
@@ -1403,9 +1417,9 @@ YY_RULE_SETUP
                                             return EQ;
                                         }
 	YY_BREAK
-case 50:
+case 51:
 YY_RULE_SETUP
-#line 387 "./lex.l"
+#line 393 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '!='\n");
@@ -1413,9 +1427,9 @@ YY_RULE_SETUP
                                             return NE;
                                         }
 	YY_BREAK
-case 51:
+case 52:
 YY_RULE_SETUP
-#line 393 "./lex.l"
+#line 399 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found white space\n");
@@ -1423,10 +1437,10 @@ YY_RULE_SETUP
                                             /* Ignore white space */
                                         }
 	YY_BREAK
-case 52:
-/* rule 52 can match eol */
+case 53:
+/* rule 53 can match eol */
 YY_RULE_SETUP
-#line 399 "./lex.l"
+#line 405 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found newline\n");
@@ -1435,9 +1449,9 @@ YY_RULE_SETUP
                                             return yytext[0];
                                         }
 	YY_BREAK
-case 53:
+case 54:
 YY_RULE_SETUP
-#line 406 "./lex.l"
+#line 412 "./lex.l"
 {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found ';'\n");
@@ -1445,9 +1459,9 @@ YY_RULE_SETUP
                                             return yytext[0];
                                         }
 	YY_BREAK
-case 54:
+case 55:
 YY_RULE_SETUP
-#line 412 "./lex.l"
+#line 418 "./lex.l"
 {
                                             /* any character not matching existing rules */
                                             /* pass it onto the parser and let the parser handle it */
@@ -1457,12 +1471,12 @@ YY_RULE_SETUP
                                             return yytext[0];
                                         }
 	YY_BREAK
-case 55:
+case 56:
 YY_RULE_SETUP
-#line 420 "./lex.l"
+#line 426 "./lex.l"
 ECHO;
 	YY_BREAK
-#line 1466 "./lex.yy.cpp"
+#line 1480 "./lex.yy.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1754,7 +1768,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 173 )
+			if ( yy_current_state >= 181 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1782,11 +1796,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 173 )
+		if ( yy_current_state >= 181 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 172);
+	yy_is_jam = (yy_current_state == 180);
 
 	return yy_is_jam ? 0 : yy_current_state;
 }
@@ -2459,7 +2473,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 420 "./lex.l"
+#line 426 "./lex.l"
 
 
 

@@ -54,19 +54,14 @@ RevLanguage::MemberFunction<memberObjectType, retType>* RevLanguage::MemberFunct
 template <typename memberObjectType, typename retType>
 RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::MemberFunction<memberObjectType, retType>::execute( void )
 {
-    
-//    RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    
+        
     std::vector<const RevBayesCore::DagNode*> argNodes;
     for ( size_t i=0; i<args.size(); ++i)
     {
-        argNodes.push_back( this->args[0].getVariable()->getRevObject().getDagNode() );
+        argNodes.push_back( this->args[i].getVariable()->getRevObject().getDagNode() );
     }
     
     const RevBayesCore::TypedDagNode<typename memberObjectType::valueType>* o = theMemberObject->getDagNode();
-//    const typename memberObjectType::valueType &rbMemberObject = theMemberObject->getValue();
-//    o = dynamic_cast<const RevBayesCore::MemberObject<typename retType::valueType>* >( &rbMemberObject );
     if ( o == NULL )
     {
         throw RbException("Could not cast the member object.");

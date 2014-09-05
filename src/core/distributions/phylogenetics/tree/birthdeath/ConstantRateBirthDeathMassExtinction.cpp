@@ -13,11 +13,14 @@
 
 using namespace RevBayesCore;
 
-ConstantRateBirthDeathMassExtinction::ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
+ConstantRateBirthDeathMassExtinction::ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                      const TypedDagNode< std::vector<double> >* met, const TypedDagNode< std::vector<double> >* mep, 
-                                                     const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
-                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, r, ss, cdt, nTaxa, tn, c),
-speciation( s ), extinction( e ), massExtinctionTimes( met ), massExtinctionSurvivalProbabilities( mep )
+                                                     const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
+                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, ro, r, ss, cdt, tn, c),
+    speciation( s ),
+    extinction( e ),
+    massExtinctionTimes( met ),
+    massExtinctionSurvivalProbabilities( mep )
 {
 
     simulateTree();
@@ -103,12 +106,12 @@ double ConstantRateBirthDeathMassExtinction::rateIntegral(double t_low, double t
 
 
 
-std::vector<double> ConstantRateBirthDeathMassExtinction::simSpeciations(size_t n, double origin, double r) const {
+std::vector<double>* ConstantRateBirthDeathMassExtinction::simSpeciations(size_t n, double origin, double r) const {
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    std::vector<double> times = std::vector<double>(n, 0.0);
+    std::vector<double>* times = new std::vector<double>(n, 0.0);
     
     for (size_t i = 0; i < n; ++i) 
     {
@@ -121,12 +124,12 @@ std::vector<double> ConstantRateBirthDeathMassExtinction::simSpeciations(size_t 
     
         double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
 	
-        times[i] = t;
+        (*times)[i] = t;
     }
     
     
     // finally sort the times
-    std::sort(times.begin(), times.end());
+    std::sort(times->begin(), times->end());
     
     return times;
 }
@@ -163,7 +166,8 @@ void ConstantRateBirthDeathMassExtinction::swapParameter(const DagNode *oldP, co
     {
         massExtinctionTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
-    else if (oldP == massExtinctionSurvivalProbabilities) {
+    else if (oldP == massExtinctionSurvivalProbabilities)
+    {
         massExtinctionSurvivalProbabilities = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
     else

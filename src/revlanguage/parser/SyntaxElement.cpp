@@ -32,6 +32,16 @@ RevPtr<Variable> SyntaxElement::evaluateDynamicContent( Environment& env )
 
 
 /**
+ * Is the syntax element an assignment element?
+ * By default the answer is no.
+ */
+bool SyntaxElement::isAssignment( void ) const
+{
+    return false;
+}
+
+
+/**
  * Is the syntax element a constant expression?
  * By default a syntax element is not constant.
  */
@@ -42,10 +52,24 @@ bool SyntaxElement::isConstExpression( void ) const
 
 
 /**
- * Is the syntax element an assignment element?
- * By default the answer is no.
+ * Is the syntax element safe for use in a function
+ * (as opposed to a procedure)? Most elements are safe,
+ * so we return true by default.
  */
-bool SyntaxElement::isAssignment( void ) const
+bool SyntaxElement::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
+{
+    return true;
+}
+
+
+/**
+ * Does the syntax element retireve an external variable?
+ * This is a relevant question in the evaluation of whether
+ * the syntax tree is safe for use in a function (as opposed
+ * to a procedure). Most elements do not retrieve variables,
+ * so we return false by default.
+ */
+bool SyntaxElement::retrievesExternVar( const Environment& env, std::set<std::string>& localVars, bool inLHS ) const
 {
     return false;
 }

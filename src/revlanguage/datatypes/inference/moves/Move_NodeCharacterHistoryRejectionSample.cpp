@@ -32,6 +32,10 @@
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
+// to be removed once MH moves work
+#include "PathRejectionSampleMove.h"
+#include "StandardState.h"
+
 
 using namespace RevLanguage;
 
@@ -88,13 +92,15 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >(tree_tdn);
 
     // finally create the internal move object
-    RevBayesCore::Proposal *p = NULL;
-    if (mt == "std")
-        ;
-    else if (mt == "biogeo")
-        p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d);
-    
-    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
+//    RevBayesCore::Proposal *p = NULL;
+//    if (mt == "std")
+//        ;
+//    else if (mt == "biogeo")
+//        p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d);
+//    
+//    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
+    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, new RevBayesCore::BiogeographyNodeRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d), d, false, w);
+
 }
 
 
@@ -144,14 +150,15 @@ const MemberRules& Move_NodeCharacterHistoryRejectionSample::getMemberRules(void
     
     if ( !rulesSet )
     {
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", false, AbstractDiscreteCharacterData::getClassTypeSpec() ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", false, RateMap::getClassTypeSpec() ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", true, Probability::getClassTypeSpec() , new Probability(1.0) ) );
+        
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec()                     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
 //        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
-        std::vector<RlString> options;
-        options.push_back( RlString("std") );
-        options.push_back( RlString("biogeo") );
+        std::vector<std::string> options;
+        options.push_back( "std" );
+        options.push_back( "biogeo" );
         nodeChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options ) );
         
         /* Inherit weight from Move, put it after variable */

@@ -47,7 +47,7 @@ namespace RevBayesCore {
     class PathRejectionSampleProposal : public Proposal {
         
     public:
-        PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
+        PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
         PathRejectionSampleProposal( const PathRejectionSampleProposal& p );
         
         // Basic utility functions
@@ -92,6 +92,7 @@ namespace RevBayesCore {
         bool                                    fixNodeIndex;
         bool                                    sampleNodeIndex;
         bool                                    sampleSiteIndexSet;
+        bool                                    useTail;
         
         bool                                    printDebug;
         
@@ -108,14 +109,15 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
     node(nd),
     lambda(l),
     sampleNodeIndex(true),
-    sampleSiteIndexSet(true)
+    sampleSiteIndexSet(true),
+    useTail(ut)
 {
     nodes.insert(ctmc);
     nodes.insert(tau);
@@ -142,6 +144,7 @@ RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSamp
         lambda = m.lambda;
         sampleNodeIndex = m.sampleNodeIndex;
         sampleSiteIndexSet  = m.sampleSiteIndexSet;
+        useTail = m.useTail;
         
         numNodes =  m.numNodes;
         numCharacters = m.numCharacters;
@@ -214,14 +217,19 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         counts[i] = 0;
     fillStateCounts(currState, counts);
 
-//    const treeType& tree = tau->getValue();
     double branchLength = nd.getBranchLength();
-    if (nd.isRoot())
+    if (nd.isRoot() && useTail)
     {
-        return 0.0;
-        branchLength = 1000.0;
+        branchLength = nd.getAge() * 5;
     }
-    double currAge = (!nd.isRoot() ? nd.getParent().getAge() : 10e200);
+    else
+        return 0.0;
+
+    double currAge = 0.0;
+    if (nd.isRoot())
+        currAge = nd.getAge() + branchLength;
+    else
+        currAge = nd.getParent().getAge();
     
     // get sampling ratemap
     const RateMap& rm = qmap->getValue();
@@ -251,12 +259,10 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         t += dt;
         currAge -= dt * branchLength;
     }
+
     // lnL for final non-event
     double sr = rm.getSumOfRates(nd, currState, counts, currAge);
     lnP += -sr * (1.0 - t) * branchLength;
-    
-    if (nd.isRoot())
-        return 0.0;
     
     return lnP;
 }
@@ -315,11 +321,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     // get model parameters
 //    const treeType& tree = this->tau->getValue();
     double branchLength = node->getBranchLength();
-    if (node->isRoot())
+    if (node->isRoot() && useTail)
     {
-        return 0.0;
-        branchLength = 1000.0;//2*tree.getTreeLength();
+        branchLength = node->getAge() * 5;
     }
+    else
+        return 0.0;
     
     const RateMap& rm = qmap->getValue();
 
@@ -433,10 +440,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
 //        std::cout << *it << " ";
 //    std::cout << "\n";
     
-    if (node->isRoot())
-    {
-        return;
-    }
+//    if (node->isRoot())
+//    {
+//        return;
+//    }
     
     BranchHistory* bh = &p.getHistory(*node);
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
@@ -454,7 +461,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
     // flag node as dirty
     p.fireTreeChangeEvent(*node);
     
-    storedLnProb = computeLnProposal(*node, *bh);
+    double x = computeLnProposal(*node, *bh);
+    
+    storedLnProb = x;
     
 
 }

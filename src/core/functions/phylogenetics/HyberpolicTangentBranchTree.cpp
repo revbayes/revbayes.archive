@@ -6,13 +6,14 @@
  */
 
 #include "HyberpolicTangentBranchTree.h"
+#include <cstdlib>
 
 
 using namespace RevBayesCore;
 
 
 // constructor(s)
-HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariatePhyloProcess > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
+HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
 
     TypedFunction< std::vector< double > >( new std::vector< double >(p->getValue().getTimeTree()->getNumberOfNodes() -1, 0.0 ) ),
     tau(t), process(p), offset(o), traitindex(i) {
@@ -48,7 +49,7 @@ void HyperbolicTangentBranchTree::swapParameterInternal(const DagNode *oldP, con
     }
 
     if ( oldP == process ) {
-        process = static_cast< const TypedDagNode<MultivariatePhyloProcess> * >( newP );
+        process = static_cast< const TypedDagNode<MultivariateRealNodeContainer> * >( newP );
     }
 
     if (oldP == offset) {
@@ -84,7 +85,9 @@ void HyperbolicTangentBranchTree::recursiveUpdate(const RevBayesCore::TopologyNo
             
             double x1 = exp(process->getValue()[index][getTraitIndex()] + offset->getValue());
             double x2 = exp(process->getValue()[upindex][getTraitIndex()] + offset->getValue());
-            double y = 0.5 * (x1 + x2);
+            double y1 = x1 / (1+x1);
+            double y2 = x2 / (1+x2);
+            double y = 0.5 * (y1 + y2);
         
             // we store this val here
             (*value)[index] = y;

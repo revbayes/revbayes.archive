@@ -21,6 +21,7 @@ struct tabCompletionInfo{
 
 class RbClient : public EditorMachineObserver, public IRepoObserver {
 public:
+    void setTabCompletionInfo(const char *buf);
     
     void startInterpretor(IHelp *help, Options *options, Configuration *configuration);
     tabCompletionInfo getTabCompleteInfo(const char *buf);

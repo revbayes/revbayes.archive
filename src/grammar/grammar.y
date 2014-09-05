@@ -22,6 +22,7 @@
 #include "Environment.h"
 #include "Integer.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "Parser.h"
 #include "RlBoolean.h"
 #include "RlString.h"
@@ -97,7 +98,7 @@ Parser& parser = Parser::getParser();
 %type <intValue> INT RBNULL
 %type <boolValue> FALSE TRUE
 %type <string> identifier typeSpec optDims dimList 
-%type <syntaxVariable> variable
+%type <syntaxVariable> variable baseVariable var
 %type <syntaxFunctionCall> functionCall fxnCall
 %type <syntaxLabeledExpr> argument
 %type <syntaxFormal> formal
@@ -106,7 +107,7 @@ Parser& parser = Parser::getParser();
 %type <syntaxElement> arrowAssign tildeAssign equationAssign controlAssign referenceAssign
 %type <syntaxElement> additionAssign subtractionAssign multiplicationAssign divisionAssign
 %type <syntaxElement> declaration classDef memberDef
-%type <syntaxElement> functionDef
+%type <syntaxElement> functionDef procedureDef
 %type <syntaxElement> forStatement ifStatement whileStatement
 %type <syntaxElement> forCond cond returnStatement
 %type <syntaxElement> nextStatement breakStatement
@@ -118,8 +119,8 @@ Parser& parser = Parser::getParser();
 
 /* Tokens returned by the lexer and handled by the parser */
 %token REAL INT NAME STRING RBNULL FALSE TRUE 
-%token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
-%token MOD_CONST MOD_DYNAMIC MOD_STOCHASTIC MOD_DETERMINISTIC MOD_MUTABLE
+%token FUNCTION PROCEDURE CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
+%token MOD_CONST MOD_DYNAMIC MOD_STOCHASTIC MOD_DETERMINISTIC PROTECTED
 %token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN CONTROL_ASSIGN REFERENCE_ASSIGN
 %token ADDITION_ASSIGN SUBTRACTION_ASSIGN MULTIPLICATION_ASSIGN DIVISION_ASSIGN 
 %token DECREMENT INCREMENT
@@ -132,12 +133,12 @@ Parser& parser = Parser::getParser();
 %destructor { for (std::list<SyntaxLabeledExpr*>::iterator it=$$->begin(); it != $$->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ($$); } argumentList optArguments vectorList vector
 %destructor { for (std::list<SyntaxFormal*>::iterator it=$$->begin(); it != $$->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ($$); } formalList optFormals
 %destructor { delete ($$); } identifier typeSpec optDims dimList 
-%destructor { delete ($$); } variable functionCall fxnCall argument formal constant
+%destructor { delete ($$); } variable var baseVariable functionCall fxnCall argument formal constant
 %destructor { delete ($$); } statement expression stmt_or_expr 
 %destructor { delete ($$); } arrowAssign tildeAssign equationAssign controlAssign referenceAssign
 %destructor { delete ($$); } additionAssign subtractionAssign multiplicationAssign divisionAssign
 %destructor { delete ($$); } declaration classDef memberDef 
-%destructor { delete ($$); } functionDef 
+%destructor { delete ($$); } functionDef procedureDef 
 %destructor { delete ($$); } forStatement ifStatement whileStatement 
 %destructor { delete ($$); } forCond cond returnStatement
 %destructor { delete ($$); } nextStatement breakStatement
@@ -168,7 +169,7 @@ Parser& parser = Parser::getParser();
 %nonassoc   GT GE LT LE EQ NE
 %left       '+' '-'
 %left       '*' '/'
-%left       ':'
+%left       ':' '%'
 %right      DECREMENT INCREMENT
 %left       UMINUS UPLUS
 %right      '^'
@@ -246,6 +247,7 @@ prog    :       END_OF_INPUT
                     printf("Bison trying to execute statement or expression\n");
 #endif
                     int rv = parser.execute($1, *executionEnvironment);
+                    delete $1;
                     return rv;
                 }
         |       stmt_or_expr ';'
@@ -254,6 +256,7 @@ prog    :       END_OF_INPUT
                     printf("Bison trying to execute statement or expression\n");
 #endif
                     int rv =  parser.execute($1, *executionEnvironment);
+                    delete $1;
                     return rv;
                 }
         |       declaration '\n'
@@ -262,6 +265,7 @@ prog    :       END_OF_INPUT
                     printf("Bison trying to execute declaration\n");
 #endif
                     int rv =  parser.execute($1, *executionEnvironment);
+                    delete $1;
                     return rv;
                 }
         |       declaration ';'
@@ -270,6 +274,7 @@ prog    :       END_OF_INPUT
                     printf("Bison trying to execute declaration\n");
 #endif
                     int rv =  parser.execute($1, *executionEnvironment);
+                    delete $1;
                     return rv;
                 }
         |       '?' identifier '\n'
@@ -277,7 +282,7 @@ prog    :       END_OF_INPUT
 #ifdef DEBUG_BISON_FLEX
                     printf("Bison trying to get help for symbol\n");
 #endif
-                    int rv =  parser.help(*($2));
+                    int rv =  parser.help(*$2);
                     delete $2;
                     return rv;
                 }
@@ -295,7 +300,7 @@ prog    :       END_OF_INPUT
 #ifdef DEBUG_BISON_FLEX
                     printf("Bison trying to get help for function call\n");
 #endif
-                    int rv =  parser.help(*$2);
+                    int rv =  parser.help($2);
                     delete $2;
                     return rv;
                 }
@@ -304,7 +309,7 @@ prog    :       END_OF_INPUT
 #ifdef DEBUG_BISON_FLEX
                     printf("Bison trying to get help for function call\n");
 #endif
-                    int rv =  parser.help(*$2);
+                    int rv =  parser.help($2);
                     delete $2;
                     return rv;
                 }
@@ -347,6 +352,7 @@ expression  :   constant                    { $$ = $1; }
             |   expression '*' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, $1, $3); }
             |   expression '/' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, $1, $3); }
             |   expression '^' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, $1, $3); }
+            |   expression '%' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mod, $1, $3); }
 
             |   expression LT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, $1, $3); }
             |   expression LE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Le, $1, $3); }
@@ -457,7 +463,46 @@ divisionAssign  :   expression DIVISION_ASSIGN expression
                     }
                 ;
 
-variable    :   identifier optElements
+baseVariable    :   fxnCall optElements '.'
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting base variable (BASE_VAR, fxnCall) in syntax tree\n");
+#endif
+                    $$ = new SyntaxVariable($1, $2);
+                }
+                |   '(' expression ')' optElements '.'
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting base variable (BASE_VAR, expr) in syntax tree\n");
+#endif
+                    $$ = new SyntaxVariable($2, $4);
+                }
+                |   var '.'
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting base variable (BASE_VAR, namedVar) in syntax tree\n");
+#endif
+                    $$ = $1;
+                }
+                |   baseVariable fxnCall optElements '.'
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting base variable (BASE_VAR, fxnCall) in syntax tree\n");
+#endif
+                    $2->setBaseVariable($1);
+                    $$ = new SyntaxVariable($2, $3);
+                }
+                |   baseVariable var '.'
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting base variable (BASE_VAR, namedVar) in syntax tree\n");
+#endif
+                    $2->setBaseVariable($1);
+                    $$ = $2;
+                }
+                ;
+
+var             :   identifier optElements
                 {
 #ifdef DEBUG_BISON_FLEX
                     printf("Parser inserting variable (NAMED_VAR) in syntax tree\n");
@@ -465,37 +510,41 @@ variable    :   identifier optElements
                     $$ = new SyntaxVariable(*$1, $2);
                     delete $1;
                 }
-            |   fxnCall '[' expression ']' optElements
+                ;
+
+variable    :   var
+                {
+                    $$ = $1;
+                }
+            |   fxnCall elementList
                 {
 #ifdef DEBUG_BISON_FLEX
                     printf("Parser inserting variable (FUNCTION_VAR) in syntax tree\n");
 #endif
-                    $5->push_front($3);
-                    $$ = new SyntaxVariable($1, $5);
+                    $$ = new SyntaxVariable($1, $2);
                 }
-            |   '(' expression ')' '[' expression ']' optElements
+            |   '(' expression ')' elementList
                 {
 #ifdef DEBUG_BISON_FLEX
                     printf("Parser inserting variable (EXPRESSION_VAR) in syntax tree\n");
 #endif
-                    $7->push_front($5);
-                    $$ = new SyntaxVariable($2, $7);
+                    $$ = new SyntaxVariable($2, $4);
                 }
-            |   variable '.' identifier optElements
+            |   baseVariable var
                 {
 #ifdef DEBUG_BISON_FLEX
                     printf("Parser inserting member variable (NAMED_VAR) in syntax tree\n");
 #endif
-                    $$ = new SyntaxVariable($1, *$3, $4);
-                    delete $3;
+                    $2->setBaseVariable($1);
+                    $$ = $2;
                 }
-            |   variable '.' fxnCall '[' expression ']' optElements
+            |   baseVariable fxnCall elementList
                 {
 #ifdef DEBUG_BISON_FLEX
                     printf("Parser inserting member variable (FUNCTION_VAR) in syntax tree\n");
 #endif
-                    $7->push_front($5);
-                    $$ = new SyntaxVariable($1, $3, $7);
+                    $2->setBaseVariable($1);
+                    $$ = new SyntaxVariable($2, $3);
                 }
             ;
 
@@ -523,13 +572,13 @@ functionCall    :   fxnCall
 #endif
                         $$ = $1;
                     }
-                |   variable '.' fxnCall 
+                |   baseVariable fxnCall 
                     {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting member call in syntax tree\n");
 #endif
-                        $3->setBaseVariable($1);
-                        $$ = $3;
+                        $2->setBaseVariable($1);
+                        $$ = $2;
                     }
                 ;
 
@@ -574,6 +623,28 @@ functionDef :   FUNCTION identifier '(' optFormals ')' stmts
 #endif
                     $2->append(*$3);
                     $$ = new SyntaxFunctionDef(*$2, *$4, $6, $8);
+                    delete $2;
+                    delete $3;
+                    delete $4;
+                }
+            ;
+
+procedureDef :   PROCEDURE identifier '(' optFormals ')' stmts
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting procedure definition in syntax tree\n");
+#endif
+                    $$ = new SyntaxFunctionDef("", *$2, $4, $6, true);
+                    delete $2;
+                }
+ 
+            |   PROCEDURE identifier optDims identifier '(' optFormals ')' stmts
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting typed procedure definition in syntax tree\n");
+#endif
+                    $2->append(*$3);
+                    $$ = new SyntaxFunctionDef(*$2, *$4, $6, $8, true);
                     delete $2;
                     delete $3;
                     delete $4;
@@ -629,7 +700,6 @@ typeSpec    :   identifier optDims                      { $1->append(*($2)); del
             |   MOD_DYNAMIC identifier optDims          { $2->append(*($3)); $2->insert(0, "dynamic ");         delete $3; $$ = $2; }
             |   MOD_STOCHASTIC identifier optDims       { $2->append(*($3)); $2->insert(0, "stochastic ");      delete $3; $$ = $2; }
             |   MOD_DETERMINISTIC identifier optDims    { $2->append(*($3)); $2->insert(0, "deterministic ");   delete $3; $$ = $2; }
-            |   MOD_MUTABLE identifier optDims          { $2->append(*($3)); $2->insert(0, "mutable ");         delete $3; $$ = $2; }
             ;
 
 optDims     :   /* empty */                 { $$ = new std::string(""); }
@@ -671,6 +741,7 @@ stmt_or_expr    :   statement           { $$ = $1; }
 
 declaration     :   classDef            { $$ = $1; }
                 |   functionDef         { $$ = $1; }
+                |   procedureDef        { $$ = $1; }
                 |   identifier optElements identifier
                     {
 #ifdef DEBUG_BISON_FLEX
@@ -690,8 +761,10 @@ memberDefs      :   /* empty */                 { $$ = new std::list<SyntaxEleme
                 |   memberDefs '\n'             { $$ = $1; }
                 ;
 
-memberDef   :   formal      { $$ = $1; }
-            |   functionDef { $$ = $1; }
+memberDef   :   formal              { $$ = $1; }
+            |   PROTECTED formal    { $2->setIsProtected(); $$ = $2; }
+            |   functionDef         { $$ = $1; }
+            |   procedureDef        { $$ = $1; }
             ;
 
 classDef    :   CLASS identifier ':' identifier '{' memberDefs '}'
@@ -826,7 +899,14 @@ constant    :   FALSE
                     real->setPrecision(prec);
                     real->setScientific(sci);
                     */
-                    if ($1 >= 0.0) {
+                    
+                    if ($1 >= 0.0 && $1 <= 1.0) {
+                        #ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting RealPos constant in syntax tree \n");
+                        #endif
+                        $$ = new SyntaxConstant(new Probability($1) );
+                    }
+                    else if ($1 >= 0.0) {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting RealPos constant in syntax tree \n");
 #endif

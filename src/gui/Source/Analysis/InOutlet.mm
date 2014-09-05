@@ -20,11 +20,6 @@
     return NO;
 }
 
-- (void)dealloc {
-
-    [super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
     [aCoder encodePoint:position   forKey:@"position"];
@@ -106,8 +101,7 @@
 
 - (id)init {
 
-	[self initWithTool:nil];
-	return self;
+	return [self initWithTool:nil];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {

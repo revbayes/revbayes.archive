@@ -82,6 +82,26 @@ const TypeSpec& Complex::getClassTypeSpec(void) {
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& Complex::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& Complex::getTypeSpec( void ) const {
     
@@ -100,7 +120,7 @@ void Complex::printValue(std::ostream &o) const {
     std::fixed(o);
     o.precision( 3 );
     
-    o << dagNode->getValue();
+    dagNode->printValue( o, "" );
 
     o.setf( previousFlags );
     o.precision( previousPrecision );

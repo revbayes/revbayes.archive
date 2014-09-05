@@ -10,47 +10,53 @@
 
 using namespace RevLanguage;
 
-AbstractCharacterData::AbstractCharacterData(void) : ModelObject<RevBayesCore::AbstractCharacterData>(),
-    methods()
+AbstractCharacterData::AbstractCharacterData(void) :
+    ModelObject<RevBayesCore::AbstractCharacterData>()
 {
-    
-    initMethods();
-    
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : ModelObject<RevBayesCore::AbstractCharacterData>( v ),
-    methods()
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) :
+    ModelObject<RevBayesCore::AbstractCharacterData>( v )
 {
-    
-    initMethods();
-    
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : ModelObject<RevBayesCore::AbstractCharacterData>( d ),
-    methods()
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) :
+    ModelObject<RevBayesCore::AbstractCharacterData>( d )
 {
-    
-    initMethods();
-    
 }
 
 
 
-AbstractCharacterData& AbstractCharacterData::add(const RevLanguage::AbstractCharacterData &d)
+AbstractCharacterData* AbstractCharacterData::add(const RevObject &d) const
 {
-    dagNode->getValue().add( d.getValue() );
+    const AbstractCharacterData* tmp = dynamic_cast<const AbstractCharacterData*>( &d );
+    if ( tmp != NULL )
+    {
+        return add( *tmp );
+    }
+    else
+    {
+        throw RbException("Cannot add an object of type '" + d.getType() + "' to a character data object.");
+    }
+}
+
+
+
+AbstractCharacterData* AbstractCharacterData::add(const AbstractCharacterData &d) const
+{
+    AbstractCharacterData* cloneObj = clone();
+    cloneObj->getDagNode()->getValue().add( d.getValue() );
     
-    // return a reference to myself
-    return *this;
+    // return the copy
+    return cloneObj;
 }
 
 
 
 AbstractCharacterData* AbstractCharacterData::clone() const
 {
-    
     return new AbstractCharacterData( *this );
 }
 
@@ -99,10 +105,16 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
             size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
             for (size_t i = 0; i < nChars; i++)
             {
+                
                 if (i % 3 == (n-1))
+                {
                     v.includeCharacter(i);
+                }
                 else
+                {
                     v.excludeCharacter(i);
+                }
+                
             }
         }
         
@@ -111,18 +123,26 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
         {
             const ModelVector<Natural>& x = static_cast<const ModelVector<Natural>&>( argument );
             if (x.size() == 0)
+            {
                 return NULL;
-          
+            }
+            
             for (size_t i = 0; i < nChars; i++)
+            {
                 v.excludeCharacter(i);
+            }
             
             for (size_t i = 0; i < x.size(); i++)
             {
                 size_t n = x[i];
                 for (size_t j = 0; j < nChars; j++)
                 {
+                    
                     if (j % 3 == (n-1))
+                    {
                         v.includeCharacter(j);
+                    }
+                    
                 }
             }
         }
@@ -167,7 +187,10 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
         size_t nChars = v.getNumberOfCharacters();
         
         for (size_t i = 0; i < nChars; i++)
+        {
             v.includeCharacter(i);
+        }
+        
         return NULL;
         
     }
@@ -194,9 +217,13 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                 {
                     
                     if (this->dagNode->getValue().isHomologyEstablished() == true)
+                    {
                         numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
+                    }
                     else
+                    {
                         numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
+                    }
                     
                 }
             }
@@ -223,9 +250,13 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                 {
                     
                     if (this->dagNode->getValue().isHomologyEstablished() == true)
+                    {
                         numChar = new Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() );
+                    }
                     else
+                    {
                         numChar = new Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) );
+                    }
                     
                 }
                 return new Variable( numChar );
@@ -244,6 +275,43 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
         
         return new Variable( new Natural(n) );
     }
+    else if (name == "removeTaxa" || name == "removeTaxon" )
+    {
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        if ( argument.isTypeSpec( RlString::getClassTypeSpec() ) )
+        {
+            std::string n = std::string( static_cast<const RlString&>( argument ).getValue() );
+            dagNode->getValue().excludeTaxon( n );
+        }
+        else if ( argument.isTypeSpec( ModelVector<RlString>::getClassTypeSpec() ) )
+        {
+            const ModelVector<RlString>& x = static_cast<const ModelVector<RlString>&>( argument );
+            RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
+            for ( size_t i=0; i<x.size(); i++ )
+            {
+                std::string n = std::string( static_cast<const RlString&>( x[i] ).getValue() );
+                v.excludeTaxon( n );
+            }
+        }
+        return NULL;
+    }
+    else if (name == "setTaxonName")
+    {
+        const RevObject& current = args[0].getVariable()->getRevObject();
+        if ( current.isTypeSpec( RlString::getClassTypeSpec() ) )
+        {
+            std::string n = std::string( static_cast<const RlString&>( current ).getValue() );
+            const RevObject& newName = args[1].getVariable()->getRevObject();
+            if ( newName.isTypeSpec( RlString::getClassTypeSpec() ) )
+            {
+                std::string name = std::string( static_cast<const RlString&>( newName ).getValue() );
+                dagNode->getValue().setTaxonName( n ,name );
+               // std::cout << "new name: "<< dagNode->getValue().getTaxonData( n ).getTaxonName() << std::endl;
+            }
+        }
+        return NULL;
+    }
+
     //    else if (name == "nexcludedtaxa")
     //    {
     //        int n = (int)deletedTaxa.size();
@@ -331,7 +399,9 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                 
                 std::cout << s;
                 if ( (j+1) % 100 == 0 && (j+1) != nc )
+                {
                     std::cout << std::endl << "   ";
+                }
                 
             }
             
@@ -352,7 +422,8 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
 
 
 /* Get Rev type of object */
-const std::string& AbstractCharacterData::getClassType(void) { 
+const std::string& AbstractCharacterData::getClassType(void)
+{
     
     static std::string revType = "AbstractCharacterData";
     
@@ -360,20 +431,13 @@ const std::string& AbstractCharacterData::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& AbstractCharacterData::getClassTypeSpec(void) { 
+const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
-
-
-/* Get method specifications */
-const MethodTable& AbstractCharacterData::getMethods(void) const {
-    
-    return methods;
-}
-
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
@@ -385,7 +449,31 @@ const TypeSpec& AbstractCharacterData::getTypeSpec(void) const {
 
 
 /* Get method specifications */
-void AbstractCharacterData::initMethods(void) {
+const MethodTable& AbstractCharacterData::getMethods(void) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( methodsSet == false )
+    {
+        // Make methods
+        myMethods = makeMethods();
+        
+        // Set flag
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
+/**
+ * We make the methods that belong to this abstract class here, to
+ * serve derived classes.
+ */
+MethodTable AbstractCharacterData::makeMethods( void ) const
+{
+    MethodTable methods;
     
     ArgumentRules* ncharArgRules               = new ArgumentRules();
     ArgumentRules* ncharArgRules2              = new ArgumentRules();
@@ -412,15 +500,22 @@ void AbstractCharacterData::initMethods(void) {
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
-    
+    ArgumentRules* removeTaxaArgRules          = new ArgumentRules();
+    ArgumentRules* removeTaxaArgRules2         = new ArgumentRules();
+    ArgumentRules* setTaxonNameArgRules        = new ArgumentRules();
 
-    ncharArgRules2->push_back(             new ArgumentRule("taxon_index", true, Natural::getClassTypeSpec()         ) );
-    excludecharArgRules->push_back(        new ArgumentRule(      "", true, Natural::getClassTypeSpec()              ) );
-    excludecharArgRules2->push_back(       new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
-    includecharArgRules->push_back(        new ArgumentRule(      "", true, Natural::getClassTypeSpec()              ) );
-    includecharArgRules2->push_back(       new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(      "", true, Natural::getClassTypeSpec()       ) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
+
+    ncharArgRules2->push_back(             new ArgumentRule("taxon_index", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    excludecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    excludecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    includecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    includecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    removeTaxaArgRules->push_back(         new ArgumentRule(""           , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
+    removeTaxaArgRules2->push_back(        new ArgumentRule(""           , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    setTaxonNameArgRules->push_back(       new ArgumentRule("current"    , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
+    setTaxonNameArgRules->push_back(       new ArgumentRule("new"        , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
 
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
@@ -449,15 +544,20 @@ void AbstractCharacterData::initMethods(void) {
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-    
-    // add method for call "size" as a function
+    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
+    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
+    methods.addFunction("removeTaxon",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
+    methods.addFunction("removeTaxon",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
+    methods.addFunction("setTaxonName",        new MemberProcedure(RlUtils::Void,        setTaxonNameArgRules       ) );
+
+    // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
         
-    // necessary call for proper inheritance
-    methods.setParentTable( &ModelObject<RevBayesCore::AbstractCharacterData>::getMethods() );
-    
-    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::AbstractCharacterData>::makeMethods() );
+
+    return methods;
 }
 
 

@@ -51,6 +51,8 @@ namespace RevLanguage {
         
         // Regular functions
         RevPtr<Variable>            evaluateContent(Environment& env);                                  //!< Get semantic value
+        bool                        isFunctionSafe(const Environment&       env,
+                                                   std::set<std::string>&   localVars) const;           //!< Is this element safe in a function?
         
     protected:
         SyntaxElement*              lhsExpression;                                                      //!< The lhs expression

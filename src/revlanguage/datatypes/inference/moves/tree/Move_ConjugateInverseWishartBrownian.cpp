@@ -13,11 +13,13 @@
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RevObject.h"
-#include "RlMultivariatePhyloProcess.h"
+#include "RlMultivariateRealNodeValTree.h"
 #include "RealSymmetricMatrix.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "Natural.h"
+#include "TimeTree.h"
+#include "RlTimeTree.h"
 
 
 using namespace RevLanguage;
@@ -39,16 +41,19 @@ void Move_ConjugateInverseWishartBrownian::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> *sig = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::MultivariatePhyloProcess> *proc = static_cast<const MultivariatePhyloProcess &>( process->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> *sig = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *proc = static_cast<const MultivariateRealNodeValTree &>( process->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double> *kap = static_cast<const RealPos &>( kappa->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int> *deg = static_cast<const Natural &>( df->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tree = static_cast<const TimeTree &>( tau->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix> *s = static_cast<RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix> *>( sig );
-    RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *>( proc );
+    RevBayesCore::StochasticNode<RevBayesCore::MatrixRealSymmetric> *s = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixRealSymmetric> *>( sig );
+    RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *>( proc );
     RevBayesCore::StochasticNode<double> *k = static_cast<RevBayesCore::StochasticNode<double> *>( kap );
     RevBayesCore::StochasticNode<int> *d = static_cast<RevBayesCore::StochasticNode<int> *>( deg );
+//    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tree );
        
+//    value = new RevBayesCore::ConjugateInverseWishartBrownianMove(s, p, t, k, d, w);
     value = new RevBayesCore::ConjugateInverseWishartBrownianMove(s, p, k, d, w);
     
 }
@@ -71,25 +76,29 @@ const TypeSpec& Move_ConjugateInverseWishartBrownian::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ConjugateInverseWishartBrownian::getMemberRules(void) const {
+const MemberRules& Move_ConjugateInverseWishartBrownian::getMemberRules(void) const
+{
     
-    static MemberRules nniMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "sigma", false, RealSymmetricMatrix::getClassTypeSpec() ) );        
-        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariatePhyloProcess::getClassTypeSpec() ) );        
-        nniMemberRules.push_back( new ArgumentRule( "kappa", false, RealPos::getClassTypeSpec() ) );        
-        nniMemberRules.push_back( new ArgumentRule( "df", false, Natural::getClassTypeSpec() ) );        
+    if ( !rulesSet )
+    {
+        
+        memberRules.push_back( new ArgumentRule( "sigma"  , RealSymmetricMatrix::getClassTypeSpec()        , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "process", MultivariateRealNodeValTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+//        nniMemberRules.push_back( new ArgumentRule( "tau", false, TimeTree::getClassTypeSpec() ) );        
+        memberRules.push_back( new ArgumentRule( "kappa"  , RealPos::getClassTypeSpec()                    , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "df"     , Natural::getClassTypeSpec()                    , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return nniMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */
@@ -111,18 +120,28 @@ void Move_ConjugateInverseWishartBrownian::printValue(std::ostream &o) const {
     else {
         o << "?";
     }
+    o << ",";
     if (process != NULL) {
         o << process->getName();
     }
     else {
         o << "?";
     }
+    o << ",";
+    if (process != NULL) {
+        o << process->getName();
+    }
+    else {
+        o << "?";
+    }
+    o << ",";
     if (kappa != NULL) {
         o << kappa->getName();
     }
     else {
         o << "?";
     }
+    o << ",";
     if (df != NULL) {
         o << df->getName();
     }
@@ -148,6 +167,9 @@ void Move_ConjugateInverseWishartBrownian::setConstMemberVariable(const std::str
     else if ( name == "df" ) {
         df = var;
     }
+//    else if ( name == "tau" ) {
+//        tau = var;
+//    }
     else {
         Move::setConstMemberVariable(name, var);
     }

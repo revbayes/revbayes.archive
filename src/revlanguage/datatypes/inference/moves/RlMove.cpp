@@ -47,8 +47,9 @@ const MemberRules& Move::getMemberRules(void) const {
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        moveMemberRules.push_back( new ArgumentRule( "weight", false, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
+    if ( !rulesSet )
+    {
+        moveMemberRules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
         
         /* Inherit variables from WorkspaceObject, put them last */
         const MemberRules& inheritedRules = WorkspaceObject<RevBayesCore::Move>::getMemberRules();

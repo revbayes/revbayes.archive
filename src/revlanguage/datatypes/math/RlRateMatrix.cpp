@@ -82,32 +82,22 @@ const TypeSpec& RateMatrix::getClassTypeSpec(void) {
 }
 
 
-/** Get the methods for this vector class */
-/* Get method specifications */
-const MethodTable& RateMatrix::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RateMatrix::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable(); 
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-        // add method for call "x[]" as a function
-        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
-        
-        
-        // add method for call "x[]" as a function
-        ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::RateMatrix>::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
 
 
@@ -116,5 +106,27 @@ const TypeSpec& RateMatrix::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
+}
+
+
+/** Make member methods for this class */
+MethodTable RateMatrix::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+    
+    // add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+    
+    
+    // add method for call "x[]" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::RateMatrix>::makeMethods() );
+    
+    return methods;
 }
 

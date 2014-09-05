@@ -17,7 +17,6 @@
 #include "RlUtils.h"
 #include "TypeSpec.h"
 #include "RlUserInterface.h"
-#include "Workspace.h"
 
 #include <fstream>
 
@@ -37,11 +36,22 @@ Func_license* Func_license::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_license::execute( void ) {
-    
-    
+RevPtr<Variable> Func_license::execute( void )
+{
     RBOUT( "\n" );
-    RBOUT( "License info coming soon..." );
+    RBOUT( "RevBayes license\n" );
+    RBOUT( "================\n" );
+    RBOUT( "\n" );
+    RBOUT( "This program is free software: you can redistribute it and/or modify\n" );
+    RBOUT( "it under the terms of the GNU General Public License as published by\n" );
+    RBOUT( "the Free Software Foundation, either version 3 of the License, or\n" );
+    RBOUT( "(at your option) any later version.\n" );
+    RBOUT( "\n" );
+    RBOUT( "This program is distributed in the hope that it will be useful,\n" );
+    RBOUT( "but WITHOUT ANY WARRANTY; without even the implied warranty of\n" );
+    RBOUT( "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" );
+    RBOUT( "GNU General Public License (http://www.gnu.org/licenses/) for more\n" );
+    RBOUT( "details.\n" );
     RBOUT( "\n" );
     
     return NULL;
@@ -56,7 +66,7 @@ const ArgumentRules& Func_license::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "all", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "all", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     

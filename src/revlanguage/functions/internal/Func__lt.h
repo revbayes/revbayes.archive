@@ -94,10 +94,11 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__lt<leftValType,rightValType
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "", true, leftValType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "", true, rightValType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

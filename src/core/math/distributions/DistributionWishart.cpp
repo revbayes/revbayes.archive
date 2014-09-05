@@ -30,7 +30,7 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::Wishart::pdf(const PrecisionMatrix &omega0, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::Wishart::pdf(const MatrixRealSymmetric &omega0, size_t df, const MatrixRealSymmetric &z) {
 	
     return exp(lnPdf(omega0,df,z));
 }
@@ -48,7 +48,7 @@ double RbStatistics::Wishart::pdf(const PrecisionMatrix &omega0, size_t df, cons
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Wishart::lnPdf(const PrecisionMatrix &omega0, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::Wishart::lnPdf(const MatrixRealSymmetric &omega0, size_t df, const MatrixRealSymmetric &z) {
     
     omega0.update();
     z.update();
@@ -89,12 +89,12 @@ double RbStatistics::Wishart::lnPdf(const PrecisionMatrix &omega0, size_t df, co
  * \return Returns a vector containing the Wishart random variable.
  * \throws Does not throw an error.
  */
-PrecisionMatrix RbStatistics::Wishart::rv(const PrecisionMatrix &omega0, size_t df, RandomNumberGenerator& rng) {
+MatrixRealSymmetric RbStatistics::Wishart::rv(const MatrixRealSymmetric &omega0, size_t df, RandomNumberGenerator& rng) {
 
     omega0.update();
     
     size_t dim = omega0.getDim();
-    PrecisionMatrix z(dim);
+    MatrixRealSymmetric z(dim);
     std::vector<double> tmp(dim);
     
     for (size_t k=0; k<df; k++)   {
@@ -121,7 +121,7 @@ PrecisionMatrix RbStatistics::Wishart::rv(const PrecisionMatrix &omega0, size_t 
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::Wishart::pdf(double kappa, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::Wishart::pdf(double kappa, size_t df, const MatrixRealSymmetric &z) {
 	
     return exp(lnPdf(kappa,df,z));
 }
@@ -143,7 +143,7 @@ double RbStatistics::Wishart::pdf(double kappa, size_t df, const PrecisionMatrix
 // this log density is only up to a normalization factor that *does* depend on df
 // df is therefore assumed to be constant throughout
 
-double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixRealSymmetric &z) {
 
     
     z.update();
@@ -180,9 +180,9 @@ double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const PrecisionMatr
  * \return Returns a vector containing the Wishart random variable.
  * \throws Does not throw an error.
  */
-PrecisionMatrix RbStatistics::Wishart::rv(double kappa, size_t dim, size_t df, RandomNumberGenerator& rng) {
+MatrixRealSymmetric RbStatistics::Wishart::rv(double kappa, size_t dim, size_t df, RandomNumberGenerator& rng) {
         
-    PrecisionMatrix z(dim);
+    MatrixRealSymmetric z(dim);
     std::vector<double> tmp(dim);
 
     double sk = sqrt(kappa);

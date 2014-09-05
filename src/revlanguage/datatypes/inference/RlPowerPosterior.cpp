@@ -44,6 +44,8 @@ void PowerPosterior::constructInternalObject( void ) {
     const WorkspaceVector<Move>&                rlmvs   = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() );
     RevBayesCore::RbVector<RevBayesCore::Move>  mvs     = rlmvs.getVectorRbPointer();
     const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    const double                                alpha   = static_cast<const RealPos &>( alphaVal->getRevObject() ).getValue();
+    const int                                   sf      = static_cast<const Natural &>( sampFreq->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
     
@@ -52,27 +54,18 @@ void PowerPosterior::constructInternalObject( void ) {
     {
         beta = static_cast<const ModelVector<RealPos> &>( powers->getRevObject() ).getValue();
     }
-    else if( cats->getRevObject() != RevNullObject::getInstance() )
+    else
     {
         int k = static_cast<const Natural &>( cats->getRevObject() ).getValue();
         for (int i = k; i >= 0; --i)
         {
-            double b = RevBayesCore::RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
-            beta.push_back( b );
-        }
-    }
-    else
-    {
-        int k     = 100;
-        for (int i = k; i >= 0; --i)
-        {
-            double b = RevBayesCore::RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
+            double b = RevBayesCore::RbStatistics::Beta::quantile(alpha,1.0,i / double(k));
             beta.push_back( b );
         }
     }
     
     value->setPowers( beta );
-    value->setSampleFreq( 100 );
+    value->setSampleFreq( sf );
 }
 
 
@@ -120,21 +113,24 @@ const TypeSpec& PowerPosterior::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& PowerPosterior::getMemberRules(void) const {
     
-    static MemberRules modelMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("powers", true, ModelVector<RealPos>::getClassTypeSpec(), NULL ) );
-        modelMemberRules.push_back( new ArgumentRule("cats", true, Natural::getClassTypeSpec(), NULL ) );
+        
+        memberRules.push_back( new ArgumentRule("model"      , Model::getClassTypeSpec()                , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("moves"      , WorkspaceVector<Move>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("filename"   , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("powers"     , ModelVector<RealPos>::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule("cats"       , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
+        memberRules.push_back( new ArgumentRule("alpha"      , RealPos::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.3) ) );
+        memberRules.push_back( new ArgumentRule("sample_freq", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
         
         rulesSet = true;
     }
     
-    return modelMemberRules;
+    return memberRules;
 }
 
 
@@ -146,12 +142,12 @@ const MethodTable& PowerPosterior::getMethods(void) const {
     
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
-        runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
+        runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
-        burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
+        burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         
@@ -201,6 +197,14 @@ void PowerPosterior::setConstMemberVariable(const std::string& name, const RevPt
     else if ( name == "powers")
     {
         powers = var;
+    }
+    else if ( name == "alpha")
+    {
+        alphaVal = var;
+    }
+    else if ( name == "sample_freq")
+    {
+        sampFreq = var;
     }
     else
     {

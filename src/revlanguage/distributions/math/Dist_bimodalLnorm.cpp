@@ -107,11 +107,12 @@ const MemberRules& Dist_bimodalLnorm::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distNormMemberRules.push_back( new ArgumentRule( "mean1", true, Real::getClassTypeSpec()    ) );
-        distNormMemberRules.push_back( new ArgumentRule( "mean2", true, Real::getClassTypeSpec()    ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd1"  , true, RealPos::getClassTypeSpec() ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd2"  , true, RealPos::getClassTypeSpec() ) );
-        distNormMemberRules.push_back( new ArgumentRule( "p"    , true, Probability::getClassTypeSpec() ) );
+        
+        distNormMemberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distNormMemberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distNormMemberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

@@ -24,7 +24,6 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
-#include "Workspace.h"
 
 #include <fstream>
 
@@ -53,14 +52,16 @@ RevPtr<Variable> Func_type::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_type::getArgumentRules( void ) const {
+const ArgumentRules& Func_type::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, RevObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", RevObject::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

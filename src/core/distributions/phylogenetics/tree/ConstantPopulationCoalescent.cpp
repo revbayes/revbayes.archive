@@ -14,21 +14,31 @@
 
 using namespace RevBayesCore;
 
-ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double> *N, size_t nTaxa, 
-                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( NULL ), constraints( c ), 
-Ne( N ), numTaxa( nTaxa ), taxonNames( tn ) {
-    
+ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double>       *N,
+                                                           size_t                           nTaxa,
+                                                           const std::vector<std::string>   &tn,
+                                                           const std::vector<Clade>         &c) :
+    TypedDistribution<TimeTree>( NULL ),
+    constraints( c ),
+    Ne( N ),
+    numTaxa( nTaxa ),
+    taxonNames( tn )
+{
     double lnFact = RbMath::lnFactorial( int(nTaxa) );
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     
     simulateTree();
-    
 }
 
 
 
-ConstantPopulationCoalescent::ConstantPopulationCoalescent(const ConstantPopulationCoalescent &v) : TypedDistribution<TimeTree>( v ), Ne( v.Ne ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ) {
+ConstantPopulationCoalescent::ConstantPopulationCoalescent(const ConstantPopulationCoalescent &v) :
+    TypedDistribution<TimeTree>( v ),
+    Ne( v.Ne ),
+    numTaxa( v.numTaxa ),
+    taxonNames( v.taxonNames ),
+    logTreeTopologyProb( v.logTreeTopologyProb ) {
 }
 
 

@@ -95,6 +95,7 @@ MonteCarloSampler::~MonteCarloSampler(void)
 }
 
 
+/** Run burnin and autotune */
 void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
     
     // Initialize objects needed by chain
@@ -109,32 +110,50 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
         movesPerIteration += it->getUpdateWeight();
     }
     
-    std::cout << "Running Monte Carlo Sampler while performing " << movesPerIteration << " proposals per iteration." << std::endl;
+    /* Let user know what we are doing */
+    std::cout << "\nRunning MCMC burnin simulation for " << generations << " iterations" << std::endl;
     
-    size_t printInterval = size_t( round( fmax(1,generations/20.0) ) );
-    
+    if ( scheduleType == "single" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
+        std::cout << "single move picked randomly per iteration" << std::endl;
+    }
+    else if ( scheduleType == "random" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+    }
+    else if ( scheduleType == "sequential" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+    }
+
+    // Print progress bar (68 characters wide)
     if (chainActive)
     {
-        std::cout << "burning in the chain ..." << std::endl;
-        std::cout << "0--------25--------50--------75--------100" << std::endl;
-        std::cout << "*";
+        std::cout << std::endl;
+        std::cout << "Progress:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
         std::cout.flush();
     }
     
     // Run the chain
+    size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        
-        if ( k % printInterval == 0 )
+        size_t progress = 68 * (double) k / (double) generations;
+        if ( progress > numStars )
         {
-            std::cout << "**";
+            for ( ;  numStars < progress; ++numStars )
+                std::cout << "*";
             std::cout.flush();
         }
         
         nextCycle(false);
         
         // check for autotuning
-        if ( k % tuningInterval == 0 )
+        if ( k % tuningInterval == 0 && k != generations )
         {
             
             schedule->tune();
@@ -233,7 +252,8 @@ void MonteCarloSampler::getOrderedStochasticNodes(const DagNode* dagNode,  std::
     return;
 }
 
-void MonteCarloSampler::initializeChain( void ) {
+void MonteCarloSampler::initializeChain( bool priorOnly )
+{
     
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
     std::vector<DagNode *> orderedStochNodes;
@@ -252,6 +272,7 @@ void MonteCarloSampler::initializeChain( void ) {
     // first we touch all nodes so that the likelihood is dirty
     for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
     {
+        (*i)->setPriorOnly( priorOnly );
         (*i)->touch();
     }
     
@@ -338,7 +359,9 @@ void MonteCarloSampler::initializeChain( void ) {
         std::stringstream msg;
         msg << "Unable to find a starting state with computable probability";
         if ( numTries > 1 )
+        {
             msg << " after " << numTries << " tries";
+        }
         throw RbException( msg.str() );
         
     }
@@ -390,7 +413,12 @@ void MonteCarloSampler::monitor(unsigned long g)
 
 
 
-unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
+
+
+
+
+unsigned long MonteCarloSampler::nextCycle(bool advanceCycle)
+{
     
 #ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
@@ -399,6 +427,7 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++)
     {
+        
 #ifdef DEBUG_MCMC
         double oldLnProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
@@ -409,24 +438,58 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
         
         // Get the move
         Move& theMove = schedule->nextMove( generation );
+        
+#ifdef DEBUG_MCMC
+#ifdef DEBUG_MCMC_DETAILS
+        std::cerr << "\nPerforming move " << theMove.getMoveName() << " on " << ( *theMove.getDagNodes().begin() )->getName() << std::endl;
+        
+        std::cerr << "\nValues before move " << std::endl << std::endl;
+        
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            if ( !(*it)->isConstant() )
+            {
+                std::cerr << (*it)->getName() << " <" << (*it) << "> :" << std::endl;
+                (*it)->printValue( std::cerr, ", " );
+                std::cerr << std::endl << std::endl;
+            }
+        }
+#endif
+#endif
+        
+        // Perform the move
         theMove.perform( chainHeat, false);
         
 #ifdef DEBUG_MCMC
+#ifdef DEBUG_MCMC_DETAILS
+        std::cerr << "\nValues after move " << std::endl << std::endl;
+        
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            if ( !(*it)->isConstant() )
+            {
+                std::cerr << (*it)->getName() << " <" << (*it) << "> :" << std::endl;
+                (*it)->printValue( std::cerr, ", " );
+                std::cerr << std::endl << std::endl;
+            }
+        }
+        
+        getchar();
+        
+        std::cerr << std::endl << "With shortcuts" << std::endl;
+#endif
         double lnProb = 0.0;
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            lnProb += (*it)->getLnProbability();
-        }
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            (*it)->touch();
-        }
-        double touchedLnProb = 0.0;
         double lnLikelihoodProb = 0.0;
         double lnPriorProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {
-            touchedLnProb += (*it)->getLnProbability();
+            double pr = (*it)->getLnProbability();
+            lnProb += pr;
+            
+#ifdef DEBUG_MCMC_DETAILS
+            if ( (*it)->isStochastic() )
+                std::cerr << (*it)->getName() << "<" << (*it) << "> returned lnprob = " << pr << std::endl;
+#endif
             if ( (*it)->isClamped() )
             {
                 lnLikelihoodProb += (*it)->getLnProbability();
@@ -437,10 +500,70 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
             }
         }
         
-        if ( fabs(lnProb - touchedLnProb) > 1E-6 )
+#ifdef DEBUG_MCMC_DETAILS
+        std::cerr << std::endl << "After touching everything" << std::endl;
+#endif
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {
+            (*it)->touch();
+        }
+        double touchedLnProb = 0.0;
+        double touchedLnLikelihoodProb = 0.0;
+        double touchedLnPriorProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            double pr = (*it)->getLnProbability();
+            touchedLnProb += pr;
+            
+#ifdef DEBUG_MCMC_DETAILS
+            if ( (*it)->isStochastic() )
+                std::cerr << (*it)->getName() << "<" << (*it) << "> returned lnprob = " << pr << std::endl;
+#endif
+            if ( (*it)->isClamped() )
+            {
+                touchedLnLikelihoodProb += (*it)->getLnProbability();
+            }
+            else
+            {
+                touchedLnPriorProb += (*it)->getLnProbability();
+            }
+        }
+        
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            (*it)->keep();
+            (*it)->touch();
+        }
+        double touchedAgainLnProb = 0.0;
+        double touchedAgainLnLikelihoodProb = 0.0;
+        double touchedAgainLnPriorProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            touchedAgainLnProb += (*it)->getLnProbability();
+            if ( (*it)->isClamped() )
+            {
+                touchedAgainLnLikelihoodProb += (*it)->getLnProbability();
+            }
+            else
+            {
+                touchedAgainLnPriorProb += (*it)->getLnProbability();
+            }
+        }
+        // Keep everything to be ready for next cycle
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            (*it)->keep();
+        }
+        
+        if ( fabs(lnProb - touchedLnProb) > 1E-8 )
+        {
+            std::cout << "Probability        shortcut\t\t-\t\ttouched all\t\t-\t\ttouched all again" << std::endl;
+            std::cout << "lnPriorProb      = " << lnPriorProb << "\t\t-\t\t" << touchedLnPriorProb << "\t\t-\t\t" << touchedAgainLnPriorProb << std::endl;
+            std::cout << "lnLikelihoodProb = " << lnLikelihoodProb << "\t\t-\t\t" << touchedLnLikelihoodProb << "\t\t-\t\t" << touchedAgainLnLikelihoodProb << std::endl;
+            std::cout << "lnProb           = " << lnProb << "\t\t-\t\t" << touchedLnProb << "\t\t-\t\t" << touchedAgainLnProb << std::endl;
             std::cout << "Failure occurred after move:\t" << theMove.getMoveName() << std::endl;
-            throw RbException("Error in MonteCarloSampler probability computation.");
+            
+            //            throw RbException("Error in MCMC probability computation.");
         }
 #endif
         
@@ -449,7 +572,9 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
     
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
     if (advanceCycle)
+    {
         generation++;
+    }
     
     // gen number used for p(MC)^3
     return generation;
@@ -491,7 +616,7 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             // error checking
             if ( (*j)->getName() == "" )
             {
-                throw RbException( "Unable to connect move to DAG copy because variable name was lost");
+                throw RbException( "Unable to connect move '" + theMove->getMoveName() + "' to DAG copy because variable name was lost");
             }
             
             DagNode* theNewNode = NULL;
@@ -549,63 +674,6 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
     }
     
 }
-
-
-void MonteCarloSampler::run(size_t kIterations) {
-    
-    /* Let user know what we are doing */
-    if ( generation == 0 )
-        std::cout << "Running MonteCarloSampler simulation for " << kIterations << " iterations" << std::endl;
-    else
-        std::cout << "Appending " << kIterations << " iterations to previous MonteCarloSampler simulation of " << generation << " iterations" << std::endl;
-    
-    if ( scheduleType == "single" )
-    {
-        std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
-        std::cout << "single move picked randomly per iteration" << std::endl;
-    }
-    else if ( scheduleType == "random" )
-    {
-        std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-    }
-    else if ( scheduleType == "sequential" )
-    {
-        std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-    }
-    
-    // Initialize objects used in run
-    initializeChain();
-    initializeMonitors();
-    
-    if ( generation == 0 )
-    {
-        // Monitor
-        startMonitors();
-        monitor(0);
-    }
-    
-    // reset the counters for the move schedules
-    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
-    {
-        it->resetCounters();
-    }
-    
-    // Run the chain
-    for (size_t k=1; k<=kIterations; k++)
-    {
-        nextCycle(true);
-        
-        // Monitor
-        monitor(generation);
-        
-    }
-    
-    
-}
-
-
 
 
 void MonteCarloSampler::setChainActive(bool tf)

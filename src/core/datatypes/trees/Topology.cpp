@@ -22,23 +22,26 @@ Topology::Topology(void) :
     binary( true ),
     rooted( false ),
     numTips( 0 ), 
-    numNodes( 0 )
+    numNodes( 0 ),
+    treesUsingThisTopology()
 {
-    
 }
 
 
 /* Copy constructor */
 Topology::Topology(const Topology& t) : 
-    root( NULL ) 
+    root( NULL ),
+    treesUsingThisTopology()
 {
-    
+
     // set the parameters
     binary      = t.binary;
     numTips     = t.numTips;
     numNodes    = t.numNodes;
     rooted      = t.rooted;
     
+    // nobody is using us yet, so we leave treesUsingThisTopology empty
+
     // need to perform a deep copy of the BranchLengthTree nodes
     if (t.root != NULL) 
     {
@@ -54,7 +57,6 @@ Topology::Topology(const Topology& t) :
 /* Destructor */
 Topology::~Topology(void) 
 {
-
     nodes.clear();
     
     delete root;
@@ -80,16 +82,33 @@ Topology& Topology::operator=(const Topology &t)
         
         // set the root. This will also set the nodes vector.
         setRoot(newRoot);
+        
+        // nobody is using the new topology yet
+        treesUsingThisTopology.clear();
     }
     
     return *this;
 }
 
 
+/**
+ * Add a tree using this topology. If it is the first tree,
+ * we set the tree pointer of all topology nodes to this tree.
+ * If it is not the first tree, we can leave the tree pointer
+ * of the topology nodes as is.
+ */
+void Topology::addTree( Tree* t )
+{
+    if ( treesUsingThisTopology.empty() )
+        root->setTree( t );
+    
+    treesUsingThisTopology.insert( t );
+}
+
+
 /* Clone function */
 Topology* Topology::clone(void) const 
 {
-    
     return new Topology(*this);
 }
 
@@ -106,7 +125,32 @@ std::vector<std::string> Topology::getTipNames( void ) const
     return names;
 }
 
-/* fill the nodes vector by a phylogenetic traversal recursively starting with this node. 
+
+std::vector< Taxon > Topology::getTaxa( void ) const
+{
+    std::vector< Taxon > taxa;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        taxa.push_back( n.getTaxon() );
+    }
+    
+    return taxa;
+}
+
+std::vector<std::string> Topology::getSpeciesNames() const
+{
+    std::vector< std::string > snames;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        snames.push_back( n.getTaxon().getSpeciesName() );
+    }
+    
+    return snames;
+}
+
+/* fill the nodes vector by a phylogenetic traversal recursively starting with this node.
  * The tips fill the slots 0,...,n-1 followed by the internal nodes and then the root.
  */
 void Topology::fillNodesByPhylogeneticTraversal(TopologyNode* node) {
@@ -257,6 +301,24 @@ bool Topology::isRooted( void ) const {
 }
 
 
+/**
+ * Remove a tree using this topology. We do not know if the tree to
+ * be removed is currently used as the tree pointer by the topology
+ * nodes. To make sure that the topology nodes have a valid tree
+ * pointer after the removal, we reset their tree pointer to one of
+ * the remaining trees.
+ */
+void Topology::removeTree( Tree* t )
+{
+    treesUsingThisTopology.erase( t );
+    
+    if ( treesUsingThisTopology.empty() )
+        root->setTree( NULL );
+    else
+        root->setTree( *treesUsingThisTopology.begin() );
+}
+
+
 void Topology::setRooted(bool tf) {
     rooted = tf;
 }
@@ -281,6 +343,12 @@ void Topology::setRoot( TopologyNode* r) {
     }
     
     numNodes = nodes.size();
+    
+    // Set the tree pointer of the nodes
+    if ( treesUsingThisTopology.empty() )
+        root->setTree( NULL );
+    else
+        root->setTree( *treesUsingThisTopology.begin() );
     
 }
 

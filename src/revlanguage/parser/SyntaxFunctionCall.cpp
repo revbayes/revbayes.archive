@@ -1,9 +1,11 @@
+#include "AbstractMemberFunction.h"
 #include "Argument.h"
 #include "Environment.h"
 #include "MemberProcedure.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "SyntaxFunctionCall.h"
 #include "Workspace.h"
@@ -110,7 +112,6 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
 #ifdef DEBUG_PARSER
         printf( "Adding argument with label \"%s\".\n", (*i)->getLabel().c_str() );
 #endif
-        
         const RlString& theLabel = (*it)->getLabel();
         RevPtr<Variable> theVar = (*it)->getExpression().evaluateContent(env);
         
@@ -118,35 +119,43 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
         args.push_back( theArg );
     }
 
-    Function* func = NULL;
+    RevPtr<Variable> funcReturnValue = NULL;
     if ( baseVariable == NULL )
     {
         // We are trying to find a function in the current environment
         
-        // First we see if the function name corresponds to a user-defined variable
-        // We can do this first because user-defined variables are not allowed to mask function names
+        // First we see if the function name corresponds to a user-defined variable.
+        // We can do this first because user-defined variables are not allowed to mask
+        // names of function calls
         bool found = false;
+        Function* func = NULL;
         if ( env.existsVariable( functionName ) )
         {
             RevObject &theObject = env.getRevObject( functionName );
             
             if ( theObject.isTypeSpec( Function::getClassTypeSpec() ) )
             {
-                func = &( static_cast<Function&>( theObject ) );
-                found = func->checkArguments(args, NULL);
+                func = static_cast<Function&>( theObject ).clone();
+                found = func->checkArguments(args, NULL, true);
             }
         }
 
         // If we cannot find the function name as a variable, it must be in the function table
-        // This call will throw with a relevant message if the function is not found
+        // This call will throw a relevant error message if the function is not found
         if ( !found )
-            func = &( env.getFunction(functionName, args) );
+            func = env.getFunction(functionName, args, true).clone();
 
         // Allow the function to process the arguments
-        func->processArguments( args );
+        func->processArguments( args, true );
 
         // Set the execution environment of the function
         func->setExecutionEnviroment( &env );
+        
+        // Evaluate the function (call the static evaluation function)
+        funcReturnValue = func->execute();
+        
+        // Delete function
+        delete func;
     }
     else 
     {
@@ -161,19 +170,35 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
         // \todo: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
             
-        Function* theFunction = mt.getFunction( functionName, args ).clone();
-        theFunction->processArguments(args);
-        MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( theFunction );
-        theMemberProcedure->setMemberObject( theVar );
-        func = theMemberProcedure;
-
+        Function* theFunction = mt.getFunction( functionName, args, true ).clone();
+        theFunction->processArguments(args, true);
+        
+        MemberProcedure* theMemberProcedure = dynamic_cast<MemberProcedure*>( theFunction );
+        if ( theMemberProcedure != NULL )
+        {
+            theMemberProcedure->setMemberObject( theVar );
+            
+            // Evaluate the function (call the dynamic evaluation function)
+            funcReturnValue = theMemberProcedure->execute();
+        }
+        else
+        {
+            AbstractMemberFunction* theMemberFunction = dynamic_cast<AbstractMemberFunction*>( theFunction );
+            if ( theMemberFunction != NULL )
+            {
+                theMemberFunction->setMemberObject( theVar );
+                
+                // Evaluate the function (call the dynamic evaluation function)
+                funcReturnValue = theMemberFunction->execute();
+            }
+            else
+            {
+                throw RbException("Could convert member function.");
+            }
+        }
+        
+        delete theFunction;
     }
-
-    // Evaluate the function (call the static evaluation function)
-    RevPtr<Variable> funcReturnValue = func->execute();
-
-    // Clear arguments from function
-    func->clear();
 
     // Return the value, which is typically a deterministic variable with the function
     // inside it, although many functions return constant values or NULL (void).
@@ -204,7 +229,6 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
 #ifdef DEBUG_PARSER
         printf( "Adding argument with label \"%s\".\n", (*it)->getLabel().c_str() );
 #endif
-        
         const RlString& theLabel = (*it)->getLabel();
         RevPtr<Variable> theVar = (*it)->getExpression().evaluateDynamicContent(env);
         
@@ -212,7 +236,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
         args.push_back( theArg );
     }
     
-    Function* func = NULL;
+    RevPtr<Variable> funcReturnValue = NULL;
     if ( baseVariable == NULL )
     {
         // We are trying to find a function in the current environment
@@ -220,27 +244,36 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
         // First we see if the function name corresponds to a user-defined variable
         // We can do this first because user-defined variables are not allowed to mask function names
         bool found = false;
+        Function* func = NULL;
         if ( env.existsVariable( functionName ) )
         {
             RevObject &theObject = env.getRevObject( functionName );
             
             if ( theObject.isTypeSpec( Function::getClassTypeSpec() ) )
             {
-                func = &( static_cast<Function&>( theObject ) );
-                found = func->checkArguments(args, NULL);
+                func = static_cast<Function&>( theObject ).clone();
+                found = func->checkArguments(args, NULL, false);
             }
         }
         
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw with a relevant message if the function is not found
         if ( !found )
-            func = &( env.getFunction(functionName, args) );
+        {
+            func = env.getFunction(functionName, args, false).clone();
+        }
         
         // Allow the function to process the arguments
-        func->processArguments( args );
+        func->processArguments( args, false );
         
         // Set the execution environment of the function
         func->setExecutionEnviroment( &env );
+        
+        // Evaluate the function (call the dynamic evaluation function)
+        funcReturnValue = func->execute();
+        
+        // Delete function
+        delete func;
     }
     else
     {
@@ -255,19 +288,56 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
         // \todo: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
         
-        Function* theFunction = mt.getFunction( functionName, args ).clone();
-        theFunction->processArguments(args);
-        MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( theFunction );
-        theMemberFunction->setMemberObject( theVar );
-        func = theMemberFunction;
+        Function* theFunction = NULL;
+//        try
+//        {
+//            theFunction = mt.getFunction( functionName, args, false ).clone();
+//            theFunction->processArguments( args, false );
+//        }
+//        catch ( RbException e )
+//        {
+//            
+//        }
+//        if ( theFunction == NULL )
+//        {
+//            // try to convert to stochastic node
+//            
+//            if ( theMemberObject.getDagNode()->isStochastic() )
+//            {
+//                theMemberObject.getDagNode()->get
+//            }
+//            
+//        }
+        theFunction = mt.getFunction( functionName, args, false ).clone();
+        theFunction->processArguments( args, false );
         
+        MemberProcedure* theMemberProcedure = dynamic_cast<MemberProcedure*>( theFunction );
+        if ( theMemberProcedure != NULL )
+        {
+            theMemberProcedure->setMemberObject( theVar );
+            
+            // Evaluate the function (call the dynamic evaluation function)
+            funcReturnValue = theMemberProcedure->execute();
+        }
+        else
+        {
+            AbstractMemberFunction* theMemberFunction = dynamic_cast<AbstractMemberFunction*>( theFunction );
+            if ( theMemberFunction != NULL )
+            {
+                theMemberFunction->setMemberObject( theVar );
+                
+                // Evaluate the function (call the dynamic evaluation function)
+                funcReturnValue = theMemberFunction->execute();
+            }
+            else
+            {
+                throw RbException("Could convert member function.");
+            }
+        }
+        
+        // Delete the member function clone
+        delete theFunction;
     }
-    
-    // Evaluate the function (call the dynamic evaluation function)
-    RevPtr<Variable> funcReturnValue = func->execute();
-    
-    // Clear arguments from function
-    func->clear();
     
     // Return the value, which is typically a deterministic variable with the function
     // inside it, although many functions return constant values or NULL (void). Here
@@ -286,13 +356,66 @@ bool SyntaxFunctionCall::isConstExpression(void) const {
     // We need to iterate over all arguments
     for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it != arguments->end(); ++it )
     {
-        // We return false is this argument is not constant
+        // We return false if this argument is not constant
         SyntaxLabeledExpr* expr = *it;
         if ( !expr->isConstExpression() )
             return false;
     }
     
-    // all arguments are constant
+    // All arguments are constant
+    return true;
+}
+
+
+/**
+ * Is the syntax element safe for use in a function
+ * (as opposed to a procedure)? The function call is safe
+ * if it is a call to a function, and the argument expressions
+ * are all function-safe. If it is a call to a procedure, it
+ * is safe if all argument expressions are function-safe, and
+ * none of them retrieves an external variable.
+ */
+bool SyntaxFunctionCall::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
+{
+    // Protect from self-checking if recursive. If that case, the function
+    // does not exist yet and we tentatively assume it is safe
+    if ( !env.existsFunction( functionName ) )
+        return true;
+    
+    if ( env.isProcedure( functionName ) )
+    {
+        // Check base variable
+        if ( baseVariable != NULL && ( !baseVariable->isFunctionSafe( env, localVars ) || baseVariable->SyntaxElement::retrievesExternVar( env, localVars, false ) ) )
+            return false;
+        
+        // Iterate over all arguments
+        for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it != arguments->end(); ++it )
+        {
+            // Return false if argument expression is not function-safe or retrieves an external variable
+            SyntaxLabeledExpr* expr = *it;
+            if ( !expr->isFunctionSafe( env, localVars ) || expr->retrievesExternVar( env, localVars, false ) )
+                return false;
+        }
+        
+    }
+    else
+    {
+        // Check base variable
+        if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env, localVars ) )
+            return false;
+        
+        // Iterate over all arguments
+        for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it != arguments->end(); ++it )
+        {
+            // Return false if argument expression is not function-safe
+            SyntaxLabeledExpr* expr = *it;
+            if ( !expr->isFunctionSafe( env, localVars ) )
+                return false;
+        }
+        
+    }
+    
+    // All arguments and the base variable are OK
     return true;
 }
 

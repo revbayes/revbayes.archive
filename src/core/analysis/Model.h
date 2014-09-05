@@ -31,7 +31,7 @@ namespace RevBayesCore {
         
         public:
                                                                     Model(const DagNode* source);                                   //!< Constructor from a single DAG node from which the model graph is extracted.
-                                                                    Model(const std::set<const DagNode*> sources);                  //!< Constructor from a set of DAG nodes from each of which the model graph is extracted.
+                                                                    Model(const std::set<const DagNode*> &sources);                 //!< Constructor from a set of DAG nodes from each of which the model graph is extracted.
                                                                     Model(const Model &m);                                          //!< Copy constructor.
         virtual                                                    ~Model(void);                                                    //!< Destructor.
     

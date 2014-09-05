@@ -21,12 +21,6 @@
 	[controlWindow close];
 }
 
-- (void)dealloc {
-
-	[controlWindow release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];

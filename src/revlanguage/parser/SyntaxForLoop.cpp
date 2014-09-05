@@ -154,6 +154,21 @@ bool SyntaxForLoop::isFinished( void ) const
 }
 
 
+/**
+ * Is the syntax element safe for use in a function ( as
+ * opposed to a procedure)? The variable element is safe
+ * if the index variable is not an external variable, and
+ * if the in-expression is function-safe.
+ */
+bool SyntaxForLoop::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
+{
+    if ( env.existsVariable( varName ) )
+        return false;
+    
+    return inExpression->isFunctionSafe( env, localVars );
+}
+
+
 /** Print info about syntax element */
 void SyntaxForLoop::printValue( std::ostream& o ) const
 {

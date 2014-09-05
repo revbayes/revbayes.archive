@@ -25,7 +25,7 @@ using namespace RevLanguage;
 /** Constructor */
 DistributionFunctionQuantile::DistributionFunctionQuantile( ContinuousDistribution *d ) : Function(), templateObject( d ), templateObjectPositive( NULL ) {
     
-    argRules.push_back( new ArgumentRule("p", true, Probability::getClassTypeSpec()));
+    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObject->getMemberRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
@@ -35,7 +35,7 @@ DistributionFunctionQuantile::DistributionFunctionQuantile( ContinuousDistributi
 /** Constructor */
 DistributionFunctionQuantile::DistributionFunctionQuantile( PositiveContinuousDistribution *d ) : Function(), templateObject( NULL ), templateObjectPositive( d ) {
     
-    argRules.push_back( new ArgumentRule("p", true, Probability::getClassTypeSpec()));
+    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObjectPositive->getMemberRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );

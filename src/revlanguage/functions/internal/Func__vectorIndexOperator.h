@@ -76,10 +76,11 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__vectorIndexOperator<valType
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "v", true, ModelVector<valType>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "index", true, Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "v"    , ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

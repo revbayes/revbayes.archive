@@ -31,7 +31,7 @@ Model::Model(const DagNode *source)
  *
  * \param[in]    sources    The set of DAG nodes from which the model graph is extracted.
  */
-Model::Model(const std::set<const DagNode*> s) : 
+Model::Model(const std::set<const DagNode*> &s) :
     sources() 
 {
     
@@ -50,7 +50,8 @@ Model::Model(const std::set<const DagNode*> s) :
  *
  * \param[in]    m    The model object to copy.
  */
-Model::Model(const Model &m) : sources() 
+Model::Model(const Model &m) :
+    sources()
 {
     
     // iterate over all sources
@@ -82,7 +83,7 @@ Model::~Model( void )
     while ( !sources.empty() ) 
     {
         std::set<const DagNode*>::iterator theNode = sources.begin();
-        sources.erase( theNode );
+        sources.erase( *theNode );
         
         if ( (*theNode)->decrementReferenceCount() == 0)
         {
@@ -164,7 +165,9 @@ void Model::addSourceNode(const DagNode *sourceNode)
     
     // check that the source node is a valid pointer
     if (sourceNode == NULL)
+    {
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
+    }
     
     // copy the entire graph connected to the source node
     // only if the node is not contained already in the nodesMap will it be copied.
@@ -174,9 +177,6 @@ void Model::addSourceNode(const DagNode *sourceNode)
     DagNode *theNewSource = nodesMap[sourceNode];
     theNewSource->incrementReferenceCount();
     sources.insert( theNewSource );
-        
-    /* insert new nodes into direct access vector */
-    std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
     
     // we don't really know which nodes are new in our nodes map.
     // therefore we empty the nodes map and fill it again.
@@ -188,6 +188,10 @@ void Model::addSourceNode(const DagNode *sourceNode)
         
     }
     nodes.clear();
+    
+    /* insert new nodes into direct access vector */
+    std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
+    
     while ( i != nodesMap.end() ) 
     {
         // get the copied node

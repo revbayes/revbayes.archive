@@ -31,6 +31,9 @@ namespace RevLanguage {
     class ArgumentRules {
     
     public:
+        typedef std::vector<ArgumentRule*>::iterator        iterator;
+        typedef std::vector<ArgumentRule*>::const_iterator  const_iterator;
+        
         ArgumentRules();
         ArgumentRules(const ArgumentRules& a);
         virtual                                    ~ArgumentRules();

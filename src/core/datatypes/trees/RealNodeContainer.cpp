@@ -107,6 +107,7 @@ void RealNodeContainer::recursiveClampAt(const TopologyNode& from, const Continu
         if (data->getCharacter(dataindex,l).getMean() != -1000) {
            (*this)[index] = data->getCharacter(dataindex,l).getMean();
             clampVector[index] = true;
+            //std::cerr << "taxon : " << index << '\t' << taxon << " trait value : " << (*this)[index] << '\n';
         }
         else    {
             std::cerr << "taxon : " << taxon << " is missing for trait " << l+1 << '\n';
@@ -197,31 +198,59 @@ void RealNodeContainer::recursiveGetStatsOverTips(const TopologyNode& from, doub
     
 }
 
-/*
+
+std::string RealNodeContainer::getNewick() const {
+
+    std::ostringstream s;
+    s << recursiveGetNewick(getTimeTree()->getRoot());
+    s << ";";
+    return s.str();
+}
+
+std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) const {
+
+    std::ostringstream s;
+    
+    if (from.isTip())   {
+        s << getTimeTree()->getTipNames()[from.getIndex()] << "_";
+//        std::cerr << from.getIndex() << '\t' << getTimeTree()->getTipNames()[from.getIndex()] << "_";
+//        std::cerr << (*this)[from.getIndex()] << '\n';
+//        exit(1);
+    }
+    else    {
+        s << "(";
+        // propagate forward
+        size_t numChildren = from.getNumberOfChildren();
+        for (size_t i = 0; i < numChildren; ++i) {
+            s << recursiveGetNewick(from.getChild(i));
+            if (i < numChildren-1)  {
+                s << ",";
+            }
+        }
+        s << ")";
+    }
+    s << (*this)[from.getIndex()];
+/*    if (from.isTip() && (! isClamped(from.getIndex()))) {
+        std::cerr << "leaf is not clamped\n";
+        // get taxon index
+        size_t index = from.getIndex();
+        std::cerr << "index : " << index << '\n';
+        std::string taxon = tree->getTipNames()[index];
+        std::cerr << "taxon : " << index << '\t' << taxon << '\n';
+        std::cerr << " trait value : " << (*this)[index] << '\n';        
+        exit(1);
+    }*/
+//    if (!from.isRoot()) {
+        s << ":";
+        s << getTimeTree()->getBranchLength(from.getIndex());
+//    }
+    
+    return s.str();
+}
+
 std::ostream& RevBayesCore::operator<<(std::ostream& os, const RealNodeContainer& x) {
 
-    os << std::fixed;
-    os << std::setprecision(4);
-        
-    x.printBranchContrasts(os);
-    os << '\t';
-    
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getMean(i) << '\t';
-    }
-    
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getStdev(i) << '\t';
-    }    
-    
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getRootVal(i);
-        if (i < x.getDim() -1)  {
-            os << '\t';
-        }
-    }    
-    
+    os << x.getNewick();
     return os;
 }
 
-*/

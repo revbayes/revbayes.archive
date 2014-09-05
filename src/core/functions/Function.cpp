@@ -6,8 +6,9 @@ using namespace RevBayesCore;
 
 
 
-Function::Function(void)  : parameters(),
-dirty( true )
+Function::Function(void)  :
+    dirty( true ),
+    parameters()
 {
     
 }
@@ -33,7 +34,12 @@ const std::set<const DagNode*>& Function::getParameters( void ) const {
 }
 
 
-/* Method stumb that can be overwritten for specialized treatment. */
+/**
+ * Method stumb that can be overwritten for specialized treatment.
+ * Note that it is extremely important NOT to set the dirty flag to
+ * false here, because we may have been touched without having been
+ * updated.
+ */
 void Function::keep( DagNode* affecter ) {
 
     // restore flags

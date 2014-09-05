@@ -1,6 +1,7 @@
 #include "MoveOld.h"
 #include "DagNode.h"
 #include "RbException.h"
+#include "StringUtilities.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,12 +11,22 @@
 
 using namespace RevBayesCore;
 
-MoveOld::MoveOld( DagNode *n, double w, bool t ) : AbstractOldMove(), weight( w ), numAccepted( 0 ), numTried( 0 ), autoTuning( t ) {
+MoveOld::MoveOld( DagNode *n, double w, bool t ) : AbstractOldMove(),
+    weight( w ),
+    numAccepted( 0 ),
+    numTried( 0 ),
+    autoTuning( t )
+{
     nodes.insert( n );
 }
 
 
-MoveOld::MoveOld( std::vector<DagNode*> n, double w, bool t ) : AbstractOldMove(), weight( w ), numAccepted( 0 ), numTried( 0 ), autoTuning( t ) {
+MoveOld::MoveOld( std::vector<DagNode*> n, double w, bool t ) : AbstractOldMove(),
+    weight( w ),
+    numAccepted( 0 ),
+    numTried( 0 ),
+    autoTuning( t )
+{
 
     for (std::vector<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
     {
@@ -109,7 +120,8 @@ void MoveOld::performGibbs(void)
     numAccepted++;
     
     // call accept for each node
-    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
+    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+    {
         (*i)->keep();
     }
     
@@ -125,7 +137,9 @@ void MoveOld::performGibbsMove(void) {
 }
 
 
-void MoveOld::printSummary( std::ostream &o ) const {
+void MoveOld::printSummary( std::ostream &o ) const
+{
+    
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     
@@ -133,34 +147,31 @@ void MoveOld::printSummary( std::ostream &o ) const {
     o << std::setprecision(4);
     
     // print the name
-    const std::string &n = getMoveName();
-    size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
+    std::string n = getMoveName();
+    StringUtilities::fillWithSpaces(n,40,true);
+    
     o << n;
-    for (size_t i = 0; i < spaces; ++i) {
-        o << " ";
-    }
     o << " ";
    
     // print the DagNode name
-    const std::string &dn_name = (*nodes.begin())->getName();
-    spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
+    std::string dn_name = (*nodes.begin())->getName();
+    StringUtilities::fillWithSpaces(dn_name,20,true);
     o << dn_name;
-    for (size_t i = 0; i < spaces; ++i) {
-        o << " ";
-    }
     o << " ";
     
     // print the weight
-    int w_length = 4 - (int)log10(weight);
-    for (int i = 0; i < w_length; ++i) {
+    int w_length = 4 - (int)log10(weight+1);
+    for (int i = 0; i < w_length; ++i)
+    {
         o << " ";
     }
     o << weight;
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
-    for (int i = 0; i < t_length; ++i) {
+    int t_length = 9 - (int)log10(numTried+1);
+    for (int i = 0; i < t_length; ++i)
+    {
         o << " ";
     }
     o << numTried;
@@ -168,9 +179,10 @@ void MoveOld::printSummary( std::ostream &o ) const {
     
     // print the number of accepted
     int a_length = 9;
-    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    if (numAccepted > 0) a_length -= (int)log10(numAccepted+1);
     
-    for (int i = 0; i < a_length; ++i) {
+    for (int i = 0; i < a_length; ++i)
+    {
         o << " ";
     }
     o << numAccepted;
@@ -181,7 +193,8 @@ void MoveOld::printSummary( std::ostream &o ) const {
     if (numTried == 0) ratio = 0;
     int r_length = 5;
     
-    for (int i = 0; i < r_length; ++i) {
+    for (int i = 0; i < r_length; ++i)
+    {
         o << " ";
     }
     o << ratio;

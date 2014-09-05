@@ -55,7 +55,17 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
+    {
+        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    }
+    // the root age
+    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
+    {
+        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    }
     // speciation rates
     RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
@@ -87,7 +97,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
     }
     
     // create the internal distribution object
-    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(o, s, st, e, et, p, pt, r, rt, cond, taxa, c);
+    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(o, ra, s, st, e, et, p, pt, r, rt, cond, taxa, c);
     
     return d;
 }
@@ -136,22 +146,23 @@ const MemberRules& Dist_skyFossilBDP::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"      , true, RealPos::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"      , true, ModelVector<RealPos>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambdaTimes" , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"          , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"     , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"         , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"    , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>(std::vector<double>(0.0)) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"    , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>() ) );
-        std::vector<RlString> optionsCondition;
-        optionsCondition.push_back( RlString("time") );
-        optionsCondition.push_back( RlString("survival") );
-        optionsCondition.push_back( RlString("nTaxa") );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"      , RealPos::getClassTypeSpec()                 , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge"     , RealPos::getClassTypeSpec()                 , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"      , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambdaTimes" , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"          , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"     , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"         , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"    , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>(std::vector<double>(0.0)) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"    , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>() ) );
+        std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "time" );
+        optionsCondition.push_back( "survival" );
+        optionsCondition.push_back( "nTaxa" );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, ModelVector<Clade>::getClassTypeSpec(), new ModelVector<Clade>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();
@@ -225,6 +236,10 @@ void Dist_skyFossilBDP::setConstMemberVariable(const std::string& name, const Re
     else if ( name == "origin" )
     {
         origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
     }
     else if ( name == "names" ) 
     {

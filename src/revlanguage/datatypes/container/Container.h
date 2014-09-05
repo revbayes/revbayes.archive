@@ -36,7 +36,7 @@ namespace RevLanguage {
         static const std::string&                   getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const = 0;                                        //!< Get the object type spec of the instance
-        virtual void                                printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
+        virtual void                                printStructure(std::ostream& o, bool verbose=false) const;          //!< Print structure of language object for user
         virtual void                                printValue(std::ostream& o) const = 0;                              //!< Print value for user
     
         // Container functions you have to override
@@ -47,10 +47,11 @@ namespace RevLanguage {
         virtual size_t                              size(void) const = 0;                                                   //!< Get number of elements in container
     
         // Member method functions
-        virtual const MethodTable&                  getMethods(void) const;                                             //!< Get methods
         virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods
+        virtual MethodTable                         makeMethods(void) const;                                                    //!< Make member methods
 
-        // Container function you do not have to override
+        // Container function you do not have to override (but may want to for vectors)
         virtual RevPtr<Variable>                    getElement(size_t oneOffsetIndex);                                  //!< Get element variable (single index)
         
     protected:

@@ -12,18 +12,18 @@
 #include <iostream>
 
 
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
-#include "MultivariatePhyloProcess.h"
+#include "MultivariateRealNodeContainer.h"
 
 namespace RevBayesCore {
     
-    class MultivariateBrownianPhyloProcess : public TypedDistribution<MultivariatePhyloProcess> {
+    class MultivariateBrownianPhyloProcess : public TypedDistribution<MultivariateRealNodeContainer> {
         
     public:
         // constructor(s)
-        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* insigma);
+        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<MatrixRealSymmetric>* insigma);
         MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &from);
         
         // public member functions
@@ -33,7 +33,7 @@ namespace RevBayesCore {
         size_t                                                  getDim() const {return sigma->getValue().getDim();}
         void                                                    redrawValue(void);
         
-        const TypedDagNode< TimeTree >*                         getTimeTree() const {return tau;}
+        const TimeTree*                         getTimeTree() const {return &tau->getValue();}
         
         // Parameter management functions
         std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
@@ -54,10 +54,10 @@ namespace RevBayesCore {
         void                                                    flagNodes();        
         void                                                    corruptAll();
         void                                                    recursiveCorruptAll(const TopologyNode& n);
-
+        
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< PrecisionMatrix >*                  sigma;
+        const TypedDagNode< MatrixRealSymmetric >*              sigma;
         
         std::vector<bool>                                       dirtyNodes;
         std::vector<double>                                     nodeLogProbs;

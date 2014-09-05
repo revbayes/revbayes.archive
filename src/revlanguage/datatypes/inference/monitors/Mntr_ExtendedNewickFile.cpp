@@ -1,7 +1,6 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "ExtendedNewickTreeMonitor.h"
 #include "Mntr_ExtendedNewickFile.h"
@@ -75,15 +74,17 @@ const MemberRules& Mntr_ExtendedNewickFile::getMemberRules(void) const {
     static MemberRules Mntr_ExtendedNewickFileMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("tree", true, TimeTree::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+    
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("filename", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("tree"    , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         Mntr_ExtendedNewickFileMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString(" ") ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         
         rulesSet = true;

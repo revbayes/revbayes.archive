@@ -1,8 +1,12 @@
+
+#include <iterator>
+
 #include "RbClient.h"
 #include "Parser.h"
 #include "Workspace.h"
 #include "WorkspaceUtils.h"
 #include "TerminalFormatter.h"
+#include "RbSettings.h"
 
 
 #include <stdio.h>
@@ -53,6 +57,21 @@ Configuration *config;
 void setDefaultCompletions();
 StringVector getDefaultCompletions();
 
+std::string getWd() {
+    RbSettings& s = RbSettings::userSettings();
+    const std::string& wd = s.getWorkingDirectory();
+    return wd;
+}
+
+StringVector getFileList(std::string path) {
+    StringVector v;
+
+    BOOST_FOREACH(std::string s, Filesystem::getFileList(getWd(), path)) {
+        v.push_back(s);
+    }
+    return v;
+}
+
 /**
  * Assemble tab completion data
  * 
@@ -65,19 +84,21 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
 
     StringVector specialStrings;
     // important: assign in descending order from longest to shortest strings
-    specialStrings += "<-&", "<-", "<<-", ":=", "++", "--", "+=", "-=", "*=", "/=", "&&", "||", "~", "+", "-", "*", "/", "^", "!", "=", ",", " ";
+    specialStrings += "<-&", "<-", "<<-", ":=", "++", "--", "+=", "-=", "*=", "/=", "&&", "||", "~", "+", "-", "*", "/", "^", "!", "=", ",", "(", ")", " ", "#";
 
     std::string specialMatch = "";
     int specialMatchType = 0; // 0 = no match against any operator, 1 = reference assignment operator, 2 = other
     std::string stringBuf = buf + startPos;
     int rPos = 0, _rPos, tmpInt;
+    bool endWithSpace = false;
 
-    // find the most current operator
+    // find the most current operator or control character 
+    // and move cursor (linePos) to the point where it is relevant to match for completion 
+
     BOOST_FOREACH(std::string s, specialStrings) {
 
         _rPos = tmpInt = stringBuf.find(s, rPos); // first match 
-        
-        //tmpInt = _rPos;
+
         while (tmpInt != -1) { // find last match
             _rPos = tmpInt + s.length();
             tmpInt = stringBuf.find(s, tmpInt + s.length());
@@ -86,20 +107,29 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
         if (_rPos > rPos) {
             if (s == "<-&") {
                 specialMatchType = 1;
-            } 
-            else if(s != " " ){
+                specialMatch = s;
+            } else if (s == " ") {
+                endWithSpace = true;
+            } else if (s == "#") {
+                specialMatchType = 3;
+                specialMatch = s;
+                endWithSpace = false;
+                break;
+            } else {
                 specialMatchType = 2;
+                specialMatch = s;
+                endWithSpace = false;
             }
-            specialMatch = s;
+
             rPos = _rPos;
         }
     }
     startPos += rPos;
 
     // discard extra space in beginning of string to match against completions
-    while (buf[startPos] == ' ') {
-        startPos++;
-    }
+    //    while (buf[startPos] == ' ') {
+    //        startPos++;
+    //    }
 
     // the string the matching is made against
     std::string compMatch(buf + startPos);
@@ -111,32 +141,72 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
     }
 
     // assemble completions
+    // let state release
+    if (endWithSpace) {
+        if (editorMachine.getCurrentState()->getType() == ST_ACCESSING_MEMBER) {
+            editorMachine.tryRelease(buf);
+        }
+    }
 
     // completions are either already set by the character callback or by some of the special cases here
     StringVector completions;
     if (specialMatchType == 0) {
         completions = editorMachine.getCurrentState()->getCompletions();
-    } else {
-        if (editorMachine.getCurrentState()->getType() == ST_IDLE) {
-            if (specialMatchType == 1) { //reference assignment operator
-                // completion only on user defined objects
-                completions = workspaceUtils.getObjects(false);
 
-            } else { // other operator
-                completions = getDefaultCompletions();
-            }
+    } else if (specialMatchType == 3) { // a comment
+        completions.clear();
+    } else {
+        if (specialMatchType == 1) { //reference assignment operator
+            // completion only on user defined objects
+            completions = workspaceUtils.getObjects(false);
+
+        } else if (editorMachine.getCurrentState()->getType() == ST_IDLE) {
+            completions = getDefaultCompletions();
+
         } else if (editorMachine.getCurrentState()->getType() == ST_DEF_ARGUMENT
                 || editorMachine.getCurrentState()->getType() == ST_DEF_LIST) {
-            if(specialMatch != ","){
+            if (specialMatch == ",") {
+                completions = editorMachine.getCurrentState()->getCompletions();
+
+            } else {
                 completions = getDefaultCompletions();
             }
-            else{
-                completions = editorMachine.getCurrentState()->getCompletions();
-            }
-        } else if(editorMachine.getCurrentState()->getType() == ST_ACCESSING_MEMBER){
+
+        } else if (editorMachine.getCurrentState()->getType() == ST_ACCESSING_MEMBER) {
             editorMachine.tryRelease(buf);
         }
     }
+
+    // file lookup is dynamic and has to be set for each tab
+    if (editorMachine.getCurrentState()->getType() == ST_DEF_STRING) {
+        completions = getFileList(buf + editorMachine.getLinePos());
+    }
+
+    // print function signature(s) if applicable    
+    if (editorMachine.getCurrentState()->getType() == ST_DEF_LIST) {
+        std::string subject = editorMachine.getCurrentState()->getSubject();
+        if (workspaceUtils.isFunction(subject)) {
+
+            BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, workspaceUtils.getFunctionSignatures(subject)) {
+                std::cout << "\n\r" + sign.returnType + " " + sign.name + " (";
+
+                for (size_t i = 0; i < sign.arguments.size(); i++) {
+                    std::cout << sign.arguments[i];
+                    if (i < sign.arguments.size() - 1) {
+                        std::cout << ", ";
+                    }
+                }
+            }
+            std::cout << ")\n\r";
+            linenoiceSetCursorPos(0);
+            std::cout << prompt << buf;
+            std::cout.flush();
+        }
+    }
+
+
+
+
 
     StringVector matches;
     for (unsigned int i = 0; i < completions.size(); i++) {
@@ -185,7 +255,7 @@ void printData(StringVector v, int columns, int columnWidth = 20, int indentatio
 /**
  * General guidance how to use the terminal
  */
-void printGeneralHelp() {
+int printGeneralHelp(const char *buf, size_t len, char c) {
     linenoiseClearScreen();
     linenoiceSetCursorPos(0);
 
@@ -194,7 +264,7 @@ void printGeneralHelp() {
     StringVector cmd;
     cmd.push_back("?");
     cmd.push_back("Print this screen");
-    cmd.push_back("clr");
+    cmd.push_back("clr or clear");
     cmd.push_back("Clear screen");
     cmd.push_back("");
     cmd.push_back("");
@@ -210,9 +280,9 @@ void printGeneralHelp() {
     cmd.push_back("Recursive search of previous commands");
     cmd.push_back("");
     cmd.push_back("");
-    cmd.push_back("repo-list");
+    cmd.push_back("repo_list");
     cmd.push_back("Show files in web repositories");
-    cmd.push_back("repo-get <int>");
+    cmd.push_back("repo_get <index_number>");
     cmd.push_back("Download a file with the given index number");
     cmd.push_back("");
     cmd.push_back("");
@@ -225,10 +295,10 @@ void printGeneralHelp() {
     cmd.push_back("...");
     cmd.push_back("");
 
-
-
     std::cout << nl << TerminalFormatter::makeUnderlined("Available commands") << nl;
     printData(cmd, 2);
+
+    return 0;
 
 }
 
@@ -242,6 +312,10 @@ StringVector getDefaultCompletions() {
     BOOST_FOREACH(std::string obj, workspaceUtils.getObjects(true)) {
         c.push_back(obj);
     }
+
+    c.push_back("repo_list");
+    c.push_back("repo_get");
+
     return c;
 }
 
@@ -253,6 +327,11 @@ void setDefaultCompletions() {
     BOOST_FOREACH(std::string s, getDefaultCompletions()) {
         editorMachine.getCurrentState()->addCompletion(s);
     }
+}
+
+int spaceCallback(const char *buf, size_t len, char c) {
+    editorMachine.tryRelease(buf);
+    return 0;
 }
 
 /**
@@ -339,6 +418,7 @@ int bracketCallback(const char *buf, size_t len, char c) {
             BOOST_FOREACH(std::string param, workspaceUtils.getFunctionParameters(subject)) {
                 editorMachine.getCurrentState()->addCompletion(param);
             }
+
         } else { // member method
 
             BOOST_FOREACH(std::string param, workspaceUtils.getMethodParameters(type, subject)) {
@@ -379,9 +459,14 @@ int quotationCallback(const char *buf, size_t len, char c) {
 
     if (editorMachine.processInput(buf)) {
 
-        BOOST_FOREACH(std::string s, Filesystem::getFileList(opt->getIncludePaths(), ".Rev")) {
+        BOOST_FOREACH(std::string s, getFileList("")) {
             editorMachine.getCurrentState()->addCompletion(s);
         }
+
+        //std::cout << "\n\rcmd: " << editorMachine.getCmd() << "\n\r";
+        //std::cout << "\n\rlinepos: " << editorMachine.getLinePos() << "\n\r";        
+        //std::cout.flush();
+
     }
     return 0;
 }
@@ -400,28 +485,15 @@ int escapeCallback(const char *buf, size_t len, char c) {
 
     // general info
     if (len <= 0) {
-        printGeneralHelp();
+        printGeneralHelp(buf, len, c);
     }
 
     // completions
     linenoiceSetCursorPos(0);
     std::cout << nl << TerminalFormatter::makeUnderlined("Available completions") << nl;
 
-    unsigned int startPos = editorMachine.getLinePos(); // place in buffer to start match    
-    while (buf[startPos] == ' ') { // discard extra spaces
-        startPos++;
-    }
-
-    StringVector v;
-
-    //    BOOST_FOREACH(std::string comp, editorMachine.getCurrentState()->getCompletions()) {
-    //        if (boost::starts_with(comp, (buf + startPos))) {
-    //            v.push_back(comp);
-    //        }
-    //    }
-    //    RbClient rbClient;
     tabCompletionInfo tInfo = getTabCompletionInfo(buf);
-    printData(tInfo.matchingCompletions, 2, 36);
+    printData(tInfo.completions, 2, 36);
 
     // debug
     if (debug) {
@@ -444,7 +516,7 @@ int escapeCallback(const char *buf, size_t len, char c) {
         printData(dv, 2);
 
     }
-    getTabCompletionInfo(buf);
+
     // restore prompt
     linenoiceSetCursorPos(0);
     std::cout << nl << nl << prompt << buf;
@@ -508,13 +580,17 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
     linenoiseSetCharacterCallback(dotCallback, '.');
     linenoiseSetCharacterCallback(bracketCallback, ')');
     linenoiseSetCharacterCallback(bracketCallback, '(');
-    linenoiseSetCharacterCallback(assignCallback, '=');
+    //linenoiseSetCharacterCallback(assignCallback, '=');
     linenoiseSetCharacterCallback(quotationCallback, '"');
     linenoiseSetCharacterCallback(listSeparatorCallback, ',');
+    //linenoiseSetCharacterCallback(spaceCallback, ' ');
 
     linenoiseSetCharacterCallback(escapeCallback, 27);
     linenoiseSetCharacterCallback(backspaceCallback, ctrl('H')); // works in netbeans pseudo terminal
     linenoiseSetCharacterCallback(backspaceCallback, 0x7f); // works in gnome terminal
+
+    /* help */
+    //linenoiseSetCharacterCallback(printGeneralHelp, '?');
 
 
     /* Load history from file. The history file is just a plain text file
@@ -537,19 +613,20 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
         cmd = line;
         boost::trim(cmd);
 
-        if (cmd == "clr") {
+        if (cmd == "clr" || cmd == "clear") {
             linenoiseClearScreen();
-        } else if (cmd == "?") {
-            printGeneralHelp();
         } else if (cmd == "debug=false") {
             debug = false;
         } else if (cmd == "debug=true") {
             debug = true;
         } else if (repoClient.processCommand(config->getRepositories(), cmd)) {
 
+        } else if (cmd == "?") {
+            printGeneralHelp("", 0, 'c');
         } else {
             // interpret Rev statement
             if (result == 0 || result == 2) {
+                prompt = default_prompt;
                 commandLine = cmd;
                 editorMachine.reset();
 
@@ -594,7 +671,7 @@ void RbClient::notifyGetIndexComplete(HttpResponse httpResponse, RepositoryInfo 
         std::cout << nl << "The request to fetch index from '" << revRepository.GetName() << "' failed: \n" << httpResponse.exception << nl;
 
     } else {
-        linenoiseClearScreen();
+        //linenoiseClearScreen();
         std::cout << nl << TerminalFormatter::makeUnderlined("File index of '" + revRepository.GetName() + "'") << nl;
 
         for (int i = 0; i < httpResponse.data.size() - 1; i += 2) {
@@ -618,12 +695,14 @@ void RbClient::notifyGetFileComplete(HttpResponse httpResponse, RepositoryInfo r
         std::string tmp = "    " + boost::regex_replace(httpResponse.data.at(1), boost::regex("\n"), "\n    ");
         std::cout << tmp << nl << nl;
 
-        std::string filename = config->getDownloadDir() + Filesystem::directorySeparator() + httpResponse.data.at(0);
-        std::cout << "Save file to '" + filename + "' Y/N ?:";
-        char ch;
-        std::cin.get(ch);
-        if (ch == 'y' || ch == 'Y') {
-            if (Filesystem::saveToFile(httpResponse.data.at(0), config->getDownloadDir(), httpResponse.data.at(1))) {
+        fs::path saveDir = getWd();
+        saveDir /= "downloads";
+        std::cout << "Save file to '" + saveDir.string() + "' Y/N ?: (Y) ";
+        char answer;
+        std::cin.get(answer);
+        if (answer == 'y' || answer == 'Y' || answer == '\n') {
+
+            if (Filesystem::saveToFile(httpResponse.data.at(0), saveDir.string(), httpResponse.data.at(1))) {
                 std::cout << "File saved!" << nl;
             } else {
                 std::cout << "Something went wrong and the file couldn't be saved!" << nl;

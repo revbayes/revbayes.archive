@@ -12,7 +12,8 @@
 #include "MatrixReal.h"
 #include "ModelVector.h"
 #include "RealPos.h"
-#include "RlMultivariatePhyloProcess.h"
+#include "Probability.h"
+#include "RlMultivariateRealNodeValTree.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -25,15 +26,6 @@ Func_tanhBranchTree* Func_tanhBranchTree::clone( void ) const {
     return new Func_tanhBranchTree(*this);
 }
 
-/*
-RevBayesCore::HyperbolicTangentBranchTree* HyperbolicTangentBranchTree::createFunction(void) const {
-    
-    // todo: implement this or find better solution (Sebastian)
-    throw RbException("Missing implemention in HyperbolicTangentBranchTree::createFunction");
-    
-    return NULL;
-}
-*/
 
 /* Get argument rules */
 const ArgumentRules& Func_tanhBranchTree::getArgumentRules( void ) const {
@@ -44,10 +36,10 @@ const ArgumentRules& Func_tanhBranchTree::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "process", true, RevLanguage::MultivariatePhyloProcess::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree"      , RevLanguage::TimeTree::getClassTypeSpec()                   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "process"   , RevLanguage::MultivariateRealNodeValTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "offset"    , Real::getClassTypeSpec()                                    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0)) );
+        argumentRules.push_back( new ArgumentRule( "traitindex", Integer::getClassTypeSpec()                                 , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
         
         rulesSet = true;
     }
@@ -77,7 +69,7 @@ const TypeSpec& Func_tanhBranchTree::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_tanhBranchTree::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = ModelVector<RealPos>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<Probability>::getClassTypeSpec();
     
     return returnTypeSpec;
 }
@@ -97,7 +89,7 @@ RevPtr<Variable> Func_tanhBranchTree::execute() {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode< RevBayesCore::MultivariatePhyloProcess >* process = static_cast<const MultivariatePhyloProcess &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::MultivariateRealNodeContainer >* process = static_cast<const MultivariateRealNodeValTree &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::TypedDagNode< double >* offset = static_cast<const Real &>( args[2].getVariable()->getRevObject() ).getDagNode();
 
@@ -107,7 +99,7 @@ RevPtr<Variable> Func_tanhBranchTree::execute() {
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
-    ModelVector<RealPos>* wrappedresult = new ModelVector<RealPos>(dag);
+    ModelVector<Probability>* wrappedresult = new ModelVector<Probability>(dag);
     
     return new Variable( wrappedresult );
 }
@@ -118,7 +110,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << " tanhbranchtree(";
    
     o << "tree=";
-    if ( args[0].getVariable() != NULL ) {
+    if ( argsProcessed && args[0].getVariable() != NULL ) {
         o << args[0].getVariable()->getName();
     } else {
         o << "?";
@@ -126,7 +118,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "process=";
-    if ( args[1].getVariable() != NULL ) {
+    if ( argsProcessed && args[1].getVariable() != NULL ) {
         o << args[1].getVariable()->getName();
     } else {
         o << "?";
@@ -134,7 +126,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "offset=";
-    if ( args[2].getVariable() != NULL ) {
+    if ( argsProcessed && args[2].getVariable() != NULL ) {
         o << args[2].getVariable()->getName();
     } else {
         o << "?";
@@ -142,7 +134,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "traitindex=";
-    if ( args[3].getVariable() != NULL ) {
+    if ( argsProcessed && args[3].getVariable() != NULL ) {
         o << args[3].getVariable()->getName();
     } else {
         o << "?";

@@ -9,7 +9,6 @@
 #include "Func_treeHeight.h"
 #include "ModelVector.h"
 #include "RlTimeTree.h"
-#include "RateMatrix.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "Topology.h"
@@ -53,7 +52,7 @@ const ArgumentRules& Func_treeHeight::getArgumentRules( void ) const {
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, TimeTree::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

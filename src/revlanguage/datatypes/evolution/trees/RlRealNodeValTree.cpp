@@ -71,6 +71,8 @@ RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &
         return new Variable( new Real( 0 ) );
     }
 
+    std::cerr << "sending to core execute method\n";
+    
     return ModelObject<RevBayesCore::RealNodeContainer>::executeMethod( name, args );
 }
 
@@ -92,37 +94,49 @@ const TypeSpec& RealNodeValTree::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const RevLanguage::MethodTable& RealNodeValTree::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const RevLanguage::MethodTable& RealNodeValTree::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false )
+    if ( !methodsSet )
     {
-        
-        ArgumentRules* meanArgRules = new ArgumentRules();
-        methods.addFunction("mean", new MemberFunction<RealNodeValTree,Real>( this, meanArgRules ) );
-        
-        ArgumentRules* tipmeanArgRules = new ArgumentRules();
-        methods.addFunction("tipMean", new MemberFunction<RealNodeValTree,Real>( this, tipmeanArgRules ) );
-        
-        ArgumentRules* stdevArgRules = new ArgumentRules();
-        methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
-        
-        ArgumentRules* rootArgRules = new ArgumentRules();
-        methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), rootArgRules ) );
-        
-        ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
-        clampArgRules->push_back(new ArgumentRule("dataIndex", false, Natural::getClassTypeSpec()));
-        methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::RealNodeContainer>::getMethods() );
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
+    return myMethods;
+}
+
+
+/** Make member methods for this class */
+RevLanguage::MethodTable RealNodeValTree::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+
+    ArgumentRules* meanArgRules = new ArgumentRules();
+    methods.addFunction("mean", new MemberFunction<RealNodeValTree,Real>( this, meanArgRules ) );
+    
+    ArgumentRules* tipmeanArgRules = new ArgumentRules();
+    methods.addFunction("tipMean", new MemberFunction<RealNodeValTree,Real>( this, tipmeanArgRules ) );
+    
+    ArgumentRules* stdevArgRules = new ArgumentRules();
+    methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
+    
+    ArgumentRules* rootArgRules = new ArgumentRules();
+    methods.addFunction("rootVal", new MemberFunction<RealNodeValTree,RealPos>(  this, rootArgRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"     , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+        
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::RealNodeContainer>::makeMethods() );
     
     return methods;
 }

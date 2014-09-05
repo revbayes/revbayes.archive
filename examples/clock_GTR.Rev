@@ -26,7 +26,7 @@ tau ~ cBDP(origin=org, diversification, turnover, nTaxa=taxaCount, names=names)
 moves[4] <- mNNI(tau, weight=1.0)
 moves[5] <- mFNPR(tau, weight=1.0)
 moves[6] <- mSubtreeScale(tau, weight=5.0)
-moves[7] <- mTreeScale(tau, lambda=1.0, tune=true, weight=3.0)
+moves[7] <- mSubtreeScale(tau, weight=5.0)
 moves[8] <- mNodeTimeSlideUniform(tau, weight=10.0)
 moves[9] <- mRootTimeSlide(tau, delta=1.0, tune=true, weight=3.0)
 
@@ -56,7 +56,6 @@ moves[11] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=6.0)
 # the rate matrix
 Q := gtr(er,pi)
 
-
 clockRate <- 1.0
 
 # the sequence evolution model
@@ -69,15 +68,18 @@ mymodel <- model(pi)
 
 monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
 monitors[2] <- filemonitor(filename="gtr_clock.trees",printgen=10, separator = "	", tau)
-monitors[3] <- screenmonitor(printgen=10, separator = "	", pi)
+monitors[3] <- screenmonitor(printgen=10, pi)
 
+"run model"
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
-mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(generations=2000)
+mymcmc.burnin(generations=100,tuningInterval=100)
+mymcmc.run(generations=200)
+
+"analyze output"
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
