@@ -15,12 +15,13 @@
 #include "BrownianPhyloProcess.h"
 #include "ModelVector.h"
 #include "RlTypedDistribution.h"
+#include "RlRealNodeValTree.h"
 #include "RlSimplex.h"
 #include "Real.h"
 
 namespace RevLanguage {
 
-    class Dist_brownian :  public TypedDistribution< ModelVector<Real>  > {
+    class Dist_brownian :  public TypedDistribution< RealNodeValTree  > {
         
     public:
         Dist_brownian( void ) {};
@@ -47,7 +48,7 @@ namespace RevLanguage {
         
         RevPtr<const Variable>                          tree;
         RevPtr<const Variable>                          sigma;
-        RevPtr<const Variable>                          rootval;
+        RevPtr<const Variable>                          drift;
         
     };
     

@@ -38,17 +38,29 @@ namespace RevBayesCore {
         // Parameter management functions
         std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
         void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+
+        // special handling of state changes
+        void                                                    keepSpecialization(DagNode* affecter);
+        void                                                    restoreSpecialization(DagNode *restorer);
+        void                                                    touchSpecialization(DagNode *toucher);
         
     private:
         // helper methods
         void                                                    simulate();
         double                                                  recursiveLnProb(const TopologyNode& n);
         void                                                    recursiveSimulate(const TopologyNode& n);
-        
+
+        // special handling of state changes
+        void                                                    flagNodes();        
+        void                                                    corruptAll();
+        void                                                    recursiveCorruptAll(const TopologyNode& n);
+
         // private members
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< PrecisionMatrix >*                  sigma;
         
+        std::vector<bool>                                       dirtyNodes;
+        std::vector<double>                                     nodeLogProbs;
     };
     
 }

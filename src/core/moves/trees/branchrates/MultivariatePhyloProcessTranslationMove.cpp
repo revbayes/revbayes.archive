@@ -68,13 +68,30 @@ void MultivariatePhyloProcessTranslationMove::recursiveTranslate(const TopologyN
 
     MatrixReal& value = variable->getValue();
     size_t index = from.getIndex();
-    value[index][component] += slide;
+    if (! variable->getValue().isClamped(index,component))   {
+        value[index][component] += slide;
+    }
     
+    variable->addTouchedElementIndex(index);
+
     // propagate forward
     size_t numChildren = from.getNumberOfChildren();
     
     for (size_t i = 0; i < numChildren; ++i) {
         recursiveTranslate(from.getChild(i), component, slide);
+    }
+    
+}
+
+void MultivariatePhyloProcessTranslationMove::recursiveTouch(const TopologyNode& from)  {
+    
+    variable->addTouchedElementIndex(from.getIndex());
+
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveTouch(from.getChild(i));
     }
     
 }
@@ -91,8 +108,7 @@ void MultivariatePhyloProcessTranslationMove::printParameterSummary(std::ostream
 void MultivariatePhyloProcessTranslationMove::rejectSimpleMove( void ) {
     
     variable->getValue() = storedValue;
-    variable->clearTouchedElementIndices();
-    
+    recursiveTouch(variable->getValue().getTimeTree()->getRoot());
 }
 
 void MultivariatePhyloProcessTranslationMove::swapNode(DagNode *oldN, DagNode *newN) {

@@ -5,8 +5,8 @@
 
 @interface WindowControllerRateMatrix : NSWindowController {
 
-	IBOutlet NSButton*       okButton;
-    ParmRateMatrix*          myParm;
+	IBOutlet NSButton*   okButton;
+    ParmRateMatrix*      myParm;
 }
 
 - (id)initWithParm:(ParmRateMatrix*)p;

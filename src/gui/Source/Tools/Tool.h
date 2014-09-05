@@ -9,26 +9,26 @@
 
 @interface Tool : RbItem <NSCoding> {
 
-    AnalysisView*                 myAnalysisView;
-    NSMutableArray*               inlets;
-    NSMutableArray*               outlets;
-	int                           flagCount;
-	BOOL                          touchOnRevival;
-    BOOL                          isVisited;
-    BOOL                          isCurrentlyExecuting;
-    BOOL                          isLoop;
-    BOOL                          isDirty;
-    YRKSpinningProgressIndicator* progressIndicator;
-    NSString*                     workspaceName;
+    AnalysisView*                      myAnalysisView;
+    NSMutableArray*                    inlets;
+    NSMutableArray*                    outlets;
+	int                                flagCount;
+	BOOL                               touchOnRevival;
+    BOOL                               isVisited;
+    BOOL                               isCurrentlyExecuting;
+    BOOL                               isLoop;
+    BOOL                               isDirty;
+    YRKSpinningProgressIndicator*      progressIndicator;
+    NSString*                          workspaceName;
 }
 
-@property (readwrite)        int       flagCount;
-@property (readwrite)        BOOL      touchOnRevival;
-@property (readwrite)        BOOL      isCurrentlyExecuting;
-@property (readwrite)        BOOL      isLoop;
-@property (readwrite)        BOOL      isDirty;
-@property (readwrite)        BOOL      isVisited;
-@property (readwrite,retain) NSString* workspaceName;
+@property (nonatomic)        int       flagCount;
+@property (nonatomic)        BOOL      touchOnRevival;
+@property (nonatomic)        BOOL      isCurrentlyExecuting;
+@property (nonatomic)        BOOL      isLoop;
+@property (nonatomic)        BOOL      isDirty;
+@property (nonatomic)        BOOL      isVisited;
+@property (nonatomic,strong) NSString* workspaceName;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;

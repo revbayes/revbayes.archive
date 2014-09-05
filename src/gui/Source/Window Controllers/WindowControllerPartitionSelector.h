@@ -7,29 +7,29 @@
 
 @interface WindowControllerPartitionSelector : NSWindowController {
 
-    IBOutlet NSScrollView*        firstTaxaView;
-    IBOutlet NSScrollView*        secondTaxaView;
-    IBOutlet NSPopUpButton*       firstTaxaSetsButton;
-    IBOutlet NSPopUpButton*       secondTaxaSetsButton;
-    IBOutlet NSButton*            moveDownTaxaButton;
-    IBOutlet NSButton*            moveUpTaxaButton;
-    IBOutlet NSTextField*         nameField;
+    IBOutlet NSScrollView*    firstTaxaView;
+    IBOutlet NSScrollView*    secondTaxaView;
+    IBOutlet NSPopUpButton*   firstTaxaSetsButton;
+    IBOutlet NSPopUpButton*   secondTaxaSetsButton;
+    IBOutlet NSButton*        moveDownTaxaButton;
+    IBOutlet NSButton*        moveUpTaxaButton;
+    IBOutlet NSTextField*     nameField;
 
-	NSMatrix*                     firstMatrix;
-	NSMatrix*                     secondMatrix;
-    NSMutableArray*               taxonList;
-    NSMutableArray*               firstTaxonList;
-    NSMutableArray*               secondTaxonList;
-	int                           numberOfOutlets;
-	float                         cellHeight;
-    float                         longestNameLength;
-    NSString*                     bpName;
+	NSMatrix*                 firstMatrix;
+	NSMatrix*                 secondMatrix;
+    NSMutableArray*           taxonList;
+    NSMutableArray*           firstTaxonList;
+    NSMutableArray*           secondTaxonList;
+	int                       numberOfOutlets;
+	float                     cellHeight;
+    float                     longestNameLength;
+    NSString*                 bpName;
     
-    ParmTree*                     myParm;
-    ToolModel*                    myTool;
+    ParmTree*                 myParm;
+    ToolModel*                myTool;
 }
 
-@property (readwrite,retain) NSString* bpName;
+@property (nonatomic,strong) NSString* bpName;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)changeNameAction:(id)sender;

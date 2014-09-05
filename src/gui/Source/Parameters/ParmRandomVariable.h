@@ -43,9 +43,9 @@
     int                                       indexOfSelectedPartitionModel;
 }
 
-@property (readwrite) BOOL appliesToNode;
-@property (readwrite) BOOL isClamped;
-@property (readwrite) BOOL monitorValue;
+@property (nonatomic) BOOL appliesToNode;
+@property (nonatomic) BOOL isClamped;
+@property (nonatomic) BOOL monitorValue;
 
 - (IBAction)changeDistributionAction:(id)sender;
 - (IBAction)changeIsClampedAction:(id)sender;

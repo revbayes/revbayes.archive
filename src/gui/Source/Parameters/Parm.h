@@ -8,37 +8,37 @@
 
 @interface Parm : RbItem <NSCoding> {
 
-    NSMutableArray*           parents;           // the parents of this parameter
-    NSMutableArray*           children;          // the children of this parameter
-    NSString*                 parmName;          // the parameter name
-    int                       parmType;          // the parameter type
-    int                       domain;            // the domain of the parameter (e.g., real numbers, integers, etc.)
-	ToolModel*                myModel;           // a pointer to the model tool
-	NSMutableArray*           containingPlates;  // the plates that this parameter sits on
-	NSWindow*                 parmsWindow;       // a pointer to the window the parameter lives on
-    int                       drawingIndex;
-    BOOL                      isConstant;        // is the parameter a constant
-    BOOL                      isVector;
-    int                       dimensions;
+    NSMutableArray*                       parents;           // the parents of this parameter
+    NSMutableArray*                       children;          // the children of this parameter
+    NSString*                             parmName;          // the parameter name
+    int                                   parmType;          // the parameter type
+    int                                   domain;            // the domain of the parameter (e.g., real numbers, integers, etc.)
+	ToolModel*                            myModel;           // a pointer to the model tool
+	NSMutableArray*                       containingPlates;  // the plates that this parameter sits on
+	NSWindow*                             parmsWindow;       // a pointer to the window the parameter lives on
+    int                                   drawingIndex;
+    BOOL                                  isConstant;        // is the parameter a constant
+    BOOL                                  isVector;
+    int                                   dimensions;
 
-	IBOutlet NSButton*        cancelButton;
-	IBOutlet NSButton*        helpButton;
-	IBOutlet NSTextField*     nameField;
-	IBOutlet NSTextField*     nameLabel;
-	IBOutlet NSButton*        okButton;
+	IBOutlet NSButton*                    cancelButton;
+	IBOutlet NSButton*                    helpButton;
+	IBOutlet NSTextField*                 nameField;
+	IBOutlet NSTextField*                 nameLabel;
+	IBOutlet NSButton*                    okButton;
 }
 
-@property (readwrite)        int          domain;
-@property (readwrite)        int          drawingIndex;
-@property (retain)           NSString*    parmName;
-@property (readwrite)        int          parmType;
-@property (readwrite,assign) NSWindow*    parmsWindow;
-@property (readwrite,assign) ToolModel*   myModel;
-@property (readwrite)        BOOL         isConstant;
-@property (assign)           NSTextField* nameField;
-@property (assign)           NSTextField* nameLabel;
-@property (readwrite)        BOOL         isVector;
-@property (readwrite)        int          dimensions;
+@property (nonatomic)        int          domain;
+@property (nonatomic)        int          drawingIndex;
+@property (nonatomic,strong) NSString*    parmName;
+@property (nonatomic)        int          parmType;
+@property (nonatomic,strong) NSWindow*    parmsWindow;
+@property (nonatomic,strong) ToolModel*   myModel;
+@property (nonatomic)        BOOL         isConstant;
+@property (nonatomic,strong) NSTextField* nameField;
+@property (nonatomic,strong) NSTextField* nameLabel;
+@property (nonatomic)        BOOL         isVector;
+@property (nonatomic)        int          dimensions;
 
 - (void)addChild:(Parm*)p;
 - (void)addParent:(Parm*)p;

@@ -6,13 +6,13 @@
 
 @interface AnalysisTools : NSObject <NSCoding> {
 
-	NSString*                             analysisName;
-	NSMutableArray*                       tools;
-	WindowControllerNoteBook*             noteBook;
-	NSMutableAttributedString*            notebookContents;
+	NSString*                                analysisName;
+	NSMutableArray*                          tools;
+	WindowControllerNoteBook*                noteBook;
+	NSMutableAttributedString*               notebookContents;
 }
 
-@property (readonly,retain) NSMutableArray* tools;
+@property (nonatomic,strong) NSMutableArray* tools;
 
 - (NSString*)analysisName;
 - (void)scaleToolsByScale:(float)s andFactor:(float)f;

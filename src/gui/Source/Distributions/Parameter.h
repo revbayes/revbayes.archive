@@ -6,18 +6,18 @@
 
 @interface Parameter : NSObject <NSCoding> {
 
-	NSString*                parameterName;
-	NSString*                parameterDescription;
-	DistributionGui*         myDist;
-	int                      type;
-	Parm*                    refParm;
+	NSString*                                 parameterName;
+	NSString*                                 parameterDescription;
+	DistributionGui*                          myDist;
+	int                                       type;
+	Parm*                                     refParm;
 }
 
-@property (retain) NSString* parameterName;
-@property (retain) NSString* parameterDescription;
-@property (readwrite,assign) Parm* refParm;
-@property (readwrite) int type;
-@property (readwrite,assign) DistributionGui* myDist;
+@property (nonatomic,strong) NSString*        parameterName;
+@property (nonatomic,strong) NSString*        parameterDescription;
+@property (nonatomic,strong) Parm*            refParm;
+@property (nonatomic)        int              type;
+@property (nonatomic,strong) DistributionGui* myDist;
 
 - (id)initWithDist:(DistributionGui*)d;
 - (id)initWithParameter:(Parameter*)p;

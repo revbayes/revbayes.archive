@@ -11,24 +11,24 @@
 
 @interface RbDataCell : NSObject <NSCoding> {
 
-	BOOL                 isDiscrete;
-	size_t               row;
-	size_t               column;
-	int                  dataType;
-	size_t               numStates;
-	BOOL                 isAmbig;
-    BOOL                 isGapState;
-	NSNumber*            val;
+	BOOL                               isDiscrete;
+	size_t                             row;
+	size_t                             column;
+	int                                dataType;
+	size_t                             numStates;
+	BOOL                               isAmbig;
+    BOOL                               isGapState;
+	NSNumber*                          val;
 }
 
-@property (readwrite)        BOOL      isDiscrete;
-@property (readwrite)        size_t    row;
-@property (readwrite)        size_t    column;
-@property (readwrite)        int       dataType;
-@property (readwrite)        size_t    numStates;
-@property (readwrite)        BOOL      isAmbig;
-@property (readwrite)        BOOL      isGapState;
-@property (readwrite,retain) NSNumber* val;
+@property (nonatomic)        BOOL      isDiscrete;
+@property (nonatomic)        size_t    row;
+@property (nonatomic)        size_t    column;
+@property (nonatomic)        int       dataType;
+@property (nonatomic)        size_t    numStates;
+@property (nonatomic)        BOOL      isAmbig;
+@property (nonatomic)        BOOL      isGapState;
+@property (nonatomic,strong) NSNumber* val;
 
 - (float)getContinuousState;
 - (char)getDiscreteState;

@@ -159,9 +159,9 @@ double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const Precis
    
     double trace = 0;
     
-    const MatrixReal& y = z.getInverse();
+    const MatrixReal& invz = z.getInverse();
     for (size_t i=0; i<dim; i++)   {
-        trace += kappa * y[i][i];
+        trace += kappa * invz[i][i];
     }
     
     ret -= 0.5 * trace;

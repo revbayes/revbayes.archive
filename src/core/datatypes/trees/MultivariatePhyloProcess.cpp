@@ -48,6 +48,7 @@ MultivariatePhyloProcess& MultivariatePhyloProcess::operator=(const Multivariate
     if (this != &p) {
         MatrixReal::operator=(p);
         tree = p.getTimeTree();
+        clampVector = p.clampVector;
     }
     
     return *this;
@@ -69,26 +70,24 @@ void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::ve
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
         rv = getMean(k->getValue());
     }
+    else if ( n == "tipMean" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        rv = getMeanOverTips(k->getValue());
+    }
     else if ( n == "stdev" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
-        rv = getStdev(k->getValue());        
+        rv = getStdev(k->getValue());
     }
-    /*
-    else if ( n == "clampAt" )
+    else if ( n == "rootVal" )
     {
-        const TypedDagNode< ContinuousCharacterData >* data = static_cast<const TypedDagNode<ContinuousCharacterData> *>( args[0] );
-        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[1] );
-        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[2] );
-        // clampAt(&data->getValue(), k->getValue(), l->getValue());   
-        rv = 0;
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        rv = getRootVal(k->getValue());
     }
-    */
-    else
-    {
+    else    {
         throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
     }
-    
 }
 
 bool MultivariatePhyloProcess::isClamped(size_t index, size_t k) const   {
@@ -97,10 +96,7 @@ bool MultivariatePhyloProcess::isClamped(size_t index, size_t k) const   {
 
 void MultivariatePhyloProcess::clampAt(const ContinuousCharacterData* data, size_t k, size_t l) {
 
-    std::cerr << "clamp\n";
-    std::cerr << k << '\t' << l << '\n';
     recursiveClampAt(getTimeTree()->getRoot(),data,k-1,l-1);
-    std::cerr << "clamp ok\n";
 }
 
 
@@ -110,18 +106,16 @@ void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const 
         
         // get taxon index
         size_t index = from.getIndex();
-
-        std::string taxon = data->getTaxonNameWithIndex(index);
+        std::string taxon = tree->getTipNames()[index];
+        size_t dataindex = data->getIndexOfTaxon(taxon);
         
-        std::cerr << index << '\t' << taxon << '\t' << data->getCharacter(index,l).getMean() << '\t' << data->getCharacter(index,l).getVariance() << '\n';
-        
-        if (data->getCharacter(index,l).getVariance() == 0) {
-           (*this)[index][k] = data->getCharacter(index,l).getMean();
+        if (data->getCharacter(dataindex,l).getMean() != -1000) {
+           (*this)[index][k] = data->getCharacter(dataindex,l).getMean();
             clampVector[index][k] = true;
         }
-    }
-    else    {
-        std::cerr << ".";
+        else    {
+            std::cerr << "taxon : " << taxon << " is missing for trait " << l+1 << '\n';
+        }
     }
 
     // propagate forward
@@ -134,7 +128,7 @@ void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const 
 
 void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
 
-    std::vector<std::vector<double> > c(getDim(), std::vector<double>(getDim(),0) );
+    PrecisionMatrix c(getDim());
         
     for (size_t i=0; i<getDim(); i++)   {
         for (size_t j=0; j<getDim(); j++)   {
@@ -164,7 +158,23 @@ void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
     }    
 }
 
-void MultivariatePhyloProcess::recursiveGetBranchContrasts(const TopologyNode& from, std::vector<std::vector<double> >& c, int& n)  const   {
+PrecisionMatrix MultivariatePhyloProcess::getBranchContrasts(int& n) const  {
+
+    PrecisionMatrix c(getDim());
+        
+    for (size_t i=0; i<getDim(); i++)   {
+        for (size_t j=0; j<getDim(); j++)   {
+            c[i][j] = 0;
+        }
+    }
+
+    n = 0;
+    recursiveGetBranchContrasts(getTimeTree()->getRoot(),c,n);
+
+    return c;
+}
+
+void MultivariatePhyloProcess::recursiveGetBranchContrasts(const TopologyNode& from, PrecisionMatrix& c, int& n)  const   {
 
     if (! from.isRoot())    {
 
@@ -206,6 +216,18 @@ double MultivariatePhyloProcess::getMean(int k) const {
     return e1;
 }
 
+double MultivariatePhyloProcess::getMeanOverTips(int k) const {
+    
+    int n = 0;
+    double e1 = 0;
+    double e2 = 0;
+    recursiveGetStatsOverTips(k, getTimeTree()->getRoot(), e1, e2, n);
+    e1 /= n;
+    e2 /= n;
+    e2 -= e1 * e1;
+    return e1;
+}
+
 double MultivariatePhyloProcess::getStdev(int k) const {
     
     int n = 0;
@@ -231,6 +253,24 @@ void MultivariatePhyloProcess::recursiveGetStats(int k, const TopologyNode& from
     size_t numChildren = from.getNumberOfChildren();
     for (size_t i = 0; i < numChildren; ++i) {
         recursiveGetStats(k,from.getChild(i),e1,e2,n);
+    }
+    
+}
+
+
+void MultivariatePhyloProcess::recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const {
+
+    if(from.isTip())   {
+        double tmp = (*this)[from.getIndex()][k];
+
+        n++;
+        e1 += tmp;
+        e2 += tmp * tmp;
+    }
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveGetStatsOverTips(k,from.getChild(i),e1,e2,n);
     }
     
 }

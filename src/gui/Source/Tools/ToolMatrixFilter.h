@@ -10,7 +10,7 @@
 }
 
 - (void)closeControlPanel;
-- (void)encodeWithCoder:(NSCoder *)aCoder;
+- (void)encodeWithCoder:(NSCoder*)aCoder;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (NSMutableAttributedString*)sendTip;
