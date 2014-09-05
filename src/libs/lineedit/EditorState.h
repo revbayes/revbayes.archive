@@ -31,8 +31,8 @@ public:
     StateType getType() {
         return type;
     }
-    
-    std::string getTrigger(){
+
+    std::string getTrigger() {
         return trigger;
     }
 
@@ -79,7 +79,7 @@ protected:
 
     StringVector completions;
     std::string hookChars; /** any of these triggers this state **/
-    StringVector hookStrings; 
+    StringVector hookStrings;
     char hookChar; // actual trigger
     std::string releaseChars; /** release for this state **/
     std::string subject; /** for example the function name **/
@@ -92,6 +92,8 @@ class StateIdle : public EditorState {
 public:
 
     StateIdle() : EditorState() {
+        //        hookChars = "\"";
+        //        releaseChars = "\"";
         description = "inIdle";
         type = ST_IDLE;
     }
@@ -163,10 +165,10 @@ public:
     }
 
     virtual bool tryRelease(std::string cmd, StateType type) {
-        if (type != this->type) { // cannot release unless current state is same type
+        if (!(type == this->type)) { // cannot release unless current state is same type
             return false;
         }
-        if (LineEditUtils().lastCharContains(cmd, releaseChars.c_str())) {
+        if (LineEditUtils().lastCharContains(cmd, releaseChars)) {
             return true;
         }
         return false;
@@ -178,7 +180,7 @@ public:
 
     StateDefiningArgument() : EditorState() {
         hookChars = ",";
-        releaseChars = " "; // note: this is negated
+        releaseChars = ",)";
         description = "StateDefiningArgument";
         type = ST_DEF_ARGUMENT;
     }
@@ -198,10 +200,13 @@ public:
     }
 
     virtual bool tryRelease(std::string cmd, StateType type) {
-        if (type != this->type) { // cannot release unless current state is same type
+        if (!(type == this->type
+                //|| type == ST_DEF_LIST
+                )) { // cannot release unless current state is same type
             return false;
         }
-        if (!LineEditUtils().lastCharContains(cmd, releaseChars)) { 
+
+        if (LineEditUtils().lastCharContains(cmd, releaseChars)) {
             return true;
         }
         return false;
@@ -218,8 +223,8 @@ public:
         description = "StateAssigning";
         type = ST_GENERIC_OPERATOR;
     }
-    
-    StateGenericOperator(std::string trigger){
+
+    StateGenericOperator(std::string trigger) {
         this->trigger = trigger;
         StateGenericOperator();
     }
@@ -232,7 +237,7 @@ public:
             return false;
         }
         LineEditUtils::FindLastInfo f = LineEditUtils().findLastOf(hookStrings, cmd, 0);
-        if(f.needle != ""){
+        if (f.needle != "") {
             trigger = f.needle;
             return true;
         }
@@ -246,51 +251,13 @@ public:
         }
         // same sequences that triggers also releases
         LineEditUtils::FindLastInfo f = LineEditUtils().findLastOf(hookStrings, cmd, 0);
-        if(f.needle != ""){
+        if (f.needle != "") {
             trigger = f.needle;
             return true;
         }
-//        if (LineEditUtils().lastCharContains(cmd, releaseChars)) { 
-//            return true;
-//        }
         return false;
     }
 };
-
-//class StateAssigningReference : public EditorState {
-//public:
-//
-//    StateAssigningReference() : EditorState() {
-//        hookChars = "";
-//        releaseChars = "any, non space character releases this state";
-//        description = "StateAssigningReference";
-//        type = ST_DEF_ARGUMENT;
-//    }
-//
-//    virtual bool tryHook(std::string cmd, StateType type) {
-//        if (type == this->type // cannot nest this state
-//                || type == ST_DEF_STRING // don't trigger if in middle of a string
-//                || type == ST_DEF_LIST// don't trigger if defining a list
-//                ) {
-//            return false;
-//        }
-//
-//        if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    virtual bool tryRelease(std::string cmd, StateType type) {
-//        if (type != this->type) { // cannot release unless current state is same type
-//            return false;
-//        }
-//        if (LineEditUtils().lastCharContains(cmd, " ")) { // space shouldn't release this state
-//            return false;
-//        }
-//        return true;
-//    }
-//};
 
 class StateAccessingMember : public EditorState {
 public:

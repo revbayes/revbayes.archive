@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of the Mixture class. 
- * A mixture object holds the mapping between parameter values and the indix of this parameters.
+ * A mixture object holds the mapping between parameter values and the index of this parameters.
  *
  *
  * @brief Declaration of the Mixture class
@@ -25,16 +25,16 @@
 namespace RevBayesCore {
     
     template <class mixtureType>
-    class MixtureDistribution : public TypedDistribution<mixtureType> {
+    class MixtureDistribution : public TypedDistribution<mixtureType>, public MemberObject<int> {
         
     public:
         // constructor(s)
         MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p);
-        MixtureDistribution(const MixtureDistribution<mixtureType> &n);
         
         // public member functions
         MixtureDistribution*                                clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
         const std::vector<mixtureType>&                     getParameterValues(void) const;
         size_t                                              getCurrentIndex(void) const;
         size_t                                              getNumberOfCategories(void) const;
@@ -68,100 +68,135 @@ namespace RevBayesCore {
 
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "VectorIndexOperator.h"
 
 #include <cmath>
 
 template <class mixtureType>
-RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p) : TypedDistribution<mixtureType>( new mixtureType( v->getValue()[0]) ), parameterValues( v ), probabilities( p ), index( 0 ) {
+RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p) : TypedDistribution<mixtureType>( new mixtureType( v->getValue()[0]) ),
+    parameterValues( v ),
+    probabilities( p ),
+    index( 0 )
+{
     
     *this->value = simulate();
 }
 
 
-template <class mixtureType>
-RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const MixtureDistribution<mixtureType> &n) : TypedDistribution<mixtureType>( n ), parameterValues( n.parameterValues ), probabilities( n.probabilities ), index( n.index ) {
-    // parameters are added automatically
-    
-    *(this->value) = simulate();
-}
-
-
 
 template <class mixtureType>
-RevBayesCore::MixtureDistribution<mixtureType>* RevBayesCore::MixtureDistribution<mixtureType>::clone( void ) const {
+RevBayesCore::MixtureDistribution<mixtureType>* RevBayesCore::MixtureDistribution<mixtureType>::clone( void ) const
+{
+
     return new MixtureDistribution<mixtureType>( *this );
 }
 
 
 
 template <class mixtureType>
-double RevBayesCore::MixtureDistribution<mixtureType>::computeLnProbability( void ) {
+double RevBayesCore::MixtureDistribution<mixtureType>::computeLnProbability( void )
+{
     
     return probabilities->getValue()[index];
 }
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
-    // only delegate when the toucher was our parameters
-    if ( affecter == parameterValues )
-        this->dagNode->getAffectedNodes( affected );
+void RevBayesCore::MixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+{
+    
+    if ( n == "getAllocationIndex" )
+    {
+        rv = int(index);
+    }
+    else
+    {
+        throw RbException("A mixture distribution does not have a member method called '" + n + "'.");
+    }
 }
 
 
 template <class mixtureType>
-size_t RevBayesCore::MixtureDistribution<mixtureType>::getCurrentIndex( void ) const {
+void RevBayesCore::MixtureDistribution<mixtureType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+{
+    // only delegate when the toucher was our parameters
+    if ( affecter == parameterValues )
+    {
+        this->dagNode->getAffectedNodes( affected );
+    }
+}
+
+
+template <class mixtureType>
+size_t RevBayesCore::MixtureDistribution<mixtureType>::getCurrentIndex( void ) const
+{
+
     return index;
 }
 
 
 template <class mixtureType>
-size_t RevBayesCore::MixtureDistribution<mixtureType>::getNumberOfCategories( void ) const {
+size_t RevBayesCore::MixtureDistribution<mixtureType>::getNumberOfCategories( void ) const
+{
+
     return probabilities->getValue().size();
 }
 
 
 template <class mixtureType>
-const std::vector<mixtureType>& RevBayesCore::MixtureDistribution<mixtureType>::getParameterValues( void ) const {
+const std::vector<mixtureType>& RevBayesCore::MixtureDistribution<mixtureType>::getParameterValues( void ) const
+{
     return parameterValues->getValue();
 }
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::keepSpecialization( DagNode* affecter ) {
+void RevBayesCore::MixtureDistribution<mixtureType>::keepSpecialization( DagNode* affecter )
+{
     // only do this when the toucher was our parameters
     if ( affecter == parameterValues )
+    {
         this->dagNode->keepAffected();
+    }
 }
 
 
 template <class mixtureType>
-const mixtureType& RevBayesCore::MixtureDistribution<mixtureType>::simulate() {
+const mixtureType& RevBayesCore::MixtureDistribution<mixtureType>::simulate()
+{
     
     const std::vector<double> &probs = probabilities->getValue();
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
     double u = rng->uniform01();
     index = 0;
-    while ( u > probs[index] ) {
+    while ( u > probs[index] )
+    {
         u -= probs[index];
         index++;
     }
-    return parameterValues->getValue()[index];
     
+    return parameterValues->getValue()[index];
 }
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::redrawValue( void ) {
+void RevBayesCore::MixtureDistribution<mixtureType>::redrawValue( void )
+{
+
     *(this->value) = simulate();
+
 }
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::setCurrentIndex(size_t i) {
+void RevBayesCore::MixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
+{
+
+    delete this->value;
+
     index = i;
-    *(this->value) = parameterValues->getValue()[i];
+    const mixtureType &tmp = parameterValues->getValue()[i];
+    
+    this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( tmp );
 }
 
 
@@ -196,9 +231,12 @@ void RevBayesCore::MixtureDistribution<mixtureType>::swapParameter( const DagNod
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagNode *restorer ) {
+void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagNode *restorer )
+{
+    
     // only do this when the toucher was our parameters
-    if ( restorer == parameterValues ) {
+    if ( restorer == parameterValues )
+    {
         *this->value = parameterValues->getValue()[index];
         this->dagNode->restoreAffected();
     }
@@ -206,12 +244,15 @@ void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagN
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType const &v) {
+void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType const &v)
+{
     
     const std::vector<mixtureType> &vals = parameterValues->getValue();
     // we need to catch the value and increment the index
-    for (index = 0; index < vals.size(); ++index) {
-        if ( vals[index] == v ) {
+    for (index = 0; index < vals.size(); ++index)
+    {
+        if ( vals[index] == v )
+        {
             break;
         }
     }
@@ -222,9 +263,11 @@ void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType const 
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher ) {
+void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher )
+{
     // only do this when the toucher was our parameters
-    if ( toucher == parameterValues ) {
+    if ( toucher == parameterValues )
+    {
         *this->value = parameterValues->getValue()[index];
         this->dagNode->touchAffected();
     }

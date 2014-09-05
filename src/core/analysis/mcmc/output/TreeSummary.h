@@ -46,85 +46,66 @@ namespace RevBayesCore {
     private:
         
         Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c);
-    
+        Sample<std::string>&                                                    findCladeSample(const std::string &n);
+        
         size_t                                                                  burnin;
         TreeTrace<treeType>                                                     trace;
-        std::map<std::string, unsigned int>                                     treeFrequencies;
-        std::map<std::string, unsigned int>                                     cladeFrequencies;
+//        std::map<std::string, unsigned int>                                     treeFrequencies;
+        std::vector<Sample<std::string> >                                       treeSamples;
+        std::vector<Sample<std::string> >                                       cladeSamples;
         std::map<std::string, std::map<std::string, std::vector<double> > >     conditionalCladeFrequencies;
     };
     
     
     template <>
-    inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b ) {
-        treeFrequencies.clear();
+    inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
+    {
         
-        if (b == -1)
-        {
-            burnin = trace.size() / 4;
-        }
-        else
-        {
-            burnin = size_t( b );
-        }
+        summarize( b );
         
-        for (size_t i = burnin; i < trace.size(); ++i) {
-            BranchLengthTree& tree = trace.objectAt( i );
-            std::string newick = TreeUtilities::uniqueNewickTopology( tree );
-            const std::map<std::string, unsigned int>::iterator& entry = treeFrequencies.find( newick );
-            if ( entry == treeFrequencies.end() ) {
-                treeFrequencies.insert( std::pair<std::string, unsigned int>(newick, 1));
-            } else {
-                entry->second++;
-            }
-        }
-        
-        // collect the samples
-        std::vector<Sample<std::string> > samples;
-        for (std::map<std::string, unsigned int>::const_iterator it = this->treeFrequencies.begin(); it != this->treeFrequencies.end(); ++it) {
-            samples.push_back( Sample<std::string>(it->first, it->second) );
-        }
-        
-        // sort the samples by frequency
-        sort(samples.begin(), samples.end());
-        
-        std::string bestNewick = samples.rbegin()->getValue();
+        std::string bestNewick = treeSamples.rbegin()->getValue();
         NewickConverter converter;
         BranchLengthTree* bestTree = converter.convertFromNewick( bestNewick );
-        size_t numTaxa = bestTree->getNumberOfTips();
         
         const std::vector<TopologyNode*> &nodes = bestTree->getNodes();
         std::vector<double> pp(nodes.size(),0.0);
-        std::vector<std::vector<double> > ages(nodes.size(),std::vector<double>());
+        std::vector<std::vector<double> > branchLengths(nodes.size(),std::vector<double>());
         double weight = 1.0 / (trace.size()-burnin);
         
-        for (size_t i = burnin; i < trace.size(); ++i) {
+        for (size_t i = burnin; i < trace.size(); ++i)
+        {
             BranchLengthTree& tree = trace.objectAt( i );
             const TopologyNode& root = tree.getRoot();
-            for (size_t j = numTaxa; j < nodes.size(); ++j) {
-                if ( root.containsClade(nodes[j], true) ) {
+            for (size_t j = 0; j < nodes.size(); ++j)
+            {
+                if ( root.containsClade(nodes[j], true) )
+                {
+                    size_t cladeIndex = root.getCladeIndex( nodes[j] );
                     pp[j] += weight;
-                    double tmrca = tree.getTmrca(*nodes[j]);
-                    //                double tmrca = 1.0;
-                    ages[j].push_back(tmrca);
+                    double bl = tree.getBranchLength( cladeIndex );
+                    branchLengths[j].push_back(bl);
                 }
             }
         }
         
         std::vector<double> meanBranchLengths;
-        for (std::vector<std::vector<double> >::iterator it = ages.begin(); it != ages.end(); ++it) {
+        for (std::vector<std::vector<double> >::iterator it = branchLengths.begin(); it != branchLengths.end(); ++it)
+        {
             double meanBranchLength = 0;
             const std::vector<double> &bl_samples = *it;
-            for (std::vector<double>::const_iterator j = bl_samples.begin(); j != bl_samples.end(); ++j) {
+            for (std::vector<double>::const_iterator j = bl_samples.begin(); j != bl_samples.end(); ++j)
+            {
                 meanBranchLength += *j;
             }
-            if ( bl_samples.size() > 0 ) {
+            if ( bl_samples.size() > 0 )
+            {
                 meanBranchLength /= double(bl_samples.size());
             }
             meanBranchLengths.push_back( meanBranchLength );
         }
         
-        for (size_t i = 0; i < nodes.size(); ++i) {
+        for (size_t i = 0; i < nodes.size(); ++i)
+        {
             bestTree->setBranchLength(i, meanBranchLengths[i]);
         }
         
@@ -136,19 +117,10 @@ namespace RevBayesCore {
     template <>
     inline TimeTree* TreeSummary<TimeTree>::map( int b ) 
     {
-        treeFrequencies.clear();
         
-        if (b == -1) 
-        {
-            burnin = trace.size() / 4;
-        }
-        else 
-        {
-            burnin = size_t( b );
-        }
+        summarize( b );
         
         double sampleSize = trace.size() - burnin;
-        
         
         double meanRootAge = 0.0;
         for (size_t i = burnin; i < trace.size(); ++i) 
@@ -159,81 +131,9 @@ namespace RevBayesCore {
             // add this root age to our variable
             meanRootAge += tree.getRoot().getAge();
             
-            // construct a unique newick string that we will use as an identifier
-            std::string newick = TreeUtilities::uniqueNewickTopology( tree );
-            
-            // increment the tree sample counter for this tree
-            const std::map<std::string, unsigned int>::iterator& entry = treeFrequencies.find( newick );
-            if ( entry == treeFrequencies.end() ) 
-            {
-                treeFrequencies.insert( std::pair<std::string, unsigned int>(newick, 1));
-            } 
-            else 
-            {
-                entry->second++;
-            }
-            
-            // get the conditional clades for this
-            std::vector<ConditionalClade> condClades;
-            std::vector<Clade> clades;
-            fillConditionalClades(tree.getRoot(), condClades, clades);
-            
-            
-            // first increment the clade frequency counter
-            // there need to be two loops because otherwise we count the the parent clade twice
-            for (size_t i = 0; i < clades.size(); ++i) 
-            {
-                const Clade & c = clades[i];
-                std::string parentString = c.toString();
-                const std::map<std::string, unsigned int>::iterator& entry = cladeFrequencies.find( parentString );
-                if ( entry == cladeFrequencies.end() ) 
-                {
-                    cladeFrequencies.insert( std::pair<std::string, unsigned int>(parentString, 1));
-                    conditionalCladeFrequencies.insert( std::pair<std::string, std::map<std::string, std::vector<double> > >(parentString, std::map<std::string, std::vector<double> >()) );
-                } 
-                else 
-                {
-                    entry->second++;
-                }
-            }
-            
-            for (size_t i = 0; i < condClades.size(); ++i) 
-            {
-                const ConditionalClade & cc = condClades[i];
-                const Clade &parent = cc.getParent();
-                const Clade &child  = cc.getChild();
-                
-                // now increment the conditional clade frequency counter
-                std::string parentString = parent.toString();
-                std::string childString = child.toString();
-                double childAge = child.getAge();
-                std::map<std::string, std::vector<double> >& parentEntry = conditionalCladeFrequencies.find( parentString )->second;
-                const std::map<std::string, std::vector<double> >::iterator& childEntry = parentEntry.find( childString );
-                if ( childEntry == parentEntry.end() ) 
-                {
-                    parentEntry.insert( std::pair<std::string, std::vector<double> >(childString, std::vector<double>(1,childAge) ));
-                } 
-                else 
-                {
-                    std::vector<double> &samples = childEntry->second;
-                    samples.push_back( childAge );
-                }
-
-            }
-            
         }
         
-        // collect the samples
-        std::vector<Sample<std::string> > samples;
-        for (std::map<std::string, unsigned int>::const_iterator it = this->treeFrequencies.begin(); it != this->treeFrequencies.end(); ++it) 
-        {
-            samples.push_back( Sample<std::string>(it->first, it->second) );
-        }
-        
-        // sort the samples by frequency
-        sort(samples.begin(), samples.end());
-        
-        std::string bestNewick = samples.rbegin()->getValue();
+        std::string bestNewick = treeSamples.rbegin()->getValue();
         NewickConverter converter;
         BranchLengthTree* bestTree = converter.convertFromNewick( bestNewick );
         TimeTree* bestTimeTree = TreeUtilities::convertTree( *bestTree );
@@ -250,7 +150,7 @@ namespace RevBayesCore {
                 n->getTaxaStringVector(taxa);
                 Clade c( taxa, 0.0 );
 
-                double cladeFreq = cladeFrequencies[c.toString()];
+                double cladeFreq = findCladeSample( c.toString() ).getFrequency();
                 double pp = cladeFreq / sampleSize;
                 n->addNodeParameter("posterior",pp);
                 
@@ -263,7 +163,7 @@ namespace RevBayesCore {
                     n->getParent().getTaxaStringVector(parentTaxa);
                     Clade parent( parentTaxa, 0.0 );
                     std::map<std::string, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent.toString()];
-                    double parentCladeFreq = cladeFrequencies[parent.toString()];
+                    double parentCladeFreq = findCladeSample( parent.toString() ).getFrequency();
                     const std::vector<double>& condCladeSamples = condCladeFreqs[c.toString()];
                     size_t condCladeSampleSize = condCladeSamples.size();
                     ccp = condCladeSampleSize / parentCladeFreq;
@@ -280,11 +180,12 @@ namespace RevBayesCore {
                 {
                     age = meanRootAge / sampleSize;
                 }
-                n->addNodeParameter("CCP",ccp);
+                n->addNodeParameter("ccp",ccp);
                 
                 // finally, we compute the mean conditional age
                 bestTimeTree->setAge(i, age);
             }
+            
         }
         
         return bestTimeTree;
@@ -292,8 +193,10 @@ namespace RevBayesCore {
 
 }
 
+#include "StringUtilities.h"
 #include "TopologyNode.h"
 
+#include <iomanip>
 #include <vector>
 
 template <class treeType>
@@ -340,11 +243,31 @@ RevBayesCore::Clade RevBayesCore::TreeSummary<treeType>::fillConditionalClades(c
 }
 
 
+template <class treeType>
+RevBayesCore::Sample<std::string>& RevBayesCore::TreeSummary<treeType>::findCladeSample(const std::string &n)
+{
+    
+    for (std::vector<Sample<std::string> >::iterator it=cladeSamples.begin(); it!= cladeSamples.end(); ++it)
+    {
+        if ( it->getValue() == n )
+        {
+            return *it;
+        }
+        
+    }
+    
+    throw RbException("Couldn't find a clade with name '" + n + "'.");
+}
+
+
+
 
 template <class treeType>
 void RevBayesCore::TreeSummary<treeType>::summarize( int b ) 
 {
-    treeFrequencies.clear();
+    
+    std::map<std::string, Sample<std::string> > treeAbsencePresence;
+    std::map<std::string, Sample<std::string> > cladeAbsencePresence;
     
     if (b == -1) 
     {
@@ -359,39 +282,251 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
     {
         treeType& tree = trace.objectAt( i );
         std::string newick = TreeUtilities::uniqueNewickTopology( tree );
-        const std::map<std::string, unsigned int>::iterator& entry = treeFrequencies.find( newick );
-        if ( entry == treeFrequencies.end() ) 
+        const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find( newick );
+        if ( entry == treeAbsencePresence.end() )
         {
-            treeFrequencies.insert( std::pair<std::string, unsigned int>(newick, 1));
-        } 
-        else
+            Sample<std::string> treeSample = Sample<std::string>(newick,0);
+            if ( i > burnin )
+            {
+                treeSample.setTrace( std::vector<double>(i - burnin,0.0) );
+            }
+            else
+            {
+                treeSample.setTrace( std::vector<double>() );
+            }
+            treeAbsencePresence.insert( std::pair<std::string, Sample<std::string> >(newick, treeSample));
+        }
+        
+        for (std::map<std::string, Sample<std::string> >::iterator it=treeAbsencePresence.begin(); it!=treeAbsencePresence.end(); ++it )
         {
-            entry->second++;
+            
+            if ( it->first == newick )
+            {
+                it->second.addObservation( true );
+            }
+            else
+            {
+                it->second.addObservation( false );
+            }
+            
+        }
+        
+        // get the conditional clades for this
+        std::vector<ConditionalClade> condClades;
+        std::vector<Clade> clades;
+        fillConditionalClades(tree.getRoot(), condClades, clades);
+        
+        
+        // first increment the clade frequency counter
+        // there need to be two loops because otherwise we count the the parent clade twice
+        for (size_t i = 0; i < clades.size(); ++i)
+        {
+            const Clade & c = clades[i];
+            std::string parentString = c.toString();
+            const std::map<std::string, Sample<std::string> >::iterator& entry = cladeAbsencePresence.find( newick );
+            if ( entry == cladeAbsencePresence.end() )
+            {
+                Sample<std::string> cladeSample = Sample<std::string>(parentString,0);
+                if ( i > burnin )
+                {
+                    cladeSample.setTrace( std::vector<double>(i - burnin,0.0) );
+                }
+                else
+                {
+                    cladeSample.setTrace( std::vector<double>() );
+                }
+                cladeAbsencePresence.insert( std::pair<std::string, Sample<std::string> >(parentString, cladeSample));
+                
+                conditionalCladeFrequencies.insert( std::pair<std::string, std::map<std::string, std::vector<double> > >(parentString, std::map<std::string, std::vector<double> >()) );
+
+            }
+            
+        }
+        
+        
+        
+        for (std::map<std::string, Sample<std::string> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
+        {
+            bool found = false;
+            for (size_t i = 0; i < clades.size(); ++i)
+            {
+                std::string c = clades[i].toString();
+                if ( it->first == c )
+                {
+                    found = true;
+                    break;
+                }
+                
+            }
+            
+            if ( found == true )
+            {
+                it->second.addObservation( true );
+            }
+            else
+            {
+                it->second.addObservation( false );
+            }
+            
+        }
+        
+        for (size_t i = 0; i < condClades.size(); ++i)
+        {
+            const ConditionalClade & cc = condClades[i];
+            const Clade &parent = cc.getParent();
+            const Clade &child  = cc.getChild();
+            
+            // now increment the conditional clade frequency counter
+            std::string parentString = parent.toString();
+            std::string childString = child.toString();
+            double childAge = child.getAge();
+            std::map<std::string, std::vector<double> >& parentEntry = conditionalCladeFrequencies.find( parentString )->second;
+            const std::map<std::string, std::vector<double> >::iterator& childEntry = parentEntry.find( childString );
+            if ( childEntry == parentEntry.end() )
+            {
+                parentEntry.insert( std::pair<std::string, std::vector<double> >(childString, std::vector<double>(1,childAge) ));
+            }
+            else
+            {
+                std::vector<double> &samples = childEntry->second;
+                samples.push_back( childAge );
+            }
+            
         }
     }
+    
+    // collect the samples
+    treeSamples.clear();
+    for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+    {
+        it->second.computeStatistics();
+        treeSamples.push_back( it->second );
+    }
+    
+    // sort the samples by frequency
+    sort(treeSamples.begin(), treeSamples.end());
+    
+    
+    // collect the samples
+    cladeSamples.clear();
+    for (std::map<std::string, Sample<std::string> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
+    {
+        it->second.computeStatistics();
+        cladeSamples.push_back( it->second );
+    }
+    
+    // sort the samples by frequency
+    sort(cladeSamples.begin(), cladeSamples.end());
 }
 
 
 
 template <class treeType>
-void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o) {
+void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o)
+{
     
-    // collect the samples
-    std::vector<Sample<std::string> > samples;
-    for (std::map<std::string, unsigned int>::const_iterator it = this->treeFrequencies.begin(); it != this->treeFrequencies.end(); ++it) 
-    {
-        samples.push_back( Sample<std::string>(it->first, it->second) );
-    }
-    
-    // sort the samples by frequency
-    sort(samples.begin(), samples.end());
+    std::stringstream ss;
+    ss << std::fixed;
+    ss << std::setprecision(4);
+
+    o << "========================================" << std::endl;
+    o << "Printing Posterior Distribution of Trees" << std::endl;
+    o << "========================================" << std::endl;
     
     // now the printing
-    o << "Samples\t\tProbability\t\tTree" << std::endl;
+    std::string s = "Samples";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << "\n" << s;
+    s = "Posterior";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "ESS";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "Tree";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    o << std::endl;
+    o << "----------------------------------------------------------------" << std::endl;
     double totalSamples = trace.size();
-    for (std::vector<Sample<std::string> >::reverse_iterator it = samples.rbegin(); it != samples.rend(); ++it) 
+    for (std::vector<Sample<std::string> >::reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
     {
-        o << it->getFrequency() << "\t\t\t" << it->getFrequency()/(totalSamples-burnin) << "\t\t\t" << it->getValue() << std::endl;
+        ss.str(std::string());
+        ss << it->getFrequency();
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        ss.str(std::string());
+        ss << it->getFrequency()/(totalSamples-burnin);
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        ss.str(std::string());
+        ss << it->getEss();
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        o << it->getValue();
+        o << std::endl;
+        
+    }
+    
+    
+    o << "\n\n\n=========================================" << std::endl;
+    o << "Printing Posterior Distribution of Clades" << std::endl;
+    o << "=========================================" << std::endl;
+    
+    
+    
+    // now the printing
+    s = "Samples";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << "\n" << s;
+    s = "Posterior";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "ESS";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "Clade";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    o << std::endl;
+    o << "--------------------------------------------------------------" << std::endl;
+    for (std::vector<Sample<std::string> >::reverse_iterator it = cladeSamples.rbegin(); it != cladeSamples.rend(); ++it)
+    {
+        
+        ss.str(std::string());
+        ss << it->getFrequency();
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        ss.str(std::string());
+        ss << it->getFrequency()/(totalSamples-burnin);
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        ss.str(std::string());
+        if ( it->getFrequency() <  totalSamples && it->getFrequency() > 0 )
+        {
+            ss << it->getEss();
+        }
+        else
+        {
+            ss << " - ";
+            
+        }
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        o << it->getValue();
+        o << std::endl;
     }
 
 }

@@ -12,11 +12,6 @@
     return ([[ValueInteger alloc] initWithNumber:0]);
 }
 
-- (void)dealloc {
-    
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
 	[super encodeWithCoder:aCoder];

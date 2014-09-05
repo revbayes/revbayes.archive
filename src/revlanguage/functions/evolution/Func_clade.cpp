@@ -46,7 +46,7 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const {
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "taxa", true, ModelVector<RlString>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "taxa", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

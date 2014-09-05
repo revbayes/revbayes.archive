@@ -7,7 +7,6 @@
 	NSString*        modelName;
 }
 
-- (NSString*)modelName;
-- (void)setModelName:(NSString*)aName;
+@property (nonatomic,strong) NSString* modelName;
 
 @end

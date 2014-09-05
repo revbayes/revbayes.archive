@@ -39,10 +39,15 @@ namespace RevLanguage {
 
         // Regular functions
         virtual RevPtr<Variable>        evaluateContent(Environment& env) = 0;                                              //!< Get semantic value (static)
-        virtual RevPtr<Variable>        evaluateLHSContent(Environment& env, const std::string& varType);                   //!< Get semantic value (static)
         virtual RevPtr<Variable>        evaluateDynamicContent(Environment& env);                                           //!< Get semantic value (dynamic, if different)
+        virtual RevPtr<Variable>        evaluateLHSContent(Environment& env, const std::string& varType);                   //!< Get semantic value (static)
         virtual bool                    isAssignment(void) const;                                                           //!< Is this an assignment statement element?
         virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
+        virtual bool                    isFunctionSafe(const Environment&       env,
+                                                       std::set<std::string>&   localVars) const;                           //!< Is this element safe in a function?
+        virtual bool                    retrievesExternVar(const Environment&       env,
+                                                           std::set<std::string>&   localVars,
+                                                           bool                     inLHS) const;                           //!< Does this element retrieve an external variable?
 
     protected:
                                         SyntaxElement(void) {}                                                              //!< Protected constructor, just in case

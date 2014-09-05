@@ -61,12 +61,13 @@ const TypeSpec& BirthDeathProcess::getClassTypeSpec(void)
  *
  * The member rules of the homogeneous birth-death process are:
  * (1) time of the process since the origin.
- * (2) the sampling probability.
- * (3) the sampling strategy.
- * (4) the condition.
- * (5) the number of taxa.
- * (6) the taxon names.
- * (7) the clade constraints.
+ * (2) time of the process since the rootAge.
+ * (3) the sampling probability.
+ * (4) the sampling strategy.
+ * (5) the condition.
+ * (6) the number of taxa.
+ * (7) the taxon names.
+ * (8) the clade constraints.
  *
  * \return The member rules.
  */
@@ -78,20 +79,21 @@ const MemberRules& BirthDeathProcess::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"  , true, Probability::getClassTypeSpec(), new Probability(1.0) ) );
-        std::vector<RlString> optionsStrategy;
-        optionsStrategy.push_back( RlString("uniform") );
-        optionsStrategy.push_back( RlString("diversified") );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin" , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
+        std::vector<std::string> optionsStrategy;
+        optionsStrategy.push_back( "uniform" );
+        optionsStrategy.push_back( "diversified" );
         distcBirthDeathMemberRules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy ) );
-        std::vector<RlString> optionsCondition;
-        optionsCondition.push_back( RlString("time") );
-        optionsCondition.push_back( RlString("survival") );
-        optionsCondition.push_back( RlString("nTaxa") );
+        std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "time" );
+        optionsCondition.push_back( "survival" );
+        optionsCondition.push_back( "nTaxa" );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, ModelVector<Clade>::getClassTypeSpec(), new ModelVector<Clade>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         rulesSet = true;
     }
@@ -116,6 +118,10 @@ void BirthDeathProcess::setConstMemberVariable(const std::string& name, const Re
     if ( name == "origin" ) 
     {
         origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
     }
     else if ( name == "rho" ) 
     {

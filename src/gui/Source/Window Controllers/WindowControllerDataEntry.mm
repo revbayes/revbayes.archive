@@ -105,12 +105,6 @@
     return myTool;
 }
 
-- (void)dealloc {
-
-    [rowData release];
-	[super dealloc];
-}
-
 - (IBAction)deleteColumn:(id)sender {
 
     int whichColumnToDelete = (int)[tableView selectedColumn];

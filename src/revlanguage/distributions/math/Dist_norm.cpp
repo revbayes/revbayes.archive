@@ -100,8 +100,8 @@ const MemberRules& Dist_norm::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distNormMemberRules.push_back( new ArgumentRule( "mean", true, Real::getClassTypeSpec()   , new Real(0.0) ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd"  , true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        distNormMemberRules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
     
         rulesSet = true;
     }

@@ -13,6 +13,7 @@
 #include "GeographicArea.h"
 #include <boost/property_tree/ptree.hpp>
 
+#include <string>
 #include <vector>
 
 namespace RevBayesCore {
@@ -25,6 +26,7 @@ namespace RevBayesCore {
         
         std::vector<double> getEpochs(void);
         std::vector<std::vector<GeographicArea*> > getAreas(void);
+        std::string getFilename(void);
         void readJson(void);
         void printJson(boost::property_tree::ptree const& pt);
         void fillData(boost::property_tree::ptree const& pt);
@@ -53,6 +55,9 @@ namespace RevBayesCore {
                 return first.age > second.age;
             }
         };
+    
+    private:
+        std::string filename;
         
     };
 }

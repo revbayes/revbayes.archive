@@ -41,6 +41,10 @@ namespace RevBayesCore {
         // overloaded operators
         Mcmc&                                               operator=(const Mcmc &m);
         
+        // pure virtual public methods
+        virtual void                                        run(size_t g) = 0;
+        
+        
         // public methods
         void                                                burnin(size_t g, size_t ti);
         Mcmc*                                               clone(void) const;
@@ -54,7 +58,6 @@ namespace RevBayesCore {
         virtual unsigned long                               nextCycle(bool advanceCycle);
         void                                                printOperatorSummary(void) const;
         void                                                redrawChainState(void);
-        virtual void                                        run(size_t g);
         void                                                setChainActive(bool tf);
         void                                                setChainHeat(double v);                                                                 //!< Set the heating temparature of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
@@ -64,9 +67,9 @@ namespace RevBayesCore {
     protected:
         
         void                                                getOrderedStochasticNodes(  const DagNode*              dagNode,
-                                                                                      std::vector<DagNode*>&      orderedStochasticNodes,
-                                                                                      std::set<const DagNode*>&   visitedNodes);
-        void                                                initializeChain(void);                                                                  //!< Initialize objects for mcmc sampling
+                                                                                        std::vector<DagNode*>&      orderedStochasticNodes,
+                                                                                        std::set<const DagNode*>&   visitedNodes);
+        void                                                initializeChain(bool priorOnly=false);                                                  //!< Initialize objects for mcmc sampling
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
         

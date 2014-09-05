@@ -10,12 +10,6 @@
     return [[ValueVectorReal alloc] initWithValue:self];
 }
 
-- (void)dealloc {
-    
-    // dealloc here
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
     [super encodeWithCoder:aCoder];

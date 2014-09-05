@@ -72,7 +72,7 @@ namespace RevLanguage {
         int                 execute(SyntaxElement* root, Environment &env) const;   //!< Execute the syntax tree
         void                getline(char* buf, size_t maxsize);                     //!< Give flex one line to process
         int                 help(const std::string& symbol) const;                  //!< Get help for a symbol
-        int                 help(const SyntaxFunctionCall& root) const;             //!< Get help for a function call
+        int                 help(const SyntaxFunctionCall* root) const;             //!< Get help for a function call
         int                 processCommand(std::string& command, Environment *env); //!< Process command with help from Bison
 
         /** Get singleton parser */
@@ -92,7 +92,7 @@ namespace RevLanguage {
 
         Parser&             operator=(const Parser& w) { return (*this); }          //! Prevent assignment
 
-        void                breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command RlString buffer into Rev lines
+        void                breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
     };
 
 }

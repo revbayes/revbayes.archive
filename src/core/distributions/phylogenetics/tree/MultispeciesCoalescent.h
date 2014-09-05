@@ -30,9 +30,9 @@ namespace RevBayesCore {
     class MultispeciesCoalescent : public TypedDistribution<TimeTree> {
         
     public:
-        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::map<std::string, std::string> &g2S);        
-        MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                          //!< Copy constructor
-        virtual                                            ~MultispeciesCoalescent(void);                                                                    //!< Virtual destructor
+        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::vector<Taxon> &t);
+        MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                                //!< Copy constructor
+        virtual                                            ~MultispeciesCoalescent(void);                                                                       //!< Virtual destructor
         
         // public member functions
         MultispeciesCoalescent*                             clone(void) const;                                                                                  //!< Create an independent clone
@@ -55,13 +55,18 @@ namespace RevBayesCore {
         void                                                simulateTree(void);
         
         // members
-        std::map<std::string, std::string>                  gene2species;
+   //     std::map<std::string, std::string>                  gene2species;
+        std::vector<Taxon>                                  taxa;
         const TypedDagNode<TimeTree>*                       speciesTree;
         const TypedDagNode<std::vector<double> >*           Nes;
         const TypedDagNode<double >*                        Ne;
         size_t                                              numTaxa;
         double                                              logTreeTopologyProb;
         
+      //  std::map<std::string, TopologyNode * > speciesNames2speciesNodes;
+       // std::map< std::string, TopologyNode*> individualNames2geneTreeTips;
+       // std::map< const TopologyNode *, std::set< TopologyNode* > > individualsPerBranch;
+       // std::map<double, TopologyNode*> speciesAge2speciesNodes;*/
     };
     
 }

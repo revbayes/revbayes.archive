@@ -93,7 +93,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_trunc<valType, retType>::get
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

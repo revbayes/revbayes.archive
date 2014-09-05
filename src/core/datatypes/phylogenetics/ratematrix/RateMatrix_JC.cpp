@@ -31,7 +31,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_JC::RateMatrix_JC(size_t n) : TimeReversibleRateMatrix( n ){
+RateMatrix_JC::RateMatrix_JC(size_t n) : TimeReversibleRateMatrix( n )
+{
     
     
     // compute the off-diagonal values
@@ -46,27 +47,9 @@ RateMatrix_JC::RateMatrix_JC(size_t n) : TimeReversibleRateMatrix( n ){
 }
 
 
-/** Copy constructor */
-RateMatrix_JC::RateMatrix_JC(const RateMatrix_JC& m) : TimeReversibleRateMatrix( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_JC::~RateMatrix_JC(void) {
     
-}
-
-
-RateMatrix_JC& RateMatrix_JC::operator=(const RateMatrix_JC &r) {
-    
-    if (this != &r) 
-    {
-        TimeReversibleRateMatrix::operator=( r );
-                
-    }
-    
-    return *this;
 }
 
 

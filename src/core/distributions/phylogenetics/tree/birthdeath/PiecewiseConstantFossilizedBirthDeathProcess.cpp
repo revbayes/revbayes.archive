@@ -26,12 +26,12 @@ using namespace RevBayesCore;
  */
 PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDeathProcess
 (
- const TypedDagNode<double> *o,
+ const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
  const TypedDagNode<std::vector<double> > *s, const TypedDagNode<std::vector<double> > *st,
  const TypedDagNode<std::vector<double> > *e, const TypedDagNode<std::vector<double> > *et,
  const TypedDagNode<std::vector<double> > *p, const TypedDagNode<std::vector<double> > *pt,
  const TypedDagNode<std::vector<double> > *r, const TypedDagNode<std::vector<double> > *rt,
- const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c ): AbstractBirthDeathProcess( o, cdt, tn, c ),
+ const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c ): AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 

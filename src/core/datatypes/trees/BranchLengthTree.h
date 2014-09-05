@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of a time calibrated tree, a light-weight class 
+ * This file contains the declaration of a time calibrated tree, a light-weight class
  * that holds the pointer to the root node of a tree and provides some convinience functions.
  *
  * @brief Declaration of the BranchLengthTree
@@ -26,34 +26,33 @@
 namespace RevBayesCore {
     
     class Topology;
-
-    class BranchLengthTree : public Tree {
     
+    class BranchLengthTree : public Tree {
+        
     public:
         BranchLengthTree(void);                                                                                             //!< Default constructor
-        BranchLengthTree(const BranchLengthTree& t);                                                                        //!< Copy constructor
         virtual                                    ~BranchLengthTree(void);                                                                                                        //!< Destructor
-    
-        BranchLengthTree&                           operator=(const BranchLengthTree& t);
-    
+        
         // Basic utility functions
         BranchLengthTree*                           clone(void) const;                                                      //!< Clone object
-    
+        
         // BranchLengthTree functions
         double                                      getAge(size_t idx) const;
         double                                      getBranchLength(size_t idx) const;
         double                                      getTime(size_t idx) const;
         double                                      getTreeLength(void) const;
+        void                                        reroot(const std::string &outgroup);                                    //!< Re-root the tree with the given outgroup
         void                                        setBranchLength(size_t idx, double bl);
-    
+        
     protected:
         void                                        resizeElementVectors(size_t n);
-    
+        void                                        reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
+        
     private:
         std::vector<double>                         branchLengths;
-
+        
     };
-
+    
 }
 
 // Global functions using the class

@@ -15,6 +15,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <fstream>
+#include <stdio.h>
 
 using namespace boost;
 namespace fs = boost::filesystem;
@@ -29,11 +30,11 @@ public:
         // check that directory exist
         fs::path _path(path);
         if (!fs::exists(_path)) {
-            if(!boost::filesystem::create_directory(_path)){
+            if (!boost::filesystem::create_directory(_path)) {
                 return false;
             }
         }
-        
+
         // make a valid file path
         fs::path _file(_path / filename);
 
@@ -42,7 +43,7 @@ public:
         fs.open(_file.string().c_str(), std::fstream::out | std::fstream::trunc);
         fs << content;
         fs.close();
-        
+
         return true;
     }
 
@@ -75,54 +76,50 @@ public:
         }
         return path;
     }
-
+    
     /**
-     * List all files (optionally filtered by extension) in the given list of directories.
+     * List all files  in the given directory.
      * 
-     * @param directories   directories in which to search
-     * @param extension     full extension including the dot, eg .rev, .exe, ...
+     * @param directory     directory in which to search     
      * @return 
      */
-    static StringVector getFileList(StringVector directories, std::string extension = "") {
-        StringVector result;
+    static StringVector getFileList(std::string basePath, std::string relativePath) {
+        fs::path p(relativePath);
+        fs::path bp(basePath);
+        fs::path _path;        
 
-        BOOST_FOREACH(std::string s, directories) {
-
-            BOOST_FOREACH(std::string _s, getFileList(s, extension)) {
-                result.push_back(_s);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * List all files (optionally filtered by extension) in the given directory.
-     * 
-     * @param directory     directory in which to search
-     * @param extension     full extension including the dot, eg .rev, .exe, ...
-     * @return 
-     */
-    static StringVector getFileList(std::string directory, std::string extension = "") {
-        fs::path p(directory);
-        std::string ext = boost::to_lower_copy(extension);
         StringVector v;
-        fs::recursive_directory_iterator dir(p), end;
-        while (dir != end) {
-            //            if (dir->path().filename() == exclude_this_directory) {
-            //                dir.no_push(); // don't recurse into this directory.
-            //            }
 
-            if (fs::is_regular_file(dir->path())) {
-                if (extension == "") {
-                    v.push_back(dir->path().string());
-                } else if (boost::to_lower_copy(dir->path().extension().string()) == ext) {
-                    v.push_back(dir->path().string());
-                }
-            }
-            ++dir;
+        // construct search path
+        if (p.is_relative()) {            
+            _path = bp / p;            
+        } else {
+            _path = p;
         }
 
+        if (!fs::exists(_path)) {
+
+            //std::cout << "\n\rpath " << _path.string() << " does not exist\n\r";
+            //std::cout << "parent path " << _path.parent_path().string() << "\n\r";
+            _path = _path.parent_path();
+            
+            if (!fs::exists(_path)) {
+                return v;
+            }
+            
+        }
+        if (!fs::is_directory(_path)) {
+            //std::cout << "\n\rpath " << _path.string() << " is not a directory\n\r";
+            return v;
+        }
+        
+        fs::directory_iterator end_itr; // Default ctor yields past-the-end
+        for (fs::directory_iterator i(_path); i != end_itr; ++i) {            
+            v.push_back((i->path().filename()).string());            
+        }
         return v;
     }
+
+
 };
 #endif	/* FILESYSTEM_H */

@@ -5,7 +5,6 @@
 #include "Dist_bdp.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -55,7 +54,17 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
+    {
+        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    }
+    // the root age
+    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
+    {
+        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    }
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -66,15 +75,18 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
-    // number of taxa
-    int n                                       = static_cast<const Natural &>( numTaxa->getRevObject() ).getValue();
     // taxon names
     const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
     const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
+    }
     // create the internal distribution object
-    RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, s, e, r, strategy, cond, size_t(n), names, c);
+    RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, cond, taxa, c);
     
     return d;
 }
@@ -126,8 +138,9 @@ const MemberRules& Dist_bdp::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"  , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
+        
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getMemberRules();

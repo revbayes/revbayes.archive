@@ -48,9 +48,6 @@ namespace RevLanguage {
         RevPtr<Variable>                            getElement(const std::vector<size_t>& oneOffsetIndices);            //!< Get element variable
         virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
         
-        // RevObjectVector functions
-        vectorRlPtr                                 getVectorRlPointer(void) const;                                     //!< Translate to vector of rl pointers
-        
     private:
         
     };
@@ -292,27 +289,6 @@ const TypeSpec& RevObjectVector<rlType>::getTypeSpec(void) const
 
 
 /**
- * Here we return a vector of pointers to the Rev object elements. We hope
- * that the caller does not delete the element values but it does not
- * matter if they change them.
- *
- * @todo We might want to change this function so that it gives out references
- *       instead of pointers to the Rev objects
- */
-template<typename rlType>
-std::vector<rlType*> RevObjectVector<rlType>::getVectorRlPointer( void ) const
-{
-    vectorRlPtr theVector;
-    
-    std::vector< RevPtr<Variable> >::const_iterator it;
-    for ( it = elements.begin(); it != elements.end(); ++it )
-        theVector.push_back( &( static_cast<rlType&>( (*it)->getRevObject() ) ) );
-    
-    return theVector;
-}
-
-
-/**
  * Drop an element from the back of the vector.
  */
 template <typename rlType>
@@ -370,14 +346,25 @@ template<typename rlType>
 void RevObjectVector<rlType>::printValue( std::ostream& o ) const
 {
     o << std::endl;
-    o << getClassType() << " vector with " << size() << " values" << std::endl;
-    o << std::endl;
+    std::stringstream s;
+    if ( size() == 1 )
+        s << getClassType() << " vector with 1 value";
+    else
+        s << getClassType() << " vector with " << size() << " values";
+    o << s.str() << std::endl;
+
+    for ( size_t i = 0; i < s.str().size(); ++i )
+        o << "=";
+    o << std::endl << std::endl;
     
     for ( size_t i = 0; i < elements.size(); ++i )
     {
         o << "[" << i + 1 << "]" << std::endl;
-        elements[i]->getRevObject().printValue( o );
-        o << std::endl;
+        if ( elements[i]->isNAVar() )
+            o << "NA";
+        else
+            elements[i]->getRevObject().printValue( o );
+        o << std::endl << std::endl;
     }
 }
 

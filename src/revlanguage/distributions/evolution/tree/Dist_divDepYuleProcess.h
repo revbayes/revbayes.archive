@@ -26,7 +26,7 @@ namespace RevLanguage {
         Dist_divDepYuleProcess( void );
         
         // Basic utility functions
-        Dist_divDepYuleProcess*                 clone(void) const;                                                                  //!< Clone the object
+        Dist_divDepYuleProcess*                             clone(void) const;                                                                  //!< Clone the object
         static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&                                     getTypeSpec(void) const;                                                            //!< Get the type spec of the instance
@@ -45,6 +45,7 @@ namespace RevLanguage {
         
         // members        
         RevPtr<const Variable>                              origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const Variable>                              rootAge;                                                                             //!< The time of the process since the origin
         RevPtr<const Variable>                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const Variable>                              numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
         RevPtr<const Variable>                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree

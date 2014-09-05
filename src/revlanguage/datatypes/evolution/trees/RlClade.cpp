@@ -88,8 +88,8 @@ void Clade::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<Variable> Clade::executeMethod(std::string const &name, const std::vector<Argument> &args) {
-    
+RevLanguage::RevPtr<Variable> Clade::executeMethod( const std::string& name, const std::vector<Argument>& args )
+{
 //    if (name == "nnodes") {
 //        size_t n = this->value->getValue().getNumberOfNodes();
 //        return new Natural( n );
@@ -111,7 +111,7 @@ const MemberRules& Clade::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        modelMemberRules.push_back( new ArgumentRule("taxonName", true, RlString::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         modelMemberRules.push_back( new Ellipsis(RlString::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -138,27 +138,22 @@ const TypeSpec& Clade::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const RevLanguage::MethodTable& Clade::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const RevLanguage::MethodTable& Clade::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-//        ArgumentRules* nnodesArgRules = new ArgumentRules();
-//        methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
-//        
-//        ArgumentRules* namesArgRules = new ArgumentRules();
-//        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
 
 

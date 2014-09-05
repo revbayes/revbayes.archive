@@ -52,6 +52,7 @@ RevObject* RealMatrix::convertTo( const TypeSpec& type ) const {
     return RevObject::convertTo( type );
 }
 
+
 /** Get Rev type of object */
 const std::string& RealMatrix::getClassType(void) {
     
@@ -60,6 +61,7 @@ const std::string& RealMatrix::getClassType(void) {
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& RealMatrix::getClassTypeSpec(void) {
     
@@ -67,6 +69,26 @@ const TypeSpec& RealMatrix::getClassTypeSpec(void) {
     
 	return revTypeSpec;
 }
+
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RealMatrix::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
 
 /** Get type spec */
 const TypeSpec& RealMatrix::getTypeSpec( void ) const {
@@ -78,9 +100,9 @@ const TypeSpec& RealMatrix::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool RealMatrix::isConvertibleTo(const TypeSpec& type) const {
+bool RealMatrix::isConvertibleTo(const TypeSpec& type, bool once) const {
     
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 
 
@@ -92,7 +114,8 @@ void RealMatrix::printValue(std::ostream &o) const {
     
     std::fixed( o );
     o.precision( 3 );
-    o << dagNode->getValue();
+
+    dagNode->printValue( o , "" );
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

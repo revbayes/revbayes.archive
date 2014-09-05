@@ -73,24 +73,25 @@ const TypeSpec& Move_Simplex::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Move_Simplex::getMemberRules(void) const {
     
-    static MemberRules scalingMoveMemberRules;
+    static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Simplex::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "alpha", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "numCats", true, Natural::getClassTypeSpec() , new Natural(1) ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "offset", true, Natural::getClassTypeSpec() , new RealPos(0.0) ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
+    if ( !rulesSet )
+    {
+        moveMemberRules.push_back( new ArgumentRule( "x"      , Simplex::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "alpha"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "numCats", Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        moveMemberRules.push_back( new ArgumentRule( "offset" , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return scalingMoveMemberRules;
+    return moveMemberRules;
 }
 
 /** Get type spec */

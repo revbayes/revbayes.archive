@@ -8,7 +8,6 @@
 
 #include "Func_treeAssembly.h"
 #include "ModelVector.h"
-#include "RateMatrix.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBranchLengthTree.h"
@@ -55,8 +54,8 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "topology", true, Topology::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "brlens", true, ModelVector<RealPos>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "topology", Topology::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "brlens",   ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

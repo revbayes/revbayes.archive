@@ -67,9 +67,10 @@ const MemberRules& Move_Slide::getMemberRules(void) const {
     
     if ( !rulesSet )
     {
-        slidingMoveMemberRules.push_back( new ArgumentRule( "x", false, Real::getClassTypeSpec() ) );
-        slidingMoveMemberRules.push_back( new ArgumentRule( "delta", true, RealPos::getClassTypeSpec() , new RealPos(1.0) ) );
-        slidingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
+        
+        slidingMoveMemberRules.push_back( new ArgumentRule( "x"    , Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        slidingMoveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        slidingMoveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

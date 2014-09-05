@@ -67,8 +67,10 @@ const MemberRules& Move_NNIClock::getMemberRules(void) const {
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        nniMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

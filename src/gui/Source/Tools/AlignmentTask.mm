@@ -7,17 +7,11 @@
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    if (alignTask != nil)
-        [alignTask release];
-    if (outputPipe != nil)
-        [outputPipe release];
-	[super dealloc];
 }
 
 - (id)init {
 
-    [self initWithAlignmentTool:nil];
-    return self;
+    return [self initWithAlignmentTool:nil];
 }
 
 - (id)initWithAlignmentTool:(ToolAlign*)t {
@@ -47,8 +41,8 @@
     NSString* clustalInfileArg               = @"-INFILE=";
               clustalInfileArg               = [clustalInfileArg stringByAppendingString:dFilePath];
     NSString* clustalOutfileArg              = @"-OUTFILE=";
-              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:temporaryDirectory];
-              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:@"/myAlignments/"];
+              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:workingDirectory];
+              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:@"/"];
               clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:fileName];
     NSString* clustalOutputArg               = @"-OUTPUT=FASTA";    
     NSString* clustalGuideTreeArg            = @"-NEWTREE=";
@@ -138,17 +132,18 @@
     NSFileManager* clustalFileManager = [[NSFileManager alloc] init];
     NSDictionary* clustalTemporaryDirectoryAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"clustalTemporaryDirectory"];
     [clustalFileManager createDirectoryAtPath:workingDirectory withIntermediateDirectories:NO attributes:clustalTemporaryDirectoryAttributes error:NULL];
-    [clustalFileManager release];
     
     // find the clustal executable in the application bundle
     NSString* clustalPath = [[NSBundle mainBundle] pathForResource:@"clustalw2" ofType:nil];
     
+    NSLog(@"clustalArguments=%@", clustalArguments);
     // set variables for the task
     [alignTask setCurrentDirectoryPath:clustalPath];
     [alignTask setLaunchPath:clustalPath];
     [alignTask setArguments:clustalArguments];
     outputFileHandle = [outputPipe fileHandleForReading];
     [alignTask setStandardOutput:outputPipe];
+    NSLog(@"here I am\n");
     
     // listen for a notification indicating that the task finished and that data has been sent down the pipe
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
@@ -182,8 +177,7 @@
      
     NSData* incomingData = [[aNotification userInfo] objectForKey:NSFileHandleNotificationDataItem];
     NSString* incomingText = [[NSString alloc] initWithData:incomingData encoding:NSASCIIStringEncoding];
-    //NSLog(@"task %@ %@", self, incomingText);
-    [incomingText release];
+    NSLog(@"task %@ %@", self, incomingText);
 }
 
 @end

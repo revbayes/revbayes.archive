@@ -32,7 +32,7 @@ public:
         //std::string lastNonBlankMatch = "";
         //int specialMatchType = 0; // 0 = no match, 1 = reference assignment operator, 2 = other
         std::string stringBuf = haystack.substr(startFrom);
-        int rPos = std::string::npos, _rPos, tmpInt;
+        size_t rPos = std::string::npos, _rPos, tmpInt;
 
         BOOST_FOREACH(std::string s, needles) {
 
@@ -88,7 +88,7 @@ public:
 
     static std::string reverseString(std::string s) {
         std::string result = "";
-        for (int i = 0; i < s.size(); i++) {
+        for (size_t i = 0; i < s.size(); i++) {
             result = s.at(i) + result;
         }
         return result;

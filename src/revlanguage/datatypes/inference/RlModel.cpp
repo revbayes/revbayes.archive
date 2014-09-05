@@ -64,8 +64,10 @@ const MemberRules& Model::getMemberRules(void) const {
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        modelMemberRules.push_back( new ArgumentRule("x", true, RevObject::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        modelMemberRules.push_back( new ArgumentRule("x", RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         modelMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -89,11 +91,14 @@ void Model::printValue(std::ostream &o) const {
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
     std::vector<RevBayesCore::DagNode*>::const_iterator it;
 
-    o << "\nModel with " << theNodes.size() << " nodes\n\n";
+    o << std::endl;
+    std::stringstream s;
+    s << "Model with " << theNodes.size() << " nodes";
+    o << s.str() << std::endl;
+    for ( size_t i = 0; i < s.str().size(); ++i )
+        o << "=";
+    o << std::endl << std::endl;
     
-    o << "List of nodes:\n";
-    o << "==============\n\n";
-
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
         if ( (*it)->getName() != "" )
@@ -106,7 +111,11 @@ void Model::printValue(std::ostream &o) const {
         (*it)->printValue( o1, ", " );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
-        (*it)->printStructureInfo( o );
+#if defined (DEBUG_STRUCTURE)
+        (*it)->printStructureInfo( o, true );
+#else
+        (*it)->printStructureInfo( o, false );
+#endif
 
         o << std::endl;
     }

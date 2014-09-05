@@ -4,27 +4,27 @@
 
 @interface ViewControllerConstant : NSViewController {
 
-    IBOutlet NSPopUpButton*                    partitionSelector;
-    IBOutlet NSSegmentedControl*               nodeBranchSelector;
-    IBOutlet NSComboBox*                       valueEntry;
-    IBOutlet NSScrollView*                     valueScroll;
-    IBOutlet NSPopUpButton*                    valueShortcutSelector;
-	IBOutlet NSTextField*                      nameField;
-	IBOutlet NSTextField*                      nameLabel;
-    IBOutlet NSStepper*                        vectorSizeStepper;
-    IBOutlet NSTextField*                      vectorSizeField;
-    IBOutlet NSTextField*                      vectorSizeLabel;
+    IBOutlet NSPopUpButton*        partitionSelector;
+    IBOutlet NSSegmentedControl*   nodeBranchSelector;
+    IBOutlet NSComboBox*           valueEntry;
+    IBOutlet NSScrollView*         valueScroll;
+    IBOutlet NSPopUpButton*        valueShortcutSelector;
+	IBOutlet NSTextField*          nameField;
+	IBOutlet NSTextField*          nameLabel;
+    IBOutlet NSStepper*            vectorSizeStepper;
+    IBOutlet NSTextField*          vectorSizeField;
+    IBOutlet NSTextField*          vectorSizeLabel;
 }
 
-@property (nonatomic,weak) NSPopUpButton*      partitionSelector;
-@property (nonatomic,weak) NSSegmentedControl* nodeBranchSelector;
-@property (nonatomic,weak) NSComboBox*         valueEntry;
-@property (nonatomic,weak) NSScrollView*       valueScroll;
-@property (nonatomic,weak) NSPopUpButton*      valueShortcutSelector;
-@property (nonatomic,weak) NSTextField*        nameField;
-@property (nonatomic,weak) NSTextField*        nameLabel;
-@property (nonatomic,weak) NSStepper*          vectorSizeStepper;
-@property (nonatomic,weak) NSTextField*        vectorSizeField;
-@property (nonatomic,weak) NSTextField*        vectorSizeLabel;
+@property (nonatomic,strong) NSPopUpButton*      partitionSelector;
+@property (nonatomic,strong) NSSegmentedControl* nodeBranchSelector;
+@property (nonatomic,strong) NSComboBox*         valueEntry;
+@property (nonatomic,strong) NSScrollView*       valueScroll;
+@property (nonatomic,strong) NSPopUpButton*      valueShortcutSelector;
+@property (nonatomic,strong) NSTextField*        nameField;
+@property (nonatomic,strong) NSTextField*        nameLabel;
+@property (nonatomic,strong) NSStepper*          vectorSizeStepper;
+@property (nonatomic,strong) NSTextField*        vectorSizeField;
+@property (nonatomic,strong) NSTextField*        vectorSizeLabel;
 
 @end

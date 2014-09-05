@@ -70,8 +70,8 @@ const MemberRules& Dist_offsetExponential::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec()   , new RealPos(1.0) ) );
-        distExpMemberRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec()  ) );
+        distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distExpMemberRules.push_back( new ArgumentRule( "offset", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

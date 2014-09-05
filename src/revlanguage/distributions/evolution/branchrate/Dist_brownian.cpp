@@ -31,7 +31,7 @@ RevBayesCore::BrownianPhyloProcess* Dist_brownian::createDistribution( void ) co
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<double>* s  = static_cast<const Real&>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s  = static_cast<const RealPos&>( sigma->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* dr  = static_cast<const Real&>( drift->getRevObject() ).getDagNode();
     
     RevBayesCore::BrownianPhyloProcess* d    = new RevBayesCore::BrownianPhyloProcess( tau, s, dr );
@@ -68,9 +68,9 @@ const MemberRules& Dist_brownian::getMemberRules(void) const {
     
     if ( !rulesSet )
     {
-        dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "sigma", true, RealPos::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "drift", true, Real::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "drift", Real::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0) ) );
         rulesSet = true;
     }
     

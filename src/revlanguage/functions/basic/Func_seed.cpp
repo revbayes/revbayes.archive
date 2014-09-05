@@ -21,19 +21,22 @@
 
 using namespace RevLanguage;
 
-Func_seed::Func_seed() : Function() {
+Func_seed::Func_seed() : Function()
+{
     
 }
 
 /* Clone object */
-Func_seed* Func_seed::clone( void ) const {
+Func_seed* Func_seed::clone( void ) const
+{
     
     return new Func_seed( *this );
 }
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func_seed::execute( void ) {
+RevPtr<Variable> Func_seed::execute( void )
+{
     
     std::vector<unsigned int> s;
     const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
@@ -49,15 +52,17 @@ RevPtr<Variable> Func_seed::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_seed::getArgumentRules( void ) const {
+const ArgumentRules& Func_seed::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "seed1", true, Natural::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "seed2", true, Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "seed1", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "seed2", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

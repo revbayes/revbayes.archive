@@ -89,9 +89,10 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "vector", true, ModelVector<valType>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

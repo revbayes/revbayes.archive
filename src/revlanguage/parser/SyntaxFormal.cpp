@@ -31,11 +31,11 @@ SyntaxFormal::SyntaxFormal( const std::string& label, SyntaxElement* defaultVal 
     
     // Make argument rule from the formal specification
     if ( defaultVal == NULL )
-        argRule = new ArgumentRule( label, false, typeSpec );
+        argRule = new ArgumentRule( label, typeSpec, ArgumentRule::BY_REFERENCE );
     else
     {
         RevObject* defaultObj = defaultVal->evaluateContent( Workspace::userWorkspace() )->getRevObject().clone();
-        argRule = new ArgumentRule( label, false, typeSpec, defaultObj );
+        argRule = new ArgumentRule( label, typeSpec, ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, defaultObj );
     }
 }
 
@@ -86,17 +86,17 @@ SyntaxFormal::SyntaxFormal( const std::string& type, const std::string& label, S
     {
         // Make const argument rule from element
         if ( defaultVal == NULL )
-            argRule = new ArgumentRule( label, true, typeSpec );
+            argRule = new ArgumentRule( label, typeSpec, ArgumentRule::BY_CONSTANT_REFERENCE );
         else
-            argRule = new ArgumentRule( label, true, typeSpec, defaultObj );
+            argRule = new ArgumentRule( label, typeSpec, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultObj );
     }
     else // if ( modifier == "dynamic" || modifier == "" )
     {
         // Make dynamic argument rule from element
         if ( defaultVal == NULL )
-            argRule = new ArgumentRule( label, false, typeSpec );
+            argRule = new ArgumentRule( label, typeSpec, ArgumentRule::BY_REFERENCE );
         else
-            argRule = new ArgumentRule( label, false, typeSpec, defaultObj );
+            argRule = new ArgumentRule( label, typeSpec, ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, defaultObj );
     }
 }
 
@@ -175,5 +175,16 @@ void SyntaxFormal::printValue(std::ostream& o) const
     o << "defaultVal  = ";
     argRule->getDefaultVariable().getRevObject().printValue( o );
     o << std::endl;
+}
+
+
+/**
+ * Set the protected flag of the formal argument specification.
+ *
+ * @todo Support the protected modifier of member variable slots.
+ */
+void SyntaxFormal::setIsProtected( bool prot )
+{
+//    argRule->setIsProtected( prot );
 }
 

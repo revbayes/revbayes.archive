@@ -21,24 +21,30 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     std::vector<std::string>& line = chars[0];
     std::vector<size_t> columnIndices (line.size(), RbConstants::Size_t::nan);
     
-    for (size_t i = 0 ; i < line.size() ; ++i) {
+    for (size_t i = 0 ; i < line.size() ; ++i)
+    {
         std::string tmp = line[i];
         StringUtilities::toLower( tmp );
-        if ( tmp == "taxon" ) {
+        if ( tmp == "taxon" )
+        {
             columnIndices[0] = i;
         }
-        else if ( tmp == "species" ) {
+        else if ( tmp == "species" )
+        {
             columnIndices[1] = i;
         }
-        else if ( tmp == "date") {
+        else if ( tmp == "date")
+        {
             columnIndices[2] = i;
         }
-        else {
+        else
+        {
             throw RbException("Wrong header in the taxa definition file. It should contain 'Species','Taxon', 'Date' fields.");
         }
     }
-    if (columnIndices[0] == RbConstants::Size_t::nan) {
-        throw RbException("Wrong header in the taxa definition file. It should contain 'Species','Taxon', 'Date' fields.");
+    if (columnIndices[0] == RbConstants::Size_t::nan)
+    {
+//        throw RbException("Wrong header in the taxa definition file. It should contain 'Species','Taxon', 'Date' fields.");
     }
     
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
@@ -46,11 +52,13 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         const std::vector<std::string>& line = chars[i];
         Taxon t = Taxon(line[ columnIndices[0] ]);
                 
-        if ( columnIndices[2] != RbConstants::Size_t::nan) {
+        if ( columnIndices[2] != RbConstants::Size_t::nan)
+        {
             TimeAndDate d = TimeAndDate( ); // line[ columnIndices[2] ]
             t.setDate( d );
         }
-        if ( columnIndices[1] != RbConstants::Size_t::nan) {
+        if ( columnIndices[1] != RbConstants::Size_t::nan)
+        {
             t.setSpeciesName( line[columnIndices[1] ] );
         }
         taxa.push_back( t );

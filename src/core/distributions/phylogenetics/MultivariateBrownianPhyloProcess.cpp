@@ -23,7 +23,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MultivariatePhyloProcess >( new MultivariatePhyloProcess(&intau->getValue(), insigma->getValue().getDim())),
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< MatrixRealSymmetric >* insigma) : TypedDistribution< MultivariateRealNodeContainer >( new MultivariateRealNodeContainer(&intau->getValue(), insigma->getValue().getDim())),
     tau( intau ),
     sigma( insigma ),
     dirtyNodes(intau->getValue().getNumberOfNodes(),true),
@@ -34,7 +34,7 @@ MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDa
 }
 
 
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariatePhyloProcess>( n ), 
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariateRealNodeContainer>( n ), 
     tau( n.tau ),
     sigma( n.sigma ),
     /*, rootVal( n.rootVal )*/ 
@@ -76,8 +76,8 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
     
     if (! from.isRoot()) {
         
-        if (1)  {
-//        if (dirtyNodes[index])  {
+//        if (1)  {
+        if (dirtyNodes[index])  {
 
             // x ~ normal(x_up, sigma^2 * branchLength)
 
@@ -180,10 +180,11 @@ void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const
     if ( oldP == tau )
     {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
+        getValue().setTimeTree(&tau->getValue());
     }
     
     if ( oldP == sigma ) {
-        sigma = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
+        sigma = static_cast< const TypedDagNode<MatrixRealSymmetric> * >( newP );
     }
 }
 
@@ -210,7 +211,7 @@ void MultivariateBrownianPhyloProcess::flagNodes() {
     // flag recomputation only for the nodes
     for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
         dirtyNodes[*it] = true;
-        const TimeTree& tau = getTimeTree()->getValue();
+        const TimeTree& tau = *getTimeTree();
         const TopologyNode& from = tau.getNode(*it);
         for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
             dirtyNodes[from.getChild(i).getIndex()] = true;
@@ -256,4 +257,3 @@ void MultivariateBrownianPhyloProcess::restoreSpecialization( DagNode *restorer 
     }
     dagNode->clearTouchedElementIndices();    
 }
-

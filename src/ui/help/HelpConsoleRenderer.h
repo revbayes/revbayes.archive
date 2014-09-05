@@ -203,7 +203,7 @@ private:
         std::string result = tabbing;
         int w = width - tabbing.size();
         int cc = 0; // character count
-        char lastChar;
+        char lastChar = '\0';
 
         for (unsigned int i = 0; i < s.size(); i++) {
             if (result.size() > 0) {

@@ -61,17 +61,6 @@
 	return (int)[data count];
 }
 
-- (void)dealloc {
-
-	[data release];
-	[name release];
-    [alignmentMethod release];
-	[taxonNames release];
-	[excludedTaxa release];
-	[excludedCharacters release];
-	[super dealloc];
-}
-
 - (void)deleteLastTaxon {
 
     if ([data count] > 0)
@@ -113,7 +102,6 @@
         {
         NSNumber* n = [[NSNumber alloc] initWithInt:idx];
 		[excludedCharacters addObject:n];
-        [n release];
         }
 }
 
@@ -196,12 +184,6 @@
 		excludedTaxa          = [aDecoder decodeObjectForKey:@"excludedTaxa"];
 		excludedCharacters    = [aDecoder decodeObjectForKey:@"excludedCharacters"];
         copiedFrom            = [aDecoder decodeObjectForKey:@"copiedFrom"];
-		[data retain];
-		[name retain];
-        [alignmentMethod retain];
-		[taxonNames retain];
-		[excludedTaxa retain];
-		[excludedCharacters retain];
 		}
 	return self;
 }
@@ -212,9 +194,9 @@
 		{
 		// allocate an array holding the data
 		data            = [[NSMutableArray alloc] init];
-		name            = [[NSString alloc] initWithString:@""];
+		name            = @"";
 		taxonNames      = [[NSMutableArray alloc] init];
-        alignmentMethod = [[NSString alloc] initWithString:@""];
+        alignmentMethod = @"";
 		
 		// allocate sets keeping track of excluded taxa and characters
 		excludedTaxa       = [[NSMutableSet alloc] init];
@@ -348,7 +330,7 @@
 			{
 			RbDataCell* cell = [td dataCellIndexed:j];
 			NSNumber* n = [cell val];
-            char c;
+            char c = ' ';
             if ( [cell dataType] == DNA )
                 c = [cell interpretAsDna:[n unsignedIntValue]];
             else if ( [cell dataType] == RNA )
@@ -421,10 +403,8 @@
             [dc setNumStates:10];
             [dc setIsAmbig:YES];
             [td addObservation:dc];
-            [dc release];
             }
         [data addObject:td];
-        [td release];
         }
 }
 
@@ -459,7 +439,8 @@
                 {
                 RbTaxonData* td = [self getDataForTaxonIndexed:i];
                 [outStr appendString:@"   "];
-                NSString* tn = [td taxonName];
+                //NSString* tn = [td taxonName];
+                NSString* tn = [self taxonWithIndex:i];
                 NSString* tn2 = [tn stringByReplacingOccurrencesOfString:@" " withString:@"_"];
                 [self cleanName:tn2];
                 [outStr appendString:tn2];
@@ -498,7 +479,7 @@
                 {
                 RbTaxonData* td = [self getDataForTaxonIndexed:i];
                 [outStr appendString:@"   "];
-                [outStr appendString:[td taxonName]];
+                [outStr appendString:[self taxonWithIndex:i]];
                 [outStr appendString:@"   "];
                 for (int j=0; j<[td numCharacters]; j++)
                     {
@@ -524,7 +505,8 @@
             {
             RbTaxonData* td = [self getDataForTaxonIndexed:i];
             [outStr appendString:@">"];
-            [outStr appendString:[td taxonName]];
+
+            [outStr appendString:[self taxonWithIndex:i]];
             [outStr appendString:@"\n"];
             for (int j=0; j<[td numCharacters]; j++)
                 {

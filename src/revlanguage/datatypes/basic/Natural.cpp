@@ -203,6 +203,26 @@ const TypeSpec& Natural::getClassTypeSpec(void) {
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& Natural::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& Natural::getTypeSpec( void ) const {
     
@@ -213,7 +233,7 @@ const TypeSpec& Natural::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool Natural::isConvertibleTo( const TypeSpec& type ) const {
+bool Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
         return true;
@@ -227,7 +247,7 @@ bool Natural::isConvertibleTo( const TypeSpec& type ) const {
     if ( type == RlString::getClassTypeSpec() )
         return true;
 
-    return Integer::isConvertibleTo( type );
+    return Integer::isConvertibleTo( type, once );
 }
 
 

@@ -61,7 +61,7 @@ DagNode::~DagNode( void )
     if ( refCount != 0 )
     {
         std::stringstream s;
-        s << "Deleting DAG Node with " << refCount << " references to it (reported)!" << std::endl;
+        s << "Deleting DAG Node with " << refCount << " references to it!" << std::endl;
         throw RbException( s.str() );
     }
     if ( children.size() != 0 )
@@ -97,20 +97,26 @@ DagNode& DagNode::operator=(const DagNode &d)
 }
 
 
-void DagNode::addChild(DagNode *child) const {
-
+void DagNode::addChild(DagNode *child) const
+{
     children.insert( child );
 }
 
 
 /* Add the index of an element that has been touched */
-void DagNode::addTouchedElementIndex(size_t i) {
+void DagNode::addTouchedElementIndex(size_t i)
+{
+    
     touchedElements.insert( i );
+
 }
 
 
-void DagNode::clearTouchedElementIndices( void ) {
+void DagNode::clearTouchedElementIndices( void )
+{
+    
     touchedElements.clear();
+
 }
 
 
@@ -119,8 +125,9 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
 {
     
     if ( newNodes.find( this ) != newNodes.end() )
+    {
         return ( newNodes[ this ] );
-    
+    }
     // Get pristine copy
     DagNode* copy = clone();
     
@@ -128,7 +135,8 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ ) {
+    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    {
         DagNode *child = (*i)->cloneDownstreamDag( newNodes );
         child->swapParent(this, copy);
     }
@@ -137,18 +145,23 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
 }
 
 
-void DagNode::collectDownstreamGraph(std::set<RevBayesCore::DagNode *> &nodes) {
+void DagNode::collectDownstreamGraph(std::set<RevBayesCore::DagNode *> &nodes)
+{
     
     // for efficiency we check for multiple calls
-    if ( nodes.find( this ) == nodes.end() ) {
+    if ( nodes.find( this ) == nodes.end() )
+    {
         // first, add myself
         nodes.insert( this );
         
         // now, perform a recursive call
-        for (std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it) {
+        for (std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
             (*it)->collectDownstreamGraph( nodes );
         }
+        
     }
+    
 }
 
 
@@ -186,15 +199,20 @@ size_t DagNode::decrementReferenceCount( void ) const
  * Get all affected nodes this DAGNode.
  * This means we call getAffected() of all children. getAffected() is pure virtual.
  */
-void DagNode::getAffectedNodes(std::set<DagNode *> &affected) {
+void DagNode::getAffectedNodes(std::set<DagNode *> &affected)
+{
     
     // get all my affected children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    {
         (*i)->getAffected(affected, this);
+    }
+    
 }
 
 
-const std::set<DagNode*>& DagNode::getChildren( void ) const {
+const std::set<DagNode*>& DagNode::getChildren( void ) const
+{
     return children;
 }
 
@@ -217,17 +235,23 @@ std::string DagNode::getDagNodeType( void ) const
     
 }
 
-DagNode* DagNode::getFirstChild( void ) const {
+DagNode* DagNode::getFirstChild( void ) const
+{
+    
     return *children.begin();
 }
 
 
-const std::string& DagNode::getName( void ) const {
+const std::string& DagNode::getName( void ) const
+{
+
     return name;
 }
 
 
-size_t DagNode::getNumberOfChildren( void ) const {
+size_t DagNode::getNumberOfChildren( void ) const
+{
+
     return children.size();
 }
 
@@ -236,7 +260,8 @@ size_t DagNode::getNumberOfChildren( void ) const {
  * To allow calls to getParents even on classes without parents,
  * we simply return an empty set by default.
  */
-std::set<const DagNode*> DagNode::getParents( void ) const {
+std::set<const DagNode*> DagNode::getParents( void ) const
+{
     
     return std::set<const DagNode*>();
 }
@@ -253,7 +278,9 @@ size_t DagNode::getReferenceCount( void ) const
 
 
 /* Get the indices of all touched elements */
-const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const {
+const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
+{
+
     return touchedElements;
 }
 
@@ -271,21 +298,74 @@ void DagNode::incrementReferenceCount( void ) const
     if ( refCount - children.size() > 1 )
     {
         if ( getName() != "" )
+        {
             std::cerr << "More than 1 non-DAG references to node " << getName() << std::endl;
+        }
         else
+        {
             std::cerr << "More than 1 non-DAG references to node <" << this << std::endl;
+        }
+        
     }
 #endif
 
 }
 
 
-bool DagNode::isClamped( void ) const {
+/**
+ * This function returns true if the DAG node is
+ * a node that is modifiable by the user through
+ * assignment. This occurs when the node is named
+ * or at least one of the parents is assignable.
+ *
+ * @todo The current code really belongs to the
+ *       language layer but it is convenient to
+ *       implement it here. See if it is possible
+ *       to move it to the language layer.
+ */
+bool DagNode::isAssignable( void ) const
+{
+    const std::set<const DagNode*>& parents = getParents();
+    
+    if ( getName() != "" )
+        return true;
+    
+    for ( std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+        if ( (*it)->isAssignable() )
+            return true;
+
     return false;
 }
 
 
-bool DagNode::isConstant( void ) const {
+bool DagNode::isClamped( void ) const
+{
+
+    return false;
+}
+
+
+/**
+ * Is this node composite, that is, does it keep track of elements or member variables
+ * of a single composite language object? The default is false; composite nodes in the
+ * language layer need to override this method and return true.
+ */
+bool DagNode::isComposite( void ) const
+{
+    return false;
+}
+
+
+bool DagNode::isConstant( void ) const
+{
+
+    return false;
+}
+
+
+/** Is this a non-applicable (NA) value? */
+bool DagNode::isNAValue( void ) const
+{
     return false;
 }
 
@@ -302,7 +382,8 @@ bool DagNode::isSimpleNumeric( void ) const
 }
 
 
-bool DagNode::isStochastic( void ) const {
+bool DagNode::isStochastic( void ) const
+{
     return false;
 }
 
@@ -310,7 +391,12 @@ bool DagNode::isStochastic( void ) const {
  * Keep the value of the node.
  * This function delegates the call to keepMe() and calls keepAffected() too.
  */
-void DagNode::keep(void) {
+void DagNode::keep(void)
+{
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "Keeping DAG node " << getName() << " <" << this << ">" << std::endl;
+#endif
     
     // keep myself first
     keepMe( this );
@@ -322,20 +408,30 @@ void DagNode::keep(void) {
 /**
  * Tell affected variable nodes to keep the current value.
  */
-void DagNode::keepAffected() {
+void DagNode::keepAffected()
+{
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "Keeping affected of DAG node " << getName() << " <" << this << ">" << std::endl;
+#endif
     
     // keep all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    {
         (*i)->keepMe( this );
+    }
+    
 }
 
 
 /** Print children. We assume indent is from line 2 (hanging indent). Line length is lineLen. */
-void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) const
+void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, bool verbose ) const
 {
     std::string pad;
     for ( size_t i = 0; i < indent; ++i )
+    {
         pad.push_back( ' ' );
+    }
     
     o << "[ ";
     pad += "  ";
@@ -350,12 +446,25 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) co
     {
         std::ostringstream s;
         if ( (*it)->getName() == "" )
+        {
             s << "<" << (*it) << ">";
+        }
         else
+        {
+            if ( verbose == true )
+            {
             s << (*it)->getName() << " <" << (*it) << ">";
+            }
+            else
+            {
+                s << (*it)->getName();
+            }
+        }
         
         if ( children.size() - i > 1 )
+        {
             s << ", ";
+        }
         
         if ( s.str().size() + currentLength > lineLen )
         {
@@ -366,6 +475,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) co
         currentLength += s.str().size();
         s.str("");
     }
+    
     o << " ]";
 }
 
@@ -378,13 +488,15 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) co
  * Note the use of a const reference here to potentially avoid one copy
  * operation on the set of DAG nodes.
  */
-void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen ) const
+void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool verbose ) const
 {
     const std::set<const DagNode*>& parents = getParents();
 
     std::string pad;
     for ( size_t i = 0; i < indent; ++i )
+    {
         pad.push_back( ' ' );
+    }
     
     o << "[ ";
     pad += "  ";
@@ -399,12 +511,25 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen ) con
     for ( i = 0, it = parents.begin(); it != parents.end(); ++it, ++i )
     {
         if ( (*it)->getName() == "" )
+        {
             s << "<" << (*it) << ">";
+        }
         else
-            s << (*it)->getName() << " <" << (*it) << ">";
+        {
+            if ( verbose == true )
+            {
+                s << (*it)->getName() << " <" << (*it) << ">";
+            }
+            else
+            {
+                s << (*it)->getName();
+            }
+        }
         
         if ( parents.size() - i > 1 )
+        {
             s << ", ";
+        }
         
         if ( s.str().size() + currentLength > lineLen )
         {
@@ -449,12 +574,13 @@ void DagNode::reInitializeAffected( void )
 /**
  * By default we do not need to do anything when re-initializiating.
  */
-void DagNode::reInitializeMe( void ) {
+void DagNode::reInitializeMe( void )
+{
     // nothing to do
 }
 
 
-void DagNode::removeChild(DagNode *child) const 
+void DagNode::removeChild(DagNode *child) const
 {
     
     // test if we even have this node as a child
@@ -471,15 +597,18 @@ void DagNode::removeChild(DagNode *child) const
 
 /**
  * Replace the DAG node. 
- * We call replace for all children so that they get a new parent. We do not change the parents.
+ * We call swap parent for all children so that they get a new parent. We do not change the parents.
  */
-void DagNode::replace( DagNode *n ) {
+void DagNode::replace( DagNode *n )
+{
     
     // replace myself at all my children
-    while ( !children.empty() ) {
+    while ( !children.empty() )
+    {
         DagNode *child = *children.begin();
         child->swapParent( this, n);
     }
+    
 }
 
 
@@ -488,7 +617,12 @@ void DagNode::replace( DagNode *n ) {
  * This means we call restoreMe() and restoreAffected(). There is a default implementation of restoreAffected()
  * which call restoreMe() of all children of this node. restoreMe() is pure virtual.
  */
-void DagNode::restore(void) {
+void DagNode::restore(void)
+{
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "Restoring DAG node " << getName() << " <" << this << ">" << std::endl;
+#endif
     
     // first restore myself
     restoreMe( this );
@@ -502,7 +636,12 @@ void DagNode::restore(void) {
  * Restore all affected nodes this DAGNode.
  * This means we call restoreMe() of all children. restoreMe() is pure virtual.
  */
-void DagNode::restoreAffected(void) {
+void DagNode::restoreAffected(void)
+{
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "Restoring affected of DAG node " << getName() << " <" << this << ">" << std::endl;
+#endif
     
     // next, restore all my children
     for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
@@ -521,6 +660,14 @@ void DagNode::setName(std::string const &n)
 }
 
 
+void DagNode::setPriorOnly(bool tf)
+{
+    
+    priorOnly = tf;
+    
+}
+
+
 /**
  * Swap parent node. We delegate this task to derived DAG node classes
  * with parents. Here we just throw an error in case a derived class
@@ -528,7 +675,9 @@ void DagNode::setName(std::string const &n)
  */
 void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
 {
+    
     throw RbException( "This DAG node does not have any parents" );
+
 }
 
 
@@ -543,6 +692,11 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
  */
 void DagNode::touch()
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "Touching DAG node " << getName() << " <" << this << ">" << std::endl;
+#endif
+
     // first touch myself
     touchMe( this );
     
@@ -556,6 +710,11 @@ void DagNode::touch()
  */
 void DagNode::touchAffected()
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "Touching affected of DAG node " << getName() << " <" << this << ">" << std::endl;
+#endif
+
     // touch all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->touchMe( this );

@@ -74,7 +74,7 @@ void ConditionalCladeProbabilityDistribution::construct(Tree& tree)
 //  taxons.clear();
 }
 
-const std::string& ConditionalCladeProbabilityDistribution::getAleRepresentation() const //Writes the object to a stream.
+std::string ConditionalCladeProbabilityDistribution::getAleRepresentation() const //Writes the object to a stream.
  {
     // create the newick string
     std::stringstream ou;

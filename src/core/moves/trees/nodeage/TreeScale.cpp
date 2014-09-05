@@ -16,21 +16,33 @@
 
 using namespace RevBayesCore;
 
-TreeScale::TreeScale(StochasticNode<TimeTree> *v, double l, bool t, double w) : SimpleMove( v, w, t), variable( v ), lambda( l ) {
+TreeScale::TreeScale(StochasticNode<TimeTree> *t, StochasticNode<double> *r, double d, bool tu, double w) : CompoundMove( std::vector<DagNode*>(), w, tu),
+    tree( t ),
+    rootAge( r ),
+    delta( d )
+{
+    
+    nodes.insert( tree );
+    if ( rootAge != NULL )
+    {
+        nodes.insert( rootAge );
+    }
     
 }
 
 
 
 /* Clone object */
-TreeScale* TreeScale::clone( void ) const {
+TreeScale* TreeScale::clone( void ) const
+{
     
     return new TreeScale( *this );
 }
 
 
 
-const std::string& TreeScale::getMoveName( void ) const {
+const std::string& TreeScale::getMoveName( void ) const
+{
     static std::string name = "Tree-Scale";
     
     return name;
@@ -38,12 +50,13 @@ const std::string& TreeScale::getMoveName( void ) const {
 
 
 /** Perform the move */
-double TreeScale::performSimpleMove( void ) {
+double TreeScale::performCompoundMove( void )
+{
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    TimeTree& tau = tree->getValue();
     
     TopologyNode& node = tau.getRoot();
     
@@ -55,10 +68,15 @@ double TreeScale::performSimpleMove( void ) {
     
     // draw new ages and compute the hastings ratio at the same time
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
+    double scalingFactor = std::exp( delta * ( u - 0.5 ) );
     
     // rescale the subtrees
     TreeUtilities::rescaleSubtree(&tau, &node, scalingFactor );
+    
+    if ( rootAge != NULL )
+    {
+        rootAge->setValue( my_age * scalingFactor );
+    }
     
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor );
@@ -67,23 +85,33 @@ double TreeScale::performSimpleMove( void ) {
 }
 
 
-void TreeScale::printParameterSummary(std::ostream &o) const {
-    o << "lambda = " << lambda;
+void TreeScale::printParameterSummary(std::ostream &o) const
+{
+
+    o << "delta = " << delta;
+
 }
 
 
-void TreeScale::rejectSimpleMove( void ) {
+void TreeScale::rejectCompoundMove( void )
+{
     
-    TimeTree& tau = variable->getValue();
+    TimeTree& tau = tree->getValue();
     
     TopologyNode& node = tau.getRoot();
     
     // undo the proposal
     TreeUtilities::rescaleSubtree(&tau, &node, storedAge / node.getAge() );
     
+    if ( rootAge != NULL )
+    {
+        rootAge->setValue( storedAge );
+    }
+    
     
 #ifdef ASSERTIONS_TREE
-    if ( fabs(storedAge - node.getAge()) > 1E-8 ) {
+    if ( fabs(storedAge - node.getAge()) > 1E-8 )
+    {
         throw RbException("Error while rejecting SubtreeScale proposal: Node ages were not correctly restored!");
     }
 #endif
@@ -91,22 +119,34 @@ void TreeScale::rejectSimpleMove( void ) {
 }
 
 
-void TreeScale::swapNode(DagNode *oldN, DagNode *newN) {
+void TreeScale::swapNode(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
-    SimpleMove::swapNode(oldN, newN);
+    CompoundMove::swapNode(oldN, newN);
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    if ( oldN == tree )
+    {
+        tree = static_cast<StochasticNode<TimeTree>* >(newN);
+    }
+    else if ( oldN == rootAge )
+    {
+        rootAge = static_cast<StochasticNode<double>* >(newN);
+    }
+    
 }
 
 
-void TreeScale::tune( void ) {
+void TreeScale::tune( void )
+{
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.234 ) {
-        lambda *= (1.0 + ((rate-0.234)/0.766) );
+    if ( rate > 0.234 )
+    {
+        delta *= (1.0 + ((rate-0.234)/0.766) );
     }
-    else {
-        lambda /= (2.0 - rate/0.234 );
+    else
+    {
+        delta /= (2.0 - rate/0.234 );
     }
 }
 

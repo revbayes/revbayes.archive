@@ -15,7 +15,7 @@
 #include "TypedFunction.h"
 #include "TimeTree.h"
 #include "MatrixReal.h"
-#include "MultivariatePhyloProcess.h"
+#include "MultivariateRealNodeContainer.h"
 #include "RbVector.h"
 #include <vector>
 
@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class T92GCBranchTree : public TypedFunction< RbVector<RateMatrix> > {
         
     public:
-        T92GCBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< std::vector<double> > *g, const TypedDagNode<double>* r, const TypedDagNode<double>* k);
+        T92GCBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< std::vector<double> > *g, const TypedDagNode<double>* k);
         T92GCBranchTree(const T92GCBranchTree &n);                                                                              //!< Copy constructor
         virtual                                            ~T92GCBranchTree(void) {}                                                         //!< Virtual destructor
         
@@ -43,7 +43,7 @@ namespace RevBayesCore {
         */
         
     private:
-
+        
         /*
         void                                                flagNodes();
         void                                                corruptAll();
@@ -53,7 +53,6 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< TimeTree >*                     tau;
         const TypedDagNode< std::vector<double> >*          gctree;
-        const TypedDagNode< double >*                       rootgc;
         const TypedDagNode< double >*                       kappa;
     };
     

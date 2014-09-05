@@ -35,7 +35,7 @@ Dist_wishart* Dist_wishart::clone( void ) const {
 RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* om = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
     /*
     if (omega != NULL)  {
@@ -92,20 +92,20 @@ const TypeSpec& Dist_wishart::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Dist_wishart::getMemberRules(void) const {
     
-    static MemberRules distExpMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
         
 //        distExpMemberRules.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "df", true, Natural::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "kappa", true, RealPos::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "dim", true, Natural::getClassTypeSpec() ) );
+        distMemberRules.push_back( new ArgumentRule( "df"   , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "kappa", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "dim"  , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return distMemberRules;
 }
 
 

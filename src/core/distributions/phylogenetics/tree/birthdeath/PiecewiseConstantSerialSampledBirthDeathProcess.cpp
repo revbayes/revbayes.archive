@@ -26,13 +26,13 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
  */
-PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, 
+PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
                                                                                                  const TypedDagNode<std::vector<double> > *s, const TypedDagNode<std::vector<double> > *st,
                                                                                                  const TypedDagNode<std::vector<double> > *e, const TypedDagNode<std::vector<double> > *et,
                                                                                                  const TypedDagNode<std::vector<double> > *p, const TypedDagNode<std::vector<double> > *pt,
                                                                                                  const TypedDagNode<std::vector<double> > *r, const TypedDagNode<std::vector<double> > *rt,
                                                                                                  double tLastSample, const std::string &cdt, 
-                                                                                                 const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, cdt, tn, c ), 
+                                                                                                 const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 
@@ -73,6 +73,8 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     // present time 
     double org = origin->getValue();
     
+//    double ra = value->getRoot().getAge();
+    
     // retrieved the speciation times
     std::vector<double>* agesInternalNodes  = getAgesOfInternalNodesFromMostRecentSample();
     std::vector<double>* agesTips           = getAgesOfTipsFromMostRecentSample();
@@ -98,6 +100,11 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
             lnProbTimes += log( fossil[index] / q(index, t + timeSinceLastSample) );
         }
         
+//        if ( lnProbTimes > 100 )
+//        {
+//            std::cerr << "holala" << std::endl;
+//        }
+        
     }
     
     for (size_t i = 0; i < numTaxa-1; ++i) 
@@ -112,6 +119,11 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         double t = (*agesInternalNodes)[i];
         size_t index = l(t);
         lnProbTimes += log( q(index,t+timeSinceLastSample) * birth[index] );
+        
+//        if ( lnProbTimes > 100 )
+//        {
+//            std::cerr << "holala" << std::endl;
+//        }
     }
     
     for (size_t i = 0; i < rateChangeTimes.size(); ++i) 
@@ -127,10 +139,29 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         int div = survivors(t);
         lnProbTimes += div * log( (1.0 - sampling[i+1]) * q(i, t) );
         
+//        if ( lnProbTimes > 100 )
+//        {
+//            std::cout << "t = " << t << "  -- div = " << div << "\n";
+//            std::cout << "sampling = " << sampling[i+1] << "  -- i = " << i << "\n";
+//            std::cout << "sampling size = " << sampling.size() << "   q(i,t) =" << q(i, t) << std::endl;
+//            std::cerr << "holala" << std::endl;
+//        }
+		
+        
     }
 
     
+    
+//    double test = log( q(rateChangeTimes.size(), org ) );
+//    if ( test > 100 )
+//    {
+//        std::cerr << "holala" << std::endl;
+//    }
     lnProbTimes += log( q(rateChangeTimes.size(), org ) );
+//    if ( lnProbTimes > 100 )
+//    {
+//        std::cerr << "holala" << std::endl;
+//    }
     
     delete agesInternalNodes;
     delete agesTips;
@@ -284,7 +315,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
     death.push_back(    d[0] );
     fossil.push_back(   f[0] );
     sampling.push_back( s[0] );
-    
+	
     size_t pos = 0;
     for (std::set<double>::const_iterator it = eventTimes.begin(); it != eventTimes.end(); ++it) 
     {
@@ -298,24 +329,34 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
         if ( pos != birthTimes.size() ) 
         {
             indexBirth = pos;
+			birth.push_back( b[indexBirth+1] );
         }
-        birth.push_back( b[indexBirth+1] );
+		else{
+			birth.push_back( b[indexBirth] );
+		}
+        
         
         // add the extinction rate at the rate-change event t
         pos = size_t( find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin() );
         if ( pos != deathTimes.size() ) 
         {
             indexDeath = pos;
+			death.push_back( d[indexDeath+1] );
         }
-        death.push_back( d[indexDeath+1] );
+		else{
+			death.push_back( d[indexDeath] );
+		}
         
         // add the fossilization rate at the rate-change event t
         pos = size_t( find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin() );
         if ( pos != fossilTimes.size() ) 
         {
             indexFossil = pos;
+			fossil.push_back( f[indexFossil+1] );
         }
-        fossil.push_back( f[indexFossil+1] );
+        else{
+			fossil.push_back( f[indexFossil] );
+		}
         
         // add the sampling probability at the rate-change event t
         pos = size_t( find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin() );
@@ -353,7 +394,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     if (i > 0) {
         ti = rateChangeTimes[i-1];
     }
-    
+	   
     double diff = b - d - f;
     double bp   = b*f;
     double dt   = ti - t;
@@ -364,7 +405,30 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double e = exp(A*dt);
     double tmp = ((1.0+B)+e*(1.0-B));
     
-    return 4.0*e / (tmp*tmp);    
+//    double tmp2 = 4.0*e / (tmp*tmp);
+    double tmp2 = (e/tmp)*(4.0/tmp);
+    
+    // (4 * Math.exp(Ai[index] * (t - ti))) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index])) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index]));
+    
+    // (4 * e) / (e * (1 - B) + (1 + B)) / (e * (1 - B) + (1 + B));
+    double test2 = (4 * e) / (e * (1 - B) + (1 + B)) / (e * (1 - B) + (1 + B));
+    double test3 = (4 ) / ((1 - B) + (1 + B) / e) / ((1 - B) + (1 + B) / e);
+    
+//    if ( fabs( tmp2 - test2 ) > 1E-8 || fabs( tmp2 - test3 ) > 1E-8 || fabs( test3 - test2 ) > 1E-8 )
+//    {
+//        std::cerr << "Numerical problems ..." << std::endl;
+//    }
+    
+    if ( e < 1E-6 )
+    {
+        return test3;
+    }
+    else //if ( fabs(B + 1.0) < 1E-4)
+    {
+        return test2;
+    }
+	
+//	return test2;
 }
 
 
@@ -390,6 +454,7 @@ std::vector<double>* PiecewiseConstantSerialSampledBirthDeathProcess::simSpeciat
         // draw the times
         times->push_back( n );
     }
+	
 	
     return times;
 }

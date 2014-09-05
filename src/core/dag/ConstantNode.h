@@ -40,7 +40,7 @@ namespace RevBayesCore {
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
-        void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
+        void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);
         void                                                setValue(const valueType &v);
         
@@ -173,25 +173,45 @@ bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const {
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter ) {
-    // nothing to do
+void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter )
+{
+    // nothing to do    
 }
 
 
 template<class valueType>
 /** Print struct for user */
-void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o) const 
+void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, bool verbose) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
+    
     o << "_dagType      = Constant DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
-
-    o << "_parents      = ";
-    this->printParents(o, 16, 70);
-    o << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
+    
+    if ( verbose == true )
+    {
+        o << "_parents      = ";
+        this->printParents(o, 16, 70, verbose);
+        o << std::endl;
+    }
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren(o, 16, 70, verbose);
     o << std::endl;
 }
 

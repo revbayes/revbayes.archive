@@ -18,6 +18,7 @@
 #include "Tree.h"
 #include "RbException.h"
 #include "RbOptions.h"
+#include "Taxon.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 
@@ -29,7 +30,6 @@ Tree::Tree(void) :
     changeEventHandler(),
     ownsTopology( true )
 {
-    
 }
 
 
@@ -50,26 +50,22 @@ Tree::Tree(const Tree& t) :
         topology      = t.topology;
     }
     
-    // set the tree for each node
-    topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
+    // add ourselves as a tree using the topology
+    topology->addTree( this );
 }
 
 
 /* Destructor */
 Tree::~Tree(void) 
 {
-    
     if ( ownsTopology )
     {
         delete topology;
     }
     else
     {
-        // remove the tree for each node
-        // TODO: Why are we doing this? Apparently we need at least to check that
-        // there are some nodes to delete because the topology can be empty. -- Fredrik
-        if ( topology->getNumberOfNodes() > 0 )
-            topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
+        // just remove us as a user of the topology
+        topology->removeTree( this );
     }
     
 }
@@ -80,7 +76,7 @@ Tree& Tree::operator=(const Tree &t) {
     if (this != &t) 
     {
         // nothing really to do here, should be done in the derived classes
-        // @TODO: Find a better solution - Sebastian
+        // @todo: Find a better solution - Sebastian
         // Problem: If we redraw the tree because the initial states are invalid, 
         // then we somehow need to remember the tree event change listeners.
         // But it is not nice if the tree distribution needs to remember this!!!
@@ -102,8 +98,8 @@ Tree& Tree::operator=(const Tree &t) {
             topology      = t.topology;
         }
         
-        // set the tree for each node
-        topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
+        // add ourselves as a tree using this topology
+        topology->addTree( this );
     }
     
     return *this;
@@ -167,6 +163,14 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
 std::vector<std::string> Tree::getTipNames() const {
 
     return topology->getTipNames();
+}
+
+std::vector<Taxon> Tree::getTaxa() const {
+    return topology->getTaxa();
+}
+
+std::vector<std::string> Tree::getSpeciesNames() const {
+    return topology->getSpeciesNames();
 }
 
 TopologyNode& Tree::getNode(size_t idx) {
@@ -283,8 +287,8 @@ void Tree::setTopology(const Topology *t, bool owns)
         }
         else
         {
-            // just remove the tree for each node
-            topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
+            // just remove ourselves as a user of the topology
+            topology->removeTree( this );
         }
         
     }
@@ -292,17 +296,18 @@ void Tree::setTopology(const Topology *t, bool owns)
     ownsTopology = owns;
     
     // set the topology of this tree
-    topology = t;
+    topology = const_cast<Topology*>( t );
     
-    // set the tree for each node
-    topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
+    // add ourselves as a tree using this topology
+    topology->addTree( this );
     
     resizeElementVectors( t->getNumberOfNodes() );
 
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x) {
-    o << x.getNewickRepresentation();
     
+    o << x.getNewickRepresentation();
+        
     return o;
 }

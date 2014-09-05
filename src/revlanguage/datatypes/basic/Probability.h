@@ -23,20 +23,23 @@
 
 namespace RevLanguage {
 
-class Probability : public RealPos {
+    class Probability : public RealPos {
     
-public:
-    Probability(void);                                                      //!< Default constructor
-    Probability(RevBayesCore::TypedDagNode<double> *x);                     //!< Construct from double
-    Probability(double x);                                                  //!< Construct from double
-    
-    // Basic utility functions
-    Probability*                    clone(void) const;                      //!< Clone object
-    static const std::string&       getClassType(void);                     //!< Get Rev type
-    static const TypeSpec&          getClassTypeSpec(void);                 //!< Get class type spec
-    const TypeSpec&                 getTypeSpec(void) const;                //!< Get language type of the object
+    public:
+        Probability(void);                                                      //!< Default constructor
+        Probability(RevBayesCore::TypedDagNode<double> *x);                     //!< Construct from double
+        Probability(double x);                                                  //!< Construct from double
         
-};
+        // Basic utility functions
+        Probability*                    clone(void) const;                      //!< Clone object
+        static const std::string&       getClassType(void);                     //!< Get Rev type
+        static const TypeSpec&          getClassTypeSpec(void);                 //!< Get class type spec
+        const TypeSpec&                 getTypeSpec(void) const;                //!< Get language type of the object
+        
+        // Member methods
+        const MethodTable&              getMethods(void) const;                 //!< Get member methods
+        
+    };
     
 }
 

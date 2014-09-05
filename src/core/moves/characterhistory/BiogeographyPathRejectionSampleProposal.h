@@ -102,18 +102,14 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     this->fillStateCounts(currState, counts);
     
     if (nd.isRoot())
-    {
         return 0.0;
-    }
   
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     
-        
-//    const treeType& tree = this->tau->getValue();
+    
     double branchLength = nd.getBranchLength();
     double currAge = (nd.isRoot() ? 1e10 : nd.getParent().getAge());
-//    double startAge = currAge;
     double endAge = nd.getAge();
     const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(this->qmap->getValue());
     
@@ -184,7 +180,6 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
         // waiting factor
         double sr = rm.getSumOfRates(nd, currState, counts, currAge);
         lnP += -sr * (currAge - epochEndAge);
-        if (debug) std::cout << "wait1 " << lnP << " " << currAge << " " << epochIdx << " da=" << currAge-epochEndAge << " ...  ... " << sr << "\n";
         
         
         // advance epoch
@@ -226,11 +221,12 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     if (this->node->isRoot())
     {
         return 0.0;
-        branchLength = 1e10;//2*tree.getTreeLength();
+        branchLength = this->node->getAge() * 5; //1e10;//2*tree.getTreeLength();
     }
     
     // get epoch variables
-    double startAge = this->node->getParent().getAge();
+//    double startAge = this->node->getParent().getAge();
+    double startAge = (!this->node->isRoot() ? this->node->getParent().getAge() : 1e10);
 //    double endAge = this->node->getAge();
     
     // clear characters
@@ -332,12 +328,13 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     // assign values back to model for likelihood
     bh->updateHistory(this->proposedHistory, this->siteIndexSet);
     
-    // auto-reject if too many failed rejections samplings
-    if (!failed)
+    // auto-reject if too many failed rejection samplings
+    if (failed)
         this->proposedLnProb = RbConstants::Double::neginf;
+    
     // otherwise, proceed with MH
     else
-        this->proposedLnProb = computeLnProposal( *(this->node), *bh);
+        this->proposedLnProb = RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::computeLnProposal( *(this->node), *bh);
     
     return this->storedLnProb - this->proposedLnProb;
 }
@@ -397,10 +394,10 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
     //        std::cout << *it << " ";
     //    std::cout << "\n";
     
-    if (this->node->isRoot())
-    {
-        return;
-    }
+//    if (this->node->isRoot())
+//    {
+//        return;
+//    }
     
     BranchHistory* bh = &p.getHistory(*(this->node));
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
@@ -418,171 +415,12 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
     // flag node as dirty
     p.fireTreeChangeEvent(*(this->node));
     
-    double x = computeLnProposal( *(this->node), *bh);
+    double x = RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::computeLnProposal( *(this->node), *bh);
     
     this->storedLnProb = x;
     
     
 }
-
-//template<class charType, class treeType>
-//double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::computeLnProposal_test(const TopologyNode& nd, const BranchHistory& bh)
-//{
-//    double lnP = 0.0;
-//    
-//    std::vector<CharacterEvent*> currState = bh.getParentCharacters();
-//    const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
-//    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
-//    
-//    unsigned counts[this->numStates];
-//    for (size_t i = 0; i < this->numStates; i++)
-//        counts[i] = 0;
-//    fillStateCounts(currState, counts);
-//    
-//    const treeType& tree = this->tau->getValue();
-//    double branchLength = nd.getBranchLength();
-//    if (nd.isRoot())
-//    {
-//        return 0.0;
-//        branchLength = 1000.0;
-//    }
-//    double currAge = (!nd.isRoot() ? nd.getParent().getAge() : 10e200);
-//    
-//    // get sampling ratemap
-//    const RateMap& rm = this->qmap->getValue();
-//    
-//    // stepwise events
-//    double t = 0.0;
-//    double dt = 0.0;
-//    for (it_h = history.begin(); it_h != history.end(); it_h++)
-//    {
-//        // next event time
-//        double idx = (*it_h)->getIndex();
-//        dt = (*it_h)->getTime() - t;
-//        
-//        //        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
-//        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getIndex() ], *it_h, currAge);
-//        double sr = rm.getSumOfRates(nd, currState, counts, currAge);
-//        
-//        // lnP for stepwise events for p(x->y)
-//        lnP += log(tr) - sr * dt * branchLength;
-//        
-//        // update counts
-//        counts[ currState[idx]->getState() ] -= 1;
-//        counts[ (*it_h)->getState() ] += 1;
-//        
-//        // update state
-//        currState[idx] = *it_h;
-//        t += dt;
-//        currAge -= dt * branchLength;
-//    }
-//    // lnL for final non-event
-//    double sr = rm.getSumOfRates(nd, currState, counts, currAge);
-//    lnP += -sr * (1.0 - t) * branchLength;
-//    
-//    if (nd.isRoot())
-//        return 0.0;
-//    
-//    return lnP;
-//}
-//
-
-
-
-///**
-// * Perform the Proposal.
-// *
-// * A scaling Proposal draws a random uniform number u ~ unif(-0.5,0.5)
-// * and scales the current vale by a scaling factor
-// * sf = exp( lambda * u )
-// * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.
-// *
-// * \return The hastings ratio.
-// */
-//template<class charType, class treeType>
-//double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::doProposal_test( void )
-//{
-//    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
-//    this->proposedHistory.clear();
-//    
-//    // get model parameters
-//    const treeType& tree = this->tau->getValue();
-//    double branchLength = this->node->getBranchLength();
-//    if (this->node->isRoot())
-//    {
-//        return 0.0;
-//        branchLength = 1000.0;//2*tree.getTreeLength();
-//    }
-//    
-//    const RateMap& rm = this->qmap->getValue();
-//    
-//    // clear characters
-//    BranchHistory* bh = &p.getHistory( *(this->node) );
-//    
-//    // reject sample path history
-//    std::vector<CharacterEvent*> parentVector = bh->getParentCharacters();
-//    std::vector<CharacterEvent*> childVector =  bh->getChildCharacters();
-//    for (std::set<size_t>::iterator it = this->siteIndexSet.begin(); it != this->siteIndexSet.end(); it++)
-//    {
-//        std::set<CharacterEvent*> tmpHistory;
-//        unsigned int currState = parentVector[*it]->getState();
-//        unsigned int endState = childVector[*it]->getState();
-//        do
-//        {
-//            // delete previously rejected events
-//            tmpHistory.clear();
-//            
-//            // proceed with rejection sampling
-//            currState = parentVector[*it]->getState();
-//            double t = 0.0;
-//            
-//            // repeated rejection sampling
-//            do
-//            {
-//                unsigned int nextState = (currState == 1 ? 0 : 1);
-//                double r = rm.getSiteRate(*(this->node), currState, nextState);
-//                
-//                // force valid time if event needed
-//                //                if (t == 0.0 && currState != endState)
-//                //                {
-//                //                    double u = GLOBAL_RNG->uniform01();
-//                //                    double truncate = 1.0;
-//                //                    t += -log(1 - u * (1 - exp(-truncate * r * branchLength))) / (r * branchLength);
-//                //                }
-//                //                // standard sampling otherwise
-//                //                else
-//                t += RbStatistics::Exponential::rv(r * branchLength, *GLOBAL_RNG);
-//                
-//                if (t < 1.0)
-//                {
-//                    currState = nextState;
-//                    CharacterEvent* evt = new CharacterEvent(*it, nextState, t);
-//                    tmpHistory.insert(evt);
-//                }
-//                else if (currState != endState)
-//                {
-//                    for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
-//                        delete *it_h;
-//                }
-//            }
-//            while(t < 1.0);
-//        }
-//        while (currState != endState);
-//        
-//        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
-//        {
-//            this->proposedHistory.insert(*it);
-//        }
-//    }
-//    
-//    // assign values back to model for likelihood
-//    bh->updateHistory(this->proposedHistory, this->siteIndexSet);
-//    
-//    // return hastings ratio
-//    this->proposedLnProb = computeLnProposal(*(this->node), *bh);
-//    
-//    return this->storedLnProb - this->proposedLnProb;
-//}
 
 
 #endif /* defined(__rb_mlandis__BiogeographyPathRejectionSampleProposal__) */

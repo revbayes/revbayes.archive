@@ -71,36 +71,39 @@ namespace RevLanguage {
 
 template <typename valType>
 RevLanguage::Dist_dpp<valType>::Dist_dpp() : TypedDistribution< ModelVector<valType> >(), 
-concentration( NULL ),
-baseDistribution( NULL ),
-numElements( NULL )
+    concentration( NULL ),
+    baseDistribution( NULL ),
+    numElements( NULL )
 {
     
 }
 
 
 template <typename valType>
-RevLanguage::Dist_dpp<valType>::~Dist_dpp() {
+RevLanguage::Dist_dpp<valType>::~Dist_dpp()
+{
     
 }
 
 
 
 template <typename valType>
-RevLanguage::Dist_dpp<valType>* RevLanguage::Dist_dpp<valType>::clone( void ) const {
+RevLanguage::Dist_dpp<valType>* RevLanguage::Dist_dpp<valType>::clone( void ) const
+{
     return new Dist_dpp(*this);
 }
 
 
 template <typename valType>
-RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* RevLanguage::Dist_dpp<valType>::createDistribution( void ) const {
+RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* RevLanguage::Dist_dpp<valType>::createDistribution( void ) const
+{
 	
     // get the parameters
     const Distribution& rlDistribution									= static_cast<const Distribution &>( baseDistribution->getRevObject() );
     RevBayesCore::TypedDistribution<typename valType::valueType>* g0    = static_cast<RevBayesCore::TypedDistribution<typename valType::valueType>* >( rlDistribution.createDistribution() );    
     RevBayesCore::TypedDagNode<double>* cp								= static_cast<const RealPos &>( concentration->getRevObject() ).getDagNode();
 
-    int ne = static_cast<const RealPos &>( numElements->getRevObject() ).getValue();
+    int ne = static_cast<const Natural &>( numElements->getRevObject() ).getValue();
     RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* d		= new RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>(g0, cp, ne);
     
     return d;
@@ -110,7 +113,8 @@ RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* Re
 
 /* Get Rev type of object */
 template <typename valType>
-const std::string& RevLanguage::Dist_dpp<valType>::getClassType(void) { 
+const std::string& RevLanguage::Dist_dpp<valType>::getClassType(void)
+{
     
     static std::string revType = "Dist_dpp";
     
@@ -119,7 +123,8 @@ const std::string& RevLanguage::Dist_dpp<valType>::getClassType(void) {
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector< valType > >::getClassTypeSpec() ) );
     
@@ -131,15 +136,18 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(vo
 
 /** Return member rules (no members) */
 template <typename valType>
-const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getMemberRules(void) const
+{
     
     static MemberRules distDPPMemberRules;
     static bool rulesSet = false;
 
-    if ( !rulesSet ) {
-        distDPPMemberRules.push_back( new ArgumentRule( "concentration",     true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution",  true, TypedDistribution<valType>::getClassTypeSpec() ) );
-        distDPPMemberRules.push_back( new ArgumentRule( "numElements",       true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+    if ( !rulesSet )
+    {
+    
+        distDPPMemberRules.push_back( new ArgumentRule( "concentration"   , RealPos::getClassTypeSpec()                   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "numElements"     , Natural::getClassTypeSpec()                   , ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
@@ -149,7 +157,8 @@ const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getMemberRules(v
 
 
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -160,18 +169,23 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getTypeSpec( void )
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::Dist_dpp<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_dpp<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+{
     
-    if ( name == "concentration" ) {
+    if ( name == "concentration" )
+    {
         concentration = var;
     }
-    else if ( name == "baseDistribution" ) {
+    else if ( name == "baseDistribution" )
+    {
         baseDistribution = var;
     }
-    else if ( name == "numElements" ) {
+    else if ( name == "numElements" )
+    {
         numElements = var;
     }
-    else {
+    else
+    {
         TypedDistribution< ModelVector< valType > >::setConstMemberVariable(name, var);
     }
 }

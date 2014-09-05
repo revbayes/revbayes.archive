@@ -14,7 +14,7 @@
 #include "MultivariateNormalDistribution.h"
 #include "Real.h"
 #include "StochasticNode.h"
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "RealSymmetricMatrix.h"
 
 using namespace RevLanguage;
@@ -39,7 +39,7 @@ RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( 
 
     // get the parameters
     RevBayesCore::TypedDagNode<std::vector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix >* p = static_cast<const RealSymmetricMatrix &>( precision->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric >* p = static_cast<const RealSymmetricMatrix &>( precision->getRevObject() ).getDagNode();
     RevBayesCore::MultivariateNormalDistribution* d     = new RevBayesCore::MultivariateNormalDistribution( m,p );
     
     return d;
@@ -69,17 +69,19 @@ const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Dist_mvtnorm::getMemberRules(void) const {
     
-    static MemberRules distExpMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "mean", true, ModelVector<Real>::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "precision", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
+        
+        distMemberRules.push_back( new ArgumentRule( "mean"     , ModelVector<Real>::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "precision", RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return distMemberRules;
 }
 
 

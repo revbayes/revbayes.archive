@@ -52,6 +52,8 @@ namespace RevBayesCore {
         void                                        setHomogeneousGainLossRates(const std::vector<double>& r);
         const std::vector<std::vector<double> >&    getHeterogeneousGainLossRates(void) const;
         void                                        setHeterogeneousGainLossRates(const std::vector<std::vector<double> >& r);
+        const std::vector<double>&                  getRootFrequencies(void) const;
+        void                                        setRootFrequencies(const std::vector<double>& r);
         
         // other crazy stuff for BiogeographyRateMapFunction to handle
         void                                        setGeographyRateModifier(const GeographyRateModifier& gdrm);
@@ -69,6 +71,7 @@ namespace RevBayesCore {
         std::vector<double>                         heterogeneousClockRates;
         std::vector<double>                         homogeneousGainLossRates;
         std::vector<std::vector<double> >           heterogeneousGainLossRates;
+        std::vector<double>                         rootFrequencies;
         double                                      distancePower;
         
         // geography models
@@ -89,6 +92,7 @@ namespace RevBayesCore {
         bool                                        useAreaAdjacency;
         bool                                        useAreaAvailable;
         bool                                        useDistanceDependence;
+        bool                                        useRootFrequencies;
         
     };
     

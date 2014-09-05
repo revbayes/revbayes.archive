@@ -1,4 +1,5 @@
 #import "Inlet.h"
+#import "Outlet.h"
 #import "RbData.h"
 #import "RevBayes.h"
 #import "ToolCombiner.h"

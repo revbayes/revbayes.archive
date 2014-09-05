@@ -94,7 +94,8 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
     if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) )
     {
         // We are not of a derived type (or the same type) so we need to cast
-        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) )
+        // This is a one-time type conversion, so we set the once flag to true
+        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec(), true ) )
         {
             newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
         }
@@ -115,13 +116,14 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
     // Fill the slot with newValue
     theSlot->setRevObject( newValue );
     
+    
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
     
     // We return the rhs variable itself as the semantic value of the
     // assignment statement. It can be used in further assignments.
-    return theVariable;
+    return theSlot;
 }
 
 
@@ -131,6 +133,27 @@ bool SyntaxConstantAssignment::isAssignment( void ) const
     return true;
 }
 
+
+
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The assignment is safe
+ * if its lhs and rhs expressions are safe, and the
+ * assignment is not to an external variable.
+ */
+bool SyntaxConstantAssignment::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
+{
+    // Check lhs and rhs expressions
+    if ( !lhsExpression->isFunctionSafe( env, localVars ) || !rhsExpression->isFunctionSafe( env, localVars ) )
+        return false;
+
+    // Check whether assignment is to external variable (not function safe)
+    if ( lhsExpression->retrievesExternVar( env, localVars, true ) )
+        return false;
+    
+    // All tests passed
+    return true;
+}
 
 
 /** Print info about the syntax element */

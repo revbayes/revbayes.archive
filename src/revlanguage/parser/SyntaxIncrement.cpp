@@ -108,6 +108,28 @@ RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
 }
 
 
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The assignment is safe
+ * if the variable expression is safe, and the
+ * increment is not to an external variable.
+ */
+bool SyntaxIncrement::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
+{
+    // Check variable
+    if ( !variable->isFunctionSafe( env, localVars ) )
+        return false;
+    
+    // Check whether assignment is to external variable (not function safe)
+    // We are not allowed to add the variable to the local variables, it must
+    // exist before the increment is attempted
+    if ( variable->retrievesExternVar( env, localVars, false ) )
+        return false;
+    
+    // All tests passed
+    return true;
+}
+
 
 /**
  * Print info about the syntax element

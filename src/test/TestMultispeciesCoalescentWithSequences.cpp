@@ -93,7 +93,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     GLOBAL_RNG->setSeed(seed);
     
     double trueNE = 100;
-    size_t nGeneTrees = 50;
+    size_t nGeneTrees = 10;
     size_t individualsPerSpecies = 10;
     
 //    #if defined (USE_LIB_OPENMP)
@@ -112,6 +112,9 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 //    }
 //    
    
+    //Folder for output of the files
+    std::string folder = "/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/";
+
 
     
     /* First, we read in the species tree */
@@ -119,25 +122,29 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     TimeTree *t = trees[0];
     std::cout << "True species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
-    
+   /* TreeUtilities::rescaleSubtree(t, &(t->getRoot()), 100 );
+    std::cout << "Rescaled species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;*/
+
     
     /* Then we set up the multispecies coalescent process and simulate gene trees */
     size_t nNodes = t->getNumberOfNodes();
     ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
     std::vector<std::string> speciesNames = t->getTipNames();
-    map<std::string, std::string> indiv2species;
+    std::vector<Taxon> taxa;
     for (std::vector<std::string>::iterator s = speciesNames.begin(); s != speciesNames.end(); ++s) {
         for (size_t i = 1; i <= individualsPerSpecies; ++i)
         {
             std::stringstream o;
             o << *s << "_" << i;
-            indiv2species[ o.str() ] = *s;
+            Taxon t = Taxon( o.str() );
+            t.setSpeciesName( *s );
+            taxa.push_back( t );
         }
         
     }
     
     ConstantNode<TimeTree> *spTree = new ConstantNode<TimeTree>("speciesTree", t);
-    MultispeciesCoalescent *m = new MultispeciesCoalescent( spTree, indiv2species);
+    MultispeciesCoalescent *m = new MultispeciesCoalescent( spTree, taxa);
     m->setNes(Ne);
     StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", m);
 
@@ -149,7 +156,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
         stringstream ss; //create a stringstream
         ss << i;
         std::ofstream myfile;
-        myfile.open( ("primatesSimulatedTree_" + ss.str() + ".dnd").c_str() );
+        myfile.open( (folder+"primatesSimulatedTree_" + ss.str() + ".dnd").c_str() );
         myfile << simTrees[i]->getNewickRepresentation() << std::endl;
         myfile.close();
         tauCPC->redraw();
@@ -195,7 +202,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
         stringstream ss; //create a stringstream
         ss << i;
         //  writer.writeData( "primatesSimulated_" + ss.str() + ".fas", charactermodel->getValue() );
-        writer.writeData(o.str() + ".fas", simSeqs[i]->getValue());
+        writer.writeData(folder+o.str() + ".fas", simSeqs[i]->getValue());
     }
     
     //NOW THE DATA HAS BEEN SIMULATED
@@ -237,7 +244,13 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     ConstantNode<double> *extinctionRate = new ConstantNode<double>("extinctionRate", new double(2.5) );
     ConstantNode<double> *sampling = new ConstantNode<double>("rho", new double(1.0) );
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
-    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "SpeciesTree", new ConstantRateBirthDeathProcess( origin, speciationRate, extinctionRate, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getTipNames(), std::vector<Clade>()) );
+    std::vector<std::string> names = t->getTipNames();
+    std::vector<Taxon> taxaNames;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxaNames.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "SpeciesTree", new ConstantRateBirthDeathProcess( origin, NULL, speciationRate, extinctionRate, sampling, "uniform", "survival", taxaNames, std::vector<Clade>()) );
 	
     // If we want to initialize the species tree to the starting tree
     TimeTree *startingTree = spTree_inf->getValue().clone();
@@ -268,7 +281,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     for (size_t i = 0; i < nGeneTrees; ++i) {
         std::stringstream o;
         o << "GeneTree_" << i;
-        multiCoals.push_back( new MultispeciesCoalescent(spTree_inf, indiv2species) );
+        multiCoals.push_back( new MultispeciesCoalescent(spTree_inf, taxa) );
         multiCoals[i]->setNes(Ne_inf);
         geneTrees_inf.push_back( new StochasticNode<TimeTree>(o.str(), multiCoals[i]) );
         // the following line is useful if we want to use the simulated gene trees as data
@@ -306,7 +319,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     
     //Moves for node heights of the species tree only
     moves.push_back( new SubtreeScale( spTree_inf, 10.0 ) );
-    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 10.0 ) );
+//    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( spTree_inf, 10.0 ) );
     moves.push_back( new RootTimeSlide( spTree_inf, 1.0, false, 5.0 ) );
     
@@ -322,7 +335,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 
         //Moves for node heights of the species tree only
         moves.push_back(new SubtreeScale(geneTrees_inf[i], 10.0));
-        moves.push_back(new TreeScale(geneTrees_inf[i], 1.0, true, 10.0));
+//        moves.push_back(new TreeScale(geneTrees_inf[i], 1.0, true, 10.0));
         moves.push_back(new NodeTimeSlideUniform(geneTrees_inf[i], 10.0));
         moves.push_back(new RootTimeSlide(geneTrees_inf[i], 1.0, false, 5.0));
     }
@@ -330,11 +343,11 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     
     
     RbVector<Monitor> monitors;
-    monitors.push_back( new ModelMonitor( 10, "TestMultispeciesCoalescentWithSequences.p", "\t" ) );
+    monitors.push_back( new ModelMonitor( 10, folder+"TestMultispeciesCoalescentWithSequences.p", "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( spTree_inf );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestMultispeciesCoalescentWithSequences.trees", "\t", false, false, false ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, "\t", false, false, false ) );
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, folder+"TestMultispeciesCoalescentWithSequences.trees", "\t", false, false, false ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, false, false, false ) );
     for (unsigned int i = 0; i < nGeneTrees; i++) {
         std::stringstream o;
         o << "estimatedGeneTree_" << i << ".trees";
@@ -352,7 +365,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 
     
     // read in the tree trace
-    TreeTrace<TimeTree> trace = readTreeTrace("TestMultispeciesCoalescentWithSequences.trees");
+    TreeTrace<TimeTree> trace = readTreeTrace(folder+"TestMultispeciesCoalescentWithSequences.trees");
     
     TreeSummary<TimeTree> summary = TreeSummary<TimeTree>(trace);
     summary.summarize();

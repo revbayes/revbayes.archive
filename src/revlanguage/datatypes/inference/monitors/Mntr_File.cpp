@@ -1,7 +1,6 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "FileMonitor.h"
 #include "ModelVector.h"
@@ -35,10 +34,14 @@ void Mntr_File::constructInternalObject( void ) {
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
-    std::set<RevBayesCore::DagNode *> n;
-    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    
+    // sort, remove duplicates, the create monitor vector
+    sort( vars.begin(), vars.end() );
+    vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
+    std::vector<RevBayesCore::DagNode *> n;
+    for (std::vector<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
-        n.insert( node );
+        n.push_back( node );
     }
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
@@ -75,17 +78,19 @@ const MemberRules& Mntr_File::getMemberRules(void) const {
     static MemberRules filemonitorMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        filemonitorMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("chainIdx", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("chainHeat", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+    if ( !rulesSet )
+    {
+        
         filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("append"    , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("chainIdx"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("chainHeat" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
@@ -112,7 +117,7 @@ void Mntr_File::printValue(std::ostream &o) const {
 void Mntr_File::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
-        vars.insert( var );
+        vars.push_back( var );
     }
     else if ( name == "filename" ) {
         filename = var;

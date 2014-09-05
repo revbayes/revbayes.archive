@@ -32,7 +32,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_GTR::RateMatrix_GTR(size_t n) : TimeReversibleRateMatrix( n ){
+RateMatrix_GTR::RateMatrix_GTR(size_t n) : TimeReversibleRateMatrix( n )
+{
     
     theEigenSystem       = new EigenSystem(theRateMatrix);
     c_ijk.resize(numStates * numStates * numStates);
@@ -43,7 +44,8 @@ RateMatrix_GTR::RateMatrix_GTR(size_t n) : TimeReversibleRateMatrix( n ){
 
 
 /** Copy constructor */
-RateMatrix_GTR::RateMatrix_GTR(const RateMatrix_GTR& m) : TimeReversibleRateMatrix( m ) {
+RateMatrix_GTR::RateMatrix_GTR(const RateMatrix_GTR& m) : TimeReversibleRateMatrix( m )
+{
     
     theEigenSystem       = new EigenSystem( *m.theEigenSystem );
     c_ijk                = m.c_ijk;
@@ -54,15 +56,18 @@ RateMatrix_GTR::RateMatrix_GTR(const RateMatrix_GTR& m) : TimeReversibleRateMatr
 
 
 /** Destructor */
-RateMatrix_GTR::~RateMatrix_GTR(void) {
+RateMatrix_GTR::~RateMatrix_GTR(void)
+{
     
     delete theEigenSystem;
 }
 
 
-RateMatrix_GTR& RateMatrix_GTR::operator=(const RateMatrix_GTR &r) {
+RateMatrix_GTR& RateMatrix_GTR::operator=(const RateMatrix_GTR &r)
+{
     
-    if (this != &r) {
+    if (this != &r)
+    {
         TimeReversibleRateMatrix::operator=( r );
         
         delete theEigenSystem;
@@ -80,7 +85,8 @@ RateMatrix_GTR& RateMatrix_GTR::operator=(const RateMatrix_GTR &r) {
 
 
 /** Do precalculations on eigenvectors */
-void RateMatrix_GTR::calculateCijk(void) {
+void RateMatrix_GTR::calculateCijk(void)
+{
     
     if ( theEigenSystem->isComplex() == false )
     {
@@ -89,9 +95,15 @@ void RateMatrix_GTR::calculateCijk(void) {
         const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
         double* pc = &c_ijk[0];
         for (size_t i=0; i<numStates; i++)
+        {
             for (size_t j=0; j<numStates; j++)
+            {
                 for (size_t k=0; k<numStates; k++)
-                    *(pc++) = ev[i][k] * iev[k][j];   
+                {
+                    *(pc++) = ev[i][k] * iev[k][j];
+                }
+            }
+        }
     }
     else
     {
@@ -100,24 +112,36 @@ void RateMatrix_GTR::calculateCijk(void) {
         const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
         for (size_t i=0; i<numStates; i++)
+        {
             for (size_t j=0; j<numStates; j++)
+            {
                 for (size_t k=0; k<numStates; k++)
+                {
                     *(pc++) = cev[i][k] * ciev[k][j];
+                }
+            }
+        }
     }
 }
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_GTR::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_GTR::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const
+{
     
 	if ( theEigenSystem->isComplex() == false )
+    {
 		tiProbsEigens(t, P);
+    }
 	else
+    {
 		tiProbsComplexEigens(t, P);
+    }
 }
 
 
-RateMatrix_GTR* RateMatrix_GTR::clone( void ) const {
+RateMatrix_GTR* RateMatrix_GTR::clone( void ) const
+{
     return new RateMatrix_GTR( *this );
 }
 
@@ -132,7 +156,9 @@ void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) con
     // precalculate the product of the eigenvalue and the branch length
     std::vector<double> eigValExp(numStates);
 	for (size_t s=0; s<numStates; s++)
+    {
 		eigValExp[s] = exp(eigenValue[s] * t);
+    }
     
     // calculate the transition probabilities
 	const double* ptr = &c_ijk[0];
@@ -143,7 +169,10 @@ void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) con
         {
 			double sum = 0.0;
 			for(size_t s=0; s<numStates; s++)
+            {
 				sum += (*ptr++) * eigValExp[s];
+            }
+            
 //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			(*p) = (sum < 0.0) ? 0.0 : sum;
         }

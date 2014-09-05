@@ -58,12 +58,11 @@ namespace RevBayesCore {
         void                                                clearBranchParameters(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         std::vector<std::string>                            getTipNames() const;
+        std::vector<Taxon>                                  getTaxa() const;                                                                //!< Get all the taxa in the tree
+        std::vector<std::string>                            getSpeciesNames() const;                                                     //!< Get all the species represented in the tree
         TopologyNode&                                       getNode(size_t idx);                                                            //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                                      //!< Get the node at index
         std::vector<TopologyNode*>                          getNodes(void) const;                                                           //!< Get a pointer to the nodes in the Tree
-//        TopologyNode&                                       getNodeByIndex(size_t idx);
-//        const TopologyNode&                                 getNodeByIndex(size_t idx) const;
-//        std::vector<TopologyNode*>                          getNodesByIndex(void) const;
         size_t                                              getNumberOfInteriorNodes(void) const;                                           //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfNodes(void) const;                                                   //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfTips(void) const;                                                    //!< Get the number of tip nodes in the Tree
@@ -80,8 +79,6 @@ namespace RevBayesCore {
         bool                                                hasSameTopology( const Topology &t ) const;                                     //!< Has this tree the same topology?
         bool                                                isBinary(void) const;                                                           //!< Is the Tree rooted
         bool                                                isRooted(void) const;                                                           //!< Is the Tree rooted
-//        void                                                setRooted(bool tf);                                                     //!< Set the rootedness of the Tree
-//        void                                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the Tree from it
         void                                                setTopology(const Topology *t, bool owns);
         
     protected:
@@ -94,7 +91,7 @@ namespace RevBayesCore {
         virtual void                                        resizeElementVectors(size_t n) = 0;
 
         // protected members
-        const Topology*                                     topology;
+        Topology*                                           topology;
         mutable TreeChangeEventHandler                      changeEventHandler;
         bool                                                ownsTopology;
     };

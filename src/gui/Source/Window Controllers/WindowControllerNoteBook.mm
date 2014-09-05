@@ -1,4 +1,5 @@
 #import "AnalysisTools.h"
+#import "NotebookView.h"
 #import "RbAccessoryViewController.h"
 #import "WindowControllerNoteBook.h"
 #import "WindowControllerPreferences.h"
@@ -6,6 +7,8 @@
 
 
 @implementation WindowControllerNoteBook
+
+@synthesize mString;
 
 -(BOOL)acceptsFirstResponder {
 
@@ -46,7 +49,7 @@
 - (NSData*)getData:(NSError**)outError {
 
     [self setString:[textView textStorage]];
-    NSMutableDictionary* dict = [NSDictionary dictionaryWithObject:NSRTFTextDocumentType forKey:NSDocumentTypeDocumentAttribute];
+    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithObject:NSRTFTextDocumentType forKey:NSDocumentTypeDocumentAttribute];
     [textView breakUndoCoalescing];
     NSData* data = [[self string] dataFromRange:NSMakeRange(0, [[self string] length]) documentAttributes:dict error:outError];
     return data;
@@ -71,26 +74,10 @@
 		{
         readSuccess = YES;
         [self setString:fileContents];
-        [fileContents release];
 		}
     return readSuccess;
 }
 
-- (void)setString:(NSMutableAttributedString*)newValue {
-
-	if (mString != newValue) 
-		{
-		if (mString) 
-			[mString release];
-		mString = [newValue copy];
-		}
-}
-
-- (NSMutableAttributedString*)string { 
-
-	return [[mString retain] autorelease]; 
-}
- 
 - (void)textDidChange:(NSNotification*)notification {
 
     [self setString:[textView textStorage]];

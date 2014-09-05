@@ -110,6 +110,27 @@ bool SyntaxStochasticAssignment::isAssignment( void ) const
 }
 
 
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The assignment is safe
+ * if its lhs and rhs expressions are safe, and the
+ * assignment is not to an external variable.
+ */
+bool SyntaxStochasticAssignment::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
+{
+    // Check lhs and rhs expressions
+    if ( !lhsExpression->isFunctionSafe( env, localVars ) || !rhsExpression->isFunctionSafe( env, localVars ) )
+        return false;
+    
+    // Check whether assignment is to external variable (not function-safe)
+    if ( lhsExpression->retrievesExternVar( env, localVars, true ) )
+        return false;
+    
+    // All tests passed
+    return true;
+}
+
+
 /** Print info about the syntax element */
 void SyntaxStochasticAssignment::printValue(std::ostream& o) const
 {

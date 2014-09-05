@@ -17,9 +17,13 @@
 
 using namespace RevBayesCore;
 
-WeightedNodeTimeSlide::WeightedNodeTimeSlide(StochasticNode<TimeTree> *v, size_t b, double w) : SimpleMove( v, w), variable( v ), blocks( b ) {
+WeightedNodeTimeSlide::WeightedNodeTimeSlide(StochasticNode<TimeTree> *v, size_t b, double w) : SimpleMove( v, w),
+    variable( v ),
+    blocks( b )
+{
     
-    for (size_t i = 1; i <= blocks; ++i) {
+    for (size_t i = 1; i <= blocks; ++i)
+    {
         double x = i / (1.0 + blocks);
         double q = RbStatistics::Beta::quantile( 0.25, 0.25, x);
         interval.push_back( q );
@@ -29,14 +33,16 @@ WeightedNodeTimeSlide::WeightedNodeTimeSlide(StochasticNode<TimeTree> *v, size_t
 
 
 /* Clone object */
-WeightedNodeTimeSlide* WeightedNodeTimeSlide::clone( void ) const {
+WeightedNodeTimeSlide* WeightedNodeTimeSlide::clone( void ) const
+{
     
     return new WeightedNodeTimeSlide( *this );
 }
 
 
 
-const std::string& WeightedNodeTimeSlide::getMoveName( void ) const {
+const std::string& WeightedNodeTimeSlide::getMoveName( void ) const
+{
     static std::string name = "WeightedNodeTimeSlide";
     
     return name;
@@ -44,7 +50,8 @@ const std::string& WeightedNodeTimeSlide::getMoveName( void ) const {
 
 
 /** Perform the move */
-double WeightedNodeTimeSlide::performSimpleMove( void ) {
+double WeightedNodeTimeSlide::performSimpleMove( void )
+{
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -53,7 +60,8 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
-    do {
+    do
+    {
         double u = rng->uniform01();
         size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
@@ -65,7 +73,8 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
     double child_Age   = node->getChild( 0 ).getAge();
-    if ( child_Age < node->getChild( 1 ).getAge()) {
+    if ( child_Age < node->getChild( 1 ).getAge())
+    {
         child_Age = node->getChild( 1 ).getAge();
     }
     
@@ -82,12 +91,14 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     double marginal = 0.0;
     double prev_x = 0.0;
     double pre_lnl = 0.0;
-    for (size_t i = 0; i < blocks; ++i) {
+    for (size_t i = 0; i < blocks; ++i)
+    {
         double newAge = interval[i] * f + child_Age;
         tau.setAge( node->getIndex(), newAge );
         
         double lnLikelihood = variable->getLnProbability();
-        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
+        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        {
             lnLikelihood += (*it)->getLnProbability();
         }
         lnl.push_back( lnLikelihood );
@@ -109,13 +120,16 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     double u = rng->uniform01();
     double proposedAge = 0.0;
     size_t index = 1;
-    while ( u > 0 ) {
+    while ( u > 0 )
+    {
         double block = (lnl[index]+lnl[index-1])/2.0 * (interval[index] - interval[index-1]);
-        if ( u < block ) {
+        if ( u < block )
+        {
             double slope = (lnl[index-1]-lnl[index]) / (interval[index] - interval[index-1]);
             double tmp = sqrt( lnl[index-1]*lnl[index-1] + 2.0*u*slope);
             proposedAge = interval[index-1] + (tmp-lnl[index-1])/slope;
-            if ( proposedAge < interval[index-1] || proposedAge > interval[index] ) {
+            if ( proposedAge < interval[index-1] || proposedAge > interval[index] )
+            {
                 proposedAge = interval[index-1] + (-tmp-lnl[index-1])/slope;
             }
         }
@@ -127,40 +141,45 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     tau.setAge( node->getIndex(), proposedAge );
     
     // compute Hastings ratio (ratio of the weights)
-    double weight_old, weight_new = 1.0;
+    double weight_old = 1.0, weight_new = 1.0;
     prev_x = 0.0;
     pre_lnl = 0.0;
     bool foundForward = false, foundBackward = false;
     double proposed_x = (proposedAge-child_Age)/f;
     double old_x = (my_age-child_Age)/f;
-    for (size_t i = 0; i < blocks; ++i) {
-        if ( !foundForward && interval[i] > proposed_x) {
+    for (size_t i = 0; i < blocks; ++i)
+    {
+        if ( !foundForward && interval[i] > proposed_x)
+        {
             foundForward = true;
             weight_new = pre_lnl + (proposed_x-prev_x)/(interval[i]-prev_x)*(lnl[i+1]-pre_lnl);
         }
-        if ( !foundBackward && interval[i] > old_x) {
-            foundForward = true;
-            weight_new = pre_lnl + (old_x-prev_x)/(interval[i]-prev_x)*(lnl[i+1]-pre_lnl);
+        if ( !foundBackward && interval[i] > old_x)
+        {
+            foundBackward = true;
+            weight_old = pre_lnl + (old_x-prev_x)/(interval[i]-prev_x)*(lnl[i+1]-pre_lnl);
         }
-        if ( foundForward && foundBackward ) {
+        if ( foundForward && foundBackward )
+        {
             break;
         }
         prev_x = interval[i];
         pre_lnl = lnl[i+1];
     }
     
-    // where is weight_old from??
     return log( weight_old / weight_new );
 }
 
 
-void WeightedNodeTimeSlide::rejectSimpleMove( void ) {
+void WeightedNodeTimeSlide::rejectSimpleMove( void )
+{
     
     // undo the proposal
     variable->getValue().setAge( storedNode->getIndex(), storedAge );
     
 #ifdef ASSERTIONS_TREE
-    if ( fabs(storedAge - storedNode->getAge()) > 1E-8 ) {
+    if ( fabs(storedAge - storedNode->getAge()) > 1E-8 )
+    {
         throw RbException("Error while rejecting SubtreeScale proposal: Node ages were not correctly restored!");
     }
 #endif
@@ -168,7 +187,8 @@ void WeightedNodeTimeSlide::rejectSimpleMove( void ) {
 }
 
 
-void WeightedNodeTimeSlide::swapNode(DagNode *oldN, DagNode *newN) {
+void WeightedNodeTimeSlide::swapNode(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
     SimpleMove::swapNode(oldN, newN);
     

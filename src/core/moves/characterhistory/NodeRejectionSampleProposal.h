@@ -398,7 +398,6 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
     double lnP = 0.0;
     if (!node->isRoot())
         return 0.0;
-    
 
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
     BranchHistory* bh = &p->getHistory(*node);

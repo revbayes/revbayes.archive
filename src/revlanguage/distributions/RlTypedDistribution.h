@@ -26,27 +26,30 @@
 
 namespace RevLanguage {
     
-    template <typename valueType>
+    template <typename rlType>
     class TypedDistribution : public Distribution {
         
     public:
         virtual                                         ~TypedDistribution(void);                                                                  //!< Destructor
-        TypedDistribution<valueType>(const TypedDistribution<valueType> &x);                                                                //!< Copy constuctor
+        TypedDistribution<rlType>(const TypedDistribution<rlType> &x);                                                                //!< Copy constuctor
         
-        virtual valueType*                              createRandomVariable(void) const;                                                   //!< Create a random variable from this distribution        
+        // The value type definition
+        typedef typename rlType::valueType valueType;
+        
+        virtual rlType*                                 createRandomVariable(void) const;                                                   //!< Create a random variable from this distribution
         
         // Basic utility functions you have to override
-        virtual TypedDistribution<valueType>*           clone(void) const = 0;                                                              //!< Clone object
+        virtual TypedDistribution<rlType>*              clone(void) const = 0;                                                              //!< Clone object
         static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
         
         
         // Distribution functions you have to override
-        virtual RevBayesCore::TypedDistribution<typename valueType::valueType>*     createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
+        virtual RevBayesCore::TypedDistribution<valueType>*     createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
         
         
     protected:
-        TypedDistribution<valueType>(void);                                                                                                 //!< Basic constructor
+        TypedDistribution<rlType>(void);                                                                                                 //!< Basic constructor
         
     };
     
@@ -56,49 +59,49 @@ namespace RevLanguage {
 #include "StochasticNode.h"
 #include "TypedDistribution.h"
 
-template <typename valueType>
-RevLanguage::TypedDistribution<valueType>::TypedDistribution() : Distribution() {
+template <typename rlType>
+RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution() {
     
 }
 
 
 
-template <typename valueType>
-RevLanguage::TypedDistribution<valueType>::TypedDistribution( const TypedDistribution<valueType> &d ) : Distribution(d) {
+template <typename rlType>
+RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistribution<rlType> &d ) : Distribution(d) {
     
 }
 
 
 
-template <typename valueType>
-RevLanguage::TypedDistribution<valueType>::~TypedDistribution() {
+template <typename rlType>
+RevLanguage::TypedDistribution<rlType>::~TypedDistribution() {
     
 }
 
 
-template <typename valueType>
-valueType* RevLanguage::TypedDistribution<valueType>::createRandomVariable(void) const { 
+template <typename rlType>
+rlType* RevLanguage::TypedDistribution<rlType>::createRandomVariable(void) const {
     
-    RevBayesCore::TypedDistribution<typename valueType::valueType>* d = createDistribution();
-    RevBayesCore::TypedDagNode<typename valueType::valueType>* rv  = new RevBayesCore::StochasticNode<typename valueType::valueType>("", d);
+    RevBayesCore::TypedDistribution<typename rlType::valueType>* d = createDistribution();
+    RevBayesCore::TypedDagNode<typename rlType::valueType>* rv  = new RevBayesCore::StochasticNode<typename rlType::valueType>("", d);
     
-    return new valueType(rv);
+    return new rlType(rv);
 }
 
 
 /* Get Rev type of object */
-template <typename valueType>
-const std::string& RevLanguage::TypedDistribution<valueType>::getClassType(void) { 
+template <typename rlType>
+const std::string& RevLanguage::TypedDistribution<rlType>::getClassType(void) {
     
-    static std::string revType = "Distribution<"+ valueType::getClassType() +">";
+    static std::string revType = "Distribution<"+ rlType::getClassType() +">";
     
 	return revType; 
 }
 
 
 /* Get class type spec describing type of object */
-template <typename valueType>
-const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<valueType>::getClassTypeSpec(void) { 
+template <typename rlType>
+const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
