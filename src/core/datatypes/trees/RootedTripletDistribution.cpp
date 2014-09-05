@@ -30,10 +30,17 @@ RootedTripletDistribution::RootedTripletDistribution(void) : taxa(), species(), 
     
 }
 
+RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames ) : taxa(), species(spNames), tripletDistribution(), numberOfTrees(0), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
+    std::cout << "In constructor"<<std::endl;
+    extractTriplets(ts);
+}
+
+
 
 /* Copy constructor */
 RootedTripletDistribution::RootedTripletDistribution(const RootedTripletDistribution& t)  {
     
+    std::cout << "HEHEHEHr" << std::endl;
     taxa = t.taxa;
     species = t.species;
     tripletDistribution = t.tripletDistribution;
@@ -43,6 +50,8 @@ RootedTripletDistribution::RootedTripletDistribution(const RootedTripletDistribu
     taxonToIndex = t.taxonToIndex;
     speciesToIndex = t.speciesToIndex;
     speciesOnly = t.speciesOnly;
+    std::cout << "HEHEHEHr 2" << std::endl;
+
 }
 
 
@@ -77,14 +86,31 @@ RootedTripletDistribution* RootedTripletDistribution::clone(void) const {
 }
 
 
-void RootedTripletDistribution::extractTriplets( TimeTree& t ) {
+void RootedTripletDistribution::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, std::vector < std::string > &rv) const
+{
+    
+    if ( n == "species" )
+    {
+        rv = getSpecies();
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+void RootedTripletDistribution::extractTriplets( const TimeTree& t ) {
     if (!t.isRooted() ) {
         throw(RbException("Tree is not rooted: cannot get rooted triplets."));
     }
-    if (speciesOnly && taxa.size()!=0) {
+    if (speciesOnly) std::cout << "speciesOnly" <<std::endl;
+    
+    if (speciesOnly && species.size()==0) {
         throw(RbException("Cannot add triplets of species to a triplet distribution on taxa."));
     }
-    else if (!speciesOnly && species.size()!=0) {
+    else if (!speciesOnly && taxa.size()==0) {
         throw(RbException("Cannot add triplets of taxa to a triplet distribution on species."));
     }
     std::vector< size_t > allTips;
@@ -94,14 +120,14 @@ void RootedTripletDistribution::extractTriplets( TimeTree& t ) {
 }
 
 
-void RootedTripletDistribution::extractTriplets( std::vector<TimeTree>& ts ) {
+void RootedTripletDistribution::extractTriplets( const std::vector<TimeTree>& ts ) {
     for (size_t i = 0; i < ts.size(); ++i) {
         extractTriplets( ts[i] ) ;
     }
 }
 
 
-void RootedTripletDistribution::populateTripletDistribution ( TopologyNode* node, std::vector< size_t >& allTips ) {
+void RootedTripletDistribution::populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips ) {
     std::vector< size_t > leftTips;
     std::vector< size_t > rightTips;
     if (node->getNumberOfChildren() > 0 ) {
@@ -205,10 +231,50 @@ std::vector< Taxon > RootedTripletDistribution::getTaxa ( ) const {
     return taxa;
 }
 
+std::string RootedTripletDistribution::getSpecies ( size_t i ) const {
+    return species[i];
+}
+
+
+Taxon RootedTripletDistribution::getTaxon ( size_t i ) const {
+    return taxa[i];
+}
+
+
+void RootedTripletDistribution::resetDistribution (  ) {
+    tripletDistribution.clear();
+    return ;
+}
+
+
+
+
+const std::string RootedTripletDistribution::getStringRepresentation() const {
+    // create the newick string
+    std::stringstream o;
+    
+    std::fixed(o);
+    o.precision( 6 );
+
+    o << getNumberOfTrees() <<" trees; " << getNumberOfTriplets() << " triplets." <<std::endl;
+    o << "Triplets: " <<std::endl;
+    if (speciesOnly) {
+        for (std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >::const_iterator it = tripletDistribution.begin(); it != tripletDistribution.end(); ++it) {
+            o << "(" << getSpecies(it->first.first) << " , (" <<  getSpecies(it->first.second.first) << " , " << getSpecies(it->first.second.second) << " ) ) : "<<  it->second << std::endl;
+        }
+    }
+    else {
+        for (std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >::const_iterator it = tripletDistribution.begin(); it != tripletDistribution.end(); ++it) {
+            o << "(" << getTaxon(it->first.first) << " , (" <<  getTaxon(it->first.second.first) << " , " << getTaxon(it->first.second.second) << " ) ); : "<<  it->second << std::endl;
+        }
+    }
+    
+    return o.str();
+}
+
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RootedTripletDistribution& x) {
-    o << x.getNumberOfTrees() <<" trees; " << x.getNumberOfTriplets() << " triplets.";
-    
+    o << x.getStringRepresentation() << std::endl;
     return o;
 }

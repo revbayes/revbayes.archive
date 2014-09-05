@@ -439,7 +439,8 @@
                 {
                 RbTaxonData* td = [self getDataForTaxonIndexed:i];
                 [outStr appendString:@"   "];
-                NSString* tn = [td taxonName];
+                //NSString* tn = [td taxonName];
+                NSString* tn = [self taxonWithIndex:i];
                 NSString* tn2 = [tn stringByReplacingOccurrencesOfString:@" " withString:@"_"];
                 [self cleanName:tn2];
                 [outStr appendString:tn2];
@@ -478,7 +479,7 @@
                 {
                 RbTaxonData* td = [self getDataForTaxonIndexed:i];
                 [outStr appendString:@"   "];
-                [outStr appendString:[td taxonName]];
+                [outStr appendString:[self taxonWithIndex:i]];
                 [outStr appendString:@"   "];
                 for (int j=0; j<[td numCharacters]; j++)
                     {
@@ -504,8 +505,8 @@
             {
             RbTaxonData* td = [self getDataForTaxonIndexed:i];
             [outStr appendString:@">"];
-NSLog(@"taxonName=%@", [td taxonName]);
-            [outStr appendString:[td taxonName]];
+
+            [outStr appendString:[self taxonWithIndex:i]];
             [outStr appendString:@"\n"];
             for (int j=0; j<[td numCharacters]; j++)
                 {
