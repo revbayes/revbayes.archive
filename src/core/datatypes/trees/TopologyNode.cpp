@@ -274,7 +274,7 @@ std::string TopologyNode::buildNewickString( void )
             if ( RbSettings::userSettings().getPrintNodeIndex() == true )
             {
                 o << "index=" << index;
-                if (nodeComments.size() > 0)
+                if (nodeComments.size() > 0 || getSpeciesName() != "")
                 {
                     o << ",";
                 }
@@ -288,6 +288,16 @@ std::string TopologyNode::buildNewickString( void )
                 }
                 o << nodeComments[i];
             }
+            
+            //Finally let's print the species name if it's available
+            if (getSpeciesName() != "") {
+                if ( nodeComments.size() > 0 )
+                {
+                    o << ",";
+                }
+                o << "species=" << getSpeciesName();
+            }
+            
             o << "]";
         }
         

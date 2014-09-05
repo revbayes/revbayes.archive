@@ -31,6 +31,7 @@ RootedTripletDistribution::RootedTripletDistribution(void) : taxa(), species(), 
 }
 
 RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames ) : taxa(), species(spNames), tripletDistribution(), numberOfTrees(0), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
+    std::cout << "In constructor"<<std::endl;
     extractTriplets(ts);
 }
 
@@ -39,6 +40,7 @@ RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree
 /* Copy constructor */
 RootedTripletDistribution::RootedTripletDistribution(const RootedTripletDistribution& t)  {
     
+    std::cout << "HEHEHEHr" << std::endl;
     taxa = t.taxa;
     species = t.species;
     tripletDistribution = t.tripletDistribution;
@@ -48,6 +50,8 @@ RootedTripletDistribution::RootedTripletDistribution(const RootedTripletDistribu
     taxonToIndex = t.taxonToIndex;
     speciesToIndex = t.speciesToIndex;
     speciesOnly = t.speciesOnly;
+    std::cout << "HEHEHEHr 2" << std::endl;
+
 }
 
 
@@ -101,10 +105,12 @@ void RootedTripletDistribution::extractTriplets( const TimeTree& t ) {
     if (!t.isRooted() ) {
         throw(RbException("Tree is not rooted: cannot get rooted triplets."));
     }
-    if (speciesOnly && taxa.size()!=0) {
+    if (speciesOnly) std::cout << "speciesOnly" <<std::endl;
+    
+    if (speciesOnly && species.size()==0) {
         throw(RbException("Cannot add triplets of species to a triplet distribution on taxa."));
     }
-    else if (!speciesOnly && species.size()!=0) {
+    else if (!speciesOnly && taxa.size()==0) {
         throw(RbException("Cannot add triplets of taxa to a triplet distribution on species."));
     }
     std::vector< size_t > allTips;

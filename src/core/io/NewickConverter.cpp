@@ -162,9 +162,12 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 }
                 
                 // \todo: Needs implementation
-                
-                childNode->addNodeParameter(paramName, paramValue);
-                
+                if (paramName=="species") {
+                    childNode->setSpeciesName(paramValue);
+                }
+                else {
+                    childNode->addNodeParameter(paramName, paramValue);
+                }
             } while ( (c = char( ss.peek() ) ) == ',' );
             
             // ignore the final ']'
@@ -253,7 +256,13 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             }
             
             // \todo: Needs implementation
-            node->addNodeParameter(paramName, paramValue);
+            if (paramName=="species") {
+                node->setSpeciesName(paramValue);
+            }
+            else {
+                node->addNodeParameter(paramName, paramValue);
+            }
+
             
         } while ( (c = char( ss.peek() )) == ',' );
         
