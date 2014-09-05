@@ -33,37 +33,44 @@
 
 namespace RevBayesCore {
     
-    class RootedTripletDistribution {
+    class RootedTripletDistribution : public Cloneable, public MemberObject<std::vector < std::string > > {
         
     public:
     
         RootedTripletDistribution(void);                                                                           //!< Default constructor
         RootedTripletDistribution(const RootedTripletDistribution& t);                                             //!< Copy constructor
         virtual                                    ~RootedTripletDistribution(void);                                                                                                        //!< Destructor
-        
+        RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames ) ;
+
         RootedTripletDistribution&                                   operator=(const RootedTripletDistribution& t);
         
         // Basic utility functions
         RootedTripletDistribution*                                   clone(void) const;                                                      //!< Clone object
         
+        void executeMethod(const std::string &n, const std::vector<const DagNode *> &args, std::vector < std::string > &rv) const ;                                 //!< Execute the member-method
+        
         // RootedTripletDistribution functions
-        void extractTriplets( TimeTree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
-        void extractTriplets( std::vector<TimeTree>& ts );             //!< Getting the triplets from a tree and adding them to the tripletDistribution
+        void extractTriplets( const TimeTree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
+        void extractTriplets( const std::vector<TimeTree>& ts );             //!< Getting the triplets from a tree and adding them to the tripletDistribution
+        void populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips ) ;
+        void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips) ; //!< Get all rooted triplets given vectors of left and right tips
+        void addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize,size_t rightSize ); //!< Get rooted triplets given vectors of left and right tips, one way only
 
         size_t getNumberOfTrees() const;                                                                                     //!< Get the number of trees that were used to build the object
         size_t getNumberOfTriplets() const;                                                       //!< Get the number of triplets in the object
-        void populateTripletDistribution ( TopologyNode* node, std::vector< size_t >& allTips ) ;
         
         void setSpecies ( std::vector< std::string > s );
         void setTaxa ( std::vector< Taxon > t );
         std::vector< std::string > getSpecies ( ) const;
         std::vector< Taxon > getTaxa ( ) const;
+        std::string getSpecies ( size_t i ) const;
+        Taxon getTaxon ( size_t i ) const;
+        void resetDistribution (  ) ;
+        const std::string getStringRepresentation() const ;
         
  //   protected:
         // Nothing
     private:
-        void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips) ; //!< Get all rooted triplets given vectors of left and right tips
-        void addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize,size_t rightSize ); //!< Get rooted triplets given vectors of left and right tips, one way only
 
         
         //Members:
