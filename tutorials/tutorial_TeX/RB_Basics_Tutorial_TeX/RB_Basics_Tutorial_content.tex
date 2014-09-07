@@ -8,7 +8,7 @@ Users communicate commands using a language specifically designed for \RevBayes,
 
 This tutorial demonstrates the basic syntactical features of \RevBayes~and \Rev~and shows to set up and perform an analysis on toy statistical models for linear regression. 
 This tutorial focuses on explaining probabilistic graphical models and the language \Rev.
-A good reference for probabilistic graphical models for Bayesian phylogenetic inference is given in  \citep{hoehnaGM2014}.
+A good reference for probabilistic graphical models for Bayesian phylogenetic inference is given in \citep{hoehnaGM2014}.
 The statistical examples are borrowed from a fourth year statistics course taught in the fall term 2011 at Stockholm University.
 
 
@@ -278,20 +278,20 @@ The best exercise is to write these statements exactly in \RevBayes.
 \Rev~is an interpreted language for statistical computing and analyses in evolutionary biology. Therefore, the basics are simple mathematical operations, such as 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # Simple mathematical operators:
-    RevBayes > 1 + 1                            # Addition
-    RevBayes > 10 - 5                           # Subtraction
-    RevBayes > 5 * 5                            # Multiplication
-    RevBayes > 10 / 2                           # Division
-    RevBayes > 2^3                              # Exponentiation
-    RevBayes > 5%2                              # Modulo
+> # Simple mathematical operators:
+> 1 + 1                            # Addition
+> 10 - 5                           # Subtraction
+> 5 * 5                            # Multiplication
+> 10 / 2                           # Division
+> 2^3                              # Exponentiation
+> 5%2                              # Modulo
 \end{lstlisting}
 \end{snugshade*}}
 Just as a side note, you can also write multiple statements in the same line if you separate these by \cl{;}.
 The statements will be executed as if you wrote each on a single line.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > 1 + 1; 2 + 2                    # Multiple statements in one line
+> 1 + 1; 2 + 2                    # Multiple statements in one line
 \end{lstlisting}
 \end{snugshade*}}
     
@@ -301,35 +301,35 @@ In addition to these simple mathematical operations, we provide some standard ma
     
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # Math-Functions
-    RevBayes > exp(1)                           # exponential function
-    RevBayes > ln(1)                            # logarithmic function with natural base
-    RevBayes > sqrt(16)                         # square root function 
-    RevBayes > power(2,2)                       # power function: power(a,b) = a^b
+> # Math-Functions
+> exp(1)                           # exponential function
+> ln(1)                            # logarithmic function with natural base
+> sqrt(16)                         # square root function 
+> power(2,2)                       # power function: power(a,b) = a^b
 \end{lstlisting}
 \end{snugshade*}}
 Notice that \Rev~is case-sensitive. That means \Rev~distinguishes upper and lower case letterd for both variable names and function names. For example, only the first of these two calls will work
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > exp(1)                           # correct lower case name
-    RevBayes > Exp(1)                           # wrong upper case name
+> exp(1)                           # correct lower case name
+> Exp(1)                           # wrong upper case name
 \end{lstlisting}
 \end{snugshade*}}
 Moreover, we provide functions for the common statistical distributions.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # distribution functions
-    RevBayes > dexponential(x=1,rate=1)         # exponential distribution density function
-    RevBayes > qexponential(0.5,1)              # exponential distribution quantile function
-    RevBayes > rexponential(n=10,1)             # random draws from an exponential distribution
-    RevBayes > dnorm(-2.0,0.0,1.0)              # normal distribution density function
-    RevBayes > rnorm(n=10,0,1)                  # random draws from a normal distribution
+> # distribution functions
+> dexponential(x=1,rate=1)         # exponential distribution density function
+> qexponential(0.5,1)              # exponential distribution quantile function
+> rexponential(n=10,1)             # random draws from an exponential distribution
+> dnorm(-2.0,0.0,1.0)              # normal distribution density function
+> rnorm(n=10,0,1)                  # random draws from a normal distribution
 \end{lstlisting}
 \end{snugshade*}}
 If you do not remember what the parameter or parameter names of a function are, then you can simply type in the function name and \RevBayes~will tell you the possible parameters with their names.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > rexponential
+> rexponential
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -342,26 +342,26 @@ First, we create a constant variable with name \cl{a} and assigned the value 1 t
 The left arrow assignment (\cl{<-}) will always create a constant variable.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # Variable assignment: constant and deterministic
-    RevBayes > a <- 1                           # assignment of constant node 'a'
+> # Variable assignment: constant and deterministic
+> a <- 1                           # assignment of constant node 'a'
 \end{lstlisting}
 \end{snugshade*}}
 You see the value of 'a' by just typing in the variable name and pressing enter.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > a                                # printing the value of 'a'
+> a                                # printing the value of 'a'
 \end{lstlisting}
 \end{snugshade*}}
 If you want to see which type of variable (constant, deterministic or stochastic) 'a' has, then call the structure function for it.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > str(a)                           # printing the structure information of 'a'
+> str(a)                           # printing the structure information of 'a'
 \end{lstlisting}
 \end{snugshade*}}
 An additional quite useful built-in function in \RevBayes~ is the \cl{type} function which gives you only the type information of the variable and thus is a subset of the \cl{str} function.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > type(a)                          # printing the type information of 'a'
+> type(a)                          # printing the type information of 'a'
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -370,44 +370,44 @@ Deterministic variables are always created using the colon-equal assignment (\cl
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > b := exp(a)                      # assignment of deterministic node 'b' with the exponential function with parameter 'a'
-    RevBayes > b                                # printing the value of 'b'
-    RevBayes > c := ln(b)                       # assignment of deterministic node 'c' with logarithmic function with parameter 'b'
-    RevBayes > c                                # printing the value of 'c'
+> b := exp(a)                      # assignment of deterministic node 'b' with the exponential function with parameter 'a'
+> b                                # printing the value of 'b'
+> c := ln(b)                       # assignment of deterministic node 'c' with logarithmic function with parameter 'b'
+> c                                # printing the value of 'c'
 \end{lstlisting}
 \end{snugshade*}}
 Again, you see the type of the variable and additional information such as which the parents and children are by calling the structure function on it.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > str(b)                           # printing the structure information of 'b'
+> str(b)                           # printing the structure information of 'b'
 \end{lstlisting}
 \end{snugshade*}}
 For example, see the difference to the creation of variable 'd', which is a constant variable.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > d <- ln(b)                       # assignment of constant node 'd' with the value if the logarithmic function with parameter 'b'
-    RevBayes > d                                # printing the value of 'd'
-    RevBayes > str(d)                           # printing the structure information of 'd'
+> d <- ln(b)                       # assignment of constant node 'd' with the value if the logarithmic function with parameter 'b'
+> d                                # printing the value of 'd'
+> str(d)                           # printing the structure information of 'd'
 \end{lstlisting}
 \end{snugshade*}}
 Currently, the variables \cl{c} and \cl{d} have the same value. 
 We can check this using the equal comparison (\cl{==}).
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > e := (c == d)			
-    RevBayes > e
+> e := (c == d)			
+> e
 \end{lstlisting}
 \end{snugshade*}}
 Now, if we assign a new value to variable \cl{a}, then naturally the value of \cl{a} changes. 
 This has the consequence that all deterministic variables that use 'a' as a parameter, i.e., the variable \cl{b}, change their value automatically too.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > a <- 2                           # reassignment of variable a; every deterministic node which has 'a' as a parameter changes its value
-    RevBayes > a                                # printing the value of 'a'
-    RevBayes > b                                # printing the value of 'b'
-    RevBayes > c                                # printing the value of 'c'
-    RevBayes > d                                # printing the value of 'd'
-    RevBayes > e
+> a <- 2                           # reassignment of variable a; every deterministic node which has 'a' as a parameter changes its value
+> a                                # printing the value of 'a'
+> b                                # printing the value of 'b'
+> c                                # printing the value of 'c'
+> d                                # printing the value of 'd'
+> e
 \end{lstlisting}
 \end{snugshade*}}
 Since variable \cl{d} was a constant variable it did not change its value. 
@@ -417,30 +417,30 @@ We will create a random variable \cl{x} from an exponential distribution with pa
 Stochastic assignments use the \cl{\rbdn} operation.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # Variable assignment: stochastic
-    RevBayes > lambda <- 1                      # assign constant node 'lambda' with value '1'
-    RevBayes > x ~ dnExponential(lambda)        # create stochastic node with exponential distribution and parameter 'lambda'
+> # Variable assignment: stochastic
+> lambda <- 1                      # assign constant node 'lambda' with value '1'
+> x ~ dnExponential(lambda)        # create stochastic node with exponential distribution and parameter 'lambda'
 \end{lstlisting}
 \end{snugshade*}}
 The value of \cl{x} is a random draw from the distribution. 
 You can see the value and the probability (or log-probability) of the current value under the current parameter values by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > x                                # print value of stochastic node 'x'
-    RevBayes > x.probability                    # print the probability if 'x'
-    RevBayes > x.lnProbability                  # print the log-probability if 'x'
-    RevBayes > str(x)                           # printing all the information of 'x'
+> x                                # print value of stochastic node 'x'
+> x.probability                    # print the probability if 'x'
+> x.lnProbability                  # print the log-probability if 'x'
+> str(x)                           # printing all the information of 'x'
 \end{lstlisting}
 \end{snugshade*}}
 Similarly, we create a random variable \cl{y} from a normal distribution by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > mu <- 0
-    RevBayes > sigma <- 1
-    RevBayes > y ~ norm(mu,sigma)	
-    RevBayes > y.probability                    # print the probability of 'y'
-    RevBayes > y.lnProbability                  # print the log-probability if 'y'
-    RevBayes > str(y)                           # printing all the information of 'y'
+> mu <- 0
+> sigma <- 1
+> y ~ norm(mu,sigma)	
+> y.probability                    # print the probability of 'y'
+> y.lnProbability                  # print the log-probability if 'y'
+> str(y)                           # printing all the information of 'y'
 \end{lstlisting}
 \end{snugshade*}}
 Now you know everything there is about creating the different types of variables and the different ways in which these variables behave.
@@ -456,18 +456,18 @@ A pre increment (\cl{++a}) increases the value before returning the value, that 
 Note that currently both the post- and pre-increment operations use a pre-increment functionality.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > index <- 1
-    RevBayes > index++                          # post increment
-    RevBayes > ++index                          # pre increment
-    RevBayes > index--                          # post decrement
-    RevBayes > --index                          # pre decrement
+> index <- 1
+> index++                          # post increment
+> ++index                          # pre increment
+> index--                          # post decrement
+> --index                          # pre decrement
 \end{lstlisting}
 \end{snugshade*}}
 Additionally, you can use addition (\cl{a += b}), subtraction (\cl{a -= b}), multiplication (\cl{a *= b}) and division (\cl{a /= b}) to an existing variable.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > index += 10                      # add 10 to the current value
-    RevBayes > index *= 2                       # double the current value
+> index += 10                      # add 10 to the current value
+> index *= 2                       # double the current value
 \end{lstlisting}
 \end{snugshade*}}
 These variable manipulations will come in very handy for indices of vectors/arrays.
@@ -479,7 +479,7 @@ Instead, you can create a vector using three different ways.
 First, you can call the vector function.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > v <- v(1,2,3)                    # create a vector
+> v <- v(1,2,3)                    # create a vector
 \end{lstlisting}
 \end{snugshade*}}
 Interestingly, we can use the same name for a variable as for a function: the variable \cl{v} and the function \cl{v(\ldots)}.
@@ -488,24 +488,24 @@ Both will still be fully functional and our interpreter checks if you asked for 
 Second, you can use the square bracket notation.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > w <- [1,2,3]                     # create a vector
+> w <- [1,2,3]                     # create a vector
 \end{lstlisting}
 \end{snugshade*}}
 And third, you can implicitly create the vector by assigning elements.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > z[1] <-1                         # implicit creation of a vector
-    RevBayes > z[2] <-2                   
-    RevBayes > z[3] <-3                  
+> z[1] <-1                         # implicit creation of a vector
+> z[2] <-2                   
+> z[3] <-3                  
 \end{lstlisting}
 \end{snugshade*}} 
 The implicit creation does not need to instantiate the variable beforehand.
 There are other useful built-in functions that produce vectors.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > 1:10                             # range function
-    RevBayes > rep(10,1)                        # replicate an element n times
-    RevBayes > seq(1,20,2)                      # built a sequence from a to b by c
+> 1:10                             # range function
+> rep(10,1)                        # replicate an element n times
+> seq(1,20,2)                      # built a sequence from a to b by c
 \end{lstlisting}
 \end{snugshade*}} 
 
@@ -513,26 +513,26 @@ Vectors in \Rev~belong to the class of objects that have members and/or methods.
 You can get the member of such a member-object by calling
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > x.<member name>
+> x.<member name>
 \end{lstlisting}
 \end{snugshade*}} 
 Similarly, you can call a member method by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > x.<member name>(<arguments>)                 
+> x.<member name>(<arguments>)                 
 \end{lstlisting}
 \end{snugshade*}} 
 If you don't remember what the methods were called, or if this object has any member methods, then you can get these by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > v.methods()                 
+> v.methods()                 
 \end{lstlisting}
 \end{snugshade*}} 
 In general, this is very, very useful.
 So for a vector we can get the size --- the number of elements --- by calling its member function:
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > v.size()                 
+> v.size()                 
 \end{lstlisting}
 \end{snugshade*}} 
 
@@ -543,55 +543,55 @@ The first control structure that we will look at is the \cl{for} loop.
 \cl{for} loop execute a single statement or a block of 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # loops
-    RevBayes > for (<variable> in <set of value>) <single statement>
-    RevBayes > 
-    RevBayes > for (<variable> in <set of value>) 
-    RevBayes > <single statement>
-    RevBayes >
-    RevBayes > for (<variable> in <set of value>) {
-    RevBayes > <multiple statements>
-    RevBayes > <multiple statements>
-    RevBayes > <multiple statements>
-    RevBayes > }
+> # loops
+> for (<variable> in <set of value>) <single statement>
+> 
+> for (<variable> in <set of value>) 
+> <single statement>
+>
+> for (<variable> in <set of value>) {
+> <multiple statements>
+> <multiple statements>
+> <multiple statements>
+> }
 \end{lstlisting}
 \end{snugshade*}}
 The statement(s) will be execute for each value of variable of the \cl{for} loop.
 A simple example is a \cl{for} loop that computes the sum of 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > sum <- 0
-    RevBayes > for (i in 1:100) {
-    RevBayes > sum <- sum + i
-    RevBayes > }
-    RevBayes > sum
+> sum <- 0
+> for (i in 1:100) {
+> sum <- sum + i
+> }
+> sum
 \end{lstlisting}
 \end{snugshade*}}
 Another example using a \cl{for} loop is the computation of the \href{http://en.wikipedia.org/wiki/Fibonacci_number}{Fibonacci number} for a given integer. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # Fibonacci series using a for loop
-    RevBayes > fib[1] <- 1
-    RevBayes > fib[2] <- 1
-    RevBayes > for (j in 3:10) {
-    RevBayes > fib[j] <- fib[j - 1] + fib[j - 2]
-    RevBayes > }
-    RevBayes > fib
+> # Fibonacci series using a for loop
+> fib[1] <- 1
+> fib[2] <- 1
+> for (j in 3:10) {
+> fib[j] <- fib[j - 1] + fib[j - 2]
+> }
+> fib
 \end{lstlisting}
 \end{snugshade*}}
 We could also compute the Fibonacci numbers using a \cl{while} loop.
 The \cl{while} loop continues to execute the statement(s) until the condition is wrong.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # Fibonacci series using a while loop
-    RevBayes > fib[1] <- 1
-    RevBayes > fib[2] <- 1
-    RevBayes > j <- 3
-    RevBayes > while (j <= 10) {
-    RevBayes > fib[j] <- fib[j - 1] + fib[j - 2]
-    RevBayes > j++
-    RevBayes > }
-    RevBayes > fib
+> # Fibonacci series using a while loop
+> fib[1] <- 1
+> fib[2] <- 1
+> j <- 3
+> while (j <= 10) {
+> fib[j] <- fib[j - 1] + fib[j - 2]
+> j++
+> }
+> fib
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -600,7 +600,7 @@ In \Rev~you can write your own functions as well.
 The syntax for writing function is:
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > function <return value type> <function name> (<list of arguments>) { <statements> }
+> function <return value type> <function name> (<list of arguments>) { <statements> }
 \end{lstlisting}
 \end{snugshade*}}
 As a simple example, let's write a function that computes the square of a number.
@@ -609,30 +609,30 @@ The type of real number is \cl{Real}.
 Since the square is always a positive real number, we choose the return to be \cl{RealPos}
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # simple square function
-    RevBayes > function RealPos square ( Real x ) { x * x }
+> # simple square function
+> function RealPos square ( Real x ) { x * x }
 \end{lstlisting}
 \end{snugshade*}}
 Now we can call our own function the same way as we call other already built-in function in \RevBayes.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > a <- square(5.0)
-    RevBayes > a
+> a <- square(5.0)
+> a
 \end{lstlisting}
 \end{snugshade*}}
 As an exercise, let's write a function that computes the factorial of a natural number.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # function for computing the factorial
-    RevBayes > function Natural fac(i) {
-    RevBayes > if (i > 1) {
-    RevBayes > return i * fac(i-1)
-    RevBayes > } else {
-    RevBayes > return 1
-    RevBayes > }
-    RevBayes > }
-    RevBayes > b <- fac(6)
-    RevBayes > b
+> # function for computing the factorial
+> function Natural fac(i) {
+> if (i > 1) {
+> return i * fac(i-1)
+> } else {
+> return 1
+> }
+> }
+> b <- fac(6)
+> b
 \end{lstlisting}
 \end{snugshade*}}
 Here you see that within your own function you can call your function as well, which is commonly called recursive function calls.
@@ -640,31 +640,31 @@ Here you see that within your own function you can call your function as well, w
 Now let us write a recursive function for the sum of numbers which we computed before using a \cl{for} loop.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # function for computing the sum
-    RevBayes > function Integer sum(Integer j) {
-    RevBayes > if (j > 1) {
-    RevBayes > return j + sum(j-1)
-    RevBayes > } else {
-    RevBayes > return 1
-    RevBayes > }
-    RevBayes > }
-    RevBayes > c <- sum(100)
-    RevBayes > c
+> # function for computing the sum
+> function Integer sum(Integer j) {
+> if (j > 1) {
+> return j + sum(j-1)
+> } else {
+> return 1
+> }
+> }
+> c <- sum(100)
+> c
 \end{lstlisting}
 \end{snugshade*}}
 We can do the same for our favorite example, the Fibonacci series.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # function for computing the fibonacci series
-    RevBayes > function Integer fib(Integer k) {
-    RevBayes > if (k > 1) {
-    RevBayes > return fib(k-1) + fib(k-2)
-    RevBayes > } else {
-    RevBayes > return k
-    RevBayes > }
-    RevBayes > }
-    RevBayes > d <- fib(6)
-    RevBayes > d
+> # function for computing the fibonacci series
+> function Integer fib(Integer k) {
+> if (k > 1) {
+> return fib(k-1) + fib(k-2)
+> } else {
+> return k
+> }
+> }
+> d <- fib(6)
+> d
 \end{lstlisting}
 \end{snugshade*}}
 Now that should be enough to get you going with our first example analyses.
@@ -696,7 +696,7 @@ A summary is given in table \ref{tab:airlineFatalities}.
 These data can be loaded into \RevBayes~by typing:
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > observed_fatalities <- v(24,25,31,31,22,21,26,20,16,22)
+> observed_fatalities <- v(24,25,31,31,22,21,26,20,16,22)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -713,7 +713,7 @@ For simplicity, we choose uniform priors for $\alpha$ and $\beta$.
 The probability density can be computed in \RevBayes~for a single year by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > dpoisson(y[i],exp(alpha+beta*x[i]))
+> dpoisson(y[i],exp(alpha+beta*x[i]))
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -727,7 +727,7 @@ Let us construct a Metropolis algorithm that simulates from the posterior distri
 For simplicity of the calculations you can ``normalize'' the years, e.g. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > x <- 1976:1985 - mean(1976:1985)
+> x <- 1976:1985 - mean(1976:1985)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -738,14 +738,14 @@ A common proposal distribution for $\alpha^{\prime} \sim P(\alpha[i-1])$ is the 
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)
+> alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)
 \end{lstlisting}
 \end{snugshade*}}
 A similar distribution should be used for $\beta^{\prime}$. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > delta_alpha <- 1.0
-    RevBayes > delta_beta <- 1.0
+> delta_alpha <- 1.0
+> delta_beta <- 1.0
 \end{lstlisting}
 \end{snugshade*}}
 After you looked at the output of the MCMC, play around to find appropriate values for $\delta_{\alpha}$ and $\delta_{\beta}$.
@@ -754,17 +754,17 @@ Now we need to set starting values for the MCMC algorithm.
 Usually, these are drawn from the prior distribution, but sometimes if the prior is very uninformative, then these parameter values result into a likelihood of 0.0 (or log-likelihood of -Inf).
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > alpha[1] <- -0.01     # you can also use runif(-1.0,1.0)
-    RevBayes > beta[1] <- -0.01      # you can also use runif(-1.0,1.0)
+> alpha[1] <- -0.01     # you can also use runif(-1.0,1.0)
+> beta[1] <- -0.01      # you can also use runif(-1.0,1.0)
 \end{lstlisting}
 \end{snugshade*}}
 Next, create some output for our MCMC algorithm.
 The output will be written into a file that can be read into \R or Tracer \citep{rambaut09}.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > # create a file output
-    RevBayes > write("iteration","alpha","beta",file="airline_fatalities.log")
-    RevBayes > write(0,alpha[1],beta[1],file="airline_fatalities.log",append=TRUE)
+> # create a file output
+> write("iteration","alpha","beta",file="airline_fatalities.log")
+> write(0,alpha[1],beta[1],file="airline_fatalities.log",append=TRUE)
 \end{lstlisting}
 \end{snugshade*}}
 Note that we need a first iteration with value 0 so that Tracer can load in this file.
@@ -772,53 +772,53 @@ Note that we need a first iteration with value 0 so that Tracer can load in this
 Finally, we set up a \cl{for} loop over each iteration of the MCMC.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > for (i in 2:10000) {
+> for (i in 2:10000) {
 \end{lstlisting}
 \end{snugshade*}}
 Within the \cl{for} loop we propose new parameters value.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes >    alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)[1]
-    RevBayes >    beta_prime <- rnorm(1,beta[i-1],delta_beta)[1]
+>    alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)[1]
+>    beta_prime <- rnorm(1,beta[i-1],delta_beta)[1]
 \end{lstlisting}
 \end{snugshade*}}
 For the newly proposed parameter values we compute the prior ratio.
 In this case we know that the prior ratio is 0.0 as long as the new parameters are within the limits.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes >    ln_prior_ratio <- dunif(alpha_prime,-10.0,10.0,log=TRUE) + dunif(beta_prime,-10.0,10.0,log=TRUE) - dunif(alpha[i-1],-10.0,10.0,log=TRUE) - dunif(beta[i-1],-10.0,10.0,log=TRUE)
+>    ln_prior_ratio <- dunif(alpha_prime,-10.0,10.0,log=TRUE) + dunif(beta_prime,-10.0,10.0,log=TRUE) - dunif(alpha[i-1],-10.0,10.0,log=TRUE) - dunif(beta[i-1],-10.0,10.0,log=TRUE)
 \end{lstlisting}
 \end{snugshade*}}
 Similarly, we compute the likelihood ratio for each observation.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes >    ln_likelihood_ratio <- 0
-    RevBayes >    for (j in 1:x.size() ) {
-    RevBayes >       lambda_prime <- exp( alpha_prime + beta_prime * x[j] )
-    RevBayes >       lambda <- exp( alpha[i-1] + beta[i-1] * x[j] )
-    RevBayes >       ln_likelihood_ratio += dpoisson(observed_fatalities[j],lambda_prime) - dpoisson(observed_fatalities[j],lambda)
-    RevBayes >    }
-    RevBayes >    ratio <- ln_prior_ratio + ln_likelihood_ratio
+>    ln_likelihood_ratio <- 0
+>    for (j in 1:x.size() ) {
+>       lambda_prime <- exp( alpha_prime + beta_prime * x[j] )
+>       lambda <- exp( alpha[i-1] + beta[i-1] * x[j] )
+>       ln_likelihood_ratio += dpoisson(observed_fatalities[j],lambda_prime) - dpoisson(observed_fatalities[j],lambda)
+>    }
+>    ratio <- ln_prior_ratio + ln_likelihood_ratio
 \end{lstlisting}
 \end{snugshade*}}
 And finally we accept or reject the newly proposed parameter values with probability \cl{ratio}.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes >    if ( ln(runif(1)[1]) < ratio) {
-    RevBayes >       alpha[i] <- alpha_prime
-    RevBayes >       beta[i] <- beta_prime
-    RevBayes >    } else {
-    RevBayes >       alpha[i] <- alpha[i-1]
-    RevBayes >       beta[i] <- beta[i-1]
-    RevBayes >    }
+>    if ( ln(runif(1)[1]) < ratio) {
+>       alpha[i] <- alpha_prime
+>       beta[i] <- beta_prime
+>    } else {
+>       alpha[i] <- alpha[i-1]
+>       beta[i] <- beta[i-1]
+>    }
 \end{lstlisting}
 \end{snugshade*}}
 Then we log the current parameter values to the file by appending the file.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes >    # output to a log-file
-    RevBayes >    write(i-1,alpha[i],beta[i],file="airline_fatalities.log",append=TRUE)
-    RevBayes > }
+>    # output to a log-file
+>    write(i-1,alpha[i],beta[i],file="airline_fatalities.log",append=TRUE)
+> }
 \end{lstlisting}
 \end{snugshade*}}
 As a quick summary you can compute the posterior mean of the parameters.
@@ -846,24 +846,24 @@ Currently we may have some minor memory problems and if you get stuck it may hel
 We start by loading in the data to \RevBayes.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > observed_fatalities <- v(24,25,31,31,22,21,26,20,16,22)
-    RevBayes > x <- 1976:1985 - mean(1976:1985)
+> observed_fatalities <- v(24,25,31,31,22,21,26,20,16,22)
+> x <- 1976:1985 - mean(1976:1985)
 \end{lstlisting}
 \end{snugshade*}}
 Then we create the parameters with their prior distributions.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > alpha ~ dnUnif(-10,10) 
-    RevBayes > beta ~ dnUnif(-10,10)
+> alpha ~ dnUnif(-10,10) 
+> beta ~ dnUnif(-10,10)
 \end{lstlisting}
 \end{snugshade*}}
 It may be good to set some reasonable starting values especially if you choose is very uninformative prior distribution.
 If by chance you had starting values that gave a likelihood of -Inf, then \RevBayes~will try several times to propose new starting values drawn from the prior distribution.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > # let us use reasonable starting value
-    RevBayes > alpha.setValue(0.0)
-    RevBayes > beta.setValue(0.0)
+> # let us use reasonable starting value
+> alpha.setValue(0.0)
+> beta.setValue(0.0)
 \end{lstlisting}
 \end{snugshade*}}
 Our next step is to set up the moves.
@@ -871,47 +871,47 @@ Moves are algorithms that propose new values and know how the reset the values i
 We use the same sliding window move as we implemented above by ourselves.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > mi <- 0
-    RevBayes > moves[mi++] <- mvSlide(alpha)
-    RevBayes > moves[mi++] <- mvSlide(beta)
+> mi <- 0
+> moves[mi++] <- mvSlide(alpha)
+> moves[mi++] <- mvSlide(beta)
 \end{lstlisting}
 \end{snugshade*}}
 Then we set op the model.
 This means we create a stochastic variable for each observation and clamp its value with the observed data.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > for (i in 1:x.size() ) {
-    RevBayes >     lambda[i] := exp( alpha + beta * x[i] )
-    RevBayes >     y[i] ~ dnPoisson(lambda[i])
-    RevBayes >     y[i].clamp(observed_fatalities[i])
-    RevBayes > }
+> for (i in 1:x.size() ) {
+>     lambda[i] := exp( alpha + beta * x[i] )
+>     y[i] ~ dnPoisson(lambda[i])
+>     y[i].clamp(observed_fatalities[i])
+> }
 \end{lstlisting}
 \end{snugshade*}}
 We can now create the model by pulling the up the model graph from any variable that is connected to our model graph.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > mymodel <- model( alpha )
+> mymodel <- model( alpha )
 \end{lstlisting}
 \end{snugshade*}}
 We also need some monitors that report the current values during the MCMC run.
 We create two monitors, one printing all numeric non-constant variables to a file and one printing some information to the screen.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > monitors[1] <- modelmonitor(filename="output/airline_fatalities.log",printgen=10, separator = "	")
-    RevBayes > monitors[2] <- screenmonitor(printgen=10, alpha, beta)
+> monitors[1] <- modelmonitor(filename="output/airline_fatalities.log",printgen=10, separator = "	")
+> monitors[2] <- screenmonitor(printgen=10, alpha, beta)
 \end{lstlisting}
 \end{snugshade*}}
 Finally we create an MCMC object.
 The MCMC object takes in a model object, the vector of monitors and the vector of moves.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > mymcmc <- mcmc(mymodel, monitors, moves)
+> mymcmc <- mcmc(mymodel, monitors, moves)
 \end{lstlisting}
 \end{snugshade*}}
 On the MCMC object we call its member method \cl{run} to run the MCMC.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > mymcmc.run(generations=3000)
+> mymcmc.run(generations=3000)
 \end{lstlisting}
 \end{snugshade*}}
 And now we are done {\LARGE \smiley}
@@ -1095,6 +1095,8 @@ You can carry out these batch commands by providing the file name when you execu
 \exs{\cl{\$ rb RevBayes\_scripts airline\_fatalities\_part2.Rev}}
 \exs{\cl{\$ rb RevBayes\_scripts coalmine\_accidents.Rev}}
 
+
+
 \bigskip
 \section*{Useful Links}
 
@@ -1108,3 +1110,6 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \item Tracy Heath (email: \href{mailto:tracyh@berkeley.edu}{tracyh@berkeley.edu}) \\\vspace{-8mm}
 \item Michael Landis (email: \href{mailto:mlandis@berkeley.edu}{mlandis@berkeley.edu})
 \end{itemize}
+
+\nocite{rannala96,robert02,Rubinstein1981,Smith1993,yang97b}
+

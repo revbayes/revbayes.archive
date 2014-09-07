@@ -9,7 +9,6 @@
 \usepackage{upgreek}
 \usepackage{framed}
 \usepackage{ textcomp }
-\usepackage{natbib}
 \usepackage{url}
 \usepackage{soul}
 \usepackage{amsmath, amsfonts,amssymb,mathrsfs}
@@ -17,6 +16,11 @@
 \usepackage[compact]{titlesec}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+
+\usepackage[backend=bibtex,hyperref=true,citestyle=authoryear,bibstyle=authortitle,firstinits=true,terseinits=true,issn=false,doi=false,url=false,maxbibnames=10]{biblatex}
+\addbibresource{../bib_tex/master_refs.bib}
+\input{../bib_tex/biblatex_macros}
+
 
 \setlength{\evensidemargin}{0in}
 \setlength{\headheight}{0in}
@@ -85,8 +89,8 @@
 \newcommand{\levelthree}[1]{\textit{#1 --}}
 
 
-\bibliographystyle{apalike}
-\bibpunct[; ]{(}{)}{;}{a}{,}{;}
+%\bibliographystyle{apalike}
+%\bibpunct[; ]{(}{)}{;}{a}{,}{;}
 
 
 \usepackage[breaklinks]{hyperref}

@@ -1,7 +1,6 @@
 \documentclass[11pt]{article}
 \input{../preamble}
 
-
 \begin{document}
 \renewcommand{\headrulewidth}{0.5pt}
 \headsep = 20pt
@@ -21,19 +20,13 @@
 
 Version dated: \today
 
-\nocite{rannala96,robert02,Rubinstein1981,Smith1993,yang97b}
 %\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  REFERENCES  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\renewcommand{\bibsection}{\section*{Relevant References}}
-
-
-\bibliography{../bib_tex/master_refs}
-
-
+\printbibliography[heading=relevref]
 
 
 \end{document}
