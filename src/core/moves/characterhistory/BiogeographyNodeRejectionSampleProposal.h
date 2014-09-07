@@ -678,10 +678,8 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                     budParentState[*it]->setState(sb);
                 }
             }
-           
             
-
-            
+            lnP += log( csf[storedCladogenicState-1] / csf[proposedCladogenicState-1] );
         }
         else
         {

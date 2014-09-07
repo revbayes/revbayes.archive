@@ -108,8 +108,6 @@ namespace RevBayesCore {
         bool                                                historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history);
         
         // members
-//        const TypedDagNode< double >*                       homogeneousClockRate;
-//        const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
         const TypedDagNode< std::vector< double > >*        rootFrequencies;
         const TypedDagNode< std::vector< double > >*        siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
@@ -130,7 +128,7 @@ namespace RevBayesCore {
         bool                                                useTail;
         int                                                 redrawCount;
         
-        virtual void                                        simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa);
+        virtual void                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > >& taxa);
         
     };
     
@@ -321,6 +319,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             double tr = rm.getRate(node, currState, *it_h, counts, currAge);
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
             lnL += -(sr * da) + log(tr);
+            
 //            if ( lnL < -1E20 )
 //            {
 //                bh->print();
@@ -1115,13 +1114,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogen
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(void)
 {
-    ;
+    this->simulate();
 }
 
 template<class charType, class treeType>
-//void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &taxa)
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa)
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > >& taxa)
 {
+    
     RandomNumberGenerator* rng = GLOBAL_RNG;
     const treeType& tree = this->tau->getValue();
     
@@ -1131,6 +1130,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
     // get the sequence of this node
     size_t nodeIndex = node.getIndex();
     const DiscreteTaxonData< charType > &parent = taxa[ nodeIndex ];
+//    DiscreteTaxonData<charType> parent;
     
     // simulate the sequence for each child
     for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
@@ -1252,12 +1252,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
                 // requires consideration -- currently impl. is "model-free"
             }
             taxon->setTaxonName( child.getName() );
-            taxa.addTaxonData(*taxon);
+//            taxa.addTaxonData(*taxon);
         }
         else
         {
             // recursively simulate the sequences
-            taxa.addTaxonData(*taxon);
+//            taxa.addTaxonData(*taxon);
             simulate( child, taxa );
         }
     }
