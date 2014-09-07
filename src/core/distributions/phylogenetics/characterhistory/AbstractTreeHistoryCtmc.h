@@ -49,14 +49,10 @@ namespace RevBayesCore {
         // non-virtual
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
-//        BranchHistory&                                                      getHistory(size_t idx);
-//        const BranchHistory&                                                getHistory(size_t idx) const;
         BranchHistory&                                                      getHistory(const TopologyNode& nd);
         const BranchHistory&                                                getHistory(const TopologyNode& nd) const;
-
         std::vector<BranchHistory*>                                         getHistories(void);
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
-//        void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
@@ -116,13 +112,8 @@ namespace RevBayesCore {
         // private methods
         void                                                                fillLikelihoodVector(const TopologyNode &n);
         void                                                                initializeHistoriesVector(void);
-        virtual void                                                        simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa);
-        
-
-        
-        
+        virtual void                                                        simulate(const TopologyNode& node, std::vector<DiscreteTaxonData< charType > >& taxa) = 0;
     };
-
 }
 
 template<class charType, class treeType>
@@ -417,14 +408,32 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 {
-    ;
+    
+    // delete the old value first
+    delete this->value;
+    
+    // create a new character data object
+    this->value = new DiscreteCharacterData<charType>();
+    
+    // create a vector of taxon data
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>() );
+
+    const TopologyNode& nd = tau->getValue().getRoot();
+    simulate(nd, taxa);
+    
+    // add the taxon data to the character data
+    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    {
+        this->value->addTaxonData( taxa[i] );
+    }
 }
 
-template<class charType, class treeType>
+//template<class charType, class treeType>
 //void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa)
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, DiscreteCharacterData< charType > &taxa)
-{
-//    
+//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, DiscreteCharacterData< charType > &taxa)
+//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node )
+//{
+//
 //    // get the children of the node
 //    const std::vector<TopologyNode*>& children = node.getChildren();
 //    
@@ -493,7 +502,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const 
 //        
 //    }
     
-}
+//}
 
 
 /** Get the parameters of the distribution */
