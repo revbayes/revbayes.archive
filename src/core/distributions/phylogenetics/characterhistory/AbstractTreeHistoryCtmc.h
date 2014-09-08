@@ -112,7 +112,7 @@ namespace RevBayesCore {
         // private methods
         void                                                                fillLikelihoodVector(const TopologyNode &n);
         void                                                                initializeHistoriesVector(void);
-        virtual void                                                        simulate(const TopologyNode& node, std::vector<DiscreteTaxonData< charType > >& taxa) = 0;
+        virtual void                                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector<DiscreteTaxonData< charType > >& taxa) = 0;
     };
 }
 
@@ -418,91 +418,22 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
     // create a vector of taxon data
     std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>() );
 
+    // recursively simulate, starting with the root heading tipwards
     const TopologyNode& nd = tau->getValue().getRoot();
-    simulate(nd, taxa);
+    BranchHistory* bh = new BranchHistory(numSites, numChars, nd.getIndex());
+    histories[ nd.getIndex() ] = bh;
+    
+    simulate(nd, bh, taxa);
     
     // add the taxon data to the character data
     for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
     {
         this->value->addTaxonData( taxa[i] );
     }
-}
-
-//template<class charType, class treeType>
-//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa)
-//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, DiscreteCharacterData< charType > &taxa)
-//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node )
-//{
-//
-//    // get the children of the node
-//    const std::vector<TopologyNode*>& children = node.getChildren();
-//    
-//    // get the sequence of this node
-//    size_t nodeIndex = node.getIndex();
-//    const DiscreteTaxonData< charType > &parent = taxa[ nodeIndex ];
-//    
-//    // simulate the sequence for each child
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
-//    {
-//        const TopologyNode &child = *(*it);
-//        
-//        // update the transition probability matrix
-//        updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
-//        
-//        DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
-//        for ( size_t i = 0; i < numSites; ++i )
-//        {
-//            // get the ancestral character for this site
-//            unsigned long parentState = parent.getCharacter( i ).getState();
-//            size_t p = 0;
-//            while ( parentState != 1 )
-//            {
-//                // shift to the next state
-//                parentState >>= 1;
-//                // increase the index
-//                ++p;
-//            }
-//            
-//            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ p ];
-//            
-//            // create the character
-//            charType c;
-//            c.setToFirstState();
-//            // draw the state
-//            double u = rng->uniform01();
-//            while ( true )
-//            {
-//                u -= *freqs;
-//                
-//                if ( u > 0.0 )
-//                {
-//                    ++c;
-//                    ++freqs;
-//                }
-//                else
-//                {
-//                    break;
-//                }
-//            }
-//            
-//            // add the character to the sequence
-//            taxon.addCharacter( c );
-//        }
-//        
-//        if ( child.isTip() )
-//        {
-//            taxon.setTaxonName( child.getName() );
-//        }
-//        else
-//        {
-//            // recursively simulate the sequences
-//            simulate( child, taxa, perSiteRates );
-//        }
-//        
-//    }
     
-//}
+    
+    std::cout << "";
+}
 
 
 /** Get the parameters of the distribution */
