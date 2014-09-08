@@ -307,6 +307,7 @@
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_wag.h"
+#include "Func_chromosomes.h"
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
@@ -952,6 +953,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "rtRev",    new Func_rtRev()   );
         addFunction( "vt",       new Func_vt()      );
         addFunction( "wag",      new Func_wag()     );
+        addFunction( "chromosomes",      new Func_chromosomes()     );
         
         // nonstandard names (for backwards compatibility)
         addFunction( "Blosum62", new Func_blosum62());
