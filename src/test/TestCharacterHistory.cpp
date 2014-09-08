@@ -331,7 +331,7 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
     // simulated data
-    if (simulate)
+    if (simulate || true)
         biogeoCtmc->simulate();
     
     // real data
