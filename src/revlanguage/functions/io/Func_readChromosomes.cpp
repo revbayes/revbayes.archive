@@ -49,9 +49,11 @@ RevPtr<Variable> Func_readChromosomes::execute( void ) {
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
 	
-	// setup the vector of chromosome states;
-	//WorkspaceVector<AbstractCharacterData> *chromoStates = new WorkspaceVector<AbstractCharacterData>();
-	WorkspaceVector<RevLanguage::ChromosomesState> *chromoStates = new WorkspaceVector<RevLanguage::ChromosomesState>();
+	// setup the vector of chromosome states
+	//ModelVector<RevLanguage::ChromosomesState> *chromoStates = new ModelVector<RevLanguage::ChromosomesState>();
+	
+	// setup a matrix of chromosome states
+	RevBayesCore::DiscreteCharacterData<RevBayesCore::ChromosomesState> *coreChromoStates = new RevBayesCore::DiscreteCharacterData<RevBayesCore::ChromosomesState>();
 	
 	// get data from file
     RevBayesCore::ChromosomesDataReader* data = new RevBayesCore::ChromosomesDataReader(fn.getValue());
@@ -64,17 +66,30 @@ RevPtr<Variable> Func_readChromosomes::execute( void ) {
 		std::string count = boost::lexical_cast<std::string>(data->getCounts()[i]);
 		
 		// make the core state
-		RevBayesCore::ChromosomesState *coreState = new RevBayesCore::ChromosomesState( count );
+		RevBayesCore::ChromosomesState coreState = RevBayesCore::ChromosomesState( count );
 		
-		// now put core state into RL state object
-		//DiscreteCharacterData<RevLanguage::ChromosomesState>* thisState = new RevBayesCore::DiscreteCharacterData<DiscreteCharacterData<RevLanguage::ChromosomesState>( *coreState );
-		//AbstractCharacterData<RevLanguage::ChromosomesState>* thisState = new AbstractCharacterData<RevLanguage::ChromosomesState>( *coreState );
-		RevLanguage::ChromosomesState* thisState = new RevLanguage::ChromosomesState( *coreState );
+		// now put core state into DiscreteTaxonData		
+		RevBayesCore::DiscreteTaxonData<RevBayesCore::ChromosomesState> coreSeq = RevBayesCore::DiscreteTaxonData<RevBayesCore::ChromosomesState>(data->getNames()[i]);
+		coreSeq.addCharacter( coreState );
+
 		
-		// add chromosome state to matrix
-		//chromoStates->push_back( *thisState );	
+		// what form should the states be in so as to clamp the taxon name to the chromosome number?
+		
+		// to clamp I need to add new datatype to Dist_phyloCTMC.h??
+		// where is the clamp method??
+		
+			
+		
+		// add DiscreteTaxonData to the matrix of chromosome states
+		coreChromoStates->addTaxonData( coreSeq );
+		
 		i++;
 	}
+	
+	// put core chromosome state matrix into 
+	DiscreteCharacterData<RevLanguage::ChromosomesState> *chromoStates = new DiscreteCharacterData<RevLanguage::ChromosomesState>( coreChromoStates );
+
+	
     return new Variable( chromoStates );
 }
  

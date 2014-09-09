@@ -22,6 +22,7 @@
 #include "Trace.h"
 #include "RateMatrix_GTR.h"
 #include "RateMatrix_JC.h"
+#include "ChromosomesState.h"
 
 #include <ostream>
 #include <string>
@@ -89,8 +90,9 @@ namespace RevBayesCore {
     std::ostream&                       operator<<(std::ostream& o, const std::vector<Taxon>& x);                        //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<TimeTree>& x);                        //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<Trace>& x);                        //!< Overloaded output operator
-                                                                                                                         //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_GTR>& x);                      //!< Overloaded output operator
-                                                                                                                         //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_JC>& x);                      //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const std::vector<ChromosomesState>& x);                        //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_GTR>& x);                      //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_JC>& x);                      //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<std::vector<double> >& x);                          //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<std::vector<int> >& x);                             //!< Overloaded output operator
     
