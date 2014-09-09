@@ -24,10 +24,14 @@
 #include "ChromosomesState.h"
 #include "RlChromosomesState.h"
 #include "DiscreteCharacterData.h"
+#include "RlDiscreteCharacterData.h"
+#include "WorkspaceVector.h"
+#include <boost/lexical_cast.hpp>
 
 #include <map>
 #include <set>
 #include <sstream>
+#include<iostream>
 
 
 using namespace RevLanguage;
@@ -41,21 +45,40 @@ Func_readChromosomes* Func_readChromosomes::clone( void ) const {
 
 /** Execute function */
 RevPtr<Variable> Func_readChromosomes::execute( void ) {
-    
+	
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-    
+	
+	// setup the vector of chromosome states;
+	//WorkspaceVector<AbstractCharacterData> *chromoStates = new WorkspaceVector<AbstractCharacterData>();
+	WorkspaceVector<RevLanguage::ChromosomesState> *chromoStates = new WorkspaceVector<RevLanguage::ChromosomesState>();
+	
+	// get data from file
     RevBayesCore::ChromosomesDataReader* data = new RevBayesCore::ChromosomesDataReader(fn.getValue());
 	
+	// loop through data and get each chromosome count
 	int i = 0;
-	std::vector<RevBayesCore::ChromosomesState> m[0];
-//	while (i < data.getCounts().size()) {
-//		DiscreteCharacterData<ChromosomesState>* chromo = new DiscreteCharacterData<ChromosomesState>( data.getCounts()[i] );
-//		m->push_back( chromo[i] );	
-//		i++;
-//	}
-  //  return new m;
+	while (i < data->getCounts().size()) {
+		
+		// get count from data
+		std::string count = boost::lexical_cast<std::string>(data->getCounts()[i]);
+		
+		// make the core state
+		RevBayesCore::ChromosomesState *coreState = new RevBayesCore::ChromosomesState( count );
+		
+		// now put core state into RL state object
+		//DiscreteCharacterData<RevLanguage::ChromosomesState>* thisState = new RevBayesCore::DiscreteCharacterData<DiscreteCharacterData<RevLanguage::ChromosomesState>( *coreState );
+		//AbstractCharacterData<RevLanguage::ChromosomesState>* thisState = new AbstractCharacterData<RevLanguage::ChromosomesState>( *coreState );
+		RevLanguage::ChromosomesState* thisState = new RevLanguage::ChromosomesState( *coreState );
+		
+		// add chromosome state to matrix
+		//chromoStates->push_back( *thisState );	
+		i++;
+	}
+    return new Variable( chromoStates );
 }
+ 
+
 
 //RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
 //DiscreteCharacterData<DnaState>* mDNA = new DiscreteCharacterData<DnaState>( coreM );
