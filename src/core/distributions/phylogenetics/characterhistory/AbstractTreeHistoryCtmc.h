@@ -429,10 +429,11 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
     for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
     {
         this->value->addTaxonData( taxa[i] );
+//        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
     }
     
-    
-    std::cout << "";
+
+    TypedDistribution< AbstractCharacterData >::setValue(this->value);
 }
 
 

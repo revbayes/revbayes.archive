@@ -332,14 +332,17 @@ bool TestCharacterHistory::run_exp(void) {
     
     // simulated data
     if (simulate || true)
+    {
         biogeoCtmc->simulate();
+        charactermodel->clamp( &biogeoCtmc->getValue() );
+    }
     
     // real data
     else
         charactermodel->clamp( data[0] );
     
     // initialize mapping
-        charactermodel->redraw();
+    charactermodel->redraw();
     
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
