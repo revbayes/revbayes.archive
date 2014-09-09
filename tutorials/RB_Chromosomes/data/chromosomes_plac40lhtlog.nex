@@ -2,14 +2,14 @@
 
 Begin data;
 	Dimensions ntax=40 nchar=1;
-	Format datatype=Continuous;
+	Format datatype=continuous;
 	Matrix
 
 Bos	7
 Rousettus	7
 Spermophilus	7
 Macaca	7
-Pongo	9
+Pongo	7
 Dipodomys	14
 Tursiops	14
 Choloepusdi	7
@@ -20,7 +20,7 @@ Lama	7
 Canis	14
 Tamandua	7
 Myotis	7
-Procavia	21
+Procavia	14
 Orycteropus	6
 Pedetes	7
 Ceratotherium	7
