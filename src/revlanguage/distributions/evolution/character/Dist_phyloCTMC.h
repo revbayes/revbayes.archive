@@ -412,6 +412,75 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         d = dist;
     }
+    else if ( dt == "Chromosomes" )
+    {
+        // we get the number of states from the rates matrix
+        // set the rate matrix
+        size_t nChars = 1;
+        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            nChars = rm->getValue()[0].getNumberOfStates();
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
+            nChars = rm->getValue().getNumberOfStates();
+        }
+        
+        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType>(tau, nChars, true, n);
+        
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
+        
+        // set the probability for invariant site (by default this pInv=0.0)
+        dist->setPInv( pInvNode );
+        
+        if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+            
+            // sanity check
+            if ( (nNodes-1) != clockRates->getValue().size() ) 
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+            
+            dist->setClockRate( clockRates );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
+            dist->setClockRate( clockRate );
+        }
+        
+        // set the rate matrix
+        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() ) 
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+            
+            dist->setRateMatrix( rm );
+        } 
+        else 
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
+            dist->setRateMatrix( rm );
+        }
+        
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 ) 
+        {
+            dist->setSiteRates( siteRatesNode );
+        }
+        
+        d = dist;
+    }
+	
     
     
     return d;
@@ -477,6 +546,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMember
         options.push_back( "Pomo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
+        options.push_back( "Chromosomes" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         
         rulesSet = true;

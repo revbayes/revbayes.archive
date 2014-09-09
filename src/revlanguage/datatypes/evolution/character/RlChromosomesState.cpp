@@ -25,6 +25,10 @@ ChromosomesState::ChromosomesState(const RevBayesCore::ChromosomesState &d) : Mo
     
 }
 
+ChromosomesState::ChromosomesState( RevBayesCore::TypedDagNode<RevBayesCore::ChromosomesState> *v ) : ModelObject<RevBayesCore::ChromosomesState>( v ) {
+    
+}
+
 
 /** Clone object */
 ChromosomesState* ChromosomesState::clone(void) const {

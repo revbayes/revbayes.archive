@@ -23,6 +23,7 @@ namespace RevLanguage {
         
     public:
         ChromosomesState(void);                                                                                 //!< Default constructor
+        ChromosomesState(RevBayesCore::TypedDagNode<RevBayesCore::ChromosomesState> *v);                                                            //!< Constructor from DAG node
         ChromosomesState(const RevBayesCore::ChromosomesState &d);                                              //!< Construct from ChromosomesState
         
         // Operators
