@@ -97,7 +97,7 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
     setDiagonal();
     
     // rescale
-    rescaleToAverageRate( 1.0 );
+    // rescaleToAverageRate( 1.0 );
 }
 
 
