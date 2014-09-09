@@ -1,11 +1,8 @@
-# modified by Will Freyman
-# Tutorial -- the phylogenetic comparative method
-# log-Brownian evolution of body mass in placental mammals
-# Nicolas Lartillot -- July 2014
+# by Will Freyman
 #
 
 # read the data 
-contData <- readCharacterData("data/chromosomes_plac40lhtlog.nex")
+chromoData <- readCharacterData("data/chromosomes_plac40lhtlog.nex")
 
 # work under fixed topology
 treeArray <- readTrees("data/chronoplac40.tree")
@@ -28,12 +25,20 @@ delta ~ dnExponential(10.0)
 rho ~ dnExponential(10.0)
 
 # max number of chromosomes
-n <- 40
+max_chromo <- 15
 
 # create rate matrix
-Q := chromosomes(n, lambda, delta, rho)
+Q := chromosomes(max_chromo, lambda, delta, rho)
+"==================================="
+"chromosome number transition matrix"
+"==================================="
+Q
 
-
+# non-stationary root frequencies for all the states?
+for (i in 1:max_chromo) {
+    root_prior[i] <- 1
+}
+root_frequencies ~ dnDirichlet(root_prior)
 
 ##############
 # set up moves
@@ -46,11 +51,11 @@ moves[mi++] <- mvScale(rho)
 ################
 # create the model
 ###############
-#mymodel ~ phyloCTMC(Q=Q, tree=psi)
+mymodel ~ phyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies,type="Standard")
 
 
 # clamp data
-#mymodel.clampAt(contData,1)
+mymodel.clamp(chromoData)
 #Q.clamp([contData,1])
 
 # create the monitors
