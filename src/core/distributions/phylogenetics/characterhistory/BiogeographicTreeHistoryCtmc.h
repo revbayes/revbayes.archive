@@ -499,13 +499,19 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
             TopologyNode* node = nodes[i];
             if (node->isTip())
             {
+                std::cout << i << " " << node->getName() << "\n";
+                this->value->getTaxonData( node->getName() );
+                
                 DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData( node->getName() ) );
                 
-                std::vector<CharacterEvent*> tipState;
                 
+                std::vector<CharacterEvent*> tipState;
                 for (size_t j = 0; j < d.size(); j++)
                 {
                     unsigned s = 0;
+                    d[j];
+                    
+                    
                     if (!this->usingAmbiguousCharacters)
                         s = (unsigned)d[j].getStateIndex();
                     else if (GLOBAL_RNG->uniform01() < tipProbs[node->getIndex()][j])
@@ -1404,16 +1410,20 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
 
     // simulate anagenic changes
     simulateHistory(node, bh);
-    bh->print();
+//    bh->print();
     
     const std::vector<CharacterEvent*>& childState = bh->getChildCharacters();
     for ( size_t i = 0; i < this->numSites; ++i )
     {
         // create the character
         charType c;
-        c.setToFirstState();
-        for (size_t j = 0; j < childState[i]->getState(); j++)
-            c++;
+        std::string s = "0";
+        if (childState[i]->getState() == 1)
+            s = "1";
+        c.setState( s );
+//        c.setToFirstState();
+//        for (size_t j = 0; j < childState[i]->getState(); j++)
+//            c++;
 
         // add the character to the sequence
         taxa[nodeIndex].addCharacter( c );
@@ -1421,6 +1431,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
 
     if ( node.isTip() )
     {
+        std::cout << "adding " << node.getName() << "\n";
         taxa[nodeIndex].setTaxonName( node.getName() );
     }
     else
