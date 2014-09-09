@@ -1,11 +1,13 @@
 # by Will Freyman
 #
+# source("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/chromosomeTest.Rev")
+#
 
 # read the data 
-chromoData <- readCharacterData("data/chromosomes_plac40lhtlog.nex")
-
+chromoData <- readChromosomes("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/data/chromosomes_plac40lhtlog.tsv")
+#chromoData <- readCharacterData("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/data/chromosomes_plac40lhtlog.tsv")
 # work under fixed topology
-treeArray <- readTrees("data/chronoplac40.tree")
+treeArray <- readTrees("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/data/chronoplac40.tree")
 psi <- treeArray[1]
 
 
@@ -35,9 +37,7 @@ Q := chromosomes(max_chromo, lambda, delta, rho)
 Q
 
 # non-stationary root frequencies for all the states?
-for (i in 1:max_chromo) {
-    root_prior[i] <- 1
-}
+for (i in 1:max_chromo) { root_prior[i] <- 1 }
 root_frequencies ~ dnDirichlet(root_prior)
 
 ##############
@@ -56,7 +56,7 @@ mymodel ~ phyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies,type="Standard")
 
 # clamp data
 mymodel.clamp(chromoData)
-#Q.clamp([contData,1])
+
 
 # create the monitors
 
