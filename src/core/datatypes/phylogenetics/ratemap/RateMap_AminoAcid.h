@@ -45,8 +45,8 @@ namespace RevBayesCore {
         void                                        setHeterogeneousClockRates(const std::vector<double>& r);
         const RateMatrix*                           getHomogeneousRateMatrix(void) const;
         void                                        setHomogeneousRateMatrix(const RateMatrix* r);
-        const RbVector<RateMatrix*>&                getHeterogeneousRateMatrices(void) const;
-        void                                        setHeterogeneousRateMatrices(const RbVector<RateMatrix*>& r);
+        const RbVector<RateMatrix>&                 getHeterogeneousRateMatrices(void) const;
+        void                                        setHeterogeneousRateMatrices(const RbVector<RateMatrix>& r);
         const std::vector<double>&                  getRootFrequencies(void) const;
         void                                        setRootFrequencies(const std::vector<double>& r);
 
@@ -54,7 +54,7 @@ namespace RevBayesCore {
         double                                      homogeneousClockRate;
         std::vector<double>                         heterogeneousClockRates;
         RateMatrix*                                 homogeneousRateMatrix;
-        RbVector< RateMatrix* >                     heterogeneousRateMatrices;
+        RbVector<RateMatrix>                        heterogeneousRateMatrices;
         std::vector<double>                         rootFrequencies;
                 
         // model flags
