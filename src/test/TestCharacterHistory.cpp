@@ -65,6 +65,7 @@
 #include "BranchLengthTree.h"
 #include "UniformBranchLengthTreeDistribution.h"
 #include "DistanceDependentDispersalFunction.h"
+#include "PathUniformizationSampleProposal.h"
 
 // joint mol bd test
 #include "RootTimeSlide.h"
@@ -331,7 +332,7 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
     // simulated data
-    if (simulate || true)
+    if (simulate)
     {
         biogeoCtmc->simulate();
         charactermodel->clamp( &biogeoCtmc->getValue() );
