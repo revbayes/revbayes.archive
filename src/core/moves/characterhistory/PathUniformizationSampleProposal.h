@@ -194,37 +194,24 @@ template<class charType, class treeType>
 double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::computeLnProposal(const TopologyNode& nd, const BranchHistory& bh)
 {
     double lnP = 0.0;
+    
+    if (nd.isRoot())
+        return 0.0;
  
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     
-    unsigned counts[numStates];
-    for (size_t i = 0; i < numStates; i++)
-        counts[i] = 0;
-    fillStateCounts(currState, counts);
-    
     double branchLength = nd.getBranchLength();
-    if (nd.isRoot() && useTail)
-    {
-        branchLength = nd.getAge() * 5;
-    }
-    else
-        return 0.0;
     
-    double currAge = 0.0;
-    if (nd.isRoot())
-        currAge = nd.getAge() + branchLength;
-    else
-        currAge = nd.getParent().getAge();
-    
-    // get sampling RateMatrix
+     // get sampling RateMatrix
     const RateMatrix& rm = qmat->getValue();
     
     // stepwise events
     double t = 0.0;
     double dt = 0.0;
     
+    // sum of rates away from parent sequence state
     double sr = 0.0;
     for (size_t i = 0; i < currState.size(); i++)
     {
@@ -232,18 +219,17 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
         sr += -rm[fromState][fromState];
     }
     
+    // get transition probs for proposal
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getIndex();
-        dt = (*it_h)->getTime() - t;
+        double idx = (*it_h)->getIndex();                   // 2
+        dt = (*it_h)->getTime() - t;                        // t_1 - t_0
         
         // rates for next event
-        unsigned fromState = currState[ (*it_h)->getIndex() ]->getState();
-        unsigned toState = (*it_h)->getState();
-        double tr = rm[fromState][toState];
-//        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getIndex() ], *it_h, currAge);
-//        double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+        unsigned fromState = currState[ idx ]->getState();  // k
+        unsigned toState = (*it_h)->getState();             // j
+        double tr = rm[fromState][toState];                 // Q[k][j]
         
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
@@ -251,14 +237,12 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
         // update state
         currState[idx] = *it_h;
         t += dt;
-        currAge -= dt * branchLength;
         
         // update sum of rates
         sr += (-rm[toState][toState]) - (-rm[fromState][fromState]);
     }
     
     // lnL for final non-event
-//    sr = rm.getSumOfRates(nd, currState, counts, currAge);
     lnP += -sr * (1.0 - t) * branchLength;
     
     return lnP;
@@ -474,10 +458,13 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
         unsigned prevState = startState;
         for (std::set<CharacterEvent*,CharacterEventCompare>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
+            // if non-virtual event, add to proposed history
             if ( (*it)->getState() != prevState )
                 proposedHistory.insert(*it);
+            
+            // otherwise, free memory
             else
-                tmpHistory.erase(*it);
+                delete *it;
             
             prevState = (*it)->getState();
         }
