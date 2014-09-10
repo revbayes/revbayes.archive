@@ -60,9 +60,9 @@ RateMap_AminoAcid& RateMap_AminoAcid::operator=(const RateMap_AminoAcid& r)
 
 void RateMap_AminoAcid::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P) const
 {
-    RateMatrix* rm;
+    const RateMatrix* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
@@ -71,9 +71,9 @@ void RateMap_AminoAcid::calculateTransitionProbabilities(const TopologyNode& nod
 
 void RateMap_AminoAcid::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx) const
 {
-    RateMatrix* rm;
+    const RateMatrix* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
@@ -91,9 +91,9 @@ double RateMap_AminoAcid::getRate(const TopologyNode& node, std::vector<Characte
     unsigned toState = to->getState();
     
     double rate = 0.0;
-    RateMatrix* rm;
+    const RateMatrix* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
@@ -112,9 +112,9 @@ double RateMap_AminoAcid::getSiteRate(const TopologyNode& node, CharacterEvent* 
 {
     
     double rate = 0.0;
-    RateMatrix* rm;
+    const RateMatrix* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
@@ -132,9 +132,9 @@ double RateMap_AminoAcid::getSiteRate(const TopologyNode& node, unsigned from, u
 {
     
     double rate = 0.0;
-    RateMatrix* rm;
+    const RateMatrix* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
@@ -161,9 +161,9 @@ double RateMap_AminoAcid::getSumOfRates(const TopologyNode& node, std::vector<Ch
         counts[ from[i]->getState() ] += 1;
     
     // get rate matrix
-    RateMatrix* rm;
+    const RateMatrix* rm;
     if (branchHeterogeneousRateMatrices)
-        rm = heterogeneousRateMatrices[node.getIndex()];
+        rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
 
@@ -212,12 +212,12 @@ void RateMap_AminoAcid::setHomogeneousRateMatrix(const RateMatrix* r)
     *homogeneousRateMatrix = *r;
 }
 
-const RbVector<RateMatrix*>& RateMap_AminoAcid::getHeterogeneousRateMatrices(void) const
+const RbVector<RateMatrix>& RateMap_AminoAcid::getHeterogeneousRateMatrices(void) const
 {
     return heterogeneousRateMatrices;
 }
 
-void RateMap_AminoAcid::setHeterogeneousRateMatrices(const RbVector<RateMatrix*>& r)
+void RateMap_AminoAcid::setHeterogeneousRateMatrices(const RbVector<RateMatrix>& r)
 {
     branchHeterogeneousRateMatrices = true;
     heterogeneousRateMatrices = r;
