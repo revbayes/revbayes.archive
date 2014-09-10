@@ -499,8 +499,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
             TopologyNode* node = nodes[i];
             if (node->isTip())
             {
-                std::cout << i << " " << node->getName() << "\n";
-                this->value->getTaxonData( node->getName() );
+//                std::cout << i << " " << node->getName() << "\n";
+//                this->value->getTaxonData( node->getName() );
                 
                 DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData( node->getName() ) );
                 
