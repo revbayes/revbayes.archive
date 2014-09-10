@@ -34,7 +34,6 @@ namespace RevBayesCore {
         
     public:
         HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode<std::vector<double> > *bf);
-        HkyRateMatrixFunction(const HkyRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~HkyRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions

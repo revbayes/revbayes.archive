@@ -384,6 +384,12 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
             unsigned int s = 0;
             if (u < (g1 / (g0 + g1)))
                 s = 1;
+
+//            if (u < 0.5)
+//            {
+//                s = 1;
+//            }
+//            lnProposal += ???
             
             nodeChildState[*it]->setState(s);
             leftParentState[*it]->setState(s);
