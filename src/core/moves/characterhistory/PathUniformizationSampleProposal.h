@@ -195,7 +195,6 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
 {
     double lnP = 0.0;
  
-    /*
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
@@ -225,34 +224,42 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
     // stepwise events
     double t = 0.0;
     double dt = 0.0;
+    
+    double sr = 0.0;
+    for (size_t i = 0; i < currState.size(); i++)
+    {
+        unsigned fromState = currState[i]->getState();
+        sr += -rm[fromState][fromState];
+    }
+    
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
         double idx = (*it_h)->getIndex();
         dt = (*it_h)->getTime() - t;
         
-        //        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
-        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getIndex() ], *it_h, currAge);
-        double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+        // rates for next event
+        unsigned fromState = currState[ (*it_h)->getIndex() ]->getState();
+        unsigned toState = (*it_h)->getState();
+        double tr = rm[fromState][toState];
+//        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getIndex() ], *it_h, currAge);
+//        double sr = rm.getSumOfRates(nd, currState, counts, currAge);
         
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
-        
-        // update counts
-        counts[ currState[idx]->getState() ] -= 1;
-        counts[ (*it_h)->getState() ] += 1;
         
         // update state
         currState[idx] = *it_h;
         t += dt;
         currAge -= dt * branchLength;
+        
+        // update sum of rates
+        sr += (-rm[toState][toState]) - (-rm[fromState][fromState]);
     }
     
     // lnL for final non-event
-    double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+//    sr = rm.getSumOfRates(nd, currState, counts, currAge);
     lnP += -sr * (1.0 - t) * branchLength;
-    
-    */
     
     return lnP;
 }
@@ -308,6 +315,9 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
     proposedHistory.clear();
     
+    if (node->isRoot())
+        return 0.0;
+    
     // get model parameters
     double branchLength = node->getBranchLength();
     
@@ -316,15 +326,17 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
 
 //    RateMatrix& rm = const_cast<RateMatrix&>( qmat->getValue() );
 //    rm.updateMatrix();
-//    rm.calculateTransitionProbabilities(branchLength, tp);
+//    rm.calculateTransitionProbabilities(branchLength, tpCtmc);
 
     const RateMatrix& rm = qmat->getValue();
     rm.calculateTransitionProbabilities(branchLength, tpCtmc);
     
     double domRate = 0.0;
     for (size_t i = 0; i < rm.size(); i++)
+    {
         if (-rm[i][i] > domRate)
             domRate = -rm[i][i];
+    }
     
     MatrixReal unifQ(numStates, numStates);
     for (size_t i = 0; i < numStates; i++)
@@ -362,7 +374,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
 
         
         // guarantee we have min number of needed jumps
-        // Holboth and Stone (2009) style sampling
+        // Holboth and Stone (2009) uniformization sampling algorithm
         double u = GLOBAL_RNG->uniform01();
         double cum = 0.0;
         int numJumps = 0;
@@ -379,7 +391,12 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
         {
             numJumps++;
             if (numJumps > maxNumJumps)
-                throw RbException( "Exceeded maxNumJumps." );
+            {
+                std::stringstream ss_err;
+                ss_err << "Exceeded maxNumJumps: " << maxNumJumps;
+                throw RbException( ss_err.str() );
+            }
+            
 
             tpDtmc[numJumps] = tpDtmc[numJumps-1] * unifQ;
             
@@ -454,15 +471,23 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
             }
         }
         
-        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+        unsigned prevState = startState;
+        for (std::set<CharacterEvent*,CharacterEventCompare>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
-            proposedHistory.insert(*it);
+            if ( (*it)->getState() != prevState )
+                proposedHistory.insert(*it);
+            else
+                tmpHistory.erase(*it);
+            
+            prevState = (*it)->getState();
         }
+        
+//        std::cout << numJumps << " " << proposedHistory.size() << "\n";
     }
     
     // assign values back to model for likelihood
     bh->updateHistory(proposedHistory, siteIndexSet);
-    
+//    bh->print();
     // return hastings ratio
     proposedLnProb = computeLnProposal(*node, *bh);
     
@@ -477,6 +502,9 @@ template<class charType, class treeType>
 void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::prepareProposal( void )
 {
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
+    
+    RateMatrix& rm = const_cast<RateMatrix&>( qmat->getValue() );
+    rm.updateMatrix();
     
     storedHistory.clear();
     proposedHistory.clear();
@@ -517,6 +545,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::prepare
     
     BranchHistory* bh = &p.getHistory(*node);
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
+//    bh->print();
     
     // store history for events in siteIndexSet
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
