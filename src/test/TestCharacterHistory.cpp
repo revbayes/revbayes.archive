@@ -65,6 +65,7 @@
 #include "BranchLengthTree.h"
 #include "UniformBranchLengthTreeDistribution.h"
 #include "DistanceDependentDispersalFunction.h"
+#include "PathUniformizationSampleProposal.h"
 
 // joint mol bd test
 #include "RootTimeSlide.h"
@@ -142,10 +143,10 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations = 10000;
+    mcmcGenerations = 50000;
 //    *= 10;
     //    mcmcGenerations=35;
-    unsigned int burn = (unsigned int)(mcmcGenerations * .2);
+    unsigned int burn = (unsigned int)(mcmcGenerations * .5);
     
     ////////////
     // io
@@ -168,8 +169,8 @@ bool TestCharacterHistory::run_exp(void) {
     bool forbidExtinction           = true;
     bool useCladogenesis            = true;
     bool useDistances               = !true;
-    bool useAdjacency               = !true;
-    bool useAvailable               = !true;
+    bool useAdjacency               = true;
+    bool useAvailable               = true;
     bool useRootFreqs               = !true;
     
     
@@ -202,7 +203,7 @@ bool TestCharacterHistory::run_exp(void) {
 //    afn = "hawaii_dynamic_ss.atlas.txt";
 //    afn = "100area.atlas.txt";
 //    afn = "sim_aus_50tip_33area.atlas.txt";
-    afn = "earth.atlas.txt";
+    afn = "earth2.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -262,8 +263,7 @@ bool TestCharacterHistory::run_exp(void) {
     ddd = new DeterministicNode<GeographyRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
     
     // ctmc rates
-    ConstantNode<double>* glr_pr = new ConstantNode<double>("glr_pr", new double(10.0));
-    
+    ConstantNode<double>* glr_pr = new ConstantNode<double>("glr_pr", new double(100.0));
     //    ConstantNode<double>* glr_pr_a = new ConstantNode<double>("glr_pr_a", new double(1.1));
     //    ConstantNode<double>* glr_pr_b = new ConstantNode<double>("glr_pr_b", new double(11.0));
     
@@ -280,8 +280,8 @@ bool TestCharacterHistory::run_exp(void) {
 		glr_nonConst.push_back( tmp_glr );
         glr_stoch.push_back(tmp_glr);
 	}
-    glr_nonConst[0]->setValue(0.1);
-    glr_nonConst[1]->setValue(0.1);
+//    glr_nonConst[0]->setValue(0.1);
+//    glr_nonConst[1]->setValue(0.1);
     
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
     
@@ -333,14 +333,17 @@ bool TestCharacterHistory::run_exp(void) {
     
     // simulated data
     if (simulate)
+    {
         biogeoCtmc->simulate();
+        charactermodel->clamp( &biogeoCtmc->getValue() );
+    }
     
     // real data
     else
         charactermodel->clamp( data[0] );
     
     // initialize mapping
-        charactermodel->redraw();
+    charactermodel->redraw();
     
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";

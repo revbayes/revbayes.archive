@@ -63,6 +63,11 @@ void CharacterEvent::setState(unsigned int s)
     state = s;
 }
 
+void CharacterEvent::setTime(double t)
+{
+    time = t;
+}
+
 void CharacterEvent::print(void)
 {
     std::cout << index << " " << state << " " << time << "\n";

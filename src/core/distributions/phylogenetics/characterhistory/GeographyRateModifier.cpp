@@ -218,10 +218,10 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
                 {
                     d = geographicDistancePowers[idx_e];
                 }
-                else if (useDistanceDependence)
-                {
-                    d = 1e-10;
-                }
+//                else if (d == 0.useAreaAdjacency == 0.0)
+//                {
+//                    d = 1e-10;
+//                }
                 
                 sum += d;
                 
@@ -233,10 +233,19 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         r = absent.size() * rate / sum;
 //        std::cout << "rateMod " << r << " = " << absent.size() << " * " << rate << " / " << sum << "\n";
     }
-    
+
     return r;
 }
 
+double GeographyRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+{
+    return computeRateModifier(currState, newState, age);
+}
+
+double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
+{
+    return computeRateModifier(currState, newState, 0.0);
+}
 
 double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
 {
@@ -280,16 +289,6 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     }
     
     return r;
-}
-
-double GeographyRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
-{
-    return computeRateModifier(currState, newState, age);
-}
-
-double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
-{
-    return computeRateModifier(currState, newState, 0.0);
 }
 
 
@@ -396,7 +395,7 @@ void GeographyRateModifier::initializeAdjacentAreas(void)
                 if (dvs.size() == numAreas)
                 {
                     if (dvs[k] > 0.0)
-                        d = 1.0;
+                        d = dvs[k];
                 }
                 else
                 {
