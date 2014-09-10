@@ -139,7 +139,7 @@
     NSString* temporaryDirectory = NSTemporaryDirectory();
     NSFileManager* fm = [[NSFileManager alloc] init];
     NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
-              alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments"];
+              alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
 
@@ -152,7 +152,6 @@
         // have the data object save a fasta file to the temporary directory
         RbData* d = [unalignedData objectAtIndex:i];
         NSString* dFilePath = [NSString stringWithString:alnDirectory];
-                  dFilePath = [dFilePath stringByAppendingString:@"/"];
                   dFilePath = [dFilePath stringByAppendingString:[d name]];
                   dFilePath = [dFilePath stringByAppendingString:@".fas"];
     NSLog(@"dFilePath=%@", dFilePath);
@@ -183,10 +182,11 @@
         NSNumber* nt = [NSNumber numberWithInt:[d numTaxa]];
         
         NSMutableArray* theTaskInfo = [[NSMutableArray alloc] initWithCapacity:2];
-        [theTaskInfo addObject:temporaryDirectory];
+        [theTaskInfo addObject:alnDirectory];
         [theTaskInfo addObject:fName];
         [theTaskInfo addObject:tempDir];
         [theTaskInfo addObject:nt];
+        NSLog(@"theTaskInfo=%@", theTaskInfo);
         
         // detach a thread with this task ... each thread decrements the task count when completed
         [NSThread detachNewThreadSelector:@selector(alignFile:) toTarget:theTask withObject:theTaskInfo];

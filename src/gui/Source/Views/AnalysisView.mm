@@ -586,13 +586,11 @@
             [triangle stroke];
             if ( [element isKindOfClass:[ToolData class]] == YES )
                 {
-                NSLog(@"In ToolData Outlet Draw");
                 int n = 0;
                 if ( [theOutlet toolColor] == [NSColor greenColor] )
                     n = (int)[(ToolData*)element numAligned];
                 else if ( [theOutlet toolColor] == [NSColor cyanColor] )
                     n = (int)[(ToolData*)element numUnaligned];
-                NSLog(@"n = %d", n);
                 [[[NSColor blackColor] colorWithAlphaComponent:0.4] set];
                 NSBezierPath* numPath = [self makePathForNumber:n];
                 NSRect numBounds = [numPath bounds];
