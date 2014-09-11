@@ -12,7 +12,6 @@
 #include "RlClade.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "StochasticNode.h"
 
 using namespace RevLanguage;
 

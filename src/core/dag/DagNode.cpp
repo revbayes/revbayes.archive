@@ -21,11 +21,11 @@ DagNode::DagNode( const std::string &n ) :
 
 /**
  * Copy constructor. We delegate the handling
- * of parents to derived classes with parents,
- * and they need to take care of the management
- * of those parents, removing them as a child
- * from those parents and deleting the parents
- * if necessary.
+ * of parents to derived classes with parents.
+ * Those classes need to take care of the management
+ * of their parents. They should remove themselves as
+ * a child of their parents when appropriate, and delete
+ * the parents if necessary.
  */
 DagNode::DagNode( const DagNode &n ) : 
         children(),
@@ -83,89 +83,54 @@ DagNode::~DagNode( void )
  *
  * Note that children do not need to replace or remove this node
  * as their parent, because we remain alive and their parent
- * pointer will continue to be relevant.
+ * pointer will continue to be relevant. We assume that children
+ * of this node are unaffected by the assignment.
  */
 DagNode& DagNode::operator=(const DagNode &d)
 {
     if ( &d != this )
     {
-        name = d.name;  
+        name            = d.name;
         touchedElements = d.touchedElements;
+        priorOnly       = d.priorOnly;
     }
     
     return *this;
 }
 
 
+/**
+ * Add a child to the children of this node.
+ * This function is used in constructing DAGs
+ * and in modifying the structure of DAGs.
+ *
+ * Note that any parent management is done by
+ * the child node.
+ */
 void DagNode::addChild(DagNode *child) const
 {
     children.insert( child );
 }
 
 
-/* Add the index of an element that has been touched */
+/**
+ * Add the index of an element that has been touched to the set of
+ * toched element indices.
+ */
 void DagNode::addTouchedElementIndex(size_t i)
 {
-    
     touchedElements.insert( i );
-
 }
 
 
+/** Clear the touched element indices */
 void DagNode::clearTouchedElementIndices( void )
 {
-    
     touchedElements.clear();
-
 }
 
 
-/** Clone the graph downstream from this node: clone children */
-DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNodes ) const 
-{
-    
-    if ( newNodes.find( this ) != newNodes.end() )
-    {
-        return ( newNodes[ this ] );
-    }
-    // Get pristine copy
-    DagNode* copy = clone();
-    
-    // Add this node to the map
-    newNodes[ this ] = copy;
-    
-    /* Make sure the children clone themselves */
-    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
-    {
-        DagNode *child = (*i)->cloneDownstreamDag( newNodes );
-        child->swapParent(this, copy);
-    }
-    
-    return copy;
-}
-
-
-void DagNode::collectDownstreamGraph(std::set<RevBayesCore::DagNode *> &nodes)
-{
-    
-    // for efficiency we check for multiple calls
-    if ( nodes.find( this ) == nodes.end() )
-    {
-        // first, add myself
-        nodes.insert( this );
-        
-        // now, perform a recursive call
-        for (std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it)
-        {
-            (*it)->collectDownstreamGraph( nodes );
-        }
-        
-    }
-    
-}
-
-
-/** 
+/**
  * Decrement the reference count and return it. 
  */
 size_t DagNode::decrementReferenceCount( void ) const 
@@ -226,49 +191,29 @@ void DagNode::getAffectedStochasticNodes( std::set<DagNode*>& affected )
 }
 
 
+/** Get childre of this node */
 const std::set<DagNode*>& DagNode::getChildren( void ) const
 {
     return children;
 }
 
 
-std::string DagNode::getDagNodeType( void ) const
-{
-    
-    if ( type == CONSTANT ) 
-    {
-        return "constant";
-    } 
-    else if ( type == DETERMINISTIC )
-    {
-        return "deterministic";
-    }
-    else
-    {
-        return "stochastic";
-    }
-    
-}
-
+/**
+ * Get first node in children set using the begin() iterator of
+ * the STL set (std::set).
+ */
 DagNode* DagNode::getFirstChild( void ) const
 {
-    
     return *children.begin();
 }
 
 
+/** Return the name of the node */
 const std::string& DagNode::getName( void ) const
 {
-
     return name;
 }
 
-
-size_t DagNode::getNumberOfChildren( void ) const
-{
-
-    return children.size();
-}
 
 
 /**
@@ -277,7 +222,6 @@ size_t DagNode::getNumberOfChildren( void ) const
  */
 std::set<const DagNode*> DagNode::getParents( void ) const
 {
-    
     return std::set<const DagNode*>();
 }
 
@@ -287,15 +231,15 @@ std::set<const DagNode*> DagNode::getParents( void ) const
  */
 size_t DagNode::getReferenceCount( void ) const 
 {
-    
     return refCount;
 }
 
 
-/* Get the indices of all touched elements */
+/**
+ * Get the indices of all touched elements.
+ */
 const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
 {
-
     return touchedElements;
 }
 
@@ -353,9 +297,12 @@ bool DagNode::isAssignable( void ) const
 }
 
 
+/**
+ * Is this node clamped? The question is only relevant for stochastic nodes, so we
+ * return false by default.
+ */
 bool DagNode::isClamped( void ) const
 {
-
     return false;
 }
 
@@ -371,14 +318,20 @@ bool DagNode::isComposite( void ) const
 }
 
 
+/**
+ * Is this node constant? The default answer is false according to this implementation.
+ * It needs to be overridden in the constant node base class.
+ */
 bool DagNode::isConstant( void ) const
 {
-
     return false;
 }
 
 
-/** Is this a non-applicable (NA) value? */
+/**
+ * Is this a non-applicable (NA) value? By default we return false; only
+ * NAValueNode needs to override this behavior.
+ */
 bool DagNode::isNAValue( void ) const
 {
     return false;
@@ -386,10 +339,11 @@ bool DagNode::isNAValue( void ) const
 
 
 /**
- * Is this variable a simple numeric variable?
- * This is asked for example by the model monitor that only wants to monitor simple
- * numeric variable because all others (e.g. trees and vectors/matrices) cannot be read
- * by Tracer. 
+ * Is this variable a simple numeric variable? This is asked for example by the model
+ * monitor that only wants to monitor simple numeric variable because all others
+ * (e.g. trees and vectors/matrices) cannot be read by Tracer. The default return
+ * value is false; return true for specific templated DAG nodes based on their template
+ * internal value type.
  */
 bool DagNode::isSimpleNumeric( void ) const 
 {
@@ -397,10 +351,15 @@ bool DagNode::isSimpleNumeric( void ) const
 }
 
 
+/**
+ * Is this DAG node stochastic? Default answer is false; override in
+ * the stochastic node base class.
+ */
 bool DagNode::isStochastic( void ) const
 {
     return false;
 }
+
 
 /**
  * Keep the value of the node.
@@ -595,17 +554,20 @@ void DagNode::reInitializeMe( void )
 }
 
 
+/**
+ * Remove a child node. This function is used during DAG node
+ * construction or modification.
+ */
 void DagNode::removeChild(DagNode *child) const
 {
-    
-    // test if we even have this node as a child
+    // Test if we even have this node as a child
     if (children.find(child) != children.end()) 
     {
-        // we do not own our children! See addChildNode for explanation
+        // We do not own our children! See addChildNode for explanation.
+        // This means we do not delete the child.
         
-        // remove the child from our list
+        // Remove the child from our list
         children.erase(child);
-        
     }
 }
 
@@ -675,11 +637,14 @@ void DagNode::setName(std::string const &n)
 }
 
 
+/**
+ * Set the priorOnly flag, used to signal in stochastic nodes
+ * whether the probability calculation should include the
+ * likelihood or just the prior.
+ */
 void DagNode::setPriorOnly(bool tf)
 {
-    
     priorOnly = tf;
-    
 }
 
 
@@ -690,9 +655,7 @@ void DagNode::setPriorOnly(bool tf)
  */
 void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
 {
-    
     throw RbException( "This DAG node does not have any parents" );
-
 }
 
 

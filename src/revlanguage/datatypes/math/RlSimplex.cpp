@@ -5,7 +5,6 @@
 #include "Probability.h"
 #include "RbException.h"
 #include "RlUtils.h"
-#include "StochasticNode.h"
 
 using namespace RevLanguage;
 

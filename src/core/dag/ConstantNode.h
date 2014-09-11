@@ -1,56 +1,41 @@
-/**
- * @file
- * This file contains the declaration of the constant DAG node class, which is our DAG node class holding fixed parameters of a model.
- *
- * @brief Declaration of the constant DAG node class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
 #ifndef ConstantNode_H
 #define ConstantNode_H
 
 #include "StringUtilities.h"
-#include "TypedDagNode.h"
+#include "AbstractConstantNode.h"
 #include "UnivariateFunction.h"
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Constant DAG node class
+     *
+     * This is the class for constant DAG nodes holding fixed parameters of a model
+     * in the core layer.
+     */
     template<class valueType>
-    class ConstantNode : public TypedDagNode<valueType> {
+    class ConstantNode : public AbstractConstantNode<valueType> {
     
     public:
-        ConstantNode(const std::string &n, valueType *v);
+        ConstantNode(const std::string &n, valueType *v);                                                                               //!< Constructor from value
         ConstantNode(const ConstantNode<valueType> &c);                                                                                 //!< Copy constructor
+
         virtual                                            ~ConstantNode(void);                                                         //!< Virtual destructor
     
+        // Functions implemented here
         ConstantNode<valueType>*                            clone(void) const;                                                          //!< Create a clone of this node.
-        DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;               //!< Clone the entire DAG which is connected to this node
         valueType&                                          getValue(void);                                                             //!< Get value
         const valueType&                                    getValue(void) const;                                                       //!< Get value (const version)
-        bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
-        void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
-        void                                                setValue(const valueType& v);                                               //!< Change the value of the node
-        
-    protected:
-        void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
-        void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        void                                                touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
+        void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print structure info for user
 
+        // This function should not be needed
+//        void                                                setValue(const valueType& v);                                               //!< Change the value of the node
+        
     private:
-        // members
-        valueType*                                          value;
+        // Member variable
+        valueType*                                          value;                                                                      //!< Value of the node
 
     };
-    
     
 }
 
@@ -58,93 +43,65 @@ namespace RevBayesCore {
 #include "RbException.h"
 
 
+/**
+ * Constructor from pointer to value. We assume ownership of the value.
+ */
 template<class valueType>
-RevBayesCore::ConstantNode<valueType>::ConstantNode(const std::string &n, valueType *v) : TypedDagNode<valueType>( n ), value( v ) {
-    
-    this->type = DagNode::CONSTANT;
-    
-}
-
-
-template<class valueType>
-RevBayesCore::ConstantNode<valueType>::ConstantNode(const ConstantNode<valueType> &c) : TypedDagNode<valueType>( c ), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *c.value ) ) {
-    
-    this->type = DagNode::CONSTANT;
-    
-}
-
-template<class valueType>
-RevBayesCore::ConstantNode<valueType>::~ConstantNode( void ) {
-    
-    // we own the value so we need to delete it here
-    delete value;
-    
-}
-
-
-/* Clone this node by creating an independent copy of the value. */
-template<class valueType>
-RevBayesCore::ConstantNode<valueType>* RevBayesCore::ConstantNode<valueType>::clone( void ) const {
-    
-    return new ConstantNode<valueType>( *this );
-    
-}
-
-
-/** Cloning the entire graph only involves children for a constant node */
-template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes ) const {
-    
-    if ( newNodes.find( this ) != newNodes.end() )
-        return ( newNodes[ this ] );
-    
-    /* Make pristine copy */
-    ConstantNode* copy = clone();
-    newNodes[ this ] = copy;
-    
-    /* Make sure the children clone themselves */
-    for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ ) 
-    {
-        (*i)->cloneDAG( newNodes );
-    }
-    
-    return copy;
-}
-
-
-template<class valueType>
-valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) {
-    
-    return *value;
-}
-
-
-template<class valueType>
-const valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) const {
-    
-    return *value;
-}
-
-
-template<class valueType>
-bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const {
-    
-    return true;
-}
-
-
-template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter )
+RevBayesCore::ConstantNode<valueType>::ConstantNode(const std::string &n, valueType *v) :
+    AbstractConstantNode<valueType>( n ),
+    value( v )
 {
-    // nothing to do    
 }
 
 
+/**
+ * Copy constructor. Here we use the Cloner functionality to clone the value of the
+ * argument.
+ */
 template<class valueType>
+RevBayesCore::ConstantNode<valueType>::ConstantNode(const ConstantNode<valueType> &c) :
+    AbstractConstantNode<valueType>( c ),
+    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *c.value ) )
+{
+}
+
+
+/** Destructor. We own the value so we need to delete it. */
+template<class valueType>
+RevBayesCore::ConstantNode<valueType>::~ConstantNode( void )
+{
+    // We own the value so we need to delete it here
+    delete value;
+}
+
+
+/** Type-safe clone of the node */
+template<class valueType>
+RevBayesCore::ConstantNode<valueType>* RevBayesCore::ConstantNode<valueType>::clone( void ) const
+{
+    return new ConstantNode<valueType>( *this );
+}
+
+
+/** Get value (non-const version) */
+template<class valueType>
+valueType& RevBayesCore::ConstantNode<valueType>::getValue( void )
+{
+    return *value;
+}
+
+
+/** Get value (const version) */
+template<class valueType>
+const valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) const
+{
+    return *value;
+}
+
+
 /** Print struct for user */
 void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, bool verbose) const
 {
-    
     if ( verbose == true )
     {
         o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
@@ -177,25 +134,25 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, 
 }
 
 
+#if 0
+/**
+ * Public function to set the value. We immediately accept the new state
+ * by issuing the keep message right after the touch message to any downstream
+ * DAG nodes.
+ *
+ * @todo Is this needed? Does it work for abstract types?
+ */
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode *restorer ) {
-    // nothing to do
-}
-
-
-template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v) {
-    
+void RevBayesCore::ConstantNode<valueType>::setValue( valueType const &v )
+{
     *value = v;
+
     this->touch();
-    
-}
 
-
-template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode *toucher ) {
-    // nothing to do
+    this->keep();
 }
+#endif
+
 
 #endif
 

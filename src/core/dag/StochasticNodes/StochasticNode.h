@@ -59,8 +59,10 @@ namespace RevBayesCore {
         void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
-        virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
-        virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
+        virtual void                                        keepValue(void);                                                            //!< Keep the value of this node
+        virtual void                                        restoreValue(valueType *val);                                               //!< Restore the value of this node
+        virtual void                                        setValue(valueType* val, bool keepNow);                                     //!< Set the value of this node
+        virtual void                                        setValue(const valueType& val, bool keepNow);                               //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
@@ -81,7 +83,10 @@ namespace RevBayesCore {
         double                                              lnProb;                                                                     //!< Current log probability
         bool                                                needsProbabilityRecalculation;                                              //!< Do we need recalculation of the ln prob?
         double                                              storedLnProb;
-        TypedDistribution<valueType>*                       distribution;
+
+        bool                                                touched;                                                                    //!< Has the node been touched?
+        
+        TypedDistribution<valueType>*                       distribution;                                                               //!< The distribution associated with the node
     
     };
 }
@@ -100,6 +105,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
     ignoreRedraw(false),
     lnProb( RbConstants::Double::neginf ),
     needsProbabilityRecalculation( true ),
+    touched( true ),
     distribution( d )
 {
     this->type = DagNode::STOCHASTIC;
@@ -127,6 +133,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<va
     clamped( n.clamped ),
     ignoreRedraw(n.ignoreRedraw),
     needsProbabilityRecalculation( true ),
+    touched( true ),
     distribution( n.distribution->clone() )
 {
     this->type = DagNode::STOCHASTIC;
@@ -210,6 +217,9 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
         
         // Set us as the DAG node of the new distribution
         distribution->setDeterministicNode( this );
+        
+        // Tell everybody we changed
+        this->touch();
     }
     
     return *this;
@@ -377,15 +387,11 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
         
         // clear the list of touched element indices
         this->touchedElements.clear();
-                
+    
+        this->touched = false;
     }
     
     needsProbabilityRecalculation   = false;
-    
-    
-    // delegate call
-    DynamicNode<valueType>::keepMe( affecter );
-    
 }
 
 
@@ -475,41 +481,60 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
         // clear the list of touched element indices
         this->touchedElements.clear();
         
+        // reset touched flag
+        touched = false;
     }
-    
-    // delegate call
-    DynamicNode<valueType>::restoreMe( restorer );
     
 }
 
 
+/**
+ * This function is called to set the value of the stochastic node. We send
+ * a touch message to ourselves and all downstream DAG nodes until we reach
+ * the next level of stochastic nodes in the model. If keepNow is set to true
+ * we also make sure we keep the value.
+ */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch) {
-    // set the value
+void RevBayesCore::StochasticNode<valueType>::setValue( valueType* val, bool keepNow )
+{
+    // Set the value
+    distribution->setValue( val );
+
+    // Touch this node for probability recalculation and dispatch the
+    // touch message to all downstream DAG nodes (until the next level
+    // of stochastic nodes).
+    this->touch();
+
+    if ( keepNow )
+    {
+        // Send the keep message
+        this->keep();
+    }
+}
+
+
+/**
+ * This function is the same as setValue( valueType* val, bool keepNow ), except that
+ * it takes a const reference to a value instead.
+ */
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValue( const valueType& val, bool keepNow )
+{
+    // Set the value
     distribution->setValue( val );
     
-    if ( forceTouch ) 
-    {
-        // touch this node for probability recalculation
-        this->touch();
-    }
+    // Touch this node for probability recalculation and dispatch the
+    // touch message to all downstream DAG nodes (until the next level
+    // of stochastic nodes).
+    this->touch();
     
+    if ( keepNow )
+    {
+        // Send the keep message
+        this->keep();
+    }
 }
 
-
-template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool forceTouch) {
-    
-    // set the value
-    distribution->setValue( val );
-    
-    if ( forceTouch ) 
-    {
-        // touch this node for probability recalculation
-        this->touch();
-    }
-    
-}
 
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)
@@ -549,7 +574,6 @@ void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::Da
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
 {
-    
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In touchMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
@@ -561,19 +585,18 @@ void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
         
     needsProbabilityRecalculation = true;
     
-    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
+    // Call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
     distribution->touch( toucher );
-    
-    // delegate call
-    DynamicNode<valueType>::touchMe( toucher );
+
+    // Set the touched flag
+    this->touched = true;
 }
 
 
 /**
- * Unclamp this node. If I understand this correctly, we
- * can just set the clamped flag to false if we keep the
- * current value. We do not need to tell anyone that we
- * have changed value because we really haven't.
+ * Unclamp this node. We just set the clamped flag to false and
+ * keep the current value. We do not need to tell anyone that we
+ * have changed value because we haven't.
  */
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::unclamp( void )
