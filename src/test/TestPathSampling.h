@@ -30,6 +30,8 @@ namespace RevBayesCore {
         TestPathSampling(void);
         virtual                                ~TestPathSampling(void);                                                            //!< Virtual destructor
         bool                                    run(void);
+        bool                                    run_aa(void);
+        bool                                    run_binary(void);
         
     private:
         
