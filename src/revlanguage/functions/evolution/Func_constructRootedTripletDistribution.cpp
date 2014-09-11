@@ -50,10 +50,10 @@ RevPtr<Variable> Func_constructRootedTripletDistribution::execute() {
     }
     else if ( this->args[0].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< BranchLengthTree >::getClassTypeSpec() ) )
     {
-       /* SOMETHING WEIRD HERE:
+//       /* SOMETHING WEIRD HERE:
         RevBayesCore::TypedDagNode<std::vector< RevBayesCore::BranchLengthTree > >* gTrees = static_cast<const ModelVector< BranchLengthTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
         f->setTrees(gTrees);
-        */
+//        */
 
     }
 

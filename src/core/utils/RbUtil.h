@@ -17,6 +17,7 @@
 #ifndef RbUtil_H
 #define RbUtil_H
 
+#include "BranchLengthTree.h"
 #include "Taxon.h"
 #include "TimeTree.h"
 #include "Trace.h"
@@ -88,6 +89,7 @@ namespace RevBayesCore {
     std::ostream&                       operator<<(std::ostream& o, const std::vector<Clade>& x);                        //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<Taxon>& x);                        //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<TimeTree>& x);                        //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const std::vector<BranchLengthTree>& x);             //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<Trace>& x);                        //!< Overloaded output operator
                                                                                                                          //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_GTR>& x);                      //!< Overloaded output operator
                                                                                                                          //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_JC>& x);                      //!< Overloaded output operator
