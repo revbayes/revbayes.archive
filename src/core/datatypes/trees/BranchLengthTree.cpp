@@ -41,6 +41,19 @@ BranchLengthTree::~BranchLengthTree(void) {
 }
 
 
+BranchLengthTree& BranchLengthTree::operator=(const BranchLengthTree &t) {
+    
+    if (this != &t) {
+        Tree::operator=(t);
+        
+        branchLengths      = t.branchLengths;
+        
+    }
+    
+    return *this;
+}
+
+
 /* Clone function */
 BranchLengthTree* BranchLengthTree::clone(void) const {
     
@@ -158,7 +171,7 @@ void BranchLengthTree::setBranchLength(size_t idx, double bl) {
 
 
 
-std::ostream& operator<<(std::ostream& o, const BranchLengthTree& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchLengthTree& x) {
     o << x.getNewickRepresentation();
     
     return o;
