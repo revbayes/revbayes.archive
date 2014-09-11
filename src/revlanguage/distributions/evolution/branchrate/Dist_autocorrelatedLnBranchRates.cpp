@@ -11,7 +11,6 @@
 #include "RealPos.h"
 #include "RealNodeContainer.h"
 #include "RlTimeTree.h"
-#include "StochasticNode.h"
 #include "TimeTree.h"
 
 using namespace RevLanguage;

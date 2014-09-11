@@ -41,14 +41,11 @@ namespace RevBayesCore {
         DeterministicNode<valueType>*                       clone(void) const;
         virtual TypedFunction<valueType>&                   getFunction(void);
         virtual const TypedFunction<valueType>&             getFunction(void) const;
-        double                                              getLnProbability(void);
-        double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
         virtual void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                update(void);                                                               //!< Update the current value by recomputation
-        void                                                redraw(void);
         void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
 
         // Parent DAG nodes management functions
@@ -62,9 +59,8 @@ namespace RevBayesCore {
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
         virtual void                                        touchMe(DagNode *toucher);                                                  //!< Touch myself and tell affected nodes value is reset
-        void                                                touchFunction(DagNode* toucher) const;                                      //!< Touch my function
 
-    private:
+        // Member variable
         TypedFunction<valueType>*                           function;
     };
     
@@ -220,22 +216,6 @@ const RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<va
     return *function;
 }
 
-template<class valueType>
-double RevBayesCore::DeterministicNode<valueType>::getLnProbability( void )
-{
-    
-    return 0.0;
-}
-
-
-template<class valueType>
-double RevBayesCore::DeterministicNode<valueType>::getLnProbabilityRatio( void )
-{
-    
-    return 0.0;
-}
-
-
 /**
  * Get the parents of this node. Simply ask the function to provide its parameters,
  * no need to keep parents here.
@@ -336,7 +316,7 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     {
         o << "_refCount     = " << this->getReferenceCount() << std::endl;
         o << "_function     = <" << function << ">" << std::endl;
-        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
+        o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
     }
     
     
@@ -347,15 +327,6 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     o << "_children     = ";
     this->printChildren(o, 16, 70, verbose);
     o << std::endl;
-}
-
-
-
-template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::redraw( void )
-{
-    // nothing to do
-    // the touch should have called our update
 }
 
 
@@ -379,9 +350,6 @@ void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
     
     // we need to recompute our value?!
     this->update();
-    
-    // we just mark ourselves as clean
-    this->touched = false;
     
     // call for potential specialized handling (e.g. internal flags)
     function->restore(restorer);
@@ -422,16 +390,6 @@ void RevBayesCore::DeterministicNode<valueType>::swapParent( const RevBayesCore:
 }
 
 
-/** touch my function for recalculation (function provided for derived classes) */
-template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher ) const {
-    
-    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
-    // This is essential for lazy evaluation
-    function->touch( toucher );
-}
-
-
 /**
  * Touch this node for recalculation.
  *
@@ -439,9 +397,6 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
  *       has not been touched before the entry to this function. The
  *       touchFunction call always needs to be executed (at least once
  *       for each toucher).
- *
- * @todo Get rid of the touched flag. It is not used, and any code relying on
- *       it to be set correctly might well fail.
  */
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
@@ -450,13 +405,9 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     std::cerr << "In touchMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
    
-    // To be on the safe side, we set the touched flag here, but the flag is not used by this class and may not
-    // be in a consistent state. Beware! 
-    this->touched = true;
-    
     // We need to touch the function always because of specialized touch functionality in some functions, like vector functions.
     // In principle, it would sufficient to do the touch once for each toucher, but we do not keep track of the touchers here.
-    this->touchFunction( toucher );
+    this->function->touch( toucher );
         
     // Dispatch the touch message to downstream nodes
     this->touchAffected();

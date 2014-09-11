@@ -43,14 +43,6 @@ namespace RevBayesCore {
         // this function provided for derived classes used in the language layer, which need to override it
         virtual const std::string&                          getRevTypeOfValue(void);                                                        //!< Get Rev language type of value
 
-    protected:
-        virtual void                                        keepMe(DagNode* affecter);                                                      //!< Keep value of this and affected nodes
-        virtual void                                        restoreMe(DagNode *restorer);                                                   //!< Restore value of this node
-        virtual void                                        touchMe(DagNode *toucher);                                                      //!< Tell affected nodes value is reset
-
-    
-        // members
-        bool                                                touched;                                                                        //!< Is touched by move?
     };
 
 }
@@ -59,13 +51,14 @@ namespace RevBayesCore {
 #include "RbOptions.h"
 
 template<class valueType>
-RevBayesCore::DynamicNode<valueType>::DynamicNode( const std::string &n ) : TypedDagNode<valueType>( n ), touched( true ) {
+RevBayesCore::DynamicNode<valueType>::DynamicNode( const std::string &n ) : TypedDagNode<valueType>( n )
+{
     // nothing to do here
 }
 
 
 template<class valueType>
-RevBayesCore::DynamicNode<valueType>::DynamicNode( const DynamicNode<valueType> &n ) : TypedDagNode<valueType>( n ), touched( true ) {
+RevBayesCore::DynamicNode<valueType>::DynamicNode( const DynamicNode<valueType> &n ) : TypedDagNode<valueType>( n ) {
     // nothing to do here
 }
 
@@ -140,59 +133,6 @@ const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
 {
     throw RbException( "Rev language type of dynamic DAG node value not known" );
 }
-
-
-/**
- * Keep the current value of the node.
- * At this point, we also need to make sure we update the stored ln probability.
- */
-template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
-    if ( touched )
-    {
-        touched = false;
-    }
-    
-    
-}
-
-
-/** Restore the old value of the node and tell affected */
-template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
-    if ( touched )
-    {
-        touched = false;
-    }
-    
-}
-
-/** touch this node for recalculation */
-template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
-    if (!touched)
-    {
-        // Store the current lnProb 
-        touched      = true;
-    }
-        
-}
-
 
 
 #endif
