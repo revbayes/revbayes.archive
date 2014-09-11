@@ -40,7 +40,6 @@
 #include "TestMultispeciesCoalescentWithSequences.h"
 #include "TestNNI.h"
 #include "TestNormalModel.h"
-#include "TestPathSampling.h"
 #include "TestPomoModel.h"
 #include "TestScalingMove.h"
 #include "TestSimplexMove.h"
@@ -145,16 +144,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
 //        testDdm.run();
-    }
-    catch (RbException &e)
-    {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    try
-    {
-        TestPathSampling testPs = TestPathSampling();
-        testPs.run();
     }
     catch (RbException &e)
     {
@@ -332,7 +321,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
-//        testGtrGamma.run();
+        testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

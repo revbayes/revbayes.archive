@@ -81,8 +81,8 @@ const MemberRules& Mntr_Screen::getMemberRules(void) const
         memberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;
     }
