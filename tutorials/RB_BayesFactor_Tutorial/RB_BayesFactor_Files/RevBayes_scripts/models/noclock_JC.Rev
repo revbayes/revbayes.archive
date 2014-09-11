@@ -44,7 +44,7 @@ mi <- 0
 ######################
 
 #### specify the Jukes-Cantor substitution model applied uniformly to all sites ###
-Q := JC(4) 
+Q := fnJC(4) 
 
 
 
@@ -55,7 +55,7 @@ Q := JC(4)
 ##############
 
 #### Specify a uniform prior on the tree topology #### 
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology)
