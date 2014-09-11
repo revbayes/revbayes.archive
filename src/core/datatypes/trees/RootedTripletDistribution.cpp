@@ -15,32 +15,48 @@
  * $Id: RootedTripletDistribution.cpp 1651 2014-08-31 14:47:08Z Boussau $
  */
 
+#include "BranchLengthTree.h"
 #include "RootedTripletDistribution.h"
 #include "RbException.h"
 #include "RbOptions.h"
 #include "TreeChangeEventListener.h"
 #include "Topology.h"
 #include "TopologyNode.h"
+#include "Tree.h"
 #include "TimeTree.h"
+
 
 using namespace RevBayesCore;
 
 /* Default constructor */
-RootedTripletDistribution::RootedTripletDistribution(void) : taxa(), species(), tripletDistribution(), numberOfTrees(0), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
+RootedTripletDistribution::RootedTripletDistribution(void) : ttrees( NULL ), bltrees( NULL ), taxa(), species(), tripletDistribution(), numberOfTrees(0), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
     
 }
 
-RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames ) : taxa(), species(spNames), tripletDistribution(), numberOfTrees(0), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
+
+RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames ) : ttrees(ts), bltrees( NULL ), taxa(), species(spNames), tripletDistribution(), numberOfTrees(ts.size()), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
     std::cout << "In constructor"<<std::endl;
-    extractTriplets(ts);
+    extractTriplets( );
 }
 
+
+RootedTripletDistribution::RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< std::string > spNames ) : ttrees( NULL ), bltrees(ts), taxa(), species(spNames), tripletDistribution(), numberOfTrees(ts.size()), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
+    std::cout << "In constructor"<<std::endl;
+    extractTriplets( );
+}
+
+
+RootedTripletDistribution::RootedTripletDistribution( const std::vector< std::string > spNames ): ttrees( NULL ), bltrees( NULL ), taxa(), species(spNames), tripletDistribution(), numberOfTrees(0), taxaSet(), speciesSet(), taxonToIndex(), speciesToIndex(), speciesOnly() {
+    std::cout << "In constructor"<<std::endl;
+}
 
 
 /* Copy constructor */
 RootedTripletDistribution::RootedTripletDistribution(const RootedTripletDistribution& t)  {
     
     std::cout << "HEHEHEHr" << std::endl;
+    ttrees = t.ttrees;
+    bltrees = t.bltrees;
     taxa = t.taxa;
     species = t.species;
     tripletDistribution = t.tripletDistribution;
@@ -64,6 +80,8 @@ RootedTripletDistribution::~RootedTripletDistribution(void) {
 RootedTripletDistribution& RootedTripletDistribution::operator=(const RootedTripletDistribution &t) {
     
     if (this != &t) {
+        ttrees = t.ttrees;
+        bltrees = t.bltrees;
         taxa = t.taxa;
         species = t.species;
         tripletDistribution = t.tripletDistribution;
@@ -101,7 +119,7 @@ void RootedTripletDistribution::executeMethod(const std::string &n, const std::v
 }
 
 
-void RootedTripletDistribution::extractTriplets( const TimeTree& t ) {
+void RootedTripletDistribution::extractTriplets( const Tree& t ) {
     if (!t.isRooted() ) {
         throw(RbException("Tree is not rooted: cannot get rooted triplets."));
     }
@@ -120,9 +138,17 @@ void RootedTripletDistribution::extractTriplets( const TimeTree& t ) {
 }
 
 
-void RootedTripletDistribution::extractTriplets( const std::vector<TimeTree>& ts ) {
-    for (size_t i = 0; i < ts.size(); ++i) {
-        extractTriplets( ts[i] ) ;
+void RootedTripletDistribution::extractTriplets(  ) {
+    if (ttrees.size() != 0 ) {
+        for (size_t i = 0; i < ttrees.size(); ++i) {
+            extractTriplets( ttrees[i] ) ;
+        }
+    }
+    else if (bltrees.size() != 0 ) {
+        for (size_t i = 0; i < bltrees.size(); ++i) {
+            extractTriplets( bltrees[i] ) ;
+        }
+
     }
 }
 
@@ -221,6 +247,22 @@ void RootedTripletDistribution::setTaxa ( std::vector< Taxon > t) {
     taxa = t;
     return;
 }
+
+
+void RootedTripletDistribution::setTrees( const std::vector< TimeTree >& ts ) {
+    
+    ttrees = ts;
+    bltrees.clear() ;
+                  
+}
+
+void RootedTripletDistribution::setTrees( const std::vector< BranchLengthTree >& ts ) {
+    
+    ttrees.clear() ;
+    bltrees = ts;
+    
+}
+
 
 std::vector< std::string > RootedTripletDistribution::getSpecies ( ) const {
     return species;
