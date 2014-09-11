@@ -11,8 +11,8 @@
 ################################################################################
 
 # Read in sequence data for both genes #
-data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
-data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+data_atpB <- readCharacterData("data/conifer_atpB.nex")
+data_rbcL <- readCharacterData("data/conifer_rbcL.nex")
 
 # Create concatenated data matrix
 data <- data_atpB + data_rbcL
@@ -37,12 +37,12 @@ sf ~ dnDirichlet(sf_prior)
 moves[2] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)
 
 # Instantaneous rate matrix (deterministic) P. 16 #
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 
 # Gamma-dist site rates P. 17 #
 shape_prior <- 0.05
 shape ~ dnExponential( shape_prior )
-gamma_rates := discretizeGamma( shape, shape, 4 )
+gamma_rates := fnDiscretizeGamma( shape, shape, 4 )
 moves[3] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 
 
