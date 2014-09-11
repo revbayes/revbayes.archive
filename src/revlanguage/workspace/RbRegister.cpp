@@ -613,27 +613,20 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		
 		
 		// branch-rate jump process
-        addDistribution( "dnDist_branchRateJumpProcess", new Dist_branchRateJumpProcess() );
-        addDistribution( "branchRateJumpProcess",   new Dist_branchRateJumpProcess() );
+        addDistribution( "dnBranchRateJumpProcess", new Dist_branchRateJumpProcess() );
         
         // white noise process
         addDistribution( "dnWhiteNoise",    new Dist_whiteNoise() );
-        addDistribution( "whiteNoise",      new Dist_whiteNoise() );
-        addDistribution( "whitenoise",      new Dist_whiteNoise() );
         
         /* trait evolution (in folder "distributions/evolution/branchrate") */
 
         // brownian motion
         addDistribution( "dnBrownian",              new Dist_brownian() );
-        addDistribution( "brownian",                new Dist_brownian() );
-        addDistribution( "Brownian",                new Dist_brownian() );
-        addDistribution( "ornsteinUhlenbeck",       new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
         
         // multivariate brownian motion
-        addDistribution( "dnmvtBrownian",  new Dist_mvtBrownian() );
-        addDistribution( "mvtBrownian",    new Dist_mvtBrownian() );
+        addDistribution( "dnBrownianMultiVariate",  new Dist_mvtBrownian() );
   
         /* Character state evolution processes (in folder "distributions/evolution/character") */
         
