@@ -122,7 +122,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, branchRates=clockRate, type="DNA")
+seq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)
