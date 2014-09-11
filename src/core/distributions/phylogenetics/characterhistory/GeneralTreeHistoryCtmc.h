@@ -16,7 +16,6 @@
 #include "RateMap.h"
 #include "RbConstants.h"
 #include "RbVector.h"
-#include "StandardState.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "TreeChangeEventListener.h"
@@ -145,7 +144,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>* RevBayesCore::GeneralT
 template<class charType, class treeType>
 unsigned* RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeCounts(const std::vector<CharacterEvent*>& s)
 {
-    unsigned counts[this->numChars];
+    unsigned counts[ this->numChars ];
     for (size_t i = 0; i < s.size(); i++)
         counts[i] = 0;
     for (size_t i = 0; i < s.size(); i++)
@@ -245,7 +244,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeValue( 
             TopologyNode* node = nodes[i];
             if (node->isTip())
             {
-                DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData( node->getName() ) );
+                DiscreteTaxonData<charType>& d = static_cast< DiscreteTaxonData<charType>& >( this->value->getTaxonData( node->getName() ) );
                 
                 std::vector<CharacterEvent*> tipState;
                 for (size_t j = 0; j < d.size(); j++)
@@ -335,9 +334,9 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathEnd(con
     {
         TransitionProbabilityMatrix leftTpMatrix(this->numChars);
         TransitionProbabilityMatrix rightTpMatrix(this->numChars);
-        TransitionProbabilityMatrix ancTpMatrix(this->numChars);
+//        TransitionProbabilityMatrix ancTpMatrix(this->numChars);
         
-        const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
+        const RateMap& rm = homogeneousRateMap->getValue();
         
         // for sampling probs
         const std::vector<CharacterEvent*>& leftChildState  = this->histories[node.getChild(0).getIndex()]->getChildCharacters();
@@ -349,27 +348,31 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathEnd(con
         {
             rm.calculateTransitionProbabilities(node.getChild(0), leftTpMatrix, *it);
             rm.calculateTransitionProbabilities(node.getChild(1), rightTpMatrix, *it);
-            rm.calculateTransitionProbabilities(node, ancTpMatrix, *it);
             
             unsigned int desS1 = leftChildState[*it]->getState();
             unsigned int desS2 = rightChildState[*it]->getState();
-            unsigned int ancS = (unsigned)(GLOBAL_RNG->uniform01() * 2);
             
-            double u = GLOBAL_RNG->uniform01();
-            double g0 = leftTpMatrix[0][desS1] * rightTpMatrix[0][desS2] * ancTpMatrix[ancS][0]; // mul by ancTpMatrix[uar][s] to enforce epochs
-            double g1 = leftTpMatrix[1][desS1] * rightTpMatrix[1][desS2] * ancTpMatrix[ancS][1];
+            std::vector<double> g(this->numChars, 0.0);
+            double gSum = 0.0;
+            for (size_t i = 0; i < this->numChars; i++)
+            {
+                g[i] = leftTpMatrix[i][desS1] * rightTpMatrix[i][desS2];
+                gSum += g[i];
+            }
             
-            //            std::cout << desS1 << " " << desS2 << " " << ancS << " " << g0 << " " << g1 << "\n";
+            double u = GLOBAL_RNG->uniform01() * gSum;
             unsigned int s = 0;
-            if (u < g1 / (g0 + g1) && rm.isAreaAvailable(*it, node.getAge()))
-                s = 1;
-            
-            //            std::cout << s;
+            for (size_t i = 0; i < this->numChars; i++)
+            {
+                u -= g[i];
+                if (u <= 0.0)
+                {
+                    s = i;
+                    break;
+                }
+            }
             
             nodeChildState[*it]->setState(s);
-            
-            
-            ;
         }
     }
     return true;
@@ -383,20 +386,36 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
     if (node.isRoot())
         return true;
     
-
-    
-//    PathUniformizationSampleProposal<charType,treeType> p(this->getStochasticNode(), const_cast<TypedDagNode<treeType>* >(this->tau), const_cast<TypedDagNode<RateMatrix>* >(homogeneousRateMap), 1.0);
-
-    
-// trying to use proposal to sample initial paths...
-    
 //    PathRejectionSampleProposal<charType,treeType> p(   this->getStochasticNode(),
-//                                                        const_cast<StochasticNode<treeType>* >(this->tau),
-//                                                        const_cast<TypedDagNode<RateMap>* >( static_cast<DeterministicNode<RateMap> >(homogeneousRateMap)), 1.0);
-//    p.assignNode(const_cast<TopologyNode*>(&node));
-//    p.assignSiteIndexSet(indexSet);
-//    p.doProposal();
+//                                                        const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
+//                                                        const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+//                                                        1.0);
+    
+    ConstantNode<RateMatrix>* q_sample = new ConstantNode<RateMatrix*>("q_sample", new RateMatrix_Blosum62());
+    PathRejectionSampleProposal<charType,treeType> p(   this->getStochasticNode(),
+                                                     const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
+                                                     const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+                                                     1.0);
 
+    
+    p.assignNode(const_cast<TopologyNode*>(&node));
+    p.assignSiteIndexSet(indexSet);
+    
+    
+    BranchHistory* bh = this->histories[ node.getIndex() ];
+    
+    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
+    bh->print();
+    
+    p.prepareProposal();
+    p.doProposal();
+    p.cleanProposal();
+
+    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
+    bh->print();
+    
+    return true;
+    
     /*
      
     // get model parameters
@@ -478,8 +497,6 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
     
     bh->updateHistory(history,indexSet);
     */
-    
-    return true;
     
 }
 

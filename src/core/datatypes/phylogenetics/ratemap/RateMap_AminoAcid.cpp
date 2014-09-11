@@ -7,6 +7,7 @@
 //
 
 #include "RateMap_AminoAcid.h"
+#include "RateMatrix_Blosum62.h"
 #include <cmath>
 
 using namespace RevBayesCore;
@@ -14,6 +15,7 @@ using namespace RevBayesCore;
 RateMap_AminoAcid::RateMap_AminoAcid(size_t nc) : RateMap(2, nc)
 {
     homogeneousClockRate = 1.0;
+    homogeneousRateMatrix = new RateMatrix_Blosum62();
     rootFrequencies = std::vector<double>(20,0.05);
 
     useRootFrequencies = true;
@@ -184,7 +186,11 @@ double RateMap_AminoAcid::getSumOfRates(const TopologyNode& node, std::vector<Ch
 double RateMap_AminoAcid::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
 {
     
-    unsigned counts[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+    unsigned counts[20] = { 0,0,0,0,0,
+                            0,0,0,0,0,
+                            0,0,0,0,0,
+                            0,0,0,0,0  };
+    
     for (size_t i = 0; i < from.size(); i++)
         counts[ from[i]->getState() ] += 1;
     
