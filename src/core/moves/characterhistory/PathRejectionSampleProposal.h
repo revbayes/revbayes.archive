@@ -325,7 +325,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     {
         branchLength = node->getAge() * 5;
     }
-    else
+    else if (node->isRoot())
         return 0.0;
     
     const RateMap& rm = qmap->getValue();

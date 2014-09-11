@@ -291,7 +291,7 @@ bool TestPathSampling::run_aa( void )
     
     std::string filepath="/Users/mlandis/data/bayarea/output/";
     std::string fn = "";
-    fn = "16tip_100areas.nex";
+    fn = "16tip_10aa.nex";
     
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
@@ -326,6 +326,7 @@ bool TestPathSampling::run_aa( void )
     
     // assign tips and sample histories
     charactermodel->clamp( data[0] );
+    
     charactermodel->redraw();
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";

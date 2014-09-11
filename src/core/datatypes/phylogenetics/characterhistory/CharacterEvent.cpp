@@ -9,6 +9,7 @@
 
 #include "CharacterEvent.h"
 #include <iostream>
+#include <sstream>
 
 using namespace RevBayesCore;
 
@@ -56,6 +57,14 @@ size_t CharacterEvent::getIndex(void)
 unsigned int CharacterEvent::getState(void)
 {
     return state;
+}
+
+std::string CharacterEvent::getStateStr(void)
+{
+    std::stringstream ss;
+    // want to do this based on DiscreteDataType...
+    ss << (char)(70+state);
+    return ss.str();
 }
 
 void CharacterEvent::setState(unsigned int s)
