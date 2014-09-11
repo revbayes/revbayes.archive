@@ -44,12 +44,12 @@ for (i in 1:n_parts){
   pi[i] ~ dnDirichlet(pi_prior[i])
   moves[mi++] <- mvSimplexElementScale(pi[i], alpha=10, tune=true, weight=2) 
 
-  Q[i] := gtr(er[i],pi[i]) 
+  Q[i] := fnGTR(er[i],pi[i]) 
 
   alpha_prior_min[i] <- 0.1
   alpha_prior_max[i] <- 50.0
   alpha[i] ~ dnUnif( alpha_prior_min[i], alpha_prior_max[i] )
-  norm_gamma_rates[i] := discretizeGamma( alpha[i], alpha[i], 4, false )
+  norm_gamma_rates[i] := fnDiscretizeGamma( alpha[i], alpha[i], 4, false )
   moves[mi++] <- mvScale(alpha[i], lambda=0.8, tune=true, weight=3.0)
 
   # specify a rate multiplier for each partition
@@ -73,7 +73,7 @@ for (i in 1:n_parts){
 ##############
 
 # Specify a uniform topology prior
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology, weight=10.0)
@@ -103,7 +103,7 @@ phylogeny := treeAssembly(topology, br_lens)
 
 
 for (i in 1:n_parts) {
-  phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], branchRates=part_rate_mult[i], siteRates=norm_gamma_rates[i], type="DNA")
+  phyloSeq[i] ~ dnPhyloCTMC(tree=phylogeny, Q=Q[i], branchRates=part_rate_mult[i], siteRates=norm_gamma_rates[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 

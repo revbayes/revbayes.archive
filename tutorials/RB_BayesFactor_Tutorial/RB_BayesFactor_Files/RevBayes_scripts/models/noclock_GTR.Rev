@@ -55,7 +55,7 @@ moves[mi++] <- mvSimplexElementScale(pi)
 
 
 #### create a deterministic variable for the rate matrix ####
-Q := gtr(er,pi) 
+Q := fnGTR(er,pi) 
 
 
 
@@ -66,7 +66,7 @@ Q := gtr(er,pi)
 ##############
 
 #### Specify a uniform prior on the tree topology #### 
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology)
@@ -107,7 +107,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ phyloCTMC(tree=phylogeny, Q=Q, branchRates=clockRate, type="DNA")
+seq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)

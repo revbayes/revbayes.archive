@@ -11,8 +11,8 @@
 ################################################################################
 
 # Read in sequence data for both genes #
-data[1] <- readCharacterData("data/conifer_atpB.nex")[1]
-data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+data[1] <- readCharacterData("data/conifer_atpB.nex")
+data_rbcL <- readCharacterData("data/conifer_rbcL.nex")
 
 # Specify the partition for 1st codon position
 data[2] <- data_rbcL
@@ -56,12 +56,12 @@ for (i in 1:n_parts){
   moves[mi++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
 
   # Instantaneous rate matrix (deterministic) #
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
   # Gamma-dist site rates #
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4 )
+  gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4 )
   moves[mi++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
 }
 

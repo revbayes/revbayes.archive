@@ -16,7 +16,7 @@ source("RevBayes_scripts/genecodon_partition_model.Rev")
 # Set up file and screen monitors #
 monitors[1] <- mnModel(filename="output/conifer_genecodon.log",printgen=10)
 monitors[2] <- mnFile(filename="output/conifer_genecodon.trees",printgen=10, phylogeny)
-monitors[3] <- mnScreen(printgen=10, separator = " | ", shape[1], shape[2], shape[3], shape[4], tree_length)
+monitors[3] <- mnScreen(printgen=10, shape[1], shape[2], shape[3], shape[4], tree_length)
 
 # Instantiate the MCMC analysis #
 mymcmc <- mcmc(mymodel, monitors, moves)
