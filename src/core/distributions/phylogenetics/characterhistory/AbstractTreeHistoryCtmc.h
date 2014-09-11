@@ -11,6 +11,7 @@
 
 #include "AbstractCharacterData.h"
 #include "BranchHistory.h"
+#include "ContinuousCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
