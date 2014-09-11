@@ -502,12 +502,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
         addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
 
-        // Nonstandard constructor names (for backward compatibility)
-        addTypeWithConstructor("extNewickmonitor", new Mntr_ExtendedNewickFile());
-        addTypeWithConstructor("filemonitor",      new Mntr_File());
-        addTypeWithConstructor("modelmonitor",     new Mntr_Model());
-        addTypeWithConstructor("screenmonitor",    new Mntr_Screen());
-        
         
         ///////////////////////////////////////////////////////////////////////////////////
         /* Add moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
@@ -522,28 +516,15 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		
 		// compound moves on real values
         addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
-        
-        // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mScale",                new Move_Scale() );
-        addTypeWithConstructor("mSlide",                new Move_Slide() );
-        addTypeWithConstructor("mSlice",                new Move_SliceSampling() );
-        
+                
         /* Moves on integer values */
         addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
         addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
 
-        addTypeWithConstructor("mRandomIntegerWalk",    new Move_RandomIntegerWalk() );
-        addTypeWithConstructor("mRandomGeometricWalk",  new Move_RandomGeometricWalk() );
-
 
         /* Moves on simplices */
         addTypeWithConstructor("mvSimplex",             new Move_Simplex() );
-        addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );
-
-        // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mSimplex",              new Move_Simplex() );
-        addTypeWithConstructor("mSimplexElementScale",  new Move_SimplexSingleElementScale() );
-        
+        addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );        
 
         /* Moves on vectors of real values */
         addTypeWithConstructor("mvRlcRateScale",                new Move_RLCRateScale() );
@@ -577,15 +558,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_RbMixtureAllocation<RateMatrix>( ) );
 
-        // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mRlcRateScale",                 new Move_RLCRateScale() );
-        addTypeWithConstructor("mSingleElementScale",           new Move_SingleElementScale() );
-        addTypeWithConstructor("mSwitchRateJump",               new Move_SwitchRateJump() );
-        addTypeWithConstructor("mVectorScale",                  new Move_VectorScale() );
-        addTypeWithConstructor("mVectorSingleElementScale",     new Move_VectorSingleElementScale() );
-        addTypeWithConstructor("mVectorSingleElementSliding",   new Move_VectorSingleElementSlide() );
-
-        
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
         addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
@@ -620,18 +592,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
         addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
 
-        // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
-        addTypeWithConstructor("mNarrow",               new Move_NarrowExchange() );
-        addTypeWithConstructor("mNNI",                  new Move_NNIClock() );
-        addTypeWithConstructor("mNNI",                  new Move_NNINonclock() );
-        addTypeWithConstructor("mNodeTimeSlideUniform", new Move_NodeTimeSlideUniform() );
-        addTypeWithConstructor("mRateAgeBetaShift",     new Move_RateAgeBetaShift() );
-        addTypeWithConstructor("mRootTimeSlide",        new Move_RootTimeSlide() );
-        addTypeWithConstructor("mSubtreeScale",         new Move_SubtreeScale() );
-        addTypeWithConstructor("mTreeScale",            new Move_TreeScale() );
-        
-        
         /* Add math types (in folder "datatypes/math") */
         addType( new RateMap()              );
         addType( new RateMatrix()           );
@@ -649,9 +609,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // autocorrelated log-normal branch rates relaxed clock model
         addDistribution( "dnAutocorrrelatedLNBranchRates", new Dist_autocorrelatedLnBranchRates() );
-        addDistribution( "autocorrrelatedLNBranchRates", new Dist_autocorrelatedLnBranchRates() );
         addDistribution( "dnACLN", new Dist_autocorrelatedLnBranchRates() );
-        addDistribution( "ACLN", new Dist_autocorrelatedLnBranchRates() );
 		
 		
 		// branch-rate jump process
@@ -684,143 +642,104 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
-        addDistribution( "phyloCTMC",   new Dist_phyloCTMC<TimeTree>() );
-        addDistribution( "phyloCTMC",   new Dist_phyloCTMC<BranchLengthTree>() );
-        addDistribution( "phyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
-        addDistribution( "phyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
-        addDistribution( "substModel",  new Dist_phyloCTMC<TimeTree>() );
-        addDistribution( "substModel",  new Dist_phyloCTMC<BranchLengthTree>() );
-        
-        
-        // data augmented CTMC
-//        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
-
-        
+                
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
         addDistribution( "dnBDP"                        , new Dist_bdp() );
-        addDistribution( "bdp"                          , new Dist_bdp() );
-        addDistribution( "cBDP"                         , new Dist_bdp() );
-        addDistribution( "BirthDeathConstant"           , new Dist_bdp() );
-        addDistribution( "BDConst"                      , new Dist_bdp() );
+        addDistribution( "dnBDPConst"                   , new Dist_bdp() );
+        addDistribution( "dnBirthDeathConstant"         , new Dist_bdp() );
         
         // constant rate birth-death process with serially sampled tips
-        addDistribution( "dnSerialBDP"                  , new Dist_serialBDP() );
-        addDistribution( "serialBDP"                    , new Dist_serialBDP() );
-        addDistribution( "BirthDeathConstantSerial"     , new Dist_serialBDP() );
-        addDistribution( "BDConstSS"                    , new Dist_serialBDP() );
+        addDistribution( "dnBDPSerial"                  , new Dist_serialBDP() );
+        addDistribution( "dnBDPConstSerial"             , new Dist_serialBDP() );
+        addDistribution( "dnBirthDeathConstantSerial"   , new Dist_serialBDP() );
 
         // piecewise constant rate birth-death process with serially sampled tips
-        addDistribution( "dnSkySerialBDP"               , new Dist_skySerialBDP() );
-        addDistribution( "skySerialBDP"                 , new Dist_skySerialBDP() );
-        addDistribution( "BirthDeathSkySerial"          , new Dist_skySerialBDP() );
-        addDistribution( "BDSkySS"                      , new Dist_skySerialBDP() );
+        addDistribution( "dnBDPSkySerial"               , new Dist_skySerialBDP() );
+        addDistribution( "dnBirthDeathSkySerial"        , new Dist_skySerialBDP() );
 
         // piecewise constant rate fossilized birth-death process with serially sampled fossils
-        addDistribution( "dnSkyFossilBDP"               , new Dist_skyFossilBDP() );
-        addDistribution( "skyFossilBDP"                 , new Dist_skyFossilBDP() );
-        addDistribution( "FossilizedBirthDeath"         , new Dist_skyFossilBDP() );
-        addDistribution( "FBD"                          , new Dist_skyFossilBDP() );
+        addDistribution( "dnBDPSkyFossil"               , new Dist_skyFossilBDP() );
+        addDistribution( "dnBirthDeathSkyFossilized"    , new Dist_skyFossilBDP() );
 
-        // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "dnDivDepYuleProcess"          , new Dist_divDepYuleProcess() );
-        addDistribution( "dnDivDepPBP"                  , new Dist_divDepYuleProcess() );
-        addDistribution( "divDepPBP"                    , new Dist_divDepYuleProcess() );
-        addDistribution( "divDepYuleProcess"            , new Dist_divDepYuleProcess() );
-        addDistribution( "diversityDependentPureBirthProcess", new Dist_divDepYuleProcess() );
-        addDistribution( "PureBirthDiversityDependent"  , new Dist_divDepYuleProcess() );
-        addDistribution( "PBDD"                         , new Dist_divDepYuleProcess() );
+        // diversity-dependent pure-birth process
+        addDistribution( "dnYuleDivDep"                 , new Dist_divDepYuleProcess() );
+        addDistribution( "dnPBPDivDep"                  , new Dist_divDepYuleProcess() );
+        addDistribution( "dnPureBirthDiversityDependent", new Dist_divDepYuleProcess() );
+        addDistribution( "dnYuleDiversityDependent"     , new Dist_divDepYuleProcess() );
         
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "dnConstPopMultispCoal"        , new Dist_constPopMultispCoal() );
-        addDistribution( "MultispCoal"                  , new Dist_constPopMultispCoal() );
-        addDistribution( "MultispeciesCoalescentConstantPopulationProcess", new Dist_constPopMultispCoal() );
+        addDistribution( "dnCoalMultiSpeciesConst"      , new Dist_constPopMultispCoal() );
+        addDistribution( "dnCoalMSConst"                , new Dist_constPopMultispCoal() );
 
         // uniform time tree distribution
         addDistribution( "dnUniformTimeTree"            , new Dist_uniformTimeTree() );
-        addDistribution( "uniformTimeTree"              , new Dist_uniformTimeTree() );
         
         // uniform topology distribution
         addDistribution( "dnUniformTopology"            , new Dist_uniformTopology() );
-        addDistribution( "uniformTopology"              , new Dist_uniformTopology() );
         
         
         /* Statistical distributions on simple variables (in folder "distributions/math") */
         
         // bernoulli distribution
         addDistribution( "dnBernoulli",     new Dist_bernoulli() );
-        addDistribution( "bernoulli",       new Dist_bernoulli() );
 
         // binomial distribution
         addDistribution( "dnBinomial",     new Dist_binomial() );
-        addDistribution( "binomial",       new Dist_binomial() );
         
         // beta distribution
         addDistribution( "dnBeta",          new Dist_beta() );
-        addDistribution( "beta",            new Dist_beta() );
         
         // bimodal normal distribution
-        addDistribution( "dnBimodalnorm",   new Dist_bimodalNorm() );
-        addDistribution( "bimodalNorm",     new Dist_bimodalNorm() );
-        addDistribution( "bnorm",           new Dist_bimodalNorm() );
+        addDistribution( "dnBimodalNorm",   new Dist_bimodalNorm() );
         
         // bimodal lognormal distribution
         addDistribution( "dnBimodalLnorm",  new Dist_bimodalLnorm() );
-        addDistribution( "bimodalLnorm",    new Dist_bimodalLnorm() );
-        addDistribution( "blnorm",          new Dist_bimodalLnorm() );
         
         // dirichlet distribution
         addDistribution( "dnDirichlet",     new Dist_dirichlet() );
-        addDistribution( "dirichlet",       new Dist_dirichlet() );
 		
         // gamma distribution
         addDistribution( "dnGamma",         new Dist_gamma() );
-        addDistribution( "gamma",           new Dist_gamma() );
         
         // geometric distribution
         addDistribution( "dnGeom",          new Dist_geom() );
-        addDistribution( "geom",            new Dist_geom() );
         
         // poisson distribution
         addDistribution( "dnPoisson",       new Dist_poisson() );
         addDistribution( "poisson",         new Dist_poisson() );
         
         // exponential distribution
+        addDistribution( "dnExp",           new Dist_exponential() );
+        addDistribution( "dnExp",           new Dist_offsetExponential() );
         addDistribution( "dnExponential",   new Dist_exponential() );
         addDistribution( "dnExponential",   new Dist_offsetExponential() );
-        addDistribution( "exponential",     new Dist_exponential() );
-        addDistribution( "exponential",     new Dist_offsetExponential() );
         
         // lognormal distribution
         addDistribution( "dnLnorm",         new Dist_lnorm() );
         addDistribution( "dnLnorm",         new Dist_offsetLnorm() );
-        addDistribution( "lnorm",           new Dist_lnorm() );
-        addDistribution( "lnorm",           new Dist_offsetLnorm() );
+        addDistribution( "dnLognormal",     new Dist_lnorm() );
+        addDistribution( "dnLognormal",     new Dist_offsetLnorm() );
         
         // normal distribution
         addDistribution( "dnNorm",          new Dist_norm() );
-        addDistribution( "norm",            new Dist_norm() );
+        addDistribution( "dnNormal",        new Dist_norm() );
         
-        // 1/x distribution
-        addDistribution( "dnOneOverX",      new Dist_oneOverX() );
-        addDistribution( "oneOverX",        new Dist_oneOverX() );
-        
+        // LogUniform distribution   
         addDistribution( "dnLogUniform",    new Dist_oneOverX() );
         
         // uniform distribution
         addDistribution( "dnUnif",          new Dist_unif() );
         addDistribution( "dnUnif",          new Dist_positiveUnif() );
-        addDistribution( "unif",            new Dist_unif() );
-        addDistribution( "unif",            new Dist_positiveUnif() );
+        addDistribution( "dnUniform",       new Dist_unif() );
+        addDistribution( "dnUniform",       new Dist_positiveUnif() );
         
         // Wishart distribution
         addDistribution( "dnWishart",       new Dist_wishart() );
-        addDistribution( "wishart",         new Dist_wishart() );
         
         // inverse Wishart distribution
         addDistribution( "dnInvWishart",       new Dist_inverseWishart() );
-        addDistribution( "invWishart",         new Dist_inverseWishart() );
         
         
         /* Mixture distributions (in folder "distributions/mixture") */
@@ -832,13 +751,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnDPP",           new Dist_dpp<Integer>() );
 		addDistribution( "dnDPP",           new Dist_dpp<Probability>() );
         addDistribution( "dnDPP",           new Dist_dpp<Simplex>() );
-        addDistribution( "dpp",             new Dist_dpp<Real>() );
-		addDistribution( "dpp",             new Dist_dpp<RealPos>() );
-		addDistribution( "dpp",             new Dist_dpp<Natural>() );
-		addDistribution( "dpp",             new Dist_dpp<Integer>() );
-		addDistribution( "dpp",             new Dist_dpp<Probability>() );
-        addDistribution( "dpp",             new Dist_dpp<Simplex>() );
-        
+
         // mixture distribution
         addDistribution( "dnMixture",       new Dist_mixture<Real>() );
 		addDistribution( "dnMixture",       new Dist_mixture<RealPos>() );
@@ -846,17 +759,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
 		addDistribution( "dnMixture",       new Dist_rlmixture<RateMatrix>() );
-        addDistribution( "mixture",			new Dist_mixture<Real>() );
-		addDistribution( "mixture",         new Dist_mixture<RealPos>() );
-		addDistribution( "mixture",         new Dist_mixture<Natural>() );
-		addDistribution( "mixture",         new Dist_mixture<Integer>() );
-		addDistribution( "mixture",         new Dist_mixture<Probability>() );
-		addDistribution( "mixture",         new Dist_rlmixture<RateMatrix>() );
-
-        // TAH: these don't seem to work with the moves, probably need to figure this out
-		//addDistribution( "dpp",				new Dist_dpp<Topology>() );
-		//addDistribution( "dpp",				new Dist_dpp<Simplex>() );
-		//addDistribution( "dpp",				new Dist_dpp< ModelVector<RealPos> >() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -937,39 +839,22 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "expbranchtree",               new Func_expBranchTree()            );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
-        addFunction( "blosum62", new Func_blosum62());
-        addFunction( "cpRev",    new Func_cpRev()   );
-        addFunction( "dayhoff",  new Func_dayhoff() );
-        addFunction( "f81",      new Func_f81()     );
-        addFunction( "gtr",      new Func_gtr()     );
-        addFunction( "hky",      new Func_hky()     );
-        addFunction( "t92",      new Func_t92()     );
-        addFunction( "jc",       new Func_jc()      );
-        addFunction( "jones",    new Func_jones()   );
-        addFunction( "mtMam",    new Func_mtMam()   );
-        addFunction( "mtRev",    new Func_mtRev()   );
-        addFunction( "pomo",     new Func_pomo()   );
-        addFunction( "rtRev",    new Func_rtRev()   );
-        addFunction( "vt",       new Func_vt()      );
-        addFunction( "wag",      new Func_wag()     );
-        
-        // nonstandard names (for backwards compatibility)
-        addFunction( "Blosum62", new Func_blosum62());
-        addFunction( "CpRev",    new Func_cpRev()   );
-        addFunction( "Dayhoff",  new Func_dayhoff() );
-        addFunction( "F81",      new Func_f81()     );
-        addFunction( "HKY",      new Func_hky()     );
-        addFunction( "JC",       new Func_jc()      );
-        addFunction( "Jones",    new Func_jones()   );
-        addFunction( "MtMam",    new Func_mtMam()   );
-        addFunction( "MtRev",    new Func_mtRev()   );
-        addFunction( "RtRev",    new Func_rtRev()   );
-        addFunction( "VT",       new Func_vt()      );
-        addFunction( "WAG",      new Func_wag()     );
+        addFunction( "fnBlosum62", new Func_blosum62());
+        addFunction( "fnCpRev",    new Func_cpRev()   );
+        addFunction( "fnDayhoff",  new Func_dayhoff() );
+        addFunction( "fnF81",      new Func_f81()     );
+        addFunction( "fnGTR",      new Func_gtr()     );
+        addFunction( "fnHKY",      new Func_hky()     );
+        addFunction( "fnJC",       new Func_jc()      );
+        addFunction( "fnJones",    new Func_jones()   );
+        addFunction( "fnMtMam",    new Func_mtMam()   );
+        addFunction( "fnMtRev",    new Func_mtRev()   );
+        addFunction( "fnPomo",     new Func_pomo()    );
+        addFunction( "fnRtRev",    new Func_rtRev()   );
+        addFunction( "fnVT",       new Func_vt()      );
+        addFunction( "fnWAG",      new Func_wag()     );
         
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
-        addFunction( "biogeoDE",   new Func_biogeo_de() );
-        addFunction( "biogeoGRM",  new Func_biogeo_grm() );
         addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
         addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
 
@@ -1155,21 +1040,21 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addFunction( "mean",        new Func_mean()  );
         
         // min function
-		addFunction( "min",        new Func_min()  );
+		addFunction( "min",         new Func_min()  );
 
         // normalize vector function
-		addFunction( "normalize", new Func_normalize()  );
+		addFunction( "normalize",   new Func_normalize()  );
 
 		// power function
-        addFunction( "power",     new Func_power() );
-        addFunction( "power",     new Func_powerVector() );
+        addFunction( "power",       new Func_power() );
+        addFunction( "power",       new Func_powerVector() );
 
         // powermix function (TODO: remove when user functions work)
-        addFunction( "powermix",  new Func_powermix() );
+        addFunction( "powermix",    new Func_powermix() );
         
 		// round function
-        addFunction( "round",     new Func_round<Real,Integer>()  );
-        addFunction( "round",     new Func_round<RealPos,Natural>()  );
+        addFunction( "round",       new Func_round<Real,Integer>()  );
+        addFunction( "round",       new Func_round<RealPos,Natural>()  );
 		
         // simplex constructor function (from RealPos ellipsis argument values)
         addFunction( "simplex",   new Func_simplex()                  );
@@ -1191,23 +1076,23 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
  		/* Statistics functions (in folder "functions/statistics") */
 		
 		// some helper statistics for the DPP distribution
-        addFunction("dppConcFromMean",  new Func_dppConcFromMean( )     );
-        addFunction("dppMeanFromConc",  new Func_dppMeanFromConc( )  );
+        addFunction("fnDPPConcFromMean",  new Func_dppConcFromMean( )     );
+        addFunction("fnDPPMeanFromConc",  new Func_dppMeanFromConc( )  );
 		
 		// count the number of unique elements in vector
-        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Real>( )  );
-        addFunction("numUniqueInVector",  new Func_numUniqueInVector<RealPos>( )  );
-        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
-        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
-        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
-        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Simplex>( )  );
+        addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Real>( )  );
+        addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<RealPos>( )  );
+        addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
+        addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
+        addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
+        addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Simplex>( )  );
 
         // return a distcretized (by quantile) and normalized vector from a continuous distribution
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<RealPos>()    );
         
         // return a discretized gamma distribution (for gamma-dist rates)
-        addFunction( "discretizeGamma",             new Func_discretizeGamma( )   );
+        addFunction( "fnDiscretizeGamma",             new Func_discretizeGamma( )   );
 
         
         ///////////////////////////////////////////////////////////////////////////
@@ -1229,10 +1114,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("rbeta", new DistributionFunctionRv<Probability>( new Dist_beta() ) );
         
         // exponential distribution
-        addFunction("dexponential", new DistributionFunctionPdf<RealPos>( new Dist_exponential() ) );
-        addFunction("pexponential", new DistributionFunctionCdf( new Dist_exponential() ) );
-        addFunction("qexponential", new DistributionFunctionQuantile( new Dist_exponential() ) );
-        addFunction("rexponential", new DistributionFunctionRv<RealPos>( new Dist_exponential() ) );
+        addFunction("dexp", new DistributionFunctionPdf<RealPos>( new Dist_exponential() ) );
+        addFunction("pexp", new DistributionFunctionCdf( new Dist_exponential() ) );
+        addFunction("qexp", new DistributionFunctionQuantile( new Dist_exponential() ) );
+        addFunction("rexp", new DistributionFunctionRv<RealPos>( new Dist_exponential() ) );
         
         // gamma distribution
         addFunction("dgamma", new DistributionFunctionPdf<RealPos>( new Dist_gamma() ) );
