@@ -102,7 +102,7 @@ tree_height ~ unif(0.0,10.0)
 tree_height.setValue(trueRootAge)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 speciesTree.setValue(trueSpeciesTree)
 speciesTree.rescale(0.0000001)
 
@@ -160,6 +160,6 @@ p_inv.setValue(0.000001)
 
 # To link all the parts of the model together we use the phyloCTMC object.
 
-aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Pomo")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Pomo")
 
 aln.clamp(pomo_concatenate)

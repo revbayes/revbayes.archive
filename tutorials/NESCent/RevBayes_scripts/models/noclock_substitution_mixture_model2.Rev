@@ -57,7 +57,7 @@ Q ~ dnMixture( vals, subst_model_prior)
 moves[mi++] <- mvMixtureAllocation(mixtureIndex,weight=1.0)
 
 #### Specify a uniform prior on the tree topology #### 
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology, weight=10.0)
@@ -80,16 +80,16 @@ phylogeny := treeAssembly(topology, br_lens)
 
 
 # the sequence evolution model
-phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, nSites=n_sites, type="DNA")
+phyloSeq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, nSites=n_sites, type="DNA")
 
 # attach the data
 phyloSeq.clamp(data)
 
 mymodel <- model(sf)
 
-monitors[1] <- modelmonitor(filename="output/substition_mixture.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="output/substitution_mixture.trees",printgen=10, separator = "	", phylogeny)
-monitors[3] <- screenmonitor(printgen=10, tree_length, mixtureIndex)
+monitors[1] <- mnModel(filename="output/substition_mixture.log",printgen=10, separator = "	")
+monitors[2] <- mnFile(filename="output/substitution_mixture.trees",printgen=10, separator = "	", phylogeny)
+monitors[3] <- mnScreen(printgen=10, tree_length, mixtureIndex)
 
 mymodel <- model(Q)
  

@@ -54,7 +54,7 @@ moves[mi++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 
 
 #### Specify a uniform prior on the tree topology #### 
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology, weight=10.0)
@@ -77,7 +77,7 @@ phylogeny := treeAssembly(topology, br_lens)
 
 
 # the sequence evolution model
-phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, nSites=n_sites, type="DNA")
+phyloSeq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, nSites=n_sites, type="DNA")
 
 # attach the data
 phyloSeq.clamp(data)

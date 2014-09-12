@@ -19,9 +19,9 @@ source("RevBayes_scripts/m_BD_bears.Rev")
 mymodel <- model(diversification)
 
 ### set up the monitors that will output parameter values to file and screen 
-monitors[1] <- filemonitor(filename="output/BD_mcmc_bears.log",printgen=10,
+monitors[1] <- mnFile(filename="output/BD_mcmc_bears.log",printgen=10,
 						   diversification, birth_rate, turnover, death_rate)
-monitors[2] <- screenmonitor(printgen=1000, turnover)
+monitors[2] <- mnScreen(printgen=1000, turnover)
 
 ### workspace mcmc ###
 mymcmc <- mcmc(mymodel, monitors, moves)

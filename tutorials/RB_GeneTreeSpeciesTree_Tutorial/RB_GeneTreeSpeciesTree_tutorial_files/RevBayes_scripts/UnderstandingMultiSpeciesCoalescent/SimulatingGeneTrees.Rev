@@ -39,7 +39,7 @@ tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.8)
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
 
 ###########################################
 # Gene-Tree multispecies coalescent model #
@@ -70,7 +70,7 @@ for (i in 1:n_genes) {
 	# instead of a single value,
 	# allowing 1 parameter per branch of the species tree, the same
 	# line would work.
-	geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=
+	geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=
 Ne, taxa=taxa)
 }
 

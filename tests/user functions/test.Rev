@@ -1,3 +1,0 @@
-# testing the simple function definition
-source("user functions/funcdeftest.Rev")
-clear()
