@@ -85,7 +85,7 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
                 (*theRateMatrix)[i][j] = lambda;
             } else if (j == i-1) {
                 (*theRateMatrix)[i][j] = delta;
-            } else if (j == 2*i) {
+            } else if (j == ((2*i)+1)) {
                 (*theRateMatrix)[i][j] = rho;
             } else {
                 (*theRateMatrix)[i][j] = 0.0;
