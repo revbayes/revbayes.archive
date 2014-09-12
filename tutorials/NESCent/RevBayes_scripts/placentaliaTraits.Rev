@@ -24,11 +24,11 @@ Sigma ~ invWishart(dim=nTraits, kappa=kappa, df=df)
 
 # multivariate Brownian process along the tree
 # parameterized by sigma
-X ~ mvtBrownian(psi,Sigma)
+X ~ dnBrownianMultiVariate(psi,Sigma)
 
 # moves on kappa
 index <- 1
-moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+moves[index] <- mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
 # conjugate Gibbs move on covariance matrix
@@ -90,22 +90,22 @@ mymodel <- model(kappa)
 # some of them are a bit redundant, but just to show what can be done
 
 # on screen, we will monitor only the correlation coefficient and the mean value of each trait
-monitors[1] <- screenmonitor(printgen=10, var2, correl, meanX)
+monitors[1] <- mnScreen(printgen=10, var2, correl, meanX)
 
 # a trace monitor: like the screen monitor, but directly into file
-monitors[2] <- filemonitor(filename="output/plactraits.trace", printgen=10, separator = "	", var2, correl, meanX)
+monitors[2] <- mnFile(filename="output/plactraits.trace", printgen=10, separator = "	", var2, correl, meanX)
 
 # file monitors for the correlation and partial correlation coefficients
-monitors[3] <- filemonitor(filename="output/plactraits.correl",printgen=10, separator = "	", correl, pCorrel)
+monitors[3] <- mnFile(filename="output/plactraits.correl",printgen=10, separator = "	", correl, pCorrel)
 
 # a file monitor for the complete covariance matrix
-monitors[4] <- filemonitor(filename="output/plactraits.cov",printgen=10, separator = "	", Sigma)
+monitors[4] <- mnFile(filename="output/plactraits.cov",printgen=10, separator = "	", Sigma)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[5] <- filemonitor(filename="output/plactraits.traits",printgen=10, separator = "	", X)
+monitors[5] <- mnFile(filename="output/plactraits.traits",printgen=10, separator = "	", X)
 
 # a model monitor
-monitors[6] <- modelmonitor(filename="output/plactraits.log",printgen=10, separator = "	")
+monitors[6] <- mnModel(filename="output/plactraits.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 

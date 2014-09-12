@@ -25,8 +25,8 @@ moves[2] <- mvScale(sigma,lambda=0.5, tune=true, weight=4.0)
 
 mymodel <- model(sigma)
 
-monitors[1] <- modelmonitor(filename="simple_ln_mcmc.log",printgen=10)
-monitors[2] <- screenmonitor(printgen=10, M, sigma)
+monitors[1] <- mnModel(filename="simple_ln_mcmc.log",printgen=10)
+monitors[2] <- mnScreen(printgen=10, M, sigma)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 

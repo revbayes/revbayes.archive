@@ -22,7 +22,7 @@ Q := gtr(er,sf)
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
 
-phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=abs_clock_rt, nSites=n_sites, type="DNA")
+phySeq ~ dnPhyloCTMC(tree=tau, Q=Q, branchRates=abs_clock_rt, nSites=n_sites, type="DNA")
 
 # attach the data
 phySeq.clamp(D)

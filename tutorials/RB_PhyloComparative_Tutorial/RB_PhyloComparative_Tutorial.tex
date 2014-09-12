@@ -146,7 +146,7 @@ to accelerate convergence, it can be useful to force initialization of $\sigma$ 
 \item
 define the multivariate Brownian process, which we will call \cmd{logmass}:
 \\
-\cmd{logmass $\sim$ brownian(psi,sigma)}
+\cmd{logmass $\sim$ dnBrownian(psi,sigma)}
 \item
 condition the Brownian model on empirically observed values for body mass in extant taxa.
 Here, we need to specify that body mass is the second column of the dataset:
@@ -165,7 +165,7 @@ initialize a running index for storing moves:
 push a scaling move on $\sigma$:
 \\
 \cmd{
-moves[index] <- mScale(sigma, lambda=2.0, tune=true, weight=3.0)
+moves[index] <- mvScale(sigma, lambda=2.0, tune=true, weight=3.0)
 \\
 index <- index + 1
 }
@@ -211,25 +211,25 @@ mymodel <- model(sigma)
 make a screen monitor that tracks the summary statistics of interest:
 \\
 \cmd{
-monitors[1] <- screenmonitor(printgen=10, sigma, rootlogmass, meanlogmass, stdevlogmass)
+monitors[1] <- mnScreen(printgen=10, sigma, rootlogmass, meanlogmass, stdevlogmass)
 }
 \item
 a file monitor that does the same thing, but directly into a file:
 \\
 \cmd{
-monitors[2] <- filemonitor(filename="output/placmass.trace", printgen=10, separator = "       ", sigma, rootlogmass, meanlogmass, stdevlogmass)
+monitors[2] <- mnFile(filename="output/placmass.trace", printgen=10, separator = "       ", sigma, rootlogmass, meanlogmass, stdevlogmass)
 }
 \item
 a file monitor for the ancestral reconstruction of traits along the entire tree (in newick format):
 \\
 \cmd{
-monitors[3] <- filemonitor(filename="output/placmass.logmass", printgen=10, separator = "       ", logmass)
+monitors[3] <- mnFile(filename="output/placmass.logmass", printgen=10, separator = "       ", logmass)
 }
 \item
 and a general model monitor:
 \\
 \cmd{
-monitors[4] <- modelmonitor(filename="output/placmass.log", printgen=10, separator = " ")
+monitors[4] <- mnModel(filename="output/placmass.log", printgen=10, separator = " ")
 }
 \end{itemize}
 We can finally create a mcmc, and run it for a good 100 000 cycles:
@@ -322,7 +322,7 @@ define the covariance matrix $\Sigma$ as inverse Wishart:
 \item
 define the multivariate Brownian process:
 \\
-\cmd{X $\sim$ mvtBrownian(psi,Sigma)}
+\cmd{X $\sim$ dnBrownianMultiVariate(psi,Sigma)}
 \item
 condition the Brownian model on quantitative trait data.
 This needs to be done separately for each trait:
@@ -345,7 +345,7 @@ initialize a running index for storing moves:
 push a scaling move on $\kappa$:
 \\
 \cmd{
-moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+moves[index] <- mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
 \\
 index <- index + 1
 }
@@ -434,31 +434,31 @@ mymodel <- model(kappa)
 make a screen monitor that tracks correlation coefficients and mean Brownian values:
 \\
 \cmd{
-monitors[1] <- screenmonitor(printgen=10, correl, meanX)
+monitors[1] <- mnScreen(printgen=10, correl, meanX)
 }
 \item
 a file monitor that does the same thing, but directly into a file:
 \\
 \cmd{
-monitors[2] <- filemonitor(filename="output/plactraits.trace", printgen=10, separator = "       ", correl, meanX)
+monitors[2] <- mnFile(filename="output/plactraits.trace", printgen=10, separator = "       ", correl, meanX)
 }
 \item
 a file monitor for $\Sigma$:
 \\
 \cmd{
-monitors[3] <- filemonitor(filename="output/plactraits.cov", printgen=10, separator = "  ", Sigma)
+monitors[3] <- mnFile(filename="output/plactraits.cov", printgen=10, separator = "  ", Sigma)
 }
 \item
 a file monitor for the ancestral reconstruction of traits:
 \\
 \cmd{
-monitors[4] <- filemonitor(filename="output/plactraits.traits", printgen=10, separator = "       ", X)
+monitors[4] <- mnFile(filename="output/plactraits.traits", printgen=10, separator = "       ", X)
 }
 \item
 and a general model monitor:
 \\
 \cmd{
-monitors[5] <- modelmonitor(filename="output/plactraits.log", printgen=10, separator = " ")
+monitors[5] <- mnModel(filename="output/plactraits.log", printgen=10, separator = " ")
 }
 \end{itemize}
 We can finally create the mcmc and run it:
@@ -532,7 +532,7 @@ extinction $\sim$ exponential(0.1)
 \\
 sampling\_fraction := 0.01  \, \, \,    \# 40 out of the $\sim$4000 placental mammals
 \\
-psi $\sim$ cBDP(lambda=speciation, mu=extinction, rho=sampling\_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
+psi $\sim$ dnBDP(lambda=speciation, mu=extinction, rho=sampling\_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
 }
 \item
 we still want to work on a fixed, pre-specified, tree topology (thus, the birth-death prior will be used here only for averaging over uncertainty about divergence times):
@@ -552,11 +552,11 @@ load the sequence data matrix specified in \cmd{data/plac40\_4fold.nex} and cond
 in the moves section, you should add moves for divergence times:
 \\
 \cmd{
-moves[index] <- mSubtreeScale(psi, weight=5.0)
+moves[index] <- mvSubtreeScale(psi, weight=5.0)
 \\
 index <- index + 1
 \\
-moves[index] <- mNodeTimeSlideUniform(psi, weight=10.0)
+moves[index] <- mvNodeTimeSlideUniform(psi, weight=10.0)
 \\
 index <- index + 1
 }
@@ -564,11 +564,11 @@ index <- index + 1
 you would add topology moves here (again, only in a second step):
 \\
 \cmd{
-moves[index] <- mNNI(psi, weight=5.0)
+moves[index] <- mvNNI(psi, weight=5.0)
 \\
 index <- index + 1
 \\
-moves[index] <- mFNPR(psi, weight=5.0)
+moves[index] <- mvFNPR(psi, weight=5.0)
 \\
 index <- index + 1
 }
@@ -739,7 +739,7 @@ pi $\sim$ dirichlet(bf)
 finally, create the substitution model:
 \\
 \cmd{
-seq $\sim$ substModel(tree=psi, Q=branchMatrices, rootFrequencies=pi,
+seq $\sim$ dnPhyloCTMC(tree=psi, Q=branchMatrices, rootFrequencies=pi,
 \\
 branchRates=branchrates, nSites=nSites, type="DNA")
 }
@@ -804,7 +804,7 @@ copestrend $\sim$ norm(0,10)
 \item
 create a (univariate) Brownian motion with drift:
 \\
-\cmd{logmass $\sim$ brownian(psi,sigma,drift=copestrend)}
+\cmd{logmass $\sim$ dnBrownian(psi,sigma,drift=copestrend)}
 \item
 move the trend parameter during the MCMC, using a regular sliding move:
 \\

@@ -55,7 +55,7 @@ moves[mi++] <- mvSimplexElementScale(pi)
 
 
 #### create a deterministic variable for the rate matrix ####
-Q := gtr(er,pi) 
+Q := fnGTR(er,pi) 
 
 
 
@@ -67,7 +67,7 @@ Q := gtr(er,pi)
 alpha_prior_min <- 0.1
 alpha_prior_max <- 50.0
 alpha ~ dnUnif( alpha_prior_min, alpha_prior_max )
-norm_gamma_rates := discretizeGamma( alpha, alpha, 4, false )
+norm_gamma_rates := fnDiscretizeGamma( alpha, alpha, 4, false )
 
 # add moves for the stationary frequencies, exchangeability rates and the shape parameter
 moves[mi++] <- mvScale(alpha)
@@ -88,7 +88,7 @@ moves[mi++] <- mvSlide(pinvar)
 ##############
 
 #### Specify a uniform prior on the tree topology #### 
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology)
@@ -129,7 +129,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, pInv=pinvar, branchRates=clockRate, type="DNA")
+seq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, pInv=pinvar, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)
