@@ -116,7 +116,7 @@ for (i in 1:n_genes) {
   sf_prior[i] <- v(1,1,1,1)
   sf[i] ~ dnDirichlet(sf_prior[i])
 
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
 }
 
@@ -252,7 +252,7 @@ er ~ dnDirichlet(er_prior)
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 
 # Second, one can have different fitnesses for A, C, G, T. 
 # Here, we are going to assume that all 4 bases have the same fitness.

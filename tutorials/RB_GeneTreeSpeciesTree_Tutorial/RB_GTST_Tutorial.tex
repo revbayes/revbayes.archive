@@ -446,7 +446,7 @@ for (i in 1:n_genes) {
   er[i] ~ dnDirichlet(er_prior[i])
   sf_prior[i] <- v(1,1,1,1)
   sf[i] ~ dnDirichlet(sf_prior[i])
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 }
 # Making a backup for future reference:
 for (i in 1:n_genes) {
@@ -763,7 +763,7 @@ er ~ dnDirichlet(er_prior)
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -979,7 +979,7 @@ er ~ dnDirichlet(er_prior)
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 \end{lstlisting}
 \end{snugshade*}}
 

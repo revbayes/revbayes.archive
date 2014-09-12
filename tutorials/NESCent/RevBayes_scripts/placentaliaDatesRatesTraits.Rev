@@ -114,7 +114,7 @@ e <- v(1,1,1,1,1,1)
 er ~ dnDirichlet(e)
 
 # rate matrix
-Q := gtr(er,pi)
+Q := fnGTR(er,pi)
 
 # create the sequence evolution model
 seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=rate, nSites=nSites, type="DNA")

@@ -409,7 +409,7 @@ Specify the parameters of the GTR model and the moves to operate on them.
 \begin{lstlisting}
 sf ~ dnDirichlet(v(1,1,1,1))
 er ~ dnDirichlet(v(1,1,1,1,1,1))
-Q := gtr(er,sf)
+Q := fnGTR(er,sf)
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
 \end{lstlisting}
@@ -597,7 +597,7 @@ Now, specify the stationary frequencies and exchangeability rates of the GTR mat
 \begin{lstlisting}
 sf ~ dnDirichlet(v(1,1,1,1))
 er ~ dnDirichlet(v(1,1,1,1,1,1))
-Q := gtr(er,sf)
+Q := fnGTR(er,sf)
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
 \end{lstlisting}

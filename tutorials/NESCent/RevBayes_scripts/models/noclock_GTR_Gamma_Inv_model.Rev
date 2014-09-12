@@ -85,7 +85,7 @@ moves[mi++] <- mvSimplexElementScale(sf)
 
 
 #### create a deterministic variable for the rate matrix ####
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 
 
 
