@@ -554,6 +554,9 @@ MethodTable ModelVector<rlType>::makeMethods(void) const
 {
     MethodTable methods = MethodTable();
     
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
     ArgumentRules* uniqueArgRules = new ArgumentRules();
     methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
     
