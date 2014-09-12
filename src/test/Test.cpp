@@ -12,43 +12,20 @@
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Test.h"
-#include "TestACLNDPPBranchRates.h"
-#include "TestACLNRelaxedClock.h"
-#include "TestACLNRatesGen.h"
 #include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
-#include "TestBayesFactor.h"
-#include "TestBirthDeath.h"
-#include "TestCharEvoModelImplementationPerformance.h"
 #include "TestCoala.h"
 #include "TestConstantPopCoalescent.h"
-#include "TestDistributions.h"
 #include "TestCharacterHistory.h"
 #include "TestDPPRelClock.h"
 #include "TestGtrGammaLikelihood.h"
-#include "TestGtrGammaModel.h"
-#include "TestGtrModel.h"
-#include "TestGtrModelFixedTree.h"
-#include "TestGtrUnrooted.h"
 #include "TestBranchHeterogeneousGtrModel.h"
 #include "TestBranchHeterogeneousHkyModel.h"
 #include "TestBranchHeterogeneousTamura92Model.h"
-#include "TestIndependentClockRates.h"
 #include "TestMixtureBranchHeterogeneousGtrModel.h"
-#include "TestMixtureModel.h"
 #include "TestMultispeciesCoalescent.h"
 #include "TestMultispeciesCoalescentCombinatorics.h"
 #include "TestMultispeciesCoalescentWithSequences.h"
-#include "TestNNI.h"
-#include "TestNormalModel.h"
 #include "TestPomoModel.h"
-#include "TestScalingMove.h"
-#include "TestSimplexMove.h"
-#include "TestSequenceSimulation.h"
-#include "TestSlidingMove.h"
-#include "TestStrictClockModel.h"
-#include "TestTransitionProbabilities.h"
-#include "TestTreeTraceSummary.h"
-#include "TestUCLNRelaxedClock.h"
 #include "Tree.h"
 #include "TreeTrace.h"
 
@@ -99,43 +76,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-	
-	/* A strict clock model test */
-    try {
-        TestStrictClockModel testGMC = TestStrictClockModel("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
-		
-//		testGMC.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-	/* An independent clock rate model test */
-    try {
-        TestIndependentClockRates testIRMC = TestIndependentClockRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
-		
-//		testIRMC.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-	/* An autocorrelated rate model test */
-    try {
-        TestACLNRatesGen testACLNG = TestACLNRatesGen("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
-		
-//		testACLNG.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-
-
-	/* An autocorrelated rate model test with dpp on node-wise nu */
-    try {
-        TestACLNDPPBranchRates testACLNDPP = TestACLNDPPBranchRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
-		
-//		testACLNDPP.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
+	   
 	// #######
 	
 		    
@@ -155,99 +96,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     // Older tests
     ////////////////
    
-    
-    /* The transition probability test = "tpt" */
-    try {
-        TestTransitionProbabilities testTP = TestTransitionProbabilities();
-//        testTP.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The sequence simulation test */
-    try {
-        TestSequenceSimulation test = TestSequenceSimulation("trees/primates.tree");
-        //test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The distribution test */
-    try {
-        TestDistributions test = TestDistributions();
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The scaling move test */
-    try {
-        TestScalingMove test = TestScalingMove(10000);
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The sliding move test */
-    try {
-        TestSlidingMove test = TestSlidingMove(10000);
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The simplex move test */
-    try {
-        TestSimplexMove test = TestSimplexMove(10000);
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The normal model test */
-    try {
-        TestNormalModel testNormal = TestNormalModel(10000);
-//        testNormal.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A Mixture model test */
-    try {
-        TestMixtureModel testMixture = TestMixtureModel(10000);
-//        testMixture.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A (unrooted) GTR model test */
-    try {
-        TestGtrUnrooted testGtr = TestGtrUnrooted("data/primates_mtDNA.nex", "trees/primates.tree", 200);
-        
-//        testGtr.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrUnrooted.tree");
-//        testTrace.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A GTR model test */
-    try {
-        TestGtrModelFixedTree testGtr = TestGtrModelFixedTree("data/primates.nex", "trees/primates.tree", 20);
-//        testGtr.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModelFixedTree.tree");
-//        testTrace.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A birth-death model test */
-    try {
-        TestBirthDeath testBD = TestBirthDeath("trees/primates.tree", 100000);
-//        testBD.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
     
     
     /* A coalescent model test */
@@ -294,42 +142,11 @@ bool Test::performTests(int argc, const char * argv[]) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-
-    
-    /* A NNI test */
-    try {
-        TestNNI testNNI = TestNNI(100000);
-//        testNNI.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A GTR model test */
-    try {
-//        TestGtrModel testGtr = TestGtrModel("data/primates.nex", "trees/primates.tree", 10000);
-        TestGtrModel testGtr = TestGtrModel("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.fas", "/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree", 200);
-//        TestGtrModel testGtr = TestGtrModel("data/anolis.nex", "trees/anolis_MAP.dnd", 10000);
-  //      TestGtrModel testGtr = TestGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
-
-     //  testGtr.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModel.tree");
-//        testTrace.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
     
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
         testGtrGamma.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A GTR+Gamma model test */
-    try {
-        TestGtrGammaModel testGtr = TestGtrGammaModel("data/primates.nex", "trees/primates.tree", 10000);
-//        testGtr.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -341,8 +158,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         //TestBranchHeterogeneousTamura92Model testHeteroT92 = TestBranchHeterogeneousTamura92Model("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
         
 //        testHeteroT92.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroGtrModel.tree");
-//           testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -353,8 +168,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         TestBranchHeterogeneousGtrModel testHeteroGtr = TestBranchHeterogeneousGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
 
        // testHeteroGtr.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroGtrModel.tree");
-        //    testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -364,8 +177,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         TestBranchHeterogeneousHkyModel testHeteroHky = TestBranchHeterogeneousHkyModel("/Users/boussau/Dropbox/HeterogeneousModelsRevBayes/data/SheffieldBeetles.fasta", 10000);
 		
 		//testHeteroHky.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroHkyModel.tree");
-          //  testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -376,8 +187,6 @@ bool Test::performTests(int argc, const char * argv[]) {
 //        TestAutocorrelatedBranchHeterogeneousGtrModel testAutocorrHeteroGtr = TestAutocorrelatedBranchHeterogeneousGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
         
 //        testAutocorrHeteroGtr.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroGtrModel.tree");
-        //    testTrace.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -388,30 +197,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         TestMixtureBranchHeterogeneousGtrModel testHeteroGtr = TestMixtureBranchHeterogeneousGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
         
         //testHeteroGtr.run();
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestHeteroGtrModel.tree");
-        //    testTrace.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-
-    /* A UCLN relaxed model test */
-    try {
-//        TestUCLNRelaxedClock testUCLNRC = TestUCLNRelaxedClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
-        TestUCLNRelaxedClock testUCLNRC = TestUCLNRelaxedClock("data/primates.nex", "trees/primates.tree", 1000);
-		
-		//testUCLNRC.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    
-    /* A ACLN relaxed model test */
-    try {
-        //        TestACLNRelaxedClock testACLNRC = TestACLNRelaxedClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
-        TestACLNRelaxedClock testACLNRC = TestACLNRelaxedClock("data/primates.nex", "trees/primates.tree", 1000);
-		
-		//testACLNRC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -424,32 +209,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         TestCoala testCoala = TestCoala("data/simLG_4species_1.phy", 1000);
 		
 //		testCoala.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The whole RevLanguage test suite */
-    try {
-        TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModel.tree");
-//        testTrace.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* The Bayes factors */
-    try {
-        TestBayesFactor testBF = TestBayesFactor(10000);
-//        testBF.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-
-    
-    /* A char-evo-model performance test */
-    try {
-        TestCharEvoModelImplementationPerformance testGtr = TestCharEvoModelImplementationPerformance("data/primates.nex", "trees/primates.tree", 10000);
-//		        testGtr.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
