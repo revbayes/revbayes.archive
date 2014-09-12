@@ -89,7 +89,7 @@ moves[mi++] <- mvMixtureAllocation(Q,weight=1.0)
 ##############
 
 #### Specify a uniform prior on the tree topology #### 
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology, weight=10.0)

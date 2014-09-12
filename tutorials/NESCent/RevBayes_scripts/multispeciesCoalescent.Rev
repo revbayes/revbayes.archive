@@ -62,7 +62,7 @@ moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
 moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
 
 # tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=org, nTaxa=n_species, names=speciesNames)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=org, nTaxa=n_species, names=speciesNames)
 
 # moves on the tree
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
@@ -94,7 +94,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTree[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 
    # moves on the tree
    moves[moveIndex++] <- mvNNI(geneTree[i], 1.0)
