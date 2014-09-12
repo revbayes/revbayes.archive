@@ -115,8 +115,8 @@ phylogeny := treeAssembly(topology, br_lens)
 ###################
 
 for (i in 1:n_parts){
-#  phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], clockRate=part_rate_mult[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
-  phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
+#  phyloSeq[i] ~ dnPhyloCTMC(tree=phylogeny, Q=Q[i], clockRate=part_rate_mult[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
+  phyloSeq[i] ~ dnPhyloCTMC(tree=phylogeny, Q=Q[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 

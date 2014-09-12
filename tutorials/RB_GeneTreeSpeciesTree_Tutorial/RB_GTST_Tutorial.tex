@@ -487,7 +487,7 @@ Finally we link it all using the PhyloCTMC model, which simulates gene alignment
  {\tt \begin{snugshade*}
 \begin{lstlisting}
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ dnPhyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -826,7 +826,7 @@ Combining it all with the PhyloCTMC Model and clamp the model to the data:
  {\tt \begin{snugshade*}
 \begin{lstlisting}
 
-aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
 
 aln.clamp(pomo_concatenate)
 \end{lstlisting}
@@ -1005,7 +1005,7 @@ To link all the parts of the model together we use the phyloCTMC object and clam
 \begin{lstlisting}
 
 
-aln ~ phyloCTMC(tree=speciesTree, Q=Q, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, type="DNA")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=Q, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, type="DNA")
 
 aln.clamp( concatenate )
 \end{lstlisting}
