@@ -17,11 +17,11 @@ sigma.setValue(0.1)
 
 # univariate Brownian process along the tree
 # parameterized by sigma
-logmass ~ brownian(psi,sigma)
+logmass ~ dnBrownian(psi,sigma)
 
 # moves on sigma 
 index <- 1
-moves[index] <- mScale(sigma, lambda=2.0, tune=true, weight=3.0)
+moves[index] <- mvScale(sigma, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
 # moves on the Brownian process
@@ -51,16 +51,16 @@ mymodel <- model(sigma)
 
 "monitors"
 # on screen, we will monitor only the correlation coefficient and the mean value of each trait
-monitors[1] <- screenmonitor(printgen=10, sigma, rootlogmass, meanlogmass, stdevlogmass)
+monitors[1] <- mnScreen(printgen=10, sigma, rootlogmass, meanlogmass, stdevlogmass)
 
 # a trace monitor: like the screen monitor, but directly into file
-monitors[2] <- filemonitor(filename="output/placmass.trace", printgen=10, separator = "	", sigma, rootlogmass, meanlogmass, stdevlogmass)
+monitors[2] <- mnFile(filename="output/placmass.trace", printgen=10, separator = "	", sigma, rootlogmass, meanlogmass, stdevlogmass)
 
 # a file monitor for the evolution of body mass along the tree (in newick format)
-monitors[3] <- filemonitor(filename="output/placmass.traits",printgen=10, separator = "	", logmass)
+monitors[3] <- mnFile(filename="output/placmass.traits",printgen=10, separator = "	", logmass)
 
 # a model monitor
-monitors[4] <- modelmonitor(filename="output/placmass.log",printgen=10, separator = "	")
+monitors[4] <- mnModel(filename="output/placmass.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 

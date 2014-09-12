@@ -33,8 +33,8 @@ for (i in 1:x.size() ) {
 
 mymodel <- model( alpha )
 
-monitors[1] <- modelmonitor(filename="output/airline_fatalities.log",printgen=1, separator = "	")
-monitors[2] <- screenmonitor(printgen=1, alpha, beta)
+monitors[1] <- mnModel(filename="output/airline_fatalities.log",printgen=1, separator = "	")
+monitors[2] <- mnScreen(printgen=1, alpha, beta)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 

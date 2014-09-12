@@ -200,19 +200,19 @@ mymodel <- model(speciesTree)
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis
-monitors[mntrIndex++] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="gtr_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC
-monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
 gene <- ["cytB", "G3P", "myo", "ODC"]
 
 # One monitor for each gene family tree.
 for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
+   monitors[mntrIndex++] <- mnFile(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
 }
 
 # One simple monitor that will output on the screen one parameter, Ne
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne)
+monitors[mntrIndex++] <- mnScreen(printgen=10, Ne)
 
 
 

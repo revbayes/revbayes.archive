@@ -21,13 +21,13 @@ source("RevBayes_scripts/m_ACLN_bears.Rev")
 mymodel <- model(er)
 
 ### set up the monitors that will output parameter values to file and screen 
-monitors[1] <- filemonitor(filename="output/ACLN_bears_mcmc.log", printgen=10,
+monitors[1] <- mnFile(filename="output/ACLN_bears_mcmc.log", printgen=10,
 							diversification, turnover, birth_rate, death_rate, 
 							root_time, tmrca_Ursidae, tmrca_UrsidaePinn,
 							er, sf,
 							mean_rt, nu, base_rate, root_rate, node_rates, branch_rates)
-monitors[2] <- filemonitor(filename="output/ACLN_bears_mcmc.trees", printgen=10, timetree)
-monitors[3] <- screenmonitor(printgen=10, mean_rt, root_time, nu)
+monitors[2] <- mnFile(filename="output/ACLN_bears_mcmc.trees", printgen=10, timetree)
+monitors[3] <- mnScreen(printgen=10, mean_rt, root_time, nu)
 
 ### workspace mcmc ###
 mymcmc <- mcmc(mymodel, monitors, moves)

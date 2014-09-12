@@ -613,12 +613,12 @@ First, basic monitors:
 \begin{lstlisting}
 mntrIndex <- 0
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
 # One monitor for each gene family tree:
 for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
+   monitors[mntrIndex++] <- mnFile(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -667,12 +667,12 @@ function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) {
 }
 # Same thing for exchangeability parameters:
 distExchange := diffVectorsOfVectors(trueEr, er)
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distExchange)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distExchange)
 # Same thing for the family-wise rates
 distRates := diffVectors(trueFamilyRates, familyRates)
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distRates)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distRates)
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
+monitors[mntrIndex++] <- mnScreen(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
 # We could do similar things for the few remaining parameters, but really I think that's enough.
 \end{lstlisting}
 \end{snugshade*}}
@@ -897,10 +897,10 @@ Then we define a few monitors to keep track of how things go:
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename="pomo_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="pomo_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -908,7 +908,7 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree)
 \end{lstlisting}
 \end{snugshade*}}
 We define our model:
@@ -1047,10 +1047,10 @@ We define a few monitors to keep track of how things go.
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"concatenation_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename=dataFolder+"concatenation_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"concatenation_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename=dataFolder+"concatenation_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -1058,7 +1058,7 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree)
 	
 \end{lstlisting}
 \end{snugshade*}}
