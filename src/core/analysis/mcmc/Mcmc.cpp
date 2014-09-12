@@ -62,27 +62,27 @@ void Mcmc::run(size_t kIterations)
     /* Let user know what we are doing */
     if ( generation == 0 )
     {
-        std::cout << "\nRunning MCMC simulation for " << kIterations << " cycles" << std::endl;
+        std::cout << "\nRunning MCMC simulation for " << kIterations << " iterations" << std::endl;
     }
     else
     {
-        std::cout << "Appending " << kIterations << " cycles to previous MCMC simulation of " << generation << " cycles" << std::endl;
+        std::cout << "Appending " << kIterations << " iterations to previous MCMC simulation of " << generation << " iterations" << std::endl;
     }
     
     if ( scheduleType == "single" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
-        std::cout << "single move picked randomly per cycle" << std::endl;
+        std::cout << "single move picked randomly per iteration" << std::endl;
     }
     else if ( scheduleType == "random" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
     else if ( scheduleType == "sequential" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
     
     if ( generation == 0 )
@@ -119,27 +119,27 @@ void Mcmc::runPriorSampler(size_t kIterations)
     /* Let user know what we are doing */
     if ( generation == 0 )
     {
-        std::cout << "Running prior simulation for " << kIterations << " cycles" << std::endl;
+        std::cout << "Running prior simulation for " << kIterations << " iterations" << std::endl;
     }
     else
     {
-        std::cout << "Appending " << kIterations << " cycles to previous simulation of " << generation << " cycles" << std::endl;
+        std::cout << "Appending " << kIterations << " iterations to previous simulation of " << generation << " iterations" << std::endl;
     }
     
     if ( scheduleType == "single" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
-        std::cout << "single move picked randomly per cycle" << std::endl;
+        std::cout << "single move picked randomly per iteration" << std::endl;
     }
     else if ( scheduleType == "random" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
     else if ( scheduleType == "sequential" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
     
     // Initialize objects used in run

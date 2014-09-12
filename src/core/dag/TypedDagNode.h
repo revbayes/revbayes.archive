@@ -1,3 +1,23 @@
+/**
+ * @file
+ * This file contains the declaration of the typed DAG node class, which is our base class for all DAG node with a specific type.
+ * This class is used as the typed base class for DAG nodes as in cases as when parameters (parents) of other DAG nodes are set.
+ *
+ * @brief Declaration of the typed base class DagNode.
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2012-06-17, version 1.0
+ * @interface TypedDagNode
+ *
+ * $Id$
+ */
+
+
+
 #ifndef TypedDagNode_H
 #define TypedDagNode_H
 
@@ -9,49 +29,43 @@
 
 namespace RevBayesCore {
     
-    /**
-     * @brief Template base class for DAG nodes
-     *
-     * The TypedDagNode class is used as the templated base class for DAG nodes. It is templated on the value type, which can be
-     * a core C++ data type or an STL container of a core C++ data type. It can also be a datatype implemented in the core layer,
-     * and derived from the Cloneable base class.
-     */
     template<class valueType>
     class TypedDagNode : public DagNode {
-    
+        
     public:
-        TypedDagNode(const std::string &n);                                                                                                             //!< Construct from name
+        TypedDagNode(const std::string &n);
         virtual                                            ~TypedDagNode(void);                                                                         //!< Virtual destructor
-    
-        // Pure virtual function
-        virtual TypedDagNode<valueType>*                    clone(void) const = 0;                                                                      //!< Type-safe clone (abstract)
-
-        // Member functions
+        
+        // pure virtual methods
+        virtual TypedDagNode<valueType>*                    clone(void) const = 0;
+        
+        // member functions
         virtual size_t                                      getNumberOfElements(void) const;                                                            //!< Get the number of elements for this value
-        virtual bool                                        isSimpleNumeric(void) const;                                                                //!< Is this variable a simple numeric variable?
-        virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;         //!< Monitor/Print the name of this variable
-        virtual void                                        printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;        //!< Monitor/Print the value this variable
-
-        // Getters (only stochastic nodes with setter)
-        virtual valueType&                                  getValue(void) = 0;                                                                         //!< Get the value (non-const version)
-        virtual const valueType&                            getValue(void) const = 0;                                                                   //!< Get the value (const version)
-
+        virtual bool                                        isSimpleNumeric(void) const;                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
+        virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;         //!< Monitor/Print this variable
+        virtual void                                        printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;        //!< Monitor/Print this variable
+        //        virtual void                                        printValue(std::ostream &o, size_t i, size_t l=12, bool left=false) const;                  //!< Monitor/Print the i-th element of this variable
+        
+        // getters and setters
+        virtual valueType&                                  getValue(void) = 0;
+        virtual const valueType&                            getValue(void) const = 0;
+        
         
     };
     
     
     template<>
-    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; } 
+    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; }
     
     template<>
     inline bool                                  TypedDagNode<double>::isSimpleNumeric(void) const { return true; }
-
+    
     template<>
-    inline bool                                  TypedDagNode<std::vector<int> >::isSimpleNumeric(void) const { return true; } 
+    inline bool                                  TypedDagNode<std::vector<int> >::isSimpleNumeric(void) const { return true; }
     
     template<>
     inline bool                                  TypedDagNode<std::vector<double> >::isSimpleNumeric(void) const { return true; }
-
+    
 }
 
 #include "RbUtil.h"
@@ -94,12 +108,12 @@ template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep, int l, bool left) const
 {
     
-    if ( RbUtils::is_vector<valueType>::value ) 
+    if ( RbUtils::is_vector<valueType>::value )
     {
         size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
-        for (size_t i = 0; i < numElements; ++i) 
+        for (size_t i = 0; i < numElements; ++i)
         {
-            if ( i > 0 ) 
+            if ( i > 0 )
             {
                 o << sep;
             }
@@ -112,8 +126,8 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
             }
             o << n;
         }
-    } 
-    else 
+    }
+    else
     {
         std::string n = getName();
         if ( l > 0 )
@@ -129,12 +143,12 @@ template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const std::string &sep, int l, bool left) const
 {
     
-    if ( RbUtils::is_vector<valueType>::value ) 
+    if ( RbUtils::is_vector<valueType>::value )
     {
         size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
-        for (size_t i = 0; i < numElements; ++i) 
+        for (size_t i = 0; i < numElements; ++i)
         {
-            if ( i > 0 ) 
+            if ( i > 0 )
             {
                 o << sep;
             }
@@ -147,8 +161,8 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const st
             }
             o << s;
         }
-    } 
-    else 
+    }
+    else
     {
         std::stringstream ss;
         ss << getValue();
@@ -161,6 +175,30 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const st
     }
 }
 
+
+//template<class valueType>
+//void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, size_t index) const {
+//
+//    if ( RbUtils::is_vector<valueType>::value )
+//    {
+//        o << RbUtils::sub_vector<valueType>::getElement( getValue(), index );
+//    }
+//    else
+//    {
+//        o << getValue();
+//    }
+//
+//}
+
+
+//template <typename T, typename Alloc>
+//void RevBayesCore::TypedDagNode<std::vector<T,Alloc> >::printValue(std::ostream &o, size_t index) const {
+////    if ( is_vector<valueType>::value ) {
+//        o << getValue()[index];
+////    } else {
+////        o << getValue();
+////    }
+//}
 
 #endif
 

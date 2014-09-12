@@ -198,7 +198,7 @@ void CharacterHistoryNodeMonitor::openStream(void) {
 void CharacterHistoryNodeMonitor::printHeader() {
     
     // print one column for the iteration number
-    outStream << "Cycle";
+    outStream << "Iteration";
     
     if ( posterior ) {
         // add a separator before every new element
