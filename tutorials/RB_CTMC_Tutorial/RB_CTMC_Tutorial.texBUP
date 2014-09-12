@@ -329,7 +329,7 @@ Note that the number of states will not be a part of the model graph because it 
 We also do not need a deterministic variable for the rate matrix and instead a constant variable suffices. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > Q <- JC(4)
+RevBayes > Q <- fnJC(4)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -455,10 +455,10 @@ RevBayes > moves[2] <- mvScale(kappa)
 
 
 We can finish setting up this part of the model by creating a deterministic node for the HKY rate matrix \cl{Q}. 
-The \cl{hky()} function takes a transition-transversion rate and a set of base frequencies to compute the rate matrix used when calculating the likelihood of our model.
+The \cl{fnHKY()} function takes a transition-transversion rate and a set of base frequencies to compute the rate matrix used when calculating the likelihood of our model.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > Q := hky(kappa,pi)
+RevBayes > Q := fnHKY(kappa,pi)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -563,12 +563,12 @@ RevBayes > shape ~ dnExponential(shape_prior)
 The way the ASRV model is implemented involves discretizing the mean-one gamma distribution into a set number of rate categories. 
 Thus, we can analytically marginalize over the uncertainty in the rate at each site. 
 To do this, we need a deterministic node that is a vector of rates calculated from the gamma distribution and the number of rate categories. 
-The \cl{discretizeGamma()} function returns this deterministic node and takes three arguments: the shape and rate of the gamma distribution and the number of categories. Since we want to discretize a mean-one gamma distribution, we can pass in \cl{shape} for both the shape and rate.
+The \cl{fnDiscretizeGamma()} function returns this deterministic node and takes three arguments: the shape and rate of the gamma distribution and the number of categories. Since we want to discretize a mean-one gamma distribution, we can pass in \cl{shape} for both the shape and rate.
 
-Initialize the \cl{gamma\_rates} deterministic node vector using the  \cl{discretizeGamma()} function with \cl{4} bins:
+Initialize the \cl{gamma\_rates} deterministic node vector using the  \cl{fnDiscretizeGamma()} function with \cl{4} bins:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > gamma_rates := discretizeGamma( shape, shape, 4 )
+RevBayes > gamma_rates := fnDiscretizeGamma( shape, shape, 4 )
 \end{lstlisting}
 \end{snugshade*}}
 

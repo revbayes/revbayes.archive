@@ -844,6 +844,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnMtRev",    new Func_mtRev()   );
         addFunction( "fnPomo",     new Func_pomo()    );
         addFunction( "fnRtRev",    new Func_rtRev()   );
+        addFunction( "fnT92",      new Func_t92()     );
         addFunction( "fnVT",       new Func_vt()      );
         addFunction( "fnWAG",      new Func_wag()     );
         

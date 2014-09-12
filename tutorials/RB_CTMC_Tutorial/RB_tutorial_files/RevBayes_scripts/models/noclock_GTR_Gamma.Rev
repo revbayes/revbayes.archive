@@ -67,7 +67,7 @@ Q := gtr(er,pi)
 alpha_prior_min <- 0.1
 alpha_prior_max <- 50.0
 alpha ~ dnUnif( alpha_prior_min, alpha_prior_max )
-norm_gamma_rates := discretizeGamma( alpha, alpha, 4, false )
+norm_gamma_rates := fnDiscretizeGamma( alpha, alpha, 4, false )
 
 # add moves for the stationary frequencies, exchangeability rates and the shape parameter
 moves[mi++] <- mvScale(alpha)

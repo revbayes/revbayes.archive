@@ -25,9 +25,9 @@ power(2,2)			# power function: power(a,b) = a^b
 
 
 # distribution functions
-dexponential(x=1,lambda=1)
-qexponential(0.5,1)
-rexponential(n=10,1)
+dexp(x=1,lambda=1)
+qexp(0.5,1)
+rexp(n=10,1)
 dnorm(-2.0,0.0,1.0)
 rnorm(n=10,0,1)
 

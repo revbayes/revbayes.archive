@@ -61,7 +61,7 @@ extinction ~ exponential(10.0)
 
 # A species tree larger than the gene trees has probability 0.
 # To be sure to start from a state with a non-null probability, we start from the true values.
-tree_height ~ unif(0.0,100.0)
+tree_height ~ dnUniform(0.0,100.0)
 tree_height.setValue(trueRootAge)
 
 write("Starting species tree height: "+tree_height)
@@ -93,7 +93,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ unif(0.0,10)
+Ne ~ dnUniform(0.0,10)
 Ne.setValue(trueNe)
 
 
