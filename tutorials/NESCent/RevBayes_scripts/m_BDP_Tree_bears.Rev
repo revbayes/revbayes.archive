@@ -9,7 +9,7 @@ diversification ~ exponential(10.0)
 diversification.setValue(0.01)
 
 ## turnover = death_rate / birth_rate
-turnover ~ beta(2, 2) 
+turnover ~ dnBeta(2, 2) 
 
 ## Creating deterministic nodes for birth & death rates to match previous implmentation
 denom := abs(1.0 - turnover) # even though this will always be pos, this is needed for det nodes to be RealPos for cBDP

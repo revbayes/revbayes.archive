@@ -587,11 +587,11 @@ moves[3] <- mvScale(shape)\end{lstlisting}
 
 Under the invariant site model, every site of our sequence has the chance \cl{pinvar} to be invariant.
 That mean, with probability \cl{pinvar} we do not observe any change along the phylogeny.
-Here we specify a \cl{beta(1,1)} prior distribution on \cl{pinvar}.
-The \cl{beta(1,1)} is equivalent to a uniform distribution, but has the nice advantage in \Rev~that a random variable from a beta distribution is of type \textit{Probability}.
+Here we specify a \cl{dnBeta(1,1)} prior distribution on \cl{pinvar}.
+The \cl{dnBeta(1,1)} is equivalent to a uniform distribution, but has the nice advantage in \Rev~that a random variable from a beta distribution is of type \textit{Probability}.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > pinvar ~ beta(1,1)
+RevBayes > pinvar ~ dnBeta(1,1)
 \end{lstlisting}
 \end{snugshade*}}
 

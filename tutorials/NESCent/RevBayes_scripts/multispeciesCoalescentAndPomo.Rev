@@ -76,7 +76,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=0.1,rate=0.1)
+Ne ~ dnGamma(shape=0.1,rate=0.1)
 Ne.setValue(0.0000004)
 
 # Simulate gene trees
@@ -513,7 +513,7 @@ P := pomo(Q, base_fitnesses, virtual_population_size)
 # To do that we need two variables:
 
 # First, the proportion of polymorphic sites at the root
-root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+root_polymorphism_proportion ~ dnBeta(alpha=1,beta=1)
 
 # Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
 root_base_frequencies ~ dnDirichlet(sf_prior)
@@ -532,7 +532,7 @@ norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
 branch_rates <- 1.0
 
 # We do not assume a proportion of invariant
-p_inv ~ beta(alpha=1,beta=1)
+p_inv ~ dnBeta(alpha=1,beta=1)
 p_inv.setValue(0.000001)
 
 ###################
