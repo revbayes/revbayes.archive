@@ -808,6 +808,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "v",         new Func_modelVector<Clade>()                      );
         addFunction( "v",         new Func_modelVector<RlString>()                   );
         addFunction( "v",         new Func_modelVector<TimeTree>()                   );
+        addFunction( "v",         new Func_modelVector<ModelVector<Natural> >()                    );
         
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
@@ -1105,6 +1106,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         //        addFunction("pbeta", new DistributionFunctionCdf( new Dist_beta() ) );
         //        addFunction("qbeta", new DistributionFunctionQuantile( new Dist_beta() ) );
         addFunction("rbeta", new DistributionFunctionRv<Probability>( new Dist_beta() ) );
+        
+        // dirichlet distribution
+        addFunction("ddirichlet", new DistributionFunctionPdf<Simplex>( new Dist_dirichlet() ) );
+        addFunction("rdirichlet", new DistributionFunctionRv<Simplex>( new Dist_dirichlet() ) );
         
         // exponential distribution
         addFunction("dexp", new DistributionFunctionPdf<RealPos>( new Dist_exponential() ) );

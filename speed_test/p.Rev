@@ -1,6 +1,6 @@
 D <- readCharacterData("data/Primates.nex")
 
-tau <- readTrees("data/primates.tree")[1]
+tau <- readTrees("data/Primates.tree")[1]
 
 # substition model priors
 bf <- v(1,1,1,1)
@@ -33,6 +33,4 @@ monitors[3] <- screenmonitor(printgen=1000, pi)
  
 mymcmc <- mcmc(mymodel, monitors, moves,moveschedule="single")
 
-mymcmc.run(generations=1100000)
-
-q()
+mymcmc.run(generations=110000)

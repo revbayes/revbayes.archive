@@ -1,3 +1,0 @@
-# testing some simple dag assignment stuff
-source("dag/assignments.Rev")
-clear()

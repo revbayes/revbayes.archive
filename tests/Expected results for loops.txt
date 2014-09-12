@@ -1,3 +1,0 @@
-Sum of 1:100:		5050
-Fibonacci series of 1:10:	[ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]
-Factorial 10:		3628800
