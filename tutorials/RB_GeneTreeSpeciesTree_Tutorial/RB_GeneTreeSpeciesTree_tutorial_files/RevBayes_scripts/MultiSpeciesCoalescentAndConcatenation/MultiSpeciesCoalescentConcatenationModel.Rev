@@ -76,7 +76,7 @@ for (i in 1:n_species) {
 # Birth-Death process priors.
 speciation ~ exponential(10.0)
 extinction ~ exponential(10.0)
-tree_height ~ unif(0.0,100.0)
+tree_height ~ dnUniform(0.0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 
@@ -99,7 +99,7 @@ Q := gtr(er,sf)
 # Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := fnDiscretizeGamma( shape, shape, 4, false )
 
 # We do not assume variation among branches in rates
 branch_rates <- 1.0

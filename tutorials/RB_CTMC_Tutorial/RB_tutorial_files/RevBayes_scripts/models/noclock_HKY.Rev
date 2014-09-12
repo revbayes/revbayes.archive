@@ -54,7 +54,7 @@ moves[mi++] <- mvSimplexElementScale(pi)
 
 
 #### create a deterministic variable for the rate matrix ####
-Q := hky(kappa,pi) 
+Q := fnHKY(kappa,pi) 
 
 
 

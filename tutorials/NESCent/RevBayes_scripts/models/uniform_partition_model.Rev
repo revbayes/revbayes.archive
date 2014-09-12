@@ -45,7 +45,7 @@ Q := gtr(er,sf)
 
 shape_prior <- 0.05
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := fnDiscretizeGamma( shape, shape, 4, false )
 
 # add moves for the stationary frequencies, exchangeability rates and the shape parameter
 moves[mi++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)

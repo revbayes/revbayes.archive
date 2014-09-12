@@ -112,7 +112,7 @@ Q := gtr(er,sf)
 
 ## Gamma-distributed rates
 shape ~ dnExponential( 0.1 )
-gamma_rates := discretizeGamma( shape, shape, 4 )
+gamma_rates := fnDiscretizeGamma( shape, shape, 4 )
 
 ## Putting it all together
 phySeq ~ dnPhyloCTMC(tree=timetree, Q=Q, siteRates=gamma_rates, branchRates=clock_rate, nSites=n_sites, type="DNA")

@@ -29,7 +29,7 @@ n_branches <- 2 * n_species - 3
 mi <- 0
 
 #### specify the JC substitution model applied uniformly to all sites ###
-Q_JC <- JC(4)
+Q_JC <- fnJC(4)
 
 #### specify the GTR substitution model applied uniformly to all sites ###
 er_prior <- v(1,1,1,1,1,1)
