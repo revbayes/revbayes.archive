@@ -16,7 +16,7 @@ mu := lnM - hv
 
 N <- observations.size()
 for( i in 1:N ){
-	x[i] ~ dnLdnNorm(mu, sigma)
+	x[i] ~ dnLnorm(mu, sigma)
 	##x[i].clamp(observations[i])
 }
 
