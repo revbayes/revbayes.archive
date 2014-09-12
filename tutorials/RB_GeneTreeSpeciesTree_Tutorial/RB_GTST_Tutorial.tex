@@ -203,8 +203,8 @@ for (i in 1:n_species) {
 \item We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to \citet{Leache2011}):
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
 tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
@@ -400,8 +400,8 @@ The species-tree birth-death model:
 for (i in 1:n_species) {
 	s_names[i] <- "Species_"+i
 }
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
 tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
@@ -461,7 +461,7 @@ Each gene family can have its own rate of evolution, drawn from an exponential d
  {\tt \begin{snugshade*}
 \begin{lstlisting}
 for (i in 1:n_genes) {
-  familyRates[i] ~ exponential(1.0)
+  familyRates[i] ~ dnExp(1.0)
 }
 # Making a backup for future reference:
 for (i in 1:n_genes) {
@@ -958,8 +958,8 @@ We can also concatenate all alignments and run a partitioned GTR model on it.
 \begin{lstlisting}
 
 # Birth-Death process priors.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
 tree_height ~ unif(0.0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)

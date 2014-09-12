@@ -65,7 +65,7 @@ a--                             # (post) decrement
 
 # Variable assignment: stochastic
 lambda <- 1			# assign constant node 'lambda' with value '1'
-x ~ exponential(lambda)		# create stochastic node with exponential distribution and parameter 'lambda'
+x ~ dnExp(lambda)		# create stochastic node with exponential distribution and parameter 'lambda'
 x				# print value of stochastic node 'x'
 x.probability			# print the probability if 'x'
 x.lnProbability			# print the log-probability if 'x'

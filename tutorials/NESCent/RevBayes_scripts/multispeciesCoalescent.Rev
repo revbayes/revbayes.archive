@@ -50,8 +50,8 @@ n_species <- speciesNames.size()
 ######################
 
 # Birth-Death process priors
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
 org ~ unif(0,100.0)
 
 moveIndex <- 0
@@ -139,7 +139,7 @@ for (i in 1:n_genes) {
 # and also to have huge differences between rates associated to a given branch in two different gene families. 
 
 for (i in 1:n_genes) {
-  branchRates[i] ~ exponential(1.0)
+  branchRates[i] ~ dnExp(1.0)
   moves[moveIndex++] <- mvScale(branchRates[i], lambda=0.8, tune=true, weight=3.0)
 }
 
