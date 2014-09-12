@@ -701,7 +701,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // poisson distribution
         addDistribution( "dnPoisson",       new Dist_poisson() );
-        addDistribution( "poisson",         new Dist_poisson() );
         
         // exponential distribution
         addDistribution( "dnExp",           new Dist_exponential() );

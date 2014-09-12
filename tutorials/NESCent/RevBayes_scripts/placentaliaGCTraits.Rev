@@ -104,7 +104,7 @@ for (i in 1:covdim)	{
 
 # equilibrium frequencies 
 bf <- v(1,1,1,1)
-pi ~ dirichlet(bf)
+pi ~ dnDirichlet(bf)
 
 # first component of the Brownian model gives the *log* of the substitution rate
 branchrates := expbranchtree(tree=psi,process=X,traitindex=1)

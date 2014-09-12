@@ -199,14 +199,14 @@ mean_2 <- 2.0
 sd_1 <- 1.0
 sd_2 <- 1.0
 weight <- 0.5
-M ~ dnBimodalLnorm(mean_1, mean_2, sd_1, sd_2, weight)
+M ~ dnBimodalLdnNorm(mean_1, mean_2, sd_1, sd_2, weight)
 \end{lstlisting}
 \end{snugshade*}}
 
 \Rev~does allows you to specify constant-node values in the distribution constructor function, therefore this also works:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-M ~ dnBimodalLnorm(0.5, 2.0, 1.0, 1.0, 0.5)
+M ~ dnBimodalLdnNorm(0.5, 2.0, 1.0, 1.0, 0.5)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -392,11 +392,11 @@ Moreover, we provide functions for the common statistical distributions.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # distribution functions
-    RevBayes > dexponential(x=1,rate=1)         # exponential distribution density function
-    RevBayes > qexponential(0.5,1)              # exponential distribution quantile function
-    RevBayes > rexponential(n=10,1)             # random draws from an exponential distribution
-    RevBayes > dnorm(-2.0,0.0,1.0)              # normal distribution density function
-    RevBayes > rnorm(n=10,0,1)                  # random draws from a normal distribution
+    RevBayes > dexp(x=1,rate=1)         # exponential distribution density function
+    RevBayes > qexp(0.5,1)              # exponential distribution quantile function
+    RevBayes > rexp(n=10,1)             # random draws from an exponential distribution
+    RevBayes > ddnNorm(-2.0,0.0,1.0)              # normal distribution density function
+    RevBayes > rdnNorm(n=10,0,1)                  # random draws from a normal distribution
 \end{lstlisting}
 \end{snugshade*}}
 If you do not remember what the parameter or parameter names of a function are, then you can simply type in the function name and \RevBayes~will tell you the possible parameters with their names.
@@ -510,7 +510,7 @@ Similarly, we create a random variable \cl{y} from a normal distribution by
 \begin{lstlisting}    
     RevBayes > mu <- 0
     RevBayes > sigma <- 1
-    RevBayes > y ~ norm(mu,sigma)	
+    RevBayes > y ~ dnNorm(mu,sigma)	
     RevBayes > y.probability                    # print the probability of 'y'
     RevBayes > y.lnProbability                  # print the log-probability if 'y'
     RevBayes > str(y)                           # printing all the information of 'y'
@@ -811,7 +811,7 @@ A common proposal distribution for $\alpha^{\prime} \sim P(\alpha[i-1])$ is the 
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)
+    RevBayes > alpha_prime <- rdnNorm(1,alpha[i-1],delta_alpha)
 \end{lstlisting}
 \end{snugshade*}}
 A similar distribution should be used for $\beta^{\prime}$. 
@@ -851,8 +851,8 @@ Finally, we set up a \cl{for} loop over each iteration of the MCMC.
 Within the \cl{for} loop we propose new parameters value.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes >    alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)[1]
-    RevBayes >    beta_prime <- rnorm(1,beta[i-1],delta_beta)[1]
+    RevBayes >    alpha_prime <- rdnNorm(1,alpha[i-1],delta_alpha)[1]
+    RevBayes >    beta_prime <- rdnNorm(1,beta[i-1],delta_beta)[1]
 \end{lstlisting}
 \end{snugshade*}}
 For the newly proposed parameter values we compute the prior ratio.
