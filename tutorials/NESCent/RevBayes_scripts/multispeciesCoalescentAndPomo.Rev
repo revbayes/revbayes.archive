@@ -52,7 +52,7 @@ for (i in 1:n_species) {
 # Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
 speciation ~ exponential(10.0)
 extinction ~ exponential(10.0)
-tree_height ~ dnUniform(0,100.0)
+tree_height ~ unif(0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.08)
@@ -159,7 +159,7 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
 
 }
 
@@ -507,7 +507,7 @@ base_fitnesses <- v(1, 1, 1, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
-P := fnPomo(Q, base_fitnesses, virtual_population_size)
+P := pomo(Q, base_fitnesses, virtual_population_size)
 
 # We also need to define root frequencies for all the states.
 # To do that we need two variables:
@@ -526,7 +526,7 @@ root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion,
 # Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := fnDiscretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
 
 # We do not assume variation among branches in rates
 branch_rates <- 1.0

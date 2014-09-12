@@ -44,7 +44,7 @@ mi <- 0
 ######################
 
 #### specify the Jukes-Cantor substitution model applied uniformly to all sites ###
-Q := fnJC(4) 
+Q := JC(4) 
 
 
 

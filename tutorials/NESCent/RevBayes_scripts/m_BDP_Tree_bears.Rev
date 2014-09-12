@@ -22,7 +22,7 @@ tHesperocyon <- 38.0
 mean_ra <- 50.0
 stdv_ra <- 0.25
 mu_ra <- ln(mean_ra) - ((stdv_ra*stdv_ra) * 0.5)
-root_time ~ dnLnorm(mu_ra, stdv_ra, offset=tHesperocyon)
+root_time ~ dnLdnNorm(mu_ra, stdv_ra, offset=tHesperocyon)
 
 
 
@@ -48,7 +48,7 @@ tKretzoiarctos <- -11.2
 sdv <- 0.25
 M <- 10
 mu <- ln(M) - ((sdv * sdv) * 0.5)
-fossil_Urs ~ dnLnorm(mu, sdv, offset=n_TMRCA_Urs)
+fossil_Urs ~ dnLdnNorm(mu, sdv, offset=n_TMRCA_Urs)
 fossil_Urs.clamp(tKretzoiarctos)
 
 tmrca_UrsPinn := tmrca(tau,clade_UrsPinn)

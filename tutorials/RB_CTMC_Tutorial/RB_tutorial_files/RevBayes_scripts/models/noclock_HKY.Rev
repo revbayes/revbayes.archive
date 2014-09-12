@@ -44,7 +44,7 @@ mi <- 0
 ######################
 
 #### specify the HKY substitution model applied uniformly to all sites ###
-kappa ~ dnLnorm(1.0,1.25)
+kappa ~ dnLdnNorm(1.0,1.25)
 moves[mi++] <- mvScale(kappa)
 
 

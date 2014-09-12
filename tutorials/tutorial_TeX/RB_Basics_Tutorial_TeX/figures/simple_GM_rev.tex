@@ -28,7 +28,7 @@
 \node (l7) at (4,2.7) [right]{\tt mu := ln(M) - (power(sigma, 2.0) / 2.0) };
 \node (l8) at (4,1.8) [right]{\tt N <- observations.size() };
 \node (l8) at (4,1.4) [right]{\tt for( i in 1:N )\{ };
-\node (l9) at (4.4,1) [right]{\tt x[i] $\sim$ dnLnorm(mu, sigma) };
+\node (l9) at (4.4,1) [right]{\tt x[i] $\sim$ dnLdnNorm(mu, sigma) };
 \node (l10) at (4.4,0.6) [right]{\tt x[i].clamp(observations[i]) };
 \node (l11) at (4,0.2) [right]{\tt \} };
 \end{tikzpicture}

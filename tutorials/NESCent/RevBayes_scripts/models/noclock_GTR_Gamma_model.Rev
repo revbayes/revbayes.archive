@@ -98,7 +98,7 @@ Q := gtr(er,sf)
 
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := fnDiscretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
 moves[mi++] <- mvScale(shape)
 
 

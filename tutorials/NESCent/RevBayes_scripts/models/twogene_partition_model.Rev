@@ -49,7 +49,7 @@ for (i in 1:n_parts){
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
   moves[mi++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
 
 }
