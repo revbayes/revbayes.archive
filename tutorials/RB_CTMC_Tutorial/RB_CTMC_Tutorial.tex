@@ -457,12 +457,12 @@ RevBayes > shape ~ dnExponential(shape_prior)
 \end{lstlisting}
 \end{snugshade*}}
 
-The way the ASRV model is implemented involves discretizing the mean-one gamma distribution into a set number of rate categories. Thus, we can analytically marginalize over the uncertainty in the rate at each site. To do this, we need a deterministic node that is a vector of rates calculated from the gamma distribution and the number of rate categories. The \cl{fnDiscretizeGamma()} function returns this deterministic node and takes three arguments: the shape and rate of the gamma distribution and the number of categories. Since we want to discretize a mean-one gamma distribution, we can pass in \cl{shape} for both the shape and rate.
+The way the ASRV model is implemented involves discretizing the mean-one gamma distribution into a set number of rate categories. Thus, we can analytically marginalize over the uncertainty in the rate at each site. To do this, we need a deterministic node that is a vector of rates calculated from the gamma distribution and the number of rate categories. The \cl{discretizeGamma()} function returns this deterministic node and takes three arguments: the shape and rate of the gamma distribution and the number of categories. Since we want to discretize a mean-one gamma distribution, we can pass in \cl{shape} for both the shape and rate.
 
-Initialize the \cl{gamma\_rates} deterministic node vector using the  \cl{fnDiscretizeGamma()} function with \cl{4} bins:
+Initialize the \cl{gamma\_rates} deterministic node vector using the  \cl{discretizeGamma()} function with \cl{4} bins:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > gamma_rates := fnDiscretizeGamma( shape, shape, 4 )
+RevBayes > gamma_rates := discretizeGamma( shape, shape, 4 )
 \end{lstlisting}
 \end{snugshade*}}
 

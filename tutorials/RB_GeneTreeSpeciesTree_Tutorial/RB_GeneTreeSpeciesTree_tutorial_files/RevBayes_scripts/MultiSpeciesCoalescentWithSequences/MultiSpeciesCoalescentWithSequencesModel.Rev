@@ -76,7 +76,7 @@ extinction ~ exponential(10.0)
 
 # A species tree larger than the gene trees has probability 0.
 # To be sure to start from a state with a non-null probability, we start from the true values.
-tree_height ~ dnUniform(0.0,100.0)
+tree_height ~ unif(0.0,100.0)
 tree_height.setValue(trueRootAge)
 
 write("Starting species tree height: "+tree_height)
@@ -149,7 +149,7 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
 
 }
 

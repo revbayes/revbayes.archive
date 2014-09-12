@@ -799,7 +799,7 @@ Technically, to model body size evolution with drift, we would just need to:
 define a drift parameter, with a diffuse prior centered on 0:
 \\
 \cmd{
-copestrend $\sim$ norm(0,10)
+copestrend $\sim$ dnNorm(0,10)
 }
 \item
 create a (univariate) Brownian motion with drift:

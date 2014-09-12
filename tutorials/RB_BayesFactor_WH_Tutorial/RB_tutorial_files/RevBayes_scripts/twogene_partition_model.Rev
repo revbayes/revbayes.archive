@@ -51,7 +51,7 @@ for (i in 1:n_parts){
   # Gamma-dist site rates #
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4 )
+  gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4 )
   moves[mi++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
 }
 

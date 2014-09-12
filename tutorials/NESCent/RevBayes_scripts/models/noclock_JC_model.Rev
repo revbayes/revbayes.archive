@@ -72,7 +72,7 @@ moves[mi++] <- mvNNI(tau)
 
 
 # the rate matrix, here we use the Jukes-Cantor model with 4 states
-Q <- fnJC(4)
+Q <- JC(4)
 
 
 

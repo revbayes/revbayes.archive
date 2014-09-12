@@ -42,7 +42,7 @@ Q := gtr(er,sf)
 # Gamma-dist site rates P. 17 #
 shape_prior <- 0.05
 shape ~ dnExponential( shape_prior )
-gamma_rates := fnDiscretizeGamma( shape, shape, 4 )
+gamma_rates := discretizeGamma( shape, shape, 4 )
 moves[3] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 
 

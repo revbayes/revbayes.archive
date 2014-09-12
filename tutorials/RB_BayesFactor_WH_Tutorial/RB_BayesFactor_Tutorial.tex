@@ -230,14 +230,14 @@ mean_2 <- 2.0
 sd_1 <- 1.0
 sd_2 <- 1.0
 weight <- 0.5
-M ~ dnBimodalLnorm(mean_1, mean_2, sd_1, sd_2, weight)
+M ~ dnBimodalLdnNorm(mean_1, mean_2, sd_1, sd_2, weight)
 \end{lstlisting}
 \end{snugshade*}}
 
 The Rev language does allows you to specify constant-node values in the distribution constructor function, therefore this also works:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-M ~ dnBimodalLnorm(0.5, 2.0, 1.0, 1.0, 0.5)
+M ~ dnBimodalLdnNorm(0.5, 2.0, 1.0, 1.0, 0.5)
 \end{lstlisting}
 \end{snugshade*}}
 
