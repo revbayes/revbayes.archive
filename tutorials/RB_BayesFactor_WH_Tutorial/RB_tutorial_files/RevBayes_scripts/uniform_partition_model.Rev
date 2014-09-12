@@ -37,7 +37,7 @@ sf ~ dnDirichlet(sf_prior)
 moves[2] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)
 
 # Instantaneous rate matrix (deterministic) P. 16 #
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 
 # Gamma-dist site rates P. 17 #
 shape_prior <- 0.05

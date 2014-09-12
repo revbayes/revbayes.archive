@@ -45,7 +45,7 @@ for (i in 1:n_parts){
   sf[i] ~ dnDirichlet(sf_prior[i])
   moves[mi++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
 
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )

@@ -108,7 +108,7 @@ sf ~ dnDirichlet(v(1,1,1,1))
 er ~ dnDirichlet(v(1,1,1,1,1,1))
 
 ## Rate Matrix
-Q := gtr(er,sf)
+Q := fnGTR(er,sf)
 
 ## Gamma-distributed rates
 shape ~ dnExponential( 0.1 )

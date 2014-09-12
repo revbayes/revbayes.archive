@@ -56,7 +56,7 @@ for (i in 1:n_parts){
   moves[mi++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
 
   # Instantaneous rate matrix (deterministic) #
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
   # Gamma-dist site rates #
   shape_prior[i] <- 0.05 

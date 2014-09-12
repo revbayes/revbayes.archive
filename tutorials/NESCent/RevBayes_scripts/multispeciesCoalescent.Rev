@@ -123,7 +123,7 @@ for (i in 1:n_genes) {
   sf[i] ~ dnDirichlet(sf_prior[i])
   moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
 
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
 }
 

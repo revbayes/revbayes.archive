@@ -15,7 +15,7 @@ sf ~ dnDirichlet(v(1,1,1,1))
 er ~ dnDirichlet(v(1,1,1,1,1,1))
 
 ### a deterministic node for the instantaneous rate matrix
-Q := gtr(er,sf)
+Q := fnGTR(er,sf)
 
 ### simplex moves for er and sf
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)

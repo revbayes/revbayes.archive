@@ -407,10 +407,10 @@ RevBayes > moves[2] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2)
 \end{snugshade*}}
 
 We can finish setting up this part of the model by creating a deterministic node for the GTR rate matrix \cl{Q}. 
-The \cl{gtr()} function takes a set of exchangeability rates and a set of base frequencies to compute the rate matrix used when calculating the likelihood of our model.
+The \cl{fnGTR()} function takes a set of exchangeability rates and a set of base frequencies to compute the rate matrix used when calculating the likelihood of our model.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > Q := gtr(er,sf)
+RevBayes > Q := fnGTR(er,sf)
 \end{lstlisting}
 \end{snugshade*}}
 

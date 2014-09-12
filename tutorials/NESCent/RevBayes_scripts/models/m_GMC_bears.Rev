@@ -17,7 +17,7 @@ bf <- v(1,1,1,1)
 e <- v(1,1,1,1,1,1)
 sf ~ dnDirichlet(bf)
 er ~ dnDirichlet(e)
-Q := gtr(er,sf)
+Q := fnGTR(er,sf)
 
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
