@@ -74,7 +74,7 @@ moves[mi++] <- mvScale(alpha)
 
 
 # the probability of a site being invariable
-pinvar ~ beta(1,1)
+pinvar ~ dnBeta(1,1)
 # add moves for the probability if a site being invariable
 moves[mi++] <- mvScale(pinvar)
 moves[mi++] <- mvSlide(pinvar)

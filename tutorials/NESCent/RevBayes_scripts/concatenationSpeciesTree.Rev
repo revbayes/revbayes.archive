@@ -75,7 +75,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=1,rate=1)
+Ne ~ dnGamma(shape=1,rate=1)
 Ne.setValue(10000)
 
 # Simulate gene trees
@@ -260,7 +260,7 @@ norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
 branch_rates <- 1.0
 
 # We do not assume a proportion of invariant
-p_inv ~ beta(alpha=1,beta=1)
+p_inv ~ dnBeta(alpha=1,beta=1)
 p_inv.setValue(0.000001)
 
 

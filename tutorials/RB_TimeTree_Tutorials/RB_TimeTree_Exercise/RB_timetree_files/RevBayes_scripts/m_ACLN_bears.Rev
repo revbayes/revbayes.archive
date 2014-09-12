@@ -25,7 +25,7 @@ moves[mi++] <- mvScale(nu, lambda=0.5, tune=true, weight=4.0)
 
 ### the clock rate at the root of the tree
 ### with a scale move
-root_rate ~ gamma(2.0, 4.0)
+root_rate ~ dnGamma(2.0, 4.0)
 moves[mi++] <- mvScale(root_rate, lambda=0.5, tune=true, weight=4.0)
 
 ### a vector of the rates at each node

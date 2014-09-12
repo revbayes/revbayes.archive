@@ -84,7 +84,7 @@ taxaFileNames <- ["data/Cettiidae_cytb_taxon_data.txt", "data/Cettiidae_G3P_taxo
 
 # We assume a single effective population size for the entire species tree.
 # We could also assume different parameters for each branch of the species tree.
-Ne ~ gamma(shape=1.0,rate=1.0)
+Ne ~ dnGamma(shape=1.0,rate=1.0)
 moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
 
 for (i in 1:n_genes) {

@@ -60,7 +60,7 @@ for (i in 1:n_species) {
 
 
 # Set the effective population size
-Ne ~ gamma(shape=0.1,rate=0.1)
+Ne ~ dnGamma(shape=0.1,rate=0.1)
 Ne.setValue(0.004)
 
 # Simulate gene trees

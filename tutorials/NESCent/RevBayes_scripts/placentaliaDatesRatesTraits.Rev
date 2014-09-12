@@ -107,11 +107,11 @@ for (i in 1:covdim)	{
 
 # equilibrium frequencies 
 bf <- v(1,1,1,1)
-pi ~ dirichlet(bf)
+pi ~ dnDirichlet(bf)
 
 # exchangeabilities
 e <- v(1,1,1,1,1,1)
-er ~ dirichlet(e)
+er ~ dnDirichlet(e)
 
 # rate matrix
 Q := gtr(er,pi)

@@ -15,8 +15,8 @@ abs_clock_rt := clock_rate * scale_rate
 
 bf <- v(1,1,1,1)
 e <- v(1,1,1,1,1,1)
-sf ~ dirichlet(bf)
-er ~ dirichlet(e)
+sf ~ dnDirichlet(bf)
+er ~ dnDirichlet(e)
 Q := gtr(er,sf)
 
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
