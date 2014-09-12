@@ -52,7 +52,7 @@ extinction.setValue(0.3)
 
 # Species tree from birth-death process
 tree_height.setValue(1)
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -77,7 +77,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 
 # For fun, let's look at the symmetric differences between the simulated gene tree topologies:
@@ -165,7 +165,7 @@ for (i in 1:n_genes) {
 # To link all the parts of the model together we use the phyloCTMC object.
 
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ dnPhyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
 }
 
 

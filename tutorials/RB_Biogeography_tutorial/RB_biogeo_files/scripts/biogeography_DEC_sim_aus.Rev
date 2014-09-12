@@ -92,7 +92,7 @@ moves[7] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.5, type="biogeo", wei
 ############
 
 # standard monitors
-monitors[1] <- screenmonitor(printgen=10, glr, csf, dp)
+monitors[1] <- mnScreen(printgen=10, glr, csf, dp)
 monitors[2] <- mnFile(filename=out_fp+out_str+".parameters.txt", printgen=10, glr, csf, dp)
 
 # character history monitors

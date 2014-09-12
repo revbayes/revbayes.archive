@@ -970,8 +970,8 @@ We also need some monitors that report the current values during the MCMC run.
 We create two monitors, one printing all numeric non-constant variables to a file and one printing some information to the screen.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
-    RevBayes > monitors[1] <- modelmonitor(filename="output/airline_fatalities.log",printgen=10, separator = "	")
-    RevBayes > monitors[2] <- screenmonitor(printgen=10, alpha, beta)
+    RevBayes > monitors[1] <- mnModel(filename="output/airline_fatalities.log",printgen=10, separator = "	")
+    RevBayes > monitors[2] <- mnScreen(printgen=10, alpha, beta)
 \end{lstlisting}
 \end{snugshade*}}
 Finally we create an MCMC object.
@@ -1110,8 +1110,8 @@ Finally, we create the model object from the variables, add some monitors and ru
 \begin{lstlisting} 
 mymodel <- model( theta )
 
-monitors[1] <- modelmonitor(filename="output/coal_accidents.log",printgen=10, separator = "	")
-monitors[2] <- screenmonitor(printgen=10, eta, lambda, gamma, theta)
+monitors[1] <- mnModel(filename="output/coal_accidents.log",printgen=10, separator = "	")
+monitors[2] <- mnScreen(printgen=10, eta, lambda, gamma, theta)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 

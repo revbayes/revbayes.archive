@@ -643,8 +643,8 @@ RevBayes > mymodel <- model(birth_rate)
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-monitors[1] <- filemonitor(filename="output/BDR_mcmc_bears.log",printgen=10, diversification, birth_rate, turnover, death_rate)
-monitors[2] <- screenmonitor(printgen=1000, turnover)
+monitors[1] <- mnFile(filename="output/BDR_mcmc_bears.log",printgen=10, diversification, birth_rate, turnover, death_rate)
+monitors[2] <- mnScreen(printgen=1000, turnover)
 \end{lstlisting}
 \end{snugshade*}}
 

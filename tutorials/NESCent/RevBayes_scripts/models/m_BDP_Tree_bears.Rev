@@ -37,7 +37,7 @@ constraints <- v(clade_Ursidae, clade_UrsPinn)
 
 
 # tree from birth-death process 
-tau ~ cBDP(lambda=birth_rate, mu=death_rate, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names,constraints=constraints)
+tau ~ dnBDP(lambda=birth_rate, mu=death_rate, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names,constraints=constraints)
 
 
 tau.setValue(T)

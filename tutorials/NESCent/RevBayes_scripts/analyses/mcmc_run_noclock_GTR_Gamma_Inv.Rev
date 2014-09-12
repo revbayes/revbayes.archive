@@ -19,9 +19,9 @@ source("RevBayes_scripts/models/noclock_GTR_Gamma_Inv_model.Rev")
 ############
 
 
-monitors[1] <- modelmonitor(filename="output/gtr_gamma_inv_non-clock.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="output/gtr_gamma_inv_non-clock.trees",printgen=10, separator = "	", psi)
-monitors[3] <- screenmonitor(printgen=10, tree_length, p_inv)
+monitors[1] <- mnModel(filename="output/gtr_gamma_inv_non-clock.log",printgen=10, separator = "	")
+monitors[2] <- mnFile(filename="output/gtr_gamma_inv_non-clock.trees",printgen=10, separator = "	", psi)
+monitors[3] <- mnScreen(printgen=10, tree_length, p_inv)
 
 
 

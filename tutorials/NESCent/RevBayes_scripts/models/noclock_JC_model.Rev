@@ -40,7 +40,7 @@ names <- data.names()
 ##############
 
 # Specify a uniform topology prior
-tau ~ uniformTopology(taxaCount, names)
+tau ~ dnUniformTopology(taxaCount, names)
 
 # create an index variable for our moves vector
 mi <- 0
@@ -94,7 +94,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ substModel(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)

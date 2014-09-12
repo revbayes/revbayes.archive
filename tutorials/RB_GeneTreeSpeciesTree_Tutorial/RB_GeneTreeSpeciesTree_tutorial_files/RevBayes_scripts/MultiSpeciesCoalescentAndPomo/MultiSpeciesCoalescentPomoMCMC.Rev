@@ -95,10 +95,10 @@ moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"pomo_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename=dataFolder+"pomo_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename=dataFolder+"pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -111,7 +111,7 @@ distDiv := trueSpeciation/trueExtinction - speciation/extinction
 distAge := trueRootAge - tree_height
 
 # We can use one monitor that will output on the screen one parameter, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree, distDiv, distAge )
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree, distDiv, distAge )
 	
 
 #############
