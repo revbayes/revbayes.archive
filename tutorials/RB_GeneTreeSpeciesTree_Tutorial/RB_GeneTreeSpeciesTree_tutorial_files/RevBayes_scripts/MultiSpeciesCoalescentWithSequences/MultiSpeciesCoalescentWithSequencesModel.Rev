@@ -93,7 +93,7 @@ write( speciesTree)
 
 
 # Set the effective population size
-Ne ~ gamma(shape=1,rate=1)
+Ne ~ dnGamma(shape=1,rate=1)
 Ne.setValue(trueNe)
 
 # Simulate gene trees

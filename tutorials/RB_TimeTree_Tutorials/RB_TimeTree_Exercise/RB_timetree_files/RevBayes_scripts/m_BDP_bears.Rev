@@ -50,7 +50,7 @@ mean_ra <- 11.0
 stdv_ra <- 0.25
 ### the lognormal distribution is parameterized by mu which is a function of the mean and standard deviation
 mu_ra <- ln(mean_ra) - ((stdv_ra*stdv_ra) * 0.5)
-root_time ~ dnLnorm(mu_ra, stdv_ra, offset=tHesperocyon)
+root_time ~ dnLdnNorm(mu_ra, stdv_ra, offset=tHesperocyon)
 
 ### two internal calibrations will be used
 ### first we have to create constraints on which we will condition the birth-death process tree topology
@@ -86,7 +86,7 @@ sdv <- 0.25
 mu <- ln(M) - ((sdv * sdv) * 0.5)
 ### using these parameters we create a stochastic node for the fossil 
 ### Kretzoiarctos is a fossil panda, and thus a crown fossil
-crown_Ursid_fossil ~ dnLnorm(mu, sdv, offset=n_TMRCA_Ursidae)
+crown_Ursid_fossil ~ dnLdnNorm(mu, sdv, offset=n_TMRCA_Ursidae)
 ### then we clamp this node with the observed fossil specimen, treating the fossil like data
 crown_Ursid_fossil.clamp(tKretzoiarctos)
 

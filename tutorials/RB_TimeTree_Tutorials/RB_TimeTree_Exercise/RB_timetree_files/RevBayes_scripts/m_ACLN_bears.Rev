@@ -12,7 +12,7 @@
 br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
-base_rate ~ dnLnorm(br_mu, br_s)
+base_rate ~ dnLdnNorm(br_mu, br_s)
 moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 
 ### get the number of branches in the tree
@@ -25,7 +25,7 @@ moves[mi++] <- mvScale(nu, lambda=0.5, tune=true, weight=4.0)
 
 ### the clock rate at the root of the tree
 ### with a scale move
-root_rate ~ gamma(2.0, 4.0)
+root_rate ~ dnGamma(2.0, 4.0)
 moves[mi++] <- mvScale(root_rate, lambda=0.5, tune=true, weight=4.0)
 
 ### a vector of the rates at each node

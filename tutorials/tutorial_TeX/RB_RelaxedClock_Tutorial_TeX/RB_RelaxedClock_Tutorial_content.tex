@@ -202,7 +202,7 @@ mu_ra <- ln(mean_ra) - ((stdv_ra*stdv_ra) * 0.5)
 With these parameters we can instantiate the root age stochastic node with the offset value.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-root_time ~ dnLnorm(mu_ra, stdv_ra, offset=tHesperocyon)
+root_time ~ dnLdnNorm(mu_ra, stdv_ra, offset=tHesperocyon)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -275,7 +275,7 @@ Create the stochastic node for the age of the crown ursid fossil, using a lognor
 M <- 10
 sdv <- 0.25
 mu <- ln(M) - ((sdv * sdv) * 0.5)
-crown_Ursid_fossil ~ dnLnorm(mu, sdv, offset=n_TMRCA_Ursidae)
+crown_Ursid_fossil ~ dnLdnNorm(mu, sdv, offset=n_TMRCA_Ursidae)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -382,7 +382,7 @@ This value is set to be drawn from a lognormal prior.
 br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
-base_rate ~ dnLnorm(br_mu, br_s)
+base_rate ~ dnLdnNorm(br_mu, br_s)
 moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 \end{lstlisting}
 \end{snugshade*}}
@@ -511,7 +511,7 @@ As in the clock model above, we create a lognormally distributed stochastic node
 br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
-base_rate ~ dnLnorm(br_mu, br_s)
+base_rate ~ dnLdnNorm(br_mu, br_s)
 moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 \end{lstlisting}
 \end{snugshade*}}
@@ -561,7 +561,7 @@ Within this loop, we also add the move for each branch-rate stochastic node to o
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 for(i in 1:n_branches){
-   branch_rates[i] ~ dnLnorm(ucln_mu, ucln_sigma)
+   branch_rates[i] ~ dnLdnNorm(ucln_mu, ucln_sigma)
    moves[mi++] <- mvScale(branch_rates[i], lambda=1, tune=true, weight=2.)
 }
 \end{lstlisting}
