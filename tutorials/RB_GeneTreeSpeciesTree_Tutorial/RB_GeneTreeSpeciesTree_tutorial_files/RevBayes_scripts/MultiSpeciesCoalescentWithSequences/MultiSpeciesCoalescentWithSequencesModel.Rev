@@ -71,8 +71,8 @@ for (i in 1:n_species) {
 ###############################
 
 # Birth-Death process priors
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
 
 # A species tree larger than the gene trees has probability 0.
 # To be sure to start from a state with a non-null probability, we start from the true values.
@@ -134,7 +134,7 @@ for (i in 1:n_genes) {
 # This makes it possible to have large differences in rates of evolution between two different gene families. 
 
 for (i in 1:n_genes) {
-  familyRates[i] ~ exponential(1.0)
+  familyRates[i] ~ dnExp(1.0)
 }
 
 #############################

@@ -96,8 +96,8 @@ write(pomo_concatenate)
 #######################
 
 # Birth-Death process priors.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
 tree_height ~ unif(0.0,10.0)
 tree_height.setValue(trueRootAge)
 

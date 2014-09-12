@@ -526,9 +526,9 @@ adding the following features to the model defined in the previous section
 instead of having a fixed tree, we should now define a \cmd{random} tree. We could use a birth death prior, whose speciation and extinction rates are themselves endowed with some diffuse exponential prior:
 \\
 \cmd{
-speciation $\sim$ exponential(0.1)
+speciation $\sim$ dnExp(0.1)
 \\
-extinction $\sim$ exponential(0.1)
+extinction $\sim$ dnExp(0.1)
 \\
 sampling\_fraction := 0.01  \, \, \,    \# 40 out of the $\sim$4000 placental mammals
 \\
@@ -722,7 +722,7 @@ for (k in 1:nTraits)    \{
 \item
 define the transition-transversion ratio; usually, this ratio is of the order of 1-10, so we will use an exponential prior of mean 10:
 \\
-\cmd{tstv $\sim$ exponential(0.1)}
+\cmd{tstv $\sim$ dnExp(0.1)}
 \item
 define a vector of branch-specific T92 substitution matrices:
 \\

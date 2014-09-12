@@ -5,7 +5,7 @@
 T <- readTrees("data/bears.tre")[1]
 
 ## diversification = birth_rate - death_rate
-diversification ~ exponential(10.0) 
+diversification ~ dnExp(10.0) 
 diversification.setValue(0.01)
 
 ## turnover = death_rate / birth_rate
