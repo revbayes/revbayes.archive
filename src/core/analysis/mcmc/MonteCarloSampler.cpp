@@ -111,22 +111,22 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
     }
     
     /* Let user know what we are doing */
-    std::cout << "\nRunning MCMC burnin simulation for " << generations << " cycles" << std::endl;
+    std::cout << "\nRunning MCMC burnin simulation for " << generations << " iterations" << std::endl;
     
     if ( scheduleType == "single" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
-        std::cout << "single move picked randomly per cycle" << std::endl;
+        std::cout << "single move picked randomly per iteration" << std::endl;
     }
     else if ( scheduleType == "random" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
     else if ( scheduleType == "sequential" )
     {
         std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per cycle" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
 
     // Print progress bar (68 characters wide)

@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of the deterministic DAG node class, which is our base class for all deterministc DAG nodes.
- * Deterministic DAG nodes reevaluate their value when the value of their parents change. Deterministic DAG nodes are used for 
+ * Deterministic DAG nodes reevaluate their value when the value of their parents change. Deterministic DAG nodes are used for
  * parameter transformations. Derived class are simple functions, e.g. exp, ln or GTR.
  *
  * @brief Declaration of the deterministic DAG node base class.
@@ -26,28 +26,31 @@
 #include "TypedFunction.h"
 
 namespace RevBayesCore {
-
+    
     template<class valueType>
     class DeterministicNode : public DynamicNode<valueType> {
-    
+        
     public:
         DeterministicNode(const std::string &n, TypedFunction<valueType> *f);
         DeterministicNode(const DeterministicNode<valueType> &n);                                                                       //!< Copy constructor
         virtual                                            ~DeterministicNode(void);                                                    //!< Virtual destructor
-    
+        
         DeterministicNode&                                  operator=(const DeterministicNode& n);                                      //!< Assignment operator
         
         // public methods
         DeterministicNode<valueType>*                       clone(void) const;
         virtual TypedFunction<valueType>&                   getFunction(void);
         virtual const TypedFunction<valueType>&             getFunction(void) const;
+        double                                              getLnProbability(void);
+        double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
         virtual void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                update(void);                                                               //!< Update the current value by recomputation
+        void                                                redraw(void);
         void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
-
+        
         // Parent DAG nodes management functions
         virtual std::set<const DagNode*>                    getParents(void) const;                                                     //!< Get the set of parents
         virtual void                                        swapParent(const DagNode *oldParent, const DagNode *newParent);             //!< Exchange the parent (function parameter)
@@ -59,8 +62,9 @@ namespace RevBayesCore {
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
         virtual void                                        touchMe(DagNode *toucher);                                                  //!< Touch myself and tell affected nodes value is reset
-
-        // Member variable
+        void                                                touchFunction(DagNode* toucher) const;                                      //!< Touch my function
+        
+    private:
         TypedFunction<valueType>*                           function;
     };
     
@@ -72,8 +76,8 @@ namespace RevBayesCore {
 
 template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string &n, TypedFunction<valueType> *f ) :
-    DynamicNode<valueType>( n ),
-    function( f )
+DynamicNode<valueType>( n ),
+function( f )
 {
     this->type = DagNode::DETERMINISTIC;
     
@@ -87,7 +91,7 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string
         // We don't want this parent to get deleted while we are still alive
         (*it)->incrementReferenceCount();
     }
-
+    
     // Set us as the DAG node of the function
     function->setDeterministicNode( this );
 }
@@ -95,8 +99,8 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string
 
 template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const DeterministicNode<valueType> &n ) :
-    DynamicNode<valueType>( n ),
-    function( n.function->clone() )
+DynamicNode<valueType>( n ),
+function( n.function->clone() )
 {
     this->type = DagNode::DETERMINISTIC;
     
@@ -118,7 +122,7 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const Determinist
 
 template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
-
+    
     // Remove us as the child of the function parameters
     std::set<const DagNode*> funcParents = function->getParameters();
     delete function;
@@ -146,7 +150,7 @@ RevBayesCore::DeterministicNode<valueType>& RevBayesCore::DeterministicNode<valu
     {
         // Call base class assignment operator
         DynamicNode<valueType>::operator=( n );
-
+        
         // Remove us as the child of the function parameters
         const std::set<const DagNode*>& funcParents = function->getParameters();
         for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
@@ -158,7 +162,7 @@ RevBayesCore::DeterministicNode<valueType>& RevBayesCore::DeterministicNode<valu
             if ( (*it)->decrementReferenceCount() == 0)
                 delete (*it);
         }
-
+        
         // Delete the function
         delete function;
         
@@ -190,7 +194,7 @@ RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valu
     return new DeterministicNode<valueType>( *this );
 }
 
-/** 
+/**
  * Get the affected nodes.
  * This call is started by the parent. We need to delegate this call to all our children.
  */
@@ -215,6 +219,22 @@ const RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<va
     
     return *function;
 }
+
+template<class valueType>
+double RevBayesCore::DeterministicNode<valueType>::getLnProbability( void )
+{
+    
+    return 0.0;
+}
+
+
+template<class valueType>
+double RevBayesCore::DeterministicNode<valueType>::getLnProbabilityRatio( void )
+{
+    
+    return 0.0;
+}
+
 
 /**
  * Get the parents of this node. Simply ask the function to provide its parameters,
@@ -251,7 +271,7 @@ bool RevBayesCore::DeterministicNode<valueType>::isConstant( void ) const
     const std::set<const DagNode*>& parents = function->getParameters();
     for (std::set<const DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it)
     {
-        if ( !(*it)->isConstant() ) 
+        if ( !(*it)->isConstant() )
         {
             return false;
         }
@@ -271,7 +291,7 @@ bool RevBayesCore::DeterministicNode<valueType>::isFunctionDirty( void ) const
 
 
 /**
- * Keep the current value of the node. 
+ * Keep the current value of the node.
  * At this point, we just delegate to the children.
  */
 template<class valueType>
@@ -281,7 +301,7 @@ void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In keepMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-
+    
     // allow specialized recovery in functions
     function->keep( affecter );
     
@@ -316,7 +336,7 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     {
         o << "_refCount     = " << this->getReferenceCount() << std::endl;
         o << "_function     = <" << function << ">" << std::endl;
-        o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
+        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     }
     
     
@@ -327,6 +347,15 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     o << "_children     = ";
     this->printChildren(o, 16, 70, verbose);
     o << std::endl;
+}
+
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::redraw( void )
+{
+    // nothing to do
+    // the touch should have called our update
 }
 
 
@@ -350,6 +379,9 @@ void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
     
     // we need to recompute our value?!
     this->update();
+    
+    // we just mark ourselves as clean
+    this->touched = false;
     
     // call for potential specialized handling (e.g. internal flags)
     function->restore(restorer);
@@ -375,18 +407,28 @@ void RevBayesCore::DeterministicNode<valueType>::swapParent( const RevBayesCore:
     // We are sure to get into trouble if either one of these is NULL
     if( oldParent == NULL || newParent == NULL )
         throw RbException( "Attempt to swap NULL function parameter of RevBayesCore::DeterministicNode" );
-
+    
     // This throws an error if the oldParent cannot be found
     function->swapParameter( oldParent, newParent );
     
     oldParent->removeChild( this );
     if ( oldParent->decrementReferenceCount() == 0 )
         delete ( oldParent );
-
+    
     newParent->addChild( this );
     newParent->incrementReferenceCount();
     
     this->touch();
+}
+
+
+/** touch my function for recalculation (function provided for derived classes) */
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher ) const {
+    
+    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
+    // This is essential for lazy evaluation
+    function->touch( toucher );
 }
 
 
@@ -397,6 +439,9 @@ void RevBayesCore::DeterministicNode<valueType>::swapParent( const RevBayesCore:
  *       has not been touched before the entry to this function. The
  *       touchFunction call always needs to be executed (at least once
  *       for each toucher).
+ *
+ * @todo Get rid of the touched flag. It is not used, and any code relying on
+ *       it to be set correctly might well fail.
  */
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
@@ -404,11 +449,15 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In touchMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-   
+    
+    // To be on the safe side, we set the touched flag here, but the flag is not used by this class and may not
+    // be in a consistent state. Beware!
+    this->touched = true;
+    
     // We need to touch the function always because of specialized touch functionality in some functions, like vector functions.
     // In principle, it would sufficient to do the touch once for each toucher, but we do not keep track of the touchers here.
-    this->function->touch( toucher );
-        
+    this->touchFunction( toucher );
+    
     // Dispatch the touch message to downstream nodes
     this->touchAffected();
 }
