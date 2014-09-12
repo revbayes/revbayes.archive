@@ -159,8 +159,8 @@ for (i in 1:n_genes) {
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
 #  shapeBis[i] := shape[i]
-#  norm_gamma_rates[i] := discretizeGamma( shape[i], shapeBis[i], 4, false )
-	norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+#  norm_gamma_rates[i] := dnDiscretizeGamma( shape[i], shapeBis[i], 4, false )
+	norm_gamma_rates[i] := dnDiscretizeGamma( shape[i], shape[i], 4, false )
 
 }
 
@@ -281,7 +281,7 @@ root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion,
 # Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := dnDiscretizeGamma( shape, shape, 4, false )
 
 # We do not assume variation among branches in rates
 branch_rates <- 1.0
