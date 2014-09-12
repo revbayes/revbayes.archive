@@ -147,10 +147,10 @@ moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"GTST_NoSequences_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename=dataFolder+"GTST_NoSequences_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"GTST_NoSequences_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename=dataFolder+"GTST_NoSequences_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -158,7 +158,7 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 distNe:= Ne - trueNe
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree, Ne, distNe)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree, Ne, distNe)
 	
 
 #############

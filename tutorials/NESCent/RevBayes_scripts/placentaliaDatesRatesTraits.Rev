@@ -63,7 +63,7 @@ covdim <- nTraits+1
 Sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
 
 # multivariate Brownian process along the tree
-X ~ mvtBrownian(psi,sigma=Sigma)
+X ~ dnBrownianMultiVariate(psi,sigma=Sigma)
 
 # first component of the Brownian model gives the *log* of the substitution rate
 # so we take the exponential and average over branches
@@ -133,27 +133,27 @@ mymodel <- model(kappa)
 index <- 1
 
 # rescaling moves on speciation and extinction rates
-moves[index] <- mScale(speciation, lambda=1, tune=true, weight=3.0)
+moves[index] <- mvScale(speciation, lambda=1, tune=true, weight=3.0)
 index <- index + 1
-moves[index] <- mScale(extinction, lambda=1, tune=true, weight=3.0)
+moves[index] <- mvScale(extinction, lambda=1, tune=true, weight=3.0)
 index <- index + 1
 
 # moves on the tree: only relative dates
-moves[index] <- mSubtreeScale(psi, weight=5.0)
+moves[index] <- mvSubtreeScale(psi, weight=5.0)
 index <- index + 1
-moves[index] <- mNodeTimeSlideUniform(psi, weight=10.0)
+moves[index] <- mvNodeTimeSlideUniform(psi, weight=10.0)
 index <- index + 1
 
 # if we wanted to, we could also move the tree topology
 # and integrate over the posterior induced by the sequence data
 # but mixing is currently a bit challenging 
- moves[index] <- mNNI(psi, weight=5.0)
+ moves[index] <- mvNNI(psi, weight=5.0)
  index <- index + 1
- moves[index] <- mFNPR(psi, weight=5.0)
+ moves[index] <- mvFNPR(psi, weight=5.0)
  index <- index + 1
 
 # moves on kappa
-moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+moves[index] <- mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
 # conjugate Gibbs move on covariance matrix
@@ -167,9 +167,9 @@ moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=
 index <- index + 1
 
 # moves on the substitution process parameters
-moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
+moves[index] <- mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
 index <- index + 1
-moves[index] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
+moves[index] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
 index <- index + 1
 
 ######### 
@@ -177,25 +177,25 @@ index <- index + 1
 #########
 
 # screen monitor
-monitors[1] <- screenmonitor(printgen=10, speciation, extinction, correl, meanX)
+monitors[1] <- mnScreen(printgen=10, speciation, extinction, correl, meanX)
 
 # similar monitor, but directly into file
-monitors[2] <- filemonitor(filename="output/placdatesratestraits.trace", printgen=10, separator = "	", speciation, extinction, correl, var, meanX)
+monitors[2] <- mnFile(filename="output/placdatesratestraits.trace", printgen=10, separator = "	", speciation, extinction, correl, var, meanX)
 
 # file monitors for the correlation and partial correlation coefficients
-monitors[3] <- filemonitor(filename="output/placdatesratestraits.correl",printgen=10, separator = "	", correl, pCorrel)
+monitors[3] <- mnFile(filename="output/placdatesratestraits.correl",printgen=10, separator = "	", correl, pCorrel)
 
 # a file monitor just for the covariance matrix
-monitors[4] <- filemonitor(filename="output/placdatesratestraits.cov",printgen=10, separator = "	", Sigma)
+monitors[4] <- mnFile(filename="output/placdatesratestraits.cov",printgen=10, separator = "	", Sigma)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[5] <- filemonitor(filename="output/placdatesratestraits.traits",printgen=10, separator = "	", X)
+monitors[5] <- mnFile(filename="output/placdatesratestraits.traits",printgen=10, separator = "	", X)
 
 # monitoring the trees and dates
-monitors[6] <- filemonitor(filename="output/placdatesratestraits.trees",printgen=10, separator = "	", psi)
+monitors[6] <- mnFile(filename="output/placdatesratestraits.trees",printgen=10, separator = "	", psi)
 
 # a model monitor
-monitors[7] <- modelmonitor(filename="output/placdatesratestraits.log",printgen=10, separator = "	")
+monitors[7] <- mnModel(filename="output/placdatesratestraits.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
