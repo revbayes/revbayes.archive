@@ -79,7 +79,7 @@ mean_r := mean(Re)
 mean_l := mean(lambda)
 
 ## the Birth-death-skyline distribution ##
-timetree ~ dnSkySerialBDP(origin=origin, lambda=lambda, lambdaTimes=absolute_times,
+timetree ~ dnBDPSkySerial(origin=origin, lambda=lambda, lambdaTimes=absolute_times,
 					 mu=delta, muTimes=absolute_times,
 					 psi=s,
 					 rho=rho,
@@ -120,7 +120,7 @@ phySeq.clamp(D)
 
 ## Specifying moves
 mi <- 0
-### moves on dnSkySerialBDP() parameters ###
+### moves on dnBDPSkySerial() parameters ###
 for(i in 1:n_intervals){
 	moves[mi++] <- mvScale(delta[i], lambda=1.0, tune=true, weight=1.0)
 	moves[mi++] <- mvScale(Re[i], lambda=0.1, tune=true, weight=1.0)
@@ -154,12 +154,12 @@ moves[mi++] <- mvScale(shape, lambda=0.75, tune=true, weight=3.0)
 mymodel <- model(er)
 
 ### monitors on the parameters ###
-monitors[1] <- filemonitor(filename="output/hcv_skybdp_mcmc.log", posterior=true, prior=true, 
+monitors[1] <- mnFile(filename="output/hcv_skybdp_mcmc.log", posterior=true, prior=true, 
 							likelihood=true, printgen=10, sep="	",
 							origin, th, rho, lambda, er, sf, shape, absolute_times,
 							Re, delta, mean_l, mean_r, mean_d)
-monitors[2] <- filemonitor(filename="output/hcv_skybdp_mcmc.trees",printgen=10, separator="	", timetree)
-monitors[3] <- screenmonitor(printgen=10, origin, mean_l, th, mean_r, mean_d)
+monitors[2] <- mnFile(filename="output/hcv_skybdp_mcmc.trees",printgen=10, separator="	", timetree)
+monitors[3] <- mnScreen(printgen=10, origin, mean_l, th, mean_r, mean_d)
 
 ### workspace mcmc ###
 mymcmc <- mcmc(mymodel, monitors, moves)

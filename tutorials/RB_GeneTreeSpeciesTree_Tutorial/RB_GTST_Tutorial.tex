@@ -209,7 +209,7 @@ tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.8)
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
 \end{lstlisting}
 \end{snugshade*}}
 \item Then we can use the multispecies coalescent model to generate gene trees. These can be examined using Figtree or NJplot or any other tree viewer, but we can also directly compute symmetric differences between these from RevBayes. First, we simulate a set of gene trees, using a single effective population size for all branches, and after having constructed a map between species names and gene names:
@@ -229,7 +229,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes instead of a single value, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -407,7 +407,7 @@ speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.008)
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
 \end{lstlisting}
@@ -430,7 +430,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 # Making a backup for future reference:
 trueGeneTrees <- geneTrees
@@ -487,7 +487,7 @@ Finally we link it all using the PhyloCTMC model, which simulates gene alignment
  {\tt \begin{snugshade*}
 \begin{lstlisting}
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ dnPhyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -613,12 +613,12 @@ First, basic monitors:
 \begin{lstlisting}
 mntrIndex <- 0
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
 # One monitor for each gene family tree:
 for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
+   monitors[mntrIndex++] <- mnFile(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -667,12 +667,12 @@ function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) {
 }
 # Same thing for exchangeability parameters:
 distExchange := diffVectorsOfVectors(trueEr, er)
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distExchange)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distExchange)
 # Same thing for the family-wise rates
 distRates := diffVectors(trueFamilyRates, familyRates)
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distRates)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distRates)
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
+monitors[mntrIndex++] <- mnScreen(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
 # We could do similar things for the few remaining parameters, but really I think that's enough.
 \end{lstlisting}
 \end{snugshade*}}
@@ -826,7 +826,7 @@ Combining it all with the PhyloCTMC Model and clamp the model to the data:
  {\tt \begin{snugshade*}
 \begin{lstlisting}
 
-aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
 
 aln.clamp(pomo_concatenate)
 \end{lstlisting}
@@ -897,10 +897,10 @@ Then we define a few monitors to keep track of how things go:
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename="pomo_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="pomo_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -908,7 +908,7 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree)
 \end{lstlisting}
 \end{snugshade*}}
 We define our model:
@@ -966,7 +966,7 @@ extinction.setValue(0.3)
 
 # Species tree from birth-death process
 #We assume 1000,000 generations
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 \end{lstlisting}
 \end{snugshade*}}
 Second, one needs to define a transition matrix for DNA mutations, and we use a GTR matrix for that.
@@ -1005,7 +1005,7 @@ To link all the parts of the model together we use the phyloCTMC object and clam
 \begin{lstlisting}
 
 
-aln ~ phyloCTMC(tree=speciesTree, Q=Q, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, type="DNA")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=Q, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, type="DNA")
 
 aln.clamp( concatenate )
 \end{lstlisting}
@@ -1047,10 +1047,10 @@ We define a few monitors to keep track of how things go.
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"concatenation_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename=dataFolder+"concatenation_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"concatenation_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename=dataFolder+"concatenation_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -1058,7 +1058,7 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree)
 	
 \end{lstlisting}
 \end{snugshade*}}

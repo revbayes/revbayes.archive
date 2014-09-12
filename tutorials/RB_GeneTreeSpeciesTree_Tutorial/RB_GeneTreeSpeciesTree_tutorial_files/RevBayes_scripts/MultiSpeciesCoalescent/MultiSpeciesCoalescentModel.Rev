@@ -69,7 +69,7 @@ write("Compared to smallest gene tree height: " + min(geneTreeRootAges) )
 
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 
 # We rescale by the mutation rate we used in the simulation
@@ -99,7 +99,7 @@ Ne.setValue(trueNe)
 
 # Link the gene trees to the species tree and Ne
 for (i in 1:n_genes) {
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
    geneTrees[i].clamp(trueGeneTrees[i])
 }
 
