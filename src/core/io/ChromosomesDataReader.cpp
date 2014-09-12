@@ -30,7 +30,7 @@ ChromosomesDataReader::ChromosomesDataReader(std::string fn, char d) : Delimited
 	
    filename = fn;
 	int i = 0;
-	while (i < (DelimitedDataReader::getChars().size()-1)) {
+	while (i < DelimitedDataReader::getChars().size()) {
 		
 		std::string name = DelimitedDataReader::getChars()[i][0];
 		
