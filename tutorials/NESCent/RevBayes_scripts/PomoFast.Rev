@@ -262,7 +262,7 @@ base_fitnesses <- v(1, 1, 1, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
-P := pomo(Q, base_fitnesses, virtual_population_size)
+P := fnPomo(Q, base_fitnesses, virtual_population_size)
 
 # We also need to define root frequencies for all the states.
 # To do that we need two variables:
