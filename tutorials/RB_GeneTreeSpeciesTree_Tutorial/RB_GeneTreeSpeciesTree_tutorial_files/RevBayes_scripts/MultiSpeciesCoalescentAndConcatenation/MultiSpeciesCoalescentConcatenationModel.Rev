@@ -82,7 +82,7 @@ extinction.setValue(0.3)
 
 # Species tree from birth-death process
 #We assume 1000,000 generations
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Second, one needs to define a transition matrix for DNA mutations.
 # Here we are going to use a GTR matrix. 

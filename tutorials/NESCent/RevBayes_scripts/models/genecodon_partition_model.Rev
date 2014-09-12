@@ -84,7 +84,7 @@ for (i in 1:n_parts){
 
 
 # Specify a uniform topology prior
-topology ~ uniformTopology(n_species, names)
+topology ~ dnUniformTopology(n_species, names)
 
 # moves on the tree
 moves[mi++] <- mvNNI(topology, weight=10.0)

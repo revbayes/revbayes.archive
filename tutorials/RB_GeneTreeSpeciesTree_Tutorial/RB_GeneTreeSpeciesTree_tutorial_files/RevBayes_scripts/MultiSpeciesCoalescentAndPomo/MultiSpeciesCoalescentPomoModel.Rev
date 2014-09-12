@@ -102,7 +102,7 @@ tree_height ~ unif(0.0,10.0)
 tree_height.setValue(trueRootAge)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 speciesTree.setValue(trueSpeciesTree)
 speciesTree.rescale(0.0000001)
 

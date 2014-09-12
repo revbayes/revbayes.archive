@@ -532,7 +532,7 @@ extinction $\sim$ exponential(0.1)
 \\
 sampling\_fraction := 0.01  \, \, \,    \# 40 out of the $\sim$4000 placental mammals
 \\
-psi $\sim$ cBDP(lambda=speciation, mu=extinction, rho=sampling\_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
+psi $\sim$ dnBDP(lambda=speciation, mu=extinction, rho=sampling\_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
 }
 \item
 we still want to work on a fixed, pre-specified, tree topology (thus, the birth-death prior will be used here only for averaging over uncertainty about divergence times):
@@ -739,7 +739,7 @@ pi $\sim$ dirichlet(bf)
 finally, create the substitution model:
 \\
 \cmd{
-seq $\sim$ substModel(tree=psi, Q=branchMatrices, rootFrequencies=pi,
+seq $\sim$ dnPhyloCTMC(tree=psi, Q=branchMatrices, rootFrequencies=pi,
 \\
 branchRates=branchrates, nSites=nSites, type="DNA")
 }

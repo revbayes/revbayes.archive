@@ -79,7 +79,7 @@ mean_r := mean(Re)
 mean_l := mean(lambda)
 
 ## the Birth-death-skyline distribution ##
-timetree ~ dnSkySerialBDP(origin=origin, lambda=lambda, lambdaTimes=absolute_times,
+timetree ~ dnBDPSkySerial(origin=origin, lambda=lambda, lambdaTimes=absolute_times,
 					 mu=delta, muTimes=absolute_times,
 					 psi=s,
 					 rho=rho,
@@ -120,7 +120,7 @@ phySeq.clamp(D)
 
 ## Specifying moves
 mi <- 0
-### moves on dnSkySerialBDP() parameters ###
+### moves on dnBDPSkySerial() parameters ###
 for(i in 1:n_intervals){
 	moves[mi++] <- mvScale(delta[i], lambda=1.0, tune=true, weight=1.0)
 	moves[mi++] <- mvScale(Re[i], lambda=0.1, tune=true, weight=1.0)

@@ -36,7 +36,7 @@ extinction ~ dnLogUniform(0.001,1000)
 # rough estimate of sampling fraction: 40 placental mammals out of the ~4000 currently existing out there
 sampling_fraction := 0.01
 
-psi ~ cBDP(lambda=speciation, mu=extinction, rho=sampling_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
+psi ~ dnBDP(lambda=speciation, mu=extinction, rho=sampling_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
 
 # work under fixed, externally provided, tree topology
 treeArray <- readTrees("data/chronoplac40.tree")
@@ -129,7 +129,7 @@ er ~ dirichlet(e)
 Q := gtr(er,pi)
 
 # create the sequence evolution model
-seq ~ substModel(tree=psi, Q=Q, branchRates=rateprocess, nSites=nSites, type="DNA")
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=rateprocess, nSites=nSites, type="DNA")
 
 # condition on sequence alignment
 seq.clamp(seqData)
