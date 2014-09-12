@@ -441,7 +441,7 @@ The second parameter of the HKY model is the transition-transversion rate, \cl{k
 For the transition transversion rate we choose a lognormal prior distribution.
 {\tt\small \begin{snugshade*}
 \begin{lstlisting}
-kappa ~ dnLdnNorm(1.0,1.25)
+kappa ~ dnLnorm(1.0,1.25)
 \end{lstlisting}
 \end{snugshade*}}
 

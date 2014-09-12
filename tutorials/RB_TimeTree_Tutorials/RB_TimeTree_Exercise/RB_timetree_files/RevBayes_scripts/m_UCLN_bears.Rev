@@ -12,7 +12,7 @@
 br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
-base_rate ~ dnLdnNorm(br_mu, br_s)
+base_rate ~ dnLnorm(br_mu, br_s)
 moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 
 ### get the number of branches in the tree
@@ -35,7 +35,7 @@ moves[mi++] <- mvScale(ucln_sigma, lambda=0.5, tune=true, weight=4.0)
 ### the indices of the vector correspond to branch indices in the tree
 ### using a for-lop initialize the branch rates and assign a move to each one
 for(i in 1:n_branches){
-	branch_rates[i] ~ dnLdnNorm(ucln_mu, ucln_sigma)
+	branch_rates[i] ~ dnLnorm(ucln_mu, ucln_sigma)
 	moves[mi++] <- mvScale(branch_rates[i],lambda=1.0,tune=true,weight=2.0)
 }
 ### add 2 more moves on the branch rate vector

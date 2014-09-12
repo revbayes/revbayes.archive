@@ -51,9 +51,9 @@ rho[1] <- 1e-6
 ## Re and delta (delta = becomeUninfectiousRate in BEAST2)
 ## for contemporaneous seqs, delta=mu
 for(i in 1:n_intervals){
-	delta[i] ~ dnLdnNorm(1.0, 1.25) 
+	delta[i] ~ dnLnorm(1.0, 1.25) 
 	delta[i].setValue(1.0)
-	Re[i] ~ dnLdnNorm(1.0, 1.25)
+	Re[i] ~ dnLnorm(1.0, 1.25)
 	Re[i].setValue(2.0)
 }
 
