@@ -78,7 +78,6 @@
 #include "TreeScale.h"
 #include "SubtreeScale.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "TestTreeTraceSummary.h"
 #include "TreeHeightStatistic.h"
 #include "TreeSummary.h"
 #include "TreeTrace.h"
