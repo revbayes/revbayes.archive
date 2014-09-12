@@ -60,7 +60,7 @@ kappa.setValue(0.1)
 df <- nTraits+2
 covdim <- nTraits
 
-Sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
+Sigma ~ dnInvWishart(dim=covdim, kappa=kappa, df=df)
 
 # multivariate Brownian process along the tree
 X ~ dnBrownianMultiVariate(psi,sigma=Sigma)

@@ -20,7 +20,7 @@ psi <- treeArray[1]
 
 kappa ~ dnLogUniform(min=0.001,max=1000)
 df <- nTraits+2
-Sigma ~ invWishart(dim=nTraits, kappa=kappa, df=df)
+Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=df)
 
 # multivariate Brownian process along the tree
 # parameterized by sigma
