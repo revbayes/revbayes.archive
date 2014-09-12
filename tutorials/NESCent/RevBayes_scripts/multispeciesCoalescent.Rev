@@ -52,7 +52,7 @@ n_species <- speciesNames.size()
 # Birth-Death process priors
 speciation ~ dnExp(10.0)
 extinction ~ dnExp(10.0)
-org ~ unif(0,100.0)
+org ~ dnUniform(0,100.0)
 
 moveIndex <- 0
 

@@ -205,7 +205,7 @@ for (i in 1:n_species) {
 \begin{lstlisting}
 speciation ~ dnExp(10.0)
 extinction ~ dnExp(10.0)
-tree_height ~ unif(0,1.0)
+tree_height ~ dnUniform(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.8)
@@ -402,7 +402,7 @@ for (i in 1:n_species) {
 }
 speciation ~ dnExp(10.0)
 extinction ~ dnExp(10.0)
-tree_height ~ unif(0,1.0)
+tree_height ~ dnUniform(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.008)
@@ -960,7 +960,7 @@ We can also concatenate all alignments and run a partitioned GTR model on it.
 # Birth-Death process priors.
 speciation ~ dnExp(10.0)
 extinction ~ dnExp(10.0)
-tree_height ~ unif(0.0,100.0)
+tree_height ~ dnUniform(0.0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 

@@ -98,7 +98,7 @@ write(pomo_concatenate)
 # Birth-Death process priors.
 speciation ~ dnExp(10.0)
 extinction ~ dnExp(10.0)
-tree_height ~ unif(0.0,10.0)
+tree_height ~ dnUniform(0.0,10.0)
 tree_height.setValue(trueRootAge)
 
 # Species tree from birth-death process
