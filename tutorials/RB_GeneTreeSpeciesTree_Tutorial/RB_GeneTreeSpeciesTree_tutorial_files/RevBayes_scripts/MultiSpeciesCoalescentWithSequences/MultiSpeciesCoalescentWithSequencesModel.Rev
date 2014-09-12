@@ -76,7 +76,7 @@ extinction ~ dnExp(10.0)
 
 # A species tree larger than the gene trees has probability 0.
 # To be sure to start from a state with a non-null probability, we start from the true values.
-tree_height ~ unif(0.0,100.0)
+tree_height ~ dnUniform(0.0,100.0)
 tree_height.setValue(trueRootAge)
 
 write("Starting species tree height: "+tree_height)
