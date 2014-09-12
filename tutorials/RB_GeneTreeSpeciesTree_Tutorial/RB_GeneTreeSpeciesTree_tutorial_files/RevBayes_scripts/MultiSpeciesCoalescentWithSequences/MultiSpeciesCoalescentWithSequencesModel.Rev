@@ -162,7 +162,7 @@ for (i in 1:n_genes) {
 # To link all the parts of the model together we use the phyloCTMC object.
 
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ dnPhyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
   alns[i].clamp(trueAlns[i])
 }
 

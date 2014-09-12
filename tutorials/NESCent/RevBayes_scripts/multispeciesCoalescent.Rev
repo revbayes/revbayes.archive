@@ -173,7 +173,7 @@ for (i in 1:n_genes) {
 # and we clamp the phyloCTMC object to the gene family alignments.
 
 for (i in 1:n_genes) {
-  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
+  phyloSeq[i] ~ dnPhyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 
