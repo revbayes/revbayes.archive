@@ -24,12 +24,12 @@ namespace RevBayesCore {
     class GeneralRateMapFunction : public TypedFunction<RateMap> {
         
     public:
-        GeneralRateMapFunction(size_t ns, size_t nc);                                                                                             // pass in geography object??
-        GeneralRateMapFunction(const GeneralRateMapFunction &n);                                                                  //!< Copy constructor
-        virtual                                            ~GeneralRateMapFunction(void);                                              //!< Virtual destructor
+        GeneralRateMapFunction(size_t ns, size_t nc);
+        GeneralRateMapFunction(const GeneralRateMapFunction &n);                                                                        //!< Copy constructor
+        virtual                                            ~GeneralRateMapFunction(void);                                               //!< Virtual destructor
         
         // public member functions
-        GeneralRateMapFunction*                             clone(void) const;                                                              //!< Create an independent clone
+        GeneralRateMapFunction*                             clone(void) const;                                                          //!< Create an independent clone
         
         // set parameters
         void                                                setClockRate(const TypedDagNode< double > *r);
@@ -40,7 +40,7 @@ namespace RevBayesCore {
         void                                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Implementation of swaping parameters
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swapping parameters
         
     private:
         
