@@ -66,6 +66,7 @@
 #include "UniformBranchLengthTreeDistribution.h"
 #include "DistanceDependentDispersalFunction.h"
 #include "PathUniformizationSampleProposal.h"
+#include "FreeBinaryRateMatrixFunction.h"
 
 // joint mol bd test
 #include "RootTimeSlide.h"
@@ -264,9 +265,6 @@ bool TestCharacterHistory::run_exp(void) {
     
     // ctmc rates
     ConstantNode<double>* glr_pr = new ConstantNode<double>("glr_pr", new double(100.0));
-    //    ConstantNode<double>* glr_pr_a = new ConstantNode<double>("glr_pr_a", new double(1.1));
-    //    ConstantNode<double>* glr_pr_b = new ConstantNode<double>("glr_pr_b", new double(11.0));
-    
     std::vector<const TypedDagNode<double> *> glr;
     std::vector<StochasticNode<double>* > glr_stoch;
 	std::vector< ContinuousStochasticNode *> glr_nonConst;
@@ -282,8 +280,9 @@ bool TestCharacterHistory::run_exp(void) {
 	}
 //    glr_nonConst[0]->setValue(0.1);
 //    glr_nonConst[1]->setValue(0.1);
-    
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
+    DeterministicNode<RateMatrix> *q_glr = new DeterministicNode<RateMatrix>( "Q", new FreeBinaryRateMatrixFunction(glr_vector) );
+    
     
     // root frequencies
     // gtr model priors
@@ -298,7 +297,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
-    brmf_likelihood->setGainLossRates(glr_vector);
+    brmf_likelihood->setRateMatrix(q_glr);
     brmf_likelihood->setClockRate(clockRate);
     if (useDistances || useAvailable || useAdjacency)
         brmf_likelihood->setGeographyRateModifier(ddd);
@@ -310,7 +309,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     // Q-map used to sample path histories
     BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, false);
-    brmf_sample->setGainLossRates(glr_vector);
+    brmf_sample->setRateMatrix(q_glr);
     brmf_sample->setClockRate(clockRate);
     if (useDistances || useAvailable || useAdjacency)
         brmf_sample->setGeographyRateModifier(ddd);
@@ -697,10 +696,11 @@ bool TestCharacterHistory::run_mol(void) {
     glr_nonConst[1]->setValue(0.1);
     
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
+    DeterministicNode<RateMatrix> *q_glr = new DeterministicNode<RateMatrix>( "Q", new FreeBinaryRateMatrixFunction(glr_vector) );
     
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
-    brmf_likelihood->setGainLossRates(glr_vector);
+    brmf_likelihood->setRateMatrix(q_glr);
     brmf_likelihood->setClockRate(clockRate);
     if (useDistances || useAvailable || useAdjacency)
         brmf_likelihood->setGeographyRateModifier(ddd);
@@ -709,7 +709,7 @@ bool TestCharacterHistory::run_mol(void) {
     
     // Q-map used to sample path histories
     BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, false);
-    brmf_sample->setGainLossRates(glr_vector);
+    brmf_sample->setRateMatrix(q_glr);
     brmf_sample->setClockRate(clockRate);
     if (useDistances || useAvailable || useAdjacency)
         brmf_sample->setGeographyRateModifier(ddd);
@@ -1060,16 +1060,17 @@ bool TestCharacterHistory::run_dollo(void) {
         glr_stoch.push_back(tmp_glr);
 	}
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( gainLossRates ) );
+    DeterministicNode<RateMatrix> *q_glr = new DeterministicNode<RateMatrix>( "Q", new FreeBinaryRateMatrixFunction(glr_vector) );
     
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas,forbidExtinction);
-    brmf_likelihood->setGainLossRates(glr_vector);
+    brmf_likelihood->setRateMatrix(q_glr);
     brmf_likelihood->setClockRate(clockRate);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_l", brmf_likelihood);
     
     // Q-map used to sample path histories
     BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas,false);
-    brmf_sample->setGainLossRates(glr_vector);
+    brmf_sample->setRateMatrix(q_glr);
     brmf_sample->setClockRate(clockRate);
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_s", brmf_sample);
     

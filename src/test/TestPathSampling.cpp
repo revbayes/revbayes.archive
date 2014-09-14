@@ -161,10 +161,12 @@ bool TestPathSampling::run_binary( void )
     glr_nonConst[0]->setValue(0.1);
     glr_nonConst[1]->setValue(0.1);
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
+    DeterministicNode<RateMatrix>* q_glr = new DeterministicNode<RateMatrix>("q_glr", new FreeBinaryRateMatrixFunction(glr_vector) );
+    
     
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, false);
-    brmf_likelihood->setGainLossRates(glr_vector);
+    brmf_likelihood->setRateMatrix(q_glr);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
     // Q-map used to sample path histories
