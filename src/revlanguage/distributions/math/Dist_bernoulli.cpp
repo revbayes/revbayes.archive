@@ -19,6 +19,8 @@ using namespace RevLanguage;
 
 Dist_bernoulli::Dist_bernoulli() : TypedDistribution<Natural>() {
     
+    setGuiDistributionName("Bernoulli");
+    setGuiDistributionToolTip("Bernoulli distribution for 0 or 1 random variables");
 }
 
 
