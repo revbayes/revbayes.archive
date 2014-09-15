@@ -19,6 +19,8 @@ using namespace RevLanguage;
 
 Dist_beta::Dist_beta() : TypedDistribution<Probability>() {
     
+    setGuiDistributionName("Beta");
+    setGuiDistributionToolTip("Beta distribution for random variables on the interval [0,1]");
 }
 
 
