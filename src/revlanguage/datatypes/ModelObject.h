@@ -18,6 +18,7 @@
 #ifndef ModelObject_H
 #define ModelObject_H
 
+#include "AbstractModelObject.h"
 #include "MethodTable.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
@@ -26,7 +27,7 @@
 namespace RevLanguage {
     
     template <typename rbType>
-    class ModelObject : public RevObject {
+    class ModelObject : public AbstractModelObject {
     
     public:
         virtual                                ~ModelObject(void);                                                          //!< Virtual destructor
@@ -103,7 +104,7 @@ namespace RevLanguage {
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject() :
-    RevObject(),
+    AbstractModelObject(),
     dagNode( NULL )
 {
 }
@@ -112,7 +113,7 @@ RevLanguage::ModelObject<rbType>::ModelObject() :
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
-    RevObject(),
+    AbstractModelObject(),
     dagNode( new RevBayesCore::ConstantNode<rbType>("",v) )
 {
     // increment the reference count to the value
@@ -124,7 +125,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) :
-    RevObject(),
+    AbstractModelObject(),
     dagNode( v )
 {
     // increment the reference count to the value
@@ -135,7 +136,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
-    RevObject(),
+    AbstractModelObject(),
     dagNode( NULL )
 {
     if ( v.dagNode != NULL )

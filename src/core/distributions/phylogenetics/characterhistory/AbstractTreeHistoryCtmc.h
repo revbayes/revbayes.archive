@@ -11,6 +11,7 @@
 
 #include "AbstractCharacterData.h"
 #include "BranchHistory.h"
+#include "ContinuousCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
@@ -56,9 +57,10 @@ namespace RevBayesCore {
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setTipProbs(const AbstractCharacterData* tp);
         
-        virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd) = 0;
-        virtual const std::vector<std::vector<double> >&                    getTipProbs(void) = 0;
+        virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
+        virtual const std::vector<std::vector<double> >&                    getTipProbs(void);
         
         virtual void                                                        simulate(void);
 
@@ -97,6 +99,7 @@ namespace RevBayesCore {
         std::vector<std::vector<unsigned long> >                            charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<BranchHistory*>                                         histories;
+        std::vector<std::vector<double> >                                   tipProbs;
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changedNodes;
@@ -161,7 +164,8 @@ dirtyNodes( n.dirtyNodes ),
 usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
 treatUnknownAsGap( n.treatUnknownAsGap ),
 treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
-tipsInitialized( n.tipsInitialized )
+tipsInitialized( n.tipsInitialized ),
+tipProbs( n.tipProbs )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -283,6 +287,48 @@ template<class charType, class treeType>
 std::vector<RevBayesCore::BranchHistory*> RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistories(void)
 {
     return histories;
+}
+
+
+template<class charType, class treeType>
+const std::vector<std::vector<double> >& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getTipProbs(void)
+{
+    return tipProbs;
+}
+
+template<class charType, class treeType>
+const std::vector<double>& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getTipProbs(const TopologyNode& nd)
+{
+    return tipProbs[nd.getIndex()];
+}
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
+{
+
+    tipProbs.clear();
+
+    size_t numTaxa = tp->getNumberOfTaxa();
+    size_t numCharacters = tp->getNumberOfCharacters();
+
+    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
+
+    tipProbs.resize(numTaxa);
+    const ContinuousCharacterData* ccdp = static_cast<const ContinuousCharacterData*>(tp);
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        TopologyNode* nd = nodes[i];
+        if (!nd->isTip())
+            continue;
+        
+        const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
+        for (size_t j = 0; j < numCharacters; j++)
+        {
+            double v = cd->getCharacter(j).getMean();
+            //tipProbs[nd->getIndex()].push_back(1-v);
+            tipProbs[nd->getIndex()].push_back(v);
+        }
+    }
 }
 
 

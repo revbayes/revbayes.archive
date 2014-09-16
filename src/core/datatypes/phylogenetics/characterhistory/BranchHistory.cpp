@@ -273,7 +273,8 @@ void BranchHistory::print(void) const
     std::cout << "                       0.0 : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
-        std::cout << (*it_v)->getState();
+//        std::cout << (*it_v)->getState();
+        std::cout << (*it_v)->getStateStr();
     }
     std::cout << "\n";
     
@@ -287,7 +288,8 @@ void BranchHistory::print(void) const
             if (i != (*it_h)->getIndex())
                 std::cout << " ";
             else
-                std::cout << (*it_h)->getState();
+                std::cout << (*it_h)->getStateStr();
+//                std::cout << (*it_h)->getState();
             //std::cout << " ";
         }
         std::cout << "\n";
@@ -295,7 +297,8 @@ void BranchHistory::print(void) const
     std::cout << "                       1.0 : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
-        std::cout << (*it_v)->getState();
+//        std::cout << (*it_v)->getState();
+        std::cout << (*it_v)->getStateStr();
     }
     std::cout << "\n";
     std::cout << "                             ";
