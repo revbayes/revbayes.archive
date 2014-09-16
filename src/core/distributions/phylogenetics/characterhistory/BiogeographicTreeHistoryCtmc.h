@@ -63,9 +63,9 @@ namespace RevBayesCore {
         void                                                setCladogenicStateFrequencies(const TypedDagNode<std::vector<double> >* csf);
 
         // special tip/root state flags
-        const std::vector<double>&                          getTipProbs(const TopologyNode& nd);
-        const std::vector<std::vector<double> >&            getTipProbs(void);
-        void                                                setTipProbs(const AbstractCharacterData* d);
+//        const std::vector<double>&                          getTipProbs(const TopologyNode& nd);
+//        const std::vector<std::vector<double> >&            getTipProbs(void);
+//        void                                                setTipProbs(const AbstractCharacterData* d);
         const bool                                          getUseTail(void) const;
         
         
@@ -113,7 +113,6 @@ namespace RevBayesCore {
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         const TypedDagNode< std::vector< double > >*        cladogenicStateFreqs;
-        std::vector<std::vector<double> >                   tipProbs;
         std::vector<double>                                 epochs;
         
         // flags specifying which model variants we use
@@ -155,7 +154,6 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     std::vector<double> csfInit = std::vector<double>(3, 0.33);
 //    csfInit[0] = 1.0;
     cladogenicStateFreqs        = new ConstantNode<std::vector<double> >("cladoStateFreqs", new std::vector<double>(csfInit));
-    tipProbs.clear();
     redrawCount                 = 0;
     
     
@@ -188,7 +186,6 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     homogeneousRateMap          = d.homogeneousRateMap;
     heterogeneousRateMaps       = d.heterogeneousRateMaps;
     cladogenicStateFreqs        = d.cladogenicStateFreqs;
-    tipProbs                    = d.tipProbs;
     redrawCount                 = d.redrawCount;
     useTail                     = d.useTail;
     
@@ -388,7 +385,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTi
         const std::vector<CharacterEvent*>& tipState = bh->getChildCharacters();
         for (size_t i = 0; i < tipState.size(); i++)
         {
-            double v = tipProbs[nodeIndex][i];
+            double v = this->tipProbs[nodeIndex][i];
             if (tipState[i]->getState() == 0)
                 v = 1 - v;
             lnL += std::log(v);
@@ -448,17 +445,17 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
     
 }
 
-template<class charType, class treeType>
-const std::vector<std::vector<double> >& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getTipProbs(void)
-{
-    return tipProbs;
-}
-
-template<class charType, class treeType>
-const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getTipProbs(const TopologyNode& nd)
-{
-    return tipProbs[nd.getIndex()];
-}
+//template<class charType, class treeType>
+//const std::vector<std::vector<double> >& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getTipProbs(void)
+//{
+//    return tipProbs;
+//}
+//
+//template<class charType, class treeType>
+//const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getTipProbs(const TopologyNode& nd)
+//{
+//    return tipProbs[nd.getIndex()];
+//}
 
 template<class charType, class treeType>
 const bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getUseTail(void) const
@@ -514,7 +511,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
                     
                     if (!this->usingAmbiguousCharacters)
                         s = (unsigned)d[j].getStateIndex();
-                    else if (GLOBAL_RNG->uniform01() < tipProbs[node->getIndex()][j])
+                    else if (GLOBAL_RNG->uniform01() < this->tipProbs[node->getIndex()][j])
                         s = 1;
                         
                     CharacterEvent* evt = new CharacterEvent(j, s, 1.0);
@@ -611,7 +608,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathE
             for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
             {
                 double u = GLOBAL_RNG->uniform01();
-                unsigned s = ( u < tipProbs[node.getIndex()][*it] ? 1 : 0);
+                unsigned s = ( u < this->tipProbs[node.getIndex()][*it] ? 1 : 0);
                 childState[*it]->setState(s);
             }
       
@@ -1054,33 +1051,33 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
     
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
-{
-    tipProbs.clear();
-    
-    size_t numTaxa = tp->getNumberOfTaxa();
-    size_t numCharacters = tp->getNumberOfCharacters();
-    
-    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
-    
-    tipProbs.resize(numTaxa);
-    const ContinuousCharacterData* ccdp = static_cast<const ContinuousCharacterData*>(tp);
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        TopologyNode* nd = nodes[i];
-        if (!nd->isTip())
-            continue;
-        
-        const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
-        for (size_t j = 0; j < numCharacters; j++)
-        {
-            double v = cd->getCharacter(j).getMean();
-            //tipProbs[nd->getIndex()].push_back(1-v);
-            tipProbs[nd->getIndex()].push_back(v);
-        }
-    }
-}
+//template<class charType, class treeType>
+//void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
+//{
+//    tipProbs.clear();
+//    
+//    size_t numTaxa = tp->getNumberOfTaxa();
+//    size_t numCharacters = tp->getNumberOfCharacters();
+//    
+//    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
+//    
+//    tipProbs.resize(numTaxa);
+//    const ContinuousCharacterData* ccdp = static_cast<const ContinuousCharacterData*>(tp);
+//    for (size_t i = 0; i < nodes.size(); i++)
+//    {
+//        TopologyNode* nd = nodes[i];
+//        if (!nd->isTip())
+//            continue;
+//        
+//        const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
+//        for (size_t j = 0; j < numCharacters; j++)
+//        {
+//            double v = cd->getCharacter(j).getMean();
+//            //tipProbs[nd->getIndex()].push_back(1-v);
+//            tipProbs[nd->getIndex()].push_back(v);
+//        }
+//    }
+//}
 
 template<class charType, class treeType>
 const std::vector<int>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getBuddingStates(void)
