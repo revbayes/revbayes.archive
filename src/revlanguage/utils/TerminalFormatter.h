@@ -20,11 +20,11 @@ using namespace TerminalCodes;
 
 class TerminalFormatter {
 public:
-
+    
     static std::string makeBold(std::string s) {
         return _termBold + s + _termReset;
     }
-
+    
     static std::string makeUnderlined(std::string s) {
         return _termUnderline + s + _termReset;
     }

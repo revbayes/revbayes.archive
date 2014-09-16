@@ -441,8 +441,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         
         // Model vectors of abstract elements
-        addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
-        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
+//        addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
+//        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
         addType( new ModelVectorAbstractElement<RateMatrix>() );
 
         // Workspace vectors

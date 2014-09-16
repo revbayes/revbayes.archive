@@ -5,7 +5,6 @@
  */
 
 #include "RevLanguageMain.h"
-#include "IHelp.h"
 #include "Parser.h"
 #include "RbSettings.h"
 #include "Workspace.h"
@@ -15,8 +14,9 @@
 #include <string>
 #include <cstdlib>
 
-RevLanguageMain::RevLanguageMain(IHelp *help) {
-    this->help = help;  
+RevLanguageMain::RevLanguageMain(void)
+{
+
 }
 
 
@@ -29,9 +29,6 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
     
-    // inject help class
-    RevLanguage::Parser::getParser().setHelp(this->help);
-
     // Print an extra line to separate prompt from possible output from help call
     // RevLanguage::UserInterface::userInterface().output("\n");
 
