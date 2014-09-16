@@ -23,7 +23,81 @@
 #include <string>
 
 
-std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s) {
+/**
+ * Wraps text so that each line doesn't exceeds column width.
+ * Prepends tabs to each line.
+ *
+ * @param s             string to format
+ * @param tabs          number of tabs to prepend to each line
+ * @param width         column width
+ * @param removeFormat  strips newline, tab etc if set to true
+ * @return              formatted text
+ */
+std::string StringUtilities::formatTabWrap(std::string s, int tabs, int width, bool removeFormat)
+{
+    
+    std::string tabbing = "";
+    for (int i = 0; i < tabs * 4; i++)
+    {
+        tabbing.append(" ");
+    }
+    
+    std::string result = tabbing;
+    int w = width - int(tabbing.size());
+    int cc = 0; // character count
+    char lastChar = '\0';
+    
+    for (unsigned int i = 0; i < s.size(); i++)
+    {
+        if (result.size() > 0)
+        {
+            lastChar = result[result.size() - 1];
+        }
+        
+        // strip consecutive spaces
+        if (!(lastChar == ' ' && s[i] == ' '))
+        {
+            if (!removeFormat)
+            {
+                result += s[i];
+                lastChar = s[i];
+                cc++;
+            }
+            else if (!StringUtilities::isFormattingChar(s[i]))
+            {
+                result += s[i];
+                lastChar = s[i];
+                cc++;
+            }
+        }
+        
+        if (lastChar == '\n')
+        {
+            cc = 0;
+            result.append(tabbing);
+        }
+        
+        if (lastChar == ' ')
+        {
+            // we now have a possible point where to wrap the line.
+            // peek ahead and see where next possible wrap point is:
+            size_t next = s.substr(i).find_first_of(" ", 1);
+            
+            // if next wrap point is beyond the width, then wrap line now
+            if (cc + next >= w)
+            {
+                result.append("\n").append(tabbing);
+                // reset char count for next line
+                cc = 0;
+            }
+        }
+    }
+    return result;
+}
+
+
+std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s)
+{
 
 #	ifdef WIN32
     std::string pathSeparator = "\\";
@@ -169,6 +243,18 @@ std::string StringUtilities::getLastPathComponent(const std::string& s) {
     }
     
     return lastComponent;
+}
+
+
+
+/**
+ * Indicates if a char is affecting text formatting
+ * @param c
+ * @return
+ */
+bool StringUtilities::isFormattingChar(char c)
+{
+    return c == '\n' || c == '\t' || c == '\r';
 }
 
 

@@ -1,6 +1,6 @@
-#include "IHelp.h"
 #include "Parser.h"
 #include "RbException.h"
+#include "RbHelpSystem.h"
 #include "RbUtil.h"
 #include "RevNullObject.h"
 #include "RlString.h"
@@ -232,10 +232,10 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 #	endif
 
     // Get some help
-    std::string qs(symbol);
-    if ( this->helpEntity->isHelpAvailableForQuery(qs))
+    RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
+    if ( hs.isHelpAvailableForQuery(symbol) )
     {
-        std::string hStr = this->helpEntity->getHelp( qs, 100);
+        std::string hStr = hs.getHelp( symbol, 100 );
         UserInterface::userInterface().output(hStr, false);
     }
     else
