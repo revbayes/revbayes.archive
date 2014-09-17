@@ -46,8 +46,10 @@ namespace RevBayesCore {
         virtual                                    ~RootedTripletDistribution(void);                                                                                                        //!< Destructor
         RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames ) ;
         RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< std::string > spNames ) ;
-
         RootedTripletDistribution( const std::vector< std::string > spNames ) ;
+        RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< Taxon > tax ) ;
+        RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< Taxon > tax ) ;
+        RootedTripletDistribution( const std::vector< Taxon > tax ) ;
 
         RootedTripletDistribution&                                   operator=(const RootedTripletDistribution& t);
         
@@ -90,8 +92,6 @@ namespace RevBayesCore {
         std::vector< std::string >                                                  species;
         std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >                         tripletDistribution;
         size_t                                                                numberOfTrees;
-        std::set< Taxon >                                                           taxaSet;
-        std::set< std::string >                                                  speciesSet;
         std::map< Taxon, size_t >                                              taxonToIndex;
         std::map< std::string, size_t >                                      speciesToIndex;
         bool                                                                    speciesOnly;

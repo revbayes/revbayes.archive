@@ -49,6 +49,15 @@ RootedTripletDistributionFunction::RootedTripletDistributionFunction( const Type
 
 }
 
+RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode<std::vector< Taxon > > *t ): TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
+    //    ts->getValue(), sn->getValue()
+    taxa = t->clone();
+    std::cout << "species.size(): "<< species->getValue().size() <<std::endl;
+    std::cout << "taxa.size(): "<< taxa->getValue().size() <<std::endl;
+
+    rtd = new RootedTripletDistribution( taxa->getValue()  );
+    
+}
 
 
 RootedTripletDistributionFunction::~RootedTripletDistributionFunction( void ) {
