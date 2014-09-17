@@ -37,6 +37,7 @@ namespace RevBayesCore {
         RootedTripletDistributionFunction( const TypedDagNode<std::vector< TimeTree > > *ts, const TypedDagNode<std::vector< std::string > > *sn );
         RootedTripletDistributionFunction( const TypedDagNode<std::vector< BranchLengthTree > > *ts, const TypedDagNode<std::vector< std::string > > *sn );
         RootedTripletDistributionFunction( const TypedDagNode<std::vector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode<std::vector< Taxon > > *t );
 
         virtual                                            ~RootedTripletDistributionFunction(void);                                                    //!< Virtual destructor
         
@@ -63,9 +64,8 @@ namespace RevBayesCore {
 
         const TypedDagNode<std::vector<TimeTree> >*                                  ttrees;
         const TypedDagNode<std::vector<BranchLengthTree> >*                         bltrees;
-        std::vector< Taxon >                                                           taxa;
-     //   std::vector< std::string >                                                  species;
-        const TypedDagNode<std::vector< std::string > >*                            species;
+        const TypedDagNode< std::vector< Taxon > >*                                    taxa;
+        const TypedDagNode< std::vector< std::string > >*                            species;
         std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t > tripletDistribution;
         size_t                                                                numberOfTrees;
         std::set< Taxon >                                                           taxaSet;
