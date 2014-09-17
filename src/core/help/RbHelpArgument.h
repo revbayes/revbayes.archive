@@ -14,7 +14,7 @@ namespace RevBayesCore {
      * in a function call. This class is a pure data object.
      *
      * \copyright (c) Copyright 2009-2013 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
+     * \author The RevBayes Development Core Team (Johan Dunfalk & Sebastian Hoehna)
      * \since Version 1.0, 2014-09-15
      *
      */

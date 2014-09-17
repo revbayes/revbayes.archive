@@ -16,14 +16,16 @@ namespace RevBayesCore {
      * A help entry for a function call provides all the help information available.
      *
      * \copyright (c) Copyright 2009-2013 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
+     * \author The RevBayes Development Core Team (Johan Dunfalk & Sebastian Hoehna)
      * \since Version 1.0, 2014-09-15
      *
      */
     class RbHelpFunction {
+        
     public:
         
         // getter
+        const std::vector<std::string>&             getAliases(void) const;
         const std::vector<RbHelpArgument>&          getArguments(void) const;
         const std::string&                          getAuthor(void) const;
         const std::vector<std::string>&             getDescription(void) const;
@@ -37,6 +39,7 @@ namespace RevBayesCore {
         const std::string&                          getUsage(void) const;
 
         // setters
+        void                                        setAliases(const std::vector<std::string> &a);
         void                                        setArguments(const std::vector<RbHelpArgument> &a);
         void                                        setAuthor(const std::string &a);
         void                                        setDescription(const std::vector<std::string> &d);
@@ -52,6 +55,7 @@ namespace RevBayesCore {
         
     private:
         
+        std::vector<std::string>                    aliases;
         std::vector<RbHelpArgument>                 arguments;
         std::string                                 author;
         std::vector<std::string>                    description;

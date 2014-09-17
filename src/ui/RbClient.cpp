@@ -564,7 +564,7 @@ void completion(const char *buf, linenoiseCompletions *lc) {
  * @param options
  * @param configuration
  */
-void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *configuration) {
+void RbClient::startInterpretor(Options *options, Configuration *configuration) {
 
     editorMachine.setObserver(this);
 

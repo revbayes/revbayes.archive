@@ -3,6 +3,7 @@
 
 #include "RbHelpFunction.h"
 
+#include <set>
 #include <string>
 #include <map>
 
@@ -16,7 +17,7 @@ namespace RevBayesCore {
      * The help system will provide access to other classes to the help documentation.
      *
      * \copyright (c) Copyright 2009-2013 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
+     * \author The RevBayes Development Core Team (Johan Dunfalk & Sebastian Hoehna)
      * \since Version 1.0, 2014-09-15
      *
      */
@@ -24,7 +25,8 @@ namespace RevBayesCore {
         
     public:
         
-        std::string                                 getHelp(const std::string &qs, size_t columnWidth);                     //!< Format the help information for printing to the terminal
+        const std::set<std::string>&                getFunctionEntries(void) const;
+        const RbHelpFunction&                       getHelp(const std::string &qs);                                         //!< Format the help information for printing to the terminal
         bool                                        isHelpAvailableForQuery(const std::string&query);
         
         static RbHelpSystem&                        getHelpSystem(void)                                                     //!< Return a reference to the singleton help
@@ -41,6 +43,7 @@ namespace RevBayesCore {
         void                                        initializeHelp(const std::string &helpDir);                             //!< Initialize the help from an XML file
         
         
+        std::set<std::string>                       helpFunctionNames;                                                      //!< Set of finction names without aliases
         std::map<std::string, RbHelpFunction>       helpForFunctions;
         
     };

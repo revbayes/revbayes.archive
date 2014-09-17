@@ -84,95 +84,111 @@ using namespace RevBayesCore;
 //
 //}
 
-std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp)
+std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp, size_t w)
 {
     
-    int w = 80;
     std::string result = "";
     
-    // name
-    result.append(TerminalFormatter::makeBold(functionHelp.getName()));
-    result.append(sectionBreak);
+    // we do not print the name at the top
     
     // title
     result.append(functionHelp.getTitle());
-    result.append(sectionBreak);
+    result.append( lineBreak );
+    result.append( sectionBreak );
     
     // description
     result.append(TerminalFormatter::makeUnderlined("Description"));
-    result.append(sectionBreak);
+    result.append( sectionBreak );
     
     const std::vector<std::string> & descriptions = functionHelp.getDescription();
     for (std::vector<std::string>::const_iterator it = descriptions.begin(); it != descriptions.end(); ++it)
     {
         result.append( StringUtilities::formatTabWrap(*it, 1, w) );
+        result.append( lineBreak );
         result.append( sectionBreak );
     }
     
     // usage
     if (functionHelp.getUsage().size() > 0)
     {
-        result.append(TerminalFormatter::makeUnderlined("Usage"));
-        result.append(sectionBreak);
+        result.append( TerminalFormatter::makeUnderlined("Usage") );
+        result.append( lineBreak );
         
-        result.append(StringUtilities::formatTabWrap(functionHelp.getUsage(), 1, w));
-        result.append(sectionBreak);
+        result.append( StringUtilities::formatTabWrap(functionHelp.getUsage(), 1, w, false) );
+        result.append( lineBreak );
     }
     
     // argument
     if (functionHelp.getArguments().size() > 0)
     {
-        result.append(TerminalFormatter::makeUnderlined("Arguments"));
-        result.append(sectionBreak);
+        // check if we have multiple arguments
+        if ( functionHelp.getArguments().size() == 1 )
+        {
+            result.append( TerminalFormatter::makeUnderlined("Argument") );
+        }
+        else
+        {
+            result.append( TerminalFormatter::makeUnderlined("Arguments") );
+        }
+        result.append( sectionBreak );
         
         const std::vector<RbHelpArgument>& args = functionHelp.getArguments();
         for (std::vector<RbHelpArgument>::const_iterator it = args.begin(); it != args.end(); ++it)
         {
             const RbHelpArgument& arg = *it;
-            result.append( StringUtilities::formatTabWrap(arg.getLabel(), 1, w) );
-            result.append( lineBreak );
             
-            result.append( StringUtilities::formatTabWrap(arg.getDescription(), 2, w) );
-            result.append( sectionBreak );
+            // argument type
+            result.append( StringUtilities::formatTabWrap("<", 1, w) );
+            result.append( arg.getArgumentType() );
+            result.append( "> " );
             
-            result.append( StringUtilities::formatTabWrap("Argument type", 2, w) );
-            result.append( lineBreak );
+            // value type
+            result.append( arg.getValueType() );
+            result.append( " " );
             
-            result.append( StringUtilities::formatTabWrap(arg.getArgumentType(), 3, w) );
-            result.append (sectionBreak );
+            // label
+            result.append( arg.getLabel() );
+            result.append( " " );
             
-            result.append( StringUtilities::formatTabWrap("Value type", 2, w) );
-            result.append( lineBreak );
-            
-            result.append( StringUtilities::formatTabWrap(arg.getValueType(), 3, w) );
-            result.append( sectionBreak );
+            if ( arg.getOptions().size() > 0 || arg.getDefaultValue().size() > 0 )
+            {
+                result.append( "= " );
+            }
             
             if (arg.getOptions().size() > 0)
             {
-                result.append( StringUtilities::formatTabWrap("Options", 2, w) );
-                result.append(lineBreak);
-                
                 const std::vector<std::string> & options = arg.getOptions();
                 for (std::vector<std::string>::const_iterator opt = options.begin(); opt != options.end(); ++opt)
                 {
-                    result.append( StringUtilities::formatTabWrap(*opt, 3, w) );
-                    result.append(lineBreak);
+                    // append a '|' separator if we had an option element before
+                    if ( opt != options.begin() )
+                    {
+                        result.append("|");
+                    }
+                    
+                    result.append( *opt );
+                    
                 }
-                result.append(lineBreak);
                 
             }
             
             
             if (arg.getDefaultValue().size() > 0)
             {
-                result.append( StringUtilities::formatTabWrap("Default value", 2, w) );
-                result.append( lineBreak );
-                
-                result.append( StringUtilities::formatTabWrap(arg.getDefaultValue(), 3, w) );
-                result.append( sectionBreak );
+                // default value
+                result.append( arg.getDefaultValue() );
             }
             
+            // argument description
+            result.append( "      (" );
+            result.append( arg.getDescription() );
+            result.append( ")" );
+            
+            result.append( lineBreak );
+            
         }
+        
+        result.append( sectionBreak );
     }
     
     // details
@@ -188,19 +204,28 @@ std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp)
             result.append( sectionBreak );
         }
         
+        result.append( lineBreak );
     }
     
     // example
     result.append( TerminalFormatter::makeUnderlined("Example") );
-    result.append( sectionBreak );
+    result.append( lineBreak );
     
     result.append( StringUtilities::formatTabWrap(functionHelp.getExample(), 1, w, false) );
-    result.append( sectionBreak );
+    result.append( lineBreak );
     
     // reference
     if ( functionHelp.getReferences().size() > 0 )
     {
-        result.append( TerminalFormatter::makeUnderlined("Reference") );
+        // check if we have multiple references
+        if ( functionHelp.getReferences().size() == 1 )
+        {
+            result.append( TerminalFormatter::makeUnderlined("Reference") );
+        }
+        else
+        {
+            result.append( TerminalFormatter::makeUnderlined("References") );
+        }
         result.append( sectionBreak );
         
         const std::vector<RbHelpReference>& refs = functionHelp.getReferences();

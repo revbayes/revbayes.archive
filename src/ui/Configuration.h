@@ -20,8 +20,6 @@
 
 #include "pugixml.hpp"
 
-namespace fs = boost::filesystem;
-
 const std::string relativeHelpDir = "../../help";
 const std::string relativeDownloadDir = "../../downloads";
 const std::string rbExecutable = "rb-extended";

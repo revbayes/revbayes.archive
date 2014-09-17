@@ -43,83 +43,100 @@ RevPtr<Variable> Func_help::execute( void ) {
     RBOUT( "Welcome to the RevBayes help!\n");
     RBOUT( "=============================\n\n" );
 
-    // Use the lines below to count column positions in the output. The text is currenthly
-    // hard-wrapped at 80 columns wide, assuming a three-column padding to the left.
-#if 0
-    RBOUT( "00000011111111112222222222333333333344444444445555555555666666666677777777778" );
-    RBOUT( "45678901234567890123456789012345678901234567890123456789012345678901234567890" );
-#endif
-
-    RBOUT( "RevBayes provides an R-like environment for statistical computation. It is\n" );
-    RBOUT( "primarily intended for modeling, simulation, and Bayesian inference in evolu-\n" );
-    RBOUT( "tionary biology, particularly phylogenetics. However, the environment is\n" );
-    RBOUT( "quite general and can be useful in any field dealing with complex stochastic\n" );
-    RBOUT( "models.\n" );
+    std::string helpContent;
+    helpContent.append( "RevBayes provides an R-like environment for statistical computation. " );
+    helpContent.append( "It is primarily intended for modeling, simulation, and Bayesian inference in evolutionary biology, particularly phylogenetics. " );
+    helpContent.append( "However, the environment is quite general and can be useful in any field dealing with complex stochastic models." );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "RevBayes uses its own language, Rev, which is similar to the language used in\n" );
-    RBOUT( "R. Like the R language, Rev is designed to support interactive analysis. Im-\n" );
-    RBOUT( "portant differences include the support in Rev for object-oriented program-\n" );
-    RBOUT( "ming and for stepwise construction of complex models. Rev supports both func-\n" );
-    RBOUT( "tional and procedural programming models, and make a clear distinction be-\n" );
-    RBOUT( "tween the two. It is also more strongly typed than R.\n" );
+    
+    helpContent = "";
+    helpContent.append( "RevBayes uses its own language, Rev, which is similar to the language used in R. " );
+    helpContent.append( "Like the R language, Rev is designed to support interactive analysis. " );
+    helpContent.append( "Important differences include the support in Rev for object-oriented programing and for stepwise construction of complex models. ");
+    helpContent.append( "Rev supports both functional and procedural programming models, and make a clear distinction between the two. ");
+    helpContent.append( "It is also more strongly typed than R." );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "RevBayes uses graphical model concepts like BUGS, JAGS, STAN and related\n" );
-    RBOUT( "software. It recognizes three different kinds of model variables: constant,\n" );
-    RBOUT( "deterministic, and stochastic. Each kind of model variable is created through\n" );
-    RBOUT( "a particular type of assignment. A constant variable is created through a\n" );
-    RBOUT( "left-arrow assignment:\n" );
+    
+    helpContent = "";
+    helpContent.append( "RevBayes uses graphical model concepts like BUGS, JAGS, STAN and related software. " );
+    helpContent.append( "It recognizes three different kinds of model variables: constant, deterministic, and stochastic. " );
+    helpContent.append( "Each kind of model variable is created through a particular type of assignment. " );
+    helpContent.append( "A constant variable is created through a left-arrow assignment:" );
+    RBOUT( helpContent );
     RBOUT( "\n" );
+    
     RBOUT( "   a <- 1.0\n" );
     RBOUT( "\n" );
-    RBOUT( "A deterministic variable is created through an equation assignment using a\n" );
-    RBOUT( "colon and an equal sign:\n" );
+    
+    helpContent = "";
+    helpContent.append( "A deterministic variable is created through an equation assignment using a colon and an equal sign:" );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "   b := exp( a )\n" );
+    
+    helpContent.append( "\n" );
+    helpContent.append( "   b := exp( a )\n" );
+    helpContent.append( "\n" );
+    
+    helpContent = "";
+    helpContent.append( "A deterministic variable differs from a constant variable in that its value changes dynamically when the values of the variables in its expression change." );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "A deterministic variable differs from a constant variable in that its value\n" );
-    RBOUT( "changes dynamically when the values of the variables in its expression\n" );
-    RBOUT( "change.\n" );
+    
+    helpContent = "";
+    helpContent.append( "Finally, a stochastic variable is created through a tilde assignment:" );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "Finally, a stochastic variable is created through a tilde assignment:\n" );
+    
+    helpContent.append( "   c ~ dnExp( b )\n" );
+    helpContent.append( "\n" );
+    
+    helpContent = "";
+    helpContent.append( "In general, Rev provides distribution functions with the same name as in R." );
+    helpContent.append( "For instance, 'rnorm' draws samples from the normal distribution, 'dnorm' calculates the density for a particular value, etc. " );
+    helpContent.append( "By just dropping the initial letter, you get the distribution name used in stochastic assignments, 'norm'. " );
+    helpContent.append( "Rev also supports canonical distribution names starting with 'dn' to better support tab completion. " );
+    helpContent.append( "For the normal distribution, this form is 'dnNorm', which is a synonym of 'norm'." );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "   c ~ exponential( b )\n" );
+    
+    helpContent = "";
+    helpContent.append( "At any step in the model-building process, you can examine the model pieces in several different ways. " );
+    helpContent.append( "By just typing the name of the variable, you print its value. " );
+    helpContent.append( "The 'structure' or 'str' function prints detailed information on the structure of the variable. " );
+    helpContent.append( "Finally, the 'model' function creates a copy of the model graph and prints it so that you can examine it. " );
+    helpContent.append( "To see the value of a variable 'x', its structure, and the model it is connected to, use the following three statements, respectively:" );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "In general, Rev provides distribution functions with the same name as in R.\n" );
-    RBOUT( "For instance, 'rnorm' draws samples from the normal distribution, 'dnorm'\n" );
-    RBOUT( "calculates the density for a particular value, etc. By just dropping the ini-\n" );
-    RBOUT( "tial letter, you get the distribution name used in stochastic assignments,\n" );
-    RBOUT( "'norm'. Rev also supports canonical distribution names starting with 'dn' to\n" );
-    RBOUT( "better support tab completion. For the normal distribution, this form is\n" );
-    RBOUT( "'dnNorm', which is a synonym of 'norm'.\n" );
-    RBOUT( "\n" );
-    RBOUT( "At any step in the model-building process, you can examine the model pieces\n" );
-    RBOUT( "in several different ways. By just typing the name of the variable, you print\n" );
-    RBOUT( "its value. The 'structure' or 'str' function prints detailed information on\n" );
-    RBOUT( "the structure of the variable. Finally, the 'model' function creates a copy\n" );
-    RBOUT( "of the model graph and prints it so that you can examine it. To see the value\n" );
-    RBOUT( "of a variable 'x', its structure, and the model it is connected to, use the\n" );
-    RBOUT( "following three statements, respectively:\n" );
-    RBOUT( "\n" );
+    
     RBOUT( "   x\n" );
     RBOUT( "   str(x)\n" );
     RBOUT( "   model(x)\n" );
     RBOUT( "\n" );
-    RBOUT( "To list the workspace objects, use the 'ls()' function. If you pass 'true' as\n" );
-    RBOUT( "an argument, 'ls(true)', the listing will include all global workspace ob-\n" );
-    RBOUT( "jects in addition to the objects you have defined in your user workspace.\n" );
-    RBOUT( "This will provide a complete listing of the available functions. You clear\n" );
-    RBOUT( "the user workspace using 'clear()', and read in Rev commands from a file\n" );
-    RBOUT( "using 'source(\"myfilename\")'.\n" );
+    
+    helpContent = "";
+    helpContent.append( "To list the workspace objects, use the 'ls()' function. " );
+    helpContent.append( "If you pass 'true' as an argument, 'ls(true)', the listing will include all global workspace objects in addition to the objects you have defined in your user workspace." );
+    helpContent.append( "This will provide a complete listing of the available functions. " );
+    helpContent.append( "You clear the user workspace using 'clear()', and read in Rev commands from a file using 'source(\"myfilename\")'." );
+    RBOUT( helpContent );
     RBOUT( "\n" );
-    RBOUT( "Just typing a function name will result in printing of the call signature. If\n" );
-    RBOUT( "you precede the function name with a question mark, you will obtain the help\n" );
-    RBOUT( "for that function. Try both with the normal distribution constructor using\n" );
+    
+    helpContent = "";
+    helpContent.append( "Just typing a function name will result in printing of the call signature. " );
+    helpContent.append( "If you precede the function name with a question mark, you will obtain the help for that function. " );
+    helpContent.append( "Try both with the normal distribution constructor using" );
+    RBOUT( helpContent );
     RBOUT( "\n" );
+    
     RBOUT( "   norm\n" );
     RBOUT( "   ? norm\n" );
     RBOUT( "\n" );
-    RBOUT( "For more information on Rev and how to use it for modeling, simulation, and\n" );
-    RBOUT( "inference, see the RevBayes website at http://revbayes.net.\n" );
+    
+    helpContent = "";
+    helpContent.append( "For more information on RevBayes and how to use it for modeling, simulation, and inference, see the RevBayes website at http://revbayes.net." );
+    RBOUT( helpContent );
     RBOUT( "\n" );
 
     return NULL;

@@ -2,7 +2,6 @@
 #ifndef RBCLIENT_H
 #define	RBCLIENT_H
 
-#include "IHelp.h"
 #include "Options.h"
 #include "Configuration.h"
 #include "EditorMachineObserver.h"
@@ -23,7 +22,7 @@ class RbClient : public EditorMachineObserver, public IRepoObserver {
 public:
     void setTabCompletionInfo(const char *buf);
     
-    void startInterpretor(IHelp *help, Options *options, Configuration *configuration);
+    void startInterpretor(Options *options, Configuration *configuration);
     tabCompletionInfo getTabCompleteInfo(const char *buf);
     
     // EditorMachineObserver

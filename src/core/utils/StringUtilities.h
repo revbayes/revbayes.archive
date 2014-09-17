@@ -14,6 +14,8 @@
 #ifndef RlStringUtilities_H
 #define RlStringUtilities_H
 
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -24,7 +26,7 @@ namespace StringUtilities {
                                                         const std::string  &firstLinePad,
                                                         const std::string  &hangingPad,
                                                         size_t              screenWidth);                           //!< Format string for output to screen
-    std::string                 formatTabWrap(std::string s, int tabs, int width, bool removeFormat = true);        //!< Wraps texts.
+    std::string                 formatTabWrap(std::string s, int tabs, int width, bool removeFormat=true);          //!< Wraps texts.
     std::string                 getFileContentsAsString(const std::string& s);                                      //!< Convert the file contents to a string
     std::string                 getStringWithDeletedLastPathComponent(const std::string& s);                        //!< Convert the file contents to a string
     std::string                 getLastPathComponent(const std::string& s);                                         //!< Find the last component of a file path
@@ -33,6 +35,18 @@ namespace StringUtilities {
     std::string                 oneLiner(const std::string& input, size_t maxLen);                                  //!< Get a one-liner of specified length
     void                        stringSplit(const std::string &str, const std::string &delim, std::vector<std::string>& results); //!< Split a string into pieces
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
+    
+    /**
+     * Generic to_string function
+     * @param value
+     * @return
+     */
+    template <typename T>
+    std::string to_string(T value) {
+        std::ostringstream os;
+        os << value;
+        return os.str();
+    }
     
 }
 
