@@ -32,30 +32,40 @@ using namespace RevLanguage;
 /** Default constructor */
 Complex::Complex(void) : ModelObject<std::complex<double> >() {
 
+    setGuiVariableName("Complex");
+    setGuiLatexSymbol("C");
 }
 
 
 /** Copy constructor */
 Complex::Complex(const Complex& c) : ModelObject<std::complex<double> >( c ) {
 
+    setGuiVariableName("Complex");
+    setGuiLatexSymbol("C");
 }
 
 
 /** Construct from double */
 Complex::Complex(double x) : ModelObject<std::complex<double> >( new std::complex<double>( x, 0.0 ) ) {
 
+    setGuiVariableName("Complex");
+    setGuiLatexSymbol("C");
 }
 
 
 /** Construct from int */
 Complex::Complex(int x) : ModelObject<std::complex<double> >( new std::complex<double>( double(x), 0.0 ) ) {
 
+    setGuiVariableName("Complex");
+    setGuiLatexSymbol("C");
 }
 
 
 /** Construct from complex */
 Complex::Complex(const std::complex<double>& c) : ModelObject<std::complex<double> >( new std::complex<double>(c) ) {
 
+    setGuiVariableName("Complex");
+    setGuiLatexSymbol("C");
 }
 
 
