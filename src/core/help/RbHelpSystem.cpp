@@ -21,11 +21,19 @@ using namespace RevBayesCore;
 RbHelpSystem::RbHelpSystem()
 {
     
+    initializeHelp("help");
 }
 
 
-/** This is what turns up in terminal window */
-std::string RbHelpSystem::getHelp(const std::string &qs, size_t columnWidth)
+const std::set<std::string>& RbHelpSystem::getFunctionEntries( void ) const
+{
+    // return a constant reference to the internal value
+    return helpFunctionNames;
+}
+
+
+/** Retrieve the help entry */
+const RbHelpFunction& RbHelpSystem::getHelp(const std::string &qs)
 {
     
     HelpRenderer r = HelpRenderer();
@@ -38,7 +46,7 @@ std::string RbHelpSystem::getHelp(const std::string &qs, size_t columnWidth)
     
     const RbHelpFunction& h = it->second;
     
-    return r.renderFunctionHelp( h );
+    return h;
 }
 
 
@@ -67,10 +75,17 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
     {
         RbHelpFunction h = parser.parseHelpFunction( *it );
-        helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getTitle() , h) );
+        helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getName() , h) );
+        helpFunctionNames.insert( h.getName() );
         
         
         // also add all aliases
+        const std::vector<std::string> & aliases = h.getAliases();
+        for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
+        {
+            helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( *alias , h) );
+        }
+        
     }
     
     
@@ -79,6 +94,6 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
 
 bool RbHelpSystem::isHelpAvailableForQuery(const std::string &query)
 {
-
+    // test if we have a help entry for this query string
     return helpForFunctions.find( query ) != helpForFunctions.end();
 }

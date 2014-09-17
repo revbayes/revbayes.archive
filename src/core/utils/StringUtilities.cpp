@@ -23,6 +23,34 @@
 #include <string>
 
 
+
+
+
+/**
+ * Fill this string with spaces so that it has the required length.
+ * Either fill the spaces on the right if left aligned (true)
+ * or on the left if right aligned.
+ */
+void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
+{
+    
+    for (size_t i=s.length(); i<l ; ++i)
+    {
+        // either left algined
+        if (left == true)
+        {
+            s.push_back(' ');
+        }
+        else
+        {
+            s.insert(s.begin(), ' ');
+        }
+        
+    }
+    
+}
+
+
 /**
  * Wraps text so that each line doesn't exceeds column width.
  * Prepends tabs to each line.
@@ -96,67 +124,6 @@ std::string StringUtilities::formatTabWrap(std::string s, int tabs, int width, b
 }
 
 
-std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s)
-{
-
-#	ifdef WIN32
-    std::string pathSeparator = "\\";
-#	else
-    std::string pathSeparator = "/";
-#   endif
-
-    std::string tempS = s;
-	size_t location = tempS.find_last_of( pathSeparator );
-	if ( location == std::string::npos )
-    {
-		/* There is no path in this string. We 
-         must have only the file name. */
-		return "";
-    }
-	else if ( location == tempS.length() - 1 )
-    {
-		/* It looks like the last character is "/", which
-         means that no file name has been provided. */
-		return tempS;
-    }
-	else
-    {
-		/* We can divide the path into the path and the file. */
-		tempS.erase( location );
-		return tempS;
-    }
-    
-    return "";
-}
-
-
-
-/**
- * Fill this string with spaces so that it has the required length.
- * Either fill the spaces on the right if left aligned (true)
- * or on the left if right aligned.
- */
-void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
-{
-    
-    for (size_t i=s.length(); i<l ; ++i)
-    {
-        // either left algined
-        if (left == true)
-        {
-            s.push_back(' ');
-        }
-        else
-        {
-            s.insert(s.begin(), ' ');
-        }
-        
-    }
-    
-}
-
-
-
 /** Format string for printing to screen, with word wrapping, and various indents */
 std::string StringUtilities::formatStringForScreen(const std::string &s, const std::string &firstLinePad, const std::string &hangingPad, size_t screenWidth) {
 
@@ -198,6 +165,40 @@ std::string StringUtilities::formatStringForScreen(const std::string &s, const s
     }
 
     return outputString;
+}
+
+
+std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s)
+{
+    
+#	ifdef WIN32
+    std::string pathSeparator = "\\";
+#	else
+    std::string pathSeparator = "/";
+#   endif
+    
+    std::string tempS = s;
+	size_t location = tempS.find_last_of( pathSeparator );
+	if ( location == std::string::npos )
+    {
+		/* There is no path in this string. We
+         must have only the file name. */
+		return "";
+    }
+	else if ( location == tempS.length() - 1 )
+    {
+		/* It looks like the last character is "/", which
+         means that no file name has been provided. */
+		return tempS;
+    }
+	else
+    {
+		/* We can divide the path into the path and the file. */
+		tempS.erase( location );
+		return tempS;
+    }
+    
+    return "";
 }
 
 

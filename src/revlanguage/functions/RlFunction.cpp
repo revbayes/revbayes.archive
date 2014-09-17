@@ -46,7 +46,7 @@ std::string Function::callSignature(void) const {
     
     if (argsProcessed)
     {
-        o << "Arguments processed; there are " << args.size() << " values." << std::endl;
+
         for ( size_t i = 0;  i < args.size(); i++ ) {
             o << " args[" << i << "] = ";
             args[i].getVariable()->getRevObject().printValue(o);
@@ -55,7 +55,6 @@ std::string Function::callSignature(void) const {
     }
     else
     {
-        o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
         
         for ( size_t i = 0;  i < getArgumentRules().size(); i++ ) {
             o << " args[" << i << "] = ";
