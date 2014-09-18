@@ -1,5 +1,3 @@
-#include "HtmlHelpGenerator.h"
-
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include "boost/algorithm/string_regex.hpp"
@@ -11,9 +9,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
-#include "Configuration.h"
 #include "HtmlHelpRenderer.h"
 
+#include "RbFileManager.h"
 #include "RbHelpSystem.h"
 
 
@@ -30,15 +28,13 @@ std::string load_file(std::string filename) {
 
 int main(int argc, const char * argv[]) {
     
-    Configuration configuration;
-    configuration.parseConfiguration();
-    std::cout << configuration.getMessage() << std::endl;
+    //
+    std::string helpDir = "help";
     
-    
-    fs::path helpDir(configuration.getHelpDir());
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(helpDir);
     
     std::cout << std::endl << "This tool will automatically generate the index.html page in:" << std::endl
-    << helpDir.string() << " - directory" << std::endl
+    << helpDir << " - directory" << std::endl
     << "All '*.xml' files here will be parsed and the function names added " << std::endl
     << "in alphabetical order to index.html. If you have made any manual changes to " << std::endl
     << "'help/index.html' these will be overwritten if you choose to continue. " << std::endl
@@ -52,43 +48,47 @@ int main(int argc, const char * argv[]) {
     
     std::cout << std::endl << "Generating index.html and separate html manual pages..." << std::endl;
     
-    if (!fs::exists(helpDir)) {
-        std::cout << "Error: Cannot find help directory: " << helpDir.string() << std::endl;
+    if ( !fm.testDirectory() )
+    {
+        std::cout << "Error: Cannot find help directory: " << helpDir << std::endl;
         exit(-1);
     }
     
     // gather all xml files in help dir, filtered by '.ext'
     std::string ext = ".xml";
-    std::vector<fs::path> files;
-    
-    for (fs::directory_iterator it(helpDir); it != fs::directory_iterator(); ++it) {
-        if (it->path().extension().string() == ext) {
-            files.push_back(it->path().filename());
+    std::vector<std::string> files;
+    std::vector<std::string> fileNames;
+    fm.setStringWithNamesOfFilesInDirectory( fileNames );
+    for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
+    {
+        RevBayesCore::RbFileManager tmpFM = RevBayesCore::RbFileManager( *it );
+        if ( tmpFM.getFileExtension() == ext) {
+            files.push_back( *it );
         }
     }
     
     std::cout << "Parsing files:" << std::endl;
     
-    BOOST_FOREACH(fs::path file, files) {
-        std::cout << "\t" + file.string() << std::endl;
+    BOOST_FOREACH(std::string file, files) {
+        std::cout << "\t" + file << std::endl;
     }
     
     // read html templates
-    fs::path entry_tpl_file = helpDir / "lib/html-template/entry.tpl.html";
-    fs::path index_tpl_file = helpDir / "lib/html-template/index.tpl.html";
-    fs::path type_tpl_file = helpDir / "lib/html-template/type-page.tpl.html";
-    fs::path function_tpl_file = helpDir / "lib/html-template/function-page.tpl.html";
+    std::string entry_tpl_file = "html-template/entry.tpl.html";
+    std::string index_tpl_file =  "html-template/index.tpl.html";
+    std::string type_tpl_file =  "html-template/type-page.tpl.html";
+    std::string function_tpl_file = "html-template/function-page.tpl.html";
     
-    if (!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file) || !fs::exists(type_tpl_file) || !fs::exists(function_tpl_file)) {
-        std::cout << "Error: One or more of the html template files in help/html directory is missing."
-        << std::endl << "The html cannot be constructed and program will exit." << std::endl;
-        exit(-1);
-    }
+//    if (!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file) || !fs::exists(type_tpl_file) || !fs::exists(function_tpl_file)) {
+//        std::cout << "Error: One or more of the html template files in help/html directory is missing."
+//        << std::endl << "The html cannot be constructed and program will exit." << std::endl;
+//        exit(-1);
+//    }
     
-    std::string entry_tpl = load_file(entry_tpl_file.string());
-    std::string index_tpl = load_file(index_tpl_file.string());
-    std::string type_tpl = load_file(type_tpl_file.string());
-    std::string function_tpl = load_file(function_tpl_file.string());
+    std::string entry_tpl = load_file(entry_tpl_file);
+    std::string index_tpl = load_file(index_tpl_file);
+    std::string type_tpl = load_file(type_tpl_file);
+    std::string function_tpl = load_file(function_tpl_file);
     
     std::string function_entry_result, type_entry_result, tmp, tmp1;
     
@@ -121,7 +121,7 @@ int main(int argc, const char * argv[]) {
             // create a manual page
             std::fstream fs;
             std::string functionPage = "html/pages/" + functionName + "-function.html";
-            fs.open(fs::path(helpDir / functionPage).string().c_str(), std::fstream::out | std::fstream::trunc);
+            fs.open(functionPage, std::fstream::out | std::fstream::trunc);
             fs << renderer.renderFunctionHelp(functionEntry, true);
             fs.close();
             
@@ -157,7 +157,7 @@ int main(int argc, const char * argv[]) {
     
     // write out new file content
     std::fstream fs;
-    fs.open(fs::path(helpDir / "html/index.html").string().c_str(), std::fstream::out | std::fstream::trunc);
+    fs.open("html/index.html", std::fstream::out | std::fstream::trunc);
     fs << index_result;
     fs.close();
     
