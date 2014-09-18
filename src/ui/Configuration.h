@@ -10,12 +10,9 @@
 
 #include <string>
 
-#include <boost/filesystem.hpp>
-#include "boost/filesystem/operations.hpp"
-#include "boost/filesystem/path.hpp"
 #include <boost/foreach.hpp>
 
-#include "Filesystem.h"
+#include "RbFileManager.h"
 #include "RepositoryInfo.h"
 
 #include "pugixml.hpp"

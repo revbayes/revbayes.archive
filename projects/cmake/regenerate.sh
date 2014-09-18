@@ -174,22 +174,9 @@ fi
 echo '
 
 
-# utility for generating help html files.
-#add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/utils/HelpHtmlGenerator.cpp)
-#target_link_libraries(help-html-generator rb-parser rb-core libs ${Boost_LIBRARIES})
-
-
 ' >> $HERE/CMakeLists.txt
 
 echo
-
-if [ ! -d "$HERE/ui" ]; then
-mkdir "$HERE/ui"
-fi
-echo 'set(UI_FILES' > "$HERE/ui/CMakeLists.txt"
-find ui | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/ui/CMakeLists.txt"
-echo ')
-add_library(rb-ui ${UI_FILES})'  >> "$HERE/ui/CMakeLists.txt"
 
 if [ ! -d "$HERE/libs" ]; then
 mkdir "$HERE/libs"
