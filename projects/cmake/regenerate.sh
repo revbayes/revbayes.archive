@@ -144,7 +144,6 @@ echo ' ${Boost_INCLUDE_DIR} )
 ####
 
 # Split into much smaller libraries
-add_subdirectory(ui)
 add_subdirectory(libs)
 add_subdirectory(core)
 add_subdirectory(revlanguage)
@@ -155,20 +154,7 @@ add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 
 # extended rev-bayes binary
-add_executable(rb-extended ${PROJECT_SOURCE_DIR}/ui/main.cpp)
-
 ' >> "$HERE/CMakeLists.txt"
-
-if [ "$win" = "true" ]
-then
-echo '
-target_link_libraries(rb-extended rb-ui rb-parser rb-core libs ${Boost_LIBRARIES})
-'  >> "$HERE/CMakeLists.txt"
-else
-echo '
-target_link_libraries(rb-extended rb-ui rb-parser rb-core libs pthread ${Boost_LIBRARIES})
-'  >> "$HERE/CMakeLists.txt"
-fi
 
 
 echo '

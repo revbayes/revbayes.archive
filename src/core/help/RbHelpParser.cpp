@@ -63,7 +63,7 @@ RbHelpFunction RbHelpParser::parseHelpFunction(const std::string &fn)
     
     // arguments
     nodeSet = doc.select_nodes("//function-help-entry/argument");
-    int loop = 0;
+    int loop = 1;
     std::vector<RbHelpArgument> arguments = std::vector<RbHelpArgument>();
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {

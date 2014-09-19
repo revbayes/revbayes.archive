@@ -140,30 +140,58 @@ std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp,
         result.append( sectionBreak );
         
         const std::vector<RbHelpArgument>& args = functionHelp.getArguments();
+        size_t longestArgLabel = 0;
+        for (std::vector<RbHelpArgument>::const_iterator it = args.begin(); it != args.end(); ++it)
+        {
+            if ( longestArgLabel < it->getLabel().size() )
+            {
+                longestArgLabel = it->getLabel().size();
+            }
+        }
+        
+        size_t indentSize = longestArgLabel + 4 + 3;
+        std::string spaces = "";
+        for (size_t i = 0; i < indentSize; ++i)
+        {
+            spaces += " ";
+        }
+        
         for (std::vector<RbHelpArgument>::const_iterator it = args.begin(); it != args.end(); ++it)
         {
             const RbHelpArgument& arg = *it;
+
+            // label
+            std::string l = arg.getLabel();
+            StringUtilities::fillWithSpaces(l, longestArgLabel+4, false);
+            std::string formattedLabel = StringUtilities::formatStringForScreen(l, "", spaces, w);
+            formattedLabel = formattedLabel.substr(0, formattedLabel.size()-1);
+            formattedLabel.append( " : " );
             
-            // argument type
-            result.append( StringUtilities::formatTabWrap("<", 1, w) );
-            result.append( arg.getArgumentType() );
-            result.append( "> " );
+            // argument description
+            formattedLabel.append( arg.getDescription() );
+            result.append( StringUtilities::formatStringForScreen(formattedLabel, "", spaces, w) );
+//            result.append( lineBreak );
             
             // value type
+            result.append( spaces );
+            result.append( "Type: " );
             result.append( arg.getValueType() );
-            result.append( " " );
+            result.append( ", " );
+            result.append( arg.getArgumentType() );
+            result.append( lineBreak );
             
-            // label
-            result.append( arg.getLabel() );
-            result.append( " " );
-            
-            if ( arg.getOptions().size() > 0 || arg.getDefaultValue().size() > 0 )
+            if ( arg.getDefaultValue().size() > 0 )
             {
-                result.append( "= " );
+                result.append( spaces );
+                result.append( "Default: " );
+                result.append( arg.getDefaultValue() );
+                result.append( lineBreak );
             }
             
             if (arg.getOptions().size() > 0)
             {
+                result.append( spaces );
+                result.append( "Options: " );
                 const std::vector<std::string> & options = arg.getOptions();
                 for (std::vector<std::string>::const_iterator opt = options.begin(); opt != options.end(); ++opt)
                 {
@@ -176,22 +204,11 @@ std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp,
                     result.append( *opt );
                     
                 }
+                result.append( lineBreak );
                 
             }
             
-            
-            if (arg.getDefaultValue().size() > 0)
-            {
-                // default value
-                result.append( arg.getDefaultValue() );
-            }
-            
-            // argument description
-            result.append( "      (" );
-            result.append( arg.getDescription() );
-            result.append( ")" );
-            
-            result.append( lineBreak );
+//            result.append( lineBreak );
             
         }
         
