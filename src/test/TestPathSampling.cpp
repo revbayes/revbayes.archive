@@ -66,9 +66,9 @@
 
 
 // amino acid uniformization test
-#include "AminoAcidRateMapFunction.h"
+#include "GeneralRateMapFunction.h"
 #include "AminoAcidState.h"
-#include "RateMap_AminoAcid.h"
+#include "RateMap.h"
 #include "RateMatrix_Blosum62.h"
 #include "GeneralTreeHistoryCtmc.h"
 
@@ -161,10 +161,12 @@ bool TestPathSampling::run_binary( void )
     glr_nonConst[0]->setValue(0.1);
     glr_nonConst[1]->setValue(0.1);
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
+    DeterministicNode<RateMatrix>* q_glr = new DeterministicNode<RateMatrix>("q_glr", new FreeBinaryRateMatrixFunction(glr_vector) );
+    
     
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, false);
-    brmf_likelihood->setGainLossRates(glr_vector);
+    brmf_likelihood->setRateMatrix(q_glr);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
     // Q-map used to sample path histories
@@ -297,6 +299,7 @@ bool TestPathSampling::run_aa( void )
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numChars = data[0]->getNumberOfCharacters();
+    size_t numStates = 20;
     
     // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
@@ -315,7 +318,7 @@ bool TestPathSampling::run_aa( void )
     ConstantNode<RateMatrix>* q_sample = new ConstantNode<RateMatrix>("Q_samp", new RateMatrix_Blosum62());
     
     // Q-map used to compute likehood under the full model
-    AminoAcidRateMapFunction* aarmf_likelihood = new AminoAcidRateMapFunction(numChars);
+    GeneralRateMapFunction* aarmf_likelihood = new GeneralRateMapFunction(numStates, numChars);
     aarmf_likelihood->setRateMatrix(q_sample);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", aarmf_likelihood);
         

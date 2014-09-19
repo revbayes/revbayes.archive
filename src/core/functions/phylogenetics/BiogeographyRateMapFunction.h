@@ -10,7 +10,9 @@
 #define __rb_mlandis__BiogeographyRateMapFunction__
 
 #include "GeographyRateModifier.h"
+#include "RateMatrix.h"
 #include "RateMap_Biogeography.h"
+#include "RbVector.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -35,6 +37,7 @@ namespace RevBayesCore {
         //void                                                setDistancePower(const TypedDagNode<double>* dp);
         void                                                setGeographyRateModifier(const TypedDagNode<GeographyRateModifier>* drm);
         void                                                setGainLossRates(const TypedDagNode<std::vector<double> >* glr);
+        void                                                setRateMatrix(const TypedDagNode<RateMatrix>* rm);
 //        void                                                setGainLossRates(const TypedDagNode<std::vector<std::vector<double> > >* glr);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                update(void);
@@ -45,10 +48,13 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< double >*                           homogeneousClockRate;
-        const TypedDagNode< std::vector< double > >*            heterogeneousClockRates;
-        const TypedDagNode<std::vector<double> >*               homogeneousGainLossRates;
-        const TypedDagNode<std::vector<double> >*               heterogeneousGainLossRates;
+        const TypedDagNode< double >*                       homogeneousClockRate;
+        const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
+        const TypedDagNode<RateMatrix>*                     homogeneousRateMatrix;
+        const TypedDagNode<RbVector<RateMatrix> >*          heterogeneousRateMatrices;
+
+//        const TypedDagNode<std::vector<double> >*               homogeneousGainLossRates;
+//        const TypedDagNode<std::vector<double> >*               heterogeneousGainLossRates;
         //const TypedDagNode<double>*                             distancePower;
         const TypedDagNode<GeographyRateModifier>*              geographyRateModifier;
         const TypedDagNode<TimeTree>*                           tau;
@@ -59,7 +65,7 @@ namespace RevBayesCore {
         // branchwise models, etc
         
         bool                                                branchHeterogeneousClockRates;
-        bool                                                branchHeterogeneousGainLossRates;
+        bool                                                branchHeterogeneousRateMatrices;
         bool                                                useGeographicDistance;
         
     };
