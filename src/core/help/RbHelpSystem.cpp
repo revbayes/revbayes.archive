@@ -70,10 +70,26 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     RbHelpParser parser = RbHelpParser();
     
     // get the files contained in the directory
+
+    // gather all xml files in help dir, filtered by '.ext'
+    std::string ext = "xml";
+    std::vector<std::string> files;
     std::vector<std::string> fileNames;
-    fMngr.setStringWithNamesOfFilesInDirectory( fileNames );
+    fMngr.setStringWithNamesOfFilesInDirectory( files );
+    for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); ++it)
+    {
+        RevBayesCore::RbFileManager tmpFM = RevBayesCore::RbFileManager( *it );
+        std::cout << *it <<  " - " << tmpFM.getFileExtension() << std::endl;
+        if ( tmpFM.getFileExtension() == ext) {
+            fileNames.push_back( *it );
+        }
+    }
+
     for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
     {
+    
+        std::cout << *it << std::endl;
+    
         RbHelpFunction h = parser.parseHelpFunction( *it );
         helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getName() , h) );
         helpFunctionNames.insert( h.getName() );

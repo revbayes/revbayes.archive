@@ -7,6 +7,13 @@
 
 using namespace RevBayesCore;
 
+HelpRenderer::HelpRenderer(void){
+    
+    sectionBreak = "\n\n";
+    lineBreak = "\n";
+
+}
+
 //void HelpRenderer::renderTypeHelp(TypeHelpEntry typeHelp)
 //{
 //    std::string result = "";

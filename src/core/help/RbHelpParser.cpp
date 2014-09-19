@@ -25,6 +25,7 @@ RbHelpFunction RbHelpParser::parseHelpFunction(const std::string &fn)
     pugi::xml_parse_result result = doc.load_file(fn.c_str(), pugi::parse_default);
     if (result.status != pugi::status_ok)
     {
+    std::cerr << "Problem while parsing file " << fn << std::endl;
         throw RbException( result.description() );
     }
 
