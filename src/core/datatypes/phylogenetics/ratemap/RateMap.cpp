@@ -104,7 +104,11 @@ const RateMatrix* RateMap::getHomogeneousRateMatrix(void) const
 void RateMap::setHomogeneousRateMatrix(const RateMatrix* r)
 {
     branchHeterogeneousRateMatrices = false;
-    *homogeneousRateMatrix = *r;
+    
+    if (r != homogeneousRateMatrix)
+        delete homogeneousRateMatrix;
+    
+    homogeneousRateMatrix = r->clone();
 }
 
 const RbVector<RateMatrix>& RateMap::getHeterogeneousRateMatrices(void) const
