@@ -18,15 +18,17 @@ namespace RevBayesCore {
         
     public:
         
+        HelpRenderer(void);
         //        void renderTypeHelp(TypeHelpEntry typeHelp);
         std::string                 renderFunctionHelp(const RbHelpFunction &functionHelp, size_t w);
+        
         
         
     private:
         
         
-        const std::string           sectionBreak = "\n\n";
-        const std::string           lineBreak = "\n";
+        std::string           sectionBreak;
+        std::string           lineBreak;
         
     };
     
