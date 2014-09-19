@@ -367,6 +367,12 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     double* p_right  = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
     double* p_node   = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
+    double* tmp_ac = new double[4];
+    double* tmp_gt = new double[4];
+//    double tmp_ac[4];
+//    double tmp_gt[4];
+    
+    
 #   else
 
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
@@ -471,9 +477,14 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
             __m256d ac   = _mm256_hadd_pd(a_acgt,c_acgt);
             __m256d gt   = _mm256_hadd_pd(g_acgt,t_acgt);
             
-            __m256d acgt = _mm256_hadd_pd(ac,gt);
-
-            _mm256_store_pd(p_site_mixture,acgt);
+            
+            _mm256_store_pd(tmp_ac,ac);
+            _mm256_store_pd(tmp_gt,gt);
+            
+            p_site_mixture[0] = tmp_ac[0] + tmp_ac[2];
+            p_site_mixture[1] = tmp_ac[1] + tmp_ac[3];
+            p_site_mixture[2] = tmp_gt[0] + tmp_gt[2];
+            p_site_mixture[3] = tmp_gt[1] + tmp_gt[3];
 
 #           else
 
@@ -519,6 +530,13 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
         } // end-for over all sites (=patterns)
         
     } // end-for over all mixtures (=rate-categories)
+    
+    
+    
+# if defined ( AVX_ENABLED )
+    delete[] tmp_ac;
+    delete[] tmp_gt;
+# endif
     
 }
 
