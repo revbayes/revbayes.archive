@@ -11,14 +11,7 @@
 #include "libs/Filesystem.h"
 
 #include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
-#include "boost/filesystem/operations.hpp"
-#include "boost/filesystem/path.hpp"
 #include <boost/foreach.hpp>
-
-using namespace boost;
-namespace po = boost::program_options;
-namespace fs = boost::filesystem;
 
 typedef std::vector<std::string> StringVector;
 
@@ -40,23 +33,23 @@ public:
 
         std::string endl = "\n";
         // set up the command line options to parse    
-        po::options_description desc("Available options are");
+        boost::program_options::options_description desc("Available options are");
         desc.add_options()
                 ("help,h", "print this help")
                 ("interactive,i", "enable interactive prompt\nBy default enabled when no files are given, otherwise disabled.")
                 ("disable-readline,d", "some terminals can't handle readline functionality well. Try this option if the output of your terminal is scrambled.")
-                ("include-path,p", po::value<std::string>(&includePath)->default_value(includePath), "Semicolon separated list of paths to scan for input files")
-                ("input-file,f", po::value< std::vector<std::string> >(&sourceFiles), "input file. ")
+                ("include-path,p", boost::program_options::value<std::string>(&includePath)->default_value(includePath), "Semicolon separated list of paths to scan for input files")
+                ("input-file,f", boost::program_options::value< std::vector<std::string> >(&sourceFiles), "input file. ")
                 ;
 
         // multiple files can be appended at end of argument chain
-        po::positional_options_description p;
+        boost::program_options::positional_options_description p;
         p.add("input-file", -1);
 
         // parse commandline
-        po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-        po::notify(vm);
+        boost::program_options::variables_map vm;
+        boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+        boost::program_options::notify(vm);
 
         if (vm.count("help")) {
             std::ostringstream _desc;

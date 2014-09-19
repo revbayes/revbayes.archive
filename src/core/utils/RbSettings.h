@@ -34,11 +34,13 @@ class RbSettings {
     
     
         // Access functions
-        bool                        getPrintNodeIndex(void) const;                      //!< Retrieve the flag whether we should print node indices 
+        size_t                      getLineWidth(void) const;                           //!< Retrieve the line width that will be used for the screen width when printing
+        bool                        getPrintNodeIndex(void) const;                      //!< Retrieve the flag whether we should print node indices
         double                      getTolerance(void) const;                           //!< Retrieve the tolerance for comparing doubles
         const std::string&          getWorkingDirectory(void) const;                    //!< Retrieve the current working directory
     
         // setters
+        void                        setLineWidth(size_t w);                             //!< Set the line width that will be used for the screen width when printing
         void                        setPrintNodeIndex(bool tf);                         //!< Set the flag whether we should print node indices
         void                        setTolerance(double t);                             //!< Set the tolerance for comparing double
         void                        setWorkingDirectory(const std::string &wd);         //!< Set the current working directory
@@ -52,6 +54,7 @@ class RbSettings {
 
 
 		// Variables that have user settings
+        size_t                      lineWidth;
         double                      tolerance;                                          //!< Tolerance for comparison of doubles
         bool                        printNodeIndex;                                     //!< Should the node index of a tree be printed as a comment?
         std::string                 workingDirectory;

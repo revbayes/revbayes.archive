@@ -44,6 +44,7 @@ namespace RevBayesCore {
         void                    createDirectoryForFile(void);                                                                       //!< Create the directories in which this files exist.
         void                    formatError(std::string& errorStr);                                                                 //!< Format the error string when (mis)reading files
         const std::string&      getCurrentDirectory(void) const;                                                                    //!< Returns the default directory for the process 
+        std::string             getFileExtension(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFileName(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFilePath(void) const;                                                                            //!< Returns the name of the path
         const std::string&      getFullFileName(void) const;

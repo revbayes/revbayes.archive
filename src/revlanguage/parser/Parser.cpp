@@ -1,6 +1,8 @@
-#include "IHelp.h"
 #include "Parser.h"
 #include "RbException.h"
+#include "RbHelpSystem.h"
+#include "RbHelpRenderer.h"
+#include "RbSettings.h"
 #include "RbUtil.h"
 #include "RevNullObject.h"
 #include "RlString.h"
@@ -154,9 +156,6 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
                     (*i)->printValue( s );
                     RBOUT( s.str() );
                     
-                    // Uncommenting this as the function callSignature() does not produce the call signature despite its name
-                    // -- Fredrik
-                    // RBOUT( (*i)->callSignature() );
                 }
                 return 0;
             }
@@ -232,27 +231,20 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 #	endif
 
     // Get some help
-    std::string qs(symbol);
-    if ( this->helpEntity->isHelpAvailableForQuery(qs))
+    RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
+    if ( hs.isHelpAvailableForQuery(symbol) )
     {
-        std::string hStr = this->helpEntity->getHelp( qs, 100);
-        UserInterface::userInterface().output(hStr, false);
+        const RevBayesCore::RbHelpFunction& h = hs.getHelp( symbol );
+        RevBayesCore::HelpRenderer hRenderer;
+        std::string hStr = hRenderer.renderFunctionHelp(h, RbSettings::userSettings().getLineWidth() - RevBayesCore::RbUtils::PAD.size());
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output(hStr, true);
     }
     else
     {
         
         RBOUT("Help is not available for \"" + symbol + "\"");
-
-        std::vector<Function *> functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol );
-        if ( functions.size() != 0 )
-        {
-            RBOUT( "Usage:" );
-            for ( std::vector<Function *>::const_iterator i=functions.begin(); i!=functions.end(); i++ )
-            {
-                RBOUT( (*i)->callSignature() );
-                delete *i;
-            }
-        }
         
     }
 

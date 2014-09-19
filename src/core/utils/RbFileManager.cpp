@@ -169,6 +169,14 @@ const std::string& RbFileManager::getCurrentDirectory( void ) const
 }
 
 
+std::string RbFileManager::getFileExtension( void ) const
+{
+    std::vector<std::string> tokens;
+    StringUtilities::stringSplit(fileName,".",tokens);
+    return tokens[tokens.size()-1];
+}
+
+
 const std::string& RbFileManager::getFileName( void ) const
 {
     return fileName;
