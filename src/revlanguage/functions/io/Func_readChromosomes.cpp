@@ -49,9 +49,6 @@ RevPtr<Variable> Func_readChromosomes::execute( void ) {
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
 	
-	// setup the vector of chromosome states
-	//ModelVector<RevLanguage::ChromosomesState> *chromoStates = new ModelVector<RevLanguage::ChromosomesState>();
-	
 	// setup a matrix of chromosome states
 	RevBayesCore::DiscreteCharacterData<RevBayesCore::ChromosomesState> *coreChromoStates = new RevBayesCore::DiscreteCharacterData<RevBayesCore::ChromosomesState>();
 	
@@ -65,6 +62,8 @@ RevPtr<Variable> Func_readChromosomes::execute( void ) {
 		// get count from data
 		std::string count = boost::lexical_cast<std::string>(data->getCounts()[i]);
 		
+		std::cout << count << " in Func_readChromosomes" << std::endl;
+		
 		// make the core state
 		RevBayesCore::ChromosomesState coreState = RevBayesCore::ChromosomesState( count );
 		
@@ -72,32 +71,17 @@ RevPtr<Variable> Func_readChromosomes::execute( void ) {
 		RevBayesCore::DiscreteTaxonData<RevBayesCore::ChromosomesState> coreSeq = RevBayesCore::DiscreteTaxonData<RevBayesCore::ChromosomesState>(data->getNames()[i]);
 		coreSeq.addCharacter( coreState );
 
-		
-		// what form should the states be in so as to clamp the taxon name to the chromosome number?
-		
-		// to clamp I need to add new datatype to Dist_phyloCTMC.h??
-		// where is the clamp method??
-		
-			
-		
 		// add DiscreteTaxonData to the matrix of chromosome states
 		coreChromoStates->addTaxonData( coreSeq );
 		
 		i++;
 	}
 	
-	// put core chromosome state matrix into 
+	// put coreChromoStates matrix into rev language level matrix
 	DiscreteCharacterData<RevLanguage::ChromosomesState> *chromoStates = new DiscreteCharacterData<RevLanguage::ChromosomesState>( coreChromoStates );
 
-	
     return new Variable( chromoStates );
 }
- 
-
-
-//RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-//DiscreteCharacterData<DnaState>* mDNA = new DiscreteCharacterData<DnaState>( coreM );
-//m->push_back( mDNA );
 
 
 /** Format the error exception string for problems specifying the file/path name */

@@ -18,8 +18,9 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-ChromosomesState::ChromosomesState(void) : DiscreteCharacterState(), state( 0xFF ) {
-    
+ChromosomesState::ChromosomesState(void) : DiscreteCharacterState(), state( 1 ) {
+	std::cout << boost::lexical_cast<std::string>(state) << " = ChromosomesState - default" << std::endl;
+    // Should the default state be 1? Why was it originally 0xFF? Does 0xFF=int(255)?
 }
 
 
@@ -33,7 +34,7 @@ ChromosomesState::ChromosomesState(const ChromosomesState& s) : DiscreteCharacte
 /** Constructor that sets the observation */
 ChromosomesState::ChromosomesState(std::string s) : DiscreteCharacterState() {
     
-	//assert( s <= 15 );
+	std::cout << s << " = ChromosomesState - observed" << std::endl;
     setState(s);
 }
 
@@ -120,6 +121,7 @@ ChromosomesState* ChromosomesState::clone( void ) const {
 unsigned int ChromosomesState::computeState(std::string symbol) const {
 	
 	try {
+		std::cout << symbol << " = computeState - input string" << std::endl;
 		return boost::lexical_cast<int>( symbol );
 	} catch( boost::bad_lexical_cast const& ) {
 		throw RbException( "Chromosome state was not valid integer." );
@@ -135,32 +137,39 @@ std::string ChromosomesState::getDatatype( void ) const {
 
 
 unsigned int ChromosomesState::getNumberObservedStates(void) const  {
-    ///PROBABLY DOES NOT WORK FOR POLYMORPHIC STATES.???
-    char v = state;     // count the number of bits set in v
-    char c;             // c accumulates the total bits set in v
     
-    for (c = 0; v; v >>= 1)
-    {
-        c += v & 1;
-    }
+	// since chromosomes always have 1 state (at least currently) s
+	// should this always return 1???
+	
+    //char v = state;     // count the number of bits set in v
+    //char c;             // c accumulates the total bits set in v
     
-    return (unsigned int)c;
+    //for (c = 0; v; v >>= 1)
+    //{
+    //    c += v & 1;
+    //}
+    
+    //return (unsigned int)c;
+	return 1;
 }
 
 
 size_t ChromosomesState::getNumberOfStates( void ) const {
     
-    //return 4 + 6 * (virtualPopulationSize - 1);
+    // TODO: need to get this value from user
+	return (size_t)35;
 }
 
 
 unsigned long ChromosomesState::getState( void ) const {
+	std::cout << boost::lexical_cast<std::string>(state) << " = getState" << std::endl;
     return (int)state;
 }
 
 
 size_t  ChromosomesState::getStateIndex(void) const {
-    return (size_t)state;
+	std::cout << boost::lexical_cast<std::string>(state) << " = getStateIndex" << std::endl;
+    return (size_t)state-1;
 }
 
 
@@ -208,18 +217,22 @@ void ChromosomesState::setState(size_t pos, bool val) {
     throw RbException( "setState(size_t pos, bool val) is not implemented in ChromosomesState" );
 }
 
-void ChromosomesState::setState(std::string symbol)
-{
+void ChromosomesState::setState(std::string symbol) {
+	std::cout << symbol << " = setState - string" << std::endl;
     state = computeState( symbol ) ;
+	std::cout << boost::lexical_cast<std::string>(state) << " = setState - int set as state!!" << std::endl;
 }
 
 
 void ChromosomesState::setState(char symbol) {
+	std::cout << boost::lexical_cast<std::string>(state) << " = setState - char !" << std::endl;
     state = computeState(  boost::lexical_cast<std::string>(symbol) ) ;
 }
 
 void ChromosomesState::setState(size_t stateIndex) {
-    state = (int)stateIndex ;
+	// when is stateIndex used?
+	std::cout << boost::lexical_cast<std::string>(state) << " = setState - index" << std::endl;
+    //state = (int)stateIndex;
 }
 
 

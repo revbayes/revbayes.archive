@@ -58,7 +58,7 @@ namespace RevBayesCore {
         unsigned int                    computeState(std::string symbol) const;             //!< Compute the internal state value for this character.
         
         unsigned int                    state;
-        // size_t                          stateIndex;
+        //size_t                          stateIndex;
         
     };
     
