@@ -96,8 +96,8 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
     // set the diagonal values
     setDiagonal();
     
-    // rescale
-    // rescaleToAverageRate( 1.0 );
+    // do I need to rescale the rates??
+    //rescaleToAverageRate( 1.0 );
 }
 
 
@@ -109,14 +109,9 @@ void RateMatrix_Chromosomes::calculateTransitionProbabilities(double t, Transiti
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+	
+	// Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003)
     computeExponentialMatrixByRepeatedSquaring(t, P);
-    
-/*    for (size_t i = 0 ; i<58; ++i) {
-      //  for (size_t j = 0 ; j<58; ++j) {
-            std::cout << "t: "<< t <<  " Diag "<< i << " : "<< P.getElement(i, i)<<std::endl;
-        //}
-        
-    }*/
     
     return;
 }
@@ -170,6 +165,7 @@ inline void RateMatrix_Chromosomes::squareMatrix( TransitionProbabilityMatrix& P
 RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const {
     return new RateMatrix_Chromosomes( *this );
 }
+
 
 const std::vector<double>& RateMatrix_Chromosomes::getStationaryFrequencies( void ) const {
     

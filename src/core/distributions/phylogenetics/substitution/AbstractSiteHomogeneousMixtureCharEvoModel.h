@@ -78,7 +78,8 @@ namespace RevBayesCore {
     
         // non-virtual
         double                                                              computeLnProbability(void);
-        void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
+		std::vector<charType>												drawAncestralStateForNode(const TopologyNode &n);
+		void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
         void                                                                setValue(AbstractCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
@@ -509,19 +510,22 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                     else
                     {
                         // we use the index of the state
-                        size_t index = 0;
-                        unsigned long state = c.getState();
-                        state >>= 1;
-                        
-                        while ( state != 0 ) // there are still observed states left
-                        {
-                            
-                            // remove this state from the observed states
-                            state >>= 1;
-                            
-                            // increment the index
-                            ++index;
-                        } // end-while over all observed states for this character
+                        size_t index = c.getStateIndex();
+						
+						std::cerr << "StateIndex:\t" << index << std::endl;
+						
+//                        unsigned long state = c.getState();
+//                        state >>= 1;
+//                        
+//                        while ( state != 0 ) // there are still observed states left
+//                        {
+//                            
+//                            // remove this state from the observed states
+//                            state >>= 1;
+//                            
+//                            // increment the index
+//                            ++index;
+//                        } // end-while over all observed states for this character
                         
                         charMatrix[nodeIndex][patternIndex] = index;
                     }
@@ -642,6 +646,47 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
     }
     
     return this->lnProb;
+}
+
+template<class charType, class treeType>
+std::string<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::drawAncestralStatesForNode(const TopologyNode &node)
+{
+	
+	size_t nodeIndex = node.getIndex();
+	
+	// update this to get the marginal likelihoods
+	double* p_node  = this->marginalLikelihoods + nodeIndex*this->nodeOffset;
+    
+	std::vector< charType > &ancestralSeq = std::vector<charType>();
+    for ( size_t i = 0; i < numSites; ++i ) 
+    {
+        // create the character
+        charType c;
+        c.setToFirstState();
+        // draw the state
+        double u = rng->uniform01();
+		size_t index = 0;
+        while ( true ) 
+        {
+            u -= p_node[index];
+            
+            if ( u > 0.0 )
+            {
+                ++c;
+                ++index;
+            }
+            else 
+            {
+                break;
+            }
+            
+        }
+        
+        // add the character to the sequence
+        ancestralSeq.push_back( c );
+    }
+	
+				
 }
 
 

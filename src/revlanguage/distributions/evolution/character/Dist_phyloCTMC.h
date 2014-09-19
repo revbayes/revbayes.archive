@@ -58,7 +58,9 @@ namespace RevLanguage {
 #include "RlString.h"
 #include "StandardState.h"
 #include "PomoState.h"
+#include "ChromosomesState.h"
 
+#include <boost/lexical_cast.hpp>
 
 template <class treeType>
 RevLanguage::Dist_phyloCTMC<treeType>::Dist_phyloCTMC() : TypedDistribution< AbstractDiscreteCharacterData >() {
@@ -427,8 +429,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue().getNumberOfStates();
         }
-        
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType>(tau, nChars, true, n);
+
+		RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType>(tau, nChars, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
