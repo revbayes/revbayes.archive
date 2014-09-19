@@ -1634,3 +1634,13 @@ void linenoiceAppendCommand(const char *cmd) {
 char *linenoiseGetCurrentBuffer(){
     return _current->buf;
 }
+
+void linenoiseSetPrompt(const char *p){
+    _current->prompt = p;
+    refreshLine(p, _current);
+    /* Cursor to left edge, then the prompt */
+    cursorToLeft(_current);
+    outputChars(_current, p, 4);
+    //printf("%s", "hej");
+    //    fflush(stdout);
+}

@@ -608,8 +608,9 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
 
         linenoiseHistoryAdd(line); /* Add to the history. */
         linenoiseHistorySave("history.txt"); /* Save the history on disk. */
+        
+        //linenoiseSetPrompt("hej");
 
-        prompt = default_prompt;
         cmd = line;
         boost::trim(cmd);
 
@@ -623,23 +624,30 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
 
         } else if (cmd == "?") {
             printGeneralHelp("", 0, 'c');
-        } else {
+        } else {            
+            
             // interpret Rev statement
             if (result == 0 || result == 2) {
+                
                 prompt = default_prompt;
+                
                 commandLine = cmd;
                 editorMachine.reset();
 
-            } else if (result == 1) {
-                prompt = incomplete_prompt;
+            } else //if (result == 1) 
+            {                
+                prompt = incomplete_prompt;             
                 commandLine += cmd;
             }
+
             result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
+            
         }
 
         /* The typed string is returned as a malloc() allocated string by
          * linenoise, so the user needs to free() it. */
         free(line);
+
     }
 }
 
