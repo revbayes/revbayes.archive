@@ -111,6 +111,8 @@ AminoAcidState* AminoAcidState::clone(void) const {
 unsigned int AminoAcidState::computeState(char symbol) const {
     /* A R N D C Q E G H I L K M F P S T W Y V */
     symbol = char( toupper( symbol ) );
+    
+    
     switch ( symbol ) {
         case '-':
             return 0x00000;
@@ -272,28 +274,29 @@ void AminoAcidState::setState(size_t pos, bool val) {
 
 void AminoAcidState::setState(char symbol) {
     state = computeState( symbol );
+    
     switch ( state )
     {
-        case 0x00001: stateIndex = 0;
-        case 0x00002: stateIndex = 1;
-        case 0x00004: stateIndex = 2;
-        case 0x00008: stateIndex = 3;
-        case 0x00010: stateIndex = 4;
-        case 0x00020: stateIndex = 5;
-        case 0x00040: stateIndex = 6;
-        case 0x00080: stateIndex = 7;
-        case 0x00100: stateIndex = 8;
-        case 0x00200: stateIndex = 9;
-        case 0x00400: stateIndex = 10;
-        case 0x00800: stateIndex = 11;
-        case 0x01000: stateIndex = 12;
-        case 0x02000: stateIndex = 13;
-        case 0x04000: stateIndex = 14;
-        case 0x08000: stateIndex = 15;
-        case 0x10000: stateIndex = 16;
-        case 0x20000: stateIndex = 17;
-        case 0x40000: stateIndex = 18;
-        case 0x80000: stateIndex = 19;
+        case 0x00001: { stateIndex = 0; break; }
+        case 0x00002: { stateIndex = 1; break; }
+        case 0x00004: { stateIndex = 2; break; }
+        case 0x00008: { stateIndex = 3; break; }
+        case 0x00010: { stateIndex = 4; break; }
+        case 0x00020: { stateIndex = 5; break; }
+        case 0x00040: { stateIndex = 6; break; }
+        case 0x00080: { stateIndex = 7; break; }
+        case 0x00100: { stateIndex = 8; break; }
+        case 0x00200: { stateIndex = 9; break; }
+        case 0x00400: { stateIndex = 10; break; }
+        case 0x00800: { stateIndex = 11; break; }
+        case 0x01000: { stateIndex = 12; break; }
+        case 0x02000: { stateIndex = 13; break; }
+        case 0x04000: { stateIndex = 14; break; }
+        case 0x08000: { stateIndex = 15; break; }
+        case 0x10000: { stateIndex = 16; break; }
+        case 0x20000: { stateIndex = 17; break; }
+        case 0x40000: { stateIndex = 18; break; }
+        case 0x80000: { stateIndex = 19; break; }
         default: stateIndex = -1;
     }
 }

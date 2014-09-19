@@ -107,9 +107,6 @@ void Environment::addAlias( const std::string& name, const RevPtr<Variable>& the
 /* Add function to frame. */
 bool Environment::addFunction(const std::string& name, Function* func)
 {
-#ifdef DEBUG_WORKSPACE
-    printf("Adding function %s = %s to workspace\n", name.c_str(), func->callSignature().c_str());
-#endif
 
     if (existsVariable(name))
     {

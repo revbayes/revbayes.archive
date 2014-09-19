@@ -92,12 +92,8 @@ namespace RevBayesCore {
         size_t                                  numStates;
         
         double                                  lambda;
-        bool                                    fixNodeIndex;
         bool                                    sampleNodeIndex;
         bool                                    sampleSiteIndexSet;
-        bool                                    useTail;
-        
-        bool                                    printDebug;
         
         // sampling workspace
         int                                     maxNumJumps;
@@ -126,11 +122,9 @@ node(nd),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true),
-useTail(ut),
 maxNumJumps(100),
 tpCtmc(q->getValue().getNumberOfStates()),
 tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().getNumberOfStates()))
-//uniformizedQ( q->getValue().getNumberOfStates() )
 {
     nodes.insert(ctmc);
     nodes.insert(tau);
@@ -140,18 +134,13 @@ tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().
     numCharacters = n->getValue().getNumberOfCharacters();
     numStates = static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates();
     
-    printDebug = false;
-    
-    fixNodeIndex = (node != NULL);
 }
 
 template<class charType, class treeType>
 void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::cleanProposal( void )
 {
-    
-    
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
-    BranchHistory* bh = &p.getHistory(*node);
+//    BranchHistory* bh = &p.getHistory(*node);
     
     // delete old events
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
@@ -499,7 +488,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::prepare
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
     
-    if (sampleNodeIndex && !fixNodeIndex)
+    if (sampleNodeIndex)
     {
         size_t nodeIndex = GLOBAL_RNG->uniform01() * numNodes;
         node = &tau->getValue().getNode(nodeIndex);

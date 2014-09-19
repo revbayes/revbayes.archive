@@ -17,8 +17,6 @@
 #include "functions/RlFunction.h"
 //#include "WorkspaceUtils.h"
 #include "CommandLineUtils.h"
-#include "IHelp.h"
-#include "Help.h"
 
 
 int main(int argc, const char * argv[]) {
@@ -31,9 +29,7 @@ int main(int argc, const char * argv[]) {
     }
         
     /* initialize environment */
-    Help help;
-    
-    RevLanguageMain rl(&help);
+    RevLanguageMain rl = RevLanguageMain();
     rl.startRevLanguageEnvironment(sourceFiles);
 
     /* Declare things we need */

@@ -107,12 +107,11 @@ public:
                                                           const std::vector< RevPtr<Variable> >&    oneOffsetIndices );                 //!< Get dynamic element variable lookup
 
 protected:
-    RevObject(void) {}                                                                                                                  //!< No objects of this class
+    RevObject(void) { }                                                                                                                  //!< No objects of this class
     RevObject(const MemberRules& memberRules);                                                                                          //!< Standard constructor
 
     virtual void                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
     virtual void                        setMemberVariable(const std::string& name, const RevPtr<Variable> &var);                        //!< Set member variable
-
     
 };
     

@@ -25,6 +25,7 @@
 #include "TestMultispeciesCoalescent.h"
 #include "TestMultispeciesCoalescentCombinatorics.h"
 #include "TestMultispeciesCoalescentWithSequences.h"
+#include "TestPathSampling.h"
 #include "TestPomoModel.h"
 #include "Tree.h"
 #include "TreeTrace.h"
@@ -85,6 +86,16 @@ bool Test::performTests(int argc, const char * argv[]) {
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
 //        testDdm.run();
+    }
+    catch (RbException &e)
+    {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    try
+    {
+        TestPathSampling testPs = TestPathSampling();
+        testPs.run();
     }
     catch (RbException &e)
     {
