@@ -61,7 +61,7 @@ void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
  * @param removeFormat  strips newline, tab etc if set to true
  * @return              formatted text
  */
-std::string StringUtilities::formatTabWrap(std::string s, int tabs, int width, bool removeFormat)
+std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t width, bool removeFormat)
 {
     
     std::string tabbing = "";
