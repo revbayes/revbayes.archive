@@ -131,28 +131,6 @@ void BiogeographyRateMapFunction::setRateMatrix(const TypedDagNode<RateMatrix>* 
 }
 
 
-//void BiogeographyRateMapFunction::setGainLossRates(const TypedDagNode<std::vector<double> > *r)
-//{
-//    // remove the old parameter first
-//    if ( homogeneousGainLossRates != NULL )
-//    {
-//        this->removeParameter( homogeneousGainLossRates );
-//        homogeneousGainLossRates = NULL;
-//    }
-//    else
-//    {
-//        this->removeParameter( heterogeneousGainLossRates );
-//        heterogeneousGainLossRates = NULL;
-//    }
-//    
-//    // set the value
-//    branchHeterogeneousGainLossRates = false;
-//    homogeneousGainLossRates = r;
-//    
-//    // add the parameter
-//    this->addParameter( homogeneousGainLossRates );
-//}
-
 void BiogeographyRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     
     // remove the old parameter first

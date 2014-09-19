@@ -48,8 +48,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< double >*                           homogeneousClockRate;
-        const TypedDagNode< std::vector< double > >*            heterogeneousClockRates;
+        const TypedDagNode< double >*                       homogeneousClockRate;
+        const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
         const TypedDagNode<RateMatrix>*                     homogeneousRateMatrix;
         const TypedDagNode<RbVector<RateMatrix> >*          heterogeneousRateMatrices;
 
