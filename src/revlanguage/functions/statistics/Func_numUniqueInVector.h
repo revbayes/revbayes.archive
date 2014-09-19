@@ -76,7 +76,7 @@ RevLanguage::RevPtr<Variable> RevLanguage::Func_numUniqueInVector<valType>::exec
     
     DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
     
-    Integer* value = new Integer( detNode );
+    Natural* value = new Natural( detNode );
     
     return new Variable( value );
 }
@@ -123,7 +123,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getCl
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = Natural::getClassTypeSpec();
     
     return returnTypeSpec;
 }
