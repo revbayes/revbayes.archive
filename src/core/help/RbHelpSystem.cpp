@@ -79,7 +79,6 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); ++it)
     {
         RevBayesCore::RbFileManager tmpFM = RevBayesCore::RbFileManager( *it );
-        std::cout << *it <<  " - " << tmpFM.getFileExtension() << std::endl;
         if ( tmpFM.getFileExtension() == ext) {
             fileNames.push_back( *it );
         }
@@ -88,7 +87,6 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
     {
     
-        std::cout << *it << std::endl;
     
         RbHelpFunction h = parser.parseHelpFunction( *it );
         helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getName() , h) );
