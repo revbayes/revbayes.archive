@@ -1,6 +1,6 @@
 #include "AncestralStateMonitor.h"
 #include "DagNode.h"
-#include "AncestralState.h"
+#include "Model.h"
 #include "Monitor.h"
 #include "RbFileManager.h"
 #include "StochasticNode.h"
@@ -96,7 +96,7 @@ void AncestralStateMonitor::monitor(unsigned long gen)
         outStream << gen;
 		
 		// call update for the marginal node likelihoods
-		seq->updateMarginalNodeLikelihoods();
+		//seq->updateMarginalNodeLikelihoods();
         
         // loop through all nodes
         for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) 
@@ -111,7 +111,7 @@ void AncestralStateMonitor::monitor(unsigned long gen)
             node->printValue(outStream,separator);
 			
 			
-			seq->drawAncestralStatesForNode( nodeIndex );
+			//seq->drawAncestralStatesForNode( nodeIndex );
         }
         
         outStream << std::endl;
@@ -241,11 +241,11 @@ void AncestralStateMonitor::setAppend(bool tf)
  *
  * \param[in]   m    The new model.
  */
-void AncestralStateMonitor::setAncestralState(AncestralState *m)
+void AncestralStateMonitor::setSeqObject(Model *m)
 {
     
     // delegate call to super class
-    Monitor::setAncestralState(m);
+    Monitor::setModel(m);
     
     // reset the DAG nodes that should be monitored
     resetDagNodes();

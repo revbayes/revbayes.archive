@@ -74,7 +74,7 @@ mymodel <- model(Q)
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
 monitors[2] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/output/chromosome_test_toy.log",printgen=10, separator = "	")
-monitors[3] <- mnAncestralState(seq,filename="/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log",printgen=10, separator = "	")
+#monitors[3] <- mnAncestralState(seq,filename="/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log",printgen=10, separator = "	")
  
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)

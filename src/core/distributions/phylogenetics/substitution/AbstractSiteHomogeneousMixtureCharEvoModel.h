@@ -78,7 +78,7 @@ namespace RevBayesCore {
     
         // non-virtual
         double                                                              computeLnProbability(void);
-		std::vector<charType>												drawAncestralStateForNode(const TopologyNode &n);
+		std::vector<charType>												drawAncestralStatesForNode(const TopologyNode &n);
 		void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
         void                                                                setValue(AbstractCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
@@ -649,7 +649,7 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
 }
 
 template<class charType, class treeType>
-std::string<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::drawAncestralStatesForNode(const TopologyNode &node)
+std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::drawAncestralStatesForNode(const TopologyNode &node)
 {
 	
 	size_t nodeIndex = node.getIndex();
@@ -657,6 +657,7 @@ std::string<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
 	// update this to get the marginal likelihoods
 	double* p_node  = this->marginalLikelihoods + nodeIndex*this->nodeOffset;
     
+	RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector< charType > &ancestralSeq = std::vector<charType>();
     for ( size_t i = 0; i < numSites; ++i ) 
     {

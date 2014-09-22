@@ -48,7 +48,7 @@ namespace RevBayesCore {
         
         // getters and setters
         void                                setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
-        void                                setSeqObject(AncestralState *m);                                                 //!< Set the model for which the monitor should print values
+        void                                setSeqObject(Model *m);                                                 //!< Set the model for which the monitor should print values
 		
     private:
         // helper methods
@@ -61,6 +61,10 @@ namespace RevBayesCore {
         std::string                         filename;                                                           //!< Filename to which we print the values
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
         bool                                append;                                                             //!< Flag if to append to existing file
+        bool                                posterior;
+        bool                                prior;
+        bool                                likelihood;
+		bool								stochasticNodesOnly;
     };
     
 }
