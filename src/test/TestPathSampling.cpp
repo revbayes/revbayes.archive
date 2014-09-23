@@ -206,13 +206,14 @@ bool TestPathSampling::run_aa( void )
     // and the character model
     GeneralTreeHistoryCtmc<AminoAcidState, TimeTree> *ctmc = new GeneralTreeHistoryCtmc<AminoAcidState, TimeTree>(tau, 20, numChars, false);
     ctmc->setRateMap(q_full);
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", ctmc );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("character_model", ctmc );
     
     // assign tips and sample histories
     charactermodel->clamp( data[0] );
     charactermodel->redraw();
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
+    charactermodel->keep();
      
     ////////////
     // moves
@@ -221,17 +222,18 @@ bool TestPathSampling::run_aa( void )
     std::cout << "Adding moves\n";
     RbVector<Move> moves;
     
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 3, true ) );
+//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 10, true ) );
+//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 10, true ) );
+//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 10, true ) );
     
-    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 100.0, numRateMatrixElems, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, numStates, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 10.0 ) );
+    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 10.0 ) );
+    moves.push_back( new SimplexMove( er, 100.0, 25, 0, true, 10.0 ) );
+    moves.push_back( new SimplexMove( pi, 100.0, 10, 0, true, 10.0 ) );
     
     // path
-    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_site, 0.5), numNodes*2, false));
+    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
+//    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_site, 0.5), numNodes, false));
     //    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
      
     //    // node
@@ -364,7 +366,7 @@ bool TestPathSampling::run_binary( void )
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, false);
     brmf_likelihood->setRateMatrix(q_glr);
-    DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
+    DeterministicNode<RateMap> *q_full = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
     // Q-map used to sample path histories
     FreeBinaryRateMatrixFunction* fbrmf = new FreeBinaryRateMatrixFunction(glr_vector);
@@ -372,7 +374,7 @@ bool TestPathSampling::run_binary( void )
     
     // and the character model
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, false, false, false);
-    biogeoCtmc->setRateMap(q_likelihood);
+    biogeoCtmc->setRateMap(q_full);
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
     // assign tips and sample histories
@@ -401,7 +403,7 @@ bool TestPathSampling::run_binary( void )
     }
     
     // path
-    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.5), numNodes*2, false));
+    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes*2, false));
 //    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
     
 //    // node
