@@ -512,7 +512,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                         // we use the index of the state
                         size_t index = c.getStateIndex();
 						
-						std::cerr << "StateIndex:\t" << index << std::endl;
+						//std::cerr << "StateIndex:\t" << index << std::endl;
 						
 //                        unsigned long state = c.getState();
 //                        state >>= 1;

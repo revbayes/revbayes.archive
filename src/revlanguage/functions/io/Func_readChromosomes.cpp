@@ -62,8 +62,6 @@ RevPtr<Variable> Func_readChromosomes::execute( void ) {
 		// get count from data
 		std::string count = boost::lexical_cast<std::string>(data->getCounts()[i]);
 		
-		std::cout << count << " in Func_readChromosomes" << std::endl;
-		
 		// make the core state
 		RevBayesCore::ChromosomesState coreState = RevBayesCore::ChromosomesState( count );
 		
