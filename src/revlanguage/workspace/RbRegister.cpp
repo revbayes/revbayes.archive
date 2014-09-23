@@ -28,9 +28,6 @@
 #include <set>
 #include <cstdlib>
 
-
-#include "HelloWorld.h"
-
 /* Files including helper classes */
 #include "RbException.h"
 #include "RevAbstractType.h"
@@ -764,11 +761,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         ///////////////////////////////////////////
         /* Add functions (in "functions" folder) */
         ///////////////////////////////////////////
-        
-        
-        /// THIS IS TO TEST ODD XCODE BEHAVIOR
-        addFunction( "hellWorld",                 new HelloWorld()                 );
-
         
         /* Basic functions (in folder "functions/basic") */
         
