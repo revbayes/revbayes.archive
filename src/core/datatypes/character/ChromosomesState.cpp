@@ -19,8 +19,7 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 ChromosomesState::ChromosomesState(void) : DiscreteCharacterState(), state( 1 ) {
-	std::cout << boost::lexical_cast<std::string>(state) << " = ChromosomesState - default" << std::endl;
-    // Should the default state be 1? Why was it originally 0xFF? Does 0xFF=int(255)?
+    // default state be 1
 }
 
 
@@ -33,8 +32,6 @@ ChromosomesState::ChromosomesState(const ChromosomesState& s) : DiscreteCharacte
 
 /** Constructor that sets the observation */
 ChromosomesState::ChromosomesState(std::string s) : DiscreteCharacterState() {
-    
-	std::cout << s << " = ChromosomesState - observed" << std::endl;
     setState(s);
 }
 
@@ -121,7 +118,6 @@ ChromosomesState* ChromosomesState::clone( void ) const {
 unsigned int ChromosomesState::computeState(std::string symbol) const {
 	
 	try {
-		std::cout << symbol << " = computeState - input string" << std::endl;
 		return boost::lexical_cast<int>( symbol );
 	} catch( boost::bad_lexical_cast const& ) {
 		throw RbException( "Chromosome state was not valid integer." );
@@ -162,13 +158,11 @@ size_t ChromosomesState::getNumberOfStates( void ) const {
 
 
 unsigned long ChromosomesState::getState( void ) const {
-	std::cout << boost::lexical_cast<std::string>(state) << " = getState" << std::endl;
     return (int)state;
 }
 
 
 size_t  ChromosomesState::getStateIndex(void) const {
-	std::cout << boost::lexical_cast<std::string>(state) << " = getStateIndex" << std::endl;
     return (size_t)state-1;
 }
 
@@ -218,20 +212,17 @@ void ChromosomesState::setState(size_t pos, bool val) {
 }
 
 void ChromosomesState::setState(std::string symbol) {
-	std::cout << symbol << " = setState - string" << std::endl;
     state = computeState( symbol ) ;
-	std::cout << boost::lexical_cast<std::string>(state) << " = setState - int set as state!!" << std::endl;
 }
 
 
 void ChromosomesState::setState(char symbol) {
-	std::cout << boost::lexical_cast<std::string>(state) << " = setState - char !" << std::endl;
     state = computeState(  boost::lexical_cast<std::string>(symbol) ) ;
 }
 
 void ChromosomesState::setState(size_t stateIndex) {
 	// when is stateIndex used?
-	std::cout << boost::lexical_cast<std::string>(state) << " = setState - index" << std::endl;
+	std::cout << boost::lexical_cast<std::string>(state) << ": setState - index????" << std::endl;
     //state = (int)stateIndex;
 }
 
