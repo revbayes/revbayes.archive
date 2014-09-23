@@ -163,7 +163,13 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
     else
         rm = homogeneousRateMatrix;
     
-    rm->calculateTransitionProbabilities(node.getBranchLength(), P);
+    double t = node.getBranchLength();
+    if (branchHeterogeneousClockRates)
+        t *= heterogeneousClockRates[node.getIndex()];
+    else
+        t *= homogeneousClockRate;
+    
+    rm->calculateTransitionProbabilities(t, P);
 }
 
 void RateMap::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx) const
@@ -174,7 +180,13 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
     else
         rm = homogeneousRateMatrix;
     
-    rm->calculateTransitionProbabilities(node.getBranchLength(), P);
+    double t = node.getBranchLength();
+    if (branchHeterogeneousClockRates)
+        t *= heterogeneousClockRates[node.getIndex()];
+    else
+        t *= homogeneousClockRate;
+    
+    rm->calculateTransitionProbabilities(t, P);
 }
 
 RateMap* RateMap::clone(void) const
