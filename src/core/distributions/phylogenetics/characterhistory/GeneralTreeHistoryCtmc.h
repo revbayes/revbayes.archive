@@ -404,100 +404,17 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
     
     BranchHistory* bh = this->histories[ node.getIndex() ];
     
-    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
-    bh->print();
+//    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
+//    bh->print();
     
     p.prepareProposal();
     p.doProposal();
     p.cleanProposal();
 
-    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
-    bh->print();
+//    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
+//    bh->print();
     
     return true;
-    
-    /*
-     
-    // get model parameters
-    //    const treeType& tree = this->tau->getValue();
-    double branchLength = node.getBranchLength();
-    const RateMap& rm = homogeneousRateMap->getValue();
-    
-    // begin update
-    BranchHistory* bh = this->histories[ node.getIndex() ];
-    
-    // reject sample path history
-    std::vector<CharacterEvent*> parentVector = bh->getParentCharacters();
-    std::vector<CharacterEvent*> childVector =  bh->getChildCharacters();
-    std::multiset<CharacterEvent*,CharacterEventCompare> history;
-    
-    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-    {
-        std::set<CharacterEvent*> tmpHistory;
-        unsigned int currState = parentVector[*it]->getState();
-        unsigned int endState = childVector[*it]->getState();
-        do
-        {
-            // delete previously rejected events
-            tmpHistory.clear();
-            
-            // proceed with rejection sampling
-            currState = parentVector[*it]->getState();
-            
-            double t = 0.0;
-    
-            // repeated rejection sampling
-            do
-            {
-                unsigned int nextState = (currState == 1 ? 0 : 1);
-                unsigned charIdx = (unsigned)(*it);
-                double r = rm.getSiteRate(node, currState, nextState);
-                
-                double dt = 0.0;
-                if (r > 0.0)
-                    dt = RbStatistics::Exponential::rv(r * branchLength, *GLOBAL_RNG);
-                
-                double da = dt * branchLength;
-                
-                // sample time from next interval (by memorylessness)
-                if (currAge - da < epochAge || r == 0.0)
-                {
-                    t = (startAge - epochAge) / branchLength;
-                    currAge = epochAge;
-                    epochIdx++;
-                    epochAge = epochs[epochIdx];
-                }
-                else
-                {
-                    t += dt;
-                    currAge -= da;
-                    
-                    if (t < 1.0)
-                    {
-                        currState = nextState;
-                        CharacterEvent* evt = new CharacterEvent(*it, nextState, t);
-                        tmpHistory.insert(evt);
-                    }
-                    else if (currState != endState)
-                    {
-                        for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
-                            delete *it_h;
-                    }
-                }
-            }
-            while(t < 1.0);
-        }
-        while (currState != endState);
-        
-        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
-        {
-            history.insert(*it);
-        }
-    }
-    
-    bh->updateHistory(history,indexSet);
-    */
-    
 }
 
 
