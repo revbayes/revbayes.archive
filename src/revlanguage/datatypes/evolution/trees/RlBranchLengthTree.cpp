@@ -24,6 +24,8 @@
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
+#include "Topology.h"
+#include "RlTopology.h"
 
 #include <sstream>
 
@@ -78,6 +80,10 @@ RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::
     else if (name == "names") {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
         return new Variable( new ModelVector<RlString>( n ) );
+    } 
+	else if (name == "topology") {
+        const RevBayesCore::Topology& t = this->dagNode->getValue().getTopology();
+        return new Variable( new RevLanguage::Topology( t ) );
     } 
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args );
@@ -142,7 +148,11 @@ RevLanguage::MethodTable BranchLengthTree::makeMethods( void ) const
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
-    
+ 
+	ArgumentRules* topologyArgRules = new ArgumentRules();
+    methods.addFunction("topology", new MemberProcedure(RevLanguage::Topology::getClassTypeSpec(),  topologyArgRules       ) );
+
+	
     // Insert inherited methods
     methods.insertInheritedMethods( ModelObject<RevBayesCore::BranchLengthTree>::makeMethods() );
 
