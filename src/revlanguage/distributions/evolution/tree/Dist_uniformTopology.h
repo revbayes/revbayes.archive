@@ -40,12 +40,12 @@ namespace RevLanguage {
         
         void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
-        
     private:
         
         RevPtr<const Variable>                          numTaxa;                                                                                        //!< Number of taxa of the topology
         RevPtr<const Variable>                          taxonNames;                                                                                     //!< Taxon names
-        
+		RevPtr<const Variable>                          constraints;																				//!< Topological constraints that will be used for calibrations
+
     };
     
 }
