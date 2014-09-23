@@ -47,6 +47,7 @@
 #include "VectorFunction.h"
 #include "VectorScaleMove.h"
 
+
 // experimental RateMap setup
 #include "RateMap_Biogeography.h"
 #include "BiogeographyRateMapFunction.h"
@@ -63,9 +64,6 @@
 #include "PathRejectionSampleMove.h"
 #include "UniformTimeTreeDistribution.h"
 #include "PathUniformizationSampleProposal.h"
-
-
-// amino acid uniformization test
 #include "GeneralRateMapFunction.h"
 #include "AminoAcidState.h"
 #include "RateMap.h"
@@ -75,6 +73,7 @@
 #include "GtrRateMatrixFunction.h"
 #include "BirthRateConstBDStatistic.h"
 #include "DeathRateConstBDStatistic.h"
+#include "NodeUniformizationSampleProposal.h"
 
 
 
@@ -181,19 +180,14 @@ bool TestPathSampling::run_aa( void )
 
 //    ConstantNode<TimeTree>* tau = new ConstantNode<TimeTree>("tree", new TimeTree( *trees[0] ));
     
-    // Q matrix for independence model/sampling
-    
+    // exchangeability rates and stationary frequencies
     ConstantNode<std::vector<double> > *bf = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(numStates ,1.0) );
     ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(numRateMatrixElems,1.0) );
-    
-    // then the parameters
+
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
     StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
 
-//    std::cout << "bf:\t" << bf->getValue() << std::endl;
-//    std::cout << "e:\t" << e->getValue() << std::endl;
-//    std::cout << "pi:\t" << pi->getValue() << std::endl;
-//    std::cout << "er:\t" << er->getValue() << std::endl;    
+    // per-site Q matrix
     DeterministicNode<RateMatrix> *q_site = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
     
 
@@ -233,11 +227,12 @@ bool TestPathSampling::run_aa( void )
     
     // path
     moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
-//    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_site, 0.5), numNodes, false));
+    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes, false));
     //    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
-     
-    //    // node
-    //    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes*2));
+    
+    // node
+    moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
+    moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes, false));
     //    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
      
      

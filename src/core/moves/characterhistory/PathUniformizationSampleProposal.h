@@ -98,6 +98,7 @@ namespace RevBayesCore {
         
         // sampling workspace
         int                                     maxNumJumps;
+        bool                                    failed;
         TransitionProbabilityMatrix             tpCtmc;
         std::vector<MatrixReal>                 tpDtmc;
 
@@ -123,7 +124,8 @@ node(nd),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true),
-maxNumJumps(1000),
+maxNumJumps(50),
+failed(false),
 tpCtmc(q->getValue().getNumberOfStates()),
 tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().getNumberOfStates()))
 {
@@ -367,11 +369,15 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
         while (!exceed)
         {
             numJumps++;
+            
             if (numJumps > maxNumJumps)
             {
-                std::stringstream ss_err;
-                ss_err << "Exceeded maxNumJumps: " << maxNumJumps;
-                throw RbException( ss_err.str() );
+
+                failed = true;
+                return RbConstants::Double::neginf;
+//                std::stringstream ss_err;
+//                ss_err << "Exceeded maxNumJumps: " << maxNumJumps;
+//                throw RbException( ss_err.str() );
             }
             
 
@@ -491,6 +497,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::prepare
     
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
+    failed = false;
     
     if (sampleNodeIndex)
     {
