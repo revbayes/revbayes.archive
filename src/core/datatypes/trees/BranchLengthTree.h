@@ -52,11 +52,11 @@ namespace RevBayesCore {
         std::vector<double>                         branchLengths;
         
     };
-    
-}
 
-// Global functions using the class
-std::ostream&                       operator<<(std::ostream& o, const RevBayesCore::BranchLengthTree& x);                                         //!< Overloaded output operator
+	// Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const BranchLengthTree& x);                                         //!< Overloaded output operator
+
+}
 
 #endif
 
