@@ -128,6 +128,7 @@ bool TestPathSampling::run_aa( void )
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numChars = data[0]->getNumberOfCharacters();
     size_t numStates = 20;
+    size_t numRateMatrixElems = numStates * (numStates-1) / 2;
     
     // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
@@ -183,7 +184,7 @@ bool TestPathSampling::run_aa( void )
     // Q matrix for independence model/sampling
     
     ConstantNode<std::vector<double> > *bf = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(numStates ,1.0) );
-    ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(numStates*(numStates-1)/2,1.0) );
+    ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(numRateMatrixElems,1.0) );
     
     // then the parameters
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
@@ -226,8 +227,8 @@ bool TestPathSampling::run_aa( void )
     
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( er, 100.0, numRateMatrixElems, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( pi, 100.0, numStates, 0, true, 2.0 ) );
     
     // path
     moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_site, 0.5), numNodes*2, false));

@@ -122,7 +122,7 @@ node(nd),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true),
-maxNumJumps(100),
+maxNumJumps(500),
 tpCtmc(q->getValue().getNumberOfStates()),
 tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().getNumberOfStates()))
 {
