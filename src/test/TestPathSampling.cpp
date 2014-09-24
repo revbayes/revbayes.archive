@@ -113,8 +113,8 @@ bool TestPathSampling::run_aa( void )
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    //    seed.push_back(1+1); seed.push_back(1);
-    //    GLOBAL_RNG->setSeed(seed);
+    seed.push_back(1); seed.push_back(1);
+    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
     

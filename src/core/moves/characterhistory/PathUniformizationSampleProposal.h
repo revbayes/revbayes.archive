@@ -351,6 +351,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
         unsigned int currState = startState;
         unsigned int endState = childVector[*it]->getState();
 
+//        std::cout << *it << " : " << startState << " " << endState << "\n";
         
         // guarantee we have min number of needed jumps
         // Holboth and Stone (2009) uniformization sampling algorithm
@@ -391,75 +392,87 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
                 exceed = true;
         }
 
-        // sample jump times
-        for (int i = 0; i < numJumps; i++)
-            tmpHistory.insert( new CharacterEvent(*it,0,GLOBAL_RNG->uniform01()) );
+      
         
         // sample jump states
         if (numJumps == 0 || (numJumps == 1 && startState == endState))
         {
             ; // do nothing
         }
-        else if (numJumps == 1 && startState != endState)
+        else
         {
-            CharacterEvent* evt = *(tmpHistory.begin());
-            evt->setState(endState);
-        }
-        else if (numJumps > 1)
-        {
-            std::set<CharacterEvent*,CharacterEventCompare>::iterator it;
+            // sample jump times
+            for (int i = 0; i < numJumps; i++)
+                tmpHistory.insert( new CharacterEvent(*it,0,GLOBAL_RNG->uniform01()) );
             
-            int jumpIdx = 1;
-            for (it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+            
+            // only one jump
+            if (numJumps == 1 && startState != endState)
             {
-                CharacterEvent* evt = *it;
-                unsigned int nextState;
+                CharacterEvent* evt = *(tmpHistory.begin());
+                evt->setState(endState);
+            }
+            
+            // multiple jumps
+            else if (numJumps > 1)
+            {
+                std::set<CharacterEvent*,CharacterEventCompare>::iterator it;
+                
+                int jumpIdx = 1;
+                for (it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+                {
+                    CharacterEvent* evt = *it;
+                    unsigned int nextState;
 
-                // the last event must transition to endState
-                if (jumpIdx == numJumps)
-                {
-                    nextState = endState;
-                }
-                // otherwise, sample next intermediate state
-                else
-                {
-                    // construct transition state sample probs
-                    const std::vector<double>& rowProb = unifQ[currState];
-                    std::vector<double> sampleProbs(numStates, 0.0);
-                    double sampleProbSum = 0.0;
-                    for (size_t i = 0; i < numStates; i++)
+                    // the last event must transition to endState
+                    if (jumpIdx == numJumps)
                     {
-                        double v = tpDtmc[numJumps-jumpIdx][i][endState] * rowProb[i];
-                        sampleProbs[i] = v;
-                        sampleProbSum += v;
+                        nextState = endState;
                     }
-                    
-                    // sample next state for jumpIdx-th event
-                    double uIdx = GLOBAL_RNG->uniform01() * sampleProbSum;
-                    for (size_t i = 0; i < sampleProbs.size(); i++)
+                    // otherwise, sample next intermediate state
+                    else
                     {
-                        uIdx -= sampleProbs[i];
-                        if (uIdx <= 0)
+                        // construct transition state sample probs
+                        const std::vector<double>& rowProb = unifQ[currState];
+                        std::vector<double> sampleProbs(numStates, 0.0);
+                        double sampleProbSum = 0.0;
+                        for (size_t i = 0; i < numStates; i++)
                         {
-                            nextState = i;
-                            break;
+                            double v = tpDtmc[numJumps-jumpIdx][i][endState] * rowProb[i];
+                            sampleProbs[i] = v;
+                            sampleProbSum += v;
+                        }
+                        
+                        // sample next state for jumpIdx-th event
+                        double uIdx = GLOBAL_RNG->uniform01() * sampleProbSum;
+                        for (size_t i = 0; i < sampleProbs.size(); i++)
+                        {
+                            uIdx -= sampleProbs[i];
+                            if (uIdx <= 0)
+                            {
+                                nextState = i;
+                                break;
+                            }
                         }
                     }
+                    
+                    // update jump chain state
+                    evt->setState(nextState);
+                    currState = nextState;
+                    jumpIdx++;
                 }
-                
-                // update jump chain state
-                evt->setState(nextState);
-                currState = nextState;
-                jumpIdx++;
             }
         }
+        
         
         unsigned prevState = startState;
         for (std::set<CharacterEvent*,CharacterEventCompare>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
             // if non-virtual event, add to proposed history
             if ( (*it)->getState() != prevState )
+            {
                 proposedHistory.insert(*it);
+            }
             
             // otherwise, free memory
             else
