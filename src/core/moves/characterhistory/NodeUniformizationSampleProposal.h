@@ -361,7 +361,11 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::sampleN
         const std::vector<CharacterEvent*>& rightChildState = histories[node->getChild(1).getIndex()]->getChildCharacters();
         
         // states to update
-        std::vector<CharacterEvent*> nodeChildState   = histories[node->getIndex()]->getChildCharacters();
+        BranchHistory* tmp_h = histories[node->getIndex()];
+        tmp_h->print();
+        std::vector<CharacterEvent*> nodeChildState;
+        nodeChildState = tmp_h->getChildCharacters();
+//        std::vector<CharacterEvent*> nodeChildState   = histories[node->getIndex()]->getChildCharacters();
         std::vector<CharacterEvent*> leftParentState  = histories[node->getChild(0).getIndex()]->getParentCharacters();
         std::vector<CharacterEvent*> rightParentState = histories[node->getChild(1).getIndex()]->getParentCharacters();
         

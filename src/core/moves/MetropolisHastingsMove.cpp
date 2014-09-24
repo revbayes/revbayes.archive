@@ -372,10 +372,8 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
     }
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); it++)
     {
-        std::cout << "affectedNodes " << (*it)->getName() << "\n";
         if ( nodes.find(*it) != nodes.end() )
         {
-            std::cout << " remove " << (*it)->getName() << "\n";
             affectedNodes.erase(*it);
         }
     }
