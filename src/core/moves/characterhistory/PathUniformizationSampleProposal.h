@@ -18,6 +18,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RateMap.h"
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "StochasticNode.h"
@@ -50,7 +51,7 @@ namespace RevBayesCore {
     class PathUniformizationSampleProposal : public Proposal {
         
     public:
-        PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMatrix> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
+        PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
 //        PathUniformizationSampleProposal( const PathUniformizationSampleProposal& p );
         
         // Basic utility functions
@@ -74,8 +75,8 @@ namespace RevBayesCore {
         
         // parameters
         StochasticNode<AbstractCharacterData>*  ctmc;
-        TypedDagNode<treeType>*               tau;
-        TypedDagNode<RateMatrix>*          qmat;
+        TypedDagNode<treeType>*                 tau;
+        TypedDagNode<RateMap>*                  qmap;
                 
         //BranchHistory*                          storedValue;
         std::multiset<CharacterEvent*,CharacterEventCompare> storedHistory;
@@ -97,8 +98,9 @@ namespace RevBayesCore {
         
         // sampling workspace
         int                                     maxNumJumps;
+        bool                                    failed;
         TransitionProbabilityMatrix             tpCtmc;
-        std::vector<MatrixReal> tpDtmc;
+        std::vector<MatrixReal>                 tpDtmc;
 
         
         std::set<DagNode*>                      nodes;
@@ -114,21 +116,23 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMatrix>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
+RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
 ctmc(n),
 tau(t),
-qmat(q),
+qmap(q),
 node(nd),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true),
-maxNumJumps(100),
+maxNumJumps(50),
+failed(false),
 tpCtmc(q->getValue().getNumberOfStates()),
 tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().getNumberOfStates()))
 {
+
     nodes.insert(ctmc);
     nodes.insert(tau);
-    nodes.insert(qmat);
+    nodes.insert(qmap);
     
     numNodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
@@ -194,7 +198,8 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
     double branchLength = nd.getBranchLength();
     
      // get sampling RateMatrix
-    const RateMatrix& rm = qmat->getValue();
+//    const RateMap& rm = qmap->getValue();
+    const RateMatrix& rm = *(qmap->getValue().getHomogeneousRateMatrix());
     
     // stepwise events
     double t = 0.0;
@@ -297,11 +302,12 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
     
     // get rate matrix info
 
-//    RateMatrix& rm = const_cast<RateMatrix&>( qmat->getValue() );
+//    RateMatrix& rm = const_cast<RateMatrix&>( qmap->getValue() );
 //    rm.updateMatrix();
 //    rm.calculateTransitionProbabilities(branchLength, tpCtmc);
 
-    const RateMatrix& rm = qmat->getValue();
+//    const RateMap& rm = qmap->getValue();
+    const RateMatrix& rm = *(qmap->getValue().getHomogeneousRateMatrix());
     rm.calculateTransitionProbabilities(branchLength, tpCtmc);
     
     double domRate = 0.0;
@@ -345,6 +351,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
         unsigned int currState = startState;
         unsigned int endState = childVector[*it]->getState();
 
+//        std::cout << *it << " : " << startState << " " << endState << "\n";
         
         // guarantee we have min number of needed jumps
         // Holboth and Stone (2009) uniformization sampling algorithm
@@ -363,11 +370,15 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
         while (!exceed)
         {
             numJumps++;
+            
             if (numJumps > maxNumJumps)
             {
-                std::stringstream ss_err;
-                ss_err << "Exceeded maxNumJumps: " << maxNumJumps;
-                throw RbException( ss_err.str() );
+
+                failed = true;
+                return RbConstants::Double::neginf;
+//                std::stringstream ss_err;
+//                ss_err << "Exceeded maxNumJumps: " << maxNumJumps;
+//                throw RbException( ss_err.str() );
             }
             
 
@@ -381,75 +392,87 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
                 exceed = true;
         }
 
-        // sample jump times
-        for (int i = 0; i < numJumps; i++)
-            tmpHistory.insert( new CharacterEvent(*it,0,GLOBAL_RNG->uniform01()) );
+      
         
         // sample jump states
         if (numJumps == 0 || (numJumps == 1 && startState == endState))
         {
             ; // do nothing
         }
-        else if (numJumps == 1 && startState != endState)
+        else
         {
-            CharacterEvent* evt = *(tmpHistory.begin());
-            evt->setState(endState);
-        }
-        else if (numJumps > 1)
-        {
-            std::set<CharacterEvent*,CharacterEventCompare>::iterator it;
+            // sample jump times
+            for (int i = 0; i < numJumps; i++)
+                tmpHistory.insert( new CharacterEvent(*it,0,GLOBAL_RNG->uniform01()) );
             
-            int jumpIdx = 1;
-            for (it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+            
+            // only one jump
+            if (numJumps == 1 && startState != endState)
             {
-                CharacterEvent* evt = *it;
-                unsigned int nextState;
+                CharacterEvent* evt = *(tmpHistory.begin());
+                evt->setState(endState);
+            }
+            
+            // multiple jumps
+            else if (numJumps > 1)
+            {
+                std::set<CharacterEvent*,CharacterEventCompare>::iterator it;
+                
+                int jumpIdx = 1;
+                for (it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+                {
+                    CharacterEvent* evt = *it;
+                    unsigned int nextState;
 
-                // the last event must transition to endState
-                if (jumpIdx == numJumps)
-                {
-                    nextState = endState;
-                }
-                // otherwise, sample next intermediate state
-                else
-                {
-                    // construct transition state sample probs
-                    const std::vector<double>& rowProb = unifQ[currState];
-                    std::vector<double> sampleProbs(numStates, 0.0);
-                    double sampleProbSum = 0.0;
-                    for (size_t i = 0; i < numStates; i++)
+                    // the last event must transition to endState
+                    if (jumpIdx == numJumps)
                     {
-                        double v = tpDtmc[numJumps-jumpIdx][i][endState] * rowProb[i];
-                        sampleProbs[i] = v;
-                        sampleProbSum += v;
+                        nextState = endState;
                     }
-                    
-                    // sample next state for jumpIdx-th event
-                    double uIdx = GLOBAL_RNG->uniform01() * sampleProbSum;
-                    for (size_t i = 0; i < sampleProbs.size(); i++)
+                    // otherwise, sample next intermediate state
+                    else
                     {
-                        uIdx -= sampleProbs[i];
-                        if (uIdx <= 0)
+                        // construct transition state sample probs
+                        const std::vector<double>& rowProb = unifQ[currState];
+                        std::vector<double> sampleProbs(numStates, 0.0);
+                        double sampleProbSum = 0.0;
+                        for (size_t i = 0; i < numStates; i++)
                         {
-                            nextState = i;
-                            break;
+                            double v = tpDtmc[numJumps-jumpIdx][i][endState] * rowProb[i];
+                            sampleProbs[i] = v;
+                            sampleProbSum += v;
+                        }
+                        
+                        // sample next state for jumpIdx-th event
+                        double uIdx = GLOBAL_RNG->uniform01() * sampleProbSum;
+                        for (size_t i = 0; i < sampleProbs.size(); i++)
+                        {
+                            uIdx -= sampleProbs[i];
+                            if (uIdx <= 0)
+                            {
+                                nextState = i;
+                                break;
+                            }
                         }
                     }
+                    
+                    // update jump chain state
+                    evt->setState(nextState);
+                    currState = nextState;
+                    jumpIdx++;
                 }
-                
-                // update jump chain state
-                evt->setState(nextState);
-                currState = nextState;
-                jumpIdx++;
             }
         }
+        
         
         unsigned prevState = startState;
         for (std::set<CharacterEvent*,CharacterEventCompare>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
             // if non-virtual event, add to proposed history
             if ( (*it)->getState() != prevState )
+            {
                 proposedHistory.insert(*it);
+            }
             
             // otherwise, free memory
             else
@@ -479,14 +502,15 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::prepare
 {
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
     
-    RateMatrix& rm = const_cast<RateMatrix&>( qmat->getValue() );
-    rm.updateMatrix();
+    RateMap& rm = const_cast<RateMap&>( qmap->getValue() );
+    rm.updateMap();
     
     storedHistory.clear();
     proposedHistory.clear();
     
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
+    failed = false;
     
     if (sampleNodeIndex)
     {
@@ -603,9 +627,9 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::swapNod
     {
         tau = static_cast<TypedDagNode<treeType>* >(newN);
     }
-    else if (oldN == qmat)
+    else if (oldN == qmap)
     {
-        qmat = static_cast<TypedDagNode<RateMatrix>* >(newN);
+        qmap = static_cast<TypedDagNode<RateMap>* >(newN);
     }
     
 }

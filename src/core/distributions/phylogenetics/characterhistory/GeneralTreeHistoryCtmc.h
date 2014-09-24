@@ -155,8 +155,23 @@ unsigned* RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeCount
 template<class charType, class treeType>
 double RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeRootLikelihood(const TopologyNode &n)
 {
-    // Murray et al 2006 ??
-    return 0.0;
+    // Generalize approach from Murray et al. 2006?
+    double lnP = 0.0;
+    
+    BranchHistory* bh = this->histories[n.getIndex()];
+    const std::vector<CharacterEvent*> rootState = bh->getChildCharacters();
+    
+    // get counts per state
+    std::vector<int> counts(this->numChars, 0);
+    for (size_t i = 0; i < rootState.size(); i++)
+        counts[ rootState[i]->getState() ]++;
+    
+    // get log prob
+    const std::vector<double> rf = homogeneousRateMap->getValue().getRootFrequencies();
+    for (size_t i = 0; i < counts.size(); i++)
+        lnP += counts[i] * log( rf[i] );
+    
+    return lnP;
 }
 
 template<class charType, class treeType>
@@ -306,7 +321,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
-        //        this->histories[i]->print();
+        this->histories[i]->print();
     }
     
     double lnL = this->computeLnProbability();
@@ -328,7 +343,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathEnd(con
 {
     if (node.isTip())
     {
-        ; // do nothing
+        return true; // do nothing
     }
     else
     {
@@ -391,6 +406,12 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
                                                         const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
                                                         1.0);
     
+//    PathUniformizationSampleProposal<charType,treeType> p(   this->getStochasticNode(),
+//                                                             const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
+//                                                             const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+//                                                             1.0);
+
+    
 //    ConstantNode<RateMatrix>* q_sample = new ConstantNode<RateMatrix*>("q_sample", new RateMatrix_Blosum62());
 //    PathRejectionSampleProposal<charType,treeType> p(   this->getStochasticNode(),
 //                                                     const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
@@ -402,102 +423,18 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
     p.assignSiteIndexSet(indexSet);
     
     
-    BranchHistory* bh = this->histories[ node.getIndex() ];
-    
-    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
-    bh->print();
+//    BranchHistory* bh = this->histories[ node.getIndex() ];
+//    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
+//    bh->print();
     
     p.prepareProposal();
     p.doProposal();
     p.cleanProposal();
 
-    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
-    bh->print();
+//    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
+//    bh->print();
     
     return true;
-    
-    /*
-     
-    // get model parameters
-    //    const treeType& tree = this->tau->getValue();
-    double branchLength = node.getBranchLength();
-    const RateMap& rm = homogeneousRateMap->getValue();
-    
-    // begin update
-    BranchHistory* bh = this->histories[ node.getIndex() ];
-    
-    // reject sample path history
-    std::vector<CharacterEvent*> parentVector = bh->getParentCharacters();
-    std::vector<CharacterEvent*> childVector =  bh->getChildCharacters();
-    std::multiset<CharacterEvent*,CharacterEventCompare> history;
-    
-    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-    {
-        std::set<CharacterEvent*> tmpHistory;
-        unsigned int currState = parentVector[*it]->getState();
-        unsigned int endState = childVector[*it]->getState();
-        do
-        {
-            // delete previously rejected events
-            tmpHistory.clear();
-            
-            // proceed with rejection sampling
-            currState = parentVector[*it]->getState();
-            
-            double t = 0.0;
-    
-            // repeated rejection sampling
-            do
-            {
-                unsigned int nextState = (currState == 1 ? 0 : 1);
-                unsigned charIdx = (unsigned)(*it);
-                double r = rm.getSiteRate(node, currState, nextState);
-                
-                double dt = 0.0;
-                if (r > 0.0)
-                    dt = RbStatistics::Exponential::rv(r * branchLength, *GLOBAL_RNG);
-                
-                double da = dt * branchLength;
-                
-                // sample time from next interval (by memorylessness)
-                if (currAge - da < epochAge || r == 0.0)
-                {
-                    t = (startAge - epochAge) / branchLength;
-                    currAge = epochAge;
-                    epochIdx++;
-                    epochAge = epochs[epochIdx];
-                }
-                else
-                {
-                    t += dt;
-                    currAge -= da;
-                    
-                    if (t < 1.0)
-                    {
-                        currState = nextState;
-                        CharacterEvent* evt = new CharacterEvent(*it, nextState, t);
-                        tmpHistory.insert(evt);
-                    }
-                    else if (currState != endState)
-                    {
-                        for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
-                            delete *it_h;
-                    }
-                }
-            }
-            while(t < 1.0);
-        }
-        while (currState != endState);
-        
-        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
-        {
-            history.insert(*it);
-        }
-    }
-    
-    bh->updateHistory(history,indexSet);
-    */
-    
 }
 
 
@@ -514,7 +451,12 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathStart(c
     const std::vector<TopologyNode*>& children = node.getChildren();
     for (size_t i = 0; i < children.size(); i++)
     {
-        this->histories[ children[i]->getIndex() ]->setParentCharacters( nodeChildState );
+        std::vector<CharacterEvent*> childParentState(nodeChildState.size());
+        for (size_t j = 0; j < childParentState.size(); j++)
+        {
+            childParentState[j] = new CharacterEvent(j, nodeChildState[j]->getState(), 0.0);
+        }
+        this->histories[ children[i]->getIndex() ]->setParentCharacters( childParentState );
     }
     
     return true;
