@@ -306,7 +306,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
-        //        this->histories[i]->print();
+        this->histories[i]->print();
     }
     
     double lnL = this->computeLnProbability();
@@ -386,15 +386,15 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
     if (node.isRoot())
         return true;
     
-//    PathRejectionSampleProposal<charType,treeType> p(   this->getStochasticNode(),
-//                                                        const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
-//                                                        const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
-//                                                        1.0);
+    PathRejectionSampleProposal<charType,treeType> p(   this->getStochasticNode(),
+                                                        const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
+                                                        const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+                                                        1.0);
     
-    PathUniformizationSampleProposal<charType,treeType> p(   this->getStochasticNode(),
-                                                             const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
-                                                             const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
-                                                             1.0);
+//    PathUniformizationSampleProposal<charType,treeType> p(   this->getStochasticNode(),
+//                                                             const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
+//                                                             const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+//                                                             1.0);
 
     
 //    ConstantNode<RateMatrix>* q_sample = new ConstantNode<RateMatrix*>("q_sample", new RateMatrix_Blosum62());
@@ -408,17 +408,16 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
     p.assignSiteIndexSet(indexSet);
     
     
-    BranchHistory* bh = this->histories[ node.getIndex() ];
-    
-    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
-    bh->print();
+//    BranchHistory* bh = this->histories[ node.getIndex() ];
+//    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
+//    bh->print();
     
     p.prepareProposal();
     p.doProposal();
     p.cleanProposal();
 
-    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
-    bh->print();
+//    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
+//    bh->print();
     
     return true;
 }
@@ -434,23 +433,15 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathStart(c
     
     // update daughter lineages' parent states with the current node's child state
     const std::vector<CharacterEvent*>& nodeChildState = this->histories[ node.getIndex() ]->getChildCharacters();
-//    std::vector<CharacterEvent*> copyChildState;
-//    for (size_t i = 0; i < nodeChildState.size(); i++)
-//    {
-//        copyChildState.push_back(new CharacterEvent(*nodeChildState[i]));
-//    }
-    
     const std::vector<TopologyNode*>& children = node.getChildren();
     for (size_t i = 0; i < children.size(); i++)
     {
-        BranchHistory* bh = this->histories[ children[i]->getIndex() ];
-        std::vector<CharacterEvent*> childParentState = bh->getParentCharacters();
+        std::vector<CharacterEvent*> childParentState(nodeChildState.size());
         for (size_t j = 0; j < childParentState.size(); j++)
         {
-            childParentState[j]->setState( nodeChildState[j]->getState() );
+            childParentState[j] = new CharacterEvent(j, nodeChildState[j]->getState(), 0.0);
         }
         this->histories[ children[i]->getIndex() ]->setParentCharacters( childParentState );
-//        this->histories[ children[i]->getIndex() ]->setParentCharacters( copyChildState );
     }
     
     return true;

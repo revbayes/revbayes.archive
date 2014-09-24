@@ -51,6 +51,7 @@ namespace RevBayesCore {
         
     public:
         NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -125,9 +126,9 @@ numNodes(t->getValue().getNumberOfNodes()),
 numCharacters(n->getValue().getNumberOfCharacters()),
 numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
 node(nd),
-nodeTpMatrix(2),
-leftTpMatrix(2),
-rightTpMatrix(2),
+nodeTpMatrix(numStates),
+leftTpMatrix(numStates),
+rightTpMatrix(numStates),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true)
@@ -146,6 +147,36 @@ sampleSiteIndexSet(true)
     fixNodeIndex = (node != NULL);
 }
 
+
+template<class charType, class treeType>
+RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
+ctmc(n),
+tau(t),
+qmap(q),
+numNodes(t->getValue().getNumberOfNodes()),
+numCharacters(n->getValue().getNumberOfCharacters()),
+numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
+node(nd),
+nodeTpMatrix(numStates),
+leftTpMatrix(numStates),
+rightTpMatrix(numStates),
+lambda(l),
+sampleNodeIndex(true),
+sampleSiteIndexSet(true)
+
+{
+    
+    //    std::cout << numStates << "\n";
+    nodes.insert(ctmc);
+    nodes.insert(tau);
+    nodes.insert(qmap);
+    
+    nodeProposal = new PathUniformizationSampleProposal<charType,treeType>(*p);
+    leftProposal = new PathUniformizationSampleProposal<charType,treeType>(*p);
+    rightProposal = new PathUniformizationSampleProposal<charType,treeType>(*p);
+    
+    fixNodeIndex = (node != NULL);
+}
 
 template<class charType, class treeType>
 void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::cleanProposal( void )
@@ -359,20 +390,14 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::sampleN
         const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
         const std::vector<CharacterEvent*>& leftChildState  = histories[node->getChild(0).getIndex()]->getChildCharacters();
         const std::vector<CharacterEvent*>& rightChildState = histories[node->getChild(1).getIndex()]->getChildCharacters();
-        
-        // states to update
-        BranchHistory* tmp_h = histories[node->getIndex()];
-        tmp_h->print();
-        std::vector<CharacterEvent*> nodeChildState;
-        nodeChildState = tmp_h->getChildCharacters();
-//        std::vector<CharacterEvent*> nodeChildState   = histories[node->getIndex()]->getChildCharacters();
+
+        std::vector<CharacterEvent*> nodeChildState   = histories[node->getIndex()]->getChildCharacters();
         std::vector<CharacterEvent*> leftParentState  = histories[node->getChild(0).getIndex()]->getParentCharacters();
         std::vector<CharacterEvent*> rightParentState = histories[node->getChild(1).getIndex()]->getParentCharacters();
         
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-  
-                
+                  
             unsigned int desS1 = leftChildState[*it]->getState();
             unsigned int desS2 = rightChildState[*it]->getState();
             

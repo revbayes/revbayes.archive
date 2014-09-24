@@ -216,9 +216,9 @@ bool TestPathSampling::run_aa( void )
     std::cout << "Adding moves\n";
     RbVector<Move> moves;
     
-//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 10, true ) );
-//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 10, true ) );
-//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 10, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 10, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 10, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 10, true ) );
     
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 10.0 ) );
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 10.0 ) );
@@ -233,8 +233,11 @@ bool TestPathSampling::run_aa( void )
     // node
     moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
     moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes, false));
-    //    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
-     
+//    PathUniformizationSampleProposal<AminoAcidState, TimeTree>* nd_prop = new PathUniformizationSampleProposal<AminoAcidState, TimeTree>(charactermodel, tau, q_full, 0.4);
+//    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_full, new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, nd_prop, 0.4), 0.4, false, numNodes));
+//    moves.push_back(new PathRejectionSampleMove<AminoAcidState, TimeTree>(charactermodel, tau, q_full, new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.4), 0.4, false, numNodes));
+//    moves.push_back(new PathRejectionSampleMove<AminoAcidState, TimeTree>(charactermodel, tau, q_full, new NodeRejectionSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.4), 0.4, false, numNodes));
+    
      
      
     ////////////
