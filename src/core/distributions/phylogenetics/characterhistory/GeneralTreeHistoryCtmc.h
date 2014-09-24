@@ -155,8 +155,23 @@ unsigned* RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeCount
 template<class charType, class treeType>
 double RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeRootLikelihood(const TopologyNode &n)
 {
-    // Murray et al 2006 ??
-    return 0.0;
+    // Generalize approach from Murray et al. 2006?
+    double lnP = 0.0;
+    
+    BranchHistory* bh = this->histories[n.getIndex()];
+    const std::vector<CharacterEvent*> rootState = bh->getChildCharacters();
+    
+    // get counts per state
+    std::vector<int> counts(this->numChars, 0);
+    for (size_t i = 0; i < rootState.size(); i++)
+        counts[ rootState[i]->getState() ]++;
+    
+    // get log prob
+    const std::vector<double> rf = homogeneousRateMap->getValue().getRootFrequencies();
+    for (size_t i = 0; i < counts.size(); i++)
+        lnP += counts[i] * log( rf[i] );
+    
+    return lnP;
 }
 
 template<class charType, class treeType>
