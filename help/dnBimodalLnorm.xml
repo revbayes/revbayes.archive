@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>dnBimodalLnorm</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,53 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         dnBimodalLnorm(
+               Real        mean1,
+               Real        mean2,
+               RealPos        sd1,
+               RealPos        sd2,
+               Probability        p
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>mean1</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>Real</valueType>
     </argument>
     <argument>
-        <label>monitors</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>mean2</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
+        <valueType>Real</valueType>
     </argument>
     <argument>
-        <label>moves</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>sd1</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
+        <valueType>RealPos</valueType>
     </argument>
     <argument>
-        <label>moveschedule</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>sd2</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <valueType>RealPos</valueType>
+    </argument>
+    <argument>
+        <label>p</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Probability</valueType>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>Dist_bimodalLnorm</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

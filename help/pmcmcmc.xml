@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>pmcmcmc</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,10 +23,16 @@
 
     <usage>
         <![CDATA[
-         mcmc(
+         pmcmcmc(
                Model        model,
                Monitor[]        monitors,
                Move[]        moves,
+               Natural        numChains = 4,
+               Natural        numProcessors = 4,
+               Natural        swapInterval = 100,
+               Real        deltaHeat = 0.2,
+               Real        sigmaHeat = 1,
+               Real        startHeat = 1,
                String        moveschedule = random
                )
          ]]> 
@@ -34,7 +40,7 @@
 
     <argument>
         <label>model</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
         <valueType>Model</valueType>
@@ -54,6 +60,54 @@
         <valueType>Move[]</valueType>
     </argument>
     <argument>
+        <label>numChains</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Natural</valueType>
+        <defaultValue>4</defaultValue>
+    </argument>
+    <argument>
+        <label>numProcessors</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Natural</valueType>
+        <defaultValue>4</defaultValue>
+    </argument>
+    <argument>
+        <label>swapInterval</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Natural</valueType>
+        <defaultValue>100</defaultValue>
+    </argument>
+    <argument>
+        <label>deltaHeat</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Real</valueType>
+        <defaultValue>0.2</defaultValue>
+    </argument>
+    <argument>
+        <label>sigmaHeat</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Real</valueType>
+        <defaultValue>1</defaultValue>
+    </argument>
+    <argument>
+        <label>startHeat</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Real</valueType>
+        <defaultValue>1</defaultValue>
+    </argument>
+    <argument>
         <label>moveschedule</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
@@ -65,7 +119,7 @@
         <defaultValue>random</defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>ParallelMcmcmc</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

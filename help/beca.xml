@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>beca</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,30 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         beca(
+               String        filename,
+               String        delimiter = 	
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Model</valueType>
-    </argument>
-    <argument>
-        <label>monitors</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
-    </argument>
-    <argument>
-        <label>moves</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
-    </argument>
-    <argument>
-        <label>moveschedule</label>
+        <label>filename</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
         <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+    </argument>
+    <argument>
+        <label>delimiter</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>String</valueType>
+        <defaultValue>	</defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>BurninEstimationConvergenceAssessment</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

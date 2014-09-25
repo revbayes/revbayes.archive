@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>pomoRF</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,45 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         pomoRF(
+               Simplex        root_base_frequencies,
+               Real        root_polymorphism_proportion,
+               RateMatrix        mutation_rate_matrix,
+               Natural        virtualNe
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>root_base_frequencies</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>Simplex</valueType>
     </argument>
     <argument>
-        <label>monitors</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>root_polymorphism_proportion</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
+        <valueType>Real</valueType>
     </argument>
     <argument>
-        <label>moves</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>mutation_rate_matrix</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
+        <valueType>RateMatrix</valueType>
     </argument>
     <argument>
-        <label>moveschedule</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>virtualNe</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <valueType>Natural</valueType>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>Simplex</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

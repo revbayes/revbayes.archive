@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>powerPosterior</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,11 +23,14 @@
 
     <usage>
         <![CDATA[
-         mcmc(
+         powerPosterior(
                Model        model,
-               Monitor[]        monitors,
                Move[]        moves,
-               String        moveschedule = random
+               String        filename,
+               RealPos[]        powers = NULL,
+               Natural        cats = 100,
+               RealPos        alpha = 0.3,
+               Natural        sample_freq = 100
                )
          ]]> 
     </usage>
@@ -40,13 +43,6 @@
         <valueType>Model</valueType>
     </argument>
     <argument>
-        <label>monitors</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
-    </argument>
-    <argument>
         <label>moves</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
@@ -54,18 +50,46 @@
         <valueType>Move[]</valueType>
     </argument>
     <argument>
-        <label>moveschedule</label>
+        <label>filename</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
         <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+    </argument>
+    <argument>
+        <label>powers</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>RealPos[]</valueType>
+        <defaultValue>NULL</defaultValue>
+    </argument>
+    <argument>
+        <label>cats</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Natural</valueType>
+        <defaultValue>100</defaultValue>
+    </argument>
+    <argument>
+        <label>alpha</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>RealPos</valueType>
+        <defaultValue>0.3</defaultValue>
+    </argument>
+    <argument>
+        <label>sample_freq</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Natural</valueType>
+        <defaultValue>100</defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>PowerPosterior</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>fnBiogeoDE</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,55 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         fnBiogeoDE(
+               RealPos[]        gainLossRates,
+               Simplex        rootFrequencies = 0.50.5,
+               RlGeographyRateModifier        geoRateMod,
+               Natural        numAreas,
+               Bool        forbidExtinction = 1
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>gainLossRates</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>RealPos[]</valueType>
     </argument>
     <argument>
-        <label>monitors</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>rootFrequencies</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
+        <valueType>Simplex</valueType>
+        <defaultValue>0.50.5</defaultValue>
     </argument>
     <argument>
-        <label>moves</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>geoRateMod</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
+        <valueType>RlGeographyRateModifier</valueType>
     </argument>
     <argument>
-        <label>moveschedule</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>numAreas</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <valueType>Natural</valueType>
+    </argument>
+    <argument>
+        <label>forbidExtinction</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Bool</valueType>
+        <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>RateMap</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

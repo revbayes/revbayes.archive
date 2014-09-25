@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>seq</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,37 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         seq(
+               Real        from,
+               Real        to,
+               Real        by
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
+        <label>from</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>Real</valueType>
     </argument>
     <argument>
-        <label>monitors</label>
+        <label>to</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
+        <valueType>Real</valueType>
     </argument>
     <argument>
-        <label>moves</label>
+        <label>by</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
-    </argument>
-    <argument>
-        <label>moveschedule</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <valueType>Real</valueType>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>Real[]</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

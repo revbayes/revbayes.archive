@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>rbernoulli</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,30 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         rbernoulli(
+               Natural        n = 1,
+               Probability        p
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
+        <label>n</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>Natural</valueType>
+        <defaultValue>1</defaultValue>
     </argument>
     <argument>
-        <label>monitors</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>p</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
-    </argument>
-    <argument>
-        <label>moves</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
-    </argument>
-    <argument>
-        <label>moveschedule</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <valueType>Probability</valueType>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>Real</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
