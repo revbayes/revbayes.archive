@@ -69,11 +69,12 @@ RbHelpFunction RbHelpParser::parseHelpFunction(const std::string &fn)
     {
         pugi::xpath_node node = *it;
         RbHelpArgument argument = RbHelpArgument();
-        argument.setLabel(         node.node().child_value("label")         );
-        argument.setDescription(   node.node().child_value("description")   );
-        argument.setArgumentType(  node.node().child_value("argumentType")  );
-        argument.setValueType(     node.node().child_value("valueType")     );
-        argument.setDefaultValue(  node.node().child_value("defaultValue")  );
+        argument.setLabel(                  node.node().child_value("label")                    );
+        argument.setDescription(            node.node().child_value("description")              );
+        argument.setArgumentDagNodeType(    node.node().child_value("argumentNodeType")         );
+        argument.setArgumentPassingMethod(  node.node().child_value("argumentPassingMethod")    );
+        argument.setValueType(              node.node().child_value("valueType")                );
+        argument.setDefaultValue(           node.node().child_value("defaultValue")             );
         
         // loop options
         std::vector<std::string> options = std::vector<std::string>();

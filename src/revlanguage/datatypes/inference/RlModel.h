@@ -41,10 +41,16 @@ namespace RevLanguage {
         const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+
+        // Member method inits
+        const MethodTable&                          getMethods(void) const;                                                     //!< Get methods
+        RevPtr<Variable>                            executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        
         
     protected:
         
         void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        printModelDotGraph(const std::string &fn);
         
         std::set<RevPtr<const Variable> >           sources;
         

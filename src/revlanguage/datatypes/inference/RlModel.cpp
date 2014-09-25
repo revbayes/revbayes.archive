@@ -8,9 +8,13 @@
 #include "RevObject.h"
 #include "RbException.h"
 #include "RlModel.h"
+#include "RlString.h"
 #include "TypeSpec.h"
 
 #include <vector>
+#include <fstream>
+#include <algorithm>
+#include <string>
 
 using namespace RevLanguage;
 
@@ -37,8 +41,21 @@ void Model::constructInternalObject( void ) {
         s.insert( n );
     }
     value = new RevBayesCore::Model( s );
+//    printModelDotGraph();
 }
 
+/* Map calls to member methods */
+RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+    
+    if (name == "writeModelGVFile") {
+        const std::string&   fn      = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        printModelDotGraph(fn);
+        
+        return NULL;
+    }
+    
+    return RevObject::executeMethod( name, args );
+}
 
 /** Get Rev type of object */
 const std::string& Model::getClassType(void) { 
@@ -74,6 +91,27 @@ const MemberRules& Model::getMemberRules(void) const {
     }
     
     return modelMemberRules;
+}
+
+/* Get method specifications */
+const MethodTable& Model::getMethods(void) const {
+    
+    static MethodTable   methods    = MethodTable();
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false )
+    {
+        
+        ArgumentRules* dotArgRules = new ArgumentRules();
+        dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+        methods.addFunction("writeModelGVFile", new MemberProcedure( RlUtils::Void, dotArgRules) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &RevObject::getMethods() );
+        methodsSet = true;
+    }
+    
+    return methods;
 }
 
 /** Get type spec */
@@ -131,4 +169,104 @@ void Model::setConstMemberVariable(const std::string& name, const RevPtr<const V
     else {
         RevObject::setConstMemberVariable(name, var);
     }
+}
+
+/* Write a file in DOT format for viewing the model DAG in graphviz */
+//   This requires the user to have graphviz installed, or they can paste the file contents
+//   into http://graphviz-dev.appspot.com/
+void Model::printModelDotGraph(const std::string &fn){
+    
+    const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
+    std::vector<RevBayesCore::DagNode*>::const_iterator it;
+    
+    std::ofstream o;
+    o.open(fn.c_str());
+	o << "digraph REVDAG {\n";
+    for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
+        std::stringstream nname;
+        if ( (*it)->getName() != "" )
+            nname << (*it)->getName();
+        else
+            nname << (*it);
+        std::string stname = nname.str();
+        std::replace( stname.begin(), stname.end(), '[', '_');
+        stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
+              
+        std::stringstream rl;
+        rl << nname.str() ;        
+       
+        o << "   n_" << stname;
+        o << " [shape=";
+        // only print values of constant nodes (only simple numeric values)
+        if((*it)->getDagNodeType() == "constant"){
+            o << "record, style=filled, fillcolor=white, ";
+            rl << "|";
+            if((*it)->isSimpleNumeric())  
+                (*it)->printValue(rl," ");
+            else 
+                rl << " ... ";
+            o << "label=\"{" << rl.str() << "}\"]\n";
+        }
+        else if((*it)->getDagNodeType() == "deterministic"){
+            std::stringstream strss;
+            (*it)->printStructureInfo(strss);
+            std::string w;
+            while(strss >> w){
+                if(w == "_function"){
+                    strss >> w;
+                    strss >> w;
+                    strss >> w;
+                    rl << "\\n[ " << w << "() ]";
+                }
+            }
+            //std::cout << strss.str() << std::endl;
+            o << "oval, style=\"dashed,filled\", fillcolor=white, label=\"" << rl.str() << "\"]\n";
+        }
+        else if((*it)->getDagNodeType() == "stochastic"){
+            o << "oval, ";
+            if((*it)->isClamped()){
+                o << "style=filled, fillcolor=gray, ";
+            }
+            else 
+                o << "style=filled, fillcolor=white, ";
+            o << "label=\"" << rl.str() << "\"]\n";
+        }
+    }
+    for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
+        std::stringstream nname;
+        if ( (*it)->getName() != "" )
+            nname << (*it)->getName() ;
+        else
+            nname << (*it);
+        std::string stname = nname.str();
+        std::replace( stname.begin(), stname.end(), '[', '_');
+        stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
+
+        if((*it)->getNumberOfChildren() > 0){
+            const std::set<RevBayesCore::DagNode*>& childeren = (*it)->getChildren();
+            std::set<RevBayesCore::DagNode*>::const_iterator ci;
+            for ( ci=childeren.begin(); ci!=childeren.end(); ++ci ){
+                
+                std::stringstream cn;
+                if ( (*ci)->getName() != "" )
+                    cn << (*ci)->getName();
+                else
+                    cn << (*ci);
+                std::string stcn = cn.str();
+                std::replace( stcn.begin(), stcn.end(), '[', '_');
+                stcn.erase(std::remove(stcn.begin(), stcn.end(), ']'), stcn.end());  
+
+                o << "   n_" << stname << " -> n_";
+                o << stcn;
+                if((*ci)->getDagNodeType() == "deterministic")
+                    o << "[style=dashed]";
+                o << "\n";
+            }
+        }
+        
+    }
+    o << "}";
+    o.close();
+    
+    
 }
