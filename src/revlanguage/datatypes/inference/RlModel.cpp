@@ -199,13 +199,24 @@ void Model::printModelDotGraph(const std::string &fn){
         o << " [shape=";
         // only print values of constant nodes (only simple numeric values)
         if((*it)->getDagNodeType() == "constant"){
-            o << "record, style=filled, fillcolor=white, ";
-            rl << "|";
-            if((*it)->isSimpleNumeric())  
-                (*it)->printValue(rl," ");
-            else 
-                rl << " ... ";
-            o << "label=\"{" << rl.str() << "}\"]\n";
+			if( (*it)->getName() == "" ){
+				o << "box, style=filled, fillcolor=white, ";
+				std::stringstream trl;
+				if((*it)->isSimpleNumeric())  
+					(*it)->printValue(trl," ");
+				else 
+					trl << " ... ";
+				o << "label=\"" << trl.str() << "\"]\n";
+			}
+			else {
+				o << "record, style=filled, fillcolor=white, ";
+				rl << "|";
+				if((*it)->isSimpleNumeric())  
+					(*it)->printValue(rl," ");
+				else 
+					rl << " ... ";
+				o << "label=\"{" << rl.str() << "}\"]\n";
+			}
         }
         else if((*it)->getDagNodeType() == "deterministic"){
             std::stringstream strss;
