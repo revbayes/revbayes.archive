@@ -5,7 +5,6 @@
 #include "ModelVector.h"
 #include "MultispeciesCoalescent.h"
 #include "Natural.h"
-#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -138,12 +137,12 @@ const MemberRules& Dist_constPopMultispCoal::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "speciesTree", true, TimeTree::getClassTypeSpec() ) );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         std::vector<TypeSpec> branchNeTypes;
         branchNeTypes.push_back( RealPos::getClassTypeSpec() );
         branchNeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "Ne"    , true, branchNeTypes ) );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxa"  , true, ModelVector<Taxon>::getClassTypeSpec() ) );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

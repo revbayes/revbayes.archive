@@ -94,7 +94,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_modelVectorAbstractElement<v
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "", true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new Ellipsis (     valType::getClassTypeSpec() ) );
         rulesSet = true;
     }

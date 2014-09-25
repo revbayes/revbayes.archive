@@ -49,7 +49,7 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
         rulesSet = true;
     }

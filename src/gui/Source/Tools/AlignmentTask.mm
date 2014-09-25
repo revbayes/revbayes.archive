@@ -41,8 +41,8 @@
     NSString* clustalInfileArg               = @"-INFILE=";
               clustalInfileArg               = [clustalInfileArg stringByAppendingString:dFilePath];
     NSString* clustalOutfileArg              = @"-OUTFILE=";
-              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:temporaryDirectory];
-              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:@"/myAlignments/"];
+              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:workingDirectory];
+              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:@"/"];
               clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:fileName];
     NSString* clustalOutputArg               = @"-OUTPUT=FASTA";    
     NSString* clustalGuideTreeArg            = @"-NEWTREE=";
@@ -136,12 +136,14 @@
     // find the clustal executable in the application bundle
     NSString* clustalPath = [[NSBundle mainBundle] pathForResource:@"clustalw2" ofType:nil];
     
+    NSLog(@"clustalArguments=%@", clustalArguments);
     // set variables for the task
     [alignTask setCurrentDirectoryPath:clustalPath];
     [alignTask setLaunchPath:clustalPath];
     [alignTask setArguments:clustalArguments];
     outputFileHandle = [outputPipe fileHandleForReading];
     [alignTask setStandardOutput:outputPipe];
+    NSLog(@"here I am\n");
     
     // listen for a notification indicating that the task finished and that data has been sent down the pipe
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];

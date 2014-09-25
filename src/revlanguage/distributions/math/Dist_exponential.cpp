@@ -95,18 +95,18 @@ const TypeSpec& Dist_exponential::getClassTypeSpec(void)
 const MemberRules& Dist_exponential::getMemberRules(void) const 
 {
     
-    static MemberRules distExpMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distExpMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec()   , new Real(1.0) ) );
-        distExpMemberRules.push_back( new ArgumentRule( "offset", true, RealPos::getClassTypeSpec()   , new Real(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return distMemberRules;
 }
 
 

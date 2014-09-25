@@ -233,7 +233,7 @@ bool AdmixtureNode::equals(const AdmixtureNode& node) const {
         return true;
     }
     // test if the name is the same
-    if (name != node.name) {
+    if (taxon != node.taxon) {
         return false;
     }
     
@@ -449,7 +449,7 @@ void AdmixtureNode::removeAllTopologyChildren(void) {
      */
     children.clear();
     
-    name = "";
+    taxon = Taxon();
     
     // mark for newick recomputation
     flagNewickRecomputation();
@@ -649,7 +649,7 @@ void AdmixtureNode::removeAllChildren(void) {
     */
     children.clear();
     
-    name = "";
+    taxon = Taxon();
     
     // mark for newick recomputation
     flagNewickRecomputation();
@@ -810,7 +810,7 @@ std::string AdmixtureNode::buildNewickString(void)
     // test whether this is a internal or external node
     if (tipNode) {
         // this is a tip so we just return the name of the node
-        o << name;
+        o << taxon.getName();
         if ( nodeComments.size() > 0 ) {
             o << "[&";
             for (size_t i = 0; i < nodeComments.size(); ++i) {

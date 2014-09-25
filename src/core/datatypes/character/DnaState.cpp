@@ -298,10 +298,10 @@ void DnaState::setState(char symbol)
     state = char( computeState( symbol ) );
     switch ( state )
     {
-        case 0x1: stateIndex = 0;
-        case 0x2: stateIndex = 1;
-        case 0x4: stateIndex = 2;
-        case 0x8: stateIndex = 3;
+        case 0x1: { stateIndex = 0; break; }
+        case 0x2: { stateIndex = 1; break; }
+        case 0x4: { stateIndex = 2; break; }
+        case 0x8: { stateIndex = 3; break; }
         default: stateIndex = 4;
     }
     

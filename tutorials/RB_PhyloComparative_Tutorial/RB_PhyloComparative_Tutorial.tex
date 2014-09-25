@@ -38,7 +38,6 @@
 \section*{Introduction}
 
 The subject of the comparative method is the analysis of trait evolution at the macroevolutionary scale.
-Traits can be morphological, behavioral or can be related to the life-history strategies (e.g. longevity).
 In a comparative context, many different questions can be addressed: tempo and mode of evolution, correlated evolution of multiple quantitative traits, trends and bursts, changes in evolutionary mode correlated with major key innovations in some groups, etc \citep[see][for a good introduction]{Harvey:1991p899}.
 
 In order to correctly formalize comparative questions, the underlying phylogeny should always be explicitly accounted for. This point is clearly illustrated, in particular, by the independent contrast method \citep{Felsenstein:1985p686}. Practically speaking, the phylogeny and the divergence times are usually first estimated using a separate phylogenetic reconstruction software. In a second step, this time-calibrated phylogeny is used as an input to the comparative method.
@@ -95,63 +94,51 @@ A univariate Brownian motion $x(t)$ is parameterized by its starting value at th
 x(T) &\sim& \text{Normal} \left( x(0), \sigma^2 T \right).
 \end{eqnarray*}
 
-Since we have not much prior information about the possible values of $\sigma$, we should use a diffuse prior, for instance, an exponential of mean 100:
+Concerning $\sigma$, we can formalize the idea that we are ignorant about the \emph{scale} (the order of magnitude) of this parameter by using a log-uniform prior:
 \begin{eqnarray*}
-\sigma &\sim& \text{Exponential}(0.001).
+\sigma &\sim& \frac{1}{\sigma}.
 \end{eqnarray*}
 
 Concerning the initial value $x(0)$ of the Brownian process at the root of the phylogeny,
 the current version of RevBayes only implements a uniform prior.
 This is done by default (no need to explicitly define it).
-Note that this uniform prior is invariant by translation. Given that our traits have been log-transformed, this means that the prior is invariant upon changing the units in which the traits are measured: it is insensitive to the fact that, for example, body mass has been given in kilograms, and not in grams.
 
-Finally, the tree topology $\tau$ is, as mentioned above, fixed to some externally given phylogeny. However, in order to fully specify the model in RevBayes, we still need to define a prior on this tree: here, we will simply use a uniform prior, both on the topology and on divergence times.
-
-The entire model is now specified: tree $\tau$, variance $\sigma$ and Brownian process $x(t)$:
+Finally, the tree topology $\psi$ is, as mentioned above, fixed to some externally given phylogeny.
+The entire model is now specified: tree $\psi$, variance $\sigma$ and Brownian process $x(t)$:
 \begin{eqnarray*}
-\tau &\sim& \text{Uniform},
-\\
-\sigma &\sim& \text{Exponential}(0.001),
+\sigma &\sim& \frac{1}{\sigma},
 \\
 x(0) &\sim& \text{Uniform},
 \\
-x(t) &\sim& \text{Brownian} \left( x(0), \, \tau, \, \sigma \right).
+x(t) \mid \Psi, \sigma &\sim& \text{Brownian} \left( x(0), \, \psi, \, \sigma \right).
 \end{eqnarray*}
-Constraining $\tau$ based on an externally-provided phylogeny and conditioning the model on empirical data by clamping $x(t)$ at the tips of the phylogeny, we can then run a MCMC to sample from the joint posterior distribution on $\sigma$ and $x$. Once this is done, we can obtain posterior means, medians or credible intervals for the value of body mass or other life-history traits for specific ancestors.
+Conditioning the model on empirical data by clamping $x(t)$ at the tips of the phylogeny, we can then run a MCMC to sample from the joint posterior distribution on $\sigma$ and $x$. Once this is done, we can obtain posterior means, medians or credible intervals for the value of body mass or other life-history traits for specific ancestors.
 
 
 \subsection*{Programming the model in RevBayes}
 
-We just need to reformulate what has been explained in the last subsection, now in the Rev language:
+In \cmd{tutorials/NESCent/RevBayes\_scripts/}, you will find a script called \cmd{placentaliaMass.Rev}.
+This script implements the univariate Brownian model described above. Instead of re-typing the content of script entirely in the context of an interactive \cmd{RevBayes} session, you can instead run the script directly, by first going to the \cmd{tutorials/NESCent/} folder and then giving the script as an argument to the \cmd{RevBayes} program:
+\\
+\cmd{RevBayes RevBayes\_scripts/placentaliaMass.Rev}.
+
+This script essentially reformulates what has been explained in the last subsection, now in the Rev language:
 \begin{itemize}
 \item
 load trait data:
 \\
 \cmd{contData <- readCharacterData("data/plac40lhtlog.nex")}
 \item
-get taxon number and taxon names:
+load the time-tree from file:
 \\
-\cmd{
-nTaxa <- contData.ntaxa()
+\cmd{treeArray <- readTrees("data/chronoplac40.tree"
 \\
-names <- contData.names()
+psi <- treeArray[1]
 }
 \item
-define a uniformly-distirbuted time-tree:
+define $\sigma$, with a truncated log-uniform prior:
 \\
-\cmd{tau $\sim$ uniformTimeTree(originTime = 1.0, taxonNames = names)}
-\item
-set this tree equal to the one defined in \cmd{chronoplac40.tree}:
-\\
-\cmd{treeArray <- readTrees("data/chronoplac40.tree")
-\\
-fixedTree <- treeArray[1]
-\\
-tau.setValue(fixedTree)}
-\item
-define $\sigma$:
-\\
-\cmd{sigma $\sim$ \text{Exponential}(0.001)}
+\cmd{sigma $\sim$ \text{dnLogUniform}(min=0.001,max=1000)}
 \\
 to accelerate convergence, it can be useful to force initialization of $\sigma$ to a small value:
 \\
@@ -159,7 +146,7 @@ to accelerate convergence, it can be useful to force initialization of $\sigma$ 
 \item
 define the multivariate Brownian process, which we will call \cmd{logmass}:
 \\
-\cmd{logmass $\sim$ brownian(tau,sigma)}
+\cmd{logmass $\sim$ brownian(psi,sigma)}
 \item
 condition the Brownian model on empirically observed values for body mass in extant taxa.
 Here, we need to specify that body mass is the second column of the dataset:
@@ -192,7 +179,6 @@ index <- index + 1
 }
 \item
 a global translation move on the Brownian process:
-% this move applies a random translation across the entire phylogeny:
 \\
 \cmd{
 moves[index] <- mvRealNodeValTreeTranslation(process=logmass,lambda=1,
@@ -201,8 +187,6 @@ tune=true,weight=1)
 \\
 index <- index + 1
 }
-%\\
-%Note that the translation move concerns the entire phylogeny: therefore, its tuning parameter is smaller than that used %for the single-node sliding move above.
 \item
 before creating the model, we define summary statistics, to be monitored during the MCMC: the mean and the standard deviation of the trait across the tree:
 \\
@@ -264,18 +248,13 @@ mymcmc.run(100000)
 \item
 run the model, check convergence and obtain a sample from the posterior distribution
 \item
-take the time to explore the files produced by the run: in particular, the \cmd{.logmass} file in which the sampled histories of body mass evolution are written in the newick format.
-\item
 using \cmd{Tracer}, visualize the posterior distribution on ancestral placental body mass
 \item
-calculate the credible interval for this ancestral body mass
+calculate the 95\% credible interval for ancestral body mass
 \item
-sumarize the evolution of body mass along the tree, visualizing it with \cmd{njplot}
-\item
-calculate a 95\% credible interval for the rate of evolution of the logarithm of body mass ($\sigma$)
+calculate the 95\% credible interval for the rate of evolution of the log of body mass ($\sigma$)
 \end{itemize}
 
-You can of course conduct a similar inference for each of the three life-history traits given in \cmd{plac40lhtlog.nex}. You could either run the model separately on each trait or, alternatively, define (within the same model) three independent univariate Brownian motions running along the same phylogeny (each with its own $\sigma$ parameter).
 
 
 \section{Correlated evolution of multiple traits}
@@ -283,82 +262,55 @@ You can of course conduct a similar inference for each of the three life-history
 
 Next, we would like to estimate the correlation between the $K=3$ life-history traits given in the \cmd{plac40lhtlog.nex} file, while properly taking into account phylogenetic inertia. 
 To do so, we will assume that the traits jointly evolve along the phylogeny as a \emph{multivariate} Brownian process.
-We will estimate the \emph{covariance matrix} of this process. The empirical support in favor of positive or negative correlations between pairs of traits will then be formalized in terms of posterior probabilities of having positive or negative entries in this covariance matrix.
-As a by-product of this correlation analysis, we will also obtain a marginal ancestral reconstruction of the traits along the entire phylogeny, which we will then visualize using graphical software programs.
+We will estimate the \emph{covariance matrix} of this process and assess the empirical support in favor of positive or negative correlations between pairs of traits in terms of posterior probabilities of having positive or negative entries in this covariance matrix.
 At this stage of the tutorial, we will again ignore phylogenetic uncertainty.
 
 \subsection*{The model and the priors}
 
 A multivariate Brownian process $X(t)$, of dimension $K$ (here $K=3$),
 is entirely parameterized by its starting value ($X(0)$ at the root of the phylogeny, which a vector of dimension $K$) and a $K \times K$ symmetric positive matrix (the covariance matrix), which we will call $\Sigma$.
-%(we use capital letters for the now vector-valued $X$ and matrix-valued $\Sigma$
-%to distinguish them from their scalar counterparts of the previous section).
 A positive entry between two traits, say $\Sigma_{12} > 0$, means that when trait 1 increases, trait 2 also tends to increase. Conversely, a negative entry means that the two traits tend to undergo variation in opposite directions.
 As for the diagonal entries (e.g. $\Sigma_{11}$), they represent the variance per unit of time (i.e. the rate of evolution) of each trait considered marginally,
 thus very much like $\sigma^2$ (\emph{not} $\sigma$) in the univariate model of the previous section.
-%In fact, when $K=1$, the matrix becomes a scalar and is therefore really equivalent to the scalar parameter $\sigma^2$ of the univariate model (note the little difference: $\Sigma$ is the covariance, whereas $\sigma$ the standard deviation -- at least, this is the usual practice).
 
 On $\Sigma$, we will assume an inverse-Wishart prior:
 \begin{eqnarray*}
-\Sigma &\sim& W^{-1}(\Sigma_0, d).
+\Sigma &\sim& W^{-1}(\Sigma_0, d),
 \end{eqnarray*}
-The inverse Wishart distribution has two parameters: a symmetric positive matrix $\Sigma_0$, of same dimension as $\Sigma$, and a natural number $d \ge K$ (called the number of degrees of freedom). When $d > K+1$, the inverse Wishart prior has a well defined mean, which is equal to $\frac{\Sigma_0}{d-K-1}$ and is all the more concentrated around this mean than $d$ is large.
-The choice of this prior is primarily motivated by the fact that it is analytically conjugate to the multivariate normal distribution. It is therefore very convenient when used for the covariance matrix of a Brownian motion.
-
-Since we want a diffuse prior, we will use a small value for $d$, e.g. $d=K+2$, which is the smallest value for which the mean of the distribution is well-defined.
-In addition, we want the prior to be centered on a diagonal matrix (i.e. we want to be a priori \emph{equi-poised}, or indifferent, with respect to either positive or negative correlations among traits). We may also want our prior to be invariant by linear reparameterizations of traits (linear transformations on the logarithm of life-history traits are equivalent to allometric re-parameterizations of the traits considered in natural units). This invariance will hold if and only if $\Sigma_0$ is proportional to the identity matrix, i.e. if $\Sigma_0 = \kappa I_K$, for some positive real number $\kappa$. This number $\kappa$ will set the amplitude of the variation per unit of time of the traits. Since we have no idea about the scale of $\kappa$, we should use a diffuse prior, e.g. an exponential of mean 100:
+where $\Sigma_0$ is a multiple of the identity matrix (i.e. $\Sigma_0 = \kappa I_K$), for some positive real number $\kappa$.
+Using a prior centered on a diagonal matrix means that we want to be indifferent with respect to either positive or negative correlations among traits. As for the parameter $\kappa$, it will set the amplitude of the variation per unit of time of the traits. Since we have no idea about the scale of this parameter, we can use a log-uniform prior:
 \begin{eqnarray*}
-\kappa &\sim& \text{Exponential}(0.001).
+\kappa &\sim& \frac{1}{\kappa}.
 \end{eqnarray*}
 This completes our model:
 \begin{eqnarray*}
-\tau &\sim& \text{Uniform},
+\kappa &\sim& \frac{1}{\kappa},
 \\
-\kappa &\sim& \text{Exponential}(0.001),
-\\
-\Sigma &\sim& W^{-1}(\Sigma_0 = \kappa I_K , \, d = K+2),
+\Sigma \mid \kappa &\sim& W^{-1}(\Sigma_0 = \kappa I_K , \, d = K+2),
 \\
 X(0) &\sim& \text{Uniform},
 \\
-X(t) &\sim& \text{Brownian}(X(0), \, \tau, \, \Sigma).
+X(t) \mid X(0), \Psi, \Sigma &\sim& \text{Brownian}(X(0), \, \psi, \, \Sigma).
 \end{eqnarray*}
-As in the univariate case, we can then constrain $\tau$, clamp $X$ and sample from the joint distribution over the parameters of the model by MCMC.
+As in the univariate case, we can then clamp $X$ at the tips of the phylogeny and sample from the joint distribution over the parameters of the model by MCMC.
 Once this is done, we can estimate marginal posterior probabilities (e.g. for positive or negative covariance among traits) and infer ancestral traits.
 
 \subsection*{Programming the model in RevBayes}
 
-We go through the same series of steps as in the univariate case:
+You may find it convenient to program this multivariate model by first duplicating the script of the univariate model:
+\\
+\cmd{cp placentaliaMass.Rev placentaliaTraits.Rev}
+\\
+Then, you can edit the new script, \cmd{placentaliaTraits.Rev}, and introduce the modifications that would change the univariate model
+into its multivariate counterpart.
+
+In the following, only those aspects of the multivariate model that differ from the univariate case are outlined.
+Essentially, instead of a univariate Brownian motion parameterized by a scalar parameter, you now need to:
 \begin{itemize}
-\item
-load trait data:
-\\
-\cmd{contData <- readCharacterData("data/plac40lhtlog.nex")}
-\item
-get number of traits, number of taxa and taxon names:
-\\
-\cmd{
-nTraits <- contData.nchar()[1]
-\\
-nTaxa <- contData.ntaxa()
-\\
-names <- contData.names()
-}
-\item
-define a uniformly-distirbuted time-tree:
-\\
-\cmd{tau $\sim$ uniformTimeTree(originTime = 1.0, taxonNames = names)}
-\item
-set this tree equal to the one defined in \cmd{chronoplac40.tree}:
-\\
-\cmd{treeArray <- readTrees("data/chronoplac40.tree")
-\\
-fixedTree <- treeArray[1]
-\\
-tau.setValue(fixedTree)}
 \item
 define $\kappa$:
 \\
-\cmd{kappa $\sim$ \text{Exponential}(0.001)}
+\cmd{kappa $\sim$ \text{dnLogUniform}(min=0.001,max=1000)}
 \item
 define the number of degrees of freedom as $d = K+2$:
 \\
@@ -367,12 +319,10 @@ define the number of degrees of freedom as $d = K+2$:
 define the covariance matrix $\Sigma$ as inverse Wishart:
 \\
 \cmd{Sigma $\sim$ invWishart(dim=nTraits, kappa=kappa, df=df)}
-\\
-note that we are using a special constructor for the inverse Wishart: when a natural number $d$ and a positive real number $\kappa$ are given, it is implicitly assumed that the matrix-valued parameter is $\kappa$ times the identity matrix of dimension $d$: $\kappa I_d$.
 \item
 define the multivariate Brownian process:
 \\
-\cmd{X $\sim$ mvtBrownian(tau,Sigma)}
+\cmd{X $\sim$ mvtBrownian(psi,Sigma)}
 \item
 condition the Brownian model on quantitative trait data.
 This needs to be done separately for each trait:
@@ -446,36 +396,29 @@ the correlation coefficient:
 cor23 := Sigma.correlation(2,3)
 }
 \item
-the partial correlation:
-\\
-\cmd{
-parcor23 := Sigma.partialCorrelation(2,3)
-}
-\item
-note that the variance per unit of time of, say, log body mass is given by the diagonal entry:
+the variance per unit of time of, say, log body mass, which is given by the diagonal entry:
 \\
 \cmd{
 var2 := Sigma.covariance(2,2)
 }
 \item
-we can also get all correlation coefficients into a single vector:
+we can also get all correlation coefficients into a single vector (you can skip this part during the session and leave it as  homework):
 \begin{verbatim}
 # initialize a running index
 corrindex <- 1
 # loop over all pairs of traits
-for (i in 1:nTraits)    {
-    for (j in i+1:nTraits) {
+for (i in 1:(nTraits-1))    {
+    for (j in (i+1):nTraits) {
         correl[corrindex] := Sigma.correlation(i,j)
         corrindex <- corrindex + 1
     }
 }
 \end{verbatim}
 \item
-we could be interested in tracking several summary statistics also for the Brownian motion, in particular the mean and the standard deviation along the tree, separately for each trait:
+we could be interested in tracking several summary statistics also for the Brownian motion, in particular the mean along the tree, separately for each trait:
 \begin{verbatim}
 for (i in 1:nTraits)    {
         meanX[i] := X.mean(i)
-        stdevX[i] := X.stdev(i)
 }
 \end{verbatim}
 \end{itemize}
@@ -497,25 +440,25 @@ monitors[1] <- screenmonitor(printgen=10, correl, meanX)
 a file monitor that does the same thing, but directly into a file:
 \\
 \cmd{
-monitors[2] <- filemonitor(filename="output/placmass.trace", printgen=10, separator = "       ", correl, meanX)
+monitors[2] <- filemonitor(filename="output/plactraits.trace", printgen=10, separator = "       ", correl, meanX)
 }
 \item
 a file monitor for $\Sigma$:
 \\
 \cmd{
-monitors[2] <- filemonitor(filename="output/plactraits.cov", printgen=10, separator = "  ", Sigma)
+monitors[3] <- filemonitor(filename="output/plactraits.cov", printgen=10, separator = "  ", Sigma)
 }
 \item
 a file monitor for the ancestral reconstruction of traits:
 \\
 \cmd{
-monitors[3] <- filemonitor(filename="output/plactraits.traits", printgen=10, separator = "       ", X)
+monitors[4] <- filemonitor(filename="output/plactraits.traits", printgen=10, separator = "       ", X)
 }
 \item
 and a general model monitor:
 \\
 \cmd{
-monitors[4] <- modelmonitor(filename="output/plactraits.log", printgen=10, separator = " ")
+monitors[5] <- modelmonitor(filename="output/plactraits.log", printgen=10, separator = " ")
 }
 \end{itemize}
 We can finally create the mcmc and run it:
@@ -538,14 +481,7 @@ estimate the posterior mean, median and 95\% credible interval for this correlat
 \item
 does the credible inrerval overlap 0? What does that say about the empirical support for the correlation between body mass and longevity?
 \item
-which fraction of the total variance in longevity among placental mammals is explained by body-mass?
-\item
-sumarize evolution of body size and longevity along the tree, visualizing it with \cmd{njplot}
-\item
-calculate the credible interval for body size of the last common ancestor of placental mammals
-\item
-as mentioned above, it would be easy to make an \emph{uncorrelated} version of the same model, either by constraining $\Sigma$ to be a diagonal matrix or by creating three independent Brownian models of dimension 1, one for each trait (the latter is easier under the current version of \cmd{RevBayes}, if you want to try it after the workshop). Would this uncorrelated model have a better or a poorer fit than the covariant model constructed above? Why?
-So, do we need to explicitly compute a Bayes factor in the present case?
+what proportion of the variation in longevity among placental mammals is explained by body mass?
 \end{itemize}
 
 
@@ -583,62 +519,44 @@ will nevertheless be indicated. You may want try them after the workshop.
 \subsection*{Programming the model in RevBayes}
 
 Implementing this joint model in RevBayes is just a matter of
-adding the following features to the model defined in the previous section.
+adding the following features to the model defined in the previous section
+(after duplicating the script):
 \begin{itemize}
 \item
-load a sequence data matrix
+instead of having a fixed tree, we should now define a \cmd{random} tree. We could use a birth death prior, whose speciation and extinction rates are themselves endowed with some diffuse exponential prior:
 \\
 \cmd{
-seqData <- readCharacterData("data/plac40\_4fold.nex")
+speciation $\sim$ exponential(0.1)
 \\
-nSites <- seqData.nchar()[1]
+extinction $\sim$ exponential(0.1)
+\\
+sampling\_fraction := 0.01  \, \, \,    \# 40 out of the $\sim$4000 placental mammals
+\\
+psi $\sim$ cBDP(lambda=speciation, mu=extinction, rho=sampling\_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
 }
 \item
-create a substitution model, just like what you probably did in previous sessions. Here, we will make a simple GTR model, without any rate variation, neither among sites nor among branches:
+we still want to work on a fixed, pre-specified, tree topology (thus, the birth-death prior will be used here only for averaging over uncertainty about divergence times):
 \\
 \cmd{
-\# equilibrium frequencies
+treeArray <- readTrees("data/chronoplac40.tree")
 \\
-bf <- v(1,1,1,1)
+fixedTree <- treeArray[1]
 \\
-pi $\sim$ dirichlet(bf)
-\\
-\# exchangeabilities
-\\
-e <- v(1,1,1,1,1,1)
-\\
-er $\sim$ dirichlet(e)
-\\
-\# rate matrix
-\\
-Q := gtr(er,pi)
-\\
-\# global substitution rate (strict clock)
-\\
-clockRate $\sim$ exponential(0.1)
-\\
-\# sequence evolution model
-\\
-seq $\sim$ substModel(tree=tau, Q=Q, branchRates=clockRate, nSites=nSites, type="DNA")
-}
-(note that the \cmd{tau} here refers to the same tree as the \cmd{tau} parameter of the Bronwian process)
-%\\
-%\cmd{x $\sim$ mvtBrownian(tau,sigma)}
-\item
-condition the model on the sequence data:
-\\
-\cmd{
-seq.clamp(seqData)
+psi.setValue(fixedTree)
 }
 \item
-in the moves section, add moves for divergence times:
+create a substitution model, just like what you probably did in previous sessions. In a first step, you can use a simple GTR model, without any rate variation, neither among sites nor among branches.
+\item
+load the sequence data matrix specified in \cmd{data/plac40\_4fold.nex} and condition (or clamp) the substitution model to this dataset.
+\item
+in the moves section, you should add moves for divergence times:
 \\
 \cmd{
-moves[index] <- mSubtreeScale(tau, weight=5.0)
+moves[index] <- mSubtreeScale(psi, weight=5.0)
 \\
 index <- index + 1
 \\
-moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+moves[index] <- mNodeTimeSlideUniform(psi, weight=10.0)
 \\
 index <- index + 1
 }
@@ -646,80 +564,49 @@ index <- index + 1
 you would add topology moves here (again, only in a second step):
 \\
 \cmd{
-moves[index] <- mNNI(tau, weight=5.0)
+moves[index] <- mNNI(psi, weight=5.0)
 \\
 index <- index + 1
 \\
-moves[index] <- mFNPR(tau, weight=5.0)
+moves[index] <- mFNPR(psi, weight=5.0)
 \\
 index <- index + 1
 }
+\item
+finally, you should add moves for the parameters of the substitution model.
 \end{itemize}
+Note that, here, we do not have included any fossil information: we are merely doing \emph{relative} dating. We will see at the end of this tutorial how fossil information can be integrated.
 
-Note that, if you do not include topology moves, it is essential that you 
-set the tree equal to an externally-provided reasonable tree topology (e.g. the one defined in \cmd{chronoplac40.tree}).
-In fact, even if you move the tree topology,
-you may still want to speed up convergence of the MCMC by starting from this externally-provided tree
-(which is then not anymore a hard constraint, but merely a reasonable starting point).
-
-Note also that the simple strict-clock and the site-homogeneous model considered here are not so good.
-Although integrating over uncertainty about the phylogeny when doing a comparative analysis is nice in principle,
-doing it using a poor model, as is done here,
-may ultimately be worse than using a fixed tree that has itself been separately estimated using a more reasonable model.
-But of course, nothing prevents us from making a joint analysis in RevBayes
-that relies on a more reasonable substitution model -- in particular, using a relaxed clock.
+Write this model and make sure that it runs when you give it to \cmd{RevBayes}. Once this is the case, don't spend too much time analyzing the results and quickly turn to the model introduced in the next section.
 
 \section{Autocorrelated relaxed molecular clock}
 
 In the previous model, no consideration was given to the problem of rate variation among lineages --
 we bluntly used a strict clock. This is of course problematic, in particular at the phylogenetic scale considered here (placental mammals), where we know that there is substantial rate variation. In addition, we know that substitution rates across branches are \emph{auto-correlated} in the present case: typically, entire orders, such as rodents, are fast evolving, whereas other orders like Cetartiodactyla are slowly evolving. In other words, nearby lineages along the phylogeny tend to be characterized by similar substitution rates.
 
-You have perhaps already seen an autocorrelated relaxed clock model in the molecular dating session (ACLN). You could easily recruit it in the present context (a good exercise to try: modify the model suggested in the previous section so as to replace the strict clock by the ACLN model).
+You have perhaps already seen an autocorrelated relaxed clock model in the molecular dating session (ACLN). You could easily recruit it in the present context (a good exercise to try after the workshop: modify the model suggested in the previous section so as to replace the strict clock by the ACLN model).
 
 Here, however, we will derive the autocorrelated clock in a slightly different way. This derivation will be less straightforward, but more useful for what we want to do next.
-Fundamentally, the auto-correlated clock is a model where the logarithm of the instant substitution rate is itself a Brownian motion. Thus, it is exactly like a univariate quantitative trait, such as the logarithm of body mass (section \ref{univariate}). Next, we need to exponentiate this Brownian process and average over branches in order to obtain branch-specific substitution rates, which are finally plugged into the substitution model.
+Specifically, we will first model the logarithm of the instant substitution rate as a Brownian motion, just like we did for body mass in section \ref{univariate}. Then, we will exponentiate this Brownian process and take branch-specific averages, which we will finally plug into the substitution model as the \cmd{branchRates} argument.
 
 \subsection*{Programming the model in RevBayes}
 
-Compared to the model described in the last section, the only new feature is this: instead of defining a simple scalar \cmd{clockRate} variable, we now define a univariate Brownian motion along the tree, using the tools introduced in section \ref{univariate}:
+Compared to the model described in the last section, you should:
 \begin{itemize}
 \item
-define \cmd{nu}, the "rate of evolution of the rate of substitution":
-\\
-\cmd{nu $\sim$ \text{Exponential}(0.001)}
+delete the \cmd{clockRate} variable
 \item
-define the univariate Brownian process describing the instant (log) substitution rate:
-\\
-\cmd{lograte $\sim$ brownian(tau,nu)}
+based on what you have done with body mass in section \ref{univariate}, you should be able to create a univariate Brownian process, which you could call \cmd{lograte}
 \item
-exponentiate and average this Brownian process over branches using \cmd{expBranchTree}:
+you can then exponentiate and average this Brownian process over branches using \cmd{expBranchTree}:
 \\
-\cmd{branchrates := expBranchTree(tree=tau, process=lograte)}
-%\\
-%Specifically, \cmd{expBranchTree} is a deterministic function that calculates branchwise averages of the exponential of %the real-valued process given as its parameter (here, \cmd{lograte}).
+\cmd{branchrates := expBranchTree(tree=psi, process=lograte)}
 \item
-plug these rates into the substModel object, as the branchRates parameter:
-\\
-\cmd{seq $\sim$ substModel(tree=tau, Q=Q, branchRates=clockRate, nSites=nSites, type="DNA")}
+plug these rates into the substModel object, as the branchRates parameter vector.
 \item
 condition the model on the sequence and trait data and run the program.
 \end{itemize}
-Note that, since \cmd{lograte} is, technically, a quantitative trait, you can also reconstruct its evolution along the phylogeny. In particular, you can estimate the substitution rate in the last common ancestor of placental mammals or visualize rate variation over the entire tree using \cmd{njplot} or some other graphical display (just as for body mass).
-
-Note also that, here, we do not have included any fossil information: we are merely doing \emph{relative} dating. We will see at the end of this tutorial how fossil information can be integrated.
-
-\subsection*{Exercises}
-
-\begin{itemize}
-\item
-write the model
-\item
-run it on the placental dataset
-\item
-estimate the strength of the correlation between traits
-\item
-how does that compare with the strength estimated on a fixed topology?
-\end{itemize}
+Again, write this model by duplicating and adapting the last script that you have written. Make sure that the model runs when given to \cmd{RevBayes}, before turning to the next model now introduced.
 
 \section{Rates, dates and traits}
 
@@ -735,7 +622,7 @@ while the other 3 dimensions of the process (2 to 4) will map to the quantitativ
 
 You now have all the tools to implement this model entirely by yourself, except for one little detail: you now need to exponentiate one specific component of a multivariate process (as opposed to exponentiating a univariate process, as we did in the previous section). Thus, assuming that \cmd{X} is your 4-dimensional process, you need to tell the \cmd{expBranchTree} function that you want to exponentiate the first component of the process (with the \cmd{traitIndex=1} option):
 \\
-\cmd{branchrates := expBranchTree(tree=tau, process=x, traitIndex=1)}
+\cmd{branchrates := expBranchTree(tree=psi, process=x, traitIndex=1)}
 \\
 Also, be careful with the mapping of the quantitative traits: you need to map trait $i$ to entry $i+1$ of the Brownian process:
 \\
@@ -819,11 +706,11 @@ Assuming that \cmd{X} is the multivariate Brownian process:
 \item
 as above, define the branch rates as the exponential of the first component:
 \\
-\cmd{branchrates := expBranchTree(tree=tau, process=X, traitIndex=1)}
+\cmd{branchrates := expBranchTree(tree=psi, process=X, traitIndex=1)}
 \item
 define the branch equilibrium GC as the hyperbolic tangent of the second component:
 \\
-\cmd{branchGC := tanhBranchTree(tree=tau, process=X, traitIndex=2)}
+\cmd{branchGC := tanhBranchTree(tree=psi, process=X, traitIndex=2)}
 \item
 for $k=1..K$, map trait $k$ onto entry $k+2$ of $X$:
 \\
@@ -839,7 +726,7 @@ define the transition-transversion ratio; usually, this ratio is of the order of
 \item
 define a vector of branch-specific T92 substitution matrices:
 \\
-\cmd{branchMatrices := t92GCBranchTree(tree=tau,branchGC=branchGC,tstv=tstv)}
+\cmd{branchMatrices := t92GCBranchTree(tree=psi,branchGC=branchGC,tstv=tstv)}
 \item
 create a Dirichlet-distributed vector of equilbirium frequencies over nucleotides:
 \\
@@ -852,7 +739,7 @@ pi $\sim$ dirichlet(bf)
 finally, create the substitution model:
 \\
 \cmd{
-seq $\sim$ substModel(tree=tau, Q=branchMatrices, rootFrequencies=pi,
+seq $\sim$ substModel(tree=psi, Q=branchMatrices, rootFrequencies=pi,
 \\
 branchRates=branchrates, nSites=nSites, type="DNA")
 }
@@ -917,7 +804,7 @@ copestrend $\sim$ norm(0,10)
 \item
 create a (univariate) Brownian motion with drift:
 \\
-\cmd{logmass $\sim$ brownian(tau,sigma,drift=copestrend)}
+\cmd{logmass $\sim$ brownian(psi,sigma,drift=copestrend)}
 \item
 move the trend parameter during the MCMC, using a regular sliding move:
 \\

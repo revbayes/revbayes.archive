@@ -450,7 +450,7 @@ double AdmixtureEdgeAddResidualWeights::performMove( double &probRatio ) {
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
         std::set<DagNode* > affectedNodes;
-        variable->getAffectedStochasticNodes(affectedNodes);
+        variable->getAffectedNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) {
             DagNode* theNode = *i;
             //theNode->touch();

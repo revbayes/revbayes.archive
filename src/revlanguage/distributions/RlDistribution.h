@@ -38,15 +38,22 @@ namespace RevLanguage {
         // Basit utility functions
         virtual void                                    printStructure(std::ostream& o, bool verbose=false) const {}                        //!< Print structure of language object for user
         void                                            printValue(std::ostream& o) const;                                                  //!< Print value for user
-    
+        std::string                                     getGuiDistributionName(void) { return guiDistributionName; }
+        std::string                                     getGuiDistributionToolTip(void) { return guiDistributionToolTip; }
+        void                                            setGuiDistributionName(std::string s) { guiDistributionName = s; }
+        void                                            setGuiDistributionToolTip(std::string s) { guiDistributionToolTip = s; }
+
         // Distribution functions you have to override
         virtual RevObject*                              createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
         virtual RevBayesCore::Distribution*             createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
     
     
     protected:
-        Distribution(void);                                                                                                                 //!< Basic constructor hidden to disallow initialization
-    
+        Distribution(void);
+                                                                                                                      //!< Basic constructor hidden to disallow initialization
+    private:
+        std::string                                     guiDistributionName;
+        std::string                                     guiDistributionToolTip;
     };
     
 }

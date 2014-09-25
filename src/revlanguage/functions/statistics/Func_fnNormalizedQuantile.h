@@ -114,8 +114,8 @@ const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void 
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "ContDstribution", true, TypedDistribution<valType>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "numCategories", true, Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "ContDistribution", TypedDistribution<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "numCategories", Integer::getClassTypeSpec()                      , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

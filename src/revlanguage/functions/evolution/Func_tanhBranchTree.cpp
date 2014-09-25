@@ -36,10 +36,10 @@ const ArgumentRules& Func_tanhBranchTree::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "process", true, RevLanguage::MultivariateRealNodeValTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() , new Real(0)) );
-        argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec(), new Natural(0) ) );
+        argumentRules.push_back( new ArgumentRule( "tree"      , RevLanguage::TimeTree::getClassTypeSpec()                   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "process"   , RevLanguage::MultivariateRealNodeValTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "offset"    , Real::getClassTypeSpec()                                    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0)) );
+        argumentRules.push_back( new ArgumentRule( "traitindex", Integer::getClassTypeSpec()                                 , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
         
         rulesSet = true;
     }

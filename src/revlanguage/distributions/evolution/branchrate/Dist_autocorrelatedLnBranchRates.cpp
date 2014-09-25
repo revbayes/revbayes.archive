@@ -64,11 +64,13 @@ const MemberRules& Dist_autocorrelatedLnBranchRates::getMemberRules(void) const 
     
     if ( !rulesSet )
     {
-        dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "sigma", true, RealPos::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "rootRate", true, Real::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "scaleValue", true, RealPos::getClassTypeSpec() ) );
+        
+        dist.push_back( new ArgumentRule( "tree"      , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "sigma"     , RealPos::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "rootRate"  , Real::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "scaleValue", RealPos::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
+        
     }
     
     return dist;

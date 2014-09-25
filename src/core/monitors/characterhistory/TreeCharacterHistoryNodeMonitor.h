@@ -183,11 +183,11 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         int cladoState = q->getCladogenicState(*n);
         
         if (cladoState == 0)
-            ss << "s";
+            ss << "n";
         else if (cladoState == 1)
             ss << "w";
         else if (cladoState == 2)
-            ss << "p";
+            ss << "s";
         else if (cladoState == 3)
             ss << "a";
         else

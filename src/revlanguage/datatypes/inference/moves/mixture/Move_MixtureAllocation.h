@@ -121,7 +121,7 @@ const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", false, rlValueType::getClassTypeSpec() ) );
+        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

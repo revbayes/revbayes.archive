@@ -505,17 +505,17 @@ MethodTable AbstractCharacterData::makeMethods( void ) const
     ArgumentRules* setTaxonNameArgRules        = new ArgumentRules();
 
 
-    ncharArgRules2->push_back(             new ArgumentRule("taxon_index", true, Natural::getClassTypeSpec()         ) );
-    excludecharArgRules->push_back(        new ArgumentRule(      "", true, Natural::getClassTypeSpec()              ) );
-    excludecharArgRules2->push_back(       new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
-    includecharArgRules->push_back(        new ArgumentRule(      "", true, Natural::getClassTypeSpec()              ) );
-    includecharArgRules2->push_back(       new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(      "", true, Natural::getClassTypeSpec()       ) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
-    removeTaxaArgRules->push_back(         new ArgumentRule(      "", true, RlString::getClassTypeSpec()              ) );
-    removeTaxaArgRules2->push_back(        new ArgumentRule(      "", true, ModelVector<RlString>::getClassTypeSpec() ) );
-    setTaxonNameArgRules->push_back(       new ArgumentRule(      "current", true, RlString::getClassTypeSpec()       ) );
-    setTaxonNameArgRules->push_back(       new ArgumentRule(      "new", true, RlString::getClassTypeSpec()           ) );
+    ncharArgRules2->push_back(             new ArgumentRule("taxon_index", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    excludecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    excludecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    includecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    includecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    removeTaxaArgRules->push_back(         new ArgumentRule(""           , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
+    removeTaxaArgRules2->push_back(        new ArgumentRule(""           , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    setTaxonNameArgRules->push_back(       new ArgumentRule("current"    , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
+    setTaxonNameArgRules->push_back(       new ArgumentRule("new"        , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
 
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );

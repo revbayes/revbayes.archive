@@ -46,7 +46,7 @@ const ArgumentRules& Func_sum::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, ModelVector<Real>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

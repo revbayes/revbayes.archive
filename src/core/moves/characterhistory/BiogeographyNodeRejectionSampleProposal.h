@@ -633,7 +633,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 }
             }
             
-            // peripatry
+            // subset sympatry
             else if (uIdx == 1)
             {
                 proposedCladogenicState = 2;
@@ -678,10 +678,8 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                     budParentState[*it]->setState(sb);
                 }
             }
-           
             
-
-            
+            lnP += log( csf[storedCladogenicState-1] / csf[proposedCladogenicState-1] );
         }
         else
         {

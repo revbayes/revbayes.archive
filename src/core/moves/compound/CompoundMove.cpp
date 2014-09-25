@@ -66,7 +66,7 @@ double CompoundMove::performMove( double &probRatio ) {
         if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
         {
             // should contain unique nodes, since it is a set
-            theNode->getAffectedStochasticNodes(affectedNodes);
+            theNode->getAffectedNodes(affectedNodes);
         }
     }
     

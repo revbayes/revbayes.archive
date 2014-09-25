@@ -19,6 +19,8 @@ using namespace RevLanguage;
 
 Dist_bernoulli::Dist_bernoulli() : TypedDistribution<Natural>() {
     
+    setGuiDistributionName("Bernoulli");
+    setGuiDistributionToolTip("Bernoulli distribution for 0 or 1 random variables");
 }
 
 
@@ -72,7 +74,7 @@ const MemberRules& Dist_bernoulli::getMemberRules(void) const {
     
     if ( !rulesSet ) 
     {
-        distBernMemberRules.push_back( new ArgumentRule( "p", true, Probability::getClassTypeSpec() ) );
+        distBernMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

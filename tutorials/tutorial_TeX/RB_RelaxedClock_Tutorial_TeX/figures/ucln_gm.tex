@@ -1,0 +1,35 @@
+\definecolor{shc}{RGB}{238,224,229}
+\begin{tikzpicture}
+\node[snode] (x) at (1,1) {\LARGE $r_i$};
+\node[detnode] (R) at ($(x)-(0,2)$) {$\mathcal{R}_i$};
+\node[snode] (base) at ($(R)+(3,0)$) {\Large $\beta$};
+\draw[dtaro] (base) -- (R);
+\draw[dtaro] (x) -- (R);
+\node[constnode] (bmu) at ($(base)+(-1,1.5)$) {\Large $\mu$};
+\node[constnode] (bsig) at ($(base)+(1,1.5)$) {\Large $\sigma$};
+\draw [taro] (bmu) -- (base) ;
+\draw [taro] (bsig) -- (base) ;
+\node[detnode] (mu) at ($(x)+(-1,2)$) {\Large $\mu$};
+\node[snode] (sigma) at ($(x)+(1,2)$) {\Large $\sigma$};
+\node[snode] (mean) at ($(mu)+(0,2)$) {\large $M$};
+\draw [dtaro] (mean) -- (mu) ;
+\draw [dtaro] (sigma) -- (mu) ;
+\draw [taro] (mu) -- (x) ;
+\draw [taro] (sigma) -- (x) ;
+\node[rectangle,dashed, very thick, inner sep=6mm, draw=black!100, fit = (x) (R)] (siteplate) {};
+\node[anchor=south east,inner sep=7pt] at (siteplate.south east) {\tiny $i \in N$};
+\node[constnode] (lambda) at ($(sigma)+(0,1.5)$) {\large $\lambda_{\sigma}$};
+\draw [taro] (lambda) -- (sigma) ;
+\node[constnode] (lamM) at ($(mean)+(0,1.5)$) {\large $\lambda_{M}$};
+\draw [taro] (lamM) -- (mean) ;
+\node (ddd) at ($(R)+(0,-1.65)$) {\scriptsize to the phyloCTMC};
+\draw[dtaro] (R) -- (ddd) ;
+\node (gd) at ($(lamM)+(0.1,-0.75)$) [right]{\scriptsize exp dist};
+\node (ed) at ($(lambda)+(-0.15,-0.75)$) [left]{\scriptsize exp dist};
+\node (ld) at ($(x)+(0,1.5)$) {\scriptsize lnorm dist};
+\node at ($(R)+(-1,0)$) [left]{absolute branch rate};
+\node at ($(x)+(-1,0)$) [left]{branch rate};
+\node at ($(base)+(0.5,0)$) [right]{base rate};
+\end{tikzpicture}
+
+

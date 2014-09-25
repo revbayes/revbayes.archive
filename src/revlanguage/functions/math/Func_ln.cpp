@@ -42,14 +42,15 @@ RevPtr<Variable> Func_ln::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_ln::getArgumentRules( void ) const {
+const ArgumentRules& Func_ln::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

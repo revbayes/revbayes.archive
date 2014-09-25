@@ -426,7 +426,8 @@ std::multimap<std::string, Function*> FunctionTable::getTableCopy(bool env) cons
 
 
 /** Check if two formals are unique */
-bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const  {
+bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const
+{
 
     /* Check that all labels are unique in both sets of argument rules */
     for (size_t i=0; i<x.size(); i++) 
@@ -434,15 +435,30 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
         for (size_t j=i+1; j < x.size(); j++) 
         {
             if (x[i].getArgumentLabel().size() != 0 && x[j].getArgumentLabel().size() != 0)
-            if (x[i].getArgumentLabel() == x[j].getArgumentLabel())
-                return false;
+            {
+             
+                if (x[i].getArgumentLabel() == x[j].getArgumentLabel())
+                {
+                    return false;
+                }
+                
+            }
+            
         }
     }
-    for (size_t i=0; i<y.size(); i++) {
-        for (size_t j=i+1; j<y.size(); j++) {
+    for (size_t i=0; i<y.size(); i++)
+    {
+        for (size_t j=i+1; j<y.size(); j++)
+        {
+            
             if (y[i].getArgumentLabel().size() != 0 && y[j].getArgumentLabel().size() != 0)
-            if (y[i].getArgumentLabel() == y[j].getArgumentLabel())
-                return false;
+            {
+                if (y[i].getArgumentLabel() == y[j].getArgumentLabel())
+                {
+                    return false;
+                }
+            }
+            
         }
     }
 
@@ -452,16 +468,24 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
 
         const std::string& xLabel = x[i].getArgumentLabel();
         if (xLabel.size() == 0)
+        {
             continue;
-
-        for (size_t j=0; j<y.size(); j++) {
+        }
+        
+        for (size_t j=0; j<y.size(); j++)
+        {
 
             const std::string& yLabel = y[j].getArgumentLabel();
             if (yLabel.size() == 0)
+            {
                 continue;
-
+            }
+            
             if (xLabel == yLabel && i != j)
+            {
                 return false;
+            }
+            
         }
     }
 
@@ -473,19 +497,28 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
             !x[i].isEllipsis() &&
             !y[i].isEllipsis() &&
             x[i].getArgumentTypeSpec() != y[i].getArgumentTypeSpec())
+        {
             return true;
+        }
+        
     }
     for (size_t j=i; j<x.size(); j++) 
     {
         if (x[j].hasDefault() == false &&
             !x[j].isEllipsis())
+        {
             return true;
+        }
+        
     }
     for (size_t j=i; j<y.size(); j++) 
     {
         if (y[j].hasDefault() == false &&
             !y[j].isEllipsis())
+        {
             return true;
+        }
+        
     }
 
     return false;
@@ -529,8 +562,10 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
 
     // Do not print anything if table is empty
     if (printTable.size() == 0)
+    {
         return;
-
+    }
+    
     for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
     {
         std::ostringstream s("");

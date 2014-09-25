@@ -74,17 +74,20 @@ const TypeSpec& Move_ACLNMixingStep::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ACLNMixingStep::getMemberRules(void) const {
+const MemberRules& Move_ACLNMixingStep::getMemberRules(void) const
+{
     
     static MemberRules mixingStepMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        mixingStepMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "nodeRates", false, ModelVector<RealPos>::getClassTypeSpec() ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "rootRate", true, RealPos::getClassTypeSpec() ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "epsilon", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( false ) ) );
+    if ( !rulesSet )
+    {
+        
+        mixingStepMemberRules.push_back( new ArgumentRule( "tree"     , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "nodeRates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "rootRate" , RealPos::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "epsilon"  , RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(1.0) ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "tune"     , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( false ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

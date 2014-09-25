@@ -19,6 +19,8 @@ using namespace RevLanguage;
 
 Dist_beta::Dist_beta() : TypedDistribution<Probability>() {
     
+    setGuiDistributionName("Beta");
+    setGuiDistributionToolTip("Beta distribution for random variables on the interval [0,1]");
 }
 
 
@@ -67,7 +69,7 @@ const std::string& Dist_beta::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_beta::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Probability>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -83,8 +85,8 @@ const MemberRules& Dist_beta::getMemberRules(void) const {
     
     if ( !rulesSet ) 
     {
-        distUnifMemberRules.push_back( new ArgumentRule( "alpha", true, RealPos::getClassTypeSpec() ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "beta"  , true, RealPos::getClassTypeSpec() ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "beta" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

@@ -201,7 +201,7 @@ RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valu
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
     
-    this->getAffectedStochasticNodes( affected );
+    this->getAffectedNodes( affected );
     
 }
 

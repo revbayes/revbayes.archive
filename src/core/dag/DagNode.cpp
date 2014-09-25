@@ -216,7 +216,7 @@ void DagNode::getAffected( std::set<DagNode*>& affected, DagNode* affecter )
  * Get the downstream stochastic nodes whose probability will be affected by a change of this
  * node. We simply pass on the call to our children through their getAffected() function.
  */
-void DagNode::getAffectedStochasticNodes( std::set<DagNode*>& affected )
+void DagNode::getAffectedNodes( std::set<DagNode*>& affected )
 {
     // Dispatch the call to our children
     for ( std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it )

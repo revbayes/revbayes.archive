@@ -62,20 +62,23 @@ extinction ~ exponential(10.0)
 # A species tree larger than the gene trees has probability 0.
 # To be sure to start from a state with a non-null probability, we start from the true values.
 tree_height ~ unif(0.0,100.0)
-tree_height.setValue(trueRootAge)
 
-write("Starting species tree height: "+tree_height)
-write("Compared to smallest gene tree height: " + min(geneTreeRootAges) )
+write("True species tree root age: "+tree_height)
+write("Compared to smallest gene tree root age: " + min(geneTreeRootAges) )
 
 
 # Species tree from birth-death process
 speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 
-# We rescale by the mutation rate we used in the simulation
-#trueSpeciesTree.rescale(0.0000001)
-
-speciesTree.setValue(trueSpeciesTree)
+# We set the species tree to a good starting value.
+# This good starting value is obtained from the Maximum Tree method (Liu, 2006).
+# The same method is used in BEST to obtain a good starting species tree.
+recTree <- maximumTree(trueGeneTrees)
+write ("		Maximum species tree: ")
+write(recTree)
+speciesTree.setValue(recTree)
+tree_height.setValue(recTree.rootAge())
 
 
 write("Proposed starting species tree: ")

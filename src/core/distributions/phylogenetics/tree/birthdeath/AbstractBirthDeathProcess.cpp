@@ -300,7 +300,7 @@ void AbstractBirthDeathProcess::getAffected(std::set<DagNode *> &affected, RevBa
     
     if ( affecter == rootAge)
     {
-        dagNode->getAffectedStochasticNodes( affected );
+        dagNode->getAffectedNodes( affected );
     }
     
 }

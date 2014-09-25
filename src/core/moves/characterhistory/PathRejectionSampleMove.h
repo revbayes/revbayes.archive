@@ -100,7 +100,12 @@ RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMo
 template<class charType, class treeType>
 RevBayesCore::PathRejectionSampleMove<charType, treeType>* RevBayesCore::PathRejectionSampleMove<charType, treeType>::clone(void) const
 {
-    return new PathRejectionSampleMove( *this );
+    PathRejectionSampleMove<charType, treeType>* p = new PathRejectionSampleMove( *this );
+    Proposal *prop = p->proposal;
+    
+    std::cout << prop->getProposalName() << "\n";
+    
+    return p;
 }
 
 template<class charType, class treeType>
@@ -160,7 +165,7 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
     {
         
         std::set<DagNode* > affectedNodes;
-        tau->getAffectedStochasticNodes(affectedNodes);
+        tau->getAffectedNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i)
         {
             DagNode* theAffectedNode = *i;

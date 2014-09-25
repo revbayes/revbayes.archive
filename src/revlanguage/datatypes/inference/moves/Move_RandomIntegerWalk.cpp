@@ -105,7 +105,7 @@ const MemberRules& Move_RandomIntegerWalk::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Integer::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", Integer::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

@@ -142,7 +142,7 @@ void WhiteNoisePhyloProcess::recursiveSimulate(const TopologyNode& from) {
  void WhiteNoisePhyloProcess::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
  // only delegate when the toucher was the root val
  //    if ( affecter == rootVal )
- //        this->dagNode->getAffectedStochasticNodes( affected );
+ //        this->dagNode->getAffectedNodes( affected );
  }
  
  

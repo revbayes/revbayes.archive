@@ -47,8 +47,8 @@ const ArgumentRules& Func_TaxonReader::getArgumentRules( void ) const
     
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "filename", true, RlString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "delimiter", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     

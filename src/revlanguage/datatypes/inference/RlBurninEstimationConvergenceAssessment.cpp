@@ -343,8 +343,8 @@ const MemberRules& BurninEstimationConvergenceAssessment::getMemberRules(void) c
         std::vector<TypeSpec> filenameTypes;
         filenameTypes.push_back( RlString::getClassTypeSpec() );
         filenameTypes.push_back( ModelVector<RlString>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule("filename", true, filenameTypes ) );
-        memberRules.push_back( new ArgumentRule("delimiter", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
+        memberRules.push_back( new ArgumentRule("filename", filenameTypes, ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         
         rulesSet = true;
     }
@@ -364,16 +364,16 @@ const MethodTable& BurninEstimationConvergenceAssessment::getMethods(void) const
         ArgumentRules* runArgRules = new ArgumentRules();
         methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
-        std::vector<RlString> options;
-        options.push_back( RlString("ESS") );
-        options.push_back( RlString("SEM") );
+        std::vector<std::string> options;
+        options.push_back( "ESS" );
+        options.push_back( "SEM" );
         
         ArgumentRules* burninMethodArgRules = new ArgumentRules();
         burninMethodArgRules->push_back( new OptionRule("method", options ) );
         methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
         
         ArgumentRules* verboseArgRules = new ArgumentRules();
-        verboseArgRules->push_back( new ArgumentRule("x", true, RlBoolean::getClassTypeSpec() ) );
+        verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
         
         // necessary call for proper inheritance
