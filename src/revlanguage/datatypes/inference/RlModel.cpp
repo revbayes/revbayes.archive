@@ -230,7 +230,6 @@ void Model::printModelDotGraph(const std::string &fn){
                     rl << "\\n[ " << w << "( ) ]";
                 }
             }
-            //std::cout << strss.str() << std::endl;
             o << "oval, style=\"dashed,filled\", fillcolor=white, label=\"" << rl.str() << "\"]\n";
         }
         else if((*it)->getDagNodeType() == "stochastic"){
