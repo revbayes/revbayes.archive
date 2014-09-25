@@ -7,12 +7,14 @@
 #include <list>
 #include <string>
 #include <sstream>
+
 #include "IHelp.h"
 
 namespace RevLanguage {
 
     class SyntaxElement;
     class SyntaxFunctionCall;
+    class SyntaxVariable;
 
     /**
      * @brief Singleton Parser class
@@ -63,11 +65,19 @@ namespace RevLanguage {
      * If multiple Rev lines had been fed to a single flex buffer, then the remaining
      * lines of the outer call would have been discarded by the time the inner call had
      * finished. For instance, this problem would occur with a command string
-     * such as 'source("somefile"); <this statement would be discarded>'
+     * such as 'source("somefile"); <this statement would be discarded>'.
+     *
+     * The parser class also supports processing of a partial command line, to find out
+     * the parser state at the end of the command line. Local variables, such as
+     * functionName, baseVariableExpression etc, as well as some of the public functions
+     * support this use case.
      */
     class Parser {
 
     public:
+
+        enum ParserMode { CHECKING, EXECUTING };                                    //!< Parser modes
+
         // Regular functions
         int                 execute(SyntaxElement* root, Environment &env) const;   //!< Execute the syntax tree
         void                getline(char* buf, size_t maxsize);                     //!< Give flex one line to process
@@ -75,24 +85,42 @@ namespace RevLanguage {
         int                 help(const SyntaxFunctionCall* root) const;             //!< Get help for a function call
         int                 processCommand(std::string& command, Environment *env); //!< Process command with help from Bison
 
+        // State checking functions
+        bool                isChecking(void) { return parserMode == CHECKING; }                 //!< Are we in state-checking mode?
+        void                setBaseVariable(SyntaxVariable* var) { baseVariableExpr = var; }    //!< Set base variable expression
+        void                executeBaseVariable(void);                                          //!< Execute base variable expression
+        void                setFunctionName( const std::string& n ) { functionName = n; }       //!< Set function name
+        void                setArgumentLabel( const std::string& n ) { argumentLabel = n; }     //!< Set argument label
+        
         /** Get singleton parser */
-        static Parser& getParser() {
+        static Parser& getParser( void ) {
             static Parser theParser;
             return theParser;
         }
-        /* inject help class */
-        void setHelp(IHelp *help){
+        
+        /** Inject help class */
+        void setHelp( IHelp *help ) {
             this->helpEntity = help;
         }
         
    private:
-                            IHelp *helpEntity;
-                            Parser(void) {}                                         //!< Prevent construction
+                            Parser(void);                                           //!< Prevent public construction
                             Parser(const Parser& x) {}                              //!< Prevent copy construction
 
         Parser&             operator=(const Parser& w) { return (*this); }          //! Prevent assignment
 
+        // Help functions
         void                breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
+        void                setParserMode(ParserMode mode);                         //!< Set the parser mode
+        
+        // Member variables
+        IHelp*              helpEntity;                                             //!< Pointer to the injected help class
+        ParserMode          parserMode;                                             //!< The current parser mode
+        std::string         functionName;                                           //!< Function name of end state, if any
+        std::string         argumentLabel;                                          //!< Argument label of end state, if any
+        SyntaxVariable*     baseVariableExpr;                                       //!< Base variable expression of end state
+        RevPtr<Variable>    baseVariable;                                           //!< Base variable of end state
+
     };
 
 }
@@ -100,7 +128,7 @@ namespace RevLanguage {
 // Global call-back function for flex-generated code
 void rrinput(char* buf, size_t& result, size_t maxsize);
 
-// Global command buffer RlString stream for rrinput
+// Global command buffer string stream for rrinput
 extern std::stringstream rrcommand;
 
 // Global flags indicating flex state
