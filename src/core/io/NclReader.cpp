@@ -227,6 +227,11 @@ std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
 /** Create an object to hold aligned amino acid data */
 DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
     
+    if ( charblock == NULL )
+    {
+        throw RbException("Trying to create an AA matrix from a NULL pointer.");
+    }
+    
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::protein)
         return NULL;
@@ -376,7 +381,13 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
 
 
 /** Create an object to hold aligned DNA data */
-DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
+{
+    
+    if ( charblock == NULL )
+    {
+        throw RbException("Trying to create an DNA matrix from a NULL pointer.");
+    }
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
@@ -1414,29 +1425,32 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     if (readingDirectory == true)
     {
         std::stringstream o2;
+        std::size_t size = 0;
         if ( trees == NULL || trees->size() == 0 )
         {
             o2 << "Failed to read any tree";
         }
         else if ( trees->size() == 1 )
         {
+            size = trees->size();
             o2 << "Successfully read one tree";
         }
         else
         {
+            size = trees->size();
             o2 << "Successfully read " << trees->size() << " trees";
         }
         RBOUT( o2.str() );
         std::set<std::string> myWarnings = getWarnings();
-        if ( vectorOfFileNames.size() - trees->size() > 0 && myWarnings.size() > 0 ) {
+        if ( vectorOfFileNames.size() - size > 0 && myWarnings.size() > 0 ) {
             std::stringstream o3;
-            if (vectorOfFileNames.size() - trees->size() == 1)
+            if (vectorOfFileNames.size() - size == 1)
             {
                 o3 << "Did not read a file for the following ";
             }
             else
             {
-                o3 << "Did not read " << vectorOfFileNames.size() - trees->size() << " files for the following ";
+                o3 << "Did not read " << vectorOfFileNames.size() - size << " files for the following ";
             }
             if (myWarnings.size() == 1)
             {
@@ -1455,7 +1469,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     }
     else
     {
-        if (trees->size() > 0)
+        if ( trees != NULL && trees->size() > 0)
         {
             RBOUT( "Successfully read file" );
         }

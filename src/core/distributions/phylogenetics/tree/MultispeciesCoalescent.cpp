@@ -225,7 +225,7 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
         {
             spParentNode = &spNode->getParent();
             parentSpeciesAge = spParentNode->getAge();
-            branchLength = parentSpeciesAge - speciesAge;
+//            branchLength = parentSpeciesAge - speciesAge;
         }
         
         //        std::cerr << "Species Age:\t\t" << speciesAge << std::endl;
@@ -326,7 +326,7 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
                 }
                 
                 // jump out of the while loop
-                currentTime = speciesAge;
+//                currentTime = speciesAge;
                 break;
             }
             

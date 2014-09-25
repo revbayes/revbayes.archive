@@ -92,7 +92,8 @@ void RevLanguage::Parser::breakIntoLines( const std::string& cmd, std::list<std:
                 /* break line here but first swallow any extra newline in DOS line ending */
                 char d = char( buf.peek() );
                 if ( d == '\n' )
-                     c = char( buf.get() );
+                    buf.get();
+//                     c = char( buf.get() );
                 break;
             }
 
