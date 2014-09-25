@@ -2,10 +2,17 @@
 
 using namespace RevBayesCore;
 
-const std::string& RbHelpArgument::getArgumentType( void ) const
+const std::string& RbHelpArgument::getArgumentDagNodeType( void ) const
 {
     // return a const reference to the internal value
-    return argumentType;
+    return argumentDagNodeType;
+}
+
+
+const std::string& RbHelpArgument::getArgumentPassingMethod( void ) const
+{
+    // return a const reference to the internal value
+    return argumentPassingMethod;
 }
 
 
@@ -44,11 +51,19 @@ const std::string& RbHelpArgument::getValueType( void ) const
 }
 
 
-void RbHelpArgument::setArgumentType(const std::string &at)
+void RbHelpArgument::setArgumentDagNodeType(const std::string &dt)
 {
     // overwrite the internal value with the new value
-    argumentType = at;
+    argumentDagNodeType = dt;
 }
+
+
+void RbHelpArgument::setArgumentPassingMethod(const std::string &pm)
+{
+    // overwrite the internal value with the new value
+    argumentPassingMethod = pm;
+}
+
 
 
 void RbHelpArgument::setDefaultValue(const std::string &df)
