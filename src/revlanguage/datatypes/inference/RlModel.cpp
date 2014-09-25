@@ -227,7 +227,7 @@ void Model::printModelDotGraph(const std::string &fn){
                     strss >> w;
                     strss >> w;
                     strss >> w;
-                    rl << "\\n[ " << w << "() ]";
+                    rl << "\\n[ " << w << "( ) ]";
                 }
             }
             //std::cout << strss.str() << std::endl;
