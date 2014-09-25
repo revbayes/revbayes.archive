@@ -23,14 +23,17 @@ LogicalUnotFunction::~LogicalUnotFunction( void ) {
 
 
 
-LogicalUnotFunction* LogicalUnotFunction::clone( void ) const {
+LogicalUnotFunction* LogicalUnotFunction::clone( void ) const
+{
+
     return new LogicalUnotFunction( *this );
 }
 
 
-void LogicalUnotFunction::update( void ) {
+void LogicalUnotFunction::update( void )
+{
     
-    *this->value = !left->getValue();
+    *(this->value) = !( left->getValue() );
     
 }
 

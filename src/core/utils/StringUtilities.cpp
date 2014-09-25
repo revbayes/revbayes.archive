@@ -71,7 +71,7 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
     }
     
     std::string result = tabbing;
-    int w = width - int(tabbing.size());
+    size_t w = width - tabbing.size();
     int cc = 0; // character count
     char lastChar = '\0';
     

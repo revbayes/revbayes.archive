@@ -197,9 +197,9 @@ std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, Ran
             if (u < sum)
             {
                 break;
-                x[j]++;
             }
-            else {
+            else
+            {
                 x[j]++;
             }
         }
@@ -230,9 +230,9 @@ std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, siz
             if (u < sum)
             {
                 break;
-                x[i]++;
             }
-            else {
+            else
+            {
                 x[i]++;
             }
         }

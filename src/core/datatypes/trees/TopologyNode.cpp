@@ -926,14 +926,12 @@ bool TopologyNode::isTip( void ) const {
 /** Remove all children. We need to call intelligently the destructor here. */
 void TopologyNode::removeAllChildren(void) {
     
-    size_t nChildren = children.size();
     // empty the children vector
     while (children.size() > 0)
     {
         TopologyNode* theNode = children[0];
         // free the memory
         delete theNode;
-        nChildren = children.size();
     }
     
     taxon = Taxon();

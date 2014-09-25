@@ -217,6 +217,14 @@ std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp,
         result.append( sectionBreak );
     }
     
+    // return value
+    result.append( TerminalFormatter::makeUnderlined("Value") );
+    result.append( sectionBreak );
+    result.append( StringUtilities::formatTabWrap(functionHelp.getReturnValue(), 1, w) );
+    result.append( lineBreak );
+    result.append( sectionBreak );
+    
+    
     // details
     if ( functionHelp.getDetails().size() > 0)
     {
