@@ -32,13 +32,14 @@ class OptionRule : public ArgumentRule {
         OptionRule(const std::string& argName, RlString* defVal, const std::vector<std::string>& optVals);              //!< Constructor of rule with default value
 
         // Basic utility functions
-        OptionRule*                 clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
-        void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
+        OptionRule*                         clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
+        const std::vector<std::string>&     getOptions(void) const;                                                             //!< Get the options
+        void                                printValue(std::ostream& o) const;                                                  //!< Print value for user
 
     protected:
-        bool                        areOptionsUnique(const std::vector<std::string>& optVals) const;                    //!< Test if options are unique
+        bool                                areOptionsUnique(const std::vector<std::string>& optVals) const;                    //!< Test if options are unique
 
-        std::vector<std::string>    options;                                                                            //!< Permissible values
+        std::vector<std::string>            options;                                                                            //!< Permissible values
     
 };
 
