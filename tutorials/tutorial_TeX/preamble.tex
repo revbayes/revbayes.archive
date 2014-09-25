@@ -1,0 +1,176 @@
+\usepackage[]{authblk}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{longtable}
+\usepackage{hanging}
+\usepackage{indentfirst}
+\usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{upgreek}
+\usepackage{framed}
+\usepackage{ textcomp }
+\usepackage{url}
+\usepackage{soul}
+\usepackage{amsmath, amsfonts,amssymb,mathrsfs}
+\usepackage{fancyhdr}
+\usepackage[compact]{titlesec}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\usepackage[backend=bibtex,hyperref=true,citestyle=authoryear,bibstyle=authortitle,firstinits=true,terseinits=true,issn=false,doi=false,url=false,maxbibnames=10,maxcitenames=2]{biblatex}
+\addbibresource{../bib_tex/master_refs.bib}
+\input{../bib_tex/biblatex_macros}
+
+
+\setlength{\evensidemargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+\setlength{\tabcolsep}{0in}
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{7in}
+\setlength{\topmargin}{0in}
+\setlength{\topskip}{0in}
+\setlength{\voffset}{0in}
+\parskip = 0.15in
+\pagestyle{plain}
+\setlength{\parindent}{0cm}
+
+\definecolor{citescol}{RGB}{194,101,1}
+\definecolor{urlscol}{RGB}{0,150,206}
+\definecolor{linkscol}{RGB}{149,0,207}
+\definecolor{mycol}{RGB}{25,23,191}
+\definecolor{outputcol}{RGB}{34,139,34}
+\definecolor{tcol}{RGB}{165,0,14}
+
+
+\DeclareMathAlphabet{\msfsl}{T1}{cmr}{m}{it}
+\DeclareMathAlphabet{\msyf}{OMX}{pcr}{m}{it}
+\newcommand{\alf}{\upalpha}
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+
+\newcommand{\levelone}[1]{
+\bigskip
+\noindent{\LARGE{\textsc{#1}}}
+\vspace {0.05in}
+}
+
+\newcommand{\leveltwo}[1]{
+\bigskip
+\noindent{\Large{\textit{#1}}}
+\vspace {-1mm}
+}
+
+\newcommand{\descriptionhead}[1]{
+\noindent{\textbf{\textit{#1}}}\\ \vspace{-7mm}
+}
+
+\newcommand{\dhead}[1]{
+\noindent{\textbf{\textit{#1 --}}}
+}
+
+
+\newcommand{\exs}[1]{
+\vspace{-4mm}
+\begin{itemize}
+\item #1 \\ \vspace{-8mm}
+\end{itemize}
+}
+
+\newcommand{\nbo}[1]{{\color{red}{#1}}}
+
+
+\newcommand{\stepbullet}{\noindent \textbullet \ }
+\newcommand{\mi}[1]{\textbf{\textit{#1}}}
+
+
+\newcommand{\levelthree}[1]{\textit{#1 --}}
+
+
+%\bibliographystyle{apalike}
+%\bibpunct[; ]{(}{)}{;}{a}{,}{;}
+
+
+\usepackage[breaklinks]{hyperref}
+\usepackage[all]{hypcap}
+\hypersetup{colorlinks=true,linkcolor=linkscol,citecolor=citescol,urlcolor=urlscol}
+
+
+\newcommand{\R}{\texttt{R} }
+\newcommand{\TESS}{\texttt{TESS}}
+\newcommand{\PBD}{\texttt{PBD}}
+\newcommand{\DDD}{\texttt{DDD}}
+\newcommand{\Laser}{\texttt{laser}}
+\newcommand{\TreePar}{\texttt{TreePar}}
+\newcommand{\diversitree}{\texttt{diversitree}}
+\newcommand{\RevBayes}{\texttt{RevBayes}}
+\newcommand{\Rev}{\texttt{Rev}}
+\newcommand{\MrBayes}{\texttt{MrBayes}}
+\newcommand{\BEAST}{\texttt{BEAST}}
+\newcommand{\PhyloBayes}{\texttt{PhyloBayes}}
+\newcommand{\PAML}{\texttt{PAML}}
+
+\let\otheriint\iint
+\let\iint\relax
+\usepackage{ wasysym }
+
+\usepackage{framed}
+\usepackage[]{listings}
+\usepackage{fontspec}
+\usepackage{placeins}
+\usepackage{epstopdf}
+
+\lstset{breaklines=true}
+
+\definecolor{shadecolor}{RGB}{238,224,229}
+
+\setlength{\tabcolsep}{5pt}
+\setlength{\topmargin}{-0.4in}
+\setlength{\headheight}{14.5pt}
+\pagestyle{fancy}
+
+\newcommand{\taha}[1]{{\textcolor{red}{[TAH comment: #1]}}} % TAH comment
+
+\titlespacing{\section}{0pt}{*0}{*0}
+\titlespacing{\subsection}{0pt}{*0}{*0}
+\titlespacing{\subsubsection}{0pt}{*0}{*0}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{mycol}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{mycol}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\color{mycol}}
+  {\thesubsubsection}{1em}{}
+
+% command for MrBayes command-line step
+\newcommand{\cl}[1]{{\texttt{\textbf{#1}}}}
+
+\newcommand{\colx}[1]{{\textcolor{tcol}{#1}}}
+
+\newcommand{\mbcl}[1]{\exs{\cl{MrBayes > {#1}}}}
+
+\newcommand{\rbprmt}{RevBayes > } 
+\newcommand{\rbcl}[1]{\exs{\cl{\rbprmt{#1}}}}
+\newcommand{\rbout}[1]{\exs{\cl{\textcolor{outputcol}{#1}}}}
+\newcommand{\rbdn}{{\Large \symbol{126}}} % This makes a copy/pasteable tilde
+\newcommand{\rbclml}[1]{\exs{\cl{\ \ \ \ \ \ \ \ \ \ \ {#1}}}}
+
+% text box settings
+% requires compiling w/ XeLaTeX
+\newfontfamily\listingsfont[Scale=1.0]{Courier New}
+\lstset{basicstyle=\listingsfont, columns=texcl}
+\defaultfontfeatures{Mapping=tex-text}
+
+
+\makeatletter
+\lst@CCPutMacro\lst@ProcessOther {"2D}{\lst@ttfamily{-{}}{-{}}}
+\@empty\z@\@empty
+\makeatother
+

@@ -307,8 +307,8 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "file", true, RlString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     

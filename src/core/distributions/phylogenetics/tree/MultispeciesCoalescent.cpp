@@ -16,8 +16,8 @@
 using namespace RevBayesCore;
 
 MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,
-                                               const std::vector<Taxon> &taxa) : TypedDistribution<TimeTree>( NULL ),
-gene2species(),
+                                               const std::vector<Taxon> &t) : TypedDistribution<TimeTree>( NULL ),
+taxa(t),
 speciesTree( sp ),
 Nes( NULL ),
 Ne( NULL ),
@@ -28,7 +28,6 @@ logTreeTopologyProb (0.0)
     std::set<std::string> speciesNames;
     for (std::vector<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it)
     {
-        gene2species[it->getName()] = it->getSpeciesName();
         speciesNames.insert( it->getSpeciesName() );
     }
     
@@ -52,7 +51,7 @@ logTreeTopologyProb (0.0)
 
 
 MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) : TypedDistribution<TimeTree>( v ),
-gene2species( v.gene2species ),
+taxa( v.taxa ),
 speciesTree( v.speciesTree ),
 Nes (v.Nes),
 Ne( v.Ne ),
@@ -176,6 +175,18 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
     
     
     std::map< const TopologyNode *, std::set< TopologyNode* > > individualsPerBranch;
+    
+    for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
+    {
+        const std::string &tipName = it->getName();
+        TopologyNode *n = individualNames2geneTreeTips[tipName];
+        const std::string &speciesName = it->getSpeciesName();
+        TopologyNode *speciesNode = speciesNames2speciesNodes[speciesName];
+        std::set< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
+        nodesAtNode.insert( n );
+    }
+
+    /*
     for (std::map<std::string,std::string>::iterator it = gene2species.begin(); it != gene2species.end(); ++it)
     {
         const std::string &tipName = it->first;
@@ -185,7 +196,7 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
         std::set< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
         nodesAtNode.insert( n );
     }
-    
+    */
     std::map<double, TopologyNode*> speciesAge2speciesNodes;
     double i = -0.01;
     for (std::vector<TopologyNode *>::const_iterator it = speciesTreeNodes.begin(); it != speciesTreeNodes.end(); ++it)
@@ -635,7 +646,18 @@ void MultispeciesCoalescent::simulateTree( void ) {
     
     
     std::map< const TopologyNode *, std::vector< TopologyNode* > > individualsPerBranch;
-    for (std::map<std::string,std::string>::iterator it = gene2species.begin(); it != gene2species.end(); ++it)
+    
+    for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
+    {
+        TopologyNode *n = new TopologyNode( *it );
+        const std::string &speciesName = it->getSpeciesName();
+        TopologyNode *speciesNode = speciesNames2Nodes[speciesName];
+        std::vector< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
+        nodesAtNode.push_back( n );
+    }
+
+    
+ /*   for (std::map<std::string,std::string>::iterator it = gene2species.begin(); it != gene2species.end(); ++it)
     {
         const std::string &tipName = it->first;
         TopologyNode *n = new TopologyNode( tipName );
@@ -644,7 +666,7 @@ void MultispeciesCoalescent::simulateTree( void ) {
         std::vector< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
         nodesAtNode.push_back( n );
     }
-    
+    */
     
     std::map<TopologyNode *, double> nodes2ages;
     TopologyNode *root = NULL;

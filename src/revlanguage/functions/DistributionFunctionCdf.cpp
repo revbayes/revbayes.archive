@@ -25,7 +25,7 @@ using namespace RevLanguage;
 /** Constructor */
 DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : Function(), templateObject( d ), templateObjectPositive( NULL ) {
     
-    argRules.push_back( new ArgumentRule("x", true, Real::getClassTypeSpec()));
+    argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObject->getMemberRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
@@ -35,28 +35,34 @@ DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : 
 /** Constructor */
 DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution *d ) : Function(), templateObject( NULL ), templateObjectPositive( d ) {
     
-    argRules.push_back( new ArgumentRule("x", true, RealPos::getClassTypeSpec()));
+    argRules.push_back( new ArgumentRule("x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObjectPositive->getMemberRules();
-    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
+    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
+    {
         argRules.push_back( (*it)->clone() );
     }
+    
 }
 
 
 /** Constructor */
 DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& obj) : Function(obj), argRules( obj.argRules )  {
     
-    if ( obj.templateObject != NULL ) {
+    if ( obj.templateObject != NULL )
+    {
         templateObject = obj.templateObject->clone();
     }
-    else {
+    else
+    {
         templateObject = NULL;
     }
     
-    if ( obj.templateObjectPositive != NULL ) {
+    if ( obj.templateObjectPositive != NULL )
+    {
         templateObjectPositive = obj.templateObjectPositive->clone();
     }
-    else {
+    else
+    {
         templateObjectPositive = NULL;
     }
     
@@ -65,20 +71,25 @@ DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& 
 
 DistributionFunctionCdf& DistributionFunctionCdf::operator=(const DistributionFunctionCdf &c) {
     
-    if (this != &c) {
+    if (this != &c)
+    {
         Function::operator=(c);
         
-        if ( c.templateObject != NULL ) {
+        if ( c.templateObject != NULL )
+        {
             templateObject = c.templateObject->clone();
         }
-        else {
+        else
+        {
             templateObject = NULL;
         }
         
-        if ( c.templateObjectPositive != NULL ) {
+        if ( c.templateObjectPositive != NULL )
+        {
             templateObjectPositive = c.templateObjectPositive->clone();
         }
-        else {
+        else
+        {
             templateObjectPositive = NULL;
         }
         

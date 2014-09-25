@@ -53,8 +53,8 @@ const ArgumentRules& Func_symmetricDifference::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree1", true, TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "tree2", true, TimeTree::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree1", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "tree2", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
         rulesSet = true;
     }

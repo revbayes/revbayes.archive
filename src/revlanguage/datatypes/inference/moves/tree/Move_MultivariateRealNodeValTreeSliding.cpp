@@ -69,22 +69,22 @@ const TypeSpec& Move_MultivariateRealNodeValTreeSliding::getClassTypeSpec(void) 
 /** Return member rules (no members) */
 const MemberRules& Move_MultivariateRealNodeValTreeSliding::getMemberRules(void) const {
     
-    static MemberRules nniMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariateRealNodeValTree::getClassTypeSpec() ) );        
-        nniMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
-        nniMemberRules.push_back( new ArgumentRule( "tune", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
+        memberRules.push_back( new ArgumentRule( "process", MultivariateRealNodeValTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec()                    , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
+        memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec()                  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return nniMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */

@@ -86,7 +86,7 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
 void AutocorrelatedLognormalRateDistribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
     // only delegate when the toucher was the root rate
     if ( affecter == rootRate )
-        this->dagNode->getAffectedStochasticNodes( affected );
+        this->dagNode->getAffectedNodes( affected );
 }
 
 

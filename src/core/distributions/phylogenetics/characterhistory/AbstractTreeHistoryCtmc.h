@@ -11,6 +11,7 @@
 
 #include "AbstractCharacterData.h"
 #include "BranchHistory.h"
+#include "ContinuousCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
@@ -49,20 +50,17 @@ namespace RevBayesCore {
         // non-virtual
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
-//        BranchHistory&                                                      getHistory(size_t idx);
-//        const BranchHistory&                                                getHistory(size_t idx) const;
         BranchHistory&                                                      getHistory(const TopologyNode& nd);
         const BranchHistory&                                                getHistory(const TopologyNode& nd) const;
-
         std::vector<BranchHistory*>                                         getHistories(void);
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
-//        void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setTipProbs(const AbstractCharacterData* tp);
         
-        virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd) = 0;
-        virtual const std::vector<std::vector<double> >&                    getTipProbs(void) = 0;
+        virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
+        virtual const std::vector<std::vector<double> >&                    getTipProbs(void);
         
         virtual void                                                        simulate(void);
 
@@ -101,6 +99,7 @@ namespace RevBayesCore {
         std::vector<std::vector<unsigned long> >                            charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<BranchHistory*>                                         histories;
+        std::vector<std::vector<double> >                                   tipProbs;
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changedNodes;
@@ -116,13 +115,8 @@ namespace RevBayesCore {
         // private methods
         void                                                                fillLikelihoodVector(const TopologyNode &n);
         void                                                                initializeHistoriesVector(void);
-        virtual void                                                        simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa);
-        
-
-        
-        
+        virtual void                                                        simulate(const TopologyNode& node, BranchHistory* bh, std::vector<DiscreteTaxonData< charType > >& taxa) = 0;
     };
-
 }
 
 template<class charType, class treeType>
@@ -170,7 +164,8 @@ dirtyNodes( n.dirtyNodes ),
 usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
 treatUnknownAsGap( n.treatUnknownAsGap ),
 treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
-tipsInitialized( n.tipsInitialized )
+tipsInitialized( n.tipsInitialized ),
+tipProbs( n.tipProbs )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -238,6 +233,9 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVe
     if (node.isTip())
         lnL += computeTipLikelihood(node);
     
+    if (node.isRoot())
+        lnL += computeRootLikelihood(node);
+    
     historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     
     // mark as computed
@@ -292,6 +290,48 @@ template<class charType, class treeType>
 std::vector<RevBayesCore::BranchHistory*> RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistories(void)
 {
     return histories;
+}
+
+
+template<class charType, class treeType>
+const std::vector<std::vector<double> >& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getTipProbs(void)
+{
+    return tipProbs;
+}
+
+template<class charType, class treeType>
+const std::vector<double>& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getTipProbs(const TopologyNode& nd)
+{
+    return tipProbs[nd.getIndex()];
+}
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
+{
+
+    tipProbs.clear();
+
+    size_t numTaxa = tp->getNumberOfTaxa();
+    size_t numCharacters = tp->getNumberOfCharacters();
+
+    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
+
+    tipProbs.resize(numTaxa);
+    const ContinuousCharacterData* ccdp = static_cast<const ContinuousCharacterData*>(tp);
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        TopologyNode* nd = nodes[i];
+        if (!nd->isTip())
+            continue;
+        
+        const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
+        for (size_t j = 0; j < numCharacters; j++)
+        {
+            double v = cd->getCharacter(j).getMean();
+            //tipProbs[nd->getIndex()].push_back(1-v);
+            tipProbs[nd->getIndex()].push_back(v);
+        }
+    }
 }
 
 
@@ -417,82 +457,32 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 {
-    ;
-}
-
-template<class charType, class treeType>
-//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa)
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, DiscreteCharacterData< charType > &taxa)
-{
-//    
-//    // get the children of the node
-//    const std::vector<TopologyNode*>& children = node.getChildren();
-//    
-//    // get the sequence of this node
-//    size_t nodeIndex = node.getIndex();
-//    const DiscreteTaxonData< charType > &parent = taxa[ nodeIndex ];
-//    
-//    // simulate the sequence for each child
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
-//    {
-//        const TopologyNode &child = *(*it);
-//        
-//        // update the transition probability matrix
-//        updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
-//        
-//        DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
-//        for ( size_t i = 0; i < numSites; ++i )
-//        {
-//            // get the ancestral character for this site
-//            unsigned long parentState = parent.getCharacter( i ).getState();
-//            size_t p = 0;
-//            while ( parentState != 1 )
-//            {
-//                // shift to the next state
-//                parentState >>= 1;
-//                // increase the index
-//                ++p;
-//            }
-//            
-//            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ p ];
-//            
-//            // create the character
-//            charType c;
-//            c.setToFirstState();
-//            // draw the state
-//            double u = rng->uniform01();
-//            while ( true )
-//            {
-//                u -= *freqs;
-//                
-//                if ( u > 0.0 )
-//                {
-//                    ++c;
-//                    ++freqs;
-//                }
-//                else
-//                {
-//                    break;
-//                }
-//            }
-//            
-//            // add the character to the sequence
-//            taxon.addCharacter( c );
-//        }
-//        
-//        if ( child.isTip() )
-//        {
-//            taxon.setTaxonName( child.getName() );
-//        }
-//        else
-//        {
-//            // recursively simulate the sequences
-//            simulate( child, taxa, perSiteRates );
-//        }
-//        
-//    }
     
+    // delete the old value first
+    delete this->value;
+    
+    // create a new character data object
+    this->value = new DiscreteCharacterData<charType>();
+    
+    // create a vector of taxon data
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>() );
+
+    // recursively simulate, starting with the root heading tipwards
+    const TopologyNode& nd = tau->getValue().getRoot();
+    BranchHistory* bh = new BranchHistory(numSites, numChars, nd.getIndex());
+    histories[ nd.getIndex() ] = bh;
+    
+    simulate(nd, bh, taxa);
+    
+    // add the taxon data to the character data
+    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    {
+        this->value->addTaxonData( taxa[i] );
+//        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
+    }
+    
+
+    TypedDistribution< AbstractCharacterData >::setValue(this->value);
 }
 
 

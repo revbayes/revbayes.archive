@@ -110,21 +110,21 @@ const TypeSpec& Move_SwitchRateJump::getClassTypeSpec(void)
 const MemberRules& Move_SwitchRateJump::getMemberRules(void) const 
 {
     
-    static MemberRules scalingMoveMemberRules;
+    static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
+        moveMemberRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return scalingMoveMemberRules;
+    return moveMemberRules;
 }
 
 

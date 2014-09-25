@@ -49,8 +49,8 @@ const ArgumentRules& Func__mod::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, Natural::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "y", true, Natural::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "y", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

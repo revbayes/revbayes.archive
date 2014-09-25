@@ -9,6 +9,7 @@
 
 #include "CharacterEvent.h"
 #include <iostream>
+#include <sstream>
 
 using namespace RevBayesCore;
 
@@ -58,9 +59,22 @@ unsigned int CharacterEvent::getState(void)
     return state;
 }
 
+std::string CharacterEvent::getStateStr(void)
+{
+    std::stringstream ss;
+    // want to do this based on DiscreteDataType...
+    ss << (char)(70+state);
+    return ss.str();
+}
+
 void CharacterEvent::setState(unsigned int s)
 {
     state = s;
+}
+
+void CharacterEvent::setTime(double t)
+{
+    time = t;
 }
 
 void CharacterEvent::print(void)

@@ -185,6 +185,7 @@ std::vector<size_t> SyntaxVariable::computeStaticIndex( Environment& env ) const
     size_t count = 1;
     for ( std::list<SyntaxElement*>::const_iterator it = index->begin(); it != index->end(); ++it, ++count )
     {
+        
         if ( (*it) == NULL )
         {
             oneOffsetIndices.push_back( 0 );
@@ -200,6 +201,7 @@ std::vector<size_t> SyntaxVariable::computeStaticIndex( Environment& env ) const
             // Push it onto the vector
             oneOffsetIndices.push_back( oneOffsetIndex );
         }
+        
     }
     
     // Return index
@@ -238,7 +240,10 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
                 theIndex = new Variable( new Natural( converterNode ) );
             }
             else
+            {
                 throw RbException( "No known conversion of type '" + theIndex->getRevObject().getType() + "' to 'Natural', required for index");
+            }
+            
         }
         
         indexVars.push_back( theIndex );

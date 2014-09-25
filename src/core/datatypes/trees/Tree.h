@@ -58,6 +58,8 @@ namespace RevBayesCore {
         void                                                clearBranchParameters(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         std::vector<std::string>                            getTipNames() const;
+        std::vector<Taxon>                                  getTaxa() const;                                                                //!< Get all the taxa in the tree
+        std::vector<std::string>                            getSpeciesNames() const;                                                     //!< Get all the species represented in the tree
         TopologyNode&                                       getNode(size_t idx);                                                            //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                                      //!< Get the node at index
         std::vector<TopologyNode*>                          getNodes(void) const;                                                           //!< Get a pointer to the nodes in the Tree

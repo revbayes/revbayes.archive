@@ -61,7 +61,7 @@ double SimpleMove::performMove( double &probRatio ) {
     {
         
         std::set<DagNode* > affectedNodes;
-        theNode->getAffectedStochasticNodes(affectedNodes);
+        theNode->getAffectedNodes(affectedNodes);
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) 
         {
             DagNode* theAffectedNode = *i;

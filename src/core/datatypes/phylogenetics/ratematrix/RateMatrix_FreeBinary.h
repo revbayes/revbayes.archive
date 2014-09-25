@@ -32,6 +32,7 @@ namespace RevBayesCore {
         double                          averageRate(void) const;
         void                            calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMatrix_FreeBinary*          clone(void) const;
+        void                            fillRateMatrix(void);
         void                            updateMatrix(void);
         
     private:

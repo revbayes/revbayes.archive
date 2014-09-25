@@ -243,9 +243,9 @@ RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>
  * implementation simply inserts this node in the set of affected nodes. The call is not
  * passed on to the children, because the likelihood of descendant stochastic nodes is not
  * affected unless the call comes from this node. In the latter case, the call originates
- * in the getAffectedStochasticNodes of this node, and passes on directly to the children
+ * in the getAffectedNodes of this node, and passes on directly to the children
  * without inserting this node in the set of affected nodes. See the DagNode base class for
- * the implementation of getAffectedStochasticNodes(...).
+ * the implementation of getAffectedNodes(...).
  */
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::getAffected( std::set<DagNode*>& affected, DagNode* affecter )

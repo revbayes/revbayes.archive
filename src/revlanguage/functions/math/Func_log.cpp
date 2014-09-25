@@ -50,8 +50,8 @@ const ArgumentRules& Func_log::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "base", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "base", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

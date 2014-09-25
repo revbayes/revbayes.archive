@@ -56,11 +56,12 @@ const ArgumentRules& Func_powermix::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "a", true, Simplex::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "b", true, Simplex::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "mixprop", true, Simplex::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "a"      , Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "b"      , Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "mixprop", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

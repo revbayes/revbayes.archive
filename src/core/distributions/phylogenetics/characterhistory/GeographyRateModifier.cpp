@@ -55,11 +55,6 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
         }
     }
     
-    // initialize distance dependence
-    geographicDistances.resize(numEpochs * numAreas * numAreas, 0.0);
-    geographicDistancePowers.resize(numEpochs * numAreas * numAreas, 1.0);
-    if (useDistanceDependence)
-        initializeDistances();
 
 //    // initialize provided area dispersal/extinction rates
 //    dispersalValues.resize(numEpochs * numAreas * numAreas, 1.0);
@@ -79,6 +74,12 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
 
     if (useAreaAdjacency || useAreaAvailable)
        initializeAdjacentAreas();
+    
+    // initialize distance dependence
+    geographicDistances.resize(numEpochs * numAreas * numAreas, 0.0);
+    geographicDistancePowers.resize(numEpochs * numAreas * numAreas, 1.0);
+    if (useDistanceDependence)
+        initializeDistances();
     
     // unimplemented, but helps for computations for large N
     //computeAllPairwiseDistanceOrder();
@@ -217,6 +218,10 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
                 {
                     d = geographicDistancePowers[idx_e];
                 }
+//                else if (d == 0.useAreaAdjacency == 0.0)
+//                {
+//                    d = 1e-10;
+//                }
                 
                 sum += d;
                 
@@ -228,10 +233,19 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         r = absent.size() * rate / sum;
 //        std::cout << "rateMod " << r << " = " << absent.size() << " * " << rate << " / " << sum << "\n";
     }
-    
+
     return r;
 }
 
+double GeographyRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+{
+    return computeRateModifier(currState, newState, age);
+}
+
+double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
+{
+    return computeRateModifier(currState, newState, 0.0);
+}
 
 double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
 {
@@ -245,12 +259,10 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     // force extinction if unavailable and present
     if (r == 0.0 && s == 0)
     {
-        
         r = 1e10;
     }
     else if (r == 0.0 && s == 1)
     {
-        
         r = 1e-10;
     }
     
@@ -277,16 +289,6 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     }
     
     return r;
-}
-
-double GeographyRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
-{
-    return computeRateModifier(currState, newState, age);
-}
-
-double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
-{
-    return computeRateModifier(currState, newState, 0.0);
 }
 
 
@@ -331,6 +333,16 @@ void GeographyRateModifier::initializeDistances(void)
                 double d = computePairwiseDistances(i, j, k);
                 geographicDistances[epochOffset*i + areaOffset*j + k] = d;
                 geographicDistances[epochOffset*i + areaOffset*k + j] = d;
+                if (j != k && d == 0.0)
+                {
+                    if (adjacentAreaVector[epochOffset*i + areaOffset*j + k] > 0 ||
+                        adjacentAreaVector[epochOffset*i + areaOffset*k + j] > 0)
+                    {
+                        std::stringstream ss;
+                        ss << "ERROR: Areas " << i << " and " << j << " have zero distance";
+                        throw RbException(ss.str());
+                    }
+                }
             }
         }
     }
@@ -383,7 +395,7 @@ void GeographyRateModifier::initializeAdjacentAreas(void)
                 if (dvs.size() == numAreas)
                 {
                     if (dvs[k] > 0.0)
-                        d = 1.0;
+                        d = dvs[k];
                 }
                 else
                 {
@@ -555,60 +567,8 @@ void GeographyRateModifier::printAll(void)
 //    
 }
 
-
-// old code
-
-
-//double GeographyRateModifier::computeRateModifier_test(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
-//{
-//    if (!useDistanceDependence || distancePower == 0.0 || newState->getState() == 0)
-//    {
-//        return 1.0;
-//    }
-//    
-//    unsigned epochIndex = getEpochIndex(age);
-//    
-//    // determine which areas are present and which are absent
-//    present.clear();
-//    absent.clear();
-//    for (unsigned i = 0; i < numAreas; i++)
-//    {
-//        if (currState[i]->getState() == 0)
-//            absent.insert(currState[i]);
-//        else
-//            present.insert(currState[i]);
-//    }
-//    
-//    if (present.size() == 0)
-//        return 1.0;
-//    
-//    // get sum of distances_ij^beta
-//    double rate = 0.0;
-//    double sum = 0.0;
-//    std::set<CharacterEvent*>::iterator it_p;
-//    std::set<CharacterEvent*>::iterator it_a;
-//    for (it_p = present.begin(); it_p != present.end(); it_p++)
-//    {
-//        size_t idx_p = (*it_p)->getIndex();
-//        
-//        for (it_a = absent.begin(); it_a != absent.end(); it_a++)
-//        {
-//            size_t idx_a = (*it_a)->getIndex();
-//            size_t idx_e = epochIndex*epochOffset + idx_p*areaOffset + idx_a;
-//            
-//            double d = geographicDistancePowers[ idx_e  ];
-//            if  (useAreaAdjacency && dispersalValues[ idx_e ] == 0)
-//                d = 0.0;
-//            
-//            sum += d;
-//            
-//            if (idx_a == newState->getIndex())
-//                rate += d;
-//        }
-//    }
-//    
-//    // get sum-normalized rate-modifier
-//    double r = absent.size() * rate / sum;
-//    
-//    return r;
-//}
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const GeographyRateModifier& x)
+{
+    o << "GeographyRateModifier";
+    return o;
+}

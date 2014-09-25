@@ -43,7 +43,7 @@ namespace RevBayesCore {
         DagNode*                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
         void                                        collectDownstreamGraph(std::set<DagNode*> &nodes);                                          //!< Collect all nodes downstream from this node (incl the node)
         size_t                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
-        void                                        getAffectedStochasticNodes(std::set<DagNode*>& affected);                                   //!< Get affected downstream stochastic nodes (not including this one)
+        void                                        getAffectedNodes(std::set<DagNode*>& affected);                                             //!< Get affected downstream stochastic nodes (not including this one)
         const std::set<DagNode*>&                   getChildren(void) const;                                                                    //!< Get the set of parents
         std::string                                 getDagNodeType(void) const;
         DagNode*                                    getFirstChild(void) const;                                                                  //!< Get the first child from a our set

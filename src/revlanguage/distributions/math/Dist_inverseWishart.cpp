@@ -82,21 +82,22 @@ const TypeSpec& Dist_inverseWishart::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Dist_inverseWishart::getMemberRules(void) const {
     
-    static MemberRules distExpMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        distExpMemberRules.push_back( new ArgumentRule( "sigma", true, RealSymmetricMatrix::getClassTypeSpec(), new RealSymmetricMatrix()  ) );
-        distExpMemberRules.push_back( new ArgumentRule( "diagonal", true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>()  ) );
-        distExpMemberRules.push_back( new ArgumentRule( "df", true, Natural::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "kappa", true, RealPos::getClassTypeSpec(), new Real(0) ) );
-        distExpMemberRules.push_back( new ArgumentRule( "dim", true, Natural::getClassTypeSpec(), new Natural(0) ) );
+        distMemberRules.push_back( new ArgumentRule( "sigma"   , RealSymmetricMatrix::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealSymmetricMatrix()  ) );
+        distMemberRules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>()  ) );
+        distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0) ) );
+        distMemberRules.push_back( new ArgumentRule( "dim"     , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return distMemberRules;
 }
 
 

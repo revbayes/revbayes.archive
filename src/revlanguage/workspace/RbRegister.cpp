@@ -70,6 +70,8 @@
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
+#include "RlRootedTripletDistribution.h"
+
 
 /* Taxon types (in folder "datatypes/evolution") */
 #include "RlTaxon.h"
@@ -100,8 +102,12 @@
 #include "RlMove.h"
 
 /* Moves on real values */
+#include "Move_SliceSampling.h"
 #include "Move_Scale.h"
 #include "Move_Slide.h"
+
+/* Compound Moves on Real Values */
+#include "Move_ScalerUpDown.h"
 
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
@@ -262,6 +268,7 @@
 #include "Func_seq.h"
 #include "Func_setwd.h"
 #include "Func_structure.h"
+#include "Func_system.h"
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
 
@@ -269,12 +276,14 @@
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_averageRateOnBranch.h"
 #include "Func_clade.h"
+#include "Func_constructRootedTripletDistribution.h"
 #include "Func_expBranchTree.h"
 #include "Func_tanhBranchTree.h"
 #include "Func_t92GCBranchTree.h"
+#include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_phyloRateMultiplier.h"
-#include "Func_polymorphicStateConverter.h"
+#include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
@@ -287,6 +296,7 @@
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_f81.h"
+#include "Func_FreeBinary.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
 #include "Func_t92.h"
@@ -370,6 +380,7 @@
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
+#include "Func_powerVector.h"
 #include "Func_round.h"
 #include "Func_simplex.h"
 #include "Func_sum.h"
@@ -464,6 +475,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
+       // addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
+
         
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
         addTypeWithConstructor( "taxon",            new Taxon() );
@@ -506,12 +519,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Moves on real values */
         addTypeWithConstructor("mvScale",               new Move_Scale() );
         addTypeWithConstructor("mvSlide",               new Move_Slide() );
+        addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
+		
+		// compound moves on real values
+        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
         
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mScale",                new Move_Scale() );
         addTypeWithConstructor("mSlide",                new Move_Slide() );
+        addTypeWithConstructor("mSlice",                new Move_SliceSampling() );
         
-
         /* Moves on integer values */
         addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
         addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
@@ -552,6 +569,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Simplex>() );
         addTypeWithConstructor("mvDPPGibbsConcentration",          new Move_DPPGibbsConcentration( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Real>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RealPos>( ) );
@@ -789,6 +807,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnOneOverX",      new Dist_oneOverX() );
         addDistribution( "oneOverX",        new Dist_oneOverX() );
         
+        addDistribution( "dnLogUniform",    new Dist_oneOverX() );
+        
         // uniform distribution
         addDistribution( "dnUnif",          new Dist_unif() );
         addDistribution( "dnUnif",          new Dist_positiveUnif() );
@@ -812,11 +832,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnDPP",           new Dist_dpp<Natural>() );
 		addDistribution( "dnDPP",           new Dist_dpp<Integer>() );
 		addDistribution( "dnDPP",           new Dist_dpp<Probability>() );
+        addDistribution( "dnDPP",           new Dist_dpp<Simplex>() );
         addDistribution( "dpp",             new Dist_dpp<Real>() );
 		addDistribution( "dpp",             new Dist_dpp<RealPos>() );
 		addDistribution( "dpp",             new Dist_dpp<Natural>() );
 		addDistribution( "dpp",             new Dist_dpp<Integer>() );
 		addDistribution( "dpp",             new Dist_dpp<Probability>() );
+        addDistribution( "dpp",             new Dist_dpp<Simplex>() );
         
         // mixture distribution
         addDistribution( "dnMixture",       new Dist_mixture<Real>() );
@@ -874,6 +896,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "setwd",                    new Func_setwd()                    );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
+        addFunction( "system",                   new Func_system()                   );
         addFunction( "type",                     new Func_type()                     );
 
         // vector functions
@@ -895,12 +918,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
         addFunction( "clade",                       new Func_clade()                    );
+        addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
+        addFunction( "maximumTree",                 new Func_maximumTree()             );
         addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
         addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
         addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
         addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
-        addFunction( "pomoStateConvert",            new Func_polymorphicStateConverter() );
+        addFunction( "pomoStateConvert",            new Func_pomoStateConverter() );
         addFunction( "pomoRF",                      new Func_pomoRootFrequencies() );
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
@@ -913,6 +938,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "expbranchtree",               new Func_expBranchTree()            );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
+        addFunction( "fnFreeBinary", new Func_FreeBinary());
         addFunction( "blosum62", new Func_blosum62());
         addFunction( "cpRev",    new Func_cpRev()   );
         addFunction( "dayhoff",  new Func_dayhoff() );
@@ -1074,6 +1100,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // exponentiation
         addFunction( "_exp",      new Func_power() );
+        addFunction( "_exp",      new Func_powerVector() );
         
         // index operator '[]'
         addFunction( "[]",         new Func__vectorIndexOperator<Natural>()                    );
@@ -1137,6 +1164,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
 		// power function
         addFunction( "power",     new Func_power() );
+        addFunction( "power",     new Func_powerVector() );
 
         // powermix function (TODO: remove when user functions work)
         addFunction( "powermix",  new Func_powermix() );
@@ -1174,6 +1202,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Simplex>( )  );
 
         // return a distcretized (by quantile) and normalized vector from a continuous distribution
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );

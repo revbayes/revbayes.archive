@@ -55,7 +55,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly )
             std::set<DagNode*> affectedNodes;
             for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
             {
-                (*it)->getAffectedStochasticNodes( affectedNodes );
+                (*it)->getAffectedNodes( affectedNodes );
             }
             // compute the probability of the current value for each node
             for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)

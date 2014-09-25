@@ -21,7 +21,7 @@ namespace RevLanguage {
         RlAtlas(RlAtlas* m);
         
         // Basic utility functions
-        RlAtlas*            clone(void) const;                                                          //!< Clone object
+        RlAtlas*                            clone(void) const;                                                          //!< Clone object
         static const std::string&           getClassType(void);                                                         //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
@@ -29,6 +29,7 @@ namespace RevLanguage {
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
         RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        MethodTable                         makeMethods( void ) const;
     };
     
 }

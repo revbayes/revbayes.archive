@@ -61,15 +61,18 @@ const TypeSpec& Move_DPPScaleCatAllocateAux::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_DPPScaleCatAllocateAux::getMemberRules(void) const {
+const MemberRules& Move_DPPScaleCatAllocateAux::getMemberRules(void) const
+{
     
     static MemberRules dppMove;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        dppMove.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
-        dppMove.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
-        dppMove.push_back( new ArgumentRule( "numAux", true, Integer::getClassTypeSpec() , new Integer(4) ) );
+    if ( !rulesSet )
+    {
+        
+        dppMove.push_back( new ArgumentRule( "x"     , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        dppMove.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(1.0) ) );
+        dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
