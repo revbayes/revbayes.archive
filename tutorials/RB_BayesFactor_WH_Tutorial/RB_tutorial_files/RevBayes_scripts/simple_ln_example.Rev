@@ -1,5 +1,5 @@
 
-observations <- rldnNorm(500, 1.222827, 0.75)
+observations <- rlnorm(5, 1.222827, 0.75)
 
 
 alpha <- 3.0
@@ -17,7 +17,7 @@ mu := lnM - hv
 N <- observations.size()
 for( i in 1:N ){
 	x[i] ~ dnLnorm(mu, sigma)
-	##x[i].clamp(observations[i])
+	x[i].clamp(observations[i])
 }
 
 moves[1] <- mvScale(M,lambda=1.5, tune=true, weight=4.0)
