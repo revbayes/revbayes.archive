@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>dnYuleDivDep</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,84 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         dnYuleDivDep(
+               RealPos        lambda,
+               Natural        capacity,
+               RealPos        origin = NULL,
+               RealPos        rootAge = NULL,
+               String        condition = survival,
+               Natural        nTaxa,
+               String[]        names,
+               Clade[]        constraints = 
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>lambda</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>RealPos</valueType>
     </argument>
     <argument>
-        <label>monitors</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>capacity</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
+        <valueType>Natural</valueType>
     </argument>
     <argument>
-        <label>moves</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <label>origin</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
+        <valueType>RealPos</valueType>
+        <defaultValue>NULL</defaultValue>
     </argument>
     <argument>
-        <label>moveschedule</label>
+        <label>rootAge</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>RealPos</valueType>
+        <defaultValue>NULL</defaultValue>
+    </argument>
+    <argument>
+        <label>condition</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
         <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <option>"time"</option>
+        <option>"survival"</option>
+        <option>"nTaxa"</option>
+        <defaultValue>survival</defaultValue>
+    </argument>
+    <argument>
+        <label>nTaxa</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Natural</valueType>
+    </argument>
+    <argument>
+        <label>names</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>String[]</valueType>
+    </argument>
+    <argument>
+        <label>constraints</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Clade[]</valueType>
+        <defaultValue></defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>Dist_divDepYuleProcess</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

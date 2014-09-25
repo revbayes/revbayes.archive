@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>dnPhyloDACTMC</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,66 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         dnPhyloDACTMC(
+               BranchLengthTree        tree,
+               RateMap        Q,
+               Simplex        C = NULL,
+               Bool        forbidExtinction = 1,
+               Bool        useCladogenesis = 1,
+               String        type = biogeo
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
+        <label>tree</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>BranchLengthTree</valueType>
+    </argument>
+    <argument>
+        <label>Q</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>RateMap</valueType>
+    </argument>
+    <argument>
+        <label>C</label>
+        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Simplex</valueType>
+        <defaultValue>NULL</defaultValue>
+    </argument>
+    <argument>
+        <label>forbidExtinction</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>Bool</valueType>
+        <defaultValue>1</defaultValue>
     </argument>
     <argument>
-        <label>monitors</label>
+        <label>useCladogenesis</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
+        <valueType>Bool</valueType>
+        <defaultValue>1</defaultValue>
     </argument>
     <argument>
-        <label>moves</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
-    </argument>
-    <argument>
-        <label>moveschedule</label>
+        <label>type</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
         <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <option>"biogeo"</option>
+        <defaultValue>biogeo</defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>Dist_phyloDACTMC</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

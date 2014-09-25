@@ -8,7 +8,7 @@
 >
 <function-help-entry>
 
-    <name>mcmc</name>
+    <name>mvSimplex</name>
 
     <alias>anotherNameForTheSameFunction</alias>
     <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,49 +23,66 @@
 
     <usage>
         <![CDATA[
-         mcmc(
-               Model        model,
-               Monitor[]        monitors,
-               Move[]        moves,
-               String        moveschedule = random
+         mvSimplex(
+               Simplex        x,
+               RealPos        alpha = 1,
+               Natural        numCats = 1,
+               Natural        offset = 0,
+               Bool        tune = 1,
+               RealPos        weight = 1
                )
          ]]> 
     </usage>
 
     <argument>
-        <label>model</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <label>x</label>
+        <argumentPassingMethod>by-reference</argumentPassingMethod>
+        <argumentNodeType>stochastic-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Model</valueType>
+        <valueType>Simplex</valueType>
     </argument>
     <argument>
-        <label>monitors</label>
+        <label>alpha</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Monitor[]</valueType>
+        <valueType>RealPos</valueType>
+        <defaultValue>1</defaultValue>
     </argument>
     <argument>
-        <label>moves</label>
+        <label>numCats</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Move[]</valueType>
+        <valueType>Natural</valueType>
+        <defaultValue>1</defaultValue>
     </argument>
     <argument>
-        <label>moveschedule</label>
+        <label>offset</label>
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"sequential"</option>
-        <option>"random"</option>
-        <option>"single"</option>
-        <defaultValue>random</defaultValue>
+        <valueType>Natural</valueType>
+        <defaultValue>0</defaultValue>
+    </argument>
+    <argument>
+        <label>tune</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>Bool</valueType>
+        <defaultValue>1</defaultValue>
+    </argument>
+    <argument>
+        <label>weight</label>
+        <argumentPassingMethod>by-value</argumentPassingMethod>
+        <argumentNodeType>any-DAG-node</argumentNodeType>
+        <description>A description of the argument.</description>
+        <valueType>RealPos</valueType>
+        <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>Move_Simplex</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
