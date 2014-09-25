@@ -174,16 +174,18 @@ std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp,
             
             // value type
             result.append( spaces );
-            result.append( "Type: " );
+            result.append( "Type:       " );
             result.append( arg.getValueType() );
             result.append( ", " );
-            result.append( arg.getArgumentType() );
+            result.append( arg.getArgumentDagNodeType() );
+            result.append( ", " );
+            result.append( arg.getArgumentPassingMethod() );
             result.append( lineBreak );
             
             if ( arg.getDefaultValue().size() > 0 )
             {
                 result.append( spaces );
-                result.append( "Default: " );
+                result.append( "Default:    " );
                 result.append( arg.getDefaultValue() );
                 result.append( lineBreak );
             }
@@ -191,7 +193,7 @@ std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp,
             if (arg.getOptions().size() > 0)
             {
                 result.append( spaces );
-                result.append( "Options: " );
+                result.append( "Options:    " );
                 const std::vector<std::string> & options = arg.getOptions();
                 for (std::vector<std::string>::const_iterator opt = options.begin(); opt != options.end(); ++opt)
                 {

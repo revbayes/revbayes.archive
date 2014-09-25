@@ -167,13 +167,21 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 }
 
 
+ArgumentRule::DagNodeType ArgumentRule::getArgumentDagNodeType( void ) const
+{
+    // return the internal value
+    return nodeType;
+}
+
+
 const std::string& ArgumentRule::getArgumentLabel(void) const
 {
     return label;
 }
 
 
-const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const {
+const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const
+{
     return argTypeSpecs;
 }
 
