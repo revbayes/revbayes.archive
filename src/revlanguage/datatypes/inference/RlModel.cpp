@@ -47,7 +47,7 @@ void Model::constructInternalObject( void ) {
 /* Map calls to member methods */
 RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "writeModelGVFile") {
+    if (name == "writeModelGVFile" || name == "gv") {
         const std::string&   fn      = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
         printModelDotGraph(fn);
         
@@ -105,6 +105,7 @@ const MethodTable& Model::getMethods(void) const {
         ArgumentRules* dotArgRules = new ArgumentRules();
         dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
         methods.addFunction("writeModelGVFile", new MemberProcedure( RlUtils::Void, dotArgRules) );
+        methods.addFunction("gv", new MemberProcedure( RlUtils::Void, dotArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );
@@ -221,13 +222,26 @@ void Model::printModelDotGraph(const std::string &fn){
         else if((*it)->getDagNodeType() == "deterministic"){
             std::stringstream strss;
             (*it)->printStructureInfo(strss);
-            std::string w;
-            while(strss >> w){
-                if(w == "_function"){
-                    strss >> w;
-                    strss >> w;
-                    strss >> w;
-                    rl << "\\n[ " << w << "( ) ]";
+            std::string si = strss.str();
+            if(si.find("Deterministic Rev function node",0) < si.npos){
+                std::string w;
+                while(strss >> w){
+                    if(w == "_function"){
+                        strss >> w;
+                        strss >> w;
+                        strss >> w;
+                        rl << "\\n[ " << w << "( ) ]";
+                    }
+                }
+            }
+            else{
+                std::string w;
+                while(strss >> w){
+                    if(w == "_dagType"){
+                        strss >> w;
+                        strss >> w;
+                        rl << "\\n[ " << w << "( ) ]";
+                    }
                 }
             }
             o << "oval, style=\"dashed,filled\", fillcolor=white, label=\"" << rl.str() << "\"]\n";

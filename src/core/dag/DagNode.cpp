@@ -11,6 +11,7 @@ using namespace RevBayesCore;
  */
 DagNode::DagNode( const std::string &n ) :
         children(),
+        hidden( false ),
         name( n ), 
         touchedElements(),
         refCount( 0 )
@@ -29,6 +30,7 @@ DagNode::DagNode( const std::string &n ) :
  */
 DagNode::DagNode( const DagNode &n ) : 
         children(),
+        hidden( n.hidden ),
         name( n.name ),  
         touchedElements( n.touchedElements ),
         refCount( 0 )
@@ -358,8 +360,14 @@ bool DagNode::isComposite( void ) const
 
 bool DagNode::isConstant( void ) const
 {
-
+    
     return false;
+}
+
+bool DagNode::isHidden( void ) const
+{
+    
+    return hidden;
 }
 
 

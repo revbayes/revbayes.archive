@@ -83,6 +83,7 @@ ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variabl
     convertedObject( NULL ),
     typeSpec( ts )
 {
+    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Add us as a child to the argument DAG node
@@ -103,6 +104,7 @@ ConverterNode<rlType>::ConverterNode( const ConverterNode<rlType>& n ) :
     convertedObject( NULL ),
     typeSpec( n.typeSpec )
 {
+    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Add us as a child to the argument DAG node
