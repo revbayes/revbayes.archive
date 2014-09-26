@@ -37,7 +37,7 @@
         <valueType>RealPos</valueType>
     </argument>
 
-    <returnValue>Dist_poisson, Distribution<Natural>, Distribution, RevObject</returnValue>
+    <returnValue>Dist_poisson, Distribution__Natural, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

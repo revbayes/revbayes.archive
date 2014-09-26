@@ -37,7 +37,7 @@
         <valueType>Probability</valueType>
     </argument>
 
-    <returnValue>Dist_geom, Distribution<Natural>, Distribution, RevObject</returnValue>
+    <returnValue>Dist_geom, Distribution__Natural, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

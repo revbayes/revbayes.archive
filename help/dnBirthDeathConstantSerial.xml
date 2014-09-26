@@ -120,7 +120,7 @@
         <defaultValue></defaultValue>
     </argument>
 
-    <returnValue>Dist_serialBDP, Distribution<TimeTree>, Distribution, RevObject</returnValue>
+    <returnValue>Dist_serialBDP, Distribution__TimeTree, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
