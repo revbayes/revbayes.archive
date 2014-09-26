@@ -49,7 +49,9 @@ RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector
     
     if (name == "writeModelGVFile" || name == "gv") {
         const std::string&   fn      = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-        printModelDotGraph(fn);
+        bool vb = static_cast< const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
+        const std::string&   bg      = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
+        printModelDotGraph(fn, vb, bg);
         
         return NULL;
     }
@@ -104,6 +106,8 @@ const MethodTable& Model::getMethods(void) const {
         
         ArgumentRules* dotArgRules = new ArgumentRules();
         dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+        dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
         methods.addFunction("writeModelGVFile", new MemberProcedure( RlUtils::Void, dotArgRules) );
         methods.addFunction("gv", new MemberProcedure( RlUtils::Void, dotArgRules) );
         
@@ -175,16 +179,21 @@ void Model::setConstMemberVariable(const std::string& name, const RevPtr<const V
 /* Write a file in DOT format for viewing the model DAG in graphviz */
 //   This requires the user to have graphviz installed, or they can paste the file contents
 //   into http://graphviz-dev.appspot.com/
-void Model::printModelDotGraph(const std::string &fn){
+void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc){
     
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
     std::vector<RevBayesCore::DagNode*>::const_iterator it;
     
     std::ofstream o;
     o.open(fn.c_str());
+    o << "/* Graphical model description in DOT language                                    */\n";
+    o << "/*    To view graph:                                                              */\n";
+    o << "/*       open this file in the program Graphviz: http://www.graphviz.org          */\n";
+    o << "/*       or paste contents into an online viewer: http://graphviz-dev.appspot.com */\n\n";
 	o << "digraph REVDAG {\n";
+    std::string nrank = "   {rank=same";
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
-        if( !(*it)->isHidden() ){
+        if( !(*it)->isHidden() || vb){
             std::stringstream nname;
             if ( (*it)->getName() != "" )
                 nname << (*it)->getName();
@@ -204,8 +213,10 @@ void Model::printModelDotGraph(const std::string &fn){
                     (*it)->printValue(trl," ");
                 else 
                     trl << " ... ";
-                if(trl.str() != ""){
+                if(trl.str() != "" || vb){
                     std::string val = trl.str();
+                    if(val == "")
+                        val = "constant\\ndefault member";
                     if(!(*it)->isSimpleNumeric())
                         val = "...";
                     o << "   n_" << stname;
@@ -226,7 +237,7 @@ void Model::printModelDotGraph(const std::string &fn){
                 o << " [shape=";
                 std::stringstream strss;
                 (*it)->printStructureInfo(strss);
-                if(strss.str().find("Deterministic Rev function node",0) < strss.str().npos){
+                if(strss.str().find("function",0) < strss.str().npos){
                     std::string w;
                     while(strss >> w){
                         if(w == "_function"){
@@ -243,7 +254,11 @@ void Model::printModelDotGraph(const std::string &fn){
                         if(w == "_dagType"){
                             strss >> w;
                             strss >> w;
-                            rl << "\\n[ " << w << " ]";
+                            rl << "\\n[ " << w;
+                            strss >> w;
+                            if(w != "DAG")
+                                rl << " " << w;
+                            rl << " ]";
                         }
                     }
                 }
@@ -255,6 +270,7 @@ void Model::printModelDotGraph(const std::string &fn){
                 o << "oval, ";
                 if((*it)->isClamped()){
                     o << "style=filled, fillcolor=gray, ";
+                    nrank += "; n_" + stname;
                 }
                 else 
                     o << "style=filled, fillcolor=white, ";
@@ -263,10 +279,10 @@ void Model::printModelDotGraph(const std::string &fn){
         }
     }
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
-        if( !(*it)->isHidden() ){
+        if( !(*it)->isHidden() || vb){
             std::stringstream trl;
             (*it)->printValue(trl,",");
-            if(trl.str() != ""){
+            if(trl.str() != "" || vb){
                 std::stringstream nname;
                 if ( (*it)->getName() != "" )
                     nname << (*it)->getName() ;
@@ -280,7 +296,7 @@ void Model::printModelDotGraph(const std::string &fn){
                     const std::set<RevBayesCore::DagNode*>& childeren = (*it)->getChildren();
                     std::set<RevBayesCore::DagNode*>::const_iterator ci;
                     for ( ci=childeren.begin(); ci!=childeren.end(); ++ci ){
-                        if( (*ci)->isHidden() ){
+                        if( (*ci)->isHidden() && vb==false ){
                             RevBayesCore::DagNode *ch = (*ci)->getFirstChild();
                             while (ch->isHidden()) {
                                 ch = ch->getFirstChild();
@@ -323,6 +339,11 @@ void Model::printModelDotGraph(const std::string &fn){
         }
         
     }
+    if(nrank.size() > 13){
+        nrank += ";}\n";
+        o << nrank;
+    }
+    o << "   graph [bgcolor=" << bgc << ", pad=0.25]\n";
     o << "}";
     o.close();
     
