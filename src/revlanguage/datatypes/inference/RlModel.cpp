@@ -184,107 +184,141 @@ void Model::printModelDotGraph(const std::string &fn){
     o.open(fn.c_str());
 	o << "digraph REVDAG {\n";
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
-        std::stringstream nname;
-        if ( (*it)->getName() != "" )
-            nname << (*it)->getName();
-        else
-            nname << (*it);
-        std::string stname = nname.str();
-        std::replace( stname.begin(), stname.end(), '[', '_');
-        stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
-              
-        std::stringstream rl;
-        rl << nname.str() ;        
-       
-        o << "   n_" << stname;
-        o << " [shape=";
-        // only print values of constant nodes (only simple numeric values)
-        if((*it)->getDagNodeType() == "constant"){
-			if( (*it)->getName() == "" ){
-				o << "box, style=filled, fillcolor=white, ";
-				std::stringstream trl;
-				if((*it)->isSimpleNumeric())  
-					(*it)->printValue(trl," ");
-				else 
-					trl << " ... ";
-				o << "label=\"" << trl.str() << "\"]\n";
-			}
-			else {
-				o << "record, style=filled, fillcolor=white, ";
-				rl << "|";
-				if((*it)->isSimpleNumeric())  
-					(*it)->printValue(rl," ");
-				else 
-					rl << " ... ";
-				o << "label=\"{" << rl.str() << "}\"]\n";
-			}
-        }
-        else if((*it)->getDagNodeType() == "deterministic"){
-            std::stringstream strss;
-            (*it)->printStructureInfo(strss);
-            std::string si = strss.str();
-            if(si.find("Deterministic Rev function node",0) < si.npos){
-                std::string w;
-                while(strss >> w){
-                    if(w == "_function"){
-                        strss >> w;
-                        strss >> w;
-                        strss >> w;
-                        rl << "\\n[ " << w << "( ) ]";
+        if( !(*it)->isHidden() ){
+            std::stringstream nname;
+            if ( (*it)->getName() != "" )
+                nname << (*it)->getName();
+            else
+                nname << (*it);
+            std::string stname = nname.str();
+            std::replace( stname.begin(), stname.end(), '[', '_');
+            stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
+                  
+            std::stringstream rl;
+            rl << nname.str() ;        
+           
+            // only print values of constant nodes (only simple numeric values)
+            if((*it)->getDagNodeType() == "constant"){
+                std::stringstream trl;
+                if((*it)->isSimpleNumeric())  
+                    (*it)->printValue(trl," ");
+                else 
+                    trl << " ... ";
+                if(trl.str() != ""){
+                    std::string val = trl.str();
+                    if(!(*it)->isSimpleNumeric())
+                        val = "...";
+                    o << "   n_" << stname;
+                    o << " [shape=";
+                    if( (*it)->getName() == "" ){
+                        o << "box, style=filled, fillcolor=white, ";
+                        o << "label=\"" << val << "\"]\n";
+                    }
+                    else {
+                        o << "record, style=filled, fillcolor=white, ";
+                        rl << "|" << val;
+                        o << "label=\"{" << rl.str() << "}\"]\n";
                     }
                 }
             }
-            else{
-                std::string w;
-                while(strss >> w){
-                    if(w == "_dagType"){
-                        strss >> w;
-                        strss >> w;
-                        rl << "\\n[ " << w << "( ) ]";
+            else if((*it)->getDagNodeType() == "deterministic"){
+                o << "   n_" << stname;
+                o << " [shape=";
+                std::stringstream strss;
+                (*it)->printStructureInfo(strss);
+                if(strss.str().find("Deterministic Rev function node",0) < strss.str().npos){
+                    std::string w;
+                    while(strss >> w){
+                        if(w == "_function"){
+                            strss >> w;
+                            strss >> w;
+                            strss >> w;
+                            rl << "\\n[ " << w << "( ) ]";
+                        }
                     }
                 }
+                else{
+                    std::string w;
+                    while(strss >> w){
+                        if(w == "_dagType"){
+                            strss >> w;
+                            strss >> w;
+                            rl << "\\n[ " << w << " ]";
+                        }
+                    }
+                }
+                o << "oval, style=\"dashed,filled\", fillcolor=white, label=\"" << rl.str() << "\"]\n";
             }
-            o << "oval, style=\"dashed,filled\", fillcolor=white, label=\"" << rl.str() << "\"]\n";
-        }
-        else if((*it)->getDagNodeType() == "stochastic"){
-            o << "oval, ";
-            if((*it)->isClamped()){
-                o << "style=filled, fillcolor=gray, ";
+            else if((*it)->getDagNodeType() == "stochastic"){
+                o << "   n_" << stname;
+                o << " [shape=";
+                o << "oval, ";
+                if((*it)->isClamped()){
+                    o << "style=filled, fillcolor=gray, ";
+                }
+                else 
+                    o << "style=filled, fillcolor=white, ";
+                o << "label=\"" << rl.str() << "\"]\n";
             }
-            else 
-                o << "style=filled, fillcolor=white, ";
-            o << "label=\"" << rl.str() << "\"]\n";
         }
     }
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
-        std::stringstream nname;
-        if ( (*it)->getName() != "" )
-            nname << (*it)->getName() ;
-        else
-            nname << (*it);
-        std::string stname = nname.str();
-        std::replace( stname.begin(), stname.end(), '[', '_');
-        stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
-
-        if((*it)->getNumberOfChildren() > 0){
-            const std::set<RevBayesCore::DagNode*>& childeren = (*it)->getChildren();
-            std::set<RevBayesCore::DagNode*>::const_iterator ci;
-            for ( ci=childeren.begin(); ci!=childeren.end(); ++ci ){
-                
-                std::stringstream cn;
-                if ( (*ci)->getName() != "" )
-                    cn << (*ci)->getName();
+        if( !(*it)->isHidden() ){
+            std::stringstream trl;
+            (*it)->printValue(trl,",");
+            if(trl.str() != ""){
+                std::stringstream nname;
+                if ( (*it)->getName() != "" )
+                    nname << (*it)->getName() ;
                 else
-                    cn << (*ci);
-                std::string stcn = cn.str();
-                std::replace( stcn.begin(), stcn.end(), '[', '_');
-                stcn.erase(std::remove(stcn.begin(), stcn.end(), ']'), stcn.end());  
+                    nname << (*it);
+                std::string stname = nname.str();
+                std::replace( stname.begin(), stname.end(), '[', '_');
+                stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
 
-                o << "   n_" << stname << " -> n_";
-                o << stcn;
-                if((*ci)->getDagNodeType() == "deterministic")
-                    o << "[style=dashed]";
-                o << "\n";
+                if((*it)->getNumberOfChildren() > 0){
+                    const std::set<RevBayesCore::DagNode*>& childeren = (*it)->getChildren();
+                    std::set<RevBayesCore::DagNode*>::const_iterator ci;
+                    for ( ci=childeren.begin(); ci!=childeren.end(); ++ci ){
+                        if( (*ci)->isHidden() ){
+                            RevBayesCore::DagNode *ch = (*ci)->getFirstChild();
+                            while (ch->isHidden()) {
+                                ch = ch->getFirstChild();
+                            }
+                            std::stringstream cn;
+                            if ( ch->getName() != "" )
+                                cn << ch->getName();
+                            else
+                                cn << ch;
+                            std::string stcn = cn.str();
+                            std::replace( stcn.begin(), stcn.end(), '[', '_');
+                            stcn.erase(std::remove(stcn.begin(), stcn.end(), ']'), stcn.end());  
+                            
+                            o << "   n_" << stname << " -> n_";
+                            o << stcn;
+                            if(ch->getDagNodeType() == "deterministic")
+                                o << "[style=dashed]";
+                            o << "\n";
+                        }
+                        else{
+                            std::stringstream cn;
+                            if ( (*ci)->getName() != "" )
+                                cn << (*ci)->getName();
+                            else
+                                cn << (*ci);
+                            std::string stcn = cn.str();
+                            std::replace( stcn.begin(), stcn.end(), '[', '_');
+                            stcn.erase(std::remove(stcn.begin(), stcn.end(), ']'), stcn.end());  
+
+                            o << "   n_" << stname << " -> n_";
+                            o << stcn;
+                            if((*ci)->getDagNodeType() == "deterministic")
+                                o << "[style=dashed]";
+                            o << "\n";
+                        }
+                    }
+                
+                }
             }
         }
         

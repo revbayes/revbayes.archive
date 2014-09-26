@@ -398,7 +398,7 @@ clear(trueSf)
  
 mymodel <- model(speciesTree)
 
-
+mymodel.gv("pomo_model_DAG.dot")
 
 ########
 # MCMC #
@@ -413,7 +413,7 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 # and the tuning interval for tuning parameters of moves on scalar variables.
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
-# mymcmc.burnin(generations=200,tuningInterval=100)
+mymcmc.burnin(generations=200,tuningInterval=100)
 mymcmc.run(generations=40000)
 
 
