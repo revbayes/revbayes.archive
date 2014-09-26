@@ -251,7 +251,7 @@ ModelVector<RlString>* TypeSpec::makeRevClass( void ) const
  */
 std::ostream& RevLanguage::operator<<(std::ostream& o, const TypeSpec& x)
 {
-    o << "[ " << x.getType();
+    o << x.getType();
     
     const TypeSpec* par = x.getParentTypeSpec();
     while ( par != NULL ) {
@@ -259,8 +259,6 @@ std::ostream& RevLanguage::operator<<(std::ostream& o, const TypeSpec& x)
         o << ", " << par->getType();
         par = par->getParentTypeSpec();
     }
-    
-    o << " ]";
 
     return o;
 }

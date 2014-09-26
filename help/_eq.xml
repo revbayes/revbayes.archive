@@ -45,7 +45,7 @@
         <valueType>String</valueType>
     </argument>
 
-    <returnValue>Bool</returnValue>
+    <returnValue>Bool, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

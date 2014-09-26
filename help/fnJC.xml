@@ -37,7 +37,7 @@
         <valueType>Natural</valueType>
     </argument>
 
-    <returnValue>RateMatrix</returnValue>
+    <returnValue>RateMatrix, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

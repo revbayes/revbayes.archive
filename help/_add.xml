@@ -45,7 +45,7 @@
         <valueType>AbstractCharacterData</valueType>
     </argument>
 
-    <returnValue>AbstractCharacterData</returnValue>
+    <returnValue>AbstractCharacterData, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

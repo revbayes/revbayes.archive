@@ -164,7 +164,7 @@ void writeXmlTemplate(std::string funcName, RevLanguage::Function *func)
     }
     
     outStream << "" << std::endl;
-    outStream << "    <returnValue>" << func->getReturnType().getType() << "</returnValue>" << std::endl;
+    outStream << "    <returnValue>" << func->getReturnType() << "</returnValue>" << std::endl;
     outStream << "" << std::endl;
     outStream << "    <details>" << std::endl;
     outStream << "        <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->" << std::endl;

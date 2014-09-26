@@ -53,7 +53,7 @@
         <valueType>Simplex</valueType>
     </argument>
 
-    <returnValue>Simplex</returnValue>
+    <returnValue>Simplex, RealPos[], ModelContainer, Container, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

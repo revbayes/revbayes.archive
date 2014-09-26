@@ -105,7 +105,7 @@
         <defaultValue>DNA</defaultValue>
     </argument>
 
-    <returnValue>Dist_phyloCTMC</returnValue>
+    <returnValue>Dist_phyloCTMC, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

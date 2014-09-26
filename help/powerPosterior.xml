@@ -89,7 +89,7 @@
         <defaultValue>100</defaultValue>
     </argument>
 
-    <returnValue>PowerPosterior</returnValue>
+    <returnValue>PowerPosterior, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

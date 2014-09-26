@@ -63,7 +63,7 @@
         <defaultValue>0</defaultValue>
     </argument>
 
-    <returnValue>Dist_branchRateJumpProcess</returnValue>
+    <returnValue>Dist_branchRateJumpProcess, Distribution<RealPos[]>, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

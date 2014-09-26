@@ -53,7 +53,7 @@
         <valueType>Taxon[]</valueType>
     </argument>
 
-    <returnValue>Dist_constPopMultispCoal</returnValue>
+    <returnValue>Dist_constPopMultispCoal, Distribution<TimeTree>, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

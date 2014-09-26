@@ -65,7 +65,7 @@
         <defaultValue>random</defaultValue>
     </argument>
 
-    <returnValue>MCMC</returnValue>
+    <returnValue>MCMC, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

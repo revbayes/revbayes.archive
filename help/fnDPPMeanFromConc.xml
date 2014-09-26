@@ -45,7 +45,7 @@
         <valueType>RealPos</valueType>
     </argument>
 
-    <returnValue>RealPos</returnValue>
+    <returnValue>RealPos, Real, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

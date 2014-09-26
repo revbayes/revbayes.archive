@@ -46,7 +46,7 @@
         <defaultValue>	</defaultValue>
     </argument>
 
-    <returnValue>BurninEstimationConvergenceAssessment</returnValue>
+    <returnValue>BurninEstimationConvergenceAssessment, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

@@ -119,7 +119,7 @@
         <defaultValue>random</defaultValue>
     </argument>
 
-    <returnValue>ParallelMcmcmc</returnValue>
+    <returnValue>ParallelMcmcmc, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

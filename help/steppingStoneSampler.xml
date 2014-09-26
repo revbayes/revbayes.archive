@@ -62,7 +62,7 @@
         <defaultValue>	</defaultValue>
     </argument>
 
-    <returnValue>SteppingStoneSampler</returnValue>
+    <returnValue>SteppingStoneSampler, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

@@ -45,7 +45,7 @@
         <valueType>Natural[]</valueType>
     </argument>
 
-    <returnValue>Natural[][]</returnValue>
+    <returnValue>Natural[][], ModelContainer, Container, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

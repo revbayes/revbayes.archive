@@ -46,7 +46,7 @@
         <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>Move_FNPR</returnValue>
+    <returnValue>Move_FNPR, Move, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
