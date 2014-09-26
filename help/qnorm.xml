@@ -55,7 +55,7 @@
         <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>Real</returnValue>
+    <returnValue>Real, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

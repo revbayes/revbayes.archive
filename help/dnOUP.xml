@@ -61,7 +61,7 @@
         <valueType>RealPos</valueType>
     </argument>
 
-    <returnValue>Dist_ornsteinUhlenbeck</returnValue>
+    <returnValue>Dist_ornsteinUhlenbeck, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

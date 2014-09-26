@@ -62,7 +62,7 @@
         <defaultValue>	</defaultValue>
     </argument>
 
-    <returnValue>PathSampler</returnValue>
+    <returnValue>PathSampler, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

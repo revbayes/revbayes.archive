@@ -46,7 +46,7 @@
         <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>Move_RandomIntegerWalk</returnValue>
+    <returnValue>Move_RandomIntegerWalk, Move, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

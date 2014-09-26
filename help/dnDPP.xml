@@ -43,7 +43,7 @@
         <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Distribution_Simplex_</valueType>
+        <valueType>Distribution<Simplex></valueType>
     </argument>
     <argument>
         <label>numElements</label>
@@ -53,7 +53,7 @@
         <valueType>Natural</valueType>
     </argument>
 
-    <returnValue>Dist_dpp</returnValue>
+    <returnValue>Dist_dpp, Distribution<Simplex[]>, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

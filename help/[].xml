@@ -45,7 +45,7 @@
         <valueType>Natural</valueType>
     </argument>
 
-    <returnValue>TimeTree</returnValue>
+    <returnValue>TimeTree, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
