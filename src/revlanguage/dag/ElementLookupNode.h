@@ -90,6 +90,7 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const std::string&    
     oneOffsetIndices(),
     element( NULL )
 {
+    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Add us as a child to the variable DAG node
@@ -120,6 +121,7 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const ElementLookupNod
     oneOffsetIndices( n.oneOffsetIndices ),
     element( NULL )
 {
+    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
 
     // Add us as a child to the variable DAG node
