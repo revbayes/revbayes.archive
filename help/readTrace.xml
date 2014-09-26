@@ -46,7 +46,7 @@
         <defaultValue>	</defaultValue>
     </argument>
 
-    <returnValue>Trace[]</returnValue>
+    <returnValue>Trace[], WorkspaceContainer, Container, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

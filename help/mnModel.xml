@@ -100,7 +100,7 @@
         <defaultValue>0</defaultValue>
     </argument>
 
-    <returnValue>Mntr_Model</returnValue>
+    <returnValue>Mntr_Model, Monitor, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

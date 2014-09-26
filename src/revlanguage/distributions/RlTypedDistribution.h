@@ -93,7 +93,8 @@ rlType* RevLanguage::TypedDistribution<rlType>::createRandomVariable(void) const
 template <typename rlType>
 const std::string& RevLanguage::TypedDistribution<rlType>::getClassType(void) {
     
-    static std::string revType = "Distribution<"+ rlType::getClassType() +">";
+//    static std::string revType = "Distribution<"+ rlType::getClassType() +">";
+    static std::string revType = "Distribution__"+ rlType::getClassType();
     
 	return revType; 
 }

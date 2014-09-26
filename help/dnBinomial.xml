@@ -45,7 +45,7 @@
         <valueType>Natural</valueType>
     </argument>
 
-    <returnValue>Dist_binomial</returnValue>
+    <returnValue>Dist_binomial, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

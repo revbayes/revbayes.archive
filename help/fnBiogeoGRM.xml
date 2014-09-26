@@ -73,7 +73,7 @@
         <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>RateMap</returnValue>
+    <returnValue>RateMap, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

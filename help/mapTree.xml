@@ -24,7 +24,7 @@
     <usage>
         <![CDATA[
          mapTree(
-               TreeTrace<TimeTree>        treetrace,
+               TreeTrace__TimeTree        treetrace,
                String        file
                )
          ]]> 
@@ -35,7 +35,7 @@
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>TreeTrace_TimeTree_</valueType>
+        <valueType>TreeTrace__TimeTree</valueType>
     </argument>
     <argument>
         <label>file</label>
@@ -45,7 +45,7 @@
         <valueType>String</valueType>
     </argument>
 
-    <returnValue>TimeTree</returnValue>
+    <returnValue>TimeTree, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

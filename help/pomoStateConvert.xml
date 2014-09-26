@@ -53,7 +53,7 @@
         <valueType>Taxon[]</valueType>
     </argument>
 
-    <returnValue>AbstractDiscreteCharacterData</returnValue>
+    <returnValue>AbstractDiscreteCharacterData, AbstractCharacterData, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

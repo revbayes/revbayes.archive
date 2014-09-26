@@ -473,7 +473,7 @@ void RevObject::printMemberInfo( std::ostream &o, bool verbose ) const
 void RevObject::printStructure( std::ostream &o, bool verbose ) const
 {
     o << "_RevType      = " << getType() << std::endl;
-    o << "_RevTypeSpec  = " << getTypeSpec() << std::endl;
+    o << "_RevTypeSpec  = [ " << getTypeSpec() << " ]" << std::endl;
     o << "_value        = ";
     
     std::ostringstream o1;

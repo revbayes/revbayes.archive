@@ -37,7 +37,7 @@
         <valueType>RevObject</valueType>
     </argument>
 
-    <returnValue>String</returnValue>
+    <returnValue>String, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

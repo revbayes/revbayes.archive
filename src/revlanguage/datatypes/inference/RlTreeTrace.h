@@ -118,7 +118,8 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::exe
 template <typename treeType>
 const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void) { 
     
-    static std::string revType = "TreeTrace<" + treeType::getClassType() + ">";
+//    static std::string revType = "TreeTrace<" + treeType::getClassType() + ">";
+    static std::string revType = "TreeTrace__" + treeType::getClassType();
     
 	return revType; 
 }

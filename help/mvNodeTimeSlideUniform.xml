@@ -46,7 +46,7 @@
         <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>Move_Move_NodeTimeSlideUniform</returnValue>
+    <returnValue>Move_Move_NodeTimeSlideUniform, Move, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

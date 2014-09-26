@@ -24,7 +24,7 @@
     <usage>
         <![CDATA[
          fnNormalizedQuantile(
-               Distribution<RealPos>        ContDistribution,
+               Distribution__RealPos        ContDistribution,
                Integer        numCategories
                )
          ]]> 
@@ -35,7 +35,7 @@
         <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Distribution_RealPos_</valueType>
+        <valueType>Distribution__RealPos</valueType>
     </argument>
     <argument>
         <label>numCategories</label>
@@ -45,7 +45,7 @@
         <valueType>Integer</valueType>
     </argument>
 
-    <returnValue>RealPos[]</returnValue>
+    <returnValue>RealPos[], ModelContainer, Container, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

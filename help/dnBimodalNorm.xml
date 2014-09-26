@@ -69,7 +69,7 @@
         <valueType>Probability</valueType>
     </argument>
 
-    <returnValue>Dist_bimodalNorm</returnValue>
+    <returnValue>Dist_bimodalNorm, ContinuousDistribution, Distribution__Real, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

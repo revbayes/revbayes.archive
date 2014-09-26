@@ -25,7 +25,7 @@
         <![CDATA[
          dnDPP(
                RealPos        concentration,
-               Distribution<Simplex>        baseDistribution,
+               Distribution__Simplex        baseDistribution,
                Natural        numElements
                )
          ]]> 
@@ -43,7 +43,7 @@
         <argumentPassingMethod>by-const-reference</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>Distribution_Simplex_</valueType>
+        <valueType>Distribution__Simplex</valueType>
     </argument>
     <argument>
         <label>numElements</label>
@@ -53,7 +53,7 @@
         <valueType>Natural</valueType>
     </argument>
 
-    <returnValue>Dist_dpp</returnValue>
+    <returnValue>Dist_dpp, Distribution__Simplex[], Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

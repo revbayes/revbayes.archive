@@ -54,7 +54,7 @@
         <defaultValue>0</defaultValue>
     </argument>
 
-    <returnValue>Dist_brownian</returnValue>
+    <returnValue>Dist_brownian, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

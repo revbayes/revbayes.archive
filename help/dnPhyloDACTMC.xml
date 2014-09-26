@@ -82,7 +82,7 @@
         <defaultValue>biogeo</defaultValue>
     </argument>
 
-    <returnValue>Dist_phyloDACTMC</returnValue>
+    <returnValue>Dist_phyloDACTMC, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

@@ -94,7 +94,8 @@ template <class rlValueType>
 const std::string& RevLanguage::Move_MixtureAllocation<rlValueType>::getClassType(void)
 {
     
-    static std::string revType = "Move_MixtureAllocation<" + rlValueType::getClassType() + ">";
+//    static std::string revType = "Move_MixtureAllocation<" + rlValueType::getClassType() + ">";
+    static std::string revType = "Move_MixtureAllocation__" + rlValueType::getClassType();
     
 	return revType;
 }

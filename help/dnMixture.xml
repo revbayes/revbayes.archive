@@ -45,7 +45,7 @@
         <valueType>Simplex</valueType>
     </argument>
 
-    <returnValue>Dist_rlmixture</returnValue>
+    <returnValue>Dist_rlmixture, Distribution__RateMatrix, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
