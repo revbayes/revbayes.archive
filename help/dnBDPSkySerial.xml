@@ -156,7 +156,7 @@
         <defaultValue></defaultValue>
     </argument>
 
-    <returnValue>Dist_skySerialBDP, Distribution<TimeTree>, Distribution, RevObject</returnValue>
+    <returnValue>Dist_skySerialBDP, Distribution__TimeTree, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

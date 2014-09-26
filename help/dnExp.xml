@@ -45,7 +45,7 @@
         <valueType>Real</valueType>
     </argument>
 
-    <returnValue>Dist_offsetExponential, ContinuousDistribution, Distribution<Real>, Distribution, RevObject</returnValue>
+    <returnValue>Dist_offsetExponential, ContinuousDistribution, Distribution__Real, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
