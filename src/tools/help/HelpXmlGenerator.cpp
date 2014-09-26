@@ -225,7 +225,7 @@ int main(int argc, const char * argv[]) {
         
         std::cout << "Creating new XML template for function " << fName << std::endl;
      
-        writeXmlTemplate(fName, f);
+        writeXmlTemplate("help/"+fName, f);
     }
     
 }
