@@ -50,7 +50,7 @@ void Move_VectorScale::constructInternalObject( void ) {
 /** Get Rev type of object */
 const std::string& Move_VectorScale::getClassType(void) { 
     
-    static std::string revType = "Move_Move_VectorScale";
+    static std::string revType = "Move_VectorScale";
     
 	return revType; 
 }
