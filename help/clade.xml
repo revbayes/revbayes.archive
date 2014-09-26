@@ -37,7 +37,7 @@
         <valueType>String[]</valueType>
     </argument>
 
-    <returnValue>Clade</returnValue>
+    <returnValue>Clade, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

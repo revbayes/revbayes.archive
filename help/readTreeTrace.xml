@@ -57,7 +57,7 @@
         <defaultValue>	</defaultValue>
     </argument>
 
-    <returnValue>TreeTrace_BranchLengthTree_</returnValue>
+    <returnValue>TreeTrace__BranchLengthTree, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

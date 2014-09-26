@@ -64,7 +64,7 @@
         <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>Move_Move_VectorScale</returnValue>
+    <returnValue>Move_Move_VectorScale, Move, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

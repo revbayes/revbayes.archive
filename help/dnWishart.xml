@@ -53,7 +53,7 @@
         <valueType>Natural</valueType>
     </argument>
 
-    <returnValue>Dist_wishart</returnValue>
+    <returnValue>Dist_wishart, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

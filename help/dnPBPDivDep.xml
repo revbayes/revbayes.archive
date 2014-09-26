@@ -100,7 +100,7 @@
         <defaultValue></defaultValue>
     </argument>
 
-    <returnValue>Dist_divDepYuleProcess</returnValue>
+    <returnValue>Dist_divDepYuleProcess, Distribution__TimeTree, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

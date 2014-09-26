@@ -27,7 +27,7 @@ namespace RevLanguage {
         Move_RbMixtureAllocation(void);                                                                                                                   //!< Default constructor
         
         // Basic utility functions
-        virtual Move_RbMixtureAllocation*             clone(void) const;                                                                              //!< Clone the object
+        virtual Move_RbMixtureAllocation*           clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
@@ -94,7 +94,8 @@ template <class rlValueType>
 const std::string& RevLanguage::Move_RbMixtureAllocation<rlValueType>::getClassType(void)
 {
     
-    static std::string revType = "Move_RbMixtureAllocation<" + rlValueType::getClassType() + ">";
+//    static std::string revType = "Move_RbMixtureAllocation<" + rlValueType::getClassType() + ">";
+    static std::string revType = "Move_RbMixtureAllocation__" + rlValueType::getClassType();
     
 	return revType;
 }

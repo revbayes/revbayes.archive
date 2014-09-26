@@ -45,7 +45,7 @@
         <valueType>RevObject</valueType>
     </argument>
 
-    <returnValue>Model</returnValue>
+    <returnValue>Model, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

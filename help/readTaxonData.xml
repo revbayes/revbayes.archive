@@ -46,7 +46,7 @@
         <defaultValue>	</defaultValue>
     </argument>
 
-    <returnValue>Taxon[]</returnValue>
+    <returnValue>Taxon[], ModelContainer, Container, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

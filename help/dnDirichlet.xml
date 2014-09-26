@@ -37,7 +37,7 @@
         <valueType>RealPos[]</valueType>
     </argument>
 
-    <returnValue>Dist_dirichlet</returnValue>
+    <returnValue>Dist_dirichlet, Distribution__Simplex, Distribution, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->

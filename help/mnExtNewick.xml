@@ -98,7 +98,7 @@
         <defaultValue>1</defaultValue>
     </argument>
 
-    <returnValue>Mntr_ExtendedNewickFile</returnValue>
+    <returnValue>Mntr_ExtendedNewickFile, Monitor, WorkspaceObject, RevObject</returnValue>
 
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
