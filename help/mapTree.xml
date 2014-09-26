@@ -24,7 +24,7 @@
     <usage>
         <![CDATA[
          mapTree(
-               TreeTrace<TimeTree>        treetrace,
+               TreeTrace__TimeTree        treetrace,
                String        file
                )
          ]]> 
@@ -35,7 +35,7 @@
         <argumentPassingMethod>by-value</argumentPassingMethod>
         <argumentNodeType>any-DAG-node</argumentNodeType>
         <description>A description of the argument.</description>
-        <valueType>TreeTrace<TimeTree></valueType>
+        <valueType>TreeTrace__TimeTree</valueType>
     </argument>
     <argument>
         <label>file</label>
