@@ -69,6 +69,7 @@ namespace RevBayesCore {
         virtual bool                                                isClamped(void) const;                                                                      //!< Is this node clamped? Only stochastic nodes might be clamped.
         virtual bool                                                isComposite(void) const;                                                                    //!< Is this DAG node composite?
         virtual bool                                                isConstant(void) const;                                                                     //!< Is this DAG node constant?
+        virtual bool                                                isHidden(void) const;
         virtual bool                                                isNAValue(void) const;                                                                      //!< Is this an NA value node?
         virtual bool                                                isSimpleNumeric(void) const;                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
         virtual bool                                                isStochastic(void) const;                                                                   //!< Is this DAG node stochastic?
@@ -107,6 +108,7 @@ namespace RevBayesCore {
         
         // members
         mutable std::set<DagNode*>                                  children;                                                                                   //!< The children in the model graph of this node
+        bool                                                        hidden;
         std::string                                                 name;
         std::set<size_t>                                            touchedElements;
         bool                                                        priorOnly;

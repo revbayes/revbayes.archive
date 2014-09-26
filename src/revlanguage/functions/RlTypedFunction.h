@@ -80,7 +80,7 @@ template <typename valueType>
 RevPtr<Variable> RevLanguage::TypedFunction<valueType>::execute(void) {
     
     RevBayesCore::TypedFunction<typename valueType::valueType>* d = createFunction();
-    RevBayesCore::TypedDagNode<typename valueType::valueType>* rv  = new RevBayesCore::DeterministicNode<typename valueType::valueType>("", d);
+    DeterministicNode<typename valueType::valueType>* rv  = new DeterministicNode<typename valueType::valueType>("", d, this->clone());
     
     return new Variable( new valueType(rv) );
 }
