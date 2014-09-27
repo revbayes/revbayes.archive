@@ -637,7 +637,8 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             // now swap the node
             theMove->swapNode( *j, theNewNode );
         }
-        moves.push_back( theMove );
+        moves.push_back( *theMove );
+        delete theMove;
     }
     
     for (RbConstIterator<Monitor> it = mons.begin(); it != mons.end(); ++it)
@@ -669,7 +670,8 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             // now swap the node
             theMonitor->swapNode( *j, theNewNode );
         }
-        monitors.push_back( theMonitor );
+        monitors.push_back( *theMonitor );
+        delete theMonitor;
         
     }
     
