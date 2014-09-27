@@ -55,6 +55,9 @@ namespace RevBayesCore {
     class RbIteratorImpl<valueType,1> {
         
     public:
+
+        typedef typename std::vector<valueType*>::const_iterator iterator;
+
         // constructor(s)
         RbIteratorImpl(const typename std::vector<valueType*>::iterator &i) { it = i; }
         //        RbConstIteratorImpl(const RbConstIteratorImpl<valueType,1> &v);

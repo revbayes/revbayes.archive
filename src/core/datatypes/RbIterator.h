@@ -31,7 +31,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        RbIterator(const typename std::vector<valueType*>::iterator &i);
+        RbIterator(const typename RbIteratorImpl<valueType, IsAbstract<valueType>::Is >::iterator &i);
         RbIterator(const RbIterator<valueType> &v);
         
         // public (stl-like) vector functions
