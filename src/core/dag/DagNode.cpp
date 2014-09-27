@@ -347,17 +347,6 @@ bool DagNode::isClamped( void ) const
 }
 
 
-/**
- * Is this node composite, that is, does it keep track of elements or member variables
- * of a single composite language object? The default is false; composite nodes in the
- * language layer need to override this method and return true.
- */
-bool DagNode::isComposite( void ) const
-{
-    return false;
-}
-
-
 bool DagNode::isConstant( void ) const
 {
     
@@ -371,18 +360,10 @@ bool DagNode::isHidden( void ) const
 }
 
 
-/** Is this a non-applicable (NA) value? */
-bool DagNode::isNAValue( void ) const
-{
-    return false;
-}
-
-
 /**
  * Is this variable a simple numeric variable?
- * This is asked for example by the model monitor that only wants to monitor simple
- * numeric variable because all others (e.g. trees and vectors/matrices) cannot be read
- * by Tracer. 
+ * This is asked for example by the model monitor that only wants to monitor simple numeric variable 
+ * because all others (e.g. trees and vectors/matrices) cannot be read by Tracer.
  */
 bool DagNode::isSimpleNumeric( void ) const 
 {
