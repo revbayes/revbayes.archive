@@ -335,7 +335,7 @@ RevBayesCore::RbVector<typename rlType::valueType> WorkspaceVector<rlType>::getV
     
     std::vector< RevPtr<Variable> >::const_iterator it;
     for ( it = elements.begin(); it != elements.end(); ++it )
-        theVector.push_back( static_cast<rlType&>( (*it)->getRevObject() ).getValue().clone() );
+        theVector.push_back( static_cast<rlType&>( (*it)->getRevObject() ).getValue() );
     
     return theVector;
 }
