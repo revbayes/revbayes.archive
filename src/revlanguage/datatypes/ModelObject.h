@@ -92,7 +92,6 @@ namespace RevLanguage {
 #include "ConverterNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
-#include "NAValueNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
