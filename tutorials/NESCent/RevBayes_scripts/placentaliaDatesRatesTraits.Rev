@@ -125,6 +125,8 @@ seq.clamp(seqData)
 # create model
 mymodel <- model(kappa)
 
+mymodel.gv("placentaliaDatesRatesTraits_DAG.dot")
+
 ######### 
 # moves
 #########

@@ -103,7 +103,7 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n ) :
     elements(),
     value()
 {
-    this->hidden = true;
+    this->hidden = false;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
 }
 
@@ -119,7 +119,7 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, std::
     elements(),
     value()
 {
-    this->hidden = true;
+    this->hidden = false;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     if ( lengths.size() != 1 || lengths[0] != elems.size() )
@@ -148,7 +148,7 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const ContainerNode<rlElemT
     elements( n.elements ),
     value()
 {
-    this->hidden = true;
+    this->hidden = false;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
 }
 

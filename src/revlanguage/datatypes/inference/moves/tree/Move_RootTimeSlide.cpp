@@ -49,7 +49,7 @@ void Move_RootTimeSlide::constructInternalObject( void ) {
 /** Get Rev type of object */
 const std::string& Move_RootTimeSlide::getClassType(void) { 
     
-    static std::string revType = "Move_Move_RootTimeSlide";
+    static std::string revType = "Move_RootTimeSlide";
     
 	return revType; 
 }

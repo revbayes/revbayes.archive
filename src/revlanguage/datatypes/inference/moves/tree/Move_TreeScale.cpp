@@ -56,7 +56,7 @@ void Move_TreeScale::constructInternalObject( void ) {
 /** Get Rev type of object */
 const std::string& Move_TreeScale::getClassType(void) { 
     
-    static std::string revType = "Move_Move_TreeScale";
+    static std::string revType = "Move_TreeScale";
     
 	return revType; 
 }
