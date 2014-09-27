@@ -50,7 +50,7 @@ RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::v
         }
         
         const std::vector<double>& element = this->dagNode->getValue()[ size_t(index.getValue()) - 1];
-        std::vector<double> elementVector;
+        RevBayesCore::RbVector<double> elementVector;
         for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
         }

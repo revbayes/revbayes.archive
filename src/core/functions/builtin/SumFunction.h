@@ -1,10 +1,9 @@
 #ifndef SumFunction_H
 #define SumFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
-
-#include <vector>
 
 namespace RevBayesCore {
     
@@ -22,11 +21,11 @@ namespace RevBayesCore {
     class SumFunction : public TypedFunction<double> {
         
     public:
-        SumFunction(const TypedDagNode<std::vector<double> > * v);
+        SumFunction(const TypedDagNode<RbVector<double> > * v);
         virtual                                            ~SumFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
-        SumFunction*                                       clone(void) const;                                                          //!< Create an independent clone
+        SumFunction*                                        clone(void) const;                                                          //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -35,7 +34,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode<RbVector<double> >*              vals;
         
     };
     

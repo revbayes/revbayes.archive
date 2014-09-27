@@ -18,7 +18,7 @@ namespace RevLanguage {
     public:
         
         typedef typename rlType::valueType          elementType;
-        typedef typename std::vector<elementType>   valueType;
+        typedef typename RevBayesCore::RbVector<elementType>      valueType;
         typedef typename valueType::iterator        iterator;
         typedef typename valueType::const_iterator  const_iterator;
         
@@ -58,6 +58,7 @@ namespace RevLanguage {
         
         // ModelVector functions: override if you do not want to support these in-place algorithms
         virtual void                                clear(void);                                                                    //!< Clear the vector
+        virtual size_t                              size(void) const;                                                               //!< Size of the vector
         virtual void                                sort(void);                                                                     //!< Sort vector
         virtual void                                unique(void);                                                                   //!< Remove consecutive duplicates
 
@@ -108,7 +109,7 @@ ModelVector<rlType>::ModelVector( void ) :
  */
 template <typename rlType>
 ModelVector<rlType>::ModelVector( const valueType &v ) :
-    ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( v )
+    ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( v.clone() )
 {
 }
 
@@ -360,38 +361,43 @@ MethodTable ModelVector<rlType>::makeMethods(void) const
 template <typename rlType>
 void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
-    if ( this->dagNode->isNAValue() )
-    {
-        o << "NA";
-        return;
-    }
     
     size_t lineLength = 75;
     
     std::ostringstream s, t;
     s << "[ ";
     size_t curLength = 2;
-    for ( size_t i = 1; i <= this->size(); ++i )
-    {
-        RevPtr<Variable> elem = const_cast< ModelVector<rlType>* >(this)->getElement( i );
-        elem->getRevObject().printValue( t );
-
-        if ( i != this->size() )
-            t << ", ";
-        if ( curLength + t.str().size() > lineLength )
-        {
-            s << std::endl << "  ";
-            curLength = 2;
-        }
-        s << t.str();
-        curLength += t.str().size();
-        t.str("");
-    }
+//    for ( size_t i = 1; i <= this->size(); ++i )
+//    {
+//        RevPtr<Variable> elem = const_cast< ModelVector<rlType>* >(this)->getElement( i );
+//        elem->getRevObject().printValue( t );
+//
+//        if ( i != this->size() )
+//            t << ", ";
+//        if ( curLength + t.str().size() > lineLength )
+//        {
+//            s << std::endl << "  ";
+//            curLength = 2;
+//        }
+//        s << t.str();
+//        curLength += t.str().size();
+//        t.str("");
+//    }
     if ( curLength + 2 > lineLength )
         s << std::endl << "]";
     else
         s << " ]";
     o << s.str();
+}
+
+
+/**
+ * Size of the vector.
+ */
+template <typename rlType>
+size_t ModelVector<rlType>::size( void ) const
+{
+    return this->dagNode->getValue().size();
 }
 
 
