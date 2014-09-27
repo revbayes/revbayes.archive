@@ -50,7 +50,7 @@ namespace RevLanguage {
     protected:
         
         void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
-        void                                        printModelDotGraph(const std::string &fn);
+        void                                        printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc);
         
         std::set<RevPtr<const Variable> >           sources;
         
