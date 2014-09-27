@@ -54,9 +54,7 @@ namespace RevLanguage {
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
         
         // Container functions provided here
-        RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);   //!< Find or create element variable
-        size_t                                      getDim(void) const;                                                 //!< Get the dimensions
-        RevPtr<Variable>                            getElement(const std::vector<size_t>& oneOffsetIndices);            //!< Get element variable
+        RevPtr<Variable>                            getElement(size_t index);                                           //!< Get element variable
         virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
         
         // WorkspaceVector functions
