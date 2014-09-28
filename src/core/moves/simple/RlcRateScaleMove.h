@@ -1,6 +1,7 @@
 #ifndef RlcRateScaleMove_H
 #define RlcRateScaleMove_H
 
+#include "RbVector.h"
 #include "SimpleMove.h"
 #include "StochasticNode.h"
 
@@ -23,7 +24,7 @@ namespace RevBayesCore {
     class RlcRateScaleMove : public SimpleMove {
         
     public:
-        RlcRateScaleMove(StochasticNode<std::vector<double> >* n, double l, bool t, double w);                                          //!< Constructor
+        RlcRateScaleMove(StochasticNode< RbVector<double> >* n, double l, bool t, double w);                                          //!< Constructor
         
         // Basic utility functions
         RlcRateScaleMove*                           clone(void) const;                                                                  //!< Clone this object.
@@ -40,7 +41,7 @@ namespace RevBayesCore {
        
     private:
         
-        StochasticNode<std::vector<double> >*       variable;
+        StochasticNode< RbVector<double> >*         variable;
         
         size_t                                      index;                                                                              //!< The index of the last modified element.
         double                                      lambda;                                                                             //!< The scale parameter of the move (larger lambda -> larger proposals).

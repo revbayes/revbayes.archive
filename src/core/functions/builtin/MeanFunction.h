@@ -22,6 +22,7 @@
 #ifndef MeanFunction_H
 #define MeanFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -32,8 +33,7 @@ namespace RevBayesCore {
     class MeanFunction : public TypedFunction<double> {
         
     public:
-        MeanFunction(const TypedDagNode<std::vector<double> > * v);
-        MeanFunction(const MeanFunction &n);                                                                                        //!< Copy constructor
+        MeanFunction(const TypedDagNode< RbVector<double> > * v);
         virtual                                            ~MeanFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -46,7 +46,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode< RbVector<double> >*             vals;
         
     };
     
