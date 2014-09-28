@@ -17,15 +17,15 @@
 #include "TimeTree.h"
 #include "MatrixReal.h"
 #include "MultivariateRealNodeContainer.h"
+#include "RbVector.h"
 #include <vector>
 
 namespace RevBayesCore {
     
-    class HyperbolicTangentBranchTree : public TypedFunction< std::vector<double> > {
+    class HyperbolicTangentBranchTree : public TypedFunction< RbVector<double> > {
         
     public:
         HyperbolicTangentBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode<double>* o, const TypedDagNode< int > *i);
-        HyperbolicTangentBranchTree(const HyperbolicTangentBranchTree &n);                                                                              //!< Copy constructor
         virtual                                            ~HyperbolicTangentBranchTree(void) {}                                                         //!< Virtual destructor
         
         // public member functions

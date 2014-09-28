@@ -27,10 +27,10 @@ using namespace RevBayesCore;
  * \param[in]    c              Clades conditioned to be present.
  */
 PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
-                                                                                                 const TypedDagNode<std::vector<double> > *s, const TypedDagNode<std::vector<double> > *st,
-                                                                                                 const TypedDagNode<std::vector<double> > *e, const TypedDagNode<std::vector<double> > *et,
-                                                                                                 const TypedDagNode<std::vector<double> > *p, const TypedDagNode<std::vector<double> > *pt,
-                                                                                                 const TypedDagNode<std::vector<double> > *r, const TypedDagNode<std::vector<double> > *rt,
+                                                                                                 const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
+                                                                                                 const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
+                                                                                                 const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
+                                                                                                 const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
                                                                                                  double tLastSample, const std::string &cdt, 
                                                                                                  const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
     lambda( s ), 
@@ -525,40 +525,40 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameter(const DagNod
     
     if (oldP == lambdaTimes) 
     {
-        lambdaTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        lambdaTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     if (oldP == muTimes) 
     {
-        muTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        muTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     if (oldP == psiTimes) 
     {
-        psiTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        psiTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     if (oldP == rhoTimes) 
     {
-        rhoTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        rhoTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     
     if (oldP == lambda) 
     {
-        lambda = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        lambda = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == mu) 
     {
-        mu = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        mu = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == psi) 
     {
-        psi = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        psi = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == rho) 
     {
-        rho = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        rho = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (!found)
     {

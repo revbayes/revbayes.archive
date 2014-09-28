@@ -29,7 +29,13 @@
 
 using namespace RevBayesCore;
 
-SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, size_t nc, double o, bool t, double w, double k /*=0.0*/) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ), kappa( k ) {
+SimplexMove::SimplexMove(StochasticNode< RbVector<double> > *v, double a, size_t nc, double o, bool t, double w, double k /*=0.0*/) : SimpleMove( v, w, t ),
+    variable( v ),
+    alpha( a ),
+    nCategories( nc ),
+    offset( o ),
+    kappa( k )
+{
     
 }
 
@@ -177,7 +183,7 @@ double SimplexMove::performSimpleMove( void ) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
     }
     
-    variable->setValue( new std::vector<double>(newVal), false );
+    variable->setValue( new RbVector<double>(newVal), false );
     
     return lnProposalRatio;
 }
@@ -190,7 +196,7 @@ void SimplexMove::printParameterSummary(std::ostream &o) const {
 
 void SimplexMove::rejectSimpleMove( void ) {
     // swap current value and stored value
-    variable->setValue( new std::vector<double>(storedValue), false );
+    variable->setValue( new RbVector<double>(storedValue), false );
 }
 
 
@@ -198,7 +204,7 @@ void SimplexMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     SimpleMove::swapNode(oldN, newN);
     
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
 }
 
 

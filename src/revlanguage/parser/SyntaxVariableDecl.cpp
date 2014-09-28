@@ -138,7 +138,8 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
         newObject = Workspace::userWorkspace().makeNewDefaultObject( elementTypeName );
     else
     {
-        newObject = Workspace::userWorkspace().makeNewEmptyContainer( elementTypeName, lengths.size() );
+        throw RbException("This needs replacements!!!");
+//        newObject = Workspace::userWorkspace().makeNewEmptyContainer( elementTypeName, lengths.size() );
 //        static_cast<Container*>( newObject )->resize( lengths );
     }
 

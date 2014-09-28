@@ -35,8 +35,8 @@ void Move_DPPScaleCatAllocateAux::constructInternalObject( void ) {
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     int na = static_cast<const Integer &>( nAux->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode< std::vector<double> > *sn = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *sn = static_cast<RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *>( tmp );
     
     value = new RevBayesCore::DPPScaleCatAllocateAuxGibbs(sn, l, na, w);
 }

@@ -15,19 +15,12 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-WhiteNoisePhyloProcess::WhiteNoisePhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() - 1, 0.0 ) ),
+WhiteNoisePhyloProcess::WhiteNoisePhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes() - 1, 0.0 ) ),
         tau( t ), 
         sigma( s )
 {
     simulate();
 }
-
-
-WhiteNoisePhyloProcess::WhiteNoisePhyloProcess(const WhiteNoisePhyloProcess &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ) {
-    // nothing to do here since the parameters are copied automatically
-    
-}
-
 
 
 WhiteNoisePhyloProcess* WhiteNoisePhyloProcess::clone(void) const {

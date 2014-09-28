@@ -11,6 +11,7 @@
 #include "Integer.h"
 #include "MatrixReal.h"
 #include "ModelVector.h"
+#include "Natural.h"
 #include "RealPos.h"
 #include "Probability.h"
 #include "RlMultivariateRealNodeValTree.h"
@@ -97,7 +98,7 @@ RevPtr<Variable> Func_tanhBranchTree::execute() {
 
     RevBayesCore::HyperbolicTangentBranchTree* result = new RevBayesCore::HyperbolicTangentBranchTree( tau, process, offset, traitindex );
 
-    DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
+    DeterministicNode<RevBayesCore::RbVector<double> >* dag = new DeterministicNode<RevBayesCore::RbVector<double> >("", result, this->clone());
     
     ModelVector<Probability>* wrappedresult = new ModelVector<Probability>(dag);
     
