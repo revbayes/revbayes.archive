@@ -29,8 +29,11 @@ namespace RevBayesCore {
     class RbIteratorImpl {
         
     public:
+        
+        typedef typename std::vector<valueType>::iterator iteratorType;
+        
         // constructor(s)
-        RbIteratorImpl(const typename std::vector<valueType>::iterator &i) { it = i; }
+        RbIteratorImpl(const iteratorType &i) { it = i; }
         //        RbConstIteratorImpl(const RbConstIteratorImpl<valueType,indicator> &v);
         
         // public (stl-like) vector functions
@@ -47,7 +50,7 @@ namespace RevBayesCore {
     private:
         
         // private members
-        typename std::vector<valueType>::iterator    it;
+        iteratorType                                        it;
     };
     
     template <class valueType>
@@ -56,10 +59,10 @@ namespace RevBayesCore {
         
     public:
 
-        typedef typename std::vector<valueType*>::const_iterator iterator;
+        typedef typename std::vector<valueType*>::iterator iteratorType;
 
         // constructor(s)
-        RbIteratorImpl(const typename std::vector<valueType*>::iterator &i) { it = i; }
+        RbIteratorImpl(const iteratorType &i) { it = i; }
         //        RbConstIteratorImpl(const RbConstIteratorImpl<valueType,1> &v);
         
         // public (stl-like) vector functions
@@ -71,12 +74,14 @@ namespace RevBayesCore {
         bool                                                operator!=(const RbIteratorImpl<valueType,1>& x) const { return it != x.it; }                              //!< Not-Equals operator
         bool                                                operator<(const RbIteratorImpl<valueType,1>& x) const { return it < x.it; }
         const valueType&                                    operator*(void) const { return *(*it); }
-        //        const valueType*                                    operator->(void) const;
+        valueType&                                          operator*(void) { return *(*it); }
+        const valueType*                                    operator->(void) const { return (*it); }
+        valueType*                                          operator->(void) { return (*it); }
         
     private:
         
         // private members
-        typename std::vector<valueType*>::iterator    it;
+        iteratorType                                        it;
     };
     
 }

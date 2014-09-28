@@ -30,10 +30,10 @@ namespace RevBayesCore {
         
     public:
 
-        typedef typename std::vector<valueType>::const_iterator iterator;
+        typedef typename std::vector<valueType>::const_iterator iteratorType;
 
         // constructor(s)
-        RbConstIteratorImpl(const iterator &i) { it = i; }
+        RbConstIteratorImpl(const iteratorType &i) { it = i; }
 //        RbConstIteratorImpl(const RbConstIteratorImpl<valueType,indicator> &v);
         
         // public (stl-like) vector functions
@@ -50,7 +50,7 @@ namespace RevBayesCore {
     private:
         
         // private members
-        typename std::vector<valueType>::const_iterator    it;
+        iteratorType                                        it;
     };
     
     template <class valueType>
@@ -59,10 +59,10 @@ namespace RevBayesCore {
         
     public:
         
-        typedef typename std::vector<valueType*>::const_iterator iterator;
+        typedef typename std::vector<valueType*>::const_iterator iteratorType;
         
         // constructor(s)
-        RbConstIteratorImpl(const iterator &i) { it = i; }
+        RbConstIteratorImpl(const iteratorType &i) { it = i; }
 //        RbConstIteratorImpl(const RbConstIteratorImpl<valueType,1> &v);
         
         // public (stl-like) vector functions
@@ -74,12 +74,12 @@ namespace RevBayesCore {
         bool                                                operator!=(const RbConstIteratorImpl<valueType,1>& x) const { return it != x.it; }                              //!< Not-Equals operator
         bool                                                operator<(const RbConstIteratorImpl<valueType,1>& x) const { return it < x.it; }
         const valueType&                                    operator*(void) const { return *(*it); }
-        //        const valueType*                                    operator->(void) const;
+        const valueType*                                    operator->(void) const { return (*it); }
         
     private:
         
         // private members
-        typename std::vector<valueType*>::const_iterator    it;
+        iteratorType                                        it;
     };
     
 }

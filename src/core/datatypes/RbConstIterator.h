@@ -31,8 +31,8 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        RbConstIterator(const typename RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is >::iterator &i);
-        RbConstIterator(const RbConstIterator<valueType> &v);
+        RbConstIterator(const typename RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is >::iteratorType &i);
+//        RbConstIterator(const RbConstIterator<valueType> &v);
         
         // public (stl-like) vector functions
 //        RbConstIterator&                                    operator++(void);                                                               //!< Increment index (prefix)
@@ -55,7 +55,7 @@ namespace RevBayesCore {
 
 
 template <class valueType>
-RevBayesCore::RbConstIterator<valueType>::RbConstIterator(const typename RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is >::iterator &i) : RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is>( i )
+RevBayesCore::RbConstIterator<valueType>::RbConstIterator(const typename RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is >::iteratorType &i) : RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is>( i )
 {
     
 }
