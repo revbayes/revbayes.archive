@@ -88,8 +88,6 @@ namespace RevLanguage {
         const TypeTable&        getTypeTable(void) const;                                                   //!< Get the type table
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
         RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
-        RevObject*              makeNewNAObject(const std::string& type) const;                             //!< Make a clone of the template type object
-        Container*              makeNewEmptyContainer(const std::string& elemType, size_t dim) const;       //!< Make an empty container of specified element type and dim
         
         static Workspace& globalWorkspace(void) //!< Get global workspace
         {

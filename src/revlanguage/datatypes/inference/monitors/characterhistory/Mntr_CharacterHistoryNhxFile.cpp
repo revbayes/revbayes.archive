@@ -3,6 +3,7 @@
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
+#include "Natural.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RbException.h"

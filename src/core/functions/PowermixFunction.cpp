@@ -12,19 +12,12 @@
 
 using namespace RevBayesCore;
 
-PowermixFunction::PowermixFunction(const std::vector<const TypedDagNode< std::vector<double> >* > &args) : TypedFunction< std::vector<double> >( new std::vector<double>() ), parameters( args ) {
+PowermixFunction::PowermixFunction(const std::vector<const TypedDagNode< RbVector<double> >* > &args) : TypedFunction< RbVector<double> >( new RbVector<double>() ), parameters( args ) {
     // add the parameters as parents
-    std::vector<const TypedDagNode< std::vector<double> >* >::iterator it;
+    std::vector<const TypedDagNode< RbVector<double> >* >::iterator it;
     for (it = parameters.begin(); it != parameters.end(); ++it) {
         this->addParameter( *it );
     }
-    
-    update();
-}
-
-
-PowermixFunction::PowermixFunction(const PowermixFunction &n) : TypedFunction< std::vector<double> >( n ), parameters( n.parameters ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -69,7 +62,7 @@ void PowermixFunction::swapParameterInternal(const DagNode *oldP, const DagNode 
     
     for (size_t i = 0; i < parameters.size(); ++i) {
         if (oldP == parameters[i]) {
-            parameters[i] = static_cast<const TypedDagNode< std::vector<double> >* >( newP );
+            parameters[i] = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
             // we can jump out of the loop now
             break;
         }

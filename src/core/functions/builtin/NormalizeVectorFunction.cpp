@@ -2,7 +2,9 @@
 
 using namespace RevBayesCore;
 
-NormalizeVectorFunction::NormalizeVectorFunction(const TypedDagNode<std::vector<double> > *v) : TypedFunction< std::vector<double> >( new std::vector<double>(v->getValue().size(), 1.0) ), vals( v ) {
+NormalizeVectorFunction::NormalizeVectorFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction< RbVector<double> >( new RbVector<double>(v->getValue().size(), 1.0) ),
+    vals( v )
+{
     // add the parameters as parents
     this->addParameter( vals );
     
@@ -42,7 +44,7 @@ void NormalizeVectorFunction::swapParameterInternal(const DagNode *oldP, const D
     
     if ( oldP == vals ) 
     {
-        vals = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        vals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

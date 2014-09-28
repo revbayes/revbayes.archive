@@ -304,54 +304,8 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env)
         theVar = theVar->getRevObject().getMember( identifier );
     }
     
-    // Get static index
-    std::vector< size_t > oneOffsetIndices = computeStaticIndex( env );
-    
-    // Get element if indices are provided.
-    while ( !oneOffsetIndices.empty() )
-    {
-        // Get the element...
-        if ( theVar->getRevObject().isTypeSpec( Container::RevObject::getClassTypeSpec() ) )
-        {
-            // ... from a container
 
-            // Get the container indices
-            std::vector<size_t> containerOneOffsetIndices;
-            for ( size_t i = 0; i < theVar->getRevObject().getDim(); ++i )
-            {
-                if ( !oneOffsetIndices.empty() )
-                {
-                    containerOneOffsetIndices.push_back( oneOffsetIndices[0] );
-                    oneOffsetIndices.erase( oneOffsetIndices.begin() );
-                }
-                else
-                    containerOneOffsetIndices.push_back( 0 );
-            }
-
-            // Get the element using the getElement function
-            theVar = theVar->getRevObject().getElement( containerOneOffsetIndices );
-        }
-        else
-        {
-            // ... or from a subscript operator
-            
-            // Note that we do not name the element here; either the member object gives out
-            // a variable it names itself, or it gives out a temporary variable copy, which
-            // should not be named
-            
-            // Create the single argument for the index operator
-            std::vector<Argument> args;
-            RevPtr<Variable> indexVar = new Variable( new Natural( oneOffsetIndices[0] ) );
-            args.push_back( Argument( indexVar ) );
-
-            // Get the variable using the subscript operator function
-            // TODO: This needs to be made generic for user-defined member objects
-            theVar = theVar->getRevObject().executeMethod( "[]", args );
-            
-            // Erase the index
-            oneOffsetIndices.erase( oneOffsetIndices.begin() );
-        }
-    }
+    throw RbException("This needs to be replaced!!!");
 
     // Return the variable for assignment
     return theVar;
@@ -394,7 +348,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
                 if ( oneOffsetIndices.size() == 0 )
                     theVar = new Variable( NULL, identifier );
                 else
-                    theVar = new Variable( Workspace::userWorkspace().makeNewEmptyContainer( elemType, oneOffsetIndices.size() ), identifier );
+                    throw RbException("This needs to be replaced ...");
                 env.addVariable( identifier, theVar );
             }
         }
@@ -418,48 +372,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
     // Get element if indices are provided.
     while ( !oneOffsetIndices.empty() )
     {
-        // Get the element...
-        if ( theVar->getRevObject().isTypeSpec( Container::RevObject::getClassTypeSpec() ) )
-        {
-            // ... from a container
-            
-            // Get the container indices
-            std::vector<size_t> containerOneOffsetIndices;
-            for ( size_t i = 0; i < theVar->getRevObject().getDim(); ++i )
-            {
-                if ( !oneOffsetIndices.empty() )
-                {
-                    containerOneOffsetIndices.push_back( oneOffsetIndices[0] );
-                    oneOffsetIndices.erase( oneOffsetIndices.begin() );
-                }
-                else
-                    containerOneOffsetIndices.push_back( 0 );
-            }
-            
-            // Get the element using the findOrCreateElement function
-            theVar = theVar->getRevObject().findOrCreateElement( containerOneOffsetIndices );
-        }
-        else
-        {
-            // ... or from a subscript operator
-            
-            // Note that we do not name the element here; either the member object gives out
-            // a variable it names itself, or it gives out a temporary variable copy, which
-            // should not be named. A subscript operator cannot be used to assign to a non-
-            // existing variable.
-            
-            // Create the single argument for the index operator
-            std::vector<Argument> args;
-            RevPtr<Variable> indexVar = new Variable( new Natural( oneOffsetIndices[0] ) );
-            args.push_back( Argument( indexVar ) );
-            
-            // Get the variable using the subscript operator function
-            // TODO: This needs to be made generic for user-defined member objects
-            theVar = theVar->getRevObject().executeMethod( "[]", args );
-            
-            // Erase the index
-            oneOffsetIndices.erase( oneOffsetIndices.begin() );
-        }
+        throw RbException("This needs to be replaced ...");
     }
 
     // Return the variable for assignment
@@ -544,65 +457,8 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env)
     // Get dynamic element from container or subscript operator
     while ( !oneOffsetIndexVars.empty() )
     {
-        // Get the element...
-        if ( theVar->getRevObject().isTypeSpec( Container::RevObject::getClassTypeSpec() ) )
-        {
-            // ... from a container
-            
-            // Get the container index variables
-            std::vector< RevPtr<Variable> > containerOneOffsetIndexVars;
-            for ( size_t i = 0; i < theVar->getRevObject().getDim(); ++i )
-            {
-                if ( !oneOffsetIndexVars.empty() )
-                {
-                    containerOneOffsetIndexVars.push_back( oneOffsetIndexVars[0] );
-                    oneOffsetIndexVars.erase( oneOffsetIndexVars.begin() );
-                }
-                else
-                    containerOneOffsetIndexVars.push_back( new Variable( new Natural( 0 ) ) );
-            }
-            
-            if ( dynamicLookup )
-            {
-                // Make a dynamic element lookup
-                theVar = new Variable( theVar->getRevObject().makeElementLookup( theVar, containerOneOffsetIndexVars ) );
-            }
-            else
-            {
-                // We want a static element lookup
+        throw RbException("This needs replacement ...");
 
-                // Get the container indices statically
-                std::vector<size_t> containerOneOffsetIndices;
-                for ( size_t i = 0; i < containerOneOffsetIndexVars.size(); ++i )
-                {
-                    containerOneOffsetIndices.push_back( getIndex( containerOneOffsetIndexVars[i], env ) );
-                }
-                
-                // Get the element using the getElement function
-                theVar = theVar->getRevObject().getElement( containerOneOffsetIndices );
-            }
-        }
-        else
-        {
-            // ... or from a subscript operator
-            
-            // Note that we do not name the element here; either the member object gives out
-            // a variable it names itself, or it gives out a temporary variable copy, which
-            // should not be named
-            
-            // Create the single argument for the index operator (statically always for now)
-            std::vector<Argument> args;
-            args.push_back( Argument( new Variable( new Natural( getIndex( oneOffsetIndexVars[0], env ) ) ) ) );
-
-           // Get the variable using the subscript operator function
-            // TODO: This needs to be made generic for user-defined member objects
-            // TODO: This needs to check that there is a subscript operator function and not procedure,
-            // and then return a dynamic element lookup
-            theVar = theVar->getRevObject().executeMethod( "[]", args );
-            
-            // Erase the index
-            oneOffsetIndexVars.erase( oneOffsetIndexVars.begin() );
-        }
     }
     
     // Check whether we have a control variable and make a clone in that case

@@ -68,21 +68,21 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
         ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     }
     // speciation rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* st    = static_cast<const ModelVector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* st    = static_cast<const ModelVector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
     // extinction rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* e     = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* e     = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
     // extinction rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* et    = static_cast<const ModelVector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* et    = static_cast<const ModelVector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
     // sampling rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* p     = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p     = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
     // sampling rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
     // sampling probabilities
-    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const ModelVector<RealPos> &>( rho->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* r     = static_cast<const ModelVector<RealPos> &>( rho->getRevObject() ).getDagNode();
     // sampling times
-    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<RealPos> &>( rhoTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt    = static_cast<const ModelVector<RealPos> &>( rhoTimes->getRevObject() ).getDagNode();
     // time between now and most recent sample
     double tLastSample                          = static_cast<const RealPos &>( tLast->getRevObject() ).getValue();
     // condition

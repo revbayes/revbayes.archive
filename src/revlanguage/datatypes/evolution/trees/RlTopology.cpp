@@ -74,7 +74,8 @@ RevLanguage::RevPtr<Variable> Topology::executeMethod(std::string const &name, c
     }
     else if (name == "names") {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Variable( new ModelVector<RlString>( n ) );
+        RevBayesCore::RbVector<std::string> tmp = RevBayesCore::RbVector<std::string>(n);
+        return new Variable( new ModelVector<RlString>( tmp ) );
     } 
     
     return ModelObject<RevBayesCore::Topology>::executeMethod( name, args );

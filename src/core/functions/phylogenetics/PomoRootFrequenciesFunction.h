@@ -22,6 +22,7 @@
 #ifndef PomoRootFrequenciesFunction_H
 #define PomoRootFrequenciesFunction_H
 
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -29,12 +30,12 @@
 
 namespace RevBayesCore {
     
-    class PomoRootFrequenciesFunction : public TypedFunction< std::vector<double> > {
+    class PomoRootFrequenciesFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< int > *ps);
         
-        PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< int > *ps);
 
         virtual                                            ~PomoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
         
@@ -48,12 +49,12 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< std::vector<double> >*           fixedNucleotideRootFrequencies;
-        const TypedDagNode< double >*                        frequencyOfPolymorphismsAtTheRoot;
-        const TypedDagNode< std::vector<double> >*           mutationRates;
-        const TypedDagNode< RateMatrix >*                    mutationMatrix;
+        const TypedDagNode< RbVector<double> >*             fixedNucleotideRootFrequencies;
+        const TypedDagNode< double >*                       frequencyOfPolymorphismsAtTheRoot;
+        const TypedDagNode< RbVector<double> >*             mutationRates;
+        const TypedDagNode< RateMatrix >*                   mutationMatrix;
         const TypedDagNode< int >*                          populationSize;
-        bool                                                 useMutationMatrix;
+        bool                                                useMutationMatrix;
 
         // Private member functions
         std::vector<double> setMutationRates(const RateMatrix& mm) ;

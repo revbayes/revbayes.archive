@@ -25,11 +25,11 @@ RevPtr<Variable> Func_phyloRateMultiplier::execute()
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< std::vector<double> >* rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* baseRate = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RateMultiplierPhyloFunction* f = new RevBayesCore::RateMultiplierPhyloFunction( tree, rates, baseRate );
     
-    DeterministicNode< std::vector<double> > *detNode = new DeterministicNode< std::vector<double> >("", f, this->clone());
+    DeterministicNode< RevBayesCore::RbVector<double> > *detNode = new DeterministicNode< RevBayesCore::RbVector<double> >("", f, this->clone());
     
     ModelVector<RealPos>* value = new ModelVector<RealPos>( detNode );
     
