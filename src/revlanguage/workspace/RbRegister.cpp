@@ -136,7 +136,6 @@
 #include "Move_DPPGibbsConcentration.h"
 #include "Move_DPPScaleCatAllocateAux.h"
 #include "Move_MixtureAllocation.h"
-#include "Move_RbMixtureAllocation.h"
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -225,7 +224,6 @@
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
 #include "Dist_mixture.h"
-#include "Dist_rlmixture.h"
 
 /// Functions ///
 
@@ -255,8 +253,6 @@
 #include "Func_license.h"
 #include "Func_ls.h"
 #include "Func_modelVector.h"
-#include "Func_modelVectorAbstractElement.h"
-#include "Func_modelVectorAbstractRbElement.h"
 #include "Func_printSeed.h"
 #include "Func_quit.h"
 #include "Func_range.h"
@@ -340,7 +336,6 @@
 #include "Func__or.h"
 #include "Func__unot.h"
 #include "Func__rladd.h"
-#include "Func__rlvectorIndexOperator.h"
 #include "Func__scalarVectorAdd.h"
 #include "Func__scalarVectorDiv.h"
 #include "Func__scalarVectorMult.h"
@@ -440,7 +435,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // Model vectors of abstract elements
 //        addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
 //        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
-        addType( new ModelVectorAbstractElement<RateMatrix>() );
+        addType( new ModelVector<RateMatrix>() );
 
         // Workspace vectors
         addType( new WorkspaceVector<Mcmc>()         );
@@ -449,9 +444,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new WorkspaceVector<Move>()         );
 
         // RevObject vectors
-        addType( new RevObjectVector<Function>()     );
-        addType( new RevObjectVector<Distribution>() );
-        addType( new RevObjectVector<RevObject>()    );
+//        addType( new RevObjectVector<Function>()     );
+//        addType( new RevObjectVector<Distribution>() );
+//        addType( new RevObjectVector<RevObject>()    );
 
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         
@@ -553,7 +548,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_RbMixtureAllocation<RateMatrix>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateMatrix>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
@@ -747,7 +742,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnMixture",       new Dist_mixture<Natural>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
-		addDistribution( "dnMixture",       new Dist_rlmixture<RateMatrix>() );
+		addDistribution( "dnMixture",       new Dist_mixture<RateMatrix>() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -792,9 +787,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // vector functions
         addFunction( "v",         new Func_workspaceVector<Monitor>()                );
         addFunction( "v",         new Func_workspaceVector<Move>()                   );
-        addFunction( "v",         new Func_modelVectorAbstractElement<AbstractCharacterData>()          );
-        addFunction( "v",         new Func_modelVectorAbstractElement<AbstractDiscreteCharacterData>()  );
-        addFunction( "v",         new Func_modelVectorAbstractRbElement<RateMatrix>()                   );
+        addFunction( "v",         new Func_modelVector<AbstractCharacterData>()          );
+        addFunction( "v",         new Func_modelVector<AbstractDiscreteCharacterData>()  );
+        addFunction( "v",         new Func_modelVector<RateMatrix>()                   );
         addFunction( "v",         new Func_modelVector<Natural>()                    );
         addFunction( "v",         new Func_modelVector<Integer>()                    );
         addFunction( "v",         new Func_modelVector<Real>()                       );

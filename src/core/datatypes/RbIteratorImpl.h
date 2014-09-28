@@ -45,7 +45,7 @@ namespace RevBayesCore {
         bool                                                operator!=(const RbIteratorImpl<valueType,indicator>& x) const { return it != x.it; }                           //!< Not-Equals operator
         bool                                                operator<(const RbIteratorImpl<valueType,indicator>& x) const { return it < x.it; }
         const valueType&                                    operator*(void) const { return (*it); }
-        //        const valueType*                                    operator->(void) const;
+        const valueType*                                    operator->(void) const { return &(*it); }
         
     private:
         

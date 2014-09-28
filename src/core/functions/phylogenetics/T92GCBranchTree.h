@@ -25,7 +25,6 @@ namespace RevBayesCore {
         
     public:
         T92GCBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< RbVector<double> > *g, const TypedDagNode<double>* k);
-        T92GCBranchTree(const T92GCBranchTree &n);                                                                              //!< Copy constructor
         virtual                                            ~T92GCBranchTree(void) {}                                                         //!< Virtual destructor
         
         // public member functions

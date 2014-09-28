@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode<std::vector< TimeTree > > *ts,  const TypedDagNode<std::vector< std::string > > *sn ) : TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
+RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode< RbVector< TimeTree > > *ts,  const TypedDagNode< RbVector< std::string > > *sn ) : TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
 //    ts->getValue(), sn->getValue()
     ttrees = ts ;
     std::cout << "trees.size(): "<< ttrees->getValue().size() <<std::endl;
@@ -26,7 +26,7 @@ RootedTripletDistributionFunction::RootedTripletDistributionFunction( const Type
 }
 
 
-RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode<std::vector<BranchLengthTree> > *ts,  const TypedDagNode<std::vector< std::string > > *sn ) : TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
+RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode< RbVector<BranchLengthTree> > *ts,  const TypedDagNode< RbVector< std::string > > *sn ) : TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
     //    ts->getValue(), sn->getValue()
     bltrees = ts ;
     std::cout << "trees.size(): "<< bltrees->getValue().size() <<std::endl;
@@ -41,7 +41,7 @@ RootedTripletDistributionFunction::RootedTripletDistributionFunction( const Type
 }
 
 
-RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode<std::vector< std::string > > *sn ): TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
+RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode< RbVector< std::string > > *sn ): TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
     //    ts->getValue(), sn->getValue()
     species = sn->clone();
     std::cout << "species.size(): "<< species->getValue().size() <<std::endl;
@@ -82,14 +82,14 @@ void RootedTripletDistributionFunction::swapParameterInternal(const DagNode *old
 {
     
     if (ttrees)
-        ttrees = static_cast<const TypedDagNode<std::vector<TimeTree> >* >( newP );
+        ttrees = static_cast<const TypedDagNode< RbVector<TimeTree> >* >( newP );
     else if (bltrees)
-        bltrees = static_cast<const TypedDagNode<std::vector<BranchLengthTree> >* >( newP );
+        bltrees = static_cast<const TypedDagNode< RbVector<BranchLengthTree> >* >( newP );
 
 }
 
 
-void RootedTripletDistributionFunction::setTrees(TypedDagNode<std::vector< TimeTree > >* ts)
+void RootedTripletDistributionFunction::setTrees(TypedDagNode< RbVector< TimeTree > >* ts)
 {
 
     ttrees = ts;
@@ -99,7 +99,7 @@ void RootedTripletDistributionFunction::setTrees(TypedDagNode<std::vector< TimeT
 }
 
 
-void RootedTripletDistributionFunction::setTrees(TypedDagNode<std::vector< BranchLengthTree > >* ts)
+void RootedTripletDistributionFunction::setTrees(TypedDagNode< RbVector< BranchLengthTree > >* ts)
 {
     
     bltrees = ts;

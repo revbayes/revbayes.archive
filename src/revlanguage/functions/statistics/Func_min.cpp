@@ -31,7 +31,7 @@ Func_min* Func_min::clone( void ) const {
 
 RevPtr<Variable> Func_min::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::MinFunction* f = new RevBayesCore::MinFunction( arg );
     
     DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());

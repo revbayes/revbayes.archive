@@ -57,10 +57,10 @@ namespace RevBayesCore {
         // These have been migrated to RateMap_Biogeography and BiogeographyRateMapFunction
         void                                                setRateMap(const TypedDagNode< RateMap > *rm);
         void                                                setRateMap(const TypedDagNode< RbVector< RateMap > > *rm);
-        void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
-        void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
+        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         void                                                setDistancePower(const TypedDagNode<double>* dp);
-        void                                                setCladogenicStateFrequencies(const TypedDagNode<std::vector<double> >* csf);
+        void                                                setCladogenicStateFrequencies(const TypedDagNode< RbVector<double> >* csf);
 
         // special tip/root state flags
 //        const std::vector<double>&                          getTipProbs(const TopologyNode& nd);
@@ -108,11 +108,11 @@ namespace RevBayesCore {
         bool                                                historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history);
         
         // members
-        const TypedDagNode< std::vector< double > >*        rootFrequencies;
-        const TypedDagNode< std::vector< double > >*        siteRates;
+        const TypedDagNode< RbVector< double > >*           rootFrequencies;
+        const TypedDagNode< RbVector< double > >*           siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
-        const TypedDagNode< std::vector< double > >*        cladogenicStateFreqs;
+        const TypedDagNode< RbVector< double > >*           cladogenicStateFreqs;
         std::vector<double>                                 epochs;
         
         // flags specifying which model variants we use
@@ -146,14 +146,14 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
 //    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
 //    heterogeneousClockRates     = NULL;
 //    rootFrequencies             = NULL;
-    rootFrequencies             = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(2, 1.0));
+    rootFrequencies             = new ConstantNode< RbVector<double> >("rootFrequencies", new RbVector<double>(2, 1.0));
     siteRates                   = NULL;
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
     
     std::vector<double> csfInit = std::vector<double>(3, 0.33);
 //    csfInit[0] = 1.0;
-    cladogenicStateFreqs        = new ConstantNode<std::vector<double> >("cladoStateFreqs", new std::vector<double>(csfInit));
+    cladogenicStateFreqs        = new ConstantNode< RbVector<double> >("cladoStateFreqs", new RbVector<double>(csfInit));
     redrawCount                 = 0;
     
     
@@ -906,7 +906,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
 
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicStateFrequencies(const TypedDagNode< std::vector< double > > *csf) {
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicStateFrequencies(const TypedDagNode< RbVector< double > > *csf) {
     
     if (csf != NULL)
     {
@@ -985,7 +985,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRateMap(
 
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f) {
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f) {
     
     // remove the old parameter first
     if ( rootFrequencies != NULL )
@@ -1016,7 +1016,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFreq
 
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRates(const TypedDagNode< std::vector< double > > *r) {
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRates(const TypedDagNode< RbVector< double > > *r) {
     
     // remove the old parameter first
     if ( siteRates != NULL )
@@ -1481,15 +1481,15 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParamet
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == siteRates)
     {
-        siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        siteRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == cladogenicStateFreqs)
     {
-        cladogenicStateFreqs = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        cladogenicStateFreqs = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else
     {

@@ -7,7 +7,7 @@
 
 using namespace RevBayesCore;
 
-RateOnBranchAve::RateOnBranchAve(const TypedDagNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode< double > *rr, const size_t idx) : TypedFunction<double>( new double(0.0) ),
+RateOnBranchAve::RateOnBranchAve(const TypedDagNode< RbVector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode< double > *rr, const size_t idx) : TypedFunction<double>( new double(0.0) ),
 nodeRates( rts ),
 tree( t ),
 rootRate( rr ),
@@ -23,7 +23,7 @@ nodeID( idx )
     update();
 }
 
-RateOnBranchAve::RateOnBranchAve(const TypedDagNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv, const size_t idx) : TypedFunction<double>( new double(0.0) ),
+RateOnBranchAve::RateOnBranchAve(const TypedDagNode< RbVector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv, const size_t idx) : TypedFunction<double>( new double(0.0) ),
 nodeRates( rts ),
 tree( t ),
 rootRate( rr ),
@@ -37,17 +37,6 @@ nodeID( idx )
     addParameter( scaleValue );
     
     update();
-}
-
-
-RateOnBranchAve::RateOnBranchAve(const RateOnBranchAve &n) : TypedFunction<double>( n ), 
-nodeRates( n.nodeRates ), 
-tree( n.tree ), 
-rootRate( n.rootRate ),
-scaleValue( n.scaleValue ),
-nodeID( n.nodeID )
-{
-    // no need to add parameters, happens automatically
 }
 
 
@@ -92,7 +81,7 @@ void RateOnBranchAve::swapParameterInternal(const DagNode *oldP, const DagNode *
 {
     
     if (oldP == nodeRates) {
-        nodeRates = static_cast< const TypedDagNode< std::vector<double> >* >( newP );
+        nodeRates = static_cast< const TypedDagNode< RbVector<double> >* >( newP );
     }
     if (oldP == tree) {
         tree = static_cast<const TypedDagNode<TimeTree>* >( newP );

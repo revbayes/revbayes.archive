@@ -86,8 +86,8 @@ void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void ) {
     // now allocate a new vector-scale move
     int na = static_cast<const Integer &>( nAux->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<typename valType::valueType> >* tmp = static_cast<const ModelVector<valType> &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode< std::vector<typename valType::valueType> > *sn = static_cast<RevBayesCore::StochasticNode<std::vector<typename valType::valueType> > *>( tmp );
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* tmp = static_cast<const ModelVector<valType> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode< RevBayesCore::RbVector<typename valType::valueType> > *sn = static_cast<RevBayesCore::StochasticNode< RevBayesCore::RbVector<typename valType::valueType> > *>( tmp );
     
     value = new RevBayesCore::DPPAllocateAuxGibbsMove<typename valType::valueType>(sn, na, w);
 }

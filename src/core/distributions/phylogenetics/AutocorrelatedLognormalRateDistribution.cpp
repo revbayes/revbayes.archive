@@ -16,29 +16,25 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes()-1, 0.0 ) ),
-tau( t ), 
-sigma( s ), 
-rootRate( rr ),
-scaleValue( new ConstantNode<double>(" ", new double(1.0) )) {
+AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes()-1, 0.0 ) ),
+    tau( t ),
+    sigma( s ),
+    rootRate( rr ),
+    scaleValue( new ConstantNode<double>(" ", new double(1.0) ))
+{
     
     simulate();
 }
 
 // constructor for when rescaling the tree to relative rates or other value
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes()-1, 0.0 ) ),
-tau( t ), 
-sigma( s ), 
-rootRate( rr ),
-scaleValue( sv ) {
+AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes()-1, 0.0 ) ),
+    tau( t ),
+    sigma( s ),
+    rootRate( rr ),
+    scaleValue( sv )
+{
     
     simulate();
-}
-
-
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const AutocorrelatedLognormalRateDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ), scaleValue( n.scaleValue ) {
-    // nothing to do here since the parameters are copied automatically
-    
 }
 
 

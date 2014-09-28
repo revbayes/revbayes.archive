@@ -6,7 +6,9 @@
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "ModelVector.h"
 #include "OptionRule.h"
+#include "Natural.h"
 #include "RbException.h"
+#include "Real.h"
 #include "RevObject.h"
 #include "RlAbstractCharacterData.h"
 #include "RlString.h"
@@ -41,9 +43,9 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
    
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    std::set<RevBayesCore::TypedDagNode<std::vector<double> > *> n;
+    std::set<RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> > *> n;
     for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
     
