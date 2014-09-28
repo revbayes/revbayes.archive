@@ -38,6 +38,7 @@ namespace RevBayesCore {
         RbVector();
         RbVector(size_t n);
         RbVector(size_t n, const valueType &v);
+        RbVector( const typename RbVectorImpl<valueType, IsAbstract<valueType>::Is >::vectorType &v);
         RbVector(const RbVector<valueType> &v);
         virtual                                            ~RbVector(void);
         
@@ -49,11 +50,11 @@ namespace RevBayesCore {
         RbVector<valueType>*                                clone(void) const;                                                                      //!< Create an independent clone
         
         // public (stl-like) vector functions
-        RbIterator<valueType>                               begin(void);
-        RbConstIterator<valueType>                          begin(void) const;
-        RbIterator<valueType>                               end(void);
-        RbConstIterator<valueType>                          end(void) const;
-        size_t                                              size(void) const;
+//        RbIterator<valueType>                               begin(void);
+//        RbConstIterator<valueType>                          begin(void) const;
+//        RbIterator<valueType>                               end(void);
+//        RbConstIterator<valueType>                          end(void) const;
+//        size_t                                              size(void) const;
         
     private:
         
@@ -95,6 +96,13 @@ RevBayesCore::RbVector<valueType>::RbVector(size_t n, const valueType &v) : RbVe
 
 
 template <class valueType>
+RevBayesCore::RbVector<valueType>::RbVector( const typename RbVectorImpl<valueType, IsAbstract<valueType>::Is >::vectorType &v ) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(v)
+{
+    
+}
+
+
+template <class valueType>
 RevBayesCore::RbVector<valueType>::RbVector( const RbVector<valueType> &v ) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(v)
 {
     
@@ -109,44 +117,9 @@ RevBayesCore::RbVector<valueType>::~RbVector( void )
 
 
 template <class valueType>
-RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) {
-    
-    return RbIterator<valueType>( this->values.begin() );
-}
-
-
-template <class valueType>
-RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) const {
-    
-    return RbConstIterator<valueType>( this->values.begin() );
-}
-
-
-template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void) const {
     
     return new RbVector<valueType>( *this );
-}
-
-
-template <class valueType>
-RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) {
-    
-    return RbIterator<valueType>( this->values.end() );
-}
-
-
-template <class valueType>
-RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) const {
-   
-    return RbConstIterator<valueType>( this->values.end() );
-}
-
-
-template <class valueType>
-size_t RevBayesCore::RbVector<valueType>::size(void) const {
-    
-    return this->values.size();
 }
 
 
