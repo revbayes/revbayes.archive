@@ -11,19 +11,14 @@
 
 using namespace RevBayesCore;
 
-SimplexFunction::SimplexFunction(const std::vector<const TypedDagNode<double> *> &args) : TypedFunction<std::vector<double> >( new std::vector<double>() ), parameters( args ) {
+SimplexFunction::SimplexFunction(const std::vector<const TypedDagNode<double> *> &args) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
+    parameters( args )
+{
     // add the lambda parameter as a parent
     std::vector<const TypedDagNode<double>* >::iterator it;
     for (it = parameters.begin(); it != parameters.end(); ++it) {
         this->addParameter( *it );
     }
-    
-    update();
-}
-
-
-SimplexFunction::SimplexFunction(const SimplexFunction &n) : TypedFunction<std::vector<double> >( n ), parameters( n.parameters ) {
-    // no need to add parameters, happens automatically
     
     update();
 }

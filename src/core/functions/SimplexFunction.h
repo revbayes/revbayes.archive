@@ -22,6 +22,7 @@
 #ifndef SimplexFunction_H
 #define SimplexFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -29,11 +30,10 @@
 
 namespace RevBayesCore {
     
-    class SimplexFunction : public TypedFunction<std::vector<double> > {
+    class SimplexFunction : public TypedFunction< RbVector<double> > {
         
     public:
         SimplexFunction(const std::vector<const TypedDagNode<double> *> &args);
-        SimplexFunction(const SimplexFunction &n);                                                                                      //!< Copy constructor
         virtual                                            ~SimplexFunction(void);                                                      //!< Virtual destructor
         
         // public member functions

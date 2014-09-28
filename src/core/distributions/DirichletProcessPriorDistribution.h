@@ -18,18 +18,18 @@
 #ifndef DirichletProcessPriorDistribution_H
 #define DirichletProcessPriorDistribution_H
 
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
     template <class valueType>
-    class DirichletProcessPriorDistribution : public TypedDistribution< std::vector<valueType> > {
+    class DirichletProcessPriorDistribution : public TypedDistribution< RbVector<valueType> > {
         
     public:
         // constructor(s)
         DirichletProcessPriorDistribution(TypedDistribution<valueType> *g, const TypedDagNode< double > *cp, int n);
-        DirichletProcessPriorDistribution(const DirichletProcessPriorDistribution<valueType> &n);
         
         // public member functions
         DirichletProcessPriorDistribution*                  clone(void) const;                                                                      //!< Create an independent clone
@@ -52,7 +52,7 @@ namespace RevBayesCore {
     private:
         // helper methods
         void                                                computeDenominator(void);
-		std::vector<valueType>*                             simulate(void);
+		RbVector<valueType>*                                simulate(void);
 		size_t												findValueinValuePerTable(valueType v);
 		      
         // private members
@@ -77,25 +77,20 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class valueType>
-RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(TypedDistribution<valueType> *g, const TypedDagNode< double > *cp,
-																							  int n) :
-																							  TypedDistribution< std::vector<valueType> >( new std::vector<valueType>() ), baseDistribution( g ), concentration( cp ),
-																							  numElements( n ), numTables( 0 ), denominator( 0.0 ), concentrationHasChanged( true ) {
+RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(TypedDistribution<valueType> *g, const TypedDagNode< double > *cp,int n) :
+																							  TypedDistribution< RbVector<valueType> >( new RbVector<valueType>() ),
+    baseDistribution( g ),
+    concentration( cp ),
+    numElements( n ),
+    numTables( 0 ),
+    denominator( 0.0 ),
+    concentrationHasChanged( true )
+{
     
 	delete this->value;
 
     this->value = simulate();
                                                                                                   
-}
-
-template <class valueType>
-RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(const DirichletProcessPriorDistribution<valueType> &n) : TypedDistribution<std::vector<valueType> >( n ),
-																								baseDistribution( n.baseDistribution ), concentration( n.concentration ), 
-																								numElements( n.numElements ), numTables( n.numTables ), denominator( 0.0 ), concentrationHasChanged( true ) {
-    // parameters are added automatically
-    delete this->value;
-    this->value = simulate();
-                                                                                                    
 }
 
 
@@ -179,11 +174,11 @@ int RevBayesCore::DirichletProcessPriorDistribution<valueType>::getNumberOfEleme
 
 
 template <class valueType>
-std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::simulate() {
+RevBayesCore::RbVector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::simulate() {
     
     // simulator function
-	std::vector<valueType>* rv = new std::vector<valueType>();
-	std::vector<valueType>& temp = *rv;
+	RbVector<valueType>* rv = new RbVector<valueType>();
+	RbVector<valueType>& temp = *rv;
 	double cp = concentration->getValue();
 	
 	RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -192,10 +187,12 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 	allocationVector.clear();
 	numCustomerPerTable.clear();
 	valuePerTable.clear();
-	for( int i=0; i<numElements; i++){
+	for( int i=0; i<numElements; i++)
+    {
 		double probNewCat = cp / (i + cp);
 		double u = rng->uniform01();
-		if( u < probNewCat){
+		if( u < probNewCat)
+        {
 			numCustomerPerTable.push_back(1);
 			numTables++;
 			allocationVector.push_back(numTables);
@@ -204,12 +201,15 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 			valuePerTable.push_back(newVal);
 			temp.push_back(newVal);
 		}
-		else{
+		else
+        {
 			double sum = 0.0;
 			double m = rng->uniform01();
-			for(unsigned j=0; j<numCustomerPerTable.size(); j++){
+			for(unsigned j=0; j<numCustomerPerTable.size(); j++)
+            {
 				sum += (double)numCustomerPerTable[j] / i;
-				if(m < sum){
+				if(m < sum)
+                {
 					numCustomerPerTable[j] += 1;
 					temp.push_back(valuePerTable[j]);
 					allocationVector.push_back(j);

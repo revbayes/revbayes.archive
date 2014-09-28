@@ -25,15 +25,14 @@
 
 namespace RevBayesCore {
     
-    class WhiteNoisePhyloProcess : public TypedDistribution< std::vector<double> > {
+    class WhiteNoisePhyloProcess : public TypedDistribution< RbVector<double> > {
         
     public:
         // constructor(s)
         WhiteNoisePhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s);
-        WhiteNoisePhyloProcess(const WhiteNoisePhyloProcess &n);
         
         // public member functions
-        WhiteNoisePhyloProcess*                clone(void) const;                                                                      //!< Create an independent clone
+        WhiteNoisePhyloProcess*                                 clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
  

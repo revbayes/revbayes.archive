@@ -163,7 +163,7 @@ void SwitchRateJumpMove::swapNode(DagNode *oldN, DagNode *newN)
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
     
     // we need to get the distribution object
     valueDistribution = static_cast<BranchRateJumpProcess&>( variable->getDistribution() ).getValueDistribution();

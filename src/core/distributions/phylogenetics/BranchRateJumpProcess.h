@@ -27,7 +27,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-03-28, version 1.0
      */
-    class BranchRateJumpProcess : public TypedDistribution< std::vector<double> > {
+    class BranchRateJumpProcess : public TypedDistribution< RbVector<double> > {
         
     public:
         // constructor(s)

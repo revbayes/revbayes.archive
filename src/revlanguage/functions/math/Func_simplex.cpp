@@ -38,7 +38,7 @@ RevPtr<Variable> Func_simplex::execute( void )
     
     RevBayesCore::SimplexFunction* func = new RevBayesCore::SimplexFunction( params );
     
-    DeterministicNode<std::vector<double> >* detNode = new DeterministicNode<std::vector<double> >( "", func, this->clone() );
+    DeterministicNode< RevBayesCore::RbVector<double> >* detNode = new DeterministicNode< RevBayesCore::RbVector<double> >( "", func, this->clone() );
     
     Simplex* theSimplex = new Simplex( detNode );
         

@@ -3,6 +3,7 @@
 
 #include "SimpleMove.h"
 #include "StochasticNode.h"
+#include "RbVector.h"
 
 #include <ostream>
 #include <vector>
@@ -30,25 +31,25 @@ namespace RevBayesCore {
     class VectorSingleElementSlidingMove : public SimpleMove {
         
     public:
-        VectorSingleElementSlidingMove(StochasticNode<std::vector<double> >* n, double l, bool t, double w);                         //!< Constructor
+        VectorSingleElementSlidingMove(StochasticNode<RbVector<double> >* n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        VectorSingleElementSlidingMove*                     clone(void) const;                                                                  //!< Clone this object.
+        VectorSingleElementSlidingMove*             clone(void) const;                                                                  //!< Clone this object.
         const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
         void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
     protected:
         
-        double                                  performSimpleMove(void);                                                            //!< Perform move
-        void                                    printParameterSummary(std::ostream &o) const;
-        void                                    rejectSimpleMove(void);
-        void                                    acceptSimpleMove(void);
-        void                                    tune(void);
-        void                                    touch( DagNode *toucher );
+        double                                      performSimpleMove(void);                                                            //!< Perform move
+        void                                        printParameterSummary(std::ostream &o) const;
+        void                                        rejectSimpleMove(void);
+        void                                        acceptSimpleMove(void);
+        void                                        tune(void);
+        void                                        touch( DagNode *toucher );
         
     private:
         
-        StochasticNode<std::vector<double> >*   variable;
+        StochasticNode< RbVector<double> >*         variable;
 
         double                                      lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
         size_t                                      index;                                                                              //!< The index of the last modified element.

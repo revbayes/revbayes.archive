@@ -13,27 +13,21 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
-
-    TypedFunction< std::vector< double > >( new std::vector< double >(p->getValue().getTimeTree()->getNumberOfNodes() -1, 0.0 ) ),
-    tau(t), process(p), offset(o), traitindex(i) {
+HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i) : TypedFunction< RbVector< double > >( new RbVector< double >(p->getValue().getTimeTree()->getNumberOfNodes() -1, 0.0 ) ),
+    tau(t), process(p), offset(o), traitindex(i)
+{
     
     this->addParameter( tau );
     this->addParameter( process );
-    if (offset != NULL) {
+    if (offset != NULL)
+    {
          this->addParameter( offset );   
     }    
-    if (traitindex != NULL) {
+    if (traitindex != NULL)
+    {
         this->addParameter(traitindex) ;
     }
     update();
-}
-
-HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const HyperbolicTangentBranchTree &n):
-
-    TypedFunction< std::vector< double > >( n ), 
-        tau(n.tau), process( n.process ), offset( n.offset ), traitindex( n.traitindex) {
-    
 }
 
 
