@@ -30,8 +30,8 @@ namespace RevLanguage {
         elementType                                 operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
 //        void                                        pop_back(void);                                             //!< Drop element from back
 //        void                                        pop_front(void);                                            //!< Drop element from front
-//        void                                        push_back(const rlType& x);                                 //!< Push Rev object element onto back
-//        void                                        push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
+        void                                        push_back(const rlType& x);                                 //!< Push Rev object element onto back
+        void                                        push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
 //        void                                        push_front(const rlType& x);                                //!< Push Rev object element onto front
 //        void                                        push_front(const elementType& x);                           //!< Push internal value of Rev object element onto front
         
@@ -350,6 +350,26 @@ MethodTable ModelVector<rlType>::makeMethods(void) const
 
 
 /**
+ * Add an element to the end of the vector.
+ */
+template <typename rlType>
+void ModelVector<rlType>::push_back(const elementType &x)
+{
+    return this->dagNode->getValue().push_back( x );
+}
+
+
+/**
+ * Add an element to the end of the vector.
+ */
+template <typename rlType>
+void ModelVector<rlType>::push_back(const rlType &x)
+{
+    return this->dagNode->getValue().push_back( x.getValue() );
+}
+
+
+/**
  * Print the value of the vector, respecting the formatting of the
  * model object elements. We do this by retrieving the elements, one
  * by one, and printing them using their own printValue implementation.
@@ -407,7 +427,7 @@ size_t ModelVector<rlType>::size( void ) const
 template <typename rlType>
 void ModelVector<rlType>::sort( void )
 {
-    std::sort( this->dagNode->getValue().begin(), this->dagNode->getValue().end(), myComparator );
+//    std::sort( this->dagNode->getValue().begin(), this->dagNode->getValue().end(), myComparator );
 }
 
                                        

@@ -610,7 +610,7 @@ void MultispeciesCoalescent::redrawValue( void ) {
     
 }
 
-void MultispeciesCoalescent::setNes(TypedDagNode<std::vector<double> >* inputNes) {
+void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* inputNes) {
     
     Nes = inputNes;
     Ne= NULL;
@@ -782,7 +782,7 @@ void MultispeciesCoalescent::swapParameter(const DagNode *oldP, const DagNode *n
     
     if (oldP == Nes)
     {
-        Nes = static_cast<const TypedDagNode< std::vector<double> >* >( newP );
+        Nes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if ( oldP == Ne)
     {

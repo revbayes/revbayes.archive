@@ -262,7 +262,7 @@ void ModelMonitor::resetDagNodes( void )
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
             if ( (*it)->isSimpleNumeric() && !(*it)->isClamped())
             {
-                if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" && !(*it)->isComposite() ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
+                if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" && !(*it)->isHidden() ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
                 {
                     if ( varNames.find( (*it)->getName() ) == varNames.end() )
                     {

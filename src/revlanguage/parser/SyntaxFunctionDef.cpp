@@ -4,7 +4,7 @@
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
 #include "UserFunctionDef.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "UserProcedure.h"
 #include "Workspace.h"
 

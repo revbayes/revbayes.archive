@@ -7,8 +7,7 @@
 
 #include "T92GCBranchTree.h"
 #include "Func_t92GCBranchTree.h"
-
-#include "ModelVectorAbstractElement.h"
+#include "ModelVector.h"
 #include "Probability.h"
 #include "RealPos.h"
 #include "RbVector.h"
@@ -66,7 +65,7 @@ const TypeSpec& Func_t92GCBranchTree::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_t92GCBranchTree::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<RateMatrix>::getClassTypeSpec();
     
     return returnTypeSpec;
 }
@@ -85,7 +84,7 @@ RevPtr<Variable> Func_t92GCBranchTree::execute() {
         
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* gcprocess = static_cast<const ModelVector<Probability> &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* gcprocess = static_cast<const ModelVector<Probability> &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::TypedDagNode< double >* kappa = static_cast<const RealPos &>( args[2].getVariable()->getRevObject() ).getDagNode();
 
@@ -93,7 +92,7 @@ RevPtr<Variable> Func_t92GCBranchTree::execute() {
 
     DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* dag = new DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >("", result, this->clone());
     
-    ModelVectorAbstractElement<RateMatrix>* wrappedresult = new ModelVectorAbstractElement<RateMatrix>( dag );
+    ModelVector<RateMatrix>* wrappedresult = new ModelVector<RateMatrix>( dag );
 
     return new Variable( wrappedresult );
 }

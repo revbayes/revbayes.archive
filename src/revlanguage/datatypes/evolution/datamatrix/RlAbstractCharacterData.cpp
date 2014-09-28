@@ -218,11 +218,11 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                     
                     if (this->dagNode->getValue().isHomologyEstablished() == true)
                     {
-                        numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
+                        numChar->push_back( int(this->dagNode->getValue().getNumberOfIncludedCharacters()) );
                     }
                     else
                     {
-                        numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
+                        numChar->push_back( int(this->dagNode->getValue().getNumberOfIncludedCharacters(i)) );
                     }
                     
                 }

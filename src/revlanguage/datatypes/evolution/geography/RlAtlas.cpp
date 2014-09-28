@@ -61,7 +61,7 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
         for (size_t i = 0; i < areas[0].size(); ++i)
         {
             std::string name = areas[0][i]->getName();
-            n->push_back( RlString( name ) );
+            n->push_back( name );
         }
         return new Variable( n );
     }

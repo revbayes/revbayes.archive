@@ -37,7 +37,7 @@ RevPtr<Variable> Func_discretizeGamma::execute( void ) {
 
     RevBayesCore::DiscretizeGammaFunction *func = new RevBayesCore::DiscretizeGammaFunction( shape, rate, numCats, median );
     
-    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
+    DeterministicNode<RevBayesCore::RbVector<double> > *detNode = new DeterministicNode<RevBayesCore::RbVector<double> >("", func, this->clone());
     
     ModelVector<RealPos> *discGammaVector = new ModelVector<RealPos>( detNode );
     

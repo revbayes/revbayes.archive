@@ -19,7 +19,7 @@ using namespace RevBayesCore;
  * \param[in]   v    The variable on which this move operates.
  * \param[in]   w    The weight how often the move will be used.
  */
-SwitchRateJumpMove::SwitchRateJumpMove(StochasticNode<std::vector<double> > *v, double w) : SimpleMove( v, w, false ), 
+SwitchRateJumpMove::SwitchRateJumpMove(StochasticNode<RbVector<double> > *v, double w) : SimpleMove( v, w, false ),
     variable(v),
     index( 0 ),
     storedValue( 1.0 ),

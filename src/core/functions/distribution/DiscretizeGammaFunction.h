@@ -21,11 +21,12 @@
 
 #include "TypedFunction.h"
 #include "ContinuousDistribution.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
-    class DiscretizeGammaFunction : public TypedFunction< std::vector<double> >{
+    class DiscretizeGammaFunction : public TypedFunction< RbVector<double> >{
         
     public:
         DiscretizeGammaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc, bool med);

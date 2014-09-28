@@ -16,7 +16,7 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 /** Construct from double */
 RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x ) {
     
-    if ( !x->isNAValue() && x->getValue() < 0.0 )
+    if ( x->getValue() < 0.0 )
         throw RbException( "Nonpositive value for " + getClassType() );
 }
 

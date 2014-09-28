@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-PowerVectorFunction::PowerVectorFunction(const TypedDagNode<std::vector<double> > *b, const TypedDagNode<double> *e) : TypedFunction<std::vector<double> >( new std::vector<double>(b->getValue().size(),0) ),
+PowerVectorFunction::PowerVectorFunction(const TypedDagNode<RbVector<double> > *b, const TypedDagNode<double> *e) : TypedFunction<RbVector<double> >( new RbVector<double>(b->getValue().size(),0) ),
     base( b ),
     exponent( e )
 {
@@ -24,7 +24,7 @@ void PowerVectorFunction::swapParameterInternal(const DagNode *oldP, const DagNo
 {
     if (oldP == base)
     {
-        base = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        base = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
     if (oldP == exponent)
     {
