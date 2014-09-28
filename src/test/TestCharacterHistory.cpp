@@ -144,7 +144,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations = 10000;
+    mcmcGenerations = 50000;
 //    *= 10;
     //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .5);
@@ -180,10 +180,11 @@ bool TestCharacterHistory::run_exp(void) {
     // binary characters
     std::string fn = "";
 //    fn = "vireya.nex";
-    fn = "psychotria_range.nex";
+//    fn = "psychotria_range.nex";
 //    fn = "16tip_100areas.nex";
 //    fn = "sim_aus_50tip_33area.nex";
 //    fn = "turtles.nex";
+    fn = "earth23.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -198,8 +199,9 @@ bool TestCharacterHistory::run_exp(void) {
     
     // geo by epochs
     std::string afn="";
+    afn = "earth23.atlas.txt";
 //    afn = "malesia_static.atlas.txt";
-    afn = "hawaii_dynamic.atlas.txt";
+//    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
 //    afn = "hawaii_dynamic_ss.atlas.txt";
 //    afn = "100area.atlas.txt";
@@ -289,9 +291,30 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(pi_pr) );
     
     // cladogenic state frequencies
-    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(3,1.0) );
+    std::vector<double> csf_pr_v(3,20.0);
+    csf_pr_v[0] = 1.0;
+//    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(3,1.0) );
+    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(csf_pr_v) );
     StochasticNode<std::vector<double> > *csf = new StochasticNode<std::vector<double> >( "csf", new DirichletDistribution(csf_pr) );
+    if (!useCladogenesis)
+    {
+        std::vector<double> csf_val(3,1e-6);
+        csf_val[0] = 1.0 - (2 * 1e-6);
+        csf->setValue(csf_val);
+    }
     
+    // proportion of areas occupied
+//    double f_on = 0.2;
+//    double var_on = 0.1;
+//    double eff_b = pow(1.0-f_on, 2) * f_on / var_on + f_on - 1;
+//    double eff_a = f_on * eff_b / (1.0 - f_on);
+
+    std::vector<double> crm_pr_v;
+    crm_pr_v.push_back(5.0);
+    crm_pr_v.push_back(50.0);
+    ConstantNode<std::vector<double> > *crm_pr = new ConstantNode<std::vector<double> >( "crm_pr", new std::vector<double>( crm_pr_v ));
+    StochasticNode<std::vector<double> > *crm = new StochasticNode<std::vector<double> >( "crm", new DirichletDistribution(crm_pr) );
+
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
     
@@ -387,7 +410,6 @@ bool TestCharacterHistory::run_exp(void) {
     {
         moves.push_back( new SimplexMove( csf, 250.0, 3, 0, true, 2.0, 1.0 ) );
         moves.push_back( new SimplexMove( csf, 200.0, 1, 0, false, 1.0 ) );
-        
     }
     
     moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
@@ -418,8 +440,8 @@ bool TestCharacterHistory::run_exp(void) {
         //        moves.push_back( new MetropolisHastingsMove( new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), numNodes*2, false));
         //        moves.push_back( new MetropolisHastingsMove( new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3), numNodes, false));
     }
-    else if (useCladogenesis)
-    {
+//    else if (useCladogenesis)
+//    {
         // path
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2), 0.2, false, numNodes * 2));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.8), 0.8, false, numNodes));
@@ -428,19 +450,19 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2), 0.2, false, numNodes*2));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.8), 0.8, false, numNodes));
         
-    }
-    
-    else if (!useCladogenesis)
-    {
-        // path
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes * 2));
-//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
-        
-        // node
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes*2));
-//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
-
-    }
+//    }
+//    
+//    else if (!useCladogenesis)
+//    {
+//        // path
+//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes * 2));
+////        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
+//        
+//        // node
+//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes*2));
+////        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
+//
+//    }
     
     //        BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd);
     //        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.1, nd), 0.1, false, numNodes*2));
@@ -466,7 +488,7 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_vector );
     if (useRootFreqs)
         monitoredNodes.insert( pi );
-    if (useCladogenesis)
+//    if (useCladogenesis)
         monitoredNodes.insert( csf );
     
     monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".parameters.txt", "\t"));

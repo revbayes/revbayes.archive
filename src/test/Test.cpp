@@ -143,8 +143,8 @@ bool Test::performTests(int argc, const char * argv[]) {
     // discrete dependence model
     try
     {
-        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-//        testDdm.run();
+        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 1000);
+        testDdm.run();
     }
     catch (RbException &e)
     {
@@ -154,7 +154,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestPathSampling testPs = TestPathSampling();
-        testPs.run();
+//        testPs.run();
     }
     catch (RbException &e)
     {
