@@ -1,6 +1,7 @@
 #ifndef ScalarVectorAddition_H
 #define ScalarVectorAddition_H
 
+#include "RbVector.h"
 #include "StringUtilities.h"    // For string concatenation through addition
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
@@ -21,10 +22,10 @@ namespace RevBayesCore {
      *
      */
     template <class firstValueType, class secondValueType, class returnType>
-    class ScalarVectorAddition : public TypedFunction<std::vector<returnType> > {
+    class ScalarVectorAddition : public TypedFunction< RbVector<returnType> > {
         
     public:
-        ScalarVectorAddition(const TypedDagNode<firstValueType> *a, const TypedDagNode<std::vector<secondValueType> > *b);
+        ScalarVectorAddition(const TypedDagNode<firstValueType> *a, const TypedDagNode< RbVector<secondValueType> > *b);
         
         ScalarVectorAddition*                               clone(void) const;                                                          //!< Create a clon.
         void                                                update(void);                                                               //!< Recompute the value
@@ -34,7 +35,7 @@ namespace RevBayesCore {
         
     private:
         const TypedDagNode<firstValueType>*                 a;
-        const TypedDagNode<std::vector<secondValueType> >*  b;
+        const TypedDagNode< RbVector<secondValueType> >*    b;
         
     };
 }
@@ -42,7 +43,7 @@ namespace RevBayesCore {
 
 
 template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::ScalarVectorAddition<firstValueType, secondValueType, returnType>::ScalarVectorAddition(const TypedDagNode<firstValueType> *l, const TypedDagNode<std::vector<secondValueType> > *r) : TypedFunction<std::vector<returnType> >( new std::vector<returnType>(r->getValue().size(),returnType()) ),
+RevBayesCore::ScalarVectorAddition<firstValueType, secondValueType, returnType>::ScalarVectorAddition(const TypedDagNode<firstValueType> *l, const TypedDagNode< RbVector<secondValueType> > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>(r->getValue().size(),returnType()) ),
 a( l ),
 b( r )
 {
@@ -71,7 +72,7 @@ void RevBayesCore::ScalarVectorAddition<firstValueType, secondValueType, returnT
     
     if (oldP == b)
     {
-        b = static_cast<const TypedDagNode<std::vector<secondValueType> >* >( newP );
+        b = static_cast<const TypedDagNode< RbVector<secondValueType> >* >( newP );
     }
 }
 

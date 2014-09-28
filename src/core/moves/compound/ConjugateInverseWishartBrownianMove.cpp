@@ -98,9 +98,9 @@ void ConjugateInverseWishartBrownianMove::rejectCompoundMove( void ) {
 
     std::cerr << "in ConjugateInverseWishartBrownianMove: move should not be rejected??\n";
     exit(1);
-    sigma->getValue() = bksigma;
-    sigma->getValue().touch();
-    sigma->getValue().update();
+//    sigma->getValue() = bksigma;
+//    sigma->getValue().touch();
+//    sigma->getValue().update();
 }
 
 void ConjugateInverseWishartBrownianMove::swapNode(DagNode *oldN, DagNode *newN) {

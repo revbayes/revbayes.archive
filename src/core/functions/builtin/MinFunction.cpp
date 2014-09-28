@@ -2,16 +2,11 @@
 
 using namespace RevBayesCore;
 
-MinFunction::MinFunction(const TypedDagNode<std::vector<double> > *v) : TypedFunction<double>( new double(0.0) ), vals( v ) {
+MinFunction::MinFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
+    vals( v )
+{
     // add the parameters as parents
     this->addParameter( vals );
-    
-    update();
-}
-
-
-MinFunction::MinFunction(const MinFunction &n) : TypedFunction<double>( n ), vals( n.vals ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -49,7 +44,7 @@ void MinFunction::update( void ) {
 void MinFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == vals ) {
-        vals = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        vals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

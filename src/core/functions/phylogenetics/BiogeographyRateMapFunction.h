@@ -11,6 +11,7 @@
 
 #include "GeographyRateModifier.h"
 #include "RateMap_Biogeography.h"
+#include "RbVector.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -23,7 +24,6 @@ namespace RevBayesCore {
         
     public:
         BiogeographyRateMapFunction(size_t nc, bool fe=true);                                                                                             // pass in geography object??
-        BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n);                                                                  //!< Copy constructor
         virtual                                            ~BiogeographyRateMapFunction(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -31,12 +31,12 @@ namespace RevBayesCore {
         
         // set parameters
         void                                                setClockRate(const TypedDagNode< double > *r);
-        void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
+        void                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
         //void                                                setDistancePower(const TypedDagNode<double>* dp);
         void                                                setGeographyRateModifier(const TypedDagNode<GeographyRateModifier>* drm);
-        void                                                setGainLossRates(const TypedDagNode<std::vector<double> >* glr);
+        void                                                setGainLossRates(const TypedDagNode< RbVector<double> >* glr);
 //        void                                                setGainLossRates(const TypedDagNode<std::vector<std::vector<double> > >* glr);
-        void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
+        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                update(void);
         
     protected:
@@ -46,13 +46,13 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< double >*                           homogeneousClockRate;
-        const TypedDagNode< std::vector< double > >*            heterogeneousClockRates;
-        const TypedDagNode<std::vector<double> >*               homogeneousGainLossRates;
-        const TypedDagNode<std::vector<double> >*               heterogeneousGainLossRates;
+        const TypedDagNode< RbVector< double > >*               heterogeneousClockRates;
+        const TypedDagNode< RbVector<double> >*                 homogeneousGainLossRates;
+        const TypedDagNode< RbVector<double> >*                 heterogeneousGainLossRates;
         //const TypedDagNode<double>*                             distancePower;
         const TypedDagNode<GeographyRateModifier>*              geographyRateModifier;
         const TypedDagNode<TimeTree>*                           tau;
-        const TypedDagNode<std::vector<double> >*               rootFrequencies;
+        const TypedDagNode< RbVector<double> >*                 rootFrequencies;
         
         // geography epochs
         // rate epochs

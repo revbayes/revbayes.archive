@@ -23,6 +23,7 @@
 #include "Trace.h"
 #include "RateMatrix_GTR.h"
 #include "RateMatrix_JC.h"
+#include "RbVector.h"
 
 #include <ostream>
 #include <string>
@@ -57,13 +58,21 @@ namespace RevBayesCore {
             static size_t    size(const T &obj) { return 1; }
         };
         
+        template <typename T>
+        class sub_vector< RbVector<T> > {
+        public:
+            static const T&  getElement(const RbVector<T> &obj, size_t i) { return obj[i]; }
+            static size_t    size(const RbVector<T> &obj) { return obj.size(); }
+        };
+
         template <typename T,typename Alloc>
         class sub_vector<std::vector<T,Alloc> > {
         public:
             static const T&  getElement(const std::vector<T,Alloc> &obj, size_t i) { return obj[i]; }
             static size_t    size(const std::vector<T,Alloc> &obj) { return obj.size(); }
         };
-        
+
+
         
         
         template <class T, class U>

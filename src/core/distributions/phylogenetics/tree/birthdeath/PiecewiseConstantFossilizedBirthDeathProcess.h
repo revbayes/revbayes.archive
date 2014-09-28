@@ -38,7 +38,7 @@ namespace RevBayesCore {
                                                       const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
                                                       const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
                                                       const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
-                                                      const std::string &cdt, const RbVector<Taxon> &tn, const RbVector<Clade> &c);  //!< Constructor
+                                                      const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);  //!< Constructor
         
         // public member functions
         PiecewiseConstantFossilizedBirthDeathProcess*    clone(void) const;                                         //!< Create an independent clone

@@ -26,7 +26,7 @@ RevPtr<Variable> Func_averageRateOnBranch::execute()
 {
 
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* nodeRates = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* nodeRates = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 	RevBayesCore::TypedDagNode< double >* rootRate = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
 	RevBayesCore::TypedDagNode< double >* scaleValue = static_cast<const RealPos &>( this->args[3].getVariable()->getRevObject() ).getDagNode();

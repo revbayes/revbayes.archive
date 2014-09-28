@@ -70,8 +70,10 @@ RevLanguage::Func_numUniqueInVector<valType>* RevLanguage::Func_numUniqueInVecto
 }
 
 template <typename valType>
-RevLanguage::RevPtr<Variable> RevLanguage::Func_numUniqueInVector<valType>::execute() {
-    RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* vect = static_cast<const ModelVector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+RevLanguage::RevPtr<Variable> RevLanguage::Func_numUniqueInVector<valType>::execute()
+{
+    
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* vect = static_cast<const ModelVector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::NumUniqueInVector<typename valType::valueType>* f = new RevBayesCore::NumUniqueInVector<typename valType::valueType>( vect );
     
     DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());

@@ -84,12 +84,12 @@ namespace RevBayesCore {
         void                                                                reInitialized(void);
         
         void                                                                setClockRate(const TypedDagNode< double > *r);
-        void                                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
+        void                                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
         void                                                                setPInv(const TypedDagNode< double > *);
         void                                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
         void                                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
-        void                                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
-        void                                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
+        void                                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
         
         
@@ -157,12 +157,12 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< double >*                                       homogeneousClockRate;
-        const TypedDagNode< std::vector< double > >*                        heterogeneousClockRates;
+        const TypedDagNode< RbVector< double > >*                           heterogeneousClockRates;
         const TypedDagNode< RateMatrix >*                                   homogeneousRateMatrix;
         const TypedDagNode< RbVector< RateMatrix > >*                       heterogeneousRateMatrices;
-        const TypedDagNode< std::vector< double > >*                        rootFrequencies;
-        const TypedDagNode< std::vector< double > >*                        siteRates;
-        const TypedDagNode< std::vector< double > >*                        siteRatesProbs;
+        const TypedDagNode< RbVector< double > >*                           rootFrequencies;
+        const TypedDagNode< RbVector< double > >*                           siteRates;
+        const TypedDagNode< RbVector< double > >*                           siteRatesProbs;
         const TypedDagNode< double >*                                       pInv;
         
         
@@ -1114,7 +1114,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< std::vector< double > > *r)
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< RbVector< double > > *r)
 {
     
     // remove the old parameter first
@@ -1223,7 +1223,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f)
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f)
 {
     
     // remove the old parameter first
@@ -1254,7 +1254,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setSiteRates(const TypedDagNode< std::vector< double > > *r) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setSiteRates(const TypedDagNode< RbVector< double > > *r) {
     
     // remove the old parameter first
     if ( siteRates != NULL )
@@ -1321,7 +1321,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     }
     else if (oldP == heterogeneousClockRates)
     {
-        heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        heterogeneousClockRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == homogeneousRateMatrix)
     {
@@ -1333,15 +1333,15 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == siteRates)
     {
-        siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        siteRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == siteRatesProbs)
     {
-        siteRatesProbs = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        siteRatesProbs = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == pInv)
     {

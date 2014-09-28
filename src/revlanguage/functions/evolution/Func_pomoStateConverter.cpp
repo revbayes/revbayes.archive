@@ -40,11 +40,11 @@ RevPtr<Variable> Func_pomoStateConverter::execute() {
 
     RevBayesCore::PomoStateConverter* c = new RevBayesCore::PomoStateConverter(  );
     
-    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> >* taxa  = static_cast< const ModelVector<Taxon> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::Taxon> >* taxa  = static_cast< const ModelVector<Taxon> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
     std::map <std::string, std::string > gene2species;
 
-    for (std::vector<RevBayesCore::Taxon>::const_iterator it=taxa->getValue().begin(); it!=taxa->getValue().end(); ++it)
+    for (RevBayesCore::RbIterator<RevBayesCore::Taxon> it=taxa->getValue().begin(); it!=taxa->getValue().end(); ++it)
     {
         gene2species[it->getName()] = it->getSpeciesName();
     }

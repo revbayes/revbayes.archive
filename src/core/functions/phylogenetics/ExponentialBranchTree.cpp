@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 // constructor(s)
 ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode< RealNodeContainer > *up, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
 
-    TypedFunction< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ),
+    TypedFunction< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ),
     tau(t), process(p), uniprocess(up), offset(o), traitindex(i) {
     
     this->addParameter( tau );
@@ -34,13 +34,6 @@ ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, 
         this->addParameter(traitindex) ;
     }
     update();
-}
-
-ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n):
-
-    TypedFunction< std::vector< double > >( n ), 
-        tau(n.tau), process( n.process ), uniprocess( n.uniprocess ), offset( n.offset ), traitindex( n.traitindex) {
-    
 }
 
 
