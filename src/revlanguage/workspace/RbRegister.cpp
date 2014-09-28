@@ -51,9 +51,6 @@
 
 /* Container types (in folder "datatypes/container") */
 #include "ModelVector.h"
-#include "ModelVectorAbstractElement.h"
-#include "ModelVectorAbstractRbElement.h"
-#include "RevObjectVector.h"
 #include "WorkspaceVector.h"
 
 /* Evolution types (in folder "datatypes/evolution") */

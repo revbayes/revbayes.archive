@@ -106,7 +106,7 @@ void SimplexSingleElementScale::printParameterSummary(std::ostream &o) const {
 void SimplexSingleElementScale::rejectSimpleMove( void ) {
     // swap current value and stored value
 
-    variable->setValue( new std::vector<double>(storedValue), false );
+    variable->setValue( new RbVector<double>(storedValue), false );
 }
 
 

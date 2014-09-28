@@ -2,7 +2,6 @@
 #define Dist_phyloCTMC_H
 
 #include "AbstractDiscreteCharacterData.h"
-#include "ModelVectorAbstractElement.h"
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
@@ -92,7 +91,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* siteRatesNode = NULL;
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* siteRatesNode = NULL;
     if ( siteRates != NULL && siteRates->getRevObject() != RevNullObject::getInstance() )
     {
         siteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
@@ -104,7 +103,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     }
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
-    const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
+    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
     if ( rootFrequencies->getRevObject() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
@@ -124,7 +123,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the clock rates
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
             // sanity check
             size_t nRates = clockRates->getValue().size();
@@ -142,9 +141,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -179,7 +178,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != clockRates->getValue().size() ) 
@@ -196,9 +195,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -233,7 +232,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != clockRates->getValue().size() ) 
@@ -250,9 +249,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -281,9 +280,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
         // set the rate matrix
         size_t nChars = 1;
-        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue()[0].getNumberOfStates();
         }
         else
@@ -302,7 +301,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != clockRates->getValue().size() )
@@ -319,9 +318,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() )
@@ -349,9 +348,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // we get the number of states from the rates matrix
         // set the rate matrix
         size_t nChars = 1;
-        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue()[0].getNumberOfStates();
         } 
         else 
@@ -370,7 +369,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != clockRates->getValue().size() ) 
@@ -387,9 +386,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -453,7 +452,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMember
         
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
-        rateMatrixTypes.push_back( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() );
+        rateMatrixTypes.push_back( ModelVector<RateMatrix>::getClassTypeSpec() );
         distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         // optional argument for the root frequencies

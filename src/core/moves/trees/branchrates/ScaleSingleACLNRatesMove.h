@@ -1,6 +1,7 @@
 #ifndef ScaleSingleACLNRatesMove_H
 #define ScaleSingleACLNRatesMove_H
 
+#include "RbVector.h"
 #include "SimpleMove.h"
 #include "StochasticNode.h"
 
@@ -13,7 +14,7 @@ namespace RevBayesCore {
      class ScaleSingleACLNRatesMove : public SimpleMove {
         
     public:
-        ScaleSingleACLNRatesMove(StochasticNode<RevBayesCore::RbVector<double> >* v, double l, bool t, double w);                         //!< Constructor
+        ScaleSingleACLNRatesMove(StochasticNode< RbVector<double> >* v, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
         ScaleSingleACLNRatesMove*                   clone(void) const;                                                                  //!< Clone this object.
@@ -31,7 +32,7 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<RevBayesCore::RbVector<double> >*       variable;
+        StochasticNode< RbVector<double> >*         variable;
 		
         double                                      lambda;                                                                             //!< The scale parameter of the move (larger lambda -> larger proposals).
         size_t                                      index;                                                                              //!< The index of the last modified element.

@@ -81,7 +81,7 @@ void ScaleSingleACLNRatesMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
     
 }
 

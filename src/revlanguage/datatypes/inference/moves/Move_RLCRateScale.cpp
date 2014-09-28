@@ -57,8 +57,8 @@ void Move_RLCRateScale::constructInternalObject( void )
     double w                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double l                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     bool t                                                      = static_cast<const RlBoolean &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const ModelVector<RealPos> &>( v->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode< std::vector<double> > *n      = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> > *tmp      = static_cast<const ModelVector<RealPos> &>( v->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *n      = static_cast<RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *>( tmp );
     
     // just to make sure also test that the stochastic node has the correct distribution
     RevBayesCore::BranchRateJumpProcess *brj = dynamic_cast< RevBayesCore::BranchRateJumpProcess* >( &n->getDistribution() );

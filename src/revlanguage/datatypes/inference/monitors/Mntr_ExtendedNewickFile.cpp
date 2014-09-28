@@ -38,9 +38,9 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void ) {
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    std::set<RevBayesCore::TypedDagNode<std::vector<double> > *> n;
+    std::set<RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> > *> n;
     for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
