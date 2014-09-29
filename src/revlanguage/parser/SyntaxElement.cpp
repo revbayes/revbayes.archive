@@ -18,20 +18,6 @@ RevPtr<Variable> SyntaxElement::evaluateLHSContent( Environment& env, const std:
 
 
 /**
- * This function evaluates the semantic value of the element if it is part of a dynamic
- * expression, or potentially part of a dynamic expression (function arguments in dynamic
- * expressions, before matching to argument rules). The default behavior is to defer to
- * the standard evaluateContent, which must then handle both cases. In function calls,
- * however, it is important to distinguish the two contexts. It is also critical for
- * variables.
- */
-RevPtr<Variable> SyntaxElement::evaluateDynamicContent( Environment& env )
-{
-    return evaluateContent( env );
-}
-
-
-/**
  * Is the syntax element an assignment element?
  * By default the answer is no.
  */

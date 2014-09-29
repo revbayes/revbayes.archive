@@ -73,7 +73,7 @@ SyntaxElement* SyntaxBinaryExpr::clone () const
 
 
 /**
- * @brief Get semantic value (static version)
+ * @brief Get semantic value
  *
  * We simply look up the function and calculate the value. Note that
  * we look up the function in the global workspace, which means that
@@ -88,89 +88,52 @@ SyntaxElement* SyntaxBinaryExpr::clone () const
  * It is not necessary to clone the function, we simply clear out
  * the arguments after we are done.
  *
- * Note that we call the static evaluate function of the arguments,
- * and make sure we return a constant value.
- *
- * @todo Support this evaluation context better
- */
-RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env )
-{
-
-    // Package the arguments
-    std::vector<Argument> args;
-
-    RevPtr<Variable> left = leftOperand->evaluateContent( env );
-    args.push_back( Argument( left, "" ) );
-
-    RevPtr<Variable> right = rightOperand->evaluateContent( env );
-    args.push_back( Argument( right, "" ) );
-
-    // Get function and create deterministic DAG node
-    std::string funcName = "_" + opCode[ operation ];
-    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, true ).clone();
-    theFunction->processArguments( args, true );
-    
-    // Execute the function
-    RevPtr<Variable> theReturnValue = theFunction->execute();
-    
-    // Delete the function clone
-    delete theFunction;
-    
-    // Return the return value of the function after making it constant
-    if ( theReturnValue != NULL )
-    {
-        theReturnValue->getRevObject().makeConstantValue();
-    }
-    
-    return theReturnValue;
-}
-
-
-/**
- * @brief Get semantic value (dynamic version)
- *
- * In the dynamic version of this function, we look up the function
- * and ask it to generate a deterministic variable with the function
- * inside. For now, we simply call the standard execute() function,
- * which is set up to produce a deterministic variable in most
- * functions.
- *
- * Note that we look up the function in the global workspace, which means
- * that we do not allow users to override internal functions corresponding
- * to binary expressions.
- *
  * Even in the dynamic version of this function, it is not necessary to
  * clone the function. We simply use it to generate a deterministic
  * variable after setting the appropriate arguments. After executing
  * the function, we make sure to clear out the arguments of the function,
  * so that it is ready for the next round of execution.
  *
- * Unlike the static version of this function, we call the dynamic evaluate
+ * If dynamic == false, then we call the static evaluate function of the arguments,
+ * and make sure we return a constant value.
+ *
+ * If dynamic == true, then we call the dynamic evaluate
  * function of the arguments. We also return the return value as is, without
  * making it a constant value first.
+ *
+ * @todo Support this evaluation context better
  */
-RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
+RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dynamic )
 {
     
     // Package the arguments
     std::vector<Argument> args;
     
-    RevPtr<Variable> left = leftOperand->evaluateDynamicContent( env );
+    RevPtr<Variable> left = leftOperand->evaluateContent( env, dynamic );
     args.push_back( Argument( left, "" ) );
     
-    RevPtr<Variable> right = rightOperand->evaluateDynamicContent( env );
+    RevPtr<Variable> right = rightOperand->evaluateContent( env, dynamic );
     args.push_back( Argument( right, "" ) );
     
-    // Get function clone and create deterministic DAG node
+    // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
-    theFunction->processArguments( args, false );
+    Function& theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false );
+    theFunction.processArguments( args, false );
     
-    RevPtr<Variable> theReturnValue = theFunction->execute();
+    RevPtr<Variable> theReturnValue = theFunction.execute();
     
-    // Delete the function clone
-    delete theFunction;
-
+    // Clear the arguments in the function
+    theFunction.clear();
+    
+    if ( dynamic == false )
+    {
+        // Return the return value of the function after making it constant
+        if ( theReturnValue != NULL )
+        {
+            theReturnValue->getRevObject().makeConstantValue();
+        }
+        
+    }
     return theReturnValue;
 }
 

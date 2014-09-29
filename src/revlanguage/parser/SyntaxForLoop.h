@@ -52,7 +52,7 @@ namespace RevLanguage {
         void                        printValue(std::ostream& o) const;                              //!< Print info about object
 
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env);                              //!< Get semantic value
+        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
         void                        finalizeLoop(void);                                             //!< Finalize loop
         const std::string&          getIndexVarName(void) const;                                    //!< Get the name of the index variable
         void                        getNextLoopState(void);                                         //!< Get next state of loop

@@ -71,7 +71,7 @@ SyntaxElement* SyntaxForLoop::clone( void ) const
 
 
 /** Get semantic value (not applicable so return NULL) */
-RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env )
+RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env, bool dynamic )
 {
     return NULL;
 }

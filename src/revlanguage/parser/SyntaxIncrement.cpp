@@ -16,7 +16,7 @@ using namespace RevLanguage;
  *
  * \param[in]   v   The variable expression
  */
-SyntaxIncrement::SyntaxIncrement( SyntaxVariable* v ) :
+SyntaxIncrement::SyntaxIncrement( SyntaxElement* v ) :
     SyntaxElement(),
     variable( v )
 {
@@ -77,7 +77,7 @@ SyntaxIncrement* SyntaxIncrement::clone () const
  * Evaluate the content of this syntax element. This will perform
  * an increment assignment operation.
  */
-RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
+RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating increment assignment\n" );
