@@ -263,11 +263,14 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     // get characters in each state
     if (counts == NULL)
     {
+        
+        // need dynamic allocation
         unsigned tmpCounts[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
         counts = tmpCounts;
+        for (size_t i = 0; i < from.size(); i++)
+            counts[ from[i]->getState() ] += 1;
     }
-    for (size_t i = 0; i < from.size(); i++)
-        counts[ from[i]->getState() ] += 1;
+    
     
     // get rate matrix
     const RateMatrix* rm;
@@ -278,8 +281,11 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     
     // get the rate of leaving the sequence-state
     double sum = 0.0;
-    for (size_t i = 0; i < 20; i++)
+    for (size_t i = 0; i < numStates; i++)
+    {
+//        std::cout << i << " "<< counts[i] << "\n";
         sum += -(*rm)[i][i] * counts[i];
+    }
     
     // apply rate for branch
     if (branchHeterogeneousClockRates)
@@ -293,6 +299,7 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
 double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
 {
     
+    // need dynamic allocation
     unsigned counts[20] = { 0,0,0,0,0,
         0,0,0,0,0,
         0,0,0,0,0,

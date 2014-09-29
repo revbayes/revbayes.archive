@@ -67,6 +67,11 @@ std::string CharacterEvent::getStateStr(void)
     return ss.str();
 }
 
+void CharacterEvent::setIndex(size_t i)
+{
+    index = i;
+}
+
 void CharacterEvent::setState(unsigned int s)
 {
     state = s;
