@@ -81,6 +81,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
 #include "MethodTable.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
@@ -211,7 +212,12 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
 template <typename rlType>
 RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args )
 {
-    if ( name == "sort" )
+    if ( name == "size" )
+    {
+        // return a new variable with the size of this container
+        return RevPtr<Variable>( new Variable( new Natural( size() ), "" ) );
+    }
+    else if ( name == "sort" )
     {
         // Check whether the DAG node is actually a constant node
         if ( !this->dagNode->isConstant() )
@@ -336,6 +342,9 @@ MethodTable ModelVector<rlType>::makeMethods(void) const
 {
     MethodTable methods = MethodTable();
     
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
     ArgumentRules* sortArgRules = new ArgumentRules();
     methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
     
@@ -427,6 +436,7 @@ size_t ModelVector<rlType>::size( void ) const
 template <typename rlType>
 void ModelVector<rlType>::sort( void )
 {
+    throw RbException("The unique function needs implementing .... ");
 //    std::sort( this->dagNode->getValue().begin(), this->dagNode->getValue().end(), myComparator );
 }
 
