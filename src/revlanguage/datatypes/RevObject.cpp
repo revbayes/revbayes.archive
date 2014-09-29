@@ -365,13 +365,6 @@ void RevObject::makeConversionValue( RevPtr<Variable> var )
 }
 
 
-/** Get a deterministic lookup of an element. Default implementation throws an error */
-RevObject* RevObject::makeElementLookup( const RevPtr<Variable>& var, const std::vector< RevPtr<Variable> >& indices )
-{
-    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
-}
-
-
 /**
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.

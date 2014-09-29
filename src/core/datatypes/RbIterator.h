@@ -31,8 +31,8 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
+        RbIterator(void);
         RbIterator(const typename RbIteratorImpl<valueType, IsAbstract<valueType>::Is >::iteratorType &i);
-        RbIterator(const RbIterator<valueType> &v);
         
         // public (stl-like) vector functions
 //        RbIterator&                                         operator++(void);                                                               //!< Increment index (prefix)
@@ -52,6 +52,16 @@ namespace RevBayesCore {
         // private members
 
     };
+    
+}
+
+
+
+
+
+template <class valueType>
+RevBayesCore::RbIterator<valueType>::RbIterator(void) : RbIteratorImpl<valueType, IsAbstract<valueType>::Is>()
+{
     
 }
 
