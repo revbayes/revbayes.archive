@@ -16,7 +16,7 @@ using namespace RevLanguage;
  *
  * \param[in]   v   The variable expression
  */
-SyntaxDecrement::SyntaxDecrement( SyntaxVariable* v ) :
+SyntaxDecrement::SyntaxDecrement( SyntaxElement* v ) :
     SyntaxElement(),
     variable( v )
 {
@@ -77,7 +77,7 @@ SyntaxDecrement* SyntaxDecrement::clone () const
  * Evaluate the content of this syntax element. This will perform
  * a decrement assignment operation.
  */
-RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env ) 
+RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating decrement assignment\n" );

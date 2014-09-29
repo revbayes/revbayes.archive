@@ -118,13 +118,14 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, con
     else
     {
         RevObject& theParentObj = theParentVar->getRevObject();
-        if ( theParentObj.getTypeSpec().isDerivedOf( Container::getClassTypeSpec() ) )
+        
+        Container* c = dynamic_cast<Container*>( &theParentObj );
+        if ( c != NULL )
         {
             
-            Container& c = dynamic_cast<Container&>( theParentObj );
-            if ( theParentObj.getDagNode()->isConstant() && c.allowsModificationToCompositeContainer() )
+            if ( theParentObj.getDagNode()->isConstant() && c->allowsModificationToCompositeContainer() )
             {
-                for ( size_t i=1; i<=c.size(); ++i)
+                for ( size_t i=1; i<=c->size(); ++i)
                 {
                     std::string elementIdentifier = theParentVar->getName() + "[" + i + "]";
                 
@@ -132,7 +133,7 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, con
                     if ( !env.existsVariable( elementIdentifier ) )
                     {
                         // create a new slot
-                        RevPtr<Variable> theElementVar = RevPtr<Variable>( new Variable( c.getElement(i-1) ) );
+                        RevPtr<Variable> theElementVar = RevPtr<Variable>( new Variable( c->getElement(i-1) ) );
                         env.addVariable(elementIdentifier,theElementVar);
                         theElementVar->setName( elementIdentifier );
                     }
@@ -152,9 +153,9 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, con
                 {
                     throw RbException("We cannot create a composite container from a non-constant container");
                 }
-                else if ( !c.allowsModificationToCompositeContainer() )
+                else if ( !c->allowsModificationToCompositeContainer() )
                 {
-                    throw RbException("An object of type '" + c.getType() + "' does not allow transformation into a composite container.");
+                    throw RbException("An object of type '" + theParentObj.getType() + "' does not allow transformation into a composite container.");
                 }
             }
         }
@@ -233,8 +234,8 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateContent( Environment& env, bool d
 
         try
         {
-            Function& f = Workspace::userWorkspace().getFunction("[]", args);
-            f.processArguments( args );
+            Function& f = Workspace::userWorkspace().getFunction("[]", args, false);
+            f.processArguments( args, false );
             theVar = f.execute();
             theVar->setName( identifier );
         }

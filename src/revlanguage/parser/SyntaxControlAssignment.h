@@ -1,8 +1,7 @@
 #ifndef SyntaxControlAssignment_H
 #define SyntaxControlAssignment_H
 
-#include "SyntaxElement.h"
-#include "SyntaxVariable.h"
+#include "SyntaxAssignment.h"
 
 #include <iostream>
 #include <list>
@@ -33,31 +32,19 @@ namespace RevLanguage {
      * variables. The for loop variable is implicitly set to be
      * a control variable.
      */
-    class SyntaxControlAssignment : public SyntaxElement {
+    class SyntaxControlAssignment : public SyntaxAssignment {
         
     public:
         SyntaxControlAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                        //!< Basic constructor
-        SyntaxControlAssignment(const SyntaxControlAssignment& x);                                      //!< Copy constructor
         
 	    virtual                    ~SyntaxControlAssignment();                                          //!< Destructor
         
-        // Assignment operator
-        SyntaxControlAssignment&    operator=(const SyntaxControlAssignment& x);                        //!< Assignment operator
-        
         // Basic utility functions
         SyntaxControlAssignment*    clone() const;                                                      //!< Clone object
-        bool                        isAssignment(void) const;                                           //!< Is this an assignment statement?
-        void                        printValue(std::ostream& o) const;                                  //!< Print info about object
-        
-        // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env);                                  //!< Get semantic value
-        bool                        isFunctionSafe(const Environment&       env,
-                                                   std::set<std::string>&   localVars) const;           //!< Is this element safe in a function?
         
     protected:
-        SyntaxElement*              lhsExpression;                                                      //!< The lhs expression
-        SyntaxElement*              rhsExpression;                                                      //!< The rhs expression
-        
+        void                        assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);               //!< The assignment operation.
+
     };
     
 }

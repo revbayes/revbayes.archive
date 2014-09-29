@@ -11,44 +11,16 @@
 using namespace RevLanguage;
 
 /** Basic constructor from lef-hand side and right-hand side expressions */
-SyntaxControlAssignment::SyntaxControlAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
-    SyntaxElement(),
-    lhsExpression( lhsExpr ),
-    rhsExpression( rhsExpr )
+SyntaxControlAssignment::SyntaxControlAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) : SyntaxAssignment(lhsExpr,rhsExpr)
 {
-}
 
-
-/** Deep copy constructor */
-SyntaxControlAssignment::SyntaxControlAssignment( const SyntaxControlAssignment& x ) :
-    SyntaxElement( x ),
-    lhsExpression( x.lhsExpression->clone() ),
-    rhsExpression( x.rhsExpression->clone() )
-{
 }
 
 
 /** Destructor deletes operands */
 SyntaxControlAssignment::~SyntaxControlAssignment( void )
 {
-    delete lhsExpression;
-    delete rhsExpression;
-}
 
-
-/** Assignment operator */
-SyntaxControlAssignment& SyntaxControlAssignment::operator=( const SyntaxControlAssignment& x )
-{
-    if ( this != &x ) {
-        
-        delete lhsExpression;
-        delete rhsExpression;
-        
-        lhsExpression = x.lhsExpression->clone();
-        rhsExpression = x.rhsExpression->clone();
-    }
-    
-    return (*this);
 }
 
 
@@ -67,40 +39,29 @@ SyntaxControlAssignment* SyntaxControlAssignment::clone () const
  * Note that the return variable is not set to a control variable, in case it is
  * used in further assignments of other types.
  */
-RevPtr<Variable> SyntaxControlAssignment::evaluateContent( Environment& env )
+void SyntaxControlAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating control assignment\n" );
 #endif
     
-    // Declare variable storing the return value of the assignment expression
-    RevPtr<Variable> theVariable;
-    
-    // Get the rhs expression wrapped and executed into a variable.
-    theVariable = rhsExpression->evaluateContent( env );
-    
-    // Get variable slot from lhs
-    RevPtr<Variable> theSlot;
-    theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
-    
     // Get a reference to the Rev object value
-    const RevObject& value = theVariable->getRevObject();
+    const RevObject& value = rhs->getRevObject();
     
     // Perform type conversion if needed, otherwise just clone the value object
     RevObject* newValue;
-    if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) )
+    if ( !value.getTypeSpec().isDerivedOf( lhs->getRevObjectTypeSpec() ) )
     {
         // We are not of a derived type (or the same type) so we need to cast
-        // This is a one-time type conversion, so we set the once flag to true
-        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec(), true ) )
+        if (value.isConvertibleTo( lhs->getRevObjectTypeSpec(), true ) )
         {
-            newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
+            newValue = value.convertTo( lhs->getRevObjectTypeSpec() );
         }
         else
         {
             std::ostringstream msg;
-            msg << "Cannot assign variable '" << theSlot->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
-            msg << " because the variable requires type '" << theSlot->getRevObjectTypeSpec().getType() << "'" << std::endl;
+            msg << "Cannot assign variable '" << lhs->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
+            msg << " because the variable requires type '" << lhs->getRevObjectTypeSpec().getType() << "'" << std::endl;
             throw RbException( msg );
         }
     }
@@ -113,57 +74,13 @@ RevPtr<Variable> SyntaxControlAssignment::evaluateContent( Environment& env )
     // Fill the slot with newValue. The variable itself will be
     // passed on as the semantic value of the statement and can
     // be used in further assignments.
-    theSlot->setRevObject( newValue );
-    theSlot->setControlVarState( true );
+    lhs->setRevObject( newValue );
+    lhs->setControlVariableState( true );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
     
-    // Return variable
-    return theVariable;
-}
-
-
-/** This is an assignment, return true. */
-bool SyntaxControlAssignment::isAssignment( void ) const
-{
-    return true;
-}
-
-
-
-/**
- * Is the syntax element safe for use in a function (as
- * opposed to a procedure)? The assignment is safe
- * if its lhs and rhs expressions are safe, and the
- * assignment is not to an external variable.
- */
-bool SyntaxControlAssignment::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
-{
-    // Check lhs and rhs expressions
-    if ( !lhsExpression->isFunctionSafe( env, localVars ) || !rhsExpression->isFunctionSafe( env, localVars ) )
-        return false;
-
-    // Check whether assignment is to external variable (not function safe)
-    if ( lhsExpression->retrievesExternVar( env, localVars, true ) )
-        return false;
-
-    // All tests passed
-    return true;
-}
-
-
-/** Print info about the syntax element */
-void SyntaxControlAssignment::printValue( std::ostream& o ) const
-{
-    o << "SyntaxControlAssignment:" << std::endl;
-    o << "lhsExpression = ";
-    lhsExpression->printValue( o );
-    o << std::endl;
-    o << "rhsExpression = ";
-    rhsExpression->printValue( o );
-    o << std::endl;
 }
 
 
