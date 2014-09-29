@@ -22,6 +22,8 @@ namespace RevBayesCore {
         
         virtual bool                        operator==(const RateMatrix &rm) const { return this == &rm; }
         virtual bool                        operator!=(const RateMatrix &rm) const { return !operator==(rm); }
+        virtual bool                        operator<(const RateMatrix &rm) const { return this < &rm; }
+        virtual bool                        operator<=(const RateMatrix &rm) const { return operator<(rm) || operator==(rm); }
         
         virtual std::vector<std::vector<double> >::const_iterator       begin(void) const = 0;
         virtual std::vector<std::vector<double> >::iterator             begin(void) = 0;

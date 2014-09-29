@@ -92,6 +92,16 @@ bool Taxon::operator<(const RevBayesCore::Taxon &t) const
 
 
 /**
+ * Less-than or equals operator.
+ */
+bool Taxon::operator<=(const RevBayesCore::Taxon &t) const
+{
+    
+    return operator<(t) || operator==(t);
+}
+
+
+/**
  * Get the date info for this taxon.
  *
  * \return    The date.
