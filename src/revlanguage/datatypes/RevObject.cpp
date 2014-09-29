@@ -156,16 +156,6 @@ RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::ve
 }
 
 
-/**
- * Find or create an element variable of a container. Default implementation throws
- * an error. Override in container objects.
- */
-RevPtr<Variable> RevObject::findOrCreateElement( const std::vector<size_t>& indices )
-{
-    throw RbException( "Object of type '" + getType() + "' does not have any elements" );
-}
-
-
 /** Get class vector describing type of object */
 const std::string& RevObject::getClassType(void)
 {
@@ -246,23 +236,6 @@ RevBayesCore::DagNode* RevObject::getDagNode( void ) const
     throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of a '" + getClassType() + "'.");
     
     return NULL;
-}
-
-
-/**
- * Get the number of dimensions. We use 0 for scalars, 1 for vectors,
- * 2 for matrices, etc.
- */
-size_t RevObject::getDim( void ) const
-{
-    return 0;
-}
-
-
-/** Get a constant element value. Default implementation throws an error */
-RevPtr<Variable> RevObject::getElement( const std::vector<size_t>& indices )
-{
-    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
 }
 
 
