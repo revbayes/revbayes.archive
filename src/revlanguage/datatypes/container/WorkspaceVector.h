@@ -25,7 +25,7 @@ namespace RevLanguage {
      * For Rev objects that are not model objects or workspace objects, see RevObjectVector.
      */
     template <typename rlType>
-    class WorkspaceVector : public WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> > {
+    class WorkspaceVector : public WorkspaceObject<RevBayesCore::RbVector<rlType> > {
         
     public:
         typedef typename rlType::valueType          elementType;
@@ -41,18 +41,15 @@ namespace RevLanguage {
         const rlType&                               operator[](size_t index) const;                                     //!< Subscript operator (const)
         void                                        pop_back(void);                                                     //!< Drop element at back
         void                                        pop_front(void);                                                    //!< Drop element from front
-        void                                        push_back(rlType *x);                                               //!< Append element to end
-        void                                        push_front(rlType *x);                                              //!< Append element to end
+        void                                        push_back(const rlType &x);                                         //!< Append element to end
+        void                                        push_front(const rlType &x);                                        //!< Append element to end
         size_t                                      size(void) const;                                                   //!< The size of the vector
 
         // Basic utility functions you have to override
         virtual WorkspaceVector<rlType>*            clone(void) const;                                                  //!< Clone object
         static const std::string&                   getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get the object type spec of the instance
-
-        void                                        constructInternalObject(void);                                      //!< We construct the a new internal object.
-        
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get the object type spec of the instance        
         
         // Basic utility function provided here
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
@@ -83,7 +80,7 @@ using namespace RevLanguage;
  */
 template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( void ) :
-    WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> >()
+    WorkspaceObject<RevBayesCore::RbVector< rlType > >()
 {
 }
 
@@ -120,7 +117,7 @@ WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
  */
 template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) :
-    WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> >()
+    WorkspaceObject<RevBayesCore::RbVector< rlType > >()
 {
     throw RbException("Missing implementation in WorkspaceVector.");
 //    for ( typename vectorRlPtr::const_iterator it = v.begin(); it != v.end(); ++it )
@@ -132,27 +129,27 @@ WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) :
 }
 
 
-///**
-// * Subscript operator, provided for convenience. Note that
-// * there is no problem to give out non-const references
-// * to our Rev object elements.
-// */
-//template <typename rlType>
-//rlType& WorkspaceVector<rlType>::operator[]( size_t index )
-//{
-//    return static_cast<rlType&>( this->value[ index ].getRevObject() );
-//}
+/**
+ * Subscript operator, provided for convenience. Note that
+ * there is no problem to give out non-const references
+ * to our Rev object elements.
+ */
+template <typename rlType>
+rlType& WorkspaceVector<rlType>::operator[]( size_t index )
+{
+    return (*this->value)[ index ];
+}
 
 
-///**
-// * Subscript operator, provided for convenience. This is
-// * the const version.
-// */
-//template <typename rlType>
-//const rlType& WorkspaceVector<rlType>::operator[]( size_t index ) const
-//{
-//    return static_cast<rlType&>( this->elements[ index ]->getRevObject() );
-//}
+/**
+ * Subscript operator, provided for convenience. This is
+ * the const version.
+ */
+template <typename rlType>
+const rlType& WorkspaceVector<rlType>::operator[]( size_t index ) const
+{
+    return (*this->value)[ index ];
+}
 
 
 /** Return a type-safe clone of the object */
@@ -242,11 +239,13 @@ const TypeSpec& WorkspaceVector<rlType>::getTypeSpec(void) const
 template<typename rlType>
 RevBayesCore::RbVector<typename rlType::valueType> WorkspaceVector<rlType>::getVectorRbPointer( void ) const
 {
-    vectorRbPtr theVector = *this->value;
+    vectorRbPtr theVector;
     
-//    std::vector< RevPtr<Variable> >::const_iterator it;
-//    for ( it = this->value->begin(); it != this->value->end(); ++it )
-//        theVector.push_back( static_cast<rlType&>( (*it)->getRevObject() ).getValue() );
+    RevBayesCore::RbIterator< rlType > it;
+    for ( it = this->value->begin(); it != this->value->end(); ++it )
+    {
+        theVector.push_back( it->getValue() );
+    }
     
     return theVector;
 }
@@ -275,14 +274,11 @@ void WorkspaceVector<rlType>::pop_front( void )
  * Push a Rev object element onto the back of the vector.
  */
 template <typename rlType>
-void WorkspaceVector<rlType>::push_back( rlType* x )
+void WorkspaceVector<rlType>::push_back( const rlType &x )
 {
-    // Make sure our variable guards the type of element
-    Variable* newVar = new Variable( x );
-    newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
 
     // Push it onto the back of the elements vector
-    this->value->push_back( x->getValue() );
+    this->value->push_back( x );
 }
 
 
@@ -290,14 +286,11 @@ void WorkspaceVector<rlType>::push_back( rlType* x )
  * Push a Rev object element onto the front of the vector.
  */
 template <typename rlType>
-void WorkspaceVector<rlType>::push_front( rlType* x )
+void WorkspaceVector<rlType>::push_front( const rlType &x )
 {
-    // Make sure our variable guards the type of element
-    Variable* newVar = new Variable( x );
-    newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
     
     // Push it onto the front of the elements vector
-    this->value->insert( this->value->begin(), x->getValue() );
+    this->value->insert( this->value->begin(), x );
 }
 
 
@@ -324,11 +317,8 @@ void WorkspaceVector<rlType>::printValue( std::ostream& o ) const
 
     for ( size_t i = 0; i < this->value->size(); ++i )
     {
-//        o << "[" << i + 1 << "]" << std::endl;
-//        if ( elements[i]->isNAVar() )
-//            o << "NA";
-//        else
-            o << this->value[i];
+        o << "[" << i + 1 << "]" << std::endl;
+            (*this->value)[i].printValue(o);
         o << std::endl << std::endl;
     }
 

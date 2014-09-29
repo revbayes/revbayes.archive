@@ -31,6 +31,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
+        RbConstIterator(void);
         RbConstIterator(const typename RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is >::iteratorType &i);
 //        RbConstIterator(const RbConstIterator<valueType> &v);
         
@@ -50,6 +51,14 @@ namespace RevBayesCore {
         // private members
 
     };
+    
+}
+
+
+
+template <class valueType>
+RevBayesCore::RbConstIterator<valueType>::RbConstIterator(void) : RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is>()
+{
     
 }
 

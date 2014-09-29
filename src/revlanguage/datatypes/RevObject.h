@@ -17,6 +17,7 @@
 #ifndef RevObject_H
 #define RevObject_H
 
+#include "Cloneable.h"
 #include "DagNode.h"
 #include "RevPtr.h"
 
@@ -40,7 +41,7 @@ typedef ArgumentRules MemberRules;                                              
 
 
 
-class RevObject {
+    class RevObject : public RevBayesCore::Cloneable {
     
 public:
     virtual                            ~RevObject(void);                                                                                //!< Virtual destructor

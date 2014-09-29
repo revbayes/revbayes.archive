@@ -33,6 +33,7 @@ namespace RevBayesCore {
         typedef typename std::vector<valueType>::iterator iteratorType;
         
         // constructor(s)
+        RbIteratorImpl(void) {  }
         RbIteratorImpl(const iteratorType &i) { it = i; }
         //        RbConstIteratorImpl(const RbConstIteratorImpl<valueType,indicator> &v);
         
@@ -62,6 +63,7 @@ namespace RevBayesCore {
         typedef typename std::vector<valueType*>::iterator iteratorType;
 
         // constructor(s)
+        RbIteratorImpl(void) {  }
         RbIteratorImpl(const iteratorType &i) { it = i; }
         //        RbConstIteratorImpl(const RbConstIteratorImpl<valueType,1> &v);
         

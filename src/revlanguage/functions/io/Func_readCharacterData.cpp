@@ -132,31 +132,31 @@ RevPtr<Variable> Func_readCharacterData::execute( void )
                 if ( dType == "DNA" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-                    DiscreteCharacterData<DnaState>* mDNA = new DiscreteCharacterData<DnaState>( coreM );
+                    DiscreteCharacterData<DnaState> mDNA = DiscreteCharacterData<DnaState>( coreM );
                     m->push_back( mDNA );
                 }
                 else if ( dType == "RNA" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
-                    DiscreteCharacterData<RnaState>* mRNA = new DiscreteCharacterData<RnaState>( coreM );
+                    DiscreteCharacterData<RnaState> mRNA = DiscreteCharacterData<RnaState>( coreM );
                     m->push_back( mRNA );
                 }
                 else if ( dType == "Protein" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
-                    DiscreteCharacterData<AminoAcidState>* mAA = new DiscreteCharacterData<AminoAcidState>( coreM );
+                    DiscreteCharacterData<AminoAcidState> mAA = DiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                 }
                 else if ( dType == "Continuous" )
                 {
                     RevBayesCore::ContinuousCharacterData *coreM = static_cast<RevBayesCore::ContinuousCharacterData *>( *it );
-                    AbstractCharacterData* mCC = new AbstractCharacterData (coreM );
+                    AbstractCharacterData mCC = AbstractCharacterData (coreM );
                     m->push_back( mCC );
                 }
                 else if ( dType == "Standard" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
-                    DiscreteCharacterData<StandardState>* mSS = new DiscreteCharacterData<StandardState>( coreM );
+                    DiscreteCharacterData<StandardState> mSS = DiscreteCharacterData<StandardState>( coreM );
                     m->push_back( mSS );
                 }
                 else
