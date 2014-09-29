@@ -641,6 +641,12 @@ void DagNode::restoreAffected(void)
 }
 
 
+void DagNode::setHidden(bool tf)
+{
+    hidden = tf;
+}
+
+
 void DagNode::setName(std::string const &n)
 {
 

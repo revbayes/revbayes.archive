@@ -101,11 +101,7 @@ public:
     virtual void                        setMember(const std::string& name, const RevPtr<Variable> &var);                                //!< Set member variable
     
     // Container functions you may want to override (container object types)
-    virtual RevPtr<Variable>            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);                               //!< Find or create element variable
-    virtual size_t                      getDim(void) const;                                                                             //!< Get the dimensions (0 for scalar, 1 for vector etc)
-    virtual RevPtr<Variable>            getElement(const std::vector<size_t>& oneOffsetIndices);                                        //!< Get element variable
-    virtual RevObject*                  makeElementLookup(const RevPtr<Variable>&                   var,
-                                                          const std::vector< RevPtr<Variable> >&    oneOffsetIndices );                 //!< Get dynamic element variable lookup
+//    virtual RevPtr<Variable>            getElement(const std::vector<size_t>& oneOffsetIndices);                                        //!< Get element variable
 
 protected:
     RevObject(void) { }                                                                                                                  //!< No objects of this class
