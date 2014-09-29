@@ -436,7 +436,6 @@ size_t ModelVector<rlType>::size( void ) const
 template <typename rlType>
 void ModelVector<rlType>::sort( void )
 {
-    throw RbException("The unique function needs implementing .... ");
     this->dagNode->getValue().sort();
 }
 
@@ -447,23 +446,23 @@ void ModelVector<rlType>::sort( void )
  *
  */
 template <typename rlType>
-void ModelVector<rlType>::unique(void) {
+void ModelVector<rlType>::unique(void)
+{
     
-    throw RbException("The unique function needs implementing .... ");
-//    sort();
-//    valueType uniqueVector;
-//    uniqueVector.push_back (this->dagNode->getValue()[0]);
-//    for (size_t i = 1 ; i<this->size() ; i++)
-//    {
-//        if ( this->dagNode->getValue()[i] != this->dagNode->getValue()[i-1] )
-//        {
-//            uniqueVector.push_back(this->dagNode->getValue()[i]);
-//        }
-//    }
-//    
-//    this->clear();
-//
-//    this->dagNode->getValue() = uniqueVector;
+    sort();
+    valueType uniqueVector;
+    uniqueVector.push_back (this->dagNode->getValue()[0]);
+    for (size_t i = 1 ; i<this->size() ; i++)
+    {
+        if ( this->dagNode->getValue()[i] != this->dagNode->getValue()[i-1] )
+        {
+            uniqueVector.push_back(this->dagNode->getValue()[i]);
+        }
+    }
+    
+    this->clear();
+
+    this->dagNode->getValue() = uniqueVector;
     
 }
 
