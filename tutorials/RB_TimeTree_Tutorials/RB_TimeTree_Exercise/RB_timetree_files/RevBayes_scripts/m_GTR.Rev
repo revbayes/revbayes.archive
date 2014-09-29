@@ -8,11 +8,13 @@
 
 ### the stationary base frequencies 
 ### with a flat Dirichlet prior
-sf ~ dnDirichlet(v(1,1,1,1))
+sf_hp <- v(1,1,1,1)
+sf ~ dnDirichlet(sf_hp)
 
 ### the exchangeability rates 
 ### with a flat Dirichlet prior
-er ~ dnDirichlet(v(1,1,1,1,1,1))
+er_hp <- v(1,1,1,1,1,1)
+er ~ dnDirichlet(er_hp)
 
 ### a deterministic node for the instantaneous rate matrix
 Q := fnGTR(er,sf)
