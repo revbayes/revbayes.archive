@@ -203,12 +203,23 @@ bool TestPathSampling::run_aa( void )
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("character_model", ctmc );
     
     // assign tips and sample histories
-    charactermodel->clamp( data[0] );
+    if (!true)
+        charactermodel->clamp( data[0] );
+    else
+    {
+        ctmc->simulate();
+        
+        charactermodel->clamp( &ctmc->getValue() );
+    }
     charactermodel->redraw();
+    
+
+
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     charactermodel->keep();
-     
+    
+    
     ////////////
     // moves
     ////////////
@@ -228,16 +239,10 @@ bool TestPathSampling::run_aa( void )
     // path
     moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
     moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes, false));
-    //    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4), 0.4, false, numNodes));
-    
+
     // node
     moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
     moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes, false));
-//    PathUniformizationSampleProposal<AminoAcidState, TimeTree>* nd_prop = new PathUniformizationSampleProposal<AminoAcidState, TimeTree>(charactermodel, tau, q_full, 0.4);
-//    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_full, new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, nd_prop, 0.4), 0.4, false, numNodes));
-//    moves.push_back(new PathRejectionSampleMove<AminoAcidState, TimeTree>(charactermodel, tau, q_full, new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.4), 0.4, false, numNodes));
-//    moves.push_back(new PathRejectionSampleMove<AminoAcidState, TimeTree>(charactermodel, tau, q_full, new NodeRejectionSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.4), 0.4, false, numNodes));
-    
      
      
     ////////////
