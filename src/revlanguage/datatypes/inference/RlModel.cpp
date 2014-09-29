@@ -204,7 +204,11 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
                   
             std::stringstream rl;
-            rl << nname.str() ;        
+			if((*it)->getName() == "" && !vb){
+				rl << "function" ;
+			}
+			else
+				rl << nname.str() ;
            
             // only print values of constant nodes (only simple numeric values)
             if((*it)->getDagNodeType() == "constant"){
