@@ -31,6 +31,7 @@ namespace RevBayesCore {
         bool                                        operator==(const Clade &t) const;
         bool                                        operator!=(const Clade &t) const;
         bool                                        operator<(const Clade &t) const;
+        bool                                        operator<=(const Clade &t) const;
 
         
         // Basic utility functions

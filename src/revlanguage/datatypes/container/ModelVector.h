@@ -437,7 +437,7 @@ template <typename rlType>
 void ModelVector<rlType>::sort( void )
 {
     throw RbException("The unique function needs implementing .... ");
-//    std::sort( this->dagNode->getValue().begin(), this->dagNode->getValue().end(), myComparator );
+    this->dagNode->getValue().sort();
 }
 
                                        

@@ -43,6 +43,7 @@ namespace RevBayesCore {
         bool                                                operator==(const Tree &t) const;
         bool                                                operator!=(const Tree &t) const;
         bool                                                operator<(const Tree &t) const;
+        bool                                                operator<=(const Tree &t) const;
         
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const = 0;                                                      //!< Clone object
