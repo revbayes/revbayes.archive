@@ -326,4 +326,16 @@ void WorkspaceVector<rlType>::printValue( std::ostream& o ) const
 }
 
 
+
+
+/**
+ * Get the of the vector.
+ */
+template <typename rlType>
+size_t WorkspaceVector<rlType>::size( void ) const
+{
+    return this->value->size();
+}
+
+
 #endif
