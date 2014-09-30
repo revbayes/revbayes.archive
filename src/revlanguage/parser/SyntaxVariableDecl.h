@@ -60,6 +60,7 @@ namespace RevLanguage {
                                                    std::set<std::string>&   localVars) const;   //!< Is this element safe in a function?
         
     protected:
+        
         std::string                 elementTypeName;                                            //!< Element type of the variable
         std::list<SyntaxElement*>*  lengthExpr;                                                 //!< Lengths in different dimensions
         std::string                 variableName;                                               //!< Variable name

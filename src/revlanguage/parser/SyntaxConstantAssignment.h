@@ -38,6 +38,7 @@ namespace RevLanguage {
         SyntaxConstantAssignment*   clone() const;                                                                  //!< Clone object
         
     protected:
+        
         void                        assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);                           //!< The assignment operation.
         
     };

@@ -19,6 +19,7 @@ namespace RevLanguage {
      * A workspace variable assignment is a statement like
      *
      *    i = 1
+     *    m = mvScale( xxx )
      *
      * using the equal assignment operator.
      *
@@ -44,6 +45,7 @@ namespace RevLanguage {
         SyntaxWorkspaceVariableAssignment*      clone() const;                                                      //!< Clone object
         
     protected:
+        
         void                                    assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);               //!< The assignment operation.
         
     };

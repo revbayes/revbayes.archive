@@ -90,6 +90,7 @@ namespace RevLanguage {
                                                        std::set<std::string>&   localVars) const;       //!< Is this element safe in a function?
         
     protected:
+        
         SyntaxElement*                  lhsExpression;                                                  //!< The lhs expression
         SyntaxElement*                  rhsExpression;                                                  //!< The rhs expression
         

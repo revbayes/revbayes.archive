@@ -56,6 +56,7 @@ namespace RevLanguage {
                                                        bool                     inLHS) const;                       //!< Does this element retrieve an external variable?
 
     protected:
+        
         std::string                 label;                                                                          //!< The label of the argument
         SyntaxElement*              expression;                                                                     //!< The expression for the argument value
     
