@@ -1,15 +1,15 @@
 # by Will Freyman
 #
-# source("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/chromosome_test_toy.Rev")
+# source("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/chromosome_test_toy.Rev")
 #
 
 # read the data 
 # this is toy data in which there are clearly 2 polyploidization events and no other events
-chromoData <- readChromosomes("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv")
+chromoData <- readChromosomes("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv")
 
 # work under fixed topology with total tree length = 0.2907
 # so we expect lambda and delta to be about 0, and rho to be 6.88 (=2/0.2907)
-treeArray <- readTrees("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
+treeArray <- readTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
 psi <- treeArray[1]
 
 
@@ -73,11 +73,11 @@ mymodel <- model(Q)
 
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
-monitors[2] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/output/chromosome_test_toy.log",printgen=10, separator = "	")
-#monitors[3] <- mnAncestralState(seq,filename="/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log",printgen=10, separator = "	")
+monitors[2] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_test_toy2.log",printgen=10, separator = "	")
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log",printgen=10, separator = "	", timetree=psi, character=seq)
  
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
-mymcmc.burnin(generations=1000,tuningInterval=100)
+#mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(1000000)
 

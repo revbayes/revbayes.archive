@@ -2,6 +2,9 @@
 #define AncestralStateMonitor_H
 
 #include "Monitor.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "StochasticNode.h"
 
 #include <fstream>
 #include <string>
@@ -29,7 +32,10 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        AncestralStateMonitor(unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
+		AncestralStateMonitor(TypedDagNode<Tree> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
+//		AncestralStateMonitor(TypedDagNode<Tree> *t, RevBayesCore::StochasticNode* &ch, unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
+
+		
         AncestralStateMonitor(const AncestralStateMonitor &m);
         virtual ~AncestralStateMonitor(void);
         
@@ -48,7 +54,6 @@ namespace RevBayesCore {
         
         // getters and setters
         void                                setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
-        void                                setSeqObject(Model *m);                                                 //!< Set the model for which the monitor should print values
 		
     private:
         // helper methods
@@ -60,11 +65,10 @@ namespace RevBayesCore {
         // parameters
         std::string                         filename;                                                           //!< Filename to which we print the values
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
-        bool                                append;                                                             //!< Flag if to append to existing file
-        bool                                posterior;
-        bool                                prior;
-        bool                                likelihood;
-		bool								stochasticNodesOnly;
+		bool                                append;                                                             //!< Flag if to append to existing file
+		TypedDagNode<Tree>*					tree;
+		RevBayesCore::DagNode*				character;
+		bool                                stochasticNodesOnly;
     };
     
 }

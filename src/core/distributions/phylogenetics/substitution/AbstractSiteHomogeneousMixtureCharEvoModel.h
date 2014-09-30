@@ -11,6 +11,7 @@
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
+#include "ConstantNode.h"
 
 #include <memory.h>
 
@@ -131,6 +132,7 @@ namespace RevBayesCore {
         double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
         std::vector<double>                                                 scalingFactors;
+		double*																marginalLikelihoods;
         
         // the data
         std::vector<std::vector<unsigned long> >                            charMatrix;
@@ -178,7 +180,7 @@ namespace RevBayesCore {
         void                                                                compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
-
+				
     
     };
     
@@ -654,11 +656,14 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
 	
 	size_t nodeIndex = node.getIndex();
 	
+	// for testing purposes set marginal to 0
+	*this->marginalLikelihoods = 0.0;
+	
 	// update this to get the marginal likelihoods
 	double* p_node  = this->marginalLikelihoods + nodeIndex*this->nodeOffset;
     
 	RandomNumberGenerator* rng = GLOBAL_RNG;
-	std::vector< charType > &ancestralSeq = std::vector<charType>();
+	std::vector< charType > ancestralSeq = std::vector<charType>();
     for ( size_t i = 0; i < numSites; ++i ) 
     {
         // create the character
@@ -686,7 +691,7 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
         // add the character to the sequence
         ancestralSeq.push_back( c );
     }
-	
+	return ancestralSeq;
 				
 }
 
