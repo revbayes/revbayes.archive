@@ -294,12 +294,6 @@ protected                               {
 #endif
                                             return TILDE_ASSIGN;
                                         }
-"<<-"                                   {
-#ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found '<<-'\n");
-#endif
-                                            return CONTROL_ASSIGN;
-                                        }
 "<-&"                                   {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found '<-&'\n");

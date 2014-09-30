@@ -34,7 +34,7 @@
 #include "SyntaxClassDef.h"
 #include "SyntaxConstant.h"
 #include "SyntaxConstantAssignment.h"
-#include "SyntaxControlAssignment.h"
+//#include "SyntaxControlAssignment.h"
 #include "SyntaxDecrement.h"
 #include "SyntaxDeterministicAssignment.h"
 #include "SyntaxDivisionAssignment.h"
@@ -46,13 +46,14 @@
 #include "SyntaxIndexOperation.h"
 #include "SyntaxLabeledExpr.h"
 #include "SyntaxMultiplicationAssignment.h"
-#include "SyntaxReferenceAssignment.h"
+//#include "SyntaxReferenceAssignment.h"
 #include "SyntaxStatement.h"
 #include "SyntaxStochasticAssignment.h"
 #include "SyntaxSubtractionAssignment.h"
 #include "SyntaxUnaryExpr.h"
 #include "SyntaxVariableDecl.h"
 #include "SyntaxVariable.h"
+#include "SyntaxWorkspaceVariableAssignment.h"
 #include "Workspace.h"
 
 #include <iostream>
@@ -106,7 +107,8 @@ Parser& parser = Parser::getParser();
 %type <syntaxFormal> formal
 %type <syntaxElement> constant
 %type <syntaxElement> statement expression stmt_or_expr
-%type <syntaxElement> arrowAssign tildeAssign equationAssign controlAssign referenceAssign
+%type <syntaxElement> arrowAssign tildeAssign equationAssign workspaceAssign
+//%type <syntaxElement> controlAssign referenceAssign
 %type <syntaxElement> additionAssign subtractionAssign multiplicationAssign divisionAssign
 %type <syntaxElement> declaration classDef memberDef
 %type <syntaxElement> functionDef procedureDef
@@ -123,7 +125,8 @@ Parser& parser = Parser::getParser();
 %token REAL INT NAME STRING RBNULL RBTAB FALSE TRUE
 %token FUNCTION PROCEDURE CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
 %token MOD_CONST MOD_DYNAMIC MOD_STOCHASTIC MOD_DETERMINISTIC PROTECTED
-%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN CONTROL_ASSIGN REFERENCE_ASSIGN
+%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN WORKSPACE_ASSIGN
+//%token CONTROL_ASSIGN REFERENCE_ASSIGN
 %token ADDITION_ASSIGN SUBTRACTION_ASSIGN MULTIPLICATION_ASSIGN DIVISION_ASSIGN 
 %token DECREMENT INCREMENT
 %token EQUAL 
@@ -137,7 +140,8 @@ Parser& parser = Parser::getParser();
 %destructor { delete ($$); } identifier typeSpec optDims dimList 
 %destructor { delete ($$); } variable functionCall fxnCall argument formal constant
 %destructor { delete ($$); } statement expression stmt_or_expr 
-%destructor { delete ($$); } arrowAssign tildeAssign equationAssign controlAssign referenceAssign
+%destructor { delete ($$); } arrowAssign tildeAssign equationAssign workspaceAssign
+//%destructor { delete ($$); } controlAssign referenceAssign
 %destructor { delete ($$); } additionAssign subtractionAssign multiplicationAssign divisionAssign
 %destructor { delete ($$); } declaration classDef memberDef 
 %destructor { delete ($$); } functionDef procedureDef 
@@ -371,8 +375,9 @@ expression  :   constant                    { $$ = $1; }
             |   arrowAssign                 { $$ = $1; }
             |   equationAssign              { $$ = $1; }
             |   tildeAssign                 { $$ = $1; }
-            |   controlAssign               { $$ = $1; }
-            |   referenceAssign             { $$ = $1; }
+            |   workspaceAssign             { $$ = $1; }
+//            |   controlAssign               { $$ = $1; }
+//            |   referenceAssign             { $$ = $1; }
 
             |   additionAssign              { $$ = $1; }
             |   subtractionAssign           { $$ = $1; }
@@ -411,23 +416,32 @@ equationAssign  :   expression EQUATION_ASSIGN expression
                     }
                 ;
 
-controlAssign   :   expression CONTROL_ASSIGN expression
+workspaceAssign :   expression EQUAL expression
                     {
 #ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting control assignment (CONTROL_ASSIGN) in syntax tree\n");
+                        printf("Parser inserting workspace assignment (WORKSPACE_ASSIGN) in syntax tree\n");
 #endif
-                        $$ = new SyntaxControlAssignment($1, $3); 
+                        $$ = new SyntaxWorkspaceVariableAssignment($1, $3);
                     }
                 ;
 
-referenceAssign :   expression REFERENCE_ASSIGN expression
-                    {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting reference assignment (REFERENCE_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxReferenceAssignment($1, $3); 
-                    }
-                ;
+//controlAssign   :   expression CONTROL_ASSIGN expression
+//                    {
+//#ifdef DEBUG_BISON_FLEX
+//                        printf("Parser inserting control assignment (CONTROL_ASSIGN) in syntax tree\n");
+//#endif
+//                        $$ = new SyntaxControlAssignment($1, $3);
+//                    }
+//                ;
+//
+//referenceAssign :   expression REFERENCE_ASSIGN expression
+//                    {
+//#ifdef DEBUG_BISON_FLEX
+//                        printf("Parser inserting reference assignment (REFERENCE_ASSIGN) in syntax tree\n");
+//#endif
+//                        $$ = new SyntaxReferenceAssignment($1, $3);
+//                    }
+//                ;
 
 additionAssign  :   expression ADDITION_ASSIGN expression
                     {
