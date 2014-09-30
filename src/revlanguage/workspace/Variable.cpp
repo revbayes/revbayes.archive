@@ -18,10 +18,10 @@ name( n ),
 refCount( 0 ),
 revObject( NULL ),
 revObjectTypeSpec( ts ),
-isControlVar( false ),
 isHiddenVar( false ),
 isReferenceVar( false ),
 isVectorVar( false ),
+isWorkspaceVar( false ),
 min( RbConstants::Integer::max ),
 max( 0 )
 {
@@ -34,10 +34,10 @@ name( n ),
 refCount( 0 ),
 revObject( NULL ),
 revObjectTypeSpec( RevObject::getClassTypeSpec() ),
-isControlVar( false ),
 isHiddenVar( false ),
 isReferenceVar( false ),
 isVectorVar( false ),
+isWorkspaceVar( false ),
 min( RbConstants::Integer::max ),
 max( 0 )
 {
@@ -51,10 +51,10 @@ name( n ),
 refCount( 0 ),
 revObject( NULL ),
 revObjectTypeSpec( RevObject::getClassTypeSpec() ),
-isControlVar( false ),
 isHiddenVar( false ),
 isReferenceVar( true ),
 isVectorVar( false ),
+isWorkspaceVar( false ),
 min( RbConstants::Integer::max ),
 max( 0 )
 {
@@ -70,10 +70,10 @@ name( v.name ),
 refCount( 0 ),
 revObject( NULL ),
 revObjectTypeSpec( v.revObjectTypeSpec ),
-isControlVar( v.isControlVar ),
 isHiddenVar( v.isHiddenVar ),
 isReferenceVar( v.isHiddenVar ),
 isVectorVar( v.isVectorVar ),
+isWorkspaceVar( v.isWorkspaceVar ),
 referencedVariable( v.referencedVariable ),
 min( v.min ),
 max( v.max )
@@ -112,10 +112,10 @@ Variable& Variable::operator=(const Variable &v)
         
         name                = v.name;
         revObjectTypeSpec   = v.revObjectTypeSpec;
-        isControlVar        = v.isControlVar;
         isHiddenVar         = v.isHiddenVar;
         isReferenceVar      = v.isReferenceVar;
         isVectorVar         = v.isVectorVar;
+        isWorkspaceVar      = v.isWorkspaceVar;
         referencedVariable  = v.referencedVariable;
         min                 = v.min;
         max                 = v.max;
@@ -239,20 +239,6 @@ void Variable::incrementReferenceCount( void ) const
 }
 
 
-/** Return the internal flag signalling whether the variable is currently a control variable */
-bool Variable::isControlVariable( void ) const
-{
-    if ( isReferenceVar )
-    {
-        return referencedVariable->isControlVariable();
-    }
-    else
-    {
-        return isControlVar;
-    }
-}
-
-
 
 /**
  * Is the variable or any of its members (upstream DAG nodes) assignable, that is,
@@ -295,6 +281,20 @@ bool Variable::isVectorVariable( void ) const
 }
 
 
+/** Return the internal flag signalling whether the variable is currently a workspace (control) variable */
+bool Variable::isWorkspaceVariable( void ) const
+{
+    if ( isReferenceVar )
+    {
+        return referencedVariable->isWorkspaceVariable();
+    }
+    else
+    {
+        return isWorkspaceVar;
+    }
+}
+
+
 /** Make this variable a reference to another variable. Make sure we delete any object we held before. */
 void Variable::makeReference(const RevPtr<Variable>& refVar)
 {
@@ -307,7 +307,7 @@ void Variable::makeReference(const RevPtr<Variable>& refVar)
         
         revObject = NULL;
         isReferenceVar = true;
-        isControlVar = false;
+        isWorkspaceVar = false;
     }
     
     referencedVariable = refVar;
@@ -370,23 +370,7 @@ void Variable::replaceRevObject( RevObject *newObj )
 
 
 /**
- * Check whether this variable is a control variable. Throw an error if the variable
- * is a reference variable. If so, you need to set the Rev object first, and then set
- * the control variable flag.
- */
-void Variable::setControlVariableState(bool flag)
-{
-    if ( isReferenceVar )
-    {
-        throw "A reference variable cannot be made a control variable";
-    }
-    
-    isControlVar = flag;
-}
-
-
-/**
- * Check whether this variable is a hidden variable. Throw an error if the variable
+ * Set whether this variable is a hidden variable. Throw an error if the variable
  * is a reference variable. If so, you need to set the Rev object first, and then set
  * the hidden variable flag.
  */
@@ -407,7 +391,7 @@ void Variable::setHiddenVariableState(bool flag)
 
 
 /**
- * Check whether this variable is a vector variable. Throw an error if the variable
+ * Set whether this variable is a vector variable. Throw an error if the variable
  * is a reference variable. If so, you need to set the Rev object first, and then set
  * the vector variable flag.
  */
@@ -415,10 +399,26 @@ void Variable::setVectorVariableState(bool flag)
 {
     if ( isReferenceVar )
     {
-        throw "A reference variable cannot be made a control variable";
+        throw "A reference variable cannot be made a vector variable";
     }
     
     isVectorVar = flag;
+}
+
+
+/**
+ * Check whether this variable is a workspace (control) variable. Throw an error if the variable
+ * is a reference variable. If so, you need to set the Rev object first, and then set
+ * the workspace (control) variable flag.
+ */
+void Variable::setWorkspaceVariableState(bool flag)
+{
+    if ( isReferenceVar )
+    {
+        throw "A reference variable cannot be made a workspace (control) variable";
+    }
+    
+    isWorkspaceVar = flag;
 }
 
 
@@ -444,8 +444,8 @@ void Variable::setRevObject( RevObject *newValue )
         referencedVariable = NULL;
     }
     
-    // Make sure default assignment is not a control variable assignment
-    isControlVar = false;
+    // Make sure default assignment is not a workspace (control) variable assignment
+    isWorkspaceVar = false;
     
     // Replace the Rev object and make sure we update the DAG as necessary
     replaceRevObject( newValue );

@@ -48,9 +48,16 @@ void SyntaxConstantAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     printf( "Evaluating constant assignment\n" );
 #endif
     
+    // check first if the right-hand-side is a model variable
+    if ( !rhs->getRevObject().isModelObject() )
+    {
+        throw RbException("You used a non-model object to create a constant node. Only model objects can be used for constant nodes.");
+    }
+    
     // Get a reference to the Rev object value
     const RevObject& value = rhs->getRevObject();
     
+    // TODO: This needs to be cleaned up because it is not used properly anymore! (Sebastian)
     // Perform type conversion if needed, otherwise just clone the value object
     RevObject* newValue;
     if ( !value.getTypeSpec().isDerivedOf( lhs->getRevObjectTypeSpec() ) )

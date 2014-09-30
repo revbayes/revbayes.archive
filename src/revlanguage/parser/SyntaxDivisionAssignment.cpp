@@ -68,7 +68,7 @@ void SyntaxDivisionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     }
     
     // Record whether it is a control variable
-    bool isControlVar = lhs->isControlVariable();
+    bool isWorkspaceVar = lhs->isWorkspaceVariable();
     
     // Get a reference to the lhs value object
     const RevObject& lhs_value = lhs->getRevObject();
@@ -90,9 +90,9 @@ void SyntaxDivisionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     
     // Reset it as control variable, if it was a control variable before the assignment.
     // When we fill the slot, the control variable property is reset to false by default.
-    if ( isControlVar )
+    if ( isWorkspaceVar )
     {
-        lhs->setControlVariableState( true );
+        lhs->setWorkspaceVariableState( true );
     }
     
 #ifdef DEBUG_PARSER

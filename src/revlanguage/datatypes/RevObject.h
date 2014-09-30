@@ -28,22 +28,20 @@
 
 namespace RevLanguage {
 
-class Argument;
-class ArgumentRule;
-class ArgumentRules;
-class MethodTable;
-class TypeSpec;
-class UserFunction;
-class UserFunctionCall;
-class Variable;
+    class Argument;
+    class ArgumentRule;
+    class ArgumentRules;
+    class MethodTable;
+    class TypeSpec;
+    class UserFunction;
+    class UserFunctionCall;
+    class Variable;
 
-typedef ArgumentRules MemberRules;                                                                                                      //!< Member rules type def, for convenience
-
-
+    typedef ArgumentRules MemberRules;                                                                                                  //!< Member rules type def, for convenience
 
     class RevObject : public RevBayesCore::Cloneable {
     
-public:
+    public:
     virtual                            ~RevObject(void);                                                                                //!< Virtual destructor
     
     // Overloaded C++ operators
@@ -77,6 +75,7 @@ public:
     virtual bool                        isAssignable(void) const;                                                                       //!< Is object or upstream members assignable?
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual bool                        isConvertibleTo(const TypeSpec& type, bool once) const;                                         //!< Is convertible to type?
+    virtual bool                        isModelObject(void) const;                                                                      //!< Is this a model object (compared with a workspace object)
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
     virtual void                        makeConversionValue(RevPtr<Variable> var);                                                      //!< Convert the object to a conversion object
     virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
