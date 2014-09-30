@@ -67,30 +67,29 @@
      TILDE_ASSIGN = 283,
      EQUATION_ASSIGN = 284,
      WORKSPACE_ASSIGN = 285,
-     ADDITION_ASSIGN = 286,
-     SUBTRACTION_ASSIGN = 287,
-     MULTIPLICATION_ASSIGN = 288,
-     DIVISION_ASSIGN = 289,
-     DECREMENT = 290,
-     INCREMENT = 291,
-     EQUAL = 292,
-     AND = 293,
-     OR = 294,
-     AND2 = 295,
-     OR2 = 296,
-     GT = 297,
-     GE = 298,
-     LT = 299,
-     LE = 300,
-     EQ = 301,
-     NE = 302,
-     END_OF_INPUT = 303,
-     CONTROL_ASSIGN = 304,
-     REFERENCE_ASSIGN = 305,
-     UNOT = 306,
-     UPLUS = 307,
-     UMINUS = 308,
-     UAND = 309
+     REFERENCE_ASSIGN = 286,
+     ADDITION_ASSIGN = 287,
+     SUBTRACTION_ASSIGN = 288,
+     MULTIPLICATION_ASSIGN = 289,
+     DIVISION_ASSIGN = 290,
+     DECREMENT = 291,
+     INCREMENT = 292,
+     EQUAL = 293,
+     AND = 294,
+     OR = 295,
+     AND2 = 296,
+     OR2 = 297,
+     GT = 298,
+     GE = 299,
+     LT = 300,
+     LE = 301,
+     EQ = 302,
+     NE = 303,
+     END_OF_INPUT = 304,
+     UNOT = 305,
+     UPLUS = 306,
+     UMINUS = 307,
+     UAND = 308
    };
 #endif
 /* Tokens.  */
@@ -122,37 +121,36 @@
 #define TILDE_ASSIGN 283
 #define EQUATION_ASSIGN 284
 #define WORKSPACE_ASSIGN 285
-#define ADDITION_ASSIGN 286
-#define SUBTRACTION_ASSIGN 287
-#define MULTIPLICATION_ASSIGN 288
-#define DIVISION_ASSIGN 289
-#define DECREMENT 290
-#define INCREMENT 291
-#define EQUAL 292
-#define AND 293
-#define OR 294
-#define AND2 295
-#define OR2 296
-#define GT 297
-#define GE 298
-#define LT 299
-#define LE 300
-#define EQ 301
-#define NE 302
-#define END_OF_INPUT 303
-#define CONTROL_ASSIGN 304
-#define REFERENCE_ASSIGN 305
-#define UNOT 306
-#define UPLUS 307
-#define UMINUS 308
-#define UAND 309
+#define REFERENCE_ASSIGN 286
+#define ADDITION_ASSIGN 287
+#define SUBTRACTION_ASSIGN 288
+#define MULTIPLICATION_ASSIGN 289
+#define DIVISION_ASSIGN 290
+#define DECREMENT 291
+#define INCREMENT 292
+#define EQUAL 293
+#define AND 294
+#define OR 295
+#define AND2 296
+#define OR2 297
+#define GT 298
+#define GE 299
+#define LT 300
+#define LE 301
+#define EQ 302
+#define NE 303
+#define END_OF_INPUT 304
+#define UNOT 305
+#define UPLUS 306
+#define UMINUS 307
+#define UAND 308
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 81 "./grammar.y"
+#line 80 "./grammar.y"
 {
     char*                                           c_string;
     std::string*                                    string;
@@ -169,7 +167,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 173 "./grammar.tab.h"
+#line 171 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

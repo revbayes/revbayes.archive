@@ -317,6 +317,17 @@ bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const
 
 
 /**
+ * The default implementation is that the variable is not a model object. Only variables which actually store
+ * internally DAG nodes are model objects.
+ */
+bool RevObject::isModelObject( void ) const
+{
+    
+    return false;
+}
+
+
+/**
   * Converting the value of the internal variable to a constant. The default implementation does nothing because we don't have a DAG node as our internal variable.
   * Note, RevLanguage types which can be used as types in the DAG should overwrite this method.
   */

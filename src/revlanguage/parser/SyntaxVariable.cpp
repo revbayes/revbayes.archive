@@ -167,7 +167,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
     if ( dynamic == true )
     {
         // Check whether we have a control variable and make a clone in that case
-        if ( theVar->isControlVariable() )
+        if ( theVar->isWorkspaceVariable() )
         {
             theVar = new Variable( theVar->getRevObject().clone() );
         }

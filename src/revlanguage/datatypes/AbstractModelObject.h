@@ -27,6 +27,8 @@ namespace RevLanguage {
     public:
         virtual                                ~AbstractModelObject(void) {}                                                          //!< Virtual destructor
 
+        virtual bool                            isModelObject(void) const;                                                            //!< Is this a model object (compared with a workspace object)
+
 
     };
     

@@ -67,8 +67,8 @@ void SyntaxAdditionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
         throw RbException( "Invalid addition assignment to dynamic variable" );
     }
     
-    // Record whether it is a control variable
-    bool isControlVar = lhs->isControlVariable();
+    // Record whether it is a workspace (control) variable
+    bool isWorkspaceVar = lhs->isWorkspaceVariable();
     
     // Get a reference to the lhs value object
     const RevObject& lhs_value = lhs->getRevObject();
@@ -88,11 +88,11 @@ void SyntaxAdditionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     // Fill the slot with the new variable
     lhs->setRevObject( newValue );
 
-    // Reset it as control variable, if it was a control variable before the assignment.
-    // When we fill the slot, the control variable property is reset to false by default.
-    if ( isControlVar )
+    // Reset it as workspace (control) variable, if it was a workspace (control) variable before the assignment.
+    // When we fill the slot, the workspace (control) variable property is reset to false by default.
+    if ( isWorkspaceVar )
     {
-        lhs->setControlVariableState( true );
+        lhs->setWorkspaceVariableState( true );
     }
     
 #ifdef DEBUG_PARSER

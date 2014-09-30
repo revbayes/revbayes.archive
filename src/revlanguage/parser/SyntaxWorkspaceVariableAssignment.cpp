@@ -48,6 +48,7 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Var
     // Get a reference to the Rev object value
     const RevObject& value = rhs->getRevObject();
     
+    // TODO: This needs to be cleaned up because it is not used properly anymore! (Sebastian)
     // Perform type conversion if needed, otherwise just clone the value object
     RevObject* newValue;
     if ( !value.getTypeSpec().isDerivedOf( lhs->getRevObjectTypeSpec() ) )
@@ -75,7 +76,7 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Var
     // passed on as the semantic value of the statement and can
     // be used in further assignments.
     lhs->setRevObject( newValue );
-    lhs->setControlVariableState( true );
+    lhs->setWorkspaceVariableState( true );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
