@@ -188,7 +188,7 @@ mymcmc.run(10000)
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
-#treetrace <- readTreeTrace("output/chromosome_test_toy_joint.trees", treetype="non-clock")
+#treetrace <- readTreeTrace("output/chromosome_test_toy_joint.trees", treetype="non-clock", separator="    ")
 # and get the summary of the tree trace
 #treetrace.summarize()
 

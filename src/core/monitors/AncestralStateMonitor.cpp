@@ -4,17 +4,20 @@
 #include "Monitor.h"
 #include "RbFileManager.h"
 #include "StochasticNode.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
+#include "AbstractSiteHomogeneousMixtureCharEvoModel.h"
+#include "ChromosomesState.h"
 
 using namespace RevBayesCore;
 
+
 /* Constructor */
-AncestralStateMonitor::AncestralStateMonitor(unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
+AncestralStateMonitor::AncestralStateMonitor(TypedDagNode<Tree> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
 outStream(), 
 filename( fname ), 
 separator( del ), 
-posterior( true ), 
-likelihood( true ), 
-prior( true ), 
+tree( t ),
+character( ch ),
 append( false ),
 stochasticNodesOnly( false )
 {
@@ -29,9 +32,8 @@ AncestralStateMonitor::AncestralStateMonitor( const AncestralStateMonitor &m) : 
 outStream(), 
 filename( m.filename ), 
 separator( m.separator ), 
-posterior( m.posterior ), 
-likelihood( m.likelihood ), 
-prior( m.prior ), 
+tree( m.tree ), 
+character( m.character ), 
 append( m.append ),
 stochasticNodesOnly( m.stochasticNodesOnly )
 {
@@ -89,7 +91,6 @@ void AncestralStateMonitor::closeStream()
  */
 void AncestralStateMonitor::monitor(unsigned long gen) 
 {
-    
     if (gen % printgen == 0) 
     {
         // print the iteration number first
@@ -98,22 +99,48 @@ void AncestralStateMonitor::monitor(unsigned long gen)
 		// call update for the marginal node likelihoods
 		//seq->updateMarginalNodeLikelihoods();
         
-        // loop through all nodes
-        for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) 
-        {
-            // add a separator before every new element
-            outStream << separator;
-            
-            // get the node
-            DagNode *node = *i;
-            
-            // print the value
-            node->printValue(outStream,separator);
+		std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
+		
+        // loop through all tree nodes
+		for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+		{
+			TopologyNode* the_node = nodes[i];
 			
+			// get the node index
+//			int nodeIndex = the_node->getIndex();
+		
+			// add a separator before every new element
+			outStream << separator;
+		
+				
+			//std::cerr << "!!!!!!!!!!!!!!!!!!!" << std::endl;
+			//character->printStructureInfo(std::cerr, true);
 			
-			//seq->drawAncestralStatesForNode( nodeIndex );
+			// convert 'character' which is DagNode to a StochasticNode
+			// so that we can call character->getDistribution()
+			
+			StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> > *char_stoch 
+				= (StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> >*) character;
+			
+			// now we need to cast TypedDistribution from char_stoch->getDistribution()
+			// into an AbstractSiteHomogeneousMixtureCharEvoModel distribution
+			AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> *dist
+				= (AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree>*) &char_stoch->getDistribution();
+	
+			
+			// TODO: make this function a template so as to accept other CharacterState objects
+//			std::vector<ChromosomesState> ancestralStates = dist->drawAncestralStatesForNode( nodeIndex );
+			std::vector<ChromosomesState> ancestralStates = dist->drawAncestralStatesForNode( *the_node );
+				
+			// print out ancestral states....
+			for (int j = 0; j < ancestralStates.size(); j++)
+			{
+				outStream << ancestralStates[j].getStringValue();
+				if (j != ancestralStates.size()-1) {
+					outStream << ",";
+				}
+			}
         }
-        
         outStream << std::endl;
         
     }
@@ -146,33 +173,21 @@ void AncestralStateMonitor::openStream(void)
  */
 void AncestralStateMonitor::printHeader() 
 {
-    
     // print one column for the iteration number
     outStream << "Iteration";
         
+	std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
 	
-	// change this to iterate through all tree nodes and make header with node index
-//    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) 
-//    {
-//        // add a separator before every new element
-//        outStream << separator;
-//        
-//        const DagNode* theNode = *it;
-//        
-//        // print the header
-//        if (theNode->getName() != "")
-//        {
-//            // print the name
-//			//            std::cerr << "<" << theNode << "> ";
-//			//            theNode->printName( std::cerr, ", " );
-//			//            std::cerr << std::endl;
-//            theNode->printName(outStream,separator);
-//        }
-//        else
-//        {
-//            outStream << "Unnamed";
-//        }
-//    }
+	// iterate through all tree nodes and make header with node index
+	for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+    {
+		TopologyNode* the_node = nodes[i];
+        // add a separator before every new element
+        outStream << separator;
+        
+		// print the node index
+		outStream << the_node->getIndex();
+    }
     
     outStream << std::endl;
 }
@@ -235,20 +250,4 @@ void AncestralStateMonitor::setAppend(bool tf)
 }
 
 
-/**
- * Set the model from which this monitor will extract the variables.
- * This will automatically result into a reseting of the currently monitored variables.
- *
- * \param[in]   m    The new model.
- */
-void AncestralStateMonitor::setSeqObject(Model *m)
-{
-    
-    // delegate call to super class
-    Monitor::setModel(m);
-    
-    // reset the DAG nodes that should be monitored
-    resetDagNodes();
-    
-}
 
