@@ -42,6 +42,7 @@ namespace RevLanguage {
         SyntaxMultiplicationAssignment*     clone() const;                                                  //!< Clone object
         
     protected:
+        
         void                                assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);           //!< The assignment operation.
         
     };

@@ -34,6 +34,7 @@ namespace RevLanguage {
         bool                                    isConstExpression(void) const;                          //!< Is the expression constant?
 
     protected:
+        
         RevObject*                              value;                                                  //!< The constant value
     
     };

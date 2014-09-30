@@ -88,6 +88,7 @@ namespace RevLanguage {
                                                            std::set<std::string>&   localVars) const;                   //!< Is this element safe in a function?
  
     protected:
+        
         std::list<SyntaxLabeledExpr*>*      arguments;                                                                  //!< The arguments passed to the function
         std::string                         functionName;                                                               //!< The name of the function
         SyntaxElement*                      baseVariable;                                                               //!< Variable holding member function

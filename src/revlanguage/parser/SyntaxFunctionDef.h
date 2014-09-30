@@ -46,6 +46,7 @@ namespace RevLanguage {
         RevPtr<Variable>                evaluateContent(Environment& env, bool dynamic=false);  //!< Get semantic value
 
     protected:
+        
         std::list<SyntaxElement*>*      code;                                                   //!< The list of statements
         std::string                     functionName;                                           //!< The name of the function
         std::list<SyntaxFormal*>*       formalArgs;                                             //!< The formal arguments

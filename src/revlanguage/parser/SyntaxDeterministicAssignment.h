@@ -52,8 +52,10 @@ namespace RevLanguage {
         SyntaxDeterministicAssignment*      clone() const;                                                                  //!< Clone object
                 
     protected:
+        
         void                                assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);                           //!< The assignment operation.
         bool                                isDynamic(void);                                                                //!< Should the rhs be evaluated dynamically?
+    
     };
     
 }

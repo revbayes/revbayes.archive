@@ -39,8 +39,8 @@ namespace RevLanguage {
     class SyntaxForLoop : public SyntaxElement {
 
     public:
-        SyntaxForLoop(const std::string &identifier, SyntaxElement* inExpr);                                        //!< Standard constructor
-        SyntaxForLoop(const SyntaxForLoop& x);                                                                      //!< Copy constructor
+        SyntaxForLoop(const std::string &identifier, SyntaxElement* inExpr);                       //!< Standard constructor
+        SyntaxForLoop(const SyntaxForLoop& x);                                                     //!< Copy constructor
 	    
         virtual                     ~SyntaxForLoop();                                               //!< Destructor
 
@@ -52,7 +52,7 @@ namespace RevLanguage {
         void                        printValue(std::ostream& o) const;                              //!< Print info about object
 
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
+        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);          //!< Get semantic value
         void                        finalizeLoop(void);                                             //!< Finalize loop
         const std::string&          getIndexVarName(void) const;                                    //!< Get the name of the index variable
         void                        getNextLoopState(void);                                         //!< Get next state of loop
@@ -62,6 +62,7 @@ namespace RevLanguage {
                                                    std::set<std::string>&   localVars) const;       //!< Is this element safe in a function?
 
     protected:
+        
         std::string                 varName;                                                        //!< The name of the loop variable
         SyntaxElement*              inExpression;                                                   //!< The in expression (a vector of values)
         Container*                  stateSpace;                                                     //!< Vector result of 'in' expression

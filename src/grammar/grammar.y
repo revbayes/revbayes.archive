@@ -344,10 +344,10 @@ expression  :   constant                    { $$ = $1; }
             |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, $2); }
             |   AND expression %prec UAND   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UAnd, $2); }
 
-            |   DECREMENT variable          { $$ = new SyntaxDecrement( $2 ); }
-            |   variable DECREMENT          { $$ = new SyntaxDecrement( $1 ); }
-            |   INCREMENT variable          { $$ = new SyntaxIncrement( $2 ); }
-            |   variable INCREMENT          { $$ = new SyntaxIncrement( $1 ); }
+            |   DECREMENT variable          { $$ = new SyntaxDecrement( $2, false ); }
+            |   variable DECREMENT          { $$ = new SyntaxDecrement( $1, true ); }
+            |   INCREMENT variable          { $$ = new SyntaxIncrement( $2, false ); }
+            |   variable INCREMENT          { $$ = new SyntaxIncrement( $1, true ); }
 
             |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, $1, $3); }
 
