@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Func_contributors, which is
- * the function used to provide information on contributors.
+ * This file contains the implementation of Func_about, which is
+ * the function used to provide information on the project.
  *
- * @brief Implementation of Func_contributors
+ * @brief Implementation of Func_about
  *
  * @author Fredrik Ronquist
  * @license GPL version 3
@@ -11,7 +11,7 @@
 
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "Func_contributors.h"
+#include "Func_about.h"
 #include "RbException.h"
 #include "RlBoolean.h"
 #include "RlUtils.h"
@@ -23,20 +23,20 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_contributors::Func_contributors( void ) : Function() {
+Func_about::Func_about( void ) : Function() {
     
 }
 
 
 /** Clone object */
-Func_contributors* Func_contributors::clone( void ) const {
+Func_about* Func_about::clone( void ) const {
     
-    return new Func_contributors( *this );
+    return new Func_about( *this );
 }
 
 
 /** Execute function */
-RevPtr<Variable> Func_contributors::execute( void )
+RevPtr<Variable> Func_about::execute( void )
 {
     // Use the lines below to count columns, if you wish
 #if 0
@@ -45,7 +45,7 @@ RevPtr<Variable> Func_contributors::execute( void )
 #endif
     
     RBOUT( "\n" );
-    RBOUT( "Contributors\n" );
+    RBOUT( "about\n" );
     RBOUT( "============\n" );
     RBOUT( "                                                                            \n");
     RBOUT( "The RevBayes project started as an attempt to provide a more general and    \n");
@@ -75,8 +75,8 @@ RevPtr<Variable> Func_contributors::execute( void )
     RBOUT( "the name of the project was changed to RevBayes, as it now had little       \n");
     RBOUT( "resemblance to MrBayes. Moreover, the MrBayes program was irretrievably     \n");
     RBOUT( "associated with Huelsenbeck and Ronquist, whereas the new code-base had     \n");
-    RBOUT( "many new contributors who were adding significantly to the code; these new  \n");
-    RBOUT( "contributors needed to be acknowledged. (The new name 'RevBayes' also       \n");
+    RBOUT( "many new about who were adding significantly to the code; these new  \n");
+    RBOUT( "about needed to be acknowledged. (The new name 'RevBayes' also       \n");
     RBOUT( "solved a criticism Joe Felsenstein made about MrBayes, that Thomas Bayes    \n");
     RBOUT( "was a reverend and that calling him a mister seemed, somehow,               \n");
     RBOUT( "disrespectful. Of course, this was the least of his criticisms as he        \n");
@@ -111,10 +111,10 @@ RevPtr<Variable> Func_contributors::execute( void )
     RBOUT( "Hopefully, this recount of the early development of the project at least    \n");
     RBOUT( "names all the relevant people involved up to the summer of 2014.            \n");
     RBOUT( "                                                                            \n");
-    RBOUT( "You can find the contact details of core contributors using the contacts()  \n");
+    RBOUT( "You can find the contact details of core about using the contacts()  \n");
     RBOUT( "function or through the program website (http://revbayes.net). The          \n");
     RBOUT( "github page                                                               \n\n");
-    RBOUT( "   https://github.com/revbayes/revbayes/graphs/contributors               \n\n");
+    RBOUT( "   https://github.com/revbayes/revbayes/graphs/about               \n\n");
     RBOUT( "shows all code contributions since the RevBayes code repository was         \n");
     RBOUT( "started on SourceForge in August of 2009. The repository was moved to       \n");
     RBOUT( "github in July of 2014.                                                     \n");
@@ -125,7 +125,7 @@ RevPtr<Variable> Func_contributors::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_contributors::getArgumentRules( void ) const {
+const ArgumentRules& Func_about::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -141,15 +141,15 @@ const ArgumentRules& Func_contributors::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_contributors::getClassType(void) {
+const std::string& Func_about::getClassType(void) {
     
-    static std::string revType = "Func_contributors";
+    static std::string revType = "Func_about";
     
 	return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_contributors::getClassTypeSpec(void) {
+const TypeSpec& Func_about::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -157,7 +157,7 @@ const TypeSpec& Func_contributors::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& Func_contributors::getTypeSpec( void ) const {
+const TypeSpec& Func_about::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -166,7 +166,7 @@ const TypeSpec& Func_contributors::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_contributors::getReturnType( void ) const {
+const TypeSpec& Func_about::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     
