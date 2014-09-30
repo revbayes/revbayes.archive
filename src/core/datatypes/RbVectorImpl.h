@@ -55,10 +55,10 @@ namespace RevBayesCore {
         virtual RbVectorImpl<valueType, indicator>*         clone(void) const = 0;                                                                      //!< Create an independent clone
         
         // public (stl-like) vector functions
-        RbIterator<valueType>                               begin(void) { return RbIterator<valueType>( this->begin() ); }
-        RbConstIterator<valueType>                          begin(void) const { return RbConstIterator<valueType>( this->begin() ); }
-        RbIterator<valueType>                               end(void) { return RbIterator<valueType>( this->end() ); }
-        RbConstIterator<valueType>                          end(void) const { return RbConstIterator<valueType>( this->end() ); }
+        RbIterator<valueType>                               begin(void) { return RbIterator<valueType>( this->std::vector<valueType>::begin() ); }
+        RbConstIterator<valueType>                          begin(void) const { return RbConstIterator<valueType>( this->std::vector<valueType>::begin() ); }
+        RbIterator<valueType>                               end(void) { return RbIterator<valueType>( this->std::vector<valueType>::end() ); }
+        RbConstIterator<valueType>                          end(void) const { return RbConstIterator<valueType>( this->std::vector<valueType>::end() ); }
 
 //        valueType&                                          operator[](size_t i) { return values[i]; }
 //        const valueType&                                    operator[](size_t i) const { return values[i]; }

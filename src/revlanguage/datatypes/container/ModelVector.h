@@ -396,6 +396,7 @@ void ModelVector<rlType>::printValue( std::ostream& o ) const
     std::ostringstream s, t;
     s << "[ ";
     size_t curLength = 2;
+    this->getDagNode()->printValue( o, "" );
 //    for ( size_t i = 1; i <= this->size(); ++i )
 //    {
 //        RevPtr<Variable> elem = const_cast< ModelVector<rlType>* >(this)->getElement( i );

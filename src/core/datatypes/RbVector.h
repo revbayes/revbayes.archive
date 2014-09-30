@@ -213,7 +213,8 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbVe
         {
             o << ", ";
         }
-        o << *it;
+        const valueType& v = *it;
+        o << v;
     }
     o << ")";
     
