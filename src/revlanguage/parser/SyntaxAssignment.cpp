@@ -79,8 +79,17 @@ RevPtr<Variable> SyntaxAssignment::evaluateContent( Environment& env, bool dynam
     // let us remove all potential indexed variables
     removeElementVariables(env, theSlot);
     
-    // now we delegate to the derived class
-    assign(theSlot, theVariable);
+    try
+    {
+        // now we delegate to the derived class
+        assign(theSlot, theVariable);
+    }
+    catch (RbException e)
+    {
+        // we need to remove the variable
+        env.eraseVariable( theSlot->getName() );
+        throw e;
+    }
     
     // We return the rhs variable itself as the semantic value of the
     // assignment statement. It can be used in further assignments.
