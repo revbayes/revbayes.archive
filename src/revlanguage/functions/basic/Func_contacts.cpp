@@ -37,8 +37,10 @@ RevPtr<Variable> Func_contacts::execute( void )
     RBOUT( "=====================================\n" );
     RBOUT( "\n" );
     RBOUT( "Sebastian Höhna\n" );
-    RBOUT( "Department of Evolution and Ecology,\n" );
-    RBOUT( "University of California, Davis, USA" );
+    RBOUT( "Department of Statistic,\n" );
+    RBOUT( "Department of Integrative Biology,\n" );
+    RBOUT( "Miller Institute for Basic Research in Science,\n" );
+    RBOUT( "University of California, Berkeley, USA" );
     RBOUT( "Sebastian.Hoehna@gmail.com\n" );
     RBOUT( "\n" );
     
