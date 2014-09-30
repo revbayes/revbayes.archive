@@ -656,7 +656,7 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
 	
 	size_t nodeIndex = node.getIndex();
 	
-	// for testing purposes set marginal to 0
+	// for testing purposes set marginals to 0
 	*this->marginalLikelihoods = 0.0;
 	
 	// update this to get the marginal likelihoods

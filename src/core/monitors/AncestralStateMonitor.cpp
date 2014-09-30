@@ -96,37 +96,38 @@ void AncestralStateMonitor::monitor(unsigned long gen)
         // print the iteration number first
         outStream << gen;
 		
+		// TODO!! make this work for CharacterStates other than ChromosomesState
+		
+		// convert 'character' which is DagNode to a StochasticNode
+		// so that we can call character->getDistribution()
+		StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> > *char_stoch 
+			= (StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> >*) character;		
+				
+		// now we get the TypedDistribution and need to cast it  
+		// into an AbstractSiteHomogeneousMixtureCharEvoModel distribution
+		AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> *dist
+			= (AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree>*) &char_stoch->getDistribution();
+		
+		// TODO: 
 		// call update for the marginal node likelihoods
-		//seq->updateMarginalNodeLikelihoods();
+		//character->updateMarginalNodeLikelihoods();
         
 		std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
 		
         // loop through all tree nodes
 		for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
-		{
+		{		
+			// add a separator before every new element
+			outStream << separator;
+			
+			// for each node print a NEXUS metacomment in the format:
+			// [&site_1={state1=prob1,state2=prob2},site_2={state1=prob1,state2=prob2}]
+			outStream << "[&";
+
 			TopologyNode* the_node = nodes[i];
 			
 			// get the node index
 //			int nodeIndex = the_node->getIndex();
-		
-			// add a separator before every new element
-			outStream << separator;
-		
-				
-			//std::cerr << "!!!!!!!!!!!!!!!!!!!" << std::endl;
-			//character->printStructureInfo(std::cerr, true);
-			
-			// convert 'character' which is DagNode to a StochasticNode
-			// so that we can call character->getDistribution()
-			
-			StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> > *char_stoch 
-				= (StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> >*) character;
-			
-			// now we need to cast TypedDistribution from char_stoch->getDistribution()
-			// into an AbstractSiteHomogeneousMixtureCharEvoModel distribution
-			AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> *dist
-				= (AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree>*) &char_stoch->getDistribution();
-	
 			
 			// TODO: make this function a template so as to accept other CharacterState objects
 //			std::vector<ChromosomesState> ancestralStates = dist->drawAncestralStatesForNode( nodeIndex );
@@ -135,11 +136,14 @@ void AncestralStateMonitor::monitor(unsigned long gen)
 			// print out ancestral states....
 			for (int j = 0; j < ancestralStates.size(); j++)
 			{
+				// TODO: modify this to print the marginal likelihood of each state
+				// in the NEXUS metacomment format
 				outStream << ancestralStates[j].getStringValue();
 				if (j != ancestralStates.size()-1) {
 					outStream << ",";
 				}
 			}
+			outStream << "]";
         }
         outStream << std::endl;
         
