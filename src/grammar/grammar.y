@@ -98,6 +98,7 @@ Parser& parser = Parser::getParser();
 %type <realValue> REAL
 %type <intValue> INT RBNULL
 %type <boolValue> FALSE TRUE
+%type <string> RBTAB
 %type <string> identifier typeSpec optDims dimList 
 %type <syntaxElement> variable
 %type <syntaxFunctionCall> functionCall fxnCall
@@ -119,7 +120,7 @@ Parser& parser = Parser::getParser();
 %type <formalList> formalList optFormals
 
 /* Tokens returned by the lexer and handled by the parser */
-%token REAL INT NAME STRING RBNULL FALSE TRUE 
+%token REAL INT NAME STRING RBNULL RBTAB FALSE TRUE
 %token FUNCTION PROCEDURE CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
 %token MOD_CONST MOD_DYNAMIC MOD_STOCHASTIC MOD_DETERMINISTIC PROTECTED
 %token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN CONTROL_ASSIGN REFERENCE_ASSIGN
@@ -818,6 +819,13 @@ constant    :   FALSE
                     printf("Parser inserting null constant in syntax tree\n");
 #endif
                     $$ = new SyntaxConstant( NULL );
+                }
+            |   RBTAB
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting 'tab' constant in syntax tree\n");
+#endif
+                    $$ = new SyntaxConstant( new RlString("\t") );
                 }
             |   INT
                 {

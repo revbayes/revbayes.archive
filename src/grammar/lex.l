@@ -134,6 +134,12 @@ null                                    {
                                             printf("Flex found 'null'\n");
 #endif
                                             return RBNULL;
+}
+tab                                    {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found '\t'\n");
+#endif
+                                            return RBTAB;
                                         }
 false                                   {
 #ifdef DEBUG_BISON_FLEX
@@ -152,7 +158,13 @@ NULL                                    {
                                             printf("Flex found 'NULL'\n");
 #endif
                                             return RBNULL;
-                                        }
+}
+TAB                                    {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found 'NULL'\n");
+#endif
+                                            return RBTAB;
+}
 FALSE                                   {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found 'FALSE'\n");
