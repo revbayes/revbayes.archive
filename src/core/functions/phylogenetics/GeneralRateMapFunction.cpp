@@ -1,20 +1,20 @@
 //
-//  AminoAcidRateMapFunction.cpp
+//  GeneralRateMapFunction.cpp
 //  rb_mlandis
 //
 //  Created by Michael Landis on 4/3/14.
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#include "AminoAcidRateMapFunction.h"
+#include "GeneralRateMapFunction.h"
 #include "RateMatrix_Blosum62.h"
-#include "RateMap_AminoAcid.h"
+#include "RateMap.h"
 #include "ConstantNode.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-AminoAcidRateMapFunction::AminoAcidRateMapFunction(size_t nc) : TypedFunction<RateMap>( new RateMap_AminoAcid(nc) )
+GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap(ns, nc) )
 {
     homogeneousRateMatrix               = new ConstantNode<RateMatrix>("homogeneousRateMatrix", new RateMatrix_Blosum62());
     heterogeneousRateMatrices           = NULL;
@@ -33,7 +33,7 @@ AminoAcidRateMapFunction::AminoAcidRateMapFunction(size_t nc) : TypedFunction<Ra
 }
 
 
-AminoAcidRateMapFunction::AminoAcidRateMapFunction(const AminoAcidRateMapFunction &n) : TypedFunction<RateMap>( n )
+GeneralRateMapFunction::GeneralRateMapFunction(const GeneralRateMapFunction &n) : TypedFunction<RateMap>( n )
 {
     homogeneousRateMatrix = n.homogeneousRateMatrix;
     heterogeneousRateMatrices = n.heterogeneousRateMatrices;
@@ -46,46 +46,46 @@ AminoAcidRateMapFunction::AminoAcidRateMapFunction(const AminoAcidRateMapFunctio
 }
 
 
-AminoAcidRateMapFunction::~AminoAcidRateMapFunction( void ) {
+GeneralRateMapFunction::~GeneralRateMapFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-AminoAcidRateMapFunction* AminoAcidRateMapFunction::clone( void ) const {
-    return new AminoAcidRateMapFunction( *this );
+GeneralRateMapFunction* GeneralRateMapFunction::clone( void ) const {
+    return new GeneralRateMapFunction( *this );
 }
 
 
-void AminoAcidRateMapFunction::update( void ) {
+void GeneralRateMapFunction::update( void ) {
     
     // set the gainLossRate
     if (branchHeterogeneousRateMatrices)
     {
         const RbVector<RateMatrix>& rm = heterogeneousRateMatrices->getValue();
-        static_cast<RateMap_AminoAcid*>(value)->setHeterogeneousRateMatrices(rm);
+        static_cast<RateMap*>(value)->setHeterogeneousRateMatrices(rm);
     }
     else
     {
         const RateMatrix& rm = homogeneousRateMatrix->getValue();
-        static_cast<RateMap_AminoAcid*>(value)->setHomogeneousRateMatrix(&rm);
+        static_cast<RateMap*>(value)->setHomogeneousRateMatrix(&rm);
     }
     
     if (branchHeterogeneousClockRates)
     {
         const std::vector<double>& r = heterogeneousClockRates->getValue();
-        static_cast< RateMap_AminoAcid* >(value)->setHeterogeneousClockRates(r);
+        static_cast< RateMap* >(value)->setHeterogeneousClockRates(r);
     }
     else
     {
         const double& r = homogeneousClockRate->getValue();
-        static_cast< RateMap_AminoAcid* >(value)->setHomogeneousClockRate(r);
+        static_cast< RateMap* >(value)->setHomogeneousClockRate(r);
     }
     
     value->updateMap();
 }
 
-void AminoAcidRateMapFunction::setRateMatrix(const TypedDagNode<RateMatrix>* r)
+void GeneralRateMapFunction::setRateMatrix(const TypedDagNode<RateMatrix>* r)
 {
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -107,7 +107,7 @@ void AminoAcidRateMapFunction::setRateMatrix(const TypedDagNode<RateMatrix>* r)
     this->addParameter( homogeneousRateMatrix );
 }
 
-void AminoAcidRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
+void GeneralRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
@@ -129,7 +129,7 @@ void AminoAcidRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     this->addParameter( homogeneousClockRate );
 }
 
-void AminoAcidRateMapFunction::setClockRate(const TypedDagNode< std::vector< double > > *r) {
+void GeneralRateMapFunction::setClockRate(const TypedDagNode< std::vector< double > > *r) {
     
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
@@ -152,7 +152,7 @@ void AminoAcidRateMapFunction::setClockRate(const TypedDagNode< std::vector< dou
     
 }
 
-void AminoAcidRateMapFunction::setRootFrequencies(const TypedDagNode<std::vector<double> > *f)
+void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<std::vector<double> > *f)
 {
     if (rootFrequencies != NULL)
     {
@@ -164,7 +164,7 @@ void AminoAcidRateMapFunction::setRootFrequencies(const TypedDagNode<std::vector
     this->addParameter(rootFrequencies);
 }
 
-void AminoAcidRateMapFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == homogeneousRateMatrix)
     {

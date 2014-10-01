@@ -30,12 +30,16 @@ using namespace RevLanguage;
 /** Default constructor */
 Probability::Probability( void ) : RealPos( 1.0 ) {
 
+    setGuiVariableName("Probability");
+    setGuiLatexSymbol("P");
 }
 
 
 /** Construct from double */
 Probability::Probability( double x ) : RealPos( x ) {
     
+    setGuiVariableName("Probability");
+    setGuiLatexSymbol("P");
     if ( x < 0.0 || x > 1.0)
         throw RbException( "Creation of " + getClassType() + " with value x=" + x + " outside standard probabilities (0,1)");
 }
@@ -44,6 +48,8 @@ Probability::Probability( double x ) : RealPos( x ) {
 /** Construct from double */
 Probability::Probability( RevBayesCore::TypedDagNode<double> *x ) : RealPos( x ) {
     
+    setGuiVariableName("Probability");
+    setGuiLatexSymbol("P");
 }
 
 

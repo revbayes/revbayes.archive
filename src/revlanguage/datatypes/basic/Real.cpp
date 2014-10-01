@@ -35,27 +35,41 @@ using namespace RevLanguage;
 
 /* Default constructor */
 Real::Real(void) : ModelObject<double>( new double(0.0) ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Construct from double */
 Real::Real(double v) : ModelObject<double>( new double(v) ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Construct from double */
 Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Construct from int */
 Real::Real(int v) : ModelObject<double>( new double(v) ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Copy Construct */
 Real::Real(const Real& x) : ModelObject<double>( x ) {
     
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 

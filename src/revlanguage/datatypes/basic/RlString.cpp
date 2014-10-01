@@ -23,17 +23,25 @@ using namespace RevLanguage;
 
 /** Constructor from empty RlString */
 RlString::RlString( void ) : ModelObject<std::string>() {
+
+    setGuiVariableName("String");
+    setGuiLatexSymbol("");
 }
 
 
 /** Constructor from RlString */
 RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::string(v) ) {
+
+    setGuiVariableName("String");
+    setGuiLatexSymbol("");
 }
 
 
 /** Constructor from int */
 RlString::RlString(int i) : ModelObject<std::string>() {
 
+    setGuiVariableName("String");
+    setGuiLatexSymbol("");
     std::ostringstream o;
     o << i;
     dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
@@ -44,6 +52,8 @@ RlString::RlString(int i) : ModelObject<std::string>() {
 /** Constructor from RlString */
 RlString::RlString(double x) : ModelObject<std::string>() {
 
+    setGuiVariableName("String");
+    setGuiLatexSymbol("");
     std::ostringstream o;
     o << x;
     dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
@@ -52,6 +62,9 @@ RlString::RlString(double x) : ModelObject<std::string>() {
 
 /* Construct from DAG node */
 RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<std::string>( v ) {
+
+    setGuiVariableName("String");
+    setGuiLatexSymbol("");
 }
 
 

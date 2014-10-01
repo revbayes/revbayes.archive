@@ -34,6 +34,13 @@ std::stringstream rrcommand;
 RevLanguage::Environment *executionEnvironment;
 
 
+/** Constructor. Here we set the parser mode to executing. */
+RevLanguage::Parser::Parser( void )
+{
+    setParserMode( EXECUTING );
+}
+
+
 /**
  * This function breaks a buffer into Rev lines, taking into account the fact that ';' also
  * breaks lines in addition to newliines. The function also deals with different types of line
@@ -181,12 +188,23 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
     }
     
     // Warn if a return signal has been encountered
+    // @todo Find out why the following lines do not work; they should
 //    if ( Signals::getSignals().isSet( Signals::RETURN ) )
 //        RBOUT( "WARNING: No function to return from" );
     Signals::getSignals().clearFlags();
 
     // Return success
     return 0;
+}
+
+
+/** Execute base variable expression to get the corresponding base variable */
+void RevLanguage::Parser::executeBaseVariable( void )
+{
+    if ( baseVariableExpr != NULL )
+    {
+        baseVariable = baseVariableExpr->evaluateContent( Workspace::userWorkspace() );
+    }
 }
 
 
@@ -267,7 +285,7 @@ int RevLanguage::Parser::help(const SyntaxFunctionCall* root) const {
     // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Syntax tree root before help:\n";
-    root.printValue(std::cerr);
+    root->printValue(std::cerr);
     std::cerr << std::endl;
 #	endif
 
@@ -278,6 +296,23 @@ int RevLanguage::Parser::help(const SyntaxFunctionCall* root) const {
 
 
 extern int yyparse(void);   // Defined in grammar.tab.cpp (from gammar.y)
+
+
+/**
+ * Set parser mode. Use this function to set the parser mode. Use
+ * Parser::CHECKING for state checking and Parser::PROCESSING for
+ * command processing.
+ */
+void RevLanguage::Parser::setParserMode( ParserMode mode )
+{
+    baseVariable = NULL;
+    functionName = "";
+    argumentLabel = "";
+    baseVariableExpr = NULL;
+
+    parserMode = mode;
+}
+
 
 /**
  * Process command buffer with the help of the bison-generated code.
@@ -293,7 +328,7 @@ extern int yyparse(void);   // Defined in grammar.tab.cpp (from gammar.y)
  *       signal is set to 2. Any remaining part of the command buffer
  *       is discarded.
  */
-int RevLanguage::Parser::processCommand(std::string& command, Environment *env) {
+int RevLanguage::Parser::processCommand(std::string& command, Environment* env) {
 
 //    extern Environment* executionEnvironment;
     
@@ -339,6 +374,15 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment *env) 
         foundNewline = false;
         foundEOF = false;
         foundErrorBeforeEnd = false;
+
+#if 0
+        // NOTE! This code is only for testing the CHECKING mode of the parser
+        // DO NOT UNCOMMENT IN NORMAL USE
+        /* Set parser mode into checking */
+        setParserMode( CHECKING );
+#endif
+
+        
 #ifdef DEBUG_PARSER
         printf("\nCalling bison with rrcommand:\n'%s'\n", rrcommand.str().c_str());
 #endif
@@ -372,6 +416,20 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment *env) 
             return 2;
         }
 
+#if 0
+        // NOTE! This code is only for testing the CHECKING mode of the parser
+        // DO NOT UNCOMMENT IN NORMAL USE
+        if ( result == 1 )
+        {
+            std::cerr << "Function name is: " << functionName << std::endl;
+            std::cerr << "Argument label is: " << argumentLabel << std::endl;
+            if ( baseVariable == NULL )
+                std::cerr << "No base variable" << std::endl;
+            else
+                std::cerr << "Base variable is: " << baseVariable->getName() << std::endl;
+        }
+#endif
+        
         if ( result == 0 ) {
             
 #ifdef DEBUG_PARSER
