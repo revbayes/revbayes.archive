@@ -81,7 +81,8 @@ namespace RevBayesCore {
         double                                                              computeLnProbability(void);
 		std::vector<charType>												drawAncestralStatesForNode(const TopologyNode &n);
 		void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
-        void                                                                setValue(AbstractCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
+        void																updateMarginalNodeLikelihoods(void);
+		void                                                                setValue(AbstractCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
         
@@ -342,6 +343,11 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>* Re
     return new AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>( *this );
 }
 
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::updateMarginalNodeLikelihoods( void ) 
+{
+}
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::compress( void ) 
@@ -671,10 +677,11 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
         c.setToFirstState();
         // draw the state
         double u = rng->uniform01();
+		double *p_site = p_node + i*siteOffset;
 		size_t index = 0;
         while ( true ) 
         {
-            u -= p_node[index];
+            u -= p_site[index];
             
             if ( u > 0.0 )
             {
