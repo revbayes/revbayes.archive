@@ -391,11 +391,6 @@ template <typename rlType>
 void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
     
-    size_t lineLength = 75;
-    
-    std::ostringstream s, t;
-    s << "[ ";
-    size_t curLength = 2;
     this->getDagNode()->printValue( o, "" );
 //    for ( size_t i = 1; i <= this->size(); ++i )
 //    {
@@ -413,11 +408,6 @@ void ModelVector<rlType>::printValue( std::ostream& o ) const
 //        curLength += t.str().size();
 //        t.str("");
 //    }
-    if ( curLength + 2 > lineLength )
-        s << std::endl << "]";
-    else
-        s << " ]";
-    o << s.str();
 }
 
 

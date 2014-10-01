@@ -206,7 +206,11 @@ void RevBayesCore::RbVector<valueType>::swap( valueType& a, valueType& b)
 template <class valueType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x) {
     
-    o << "(";
+    size_t lineLength = 75;
+    
+    o << "[ ";
+    size_t curLength = 2;
+
     for (RbConstIterator<valueType> it = x.begin(); it != x.end(); ++it) 
     {
         if ( it != x.begin() ) 
@@ -216,7 +220,10 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbVe
         const valueType& v = *it;
         o << v;
     }
-    o << ")";
+    if ( curLength + 2 > lineLength )
+        o << std::endl << "]";
+    else
+        o << " ]";
     
     return o;
 }
