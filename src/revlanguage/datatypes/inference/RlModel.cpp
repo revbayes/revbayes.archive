@@ -47,7 +47,7 @@ void Model::constructInternalObject( void ) {
 /* Map calls to member methods */
 RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "writeModelGVFile" || name == "gv") {
+    if (name == "graph") {
         const std::string&   fn      = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
         bool vb = static_cast< const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         const std::string&   bg      = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
@@ -108,8 +108,7 @@ const MethodTable& Model::getMethods(void) const {
         dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
         dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
-        methods.addFunction("writeModelGVFile", new MemberProcedure( RlUtils::Void, dotArgRules) );
-        methods.addFunction("gv", new MemberProcedure( RlUtils::Void, dotArgRules) );
+        methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

@@ -19,6 +19,9 @@ source("RevBayes_scripts/m_BD_bears.Rev")
 ### workspace model wrapper ###
 mymodel <- model(diversification)
 
+### create a visual representation of the model using graphviz
+mymodel.graph("output/m_BD_bears_GM.dot", verbose=false, bg="LightSteelBlue2")
+
 ### compute power posterior distributions
 pow_p <- powerPosterior(mymodel, moves, "output/BD_bears_powp.out", cats=100) 
 pow_p.burnin(generations=10000,tuningInterval=1000)
