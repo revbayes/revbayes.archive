@@ -1,16 +1,16 @@
 //
-//  AminoAcidRateMapFunction.h
+//  GeneralRateMapFunction.h
 //  rb_mlandis
 //
 //  Created by Michael Landis on 4/3/14.
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__AminoAcidRateMapFunction__
-#define __rb_mlandis__AminoAcidRateMapFunction__
+#ifndef __rb_mlandis__GeneralRateMapFunction__
+#define __rb_mlandis__GeneralRateMapFunction__
 
 #include "GeographyRateModifier.h"
-#include "RateMap_AminoAcid.h"
+#include "RateMap.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
 #include "TimeTree.h"
@@ -21,15 +21,15 @@
 
 namespace RevBayesCore {
     
-    class AminoAcidRateMapFunction : public TypedFunction<RateMap> {
+    class GeneralRateMapFunction : public TypedFunction<RateMap> {
         
     public:
-        AminoAcidRateMapFunction(size_t nc);                                                                                             // pass in geography object??
-        AminoAcidRateMapFunction(const AminoAcidRateMapFunction &n);                                                                  //!< Copy constructor
-        virtual                                            ~AminoAcidRateMapFunction(void);                                              //!< Virtual destructor
+        GeneralRateMapFunction(size_t ns, size_t nc);
+        GeneralRateMapFunction(const GeneralRateMapFunction &n);                                                                        //!< Copy constructor
+        virtual                                            ~GeneralRateMapFunction(void);                                               //!< Virtual destructor
         
         // public member functions
-        AminoAcidRateMapFunction*                           clone(void) const;                                                              //!< Create an independent clone
+        GeneralRateMapFunction*                             clone(void) const;                                                          //!< Create an independent clone
         
         // set parameters
         void                                                setClockRate(const TypedDagNode< double > *r);
@@ -40,15 +40,15 @@ namespace RevBayesCore {
         void                                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Implementation of swaping parameters
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swapping parameters
         
     private:
         
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
         const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
-        const TypedDagNode<RateMatrix>*                    homogeneousRateMatrix;
-        const TypedDagNode<RbVector<RateMatrix> >*         heterogeneousRateMatrices;
+        const TypedDagNode<RateMatrix>*                     homogeneousRateMatrix;
+        const TypedDagNode<RbVector<RateMatrix> >*          heterogeneousRateMatrices;
         const TypedDagNode<TimeTree>*                       tau;
         const TypedDagNode<std::vector<double> >*           rootFrequencies;
         
@@ -62,4 +62,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__AminoAcidRateMapFunction__) */
+#endif /* defined(__rb_mlandis__GeneralRateMapFunction__) */

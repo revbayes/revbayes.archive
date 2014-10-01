@@ -233,6 +233,9 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVe
     if (node.isTip())
         lnL += computeTipLikelihood(node);
     
+    if (node.isRoot())
+        lnL += computeRootLikelihood(node);
+    
     historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     
     // mark as computed

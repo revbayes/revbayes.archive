@@ -10,6 +10,7 @@
 #define __rb_mlandis__BiogeographyRateMapFunction__
 
 #include "GeographyRateModifier.h"
+#include "RateMatrix.h"
 #include "RateMap_Biogeography.h"
 #include "RbVector.h"
 #include "TimeTree.h"
@@ -24,6 +25,7 @@ namespace RevBayesCore {
         
     public:
         BiogeographyRateMapFunction(size_t nc, bool fe=true);                                                                                             // pass in geography object??
+        BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n);                                                                  //!< Copy constructor
         virtual                                            ~BiogeographyRateMapFunction(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -31,12 +33,13 @@ namespace RevBayesCore {
         
         // set parameters
         void                                                setClockRate(const TypedDagNode< double > *r);
-        void                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
+        void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         //void                                                setDistancePower(const TypedDagNode<double>* dp);
         void                                                setGeographyRateModifier(const TypedDagNode<GeographyRateModifier>* drm);
-        void                                                setGainLossRates(const TypedDagNode< RbVector<double> >* glr);
+        void                                                setGainLossRates(const TypedDagNode<std::vector<double> >* glr);
+        void                                                setRateMatrix(const TypedDagNode<RateMatrix>* rm);
 //        void                                                setGainLossRates(const TypedDagNode<std::vector<std::vector<double> > >* glr);
-        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                update(void);
         
     protected:
@@ -45,21 +48,24 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< double >*                           homogeneousClockRate;
-        const TypedDagNode< RbVector< double > >*               heterogeneousClockRates;
-        const TypedDagNode< RbVector<double> >*                 homogeneousGainLossRates;
-        const TypedDagNode< RbVector<double> >*                 heterogeneousGainLossRates;
+        const TypedDagNode< double >*                       homogeneousClockRate;
+        const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
+        const TypedDagNode<RateMatrix>*                     homogeneousRateMatrix;
+        const TypedDagNode<RbVector<RateMatrix> >*          heterogeneousRateMatrices;
+
+//        const TypedDagNode<std::vector<double> >*               homogeneousGainLossRates;
+//        const TypedDagNode<std::vector<double> >*               heterogeneousGainLossRates;
         //const TypedDagNode<double>*                             distancePower;
         const TypedDagNode<GeographyRateModifier>*              geographyRateModifier;
         const TypedDagNode<TimeTree>*                           tau;
-        const TypedDagNode< RbVector<double> >*                 rootFrequencies;
+        const TypedDagNode<std::vector<double> >*               rootFrequencies;
         
         // geography epochs
         // rate epochs
         // branchwise models, etc
         
         bool                                                branchHeterogeneousClockRates;
-        bool                                                branchHeterogeneousGainLossRates;
+        bool                                                branchHeterogeneousRateMatrices;
         bool                                                useGeographicDistance;
         
     };

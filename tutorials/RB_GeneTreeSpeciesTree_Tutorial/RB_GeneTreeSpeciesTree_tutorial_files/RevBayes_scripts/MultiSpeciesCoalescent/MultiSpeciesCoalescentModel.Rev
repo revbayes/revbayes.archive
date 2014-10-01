@@ -54,28 +54,31 @@ trueRootAge <- trueSpeciesTree.rootAge()
 #######################
 
 # Birth-Death process priors
-speciation ~ dnExp(10.0)
-extinction ~ dnExp(10.0)
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
 
 
 
 # A species tree larger than the gene trees has probability 0.
 # To be sure to start from a state with a non-null probability, we start from the true values.
-tree_height ~ dnUniform(0.0,100.0)
-tree_height.setValue(trueRootAge)
+tree_height ~ unif(0.0,100.0)
 
-write("Starting species tree height: "+tree_height)
-write("Compared to smallest gene tree height: " + min(geneTreeRootAges) )
+write("True species tree root age: "+tree_height)
+write("Compared to smallest gene tree root age: " + min(geneTreeRootAges) )
 
 
 # Species tree from birth-death process
-speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 
-# We rescale by the mutation rate we used in the simulation
-#trueSpeciesTree.rescale(0.0000001)
-
-speciesTree.setValue(trueSpeciesTree)
+# We set the species tree to a good starting value.
+# This good starting value is obtained from the Maximum Tree method (Liu, 2006).
+# The same method is used in BEST to obtain a good starting species tree.
+recTree <- maximumTree(trueGeneTrees)
+write ("		Maximum species tree: ")
+write(recTree)
+speciesTree.setValue(recTree)
+tree_height.setValue(recTree.rootAge())
 
 
 write("Proposed starting species tree: ")
@@ -93,13 +96,13 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ dnUniform(0.0,10)
+Ne ~ unif(0.0,10)
 Ne.setValue(trueNe)
 
 
 # Link the gene trees to the species tree and Ne
 for (i in 1:n_genes) {
-   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
    geneTrees[i].clamp(trueGeneTrees[i])
 }
 

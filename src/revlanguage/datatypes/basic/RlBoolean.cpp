@@ -31,16 +31,22 @@ using namespace RevLanguage;
 /** Default constructor */
 RlBoolean::RlBoolean(void) : ModelObject<bool>() {
 
+    setGuiVariableName("Boolean");
+    setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
 RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<bool> *v) : ModelObject<bool>( v ) {
     
+    setGuiVariableName("Boolean");
+    setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
 RlBoolean::RlBoolean(bool v) : ModelObject<bool>( new bool(v) ) {
 
+    setGuiVariableName("Boolean");
+    setGuiLatexSymbol("B");
 }
 
 

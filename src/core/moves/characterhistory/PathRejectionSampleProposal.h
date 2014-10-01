@@ -419,6 +419,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
         }
     }
     
+//    std::cout << proposedHistory.size() << "\n";
     // assign values back to model for likelihood
     bh->updateHistory(proposedHistory, siteIndexSet);
     

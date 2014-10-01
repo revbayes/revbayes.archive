@@ -295,6 +295,8 @@
             {
             // it's a variable!
             std::cout << "Variable: " << (it)->first << std::endl;
+            std::cout << "   " << varPtr->getGuiVariableName() << std::endl;
+            std::cout << "   " << varPtr->getGuiLatexSymbol() << std::endl;
             }
         }
 
