@@ -19,6 +19,9 @@ source("RevBayes_scripts/m_Yule_bears.Rev")
 ### workspace model wrapper ###
 mymodel <- model(birth_rate)
 
+### create a visual representation of the model using graphviz
+mymodel.graph("output/m_Yule_bears_GM.dot", verbose=false, bg="honeydew2")
+
 ### compute power posterior distributions
 pow_p <- powerPosterior(mymodel, moves, "output/Yule_bears_powp.out", cats=100) 
 pow_p.burnin(generations=10000,tuningInterval=1000)
