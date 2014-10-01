@@ -110,7 +110,7 @@ void AncestralStateMonitor::monitor(unsigned long gen)
 		
 		// TODO: 
 		// call update for the marginal node likelihoods
-		//character->updateMarginalNodeLikelihoods();
+		//dist->updateMarginalNodeLikelihoods();
         
 		std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
 		
