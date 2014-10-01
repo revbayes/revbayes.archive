@@ -66,7 +66,7 @@ namespace RevLanguage {
         std::string                 varName;                                                        //!< The name of the loop variable
         SyntaxElement*              inExpression;                                                   //!< The in expression (a vector of values)
         Container*                  stateSpace;                                                     //!< Vector result of 'in' expression
-        size_t                      nextOneoffsetElementIndex;                                      //!< Next element in vector
+        size_t                      nextIndex;                                                      //!< Next element in vector
         RevPtr<Variable>            loopVariable;                                                   //!< Smart pointer to the loop variable in the environment
 
     };
