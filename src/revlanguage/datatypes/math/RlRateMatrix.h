@@ -32,6 +32,7 @@ namespace RevLanguage {
     public:
         
         RateMatrix(void);                                                                                                   //!< Default constructor
+        RateMatrix(const RevBayesCore::RateMatrix& m);                                                                      //!< Default constructor
         RateMatrix(RevBayesCore::RateMatrix *m);                                                                            //!< Default constructor
         RateMatrix(RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *d);                                                                                                        //!< Default constructor
         

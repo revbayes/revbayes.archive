@@ -1,6 +1,7 @@
 #ifndef ModelVector_H
 #define ModelVector_H
 
+#include "Container.h"
 #include "ModelObject.h"
 #include "RbVector.h"
 
@@ -13,7 +14,7 @@ namespace RevLanguage {
      * @brief ModelVector: templated class for Rev vectors of model objects
      */
     template <typename rlType>
-    class ModelVector : public ModelObject<RevBayesCore::RbVector<typename rlType::valueType> > {
+    class ModelVector : public ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >, public Container {
         
     public:
         
@@ -53,9 +54,9 @@ namespace RevLanguage {
         virtual const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
         virtual MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
         
-        // Container functions you may want to override to protect from assignment
-//        virtual RevPtr<Variable>                    getElement(size_t index);                                              //!< Get element variable (single index)
-        
+        // Container functions provided here
+        virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
+
         // ModelVector functions: override if you do not want to support these in-place algorithms
         virtual void                                clear(void);                                                                    //!< Clear the vector
         virtual size_t                              size(void) const;                                                               //!< Size of the vector
@@ -273,6 +274,13 @@ const RevLanguage::TypeSpec& ModelVector<rlType>::getClassTypeSpec(void)
 }
 
 
+template <typename rlType>
+rlType* ModelVector<rlType>::getElement(size_t idx) const
+{
+    return new rlType( this->getValue()[ idx ] );
+}
+
+
 
 /**
  * Get member methods. We construct the appropriate static member
@@ -312,12 +320,12 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 template <typename rlType>
 bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
-//    if ( type.getParentType() == getClassTypeSpec().getParentType() )
-//    {
-//        // We want to convert to another generic model vector
-//
-//        // Simply check whether our elements can convert to the desired element type
-//        typename std::vector<elementType>::const_iterator i;
+    if ( type.getParentType() == getClassTypeSpec().getParentType() )
+    {
+        // We want to convert to another generic model vector
+
+        // Simply check whether our elements can convert to the desired element type
+        typename std::vector<elementType>::const_iterator i;
 //        for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
 //        {
 //            rlType orgElement = rlType(*i);
@@ -330,8 +338,8 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
 //        }
 //        
 //        return true;
-//    }
-    
+    }
+
     return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::isConvertibleTo( type, once );
 }
 
@@ -392,22 +400,7 @@ void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
     
     this->getDagNode()->printValue( o, "" );
-//    for ( size_t i = 1; i <= this->size(); ++i )
-//    {
-//        RevPtr<Variable> elem = const_cast< ModelVector<rlType>* >(this)->getElement( i );
-//        elem->getRevObject().printValue( t );
-//
-//        if ( i != this->size() )
-//            t << ", ";
-//        if ( curLength + t.str().size() > lineLength )
-//        {
-//            s << std::endl << "  ";
-//            curLength = 2;
-//        }
-//        s << t.str();
-//        curLength += t.str().size();
-//        t.str("");
-//    }
+
 }
 
 

@@ -1,6 +1,7 @@
 #ifndef WorkspaceVector_H
 #define WorkspaceVector_H
 
+#include "Container.h"
 #include "RbVector.h"
 #include "WorkspaceObject.h"
 
@@ -25,7 +26,7 @@ namespace RevLanguage {
      * For Rev objects that are not model objects or workspace objects, see RevObjectVector.
      */
     template <typename rlType>
-    class WorkspaceVector : public WorkspaceObject<RevBayesCore::RbVector<rlType> > {
+    class WorkspaceVector : public WorkspaceObject<RevBayesCore::RbVector<rlType> >, public Container {
         
     public:
         typedef typename rlType::valueType          elementType;
@@ -54,6 +55,9 @@ namespace RevLanguage {
         // Basic utility function provided here
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
         
+        // Container functions provided here
+        virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
+
         // Container functions provided here
 //        RevPtr<Variable>                            getElement(size_t index);                                           //!< Get element variable
 //        virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
@@ -188,6 +192,14 @@ const TypeSpec& WorkspaceVector<rlType>::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
 	return revTypeSpec;
+}
+
+
+template <typename rlType>
+rlType* WorkspaceVector<rlType>::getElement(size_t idx) const
+{
+    const rlType &element = this->operator[](idx);
+    return element.clone();
 }
 
 

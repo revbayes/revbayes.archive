@@ -23,6 +23,11 @@ RateMatrix::RateMatrix(void) : ModelObject<RevBayesCore::RateMatrix>() {
 }
 
 
+RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : ModelObject<RevBayesCore::RateMatrix>( v.clone() ) {
+    
+}
+
+
 RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : ModelObject<RevBayesCore::RateMatrix>( v ) {
     
 }
