@@ -55,7 +55,6 @@ namespace RevLanguage {
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
-        bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
         void                                    makeConstantValue(void);                                                    //!< Convert to constant object
         void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert to conversion object
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
@@ -424,13 +423,6 @@ template <typename rbType>
 bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
     
     return dagNode->isConstant();
-}
-
-
-template <typename rbType>
-bool RevLanguage::ModelObject<rbType>::isNAObject( void ) const {
-    
-    return dagNode->isNAValue();
 }
 
 

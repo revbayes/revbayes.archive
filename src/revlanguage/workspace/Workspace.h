@@ -31,6 +31,8 @@
 
 namespace RevLanguage {
 
+    class AbstractModelObject;
+    class AbstractWorkspaceObject;
     class RevObject;
     class Container;
     class Distribution;
@@ -80,7 +82,7 @@ namespace RevLanguage {
         // Workspace functions
         bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution
         bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
-        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
+//        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
         bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);          //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
@@ -114,7 +116,9 @@ namespace RevLanguage {
         bool                    typesInitialized;                                                           //!< Are types initialized?
     };
 
+    
 }
+
 
 #endif
 
