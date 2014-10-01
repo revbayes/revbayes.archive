@@ -82,6 +82,8 @@ template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( void ) :
     WorkspaceObject<RevBayesCore::RbVector< rlType > >()
 {
+    this->value = new RevBayesCore::RbVector< rlType >();
+    
 }
 
 
