@@ -1,7 +1,7 @@
 #ifndef Func_modelVector_H
 #define Func_modelVector_H
 
-#include "Function.h"
+#include "RlFunction.h"
 #include <map>
 #include <string>
 

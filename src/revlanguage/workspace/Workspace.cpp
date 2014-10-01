@@ -116,20 +116,20 @@ bool Workspace::addType(RevObject *exampleObj) {
 }
 
 
-/** Add abstract type to the workspace */
-bool Workspace::addType(const std::string& name, RevObject *exampleObj) {
-    
-#ifdef DEBUG_WORKSPACE
-    printf("Adding special abstract type %s to workspace\n", name.c_str());
-#endif
-
-    if (typeTable.find(name) != typeTable.end())
-        throw RbException("There is already a type named '" + name + "' in the workspace");
-
-    typeTable.insert(std::pair<std::string, RevObject*>( name, exampleObj));
-
-    return true;
-}
+///** Add abstract type to the workspace */
+//bool Workspace::addType(const std::string& name, RevObject *exampleObj) {
+//    
+//#ifdef DEBUG_WORKSPACE
+//    printf("Adding special abstract type %s to workspace\n", name.c_str());
+//#endif
+//
+//    if (typeTable.find(name) != typeTable.end())
+//        throw RbException("There is already a type named '" + name + "' in the workspace");
+//
+//    typeTable.insert(std::pair<std::string, RevObject*>( name, exampleObj));
+//
+//    return true;
+//}
 
 
 /** Add type with constructor to the workspace */
