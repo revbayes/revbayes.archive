@@ -99,7 +99,7 @@ using namespace RevLanguage;
  */
 template <typename rlType>
 ModelVector<rlType>::ModelVector( void ) :
-    ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >()
+ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( new RevBayesCore::RbVector<typename rlType::valueType>() )
 {
 }
 
