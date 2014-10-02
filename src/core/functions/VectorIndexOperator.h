@@ -55,7 +55,7 @@ namespace RevBayesCore {
 #include "RbException.h"
 
 template <class valueType>
-RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDagNode< RbVector<valueType> >* v, const TypedDagNode<int> *idx) : TypedFunction<valueType>( new valueType() ), index( idx ), vector( v ) {
+RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDagNode< RbVector<valueType> >* v, const TypedDagNode<int> *idx) : TypedFunction<valueType>( NULL ), index( idx ), vector( v ) {
     // add the vector parameter as a parent
     this->addParameter( vector );
     this->addParameter( index );
@@ -82,7 +82,7 @@ template <class valueType>
 void RevBayesCore::VectorIndexOperator<valueType>::update( void )
 {
     
-    const std::vector<valueType> &v = vector->getValue();
+    const RbVector<valueType> &v = vector->getValue();
     size_t idx = size_t(index->getValue());
     
     if ( idx < 1 || idx > v.size() )
@@ -91,7 +91,9 @@ void RevBayesCore::VectorIndexOperator<valueType>::update( void )
         ss_err << "Index out of bounds: The vector of size " << v.size() << " does not have an element for index " << idx << ".";
         throw RbException(ss_err.str());
     }
-    *(this->value) = v[idx - 1];
+    
+    delete this->value;
+    this->value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[idx - 1] );
 }
 
 

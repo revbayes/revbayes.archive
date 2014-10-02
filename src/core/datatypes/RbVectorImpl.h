@@ -100,6 +100,11 @@ namespace RevBayesCore {
         // public (stl-like) vector functions
         valueType&                                          operator[](size_t i) { return *values[i]; }
         const valueType&                                    operator[](size_t i) const { return *values[i]; }
+        bool                                                operator==(const RbVectorImpl<valueType,1>& x) const { return values == x.values; }                              //!< Equals operator
+        bool                                                operator!=(const RbVectorImpl<valueType,1>& x) const { return !operator==(x); }                              //!< Not-Equals operator
+        bool                                                operator<(const RbVectorImpl<valueType,1>& x) const { return values < x.values; }
+        bool                                                operator<=(const RbVectorImpl<valueType,1>& x) const { return operator<(x) || operator==(x); }
+
         void                                                clear(void) {
             size_t n = values.size();
             for (size_t i = 0; i < n; ++i)
