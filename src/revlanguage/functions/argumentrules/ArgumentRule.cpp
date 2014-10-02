@@ -129,9 +129,14 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             theVar->setRevObject( convertedObject );
             theVar->setRevObjectTypeSpec( *it );
             if ( !isEllipsis() )
+            {
                 return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+            }
             else
+            {
                 return Argument( theVar, arg.getLabel(), true );
+            }
+            
         }
         else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
         {
@@ -143,9 +148,14 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 convertedVar->setRevObjectTypeSpec( *it );
 
                 if ( !isEllipsis() )
+                {
                     return Argument( convertedVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                }
                 else
+                {
                     return Argument( convertedVar, arg.getLabel(), true );
+                }
+                
             }
             else
             {
@@ -155,9 +165,14 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 conversionVar->setRevObjectTypeSpec( *it );
                 
                 if ( !isEllipsis() )
+                {
                     return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                }
                 else
+                {
                     return Argument( conversionVar, arg.getLabel(), true );
+                }
+                
             }
         }
     }

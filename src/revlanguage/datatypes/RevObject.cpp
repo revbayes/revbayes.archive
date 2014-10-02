@@ -32,14 +32,6 @@
 using namespace RevLanguage;
 
 
-
-
-/** Constructor: we set member variables here from member rules */
-RevObject::RevObject(const MemberRules& memberRules) {
-    
-}
-
-
 /** 
  * Destructor. 
  * Nothing to do here because we don't own anything.

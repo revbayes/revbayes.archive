@@ -42,7 +42,7 @@ RevPtr<Variable> Func_biogeo_de::execute() {
     
 //    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier>* grm = static_cast<const RlGeographyRateModifier&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural&>( this->args[3].getVariable()->getRevObject() ).getValue();
     bool fe = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();

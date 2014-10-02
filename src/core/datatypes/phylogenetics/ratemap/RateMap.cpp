@@ -133,7 +133,7 @@ void RateMap::setHomogeneousClockRate(double r)
     homogeneousClockRate = r;
 }
 
-void RateMap::setRootFrequencies(const std::vector<double>& r)
+void RateMap::setRootFrequencies(const RevBayesCore::RbVector<double>& r)
 {
     rootFrequencies = r;
 }

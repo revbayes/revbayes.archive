@@ -25,15 +25,20 @@ namespace RevLanguage {
     class AbstractModelObject : public RevObject {
     
     public:
+        
         virtual                                ~AbstractModelObject(void) {}                                                          //!< Virtual destructor
+        
         std::string                             getGuiVariableName(void) { return guiVariableName; }
         std::string                             getGuiLatexSymbol(void) { return guiLatexSymbol; }
+        bool                                    isModelObject(void) const;
         void                                    setGuiVariableName(std::string s) { guiVariableName = s; }
         void                                    setGuiLatexSymbol(std::string s) { guiLatexSymbol = s; }
 
      private:
+        
         std::string                             guiVariableName;
         std::string                             guiLatexSymbol;
+
     };
     
 }

@@ -53,7 +53,7 @@ namespace RevBayesCore {
         const RbVector<RateMatrix>&         getHeterogeneousRateMatrices(void) const;
         void                                setHeterogeneousRateMatrices(const RbVector<RateMatrix>& r);
         const std::vector<double>&          getRootFrequencies(void) const;
-        void                                setRootFrequencies(const std::vector<double>& r);
+        void                                setRootFrequencies(const RevBayesCore::RbVector<double>& r);
 
 
         

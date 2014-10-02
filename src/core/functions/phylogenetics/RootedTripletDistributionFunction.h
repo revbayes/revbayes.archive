@@ -34,10 +34,10 @@ namespace RevBayesCore {
     class RootedTripletDistributionFunction : public TypedFunction<RootedTripletDistribution> {
         
     public:
-        RootedTripletDistributionFunction( const TypedDagNode<std::vector< TimeTree > > *ts, const TypedDagNode<std::vector< std::string > > *sn );
-        RootedTripletDistributionFunction( const TypedDagNode<std::vector< BranchLengthTree > > *ts, const TypedDagNode<std::vector< std::string > > *sn );
-        RootedTripletDistributionFunction( const TypedDagNode<std::vector< std::string > > *sn );
-        RootedTripletDistributionFunction( const TypedDagNode<std::vector< Taxon > > *t );
+        RootedTripletDistributionFunction( const TypedDagNode< RbVector< TimeTree > > *ts, const TypedDagNode< RbVector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode< RbVector< BranchLengthTree > > *ts, const TypedDagNode< RbVector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode< RbVector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode< RbVector< Taxon > > *t );
 
         virtual                                            ~RootedTripletDistributionFunction(void);                                                    //!< Virtual destructor
         
@@ -45,8 +45,8 @@ namespace RevBayesCore {
         RootedTripletDistributionFunction*                              clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
         
-        void setTrees(TypedDagNode<std::vector< TimeTree > >* ts); //!< Set the trees in the distribution
-        void setTrees(TypedDagNode<std::vector< BranchLengthTree > >* ts); //!< Set the trees in the distribution
+        void setTrees(TypedDagNode< RbVector< TimeTree > >* ts); //!< Set the trees in the distribution
+        void setTrees(TypedDagNode< RbVector< BranchLengthTree > >* ts); //!< Set the trees in the distribution
 
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
@@ -62,10 +62,10 @@ namespace RevBayesCore {
 
         // members
 
-        const TypedDagNode<std::vector<TimeTree> >*                                  ttrees;
-        const TypedDagNode<std::vector<BranchLengthTree> >*                         bltrees;
-        const TypedDagNode< std::vector< Taxon > >*                                    taxa;
-        const TypedDagNode< std::vector< std::string > >*                            species;
+        const TypedDagNode< RevBayesCore::RbVector<TimeTree> >*                                  ttrees;
+        const TypedDagNode< RevBayesCore::RbVector<BranchLengthTree> >*                         bltrees;
+        const TypedDagNode< RevBayesCore::RbVector< Taxon > >*                                    taxa;
+        const TypedDagNode< RevBayesCore::RbVector< std::string > >*                            species;
         std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t > tripletDistribution;
         size_t                                                                numberOfTrees;
         std::set< Taxon >                                                           taxaSet;

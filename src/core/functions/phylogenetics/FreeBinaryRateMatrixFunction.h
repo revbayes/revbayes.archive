@@ -20,7 +20,7 @@ namespace RevBayesCore {
     class FreeBinaryRateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
-        FreeBinaryRateMatrixFunction(const TypedDagNode<std::vector<double> > *bf);
+        FreeBinaryRateMatrixFunction(const TypedDagNode< RbVector<double> > *bf);
         FreeBinaryRateMatrixFunction(const FreeBinaryRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~FreeBinaryRateMatrixFunction(void);                                                    //!< Virtual destructor
         
@@ -34,7 +34,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           transitionRates;
+        const TypedDagNode< RbVector<double> >*             transitionRates;
         
     };
     

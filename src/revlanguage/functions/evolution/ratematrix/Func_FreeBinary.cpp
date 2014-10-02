@@ -35,7 +35,7 @@ Func_FreeBinary* Func_FreeBinary::clone( void ) const {
 
 RevPtr<Variable> Func_FreeBinary::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FreeBinaryRateMatrixFunction* f = new RevBayesCore::FreeBinaryRateMatrixFunction( glr );
     DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     

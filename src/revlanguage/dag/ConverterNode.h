@@ -38,10 +38,13 @@ namespace RevLanguage {
         // Public methods
         ConverterNode<rlType>*                  clone(void) const;                                                      //!< Type-safe clone
         RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
+        double                                  getLnProbability(void) { return 0.0; }                                  //!< Get ln prob
+        double                                  getLnProbabilityRatio(void) { return 0.0; }                             //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                         //!< Get the value
         const typename rlType::valueType&       getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
+        void                                    redraw(void) {}                                                         //!< Redraw (or not)
         void                                    update(void);                                                           //!< Update current value
         
         // Parent DAG nodes management functions
@@ -49,6 +52,7 @@ namespace RevLanguage {
         void                                    swapParent(const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent); //!< Exchange the parent (element variable)
         
     protected:
+        void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
         void                                    keepMe(RevBayesCore::DagNode* affecter);                                                    //!< Keep value of this and affected nodes
         void                                    restoreMe(RevBayesCore::DagNode *restorer);                                                 //!< Restore value of this nodes
         void                                    touchMe(RevBayesCore::DagNode *toucher);                                                    //!< Touch myself and tell affected nodes value is reset
@@ -74,12 +78,11 @@ using namespace RevLanguage;
  */
 template<typename rlType>
 ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variable>& arg, const TypeSpec& ts ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    argument( arg ),
-    convertedObject( NULL ),
-    typeSpec( ts )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+argument( arg ),
+convertedObject( NULL ),
+typeSpec( ts )
 {
-    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Add us as a child to the argument DAG node
@@ -95,12 +98,11 @@ ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variabl
  */
 template<typename rlType>
 ConverterNode<rlType>::ConverterNode( const ConverterNode<rlType>& n ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    argument( n.argument ),
-    convertedObject( NULL ),
-    typeSpec( n.typeSpec )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+argument( n.argument ),
+convertedObject( NULL ),
+typeSpec( n.typeSpec )
 {
-    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Add us as a child to the argument DAG node
@@ -239,6 +241,17 @@ RevBayesCore::DagNode* ConverterNode<rlType>::cloneDAG( std::map<const RevBayesC
 
 
 /**
+ * Get the affected nodes.
+ * This call is started by the parent. We need to delegate this call to all our children.
+ */
+template<typename rlType>
+void ConverterNode<rlType>::getAffected( std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter )
+{
+    this->getAffectedNodes( affected );
+}
+
+
+/**
  * Get the parents of this node. We simply return the argument DAG node.
  */
 template<typename rlType>
@@ -309,7 +322,7 @@ void ConverterNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In keepMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
- 
+    
     // Pass the call on
     this->keepAffected();
 }
@@ -362,7 +375,7 @@ void ConverterNode<rlType>::printStructureInfo( std::ostream& o, bool verbose ) 
 template<typename rlType>
 void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
-
+    
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In restoreMe of Converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
@@ -385,7 +398,7 @@ void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 template<typename rlType>
 void ConverterNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-
+    
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In touchMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
