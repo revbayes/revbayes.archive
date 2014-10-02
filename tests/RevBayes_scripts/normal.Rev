@@ -1,27 +1,27 @@
 # Test file for mcmc on normal distribution
 a <- -1.0
 b <- 1.0
-mu ~ unif(a, b)
-moves[1] <- mSlide(mu, weight=1.0,delta=1.0)
+mu ~ dnUniform(a, b)
+moves[1] = mvSlide(mu, weight=1.0,delta=1.0)
 
 
 c <- 1.0
-sigma ~ exponential(c)
-moves[2] <- mScale(sigma, weight=1.0, lambda=1.0, tune=false)
+sigma ~ dnExponential(c)
+moves[2] = mvScale(sigma, weight=1.0, lambda=1.0, tune=false)
  
 # Create a file-monitor
-monitors[1] <- filemonitor(filename="normaltest.out",printgen=1, separator = "	", mu, sigma)
-monitors[2] <- screenmonitor(printgen=100, mu, sigma)
+monitors[1] = mnFile(filename="normaltest.out",printgen=1, separator = TAB, mu, sigma)
+monitors[2] = mnScreen(printgen=100, mu, sigma)
 
 observations <- [1.0180587, 0.3551789, -3.0993260, 2.0436601, 0.5752029, -2.2873659, -0.4357313, -2.1162503, -2.0887467, 0.5446856]
 for (i in 1:observations.size()) {
-    x[i] ~ norm(mu, sigma)
-    x[i].clamp(observations[i])
+    x[i] ~ dnNorm(mu, sigma)
+    x[i].clamp( observations[i] )
 }
 
-mymodel <- model(a)
+mymodel = model(a)
  
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.run(generations=10000)
 
