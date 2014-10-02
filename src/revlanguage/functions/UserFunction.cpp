@@ -84,7 +84,7 @@ RevPtr<Variable> UserFunction::executeCode( void )
         
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
         {
-            Signals::getSignals().clearFlags();
+//            Signals::getSignals().clearFlags();
             break;
         }
     }
