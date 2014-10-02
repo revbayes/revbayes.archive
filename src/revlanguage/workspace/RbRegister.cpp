@@ -411,6 +411,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<RealPos,5>::addTypeToWorkspace( *this, new RealPos() );
         AddWorkspaceVectorType<RlBoolean,5>::addTypeToWorkspace( *this, new RlBoolean() );
         AddWorkspaceVectorType<RlString,5>::addTypeToWorkspace( *this, new RlString() );
+        AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
+        AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
         
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         
@@ -550,9 +552,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add math types (in folder "datatypes/math") */
         addType( new RateMap()              );
-        addType( new RateMatrix()           );
         addType( new RealMatrix()           );
-        addType( new Simplex()              );
         
 
         ///////////////////////////////////////////////////
