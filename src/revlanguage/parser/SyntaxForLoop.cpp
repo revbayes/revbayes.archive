@@ -101,7 +101,7 @@ const std::string& SyntaxForLoop::getIndexVarName( void ) const
 void SyntaxForLoop::getNextLoopState( void )
 {
     // Get the next value from the container
-    RevObject* elm = stateSpace->getElement( nextIndex )->clone();
+    RevObject* elm = stateSpace->getElement( nextIndex-1 )->clone();
 
     // Set the loop variable to the next value using a control variable assignment
     loopVariable->setRevObject( elm );

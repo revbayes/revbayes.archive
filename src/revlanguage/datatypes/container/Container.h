@@ -32,6 +32,7 @@ namespace RevLanguage {
         virtual                                     ~Container(void) {}
         
         // Container functions you have to override
+        virtual void                                push_back(const RevObject &x) = 0;                                  //!< Append element to end
         virtual RevObject*                          getElement(size_t idx) const = 0;                                   //!< Get element variable (vector of indices)
         virtual size_t                              size(void) const = 0;                                               //!< Get number of elements in container
         

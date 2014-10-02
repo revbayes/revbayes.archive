@@ -43,6 +43,7 @@ namespace RevLanguage {
         void                                        pop_back(void);                                                     //!< Drop element at back
         void                                        pop_front(void);                                                    //!< Drop element from front
         void                                        push_back(const rlType &x);                                         //!< Append element to end
+        void                                        push_back(const RevObject &x);                                      //!< Append element to end
         void                                        push_front(const rlType &x);                                        //!< Append element to end
         size_t                                      size(void) const;                                                   //!< The size of the vector
 
@@ -57,10 +58,6 @@ namespace RevLanguage {
         
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
-
-        // Container functions provided here
-//        RevPtr<Variable>                            getElement(size_t index);                                           //!< Get element variable
-//        virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
         
         // WorkspaceVector functions
         vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
@@ -102,14 +99,7 @@ template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
     WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> >()
 {
-    throw RbException("Missing implementation in WorkspaceVector.");
-//    for ( typename vectorRbPtr::const_iterator it = v.begin(); it != v.end(); ++it )
-//    {
-//        Variable* newVar = new Variable( new rlType( ( *it )->clone() ) );
-//        newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
-//        elements.push_back( newVar );
-//        delete ( *it );
-//    }
+    *this->value = v;
 }
 
 
@@ -125,13 +115,12 @@ template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) :
     WorkspaceObject<RevBayesCore::RbVector< rlType > >()
 {
-    throw RbException("Missing implementation in WorkspaceVector.");
-//    for ( typename vectorRlPtr::const_iterator it = v.begin(); it != v.end(); ++it )
-//    {
-//        Variable* newVar = new Variable( *it );
-//        newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
-//        elements.push_back( newVar );
-//    }
+
+    for ( typename vectorRlPtr::const_iterator it = v.begin(); it != v.end(); ++it )
+    {
+        this->value->push_back( *it );
+    }
+    
 }
 
 
@@ -203,36 +192,6 @@ rlType* WorkspaceVector<rlType>::getElement(size_t idx) const
 }
 
 
-///**
-// * This function simply sets the content of the vector using the provided
-// * elements. We do type checking and also check the lengths argument for
-// * correctness
-// */
-//template<typename rlType>
-//void WorkspaceVector<rlType>::setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths)
-//{
-//    // Check lengths specification
-//    if ( lengths.size() != 1 || lengths[0] != elems.size() )
-//        throw RbException( "Incorrect lengths specification when setting WorkspaceVector elements" );
-//    
-//    // Check types of objects
-//    for ( std::vector<RevObject*>::iterator it = elems.begin(); it != elems.end(); ++it )
-//    {
-//        if ( !(*it)->isTypeSpec( rlType::getClassTypeSpec() ) )
-//            throw RbException( "Illegal attempt to set WorkSpace vector of '" + rlType::getClassType() + "' elements with an '" + (*it)->getType() + "' object" );
-//    }
-//    
-//    // Now simply replace the elements, making sure we guard them using the type requirement of Variable
-//    elements.clear();
-//    for ( std::vector<RevObject*>::iterator it = elems.begin(); it != elems.end(); ++it )
-//    {
-//        Variable* newVar = new Variable( *it );
-//        newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
-//        elements.push_back( newVar );
-//    }
-//}
-
-
 /** Get the type spec of this class. We return a member variable because instances might have different element types. (Testing not to below) */
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getTypeSpec(void) const
@@ -293,6 +252,26 @@ void WorkspaceVector<rlType>::push_back( const rlType &x )
 
     // Push it onto the back of the elements vector
     this->value->push_back( x );
+}
+
+
+/**
+ * Push a Rev object element onto the back of the vector.
+ */
+template <typename rlType>
+void WorkspaceVector<rlType>::push_back( const RevObject &x )
+{
+    
+    // cast the object
+    const rlType *x_converted = dynamic_cast< const rlType* >( &x );
+    
+    if ( x_converted == NULL )
+    {
+        throw RbException("Could not append an element of type " + x.getType() + " to a vector of type " + this->getType() );
+    }
+    
+    // Push it onto the back of the elements vector
+    this->push_back( *x_converted );
 }
 
 

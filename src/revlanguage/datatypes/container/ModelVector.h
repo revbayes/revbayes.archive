@@ -32,6 +32,7 @@ namespace RevLanguage {
 //        void                                        pop_back(void);                                             //!< Drop element from back
 //        void                                        pop_front(void);                                            //!< Drop element from front
         void                                        push_back(const rlType& x);                                 //!< Push Rev object element onto back
+        void                                        push_back(const RevObject &x);                              //!< Append element to end
         void                                        push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
 //        void                                        push_front(const rlType& x);                                //!< Push Rev object element onto front
 //        void                                        push_front(const elementType& x);                           //!< Push internal value of Rev object element onto front
@@ -176,31 +177,41 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
     if ( type == getClassTypeSpec() )
         return this->clone();
     
-//    // Test whether we want to convert to another generic model vector
-//    if ( type.getParentType() == getClassTypeSpec().getParentType() )
-//    {
-//        // We are both model vectors. Rely on generic code to cover all allowed conversions
-//        
-//        // Now generate the vector of elements
-//        std::vector<RevObject*> theConvertedObjects;
-//        
-//        for ( typename valueType::const_iterator i = this->getValue().begin(); i != this->getValue().end(); ++i )
-//        {
-//            RevObject* orgElement = new rlType( *i );
-//            if ( orgElement->isTypeSpec( *type.getElementTypeSpec() ) )
-//                theConvertedObjects.push_back( orgElement );
-//            else
-//                theConvertedObjects.push_back( orgElement->convertTo( *type.getElementTypeSpec() ) );
-//        }
-//        
-//        // Set the elements of the converted container, which assumes ownership of the objects
-//        std::vector<size_t> lengths;
-//        lengths.push_back( this->size() );
-//        theConvertedContainer->setElements( theConvertedObjects, lengths );
-//        
-//        // Now return the converted container object
-//        return theConvertedContainer;
-//    }
+    // Test whether we want to convert to another generic model vector
+    if ( type.getParentType() == getClassTypeSpec().getParentType() )
+    {
+        // We are both model vectors. Rely on generic code to cover all allowed conversions
+
+        // First generate an empty model vector of the desired type
+        RevObject *emptyContainer = Workspace::userWorkspace().makeNewDefaultObject( type.getType() );
+        Container *theConvertedContainer = dynamic_cast<Container*>( emptyContainer );
+        
+        // test if the cast succeeded
+        if (theConvertedContainer == NULL)
+        {
+            throw RbException("Could not convert a container of type " + this->getClassType() + " to a container of type " + type.getType() );
+        }
+
+        for ( typename RevBayesCore::RbConstIterator<elementType> i = this->getValue().begin(); i != this->getValue().end(); ++i )
+        {
+            
+            rlType orgElement = rlType( *i );
+            if ( orgElement.isTypeSpec( *type.getElementTypeSpec() ) )
+            {
+                theConvertedContainer->push_back( orgElement );
+            }
+            else
+            {
+                RevObject *convObj = orgElement.convertTo( *type.getElementTypeSpec() );
+                theConvertedContainer->push_back( *convObj );
+                delete convObj;
+            }
+            
+        }
+        
+        // Now return the converted container object
+        return emptyContainer;
+    }
     
     // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
     return this->ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
@@ -325,19 +336,19 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
         // We want to convert to another generic model vector
 
         // Simply check whether our elements can convert to the desired element type
-        typename std::vector<elementType>::const_iterator i;
-//        for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
-//        {
-//            rlType orgElement = rlType(*i);
-//            
-//            // Test whether this element is already of the desired element type or can be converted to it
-//            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
-//            {
-//                return false;
-//            }
-//        }
-//        
-//        return true;
+        typename RevBayesCore::RbConstIterator<elementType> i;
+        for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
+        {
+            rlType orgElement = rlType(*i);
+
+            // Test whether this element is already of the desired element type or can be converted to it
+            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::isConvertibleTo( type, once );
@@ -383,6 +394,26 @@ template <typename rlType>
 void ModelVector<rlType>::push_back(const rlType &x)
 {
     return this->dagNode->getValue().push_back( x.getValue() );
+}
+
+
+/**
+ * Push a Rev object element onto the back of the vector.
+ */
+template <typename rlType>
+void ModelVector<rlType>::push_back( const RevObject &x )
+{
+    
+    // cast the object
+    const rlType *x_converted = dynamic_cast< const rlType* >( &x );
+    
+    if ( x_converted == NULL )
+    {
+        throw RbException("Could not append an element of type " + x.getType() + " to a vector of type " + this->getType() );
+    }
+    
+    // Push it onto the back of the elements vector
+    this->push_back( *x_converted );
 }
 
 

@@ -44,7 +44,7 @@ RootedTripletDistributionFunction::RootedTripletDistributionFunction( const Type
 
 }
 
-RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode<std::vector< Taxon > > *t ): TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
+RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode<RevBayesCore::RbVector< Taxon > > *t ): TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
     //    ts->getValue(), sn->getValue()
     taxa = t->clone();
     rtd = new RootedTripletDistribution( taxa->getValue()  );
