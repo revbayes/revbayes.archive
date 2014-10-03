@@ -67,7 +67,7 @@ RevPtr<Variable> Func_readCharacterData::execute( void )
     reader.clearWarnings();
     
     // the vector of matrices;
-    WorkspaceVector<AbstractCharacterData> *m = new WorkspaceVector<AbstractCharacterData>();
+    WorkspaceVector<AbstractDiscreteCharacterData> *m = new WorkspaceVector<AbstractDiscreteCharacterData>();
     
     // the return value
     RevObject* retVal = NULL;
