@@ -67,12 +67,11 @@ namespace RevBayesCore {
 
         
         void populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips, std::vector< double >& distancesToTips, std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ) ;
-        void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, std::vector< double >& leftDistancesToTips, std::vector< double >& rightDistancesToTips, std::map < std::pair < size_t, size_t >, double >& leftDistancesToAncestors, std::map < std::pair < size_t, size_t >, double >& rightDistancesToAncestors) ; //!< Get all rooted triplets given vectors of left and right tips, and keep distances
+        void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, std::vector< double >& leftDistancesToTips, std::vector< double >& rightDistancesToTips, std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ) ; //!< Get all rooted triplets given vectors of left and right tips, and keep distances
         void addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize, size_t rightSize,
                                   std::vector<double>& leftDistancesToTips,
                                   std::vector<double>& rightDistancesToTips,
-                                  std::map < std::pair < size_t, size_t >, double >& leftDistancesToAncestors,
-                                  std::map < std::pair < size_t, size_t >, double >& rightDistancesToAncestors ); //!< Get rooted triplets given vectors of left and right tips, one way only, and keep distances
+                                  std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ); //!< Get rooted triplets given vectors of left and right tips, one way only, and keep distances
         size_t getNumberOfTrees() const;                                                                                     //!< Get the number of trees that were used to build the object
         size_t getNumberOfTriplets() const;                                                       //!< Get the number of triplets in the object
         
@@ -81,6 +80,7 @@ namespace RevBayesCore {
        // void setTrees( TypedDagNode< std::vector< Tree > >* ts ) ;
         void setTrees ( const std::vector< TimeTree >& ts );
         void setTrees ( const std::vector< BranchLengthTree >& ts );
+        void setRecordBranchLengths ( const bool b );
         std::vector< std::string > getSpecies ( ) const;
         std::vector< Taxon > getTaxa ( ) const;
         std::string getSpecies ( size_t i ) const;

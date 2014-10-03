@@ -477,6 +477,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
         // set name
         const std::string& name = taxa[i].getName();
         node->setName(name);
+        node->setSpeciesName(taxa[i].getSpeciesName());
     }
     
     // initialize the topology by setting the root
