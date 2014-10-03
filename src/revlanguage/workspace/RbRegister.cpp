@@ -30,6 +30,7 @@
 
 /* Files including helper classes */
 #include "AddWorkspaceVectorType.h"
+#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RevAbstractType.h"
 #include "RlUserInterface.h"
@@ -412,7 +413,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<RlBoolean,5>::addTypeToWorkspace( *this, new RlBoolean() );
         AddWorkspaceVectorType<RlString,5>::addTypeToWorkspace( *this, new RlString() );
         AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
+        
         AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
+        
+        AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
+        
+//        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
+        addFunction("v", new Func_workspaceVector<Monitor>() );
+        
+        //        AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
+        addFunction("v", new Func_workspaceVector<Move>() );
         
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         

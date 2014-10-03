@@ -34,6 +34,7 @@ namespace RevLanguage {
         typedef std::vector<rlType*>                vectorRlPtr;
         
                                                     WorkspaceVector(void);                                              //!< Default constructor
+                                                    WorkspaceVector(const RevBayesCore::RbVector<rlType>& v);           //!< Constructor from rb value pointers
                                                     WorkspaceVector(const vectorRbPtr& v);                              //!< Constructor from rb value pointers
                                                     WorkspaceVector(const vectorRlPtr& v);                              //!< Constructor from rl value pointers
         
@@ -96,6 +97,23 @@ WorkspaceVector<rlType>::WorkspaceVector( void ) :
  * after we are done.
  */
 template <typename rlType>
+WorkspaceVector<rlType>::WorkspaceVector( const RevBayesCore::RbVector<rlType>& v ) : WorkspaceObject<RevBayesCore::RbVector<rlType> >()
+{
+    // just to be safe
+    delete this->value;
+    
+    this->value = v.clone();
+}
+
+
+/**
+ * Construct from vector of pointers to internal value
+ * objects. We assume here that we are responsible for
+ * managing the associated memory. Here we need to make
+ * copies of the original objects, so we delete those
+ * after we are done.
+ */
+template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
     WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> >()
 {
@@ -112,14 +130,13 @@ WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
  * elements vector.
  */
 template <typename rlType>
-WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) :
-    WorkspaceObject<RevBayesCore::RbVector< rlType > >()
+WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) : WorkspaceObject<RevBayesCore::RbVector< rlType > >()
 {
 
-    for ( typename vectorRlPtr::const_iterator it = v.begin(); it != v.end(); ++it )
-    {
-        this->value->push_back( *it );
-    }
+//    for ( typename vectorRlPtr::const_iterator it = v.begin(); it != v.end(); ++it )
+//    {
+//        this->value->push_back( **it );
+//    }
     
 }
 
