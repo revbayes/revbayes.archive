@@ -62,8 +62,11 @@ bool Taxon::operator==(const RevBayesCore::Taxon &t) const
         return false;
     }
     
-    //Shouldn't we also compare dates?
-    
+    if ( date != t.date)
+    {
+        return false;
+    }
+
     return true;
 }
 
