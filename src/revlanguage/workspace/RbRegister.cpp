@@ -193,6 +193,7 @@
 #include "Dist_brownian.h"
 #include "Dist_ornsteinUhlenbeck.h"
 #include "Dist_mvtBrownian.h"
+#include "Dist_branchHeterogeneousOrnsteinUhlenbeck.h"
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
@@ -673,6 +674,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "ornsteinUhlenbeck",       new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnBHOrnsteinUhlenbeck",   new Dist_branchHeterogeneousOrnsteinUhlenbeck() );
+        addDistribution( "bhOrnsteinUhlenbeck",     new Dist_branchHeterogeneousOrnsteinUhlenbeck() );
+        addDistribution( "dnBHOUP",                 new Dist_branchHeterogeneousOrnsteinUhlenbeck() );
+        
         
         // multivariate brownian motion
         addDistribution( "dnmvtBrownian",  new Dist_mvtBrownian() );
