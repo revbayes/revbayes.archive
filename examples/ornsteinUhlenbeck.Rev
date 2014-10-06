@@ -1,0 +1,147 @@
+#
+# Tutorial -- Ornstein-Uhlenbeck processes
+# Bastien Boussau -- October 2014
+#
+
+dataFolder <- "data/"
+
+# Let’s simulate a species tree with 10 taxa (feel free to change
+# these values).
+n_species <- 10
+
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
+
+######################
+# Species-Tree model #
+######################
+
+# We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to Leaché and Rannala (2011)):
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0,1.0)
+speciation.setValue(2)
+extinction.setValue(0.3)
+tree_height.setValue(0.8)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+
+# Now we have a species tree
+
+
+##########################
+# Continuous trait model #
+##########################
+
+# Parameters of a homogeneous Ornstein-Uhlenbeck process
+mean <- 2.0
+sigma <- 1.0
+phi <- 0.5
+
+# Set number of traits 
+nTraits <- 100
+
+Y ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
+
+type(Y)
+
+for (i in 1:nTraits)	{
+	X[i] ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
+}
+
+type(X)
+
+write(X)
+
+
+
+# moves on kappa
+index <- 1
+moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+# conjugate Gibbs move on covariance matrix
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+index <- index + 1
+
+# moves on the Brownian process
+moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
+index <- index + 1
+
+# condition Brownian model on quantitative trait data
+# i.e. clamp the process at the tips of the tree, ot the values observed in extant taxa
+# you need to do this trait by trait
+for (i in 1:nTraits)	{
+	# here we say that the ith entry of the Brownian process should map to the ith. quantitative trait
+	X.clampAt(contData,i,i)
+}
+
+# get useful functions of the covariance matrix, to be monitored
+# here we will monitor
+
+# the rate of evolution of log body mass
+var2 := Sigma.covariance(2,2)
+
+# the correlation coefficient between body mass and longevity
+r23 := Sigma.correlation(2,3)
+
+# the partial correlation coefficient between mass and longevity
+pr23 := Sigma.partialCorrelation(2,3)
+
+# you can also get these variables as a vector
+for (i in 1:nTraits)	{
+	var[i] := Sigma.covariance(i,i)
+}
+
+k <- 1;
+for (i in 1:(nTraits-1))	{
+	for (j in (i+1):nTraits)	{
+		correl[k] := Sigma.correlation(i,j)
+		pCorrel[k] := Sigma.partialCorrelation(i,j)
+		k <- k+1
+	}
+}
+
+# get useful outputs from the brownian process
+# the mean and the variance across the tree, for each trait
+for (i in 1:nTraits)	{
+	# mean and stdev of each trait
+	meanX[i] := X.mean(i)
+	stdevX[i] := X.stdev(i)
+}
+
+# create the model
+mymodel <- model(kappa)
+
+# create the monitors
+# some of them are a bit redundant, but just to show what can be done
+
+# on screen, we will monitor only the correlation coefficient and the mean value of each trait
+monitors[1] <- screenmonitor(printgen=10, var2, correl, meanX)
+
+# a trace monitor: like the screen monitor, but directly into file
+monitors[2] <- filemonitor(filename="output/plactraits.trace", printgen=10, separator = "	", var2, correl, meanX)
+
+# file monitors for the correlation and partial correlation coefficients
+monitors[3] <- filemonitor(filename="output/plactraits.correl",printgen=10, separator = "	", correl, pCorrel)
+
+# a file monitor for the complete covariance matrix
+monitors[4] <- filemonitor(filename="output/plactraits.cov",printgen=10, separator = "	", Sigma)
+
+# a file monitor for the evolution of traits along the tree (in newick format)
+monitors[5] <- filemonitor(filename="output/plactraits.traits",printgen=10, separator = "	", X)
+
+# a model monitor
+monitors[6] <- modelmonitor(filename="output/plactraits.log",printgen=10, separator = "	")
+ 
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=100,tuningInterval=100)
+
+mymcmc.run(100000)
+
+# some post analysis here
+
