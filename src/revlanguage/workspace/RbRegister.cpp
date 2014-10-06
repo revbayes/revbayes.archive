@@ -419,6 +419,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RealPos()                  );
         addType( new RlBoolean()                );
         addType( new RlString()                 );
+        addType( new RealNodeValTree()          );
         
         /* Add container types (in folder "datatypes/container") (alphabetic order) */
 
@@ -446,6 +447,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
         addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
         addType( new ModelVectorAbstractElement<RateMatrix>() );
+        addType( new ModelVectorAbstractElement<RealNodeValTree>());
+
 
         // Workspace vectors
         addType( new WorkspaceVector<Mcmc>()         );
