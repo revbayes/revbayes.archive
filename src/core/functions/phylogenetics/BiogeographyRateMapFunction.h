@@ -9,7 +9,7 @@
 #ifndef __rb_mlandis__BiogeographyRateMapFunction__
 #define __rb_mlandis__BiogeographyRateMapFunction__
 
-#include "CountRateModifier.h"
+//#include "CountRateModifier.h"
 #include "GeographyRateModifier.h"
 #include "RateMatrix.h"
 #include "RateMap_Biogeography.h"
