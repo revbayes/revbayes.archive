@@ -7,6 +7,7 @@
 //
 
 #include "BiogeographyRateMapFunction.h"
+#include "Func_FreeBinary.h"
 #include "Func_biogeo_de.h"
 #include "GeographyRateModifier.h"
 #include "ModelVector.h"
@@ -71,9 +72,10 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+//        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , RateMatrix::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "rootFrequencies" , Simplex::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
-        argumentRules.push_back( new ArgumentRule( "geoRateMod"      , RlGeographyRateModifier::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ));
+        argumentRules.push_back( new ArgumentRule( "geoRateMod"      , RlGeographyRateModifier::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
         argumentRules.push_back( new ArgumentRule( "numAreas"        , Natural::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "forbidExtinction", RlBoolean::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
