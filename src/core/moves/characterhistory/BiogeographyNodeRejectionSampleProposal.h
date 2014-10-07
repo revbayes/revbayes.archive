@@ -591,7 +591,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
 
             // "Overcount", then thin through cladogenesis below
             // Expected freq(X=0|C) after cladogenesis given X=1 prior to speciation
-            double c0 = csf[0] * 0.5 * (1 + 1.0/numCharacters) + csf[1] * 0.5 + csf[2] * (1.0);
+            double c0 = csf[0] * (1.0)+ csf[1] * 0.5 * (1 + 1.0/numCharacters) + csf[2] * 0.5;
             g0 *= c0;
             
             unsigned int s = 0;
@@ -621,7 +621,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 uIdx++;
             }
             
-            // wide sympatry
+            // wide sympatry ABCD->ABCD|ABCD
             if (uIdx == 0)
             {
                 proposedCladogenicState = 1;
@@ -633,7 +633,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 }
             }
             
-            // subset sympatry
+            // subset sympatry ABCD->A|ABCD
             else if (uIdx == 1)
             {
                 proposedCladogenicState = 2;
@@ -654,7 +654,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 }
             }
             
-            // allopatry
+            // allopatry ABCD->AB|CD
             else if (uIdx == 2)
             {
                 proposedCladogenicState = 3;
@@ -693,12 +693,12 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             }
         }
         
-        for (size_t i = 0; i < nodeChildState.size(); i++)
-            if (nodeChildState[i]->getState() == 1)
-                dOn--;
-        
-        if (dOn < 0)
-            lnP += 2;
+//        for (size_t i = 0; i < nodeChildState.size(); i++)
+//            if (nodeChildState[i]->getState() == 1)
+//                dOn--;
+//        
+//        if (dOn < 0)
+//            lnP += 2;
 
     }
     
