@@ -181,14 +181,14 @@ bool TestCharacterHistory::run_exp(void) {
     std::string fn = "";
 //    fn = "vireya.nex";
 //    fn = "psychotria_range.nex";
-//    fn = "16tip_100areas.nex";
+    fn = "16tip_100areas.nex";
 //    fn = "sim_aus_50tip_33area.nex";
 //    fn = "turtles.nex";
-    fn = "earth23.nex";
+//    fn = "earth23.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
-    size_t numAreas = data[0]->getNumberOfCharacters();
+//    size_t numAreas = data[0]->getNumberOfCharacters();
     
     // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
@@ -199,16 +199,17 @@ bool TestCharacterHistory::run_exp(void) {
     
     // geo by epochs
     std::string afn="";
-    afn = "earth23.atlas.txt";
+//    afn = "earth23.atlas.txt";
 //    afn = "malesia_static.atlas.txt";
 //    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
 //    afn = "hawaii_dynamic_ss.atlas.txt";
-//    afn = "100area.atlas.txt";
+    afn = "100area.atlas.txt";
 //    afn = "sim_aus_50tip_33area.atlas.txt";
 //    afn = "earth2.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
+    size_t numAreas = ta->getNumAreas();
     
     ////////////
     // model
@@ -280,8 +281,8 @@ bool TestCharacterHistory::run_exp(void) {
 		glr_nonConst.push_back( tmp_glr );
         glr_stoch.push_back(tmp_glr);
 	}
-//    glr_nonConst[0]->setValue(0.1);
-//    glr_nonConst[1]->setValue(0.1);
+    glr_nonConst[0]->setValue(0.01);
+    glr_nonConst[1]->setValue(0.01);
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
     DeterministicNode<RateMatrix> *q_glr = new DeterministicNode<RateMatrix>( "Q", new FreeBinaryRateMatrixFunction(glr_vector) );
     
@@ -291,8 +292,8 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(pi_pr) );
     
     // cladogenic state frequencies
-    std::vector<double> csf_pr_v(3,20.0);
-    csf_pr_v[0] = 1.0;
+    std::vector<double> csf_pr_v(3,1.0);
+    csf_pr_v[0] = 100.0;
 //    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(3,1.0) );
     ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(csf_pr_v) );
     StochasticNode<std::vector<double> > *csf = new StochasticNode<std::vector<double> >( "csf", new DirichletDistribution(csf_pr) );
@@ -352,18 +353,20 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
     // simulated data
+    simulate = true;
     if (simulate)
     {
-        biogeoCtmc->simulate();
-        charactermodel->clamp( &biogeoCtmc->getValue() );
+        charactermodel->redraw();
+//        charactermodel->clamp( &biogeoCtmc->getValue() );
     }
-    
     // real data
     else
+    {
+        // clamp calls setValue, which calls redrawValue, which calls simulate
         charactermodel->clamp( data[0] );
-    
+    }
     // initialize mapping
-    charactermodel->redraw();
+//    charactermodel->redraw();
     
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";

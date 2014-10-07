@@ -469,8 +469,8 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 
     // recursively simulate, starting with the root heading tipwards
     const TopologyNode& nd = tau->getValue().getRoot();
-    BranchHistory* bh = new BranchHistory(numSites, numChars, nd.getIndex());
-    histories[ nd.getIndex() ] = bh;
+    histories[ nd.getIndex() ] = new BranchHistory(numSites, numChars, nd.getIndex());
+    BranchHistory* bh = histories[ nd.getIndex() ];
     
     simulate(nd, bh, taxa);
     
