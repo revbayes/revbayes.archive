@@ -540,45 +540,58 @@ size_t RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::numOn(con
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue( void )
 {
-    if (this->tipsInitialized == false)
+    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+    
+//    if (this->tipsInitialized == false)
+    if (this->dagNode->isClamped())
         initializeValue();
     
-    std::set<size_t> indexSet;
-    for (size_t i = 0; i < this->numSites; i++)
-        indexSet.insert(i);
-
-    // sample node states
-    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        TopologyNode* nd = nodes[i];
-        
-        int samplePathEndCount = 0;
-        do
-        {
-            samplePathEndCount++;
-        } while (samplePathEnd(*nd,indexSet) == false && samplePathEndCount < 100);
-  
-        int samplePathStartCount = 0;
-        do
-        {
-            samplePathStartCount++;
-        } while (samplePathStart(*nd,indexSet) == false && samplePathStartCount < 100);
-    }
     
-    // sample paths
-    for (size_t i = 0; i < nodes.size(); i++)
+    
+    if (!true)
     {
-        TopologyNode* nd = nodes[i];
-
-        int samplePathHistoryCount = 0;
-        do
-        {
-            
-            samplePathHistoryCount++;
-        } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
-//        this->histories[i]->print();
+        std::set<size_t> indexSet;
+        for (size_t i = 0; i < this->numSites; i++)
+            indexSet.insert(i);
+
+        // sample node states
+                for (size_t i = 0; i < nodes.size(); i++)
+        {
+            TopologyNode* nd = nodes[i];
+            
+            int samplePathEndCount = 0;
+            do
+            {
+                samplePathEndCount++;
+            } while (samplePathEnd(*nd,indexSet) == false && samplePathEndCount < 100);
+      
+            int samplePathStartCount = 0;
+            do
+            {
+                samplePathStartCount++;
+            } while (samplePathStart(*nd,indexSet) == false && samplePathStartCount < 100);
+        }
+        
+        // sample paths
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            TopologyNode* nd = nodes[i];
+
+            int samplePathHistoryCount = 0;
+            do
+            {
+                
+                samplePathHistoryCount++;
+            } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
+            
+    //        this->histories[i]->print();
+        }
+    }
+    else
+    {
+        // enabling this gives bad access errors -- std::set<CharacterHistory*> objects may not be copied properly?
+        simulate();
     }
     
     double lnL = this->computeLnProbability();
@@ -1371,6 +1384,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
     }
     
     bh->setChildCharacters(currState);
+    bh->print();
     
 }
 
@@ -1428,7 +1442,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
 
     if ( node.isTip() )
     {
-        std::cout << "adding " << node.getName() << "\n";
+//        std::cout << "adding " << node.getName() << "\n";
         taxa[nodeIndex].setTaxonName( node.getName() );
     }
     else

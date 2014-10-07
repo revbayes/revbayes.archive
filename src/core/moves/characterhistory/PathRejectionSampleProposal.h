@@ -58,7 +58,7 @@ namespace RevBayesCore {
         PathRejectionSampleProposal*    clone(void) const;                                                                  //!< Clone object
         double                          doProposal(void);                                                                   //!< Perform proposal
         const std::set<DagNode*>&       getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
-        const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        virtual const std::string&      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                            prepareProposal(void);                                                              //!< Prepare the proposal
         void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the DAG nodes on which the Proposal is working on
@@ -159,7 +159,9 @@ template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::cleanProposal( void )
 {
     
-
+    if (node->isRoot() && !useTail)
+        return;
+    
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
     BranchHistory* bh = &p.getHistory(*node);
 
