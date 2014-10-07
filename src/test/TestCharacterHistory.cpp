@@ -181,10 +181,10 @@ bool TestCharacterHistory::run_exp(void) {
     std::string fn = "";
 //    fn = "vireya.nex";
 //    fn = "psychotria_range.nex";
-    fn = "16tip_100areas.nex";
+//    fn = "16tip_100areas.nex";
 //    fn = "sim_aus_50tip_33area.nex";
 //    fn = "turtles.nex";
-//    fn = "earth23.nex";
+    fn = "earth23.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -204,9 +204,9 @@ bool TestCharacterHistory::run_exp(void) {
 //    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
 //    afn = "hawaii_dynamic_ss.atlas.txt";
-    afn = "100area.atlas.txt";
+//    afn = "100area.atlas.txt";
 //    afn = "sim_aus_50tip_33area.atlas.txt";
-//    afn = "earth2.atlas.txt";
+    afn = "earth2.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     size_t numAreas = ta->getNumAreas();
