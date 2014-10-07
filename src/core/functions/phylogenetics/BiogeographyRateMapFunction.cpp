@@ -194,6 +194,24 @@ void BiogeographyRateMapFunction::setGeographyRateModifier(const TypedDagNode<Ge
 
 }
 
+//void BiogeographyRateMapFunction::setCountRateModifier(const TypedDagNode<CountRateModifier> *crm) {
+//    
+//    // remove the old parameter first
+//    if ( countRateModifier != NULL )
+//    {
+//        this->removeParameter( countRateModifier );
+//        countRateModifier = NULL;
+//    }
+//    
+//    // set the value
+//    useCountRateModifier = true;
+//    countRateModifier = crm;
+//    
+//    // add the parameter
+//    this->addParameter( countRateModifier );
+//    
+//}
+
 void BiogeographyRateMapFunction::setRootFrequencies(const TypedDagNode<std::vector<double> > *f)
 {
     if (rootFrequencies != NULL)
