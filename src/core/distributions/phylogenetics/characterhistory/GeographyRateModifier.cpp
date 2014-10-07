@@ -159,6 +159,61 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     if (areaAvailable && s == 0)
     {
         r = 1.0;
+
+        if (!true)
+        {
+            // determine which areas are present and which are absent
+            present.clear();
+            absent.clear();
+            
+            // which areas are in the range?
+            std::set<size_t>::iterator it;
+            for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
+            {
+                if (currState[*it]->getState() == 0)
+                {
+                    absent.insert(currState[*it]);
+                }
+                else
+                {
+                    present.insert(currState[*it]);
+                }
+            }
+            
+            if (present.size() == 0)
+                return 1.0;
+            
+            std::set<CharacterEvent*>::iterator it_p;
+            std::set<CharacterEvent*>::iterator it_a;
+
+            for (it_p = present.begin(); it_p != present.end(); it_p++)
+            {
+                size_t idx_p = (*it_p)->getIndex();
+                
+                for (it_a = present.begin(); it_a != present.end(); it_a++)
+                {
+                    size_t idx_a = (*it_a)->getIndex();
+                    size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
+                    
+                    //                std::cout << "  " << idx_p << " " << idx_a << " " << idx_p << "\n";
+                    double d = adjacentAreaVector[idx_e];
+                    
+                    // extinction depends on distance to adjacent areas?
+                    if (useDistanceDependence && d != 0.0)
+                    {
+                        d = geographicDistancePowers[idx_e];
+                    }
+                    
+                    d += 1.0; // += alpha??
+                    
+                    sum += d;
+                    
+                    if (idx_a == charIdx)
+                        rate += d;
+                }
+            }
+            r = sum / present.size() * rate;
+        }
     }
     
     // area does not exist and is lost
