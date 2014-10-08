@@ -1390,7 +1390,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
     }
     
     bh->setChildCharacters(currState);
-    bh->print();
+//    bh->print();
     
 }
 
