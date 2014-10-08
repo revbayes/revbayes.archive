@@ -21,7 +21,7 @@ using namespace RevBayesCore;
 /** Default constructor */
 AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
     
-    setState('?');
+    setState('-');
 }
 
 
@@ -267,7 +267,10 @@ void AminoAcidState::setGapState(bool tf) {
 
 void AminoAcidState::setState(size_t pos, bool val) {
     
-    state &= ((unsigned int)val) << pos;
+    unsigned x = (unsigned)val << pos;
+    
+//    state &= ((unsigned int)val) << pos;
+    state ^= x;
     stateIndex = pos;
 }
 

@@ -313,6 +313,7 @@
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
 #include "Func_biogeo_grm.h"
+#include "Func_generalRateMap.h"
 
 
 /* Inference functions (in folder "functions/inference") */
@@ -982,6 +983,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "biogeoGRM",  new Func_biogeo_grm() );
         addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
         addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
+        addFunction( "fnGeneralRateMap", new Func_generalRateMap() );
 
         /* Inference functions (in folder "functions/inference") */
 
