@@ -144,7 +144,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 1000);
-        testDdm.run();
+//        testDdm.run();
     }
     catch (RbException &e)
     {
@@ -154,7 +154,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestPathSampling testPs = TestPathSampling();
-//        testPs.run();
+        testPs.run();
     }
     catch (RbException &e)
     {
