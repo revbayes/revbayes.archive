@@ -249,6 +249,7 @@
 #include "Func_citation.h"
 #include "Func_clear.h"
 #include "Func_contacts.h"
+#include "Func_exists.h"
 #include "Func_getwd.h"
 #include "Func_help.h"
 #include "Func_ifelse.h"
@@ -428,17 +429,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         
         /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
-        addType( new AminoAcidState()   );
-        addType( new DnaState()         );
-        addType( new RnaState()         );
-        addType( new StandardState()    );
         
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
-        addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
-        addType( new DiscreteCharacterData<AminoAcidState>()    );
-        addType( new DiscreteCharacterData<DnaState>()          );
-        addType( new DiscreteCharacterData<RnaState>()          );
-        addType( new DiscreteCharacterData<StandardState>()     );
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
@@ -447,6 +439,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
         addTypeWithConstructor( "taxon",            new Taxon() );
+        
+        /* Add math types (in folder "datatypes/math") */
+        addType( new RateMap()              );
+        addType( new RealMatrix()           );
+
 
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
@@ -560,9 +557,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
         addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
 
-        /* Add math types (in folder "datatypes/math") */
-        addType( new RateMap()              );
-        addType( new RealMatrix()           );
         
 
         ///////////////////////////////////////////////////
@@ -735,6 +729,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "contacts",                 new Func_contacts()                 );
+        addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
         addFunction( "help",                     new Func_help()                     );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
