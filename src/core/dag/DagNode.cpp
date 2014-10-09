@@ -721,6 +721,25 @@ void DagNode::setName(std::string const &n)
 }
 
 
+void DagNode::setParentNamePrefix(const std::string &p)
+{
+    
+    
+    std::set<const DagNode*> parents = getParents();
+    for (std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    {
+        if ( (*it)->getName().size() > 0 && (*it)->getName()[0] == '.' )
+        {
+            DagNode *parentNode = const_cast<DagNode *>( (*it) );
+            // just insert this child
+            parentNode->setName( p + parentNode->getName() );
+            parentNode->setParentNamePrefix( parentNode->getName() );
+        }
+    }
+    
+}
+
+
 void DagNode::setPriorOnly(bool tf)
 {
     

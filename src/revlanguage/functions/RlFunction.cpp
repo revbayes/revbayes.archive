@@ -704,6 +704,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         
         const ArgumentRule& theRule = theRules[i];
         RevPtr<Variable> theVar = theRule.getDefaultVariable().clone();
+        theVar->setName( "." + theRule.getArgumentLabel() );
         theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;

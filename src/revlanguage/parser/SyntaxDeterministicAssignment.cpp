@@ -48,6 +48,10 @@ void SyntaxDeterministicAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variabl
     else
     {    
         lhs->setRevObject( rhs->getRevObject().clone() );
+        
+        // make sure all the implicitly created variables got a correct name
+        RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();
+        theNode->setParentNamePrefix( theNode->getName() );
     }
 
 #ifdef DEBUG_PARSER
