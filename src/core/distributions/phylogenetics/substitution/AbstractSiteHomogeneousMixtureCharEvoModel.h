@@ -761,7 +761,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     this->value = new DiscreteCharacterData<charType>();
     
     // create a vector of taxon data 
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( numNodes, DiscreteTaxonData<charType>() );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( numNodes, DiscreteTaxonData<charType>("") );
     
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
