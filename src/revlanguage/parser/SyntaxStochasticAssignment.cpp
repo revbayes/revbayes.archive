@@ -57,7 +57,11 @@ void SyntaxStochasticAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> 
     
     // Fill the slot with the new stochastic variable
     lhs->setRevObject( rv );
-        
+    
+    // make sure all the implicitly created variables got a correct name
+    RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();
+    theNode->setParentNamePrefix( theNode->getName() );
+    
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif

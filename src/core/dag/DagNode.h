@@ -80,8 +80,9 @@ namespace RevBayesCore {
         void                                                        replace(DagNode *n);                                                                        //!< Replace this node with node p.
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                                      //!< Restore value of affected nodes recursively
-        void                                                        setHidden(bool tf);                                                             //!< Set if this variable is hidden from printing.
+        void                                                        setHidden(bool tf);                                                                         //!< Set if this variable is hidden from printing.
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
+        void                                                        setParentNamePrefix(const std::string &p);
         virtual void                                                setPriorOnly(bool tf);                                                                      //!< Set whether we want to have the probability of the prior only.
         void                                                        touch(void);
         virtual void                                                touchAffected(void);                                                                        //!< Touch affected nodes (flag for recalculation)
