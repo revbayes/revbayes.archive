@@ -135,7 +135,20 @@ void Model::printValue(std::ostream &o) const {
 
     o << std::endl;
     std::stringstream s;
-    s << "Model with " << theNodes.size() << " nodes";
+    
+    // compute the number of nodes by only counting nodes that are not hidden
+    size_t numNodes = 0;
+    for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
+    {
+    
+        if ( (*it)->isHidden() == false )
+        {
+            ++numNodes;
+        }
+    
+    }
+    
+    s << "Model with " << numNodes << " nodes";
     o << s.str() << std::endl;
     for ( size_t i = 0; i < s.str().size(); ++i )
         o << "=";
@@ -143,10 +156,20 @@ void Model::printValue(std::ostream &o) const {
     
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
+        // skip hidden nodes
+        if ( (*it)->isHidden() == true )
+        {
+            continue;
+        }
+        
         if ( (*it)->getName() != "" )
-            o << (*it)->getName() <<  " <" << (*it) << "> :" << std::endl;
+        {
+            o << (*it)->getName() <<  " :" << std::endl;
+        }
         else
+        {
             o << "<" << (*it) << "> :" << std::endl;
+        }
         
         o << "_value        = ";
         std::ostringstream o1;

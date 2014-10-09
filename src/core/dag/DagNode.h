@@ -102,6 +102,8 @@ namespace RevBayesCore {
         virtual void                                                touchMe(DagNode *toucher) = 0;                                                              //!< Touch myself (flag for recalculation)
     
         // helper functions
+        void                                                        getPrintableChildren(std::set<DagNode*> &c) const;
+        void                                                        getPrintableParents(std::set<const DagNode*> &p) const;
         void                                                        printChildren(std::ostream& o, size_t indent, size_t lineLen, bool verbose=false) const;    //!< Print children DAG nodes
         void                                                        printParents(std::ostream& o, size_t indent, size_t lineLen, bool verbose=false) const;     //!< Print children DAG nodes
         

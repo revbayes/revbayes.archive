@@ -463,6 +463,7 @@ void RevLanguage::ModelObject<rbType>::makeConversionValue( RevPtr<Variable> var
 {
     // Create the converter node
     ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var, getTypeSpec() );
+    newNode->setHidden( true );
 
     // Signal replacement and delete the value if there are no other references to it.
     if ( dagNode != NULL )
