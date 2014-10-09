@@ -415,7 +415,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
         
         AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
-//        AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
+        AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
         
@@ -435,7 +435,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
         addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
-        addType( new RevAbstractType( AbstractDiscreteCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
         addType( new DiscreteCharacterData<AminoAcidState>()    );
         addType( new DiscreteCharacterData<DnaState>()          );
         addType( new DiscreteCharacterData<RnaState>()          );

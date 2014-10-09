@@ -50,7 +50,7 @@ namespace RevBayesCore {
     class BiogeographyPathRejectionSampleProposal : public PathRejectionSampleProposal<charType,treeType> {
         
     public:
-        BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
+        BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
         BiogeographyPathRejectionSampleProposal( const BiogeographyPathRejectionSampleProposal& p );
         
         virtual void                                prepareProposal(void);
@@ -71,7 +71,7 @@ namespace RevBayesCore {
 
 
 template<class charType, class treeType>
-RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : PathRejectionSampleProposal<charType,treeType> (n, t, q, l, nd)
+RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : PathRejectionSampleProposal<charType,treeType> (n, t, q, l, nd)
 {
 
     const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());

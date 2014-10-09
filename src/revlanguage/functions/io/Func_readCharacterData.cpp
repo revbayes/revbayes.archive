@@ -1,8 +1,10 @@
+#include "AbstractDiscreteCharacterData.h"
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DiscreteCharacterData.h"
 #include "Ellipsis.h"
 #include "Func_readCharacterData.h"
+#include "ModelVector.h"
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -17,7 +19,6 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "WorkspaceVector.h"
 #include "RlUserInterface.h"
 
 #include <map>
@@ -67,7 +68,7 @@ RevPtr<Variable> Func_readCharacterData::execute( void )
     reader.clearWarnings();
     
     // the vector of matrices;
-    WorkspaceVector<AbstractDiscreteCharacterData> *m = new WorkspaceVector<AbstractDiscreteCharacterData>();
+    ModelVector<AbstractDiscreteCharacterData> *m = new ModelVector<AbstractDiscreteCharacterData>();
     
     // the return value
     RevObject* retVal = NULL;
@@ -147,12 +148,12 @@ RevPtr<Variable> Func_readCharacterData::execute( void )
                     DiscreteCharacterData<AminoAcidState> mAA = DiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                 }
-                else if ( dType == "Continuous" )
-                {
-                    RevBayesCore::ContinuousCharacterData *coreM = static_cast<RevBayesCore::ContinuousCharacterData *>( *it );
-                    AbstractCharacterData mCC = AbstractCharacterData (coreM );
-                    m->push_back( mCC );
-                }
+//                else if ( dType == "Continuous" )
+//                {
+//                    RevBayesCore::ContinuousCharacterData *coreM = static_cast<RevBayesCore::ContinuousCharacterData *>( *it );
+//                    AbstractCharacterData mCC = AbstractCharacterData (coreM );
+//                    m->push_back( mCC );
+//                }
                 else if ( dType == "Standard" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
@@ -240,7 +241,7 @@ RevPtr<Variable> Func_readCharacterData::execute( void )
             // set the return value
             if ( returnAsVector == false )
             {
-                retVal = (*m)[0].clone();
+                retVal = new AbstractDiscreteCharacterData( (*m)[0] );
                 delete m;
             }
             else
@@ -344,7 +345,7 @@ const TypeSpec& Func_readCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = WorkspaceVector<AbstractCharacterData>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<AbstractDiscreteCharacterData>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

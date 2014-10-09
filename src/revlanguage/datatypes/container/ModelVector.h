@@ -28,7 +28,7 @@ namespace RevLanguage {
                                                     ModelVector(RevBayesCore::TypedDagNode<valueType>* n);      //!< Constructor from value node
 
         // STL-like vector functions provided here
-        elementType                                 operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
+        const elementType&                          operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
 //        void                                        pop_back(void);                                             //!< Drop element from back
 //        void                                        pop_front(void);                                            //!< Drop element from front
         void                                        push_back(const rlType& x);                                 //!< Push Rev object element onto back
@@ -137,7 +137,7 @@ ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
  * (&) on the return type.
  */
 template <typename rlType>
-typename rlType::valueType ModelVector<rlType>::operator[]( size_t index ) const
+const typename rlType::valueType& ModelVector<rlType>::operator[]( size_t index ) const
 {
     return this->getValue()[ index ];
 }

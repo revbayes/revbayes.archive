@@ -23,7 +23,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlRateMap.h"
 #include "RlString.h"
@@ -84,10 +84,10 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
     std::string mt  = static_cast<const RlString &>( type->getRevObject() ).getValue();
     
     // move/proposal parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractCharacterData&>( ctmc->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* qmap_tdn                 = static_cast<const RateMap&>( qmap->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tree_tdn                = static_cast<const TimeTree&>( tree->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::AbstractCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractCharacterData>* >(ctmc_tdn);
+    RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* >(ctmc_tdn);
     RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* >(qmap_tdn);
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >(tree_tdn);
 
