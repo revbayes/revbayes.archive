@@ -144,7 +144,7 @@
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
 #include "Move_PathCharacterHistoryRejectionSample.h"
-
+#include "Move_CharacterHistory.h"
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 #include "Move_MultivariateRealNodeValTreeTranslation.h"
@@ -613,6 +613,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>()  );
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<TimeTree>()          );
 
         /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
         addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariateRealNodeValTreeTranslation() );

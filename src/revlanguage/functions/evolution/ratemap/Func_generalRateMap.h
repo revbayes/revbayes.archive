@@ -41,7 +41,15 @@ namespace RevLanguage {
         RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
-        
+
+    protected:
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+
+    private:
+        RevPtr<const Variable>                          q;
+        RevPtr<const Variable>                          rate;
+        RevPtr<const Variable>                          rootFrequencies;
+        RevPtr<const Variable>                          numChars;
     };
     
 }
