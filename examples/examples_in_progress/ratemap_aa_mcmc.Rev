@@ -1,0 +1,62 @@
+# Test file for mcmc on GTR+Gamma model with primates dataset
+
+# read the data
+# the readCharacter function returns a vector of matrices. We just take the first one
+in_fp <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
+D <- readCharacterData(in_fp + "ratemap_aa.nex")
+tau <- readTrees(in_fp + "ratemap_aa.nex")[1]
+
+# get some useful variables from the data
+num_taxa <- D.ntaxa()
+num_char <- D.nchar()[1]
+num_states <- 20 # can you get this from D??
+names <- D.names()
+
+# Birth-Death process priors
+# diversification ~ exponential(0.1)
+#turnover ~ exponential(0.1)
+
+# tree from birth-death process
+#tau ~ cBDP(diversification, turnover, nTaxa=taxaCount, names=names)
+
+# per-site rate matrix
+pi_pr   <- rep(num_states, 1)
+er_pr   <- rep(1*(num_states*(num_states-1)/2), 1)
+pi      ~ dirichlet(pi_pr)
+er      ~ dirichlet(er_pr)
+Q_site  := gtr(er,pi)
+
+# clock rate
+clockRate ~ dnExponential(1.0)
+
+# per-sequence rate matrix
+#Q_seq := fnGeneralRateMap(qSite=Q_site,rfSite=pi,branchRates=clockRate,numChars=num_char)
+Q_seq := fnGeneralRateMap(qSite=Q_site,rfSite=pi,branchRates=clockRate,numChars=num_char)
+
+# the sequence evolution model
+M ~ dnPhyloDACTMC(tree=tau, Q=Q_seq, type="AA")
+ 
+# attach the data
+M.clamp(D)
+
+mymodel <- model(pi)
+
+# moves for the birth-death paramaters
+mi<-0
+moves[mi++] <- mvSimplex(pi, alpha=10.0, numCats=num_states/2, tune=true, weight=5.0)
+moves[mi++] <- mvSimplex(er, alpha=10.0, numCats=num_states/2, tune=true, weight=5.0)
+moves[mi++] <- mvScale(clockRate, lambda=1.0, tune=true, weight=5.0)
+moves[mi++] <- mvCharacterHistory(ctmc=M, qmap=Q_seq, tree=tau, lambda=0.1, weight=1.0*num_taxa, type="AA", graph="node", proposal="uniformization")
+moves[mi++] <- mvCharacterHistory(ctmc=M, qmap=Q_seq, tree=tau, lambda=0.1, weight=1.0*num_taxa, type="AA", graph="node", proposal="uniformization")
+moves[mi++] <- mvCharacterHistory(ctmc=M, qmap=Q_seq, tree=tau, lambda=0.5, weight=0.5*num_taxa, type="AA", graph="branch", proposal="uniformization")
+moves[mi++] <- mvCharacterHistory(ctmc=M, qmap=Q_seq, tree=tau, lambda=0.5, weight=0.5*num_taxa, type="AA", graph="branch", proposal="uniformization")
+
+# monitors
+monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=11)
+monitors[2] <- screenmonitor(pi, printgen=10, posterior=true, likelihood=true, prior=true)
+ 
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=100,tuningInterval=10)
+mymcmc.run(generations=2000)
+
