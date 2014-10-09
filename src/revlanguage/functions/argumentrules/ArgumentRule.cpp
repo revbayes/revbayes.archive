@@ -97,14 +97,13 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  */
 Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
-    //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
-    //    if ( isConstant() || !theVar->isAssignable() )
-    if ( evalType == BY_VALUE )
+
+    RevPtr<Variable> theVar = arg.getVariable();
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() )
     {
         once = true;
     }
     
-    RevPtr<Variable> theVar = arg.getVariable();
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
@@ -245,7 +244,7 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
 //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
 //    if ( isConstant() || !var->isAssignable() )
 //    if ( isConstant() )
-    if ( evalType == BY_VALUE )
+    if ( evalType == BY_VALUE || var->isWorkspaceVariable() )
     {
         once = true;
     }
