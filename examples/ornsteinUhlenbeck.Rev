@@ -46,6 +46,12 @@ Y ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
 
 type(Y)
 
+write(Y)
+
+Y.tipValues()
+
+writeNexus("data/simulatedOU10Sp.nex", Y.tipValues())
+
 for (i in 1:nTraits)	{
 	X[i] ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
 }
@@ -54,6 +60,8 @@ type(X)
 
 write(X)
 
+# read the continous trait data 
+writeNexus("data/simulatedOU10Sp.nex")
 
 
 # moves on kappa
