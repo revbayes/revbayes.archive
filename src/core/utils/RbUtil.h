@@ -95,15 +95,6 @@ namespace RevBayesCore {
     std::ostream&                       operator<<(std::ostream& o, const std::vector<int>& x);                             //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<unsigned int>& x);                    //!< Overloaded output operator
     std::ostream&                       operator<<(std::ostream& o, const std::vector<std::string>& x);                     //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<Clade>& x);                        //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<Taxon>& x);                        //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<TimeTree>& x);                        //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<BranchLengthTree>& x);             //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<Trace>& x);                        //!< Overloaded output operator
-                                                                                                                         //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_GTR>& x);                      //!< Overloaded output operator
-                                                                                                                         //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_JC>& x);                      //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::vector<double> >& x);                          //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::vector<int> >& x);                             //!< Overloaded output operator
     
     std::vector<int>                    operator+(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded addition operator
     std::vector<double>                 operator+(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded addition operator
