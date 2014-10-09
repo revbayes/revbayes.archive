@@ -182,7 +182,29 @@ void RevLanguage::Move_CharacterHistory<treeType>::constructInternalObject( void
             p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
         }
     }
-    else if (mt == "AA" || true)
+    else if (mt == "DNA")
+    {
+        if (gt == "node" && pt == "rejection")
+            p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::DnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "branch" && pt == "rejection")
+            p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::DnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "node" && pt == "uniformization")
+            p = new RevBayesCore::NodeUniformizationSampleProposal<RevBayesCore::DnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "branch" && pt == "uniformization")
+            p = new RevBayesCore::PathUniformizationSampleProposal<RevBayesCore::DnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+    }
+    else if (mt == "RNA")
+    {
+        if (gt == "node" && pt == "rejection")
+            p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::RnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "branch" && pt == "rejection")
+            p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::RnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "node" && pt == "uniformization")
+            p = new RevBayesCore::NodeUniformizationSampleProposal<RevBayesCore::RnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "branch" && pt == "uniformization")
+            p = new RevBayesCore::PathUniformizationSampleProposal<RevBayesCore::RnaState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+    }
+    else if (mt == "AA" || mt == "Protein")
     {
         if (gt == "node" && pt == "rejection")
             p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::AminoAcidState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
@@ -192,6 +214,17 @@ void RevLanguage::Move_CharacterHistory<treeType>::constructInternalObject( void
             p = new RevBayesCore::NodeUniformizationSampleProposal<RevBayesCore::AminoAcidState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
         else if (gt == "branch" && pt == "uniformization")
             p = new RevBayesCore::PathUniformizationSampleProposal<RevBayesCore::AminoAcidState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+    }
+    else if (mt == "Standard")
+    {
+        if (gt == "node" && pt == "rejection")
+            p = new RevBayesCore::NodeRejectionSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "branch" && pt == "rejection")
+            p = new RevBayesCore::PathRejectionSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "node" && pt == "uniformization")
+            p = new RevBayesCore::NodeUniformizationSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
+        else if (gt == "branch" && pt == "uniformization")
+            p = new RevBayesCore::PathUniformizationSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
     }
     
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);

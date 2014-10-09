@@ -8,8 +8,15 @@
 
 n_species <- 50
 n_branches <- 2 * n_species - 3
-n_states <- 20
-n_chars <- 50
+char_str <- "DNA"
+if (char_str == "DNA" || char_str == "RNA") {
+	n_states <- 4
+} else if (char_str == "AA" || char_str == "Protein") {
+	n_states <- 20
+} else if (char_str == "Standard") {
+	n_states <- 2 # USER MUST PROVIDE
+}
+n_chars <- 500
 in_fp <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
 
 
@@ -58,7 +65,7 @@ Q_site 		:= gtr(er,pi)
 Q_seq       := fnGeneralRateMap(qSite=Q_site,rfSite=pi,numChars=n_chars)
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
-d           ~  dnPhyloDACTMC(tree=tree, Q=Q_seq, type="AA")
+d           ~  dnPhyloDACTMC(tree=tree, Q=Q_seq, type=char_str)
 d.redraw()
 
 
@@ -77,15 +84,7 @@ pi_true <- pi
 ############################
 
 # Saving the species tree
-write(tree_true, filename=in_fp + "ratemap_aa.tree")
+write(tree_true, filename=in_fp + "ratemap_" + char_str + ".tree")
 
 # Saving the amino acid alignment
-writeNexus(d, filename=in_fp+"ratemap_aa.nex")
-
-
-
-
-
-
-
-
+writeNexus(d, filename=in_fp+"ratemap_" + char_str + ".nex")
