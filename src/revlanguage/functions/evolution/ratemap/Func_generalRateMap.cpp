@@ -43,10 +43,31 @@ RevPtr<Variable> Func_generalRateMap::execute() {
     RevBayesCore::TypedDagNode<std::vector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
     unsigned ns = rm->getValue().getNumberOfStates();
-    
+
     RevBayesCore::GeneralRateMapFunction* f = new RevBayesCore::GeneralRateMapFunction(ns, nc);
+        
+    if ( this->args[3].getVariable()->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+        
+        //        // sanity check
+        //        if ( (nNodes-1) != clockRates->getValue().size() )
+        //        {
+        //            throw RbException( "The number of clock rates does not match the number of branches" );
+        //        }
+        
+        f->setClockRate( clockRates );
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+        f->setClockRate( clockRate );
+    }
+    
     f->setRateMatrix(rm);
     f->setRootFrequencies(rf);
+    
+    
     
     DeterministicNode<RevBayesCore::RateMap> *detNode = new DeterministicNode<RevBayesCore::RateMap>("", f, this->clone());
     
@@ -68,6 +89,12 @@ const ArgumentRules& Func_generalRateMap::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "qSite"           , RateMatrix::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "rfSite"          , Simplex::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "numChars"        , Natural::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        
+        std::vector<TypeSpec> branchRateTypes;
+        branchRateTypes.push_back( RealPos::getClassTypeSpec() );
+        branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+
         
         rulesSet = true;
     }
@@ -106,4 +133,31 @@ const TypeSpec& Func_generalRateMap::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+/** Set a member variable */
+void Func_generalRateMap::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+{
+
+    if ( name == "qSite" )
+    {
+        q = var;
+    }
+    else if ( name == "rfSite" )
+    {
+        rootFrequencies = var;
+    }
+    else if ( name == "branchRates" )
+    {
+        rate = var;
+    }
+    else if ( name == "numChars" )
+    {
+        numChars = var;
+    }
+    else
+    {
+        Function::setConstMemberVariable(name, var);
+    }
+    
 }

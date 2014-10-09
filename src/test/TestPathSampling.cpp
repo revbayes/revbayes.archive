@@ -118,7 +118,7 @@ bool TestPathSampling::run_aa( void )
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
     
-    std::string filepath="/Users/mlandis/data/bayarea/output/";
+    std::string filepath="/Users/mlandis/data/ratemap/output/";
     std::string fn = "";
     fn = "16tip_10aa.nex";
     
@@ -187,7 +187,7 @@ bool TestPathSampling::run_aa( void )
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
     StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
     pi->setValue(new std::vector<double>(20, 0.05));
-//    er->setValue(new std::vector<double>(19*18, 1.0/19));
+    er->setValue(new std::vector<double>(19*18, 1.0/19));
 
     // per-site Q matrix
     DeterministicNode<RateMatrix> *q_site = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
@@ -259,6 +259,7 @@ bool TestPathSampling::run_aa( void )
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( er );
     monitoredNodes.insert( pi );
+    monitoredNodes.insert( globalRate );
      
     monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".parameters.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
