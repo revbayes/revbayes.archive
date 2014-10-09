@@ -10,7 +10,7 @@
 #include "RbException.h"
 #include "Real.h"
 #include "RevObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StandardState.h"
@@ -49,8 +49,8 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
         n.insert( node );
     }
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::AbstractCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractCharacterData>* >(ctmc_tdn);
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* >(ctmc_tdn);
     
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
@@ -101,7 +101,7 @@ const MemberRules& Mntr_CharacterHistoryNewickFile::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("ctmc"      , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("ctmc"      , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("tree"      , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );

@@ -1,7 +1,7 @@
 #ifndef AbstractSiteHomogeneousMixtureCharEvoModel_H
 #define AbstractSiteHomogeneousMixtureCharEvoModel_H
 
-#include "AbstractCharacterData.h"
+#include "AbstractDiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
@@ -64,7 +64,7 @@ namespace RevBayesCore {
      * @since 2012-06-17, version 1.0
      */
     template<class charType, class treeType>
-    class AbstractSiteHomogeneousMixtureCharEvoModel : public TypedDistribution< AbstractCharacterData >, public TreeChangeEventListener {
+    class AbstractSiteHomogeneousMixtureCharEvoModel : public TypedDistribution< AbstractDiscreteCharacterData >, public TreeChangeEventListener {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
@@ -78,8 +78,8 @@ namespace RevBayesCore {
     
         // non-virtual
         double                                                              computeLnProbability(void);
-        void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
-        void                                                                setValue(AbstractCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
+        void                                                                setValue(AbstractDiscreteCharacterData *v);                                                 //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
         
@@ -197,7 +197,7 @@ namespace RevBayesCore {
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) :
-    TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
+    TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
     numNodes( t->getValue().getNumberOfNodes() ),
     numSites( nSites ),
     numChars( nChars ),
@@ -252,7 +252,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const AbstractSiteHomogeneousMixtureCharEvoModel &n) :
-    TypedDistribution< AbstractCharacterData >( n ),
+    TypedDistribution< AbstractDiscreteCharacterData >( n ),
     numNodes( n.numNodes ),
     numSites( n.numSites ),
     numChars( n.numChars ),
@@ -934,11 +934,11 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setValue(AbstractCharacterData *v)
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setValue(AbstractDiscreteCharacterData *v)
 {
     
     // delegate to the parent class
-    TypedDistribution< AbstractCharacterData >::setValue(v);
+    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
     
     // reset the number of sites
     this->numSites = v->getNumberOfIncludedCharacters();

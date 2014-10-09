@@ -9,7 +9,7 @@
 #ifndef __rb_mlandis__AbstractTreeHistoryCtmc__
 #define __rb_mlandis__AbstractTreeHistoryCtmc__
 
-#include "AbstractCharacterData.h"
+#include "AbstractDiscreteCharacterData.h"
 #include "BranchHistory.h"
 #include "ContinuousCharacterData.h"
 #include "DiscreteTaxonData.h"
@@ -30,7 +30,7 @@
 namespace RevBayesCore {
 
     template<class charType, class treeType>
-    class AbstractTreeHistoryCtmc : public TypedDistribution< AbstractCharacterData >, public TreeChangeEventListener {
+    class AbstractTreeHistoryCtmc : public TypedDistribution< AbstractDiscreteCharacterData >, public TreeChangeEventListener {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
@@ -56,7 +56,7 @@ namespace RevBayesCore {
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
-        void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setValue(AbstractDiscreteCharacterData *v);                         //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                setTipProbs(const AbstractCharacterData* tp);
         
         virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
@@ -120,7 +120,7 @@ namespace RevBayesCore {
 }
 
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
 numChars( nChars ),
 numSites( nSites ),
 numSiteRates( 1 ),
@@ -149,7 +149,7 @@ tipsInitialized( false )
 
 
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractCharacterData >( n ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractDiscreteCharacterData >( n ),
 numChars( n.numChars ),
 numSites( n.numSites ),
 numSiteRates( n.numSiteRates ),
@@ -444,10 +444,10 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistories(con
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractCharacterData *v) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractDiscreteCharacterData *v) {
     
     // delegate to the parent class
-    TypedDistribution< AbstractCharacterData >::setValue(v);
+    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
     this->dagNode->redraw();
     this->dagNode->getLnProbability();
 
@@ -482,7 +482,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
     }
     
 
-    TypedDistribution< AbstractCharacterData >::setValue(this->value);
+    TypedDistribution< AbstractDiscreteCharacterData >::setValue(this->value);
 }
 
 

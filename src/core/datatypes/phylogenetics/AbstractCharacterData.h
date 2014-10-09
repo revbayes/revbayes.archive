@@ -36,7 +36,7 @@ namespace RevBayesCore {
         virtual bool                            operator<=(const AbstractCharacterData &rm) const { return operator<(rm) || operator==(rm); }
 
         // methods of the Cloneable interface
-        AbstractCharacterData*                  clone(void) const = 0;
+        virtual AbstractCharacterData*          clone(void) const = 0;
         
         // Container functions
         virtual void                            clear(void) = 0;

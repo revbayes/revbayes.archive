@@ -32,7 +32,7 @@ namespace RevLanguage {
     public:
         DiscreteCharacterData(void);                                                                                                            //!< Default constructor
         DiscreteCharacterData(RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v);                                          //!< Constructor with core object
-        DiscreteCharacterData(RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >*d);                                             //!< Constructor with DAG node
+        DiscreteCharacterData(RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData >*d);                                     //!< Constructor with DAG node
         
         typedef RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> valueType;
     
@@ -74,7 +74,7 @@ RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesC
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData > *d) :
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData > *d) :
     AbstractDiscreteCharacterData( d )
 {
 }
@@ -162,7 +162,7 @@ RevLanguage::MethodTable RevLanguage::DiscreteCharacterData<rlType>::makeMethods
     methods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
     
     // Insert inherited methods
-    methods.insertInheritedMethods( AbstractCharacterData::makeMethods() );
+    methods.insertInheritedMethods( AbstractDiscreteCharacterData::makeMethods() );
 
     return methods;
 }
