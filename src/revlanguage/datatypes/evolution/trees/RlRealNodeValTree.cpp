@@ -14,6 +14,7 @@
 #include "MemberProcedure.h"
 #include "ModelVector.h"
 #include "RlAbstractCharacterData.h"
+#include "RlContinuousCharacterData.h"
 #include "RlMemberFunction.h"
 #include "RlString.h"
 #include "TypeSpec.h"
@@ -71,6 +72,12 @@ RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &
         return new Variable( new Real( 0 ) );
     }
 
+    else if ( name == "tipValues" )
+    {
+        return new Variable ( new ContinuousCharacterData( this->dagNode->getValue().getTipValues() ) );
+        
+    }
+    
     std::cerr << "sending to core execute method\n";
     
     return ModelObject<RevBayesCore::RealNodeContainer>::executeMethod( name, args );
@@ -134,7 +141,11 @@ RevLanguage::MethodTable RealNodeValTree::makeMethods( void ) const
     clampArgRules->push_back(new ArgumentRule("data"     , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     clampArgRules->push_back(new ArgumentRule("dataIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
-        
+    
+    ArgumentRules* tipValArgRules = new ArgumentRules();
+    methods.addFunction("tipValues", new MemberProcedure (AbstractCharacterData::getClassTypeSpec(), tipValArgRules ) );
+   
+    
     // Insert inherited methods
     methods.insertInheritedMethods( ModelObject<RevBayesCore::RealNodeContainer>::makeMethods() );
     

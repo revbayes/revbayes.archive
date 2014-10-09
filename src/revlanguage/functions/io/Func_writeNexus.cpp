@@ -3,6 +3,7 @@
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlAbstractDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
 #include "NexusWriter.h"
@@ -67,7 +68,11 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
     if (!rulesSet) 
     {
         argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "data"    , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        std::vector<TypeSpec> dataTypes;
+        dataTypes.push_back( AbstractCharacterData::getClassTypeSpec() );
+        dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
+
+        argumentRules.push_back( new ArgumentRule( "data"    , dataTypes, ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     
