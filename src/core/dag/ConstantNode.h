@@ -195,13 +195,6 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, 
         o << "_refCount     = " << this->getReferenceCount() << std::endl;
     }
     
-    if ( verbose == true )
-    {
-        o << "_parents      = ";
-        this->printParents(o, 16, 70, verbose);
-        o << std::endl;
-    }
-    
     o << "_children     = ";
     this->printChildren(o, 16, 70, verbose);
     o << std::endl;

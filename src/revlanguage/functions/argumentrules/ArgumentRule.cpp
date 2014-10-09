@@ -159,6 +159,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
                 conversionObject->makeConversionValue( theVar );
                 Variable*  conversionVar    = new Variable( conversionObject );
+                conversionVar->setHiddenVariableState( true );
                 conversionVar->setRevObjectTypeSpec( *it );
                 
                 if ( !isEllipsis() )
