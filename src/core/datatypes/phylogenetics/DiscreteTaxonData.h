@@ -15,7 +15,6 @@ namespace RevBayesCore {
     class DiscreteTaxonData : public AbstractDiscreteTaxonData {
     
     public:
-        DiscreteTaxonData(void);                                                                                    //!< Set type spec of container from type of elements
         DiscreteTaxonData(const std::string &tname);                                                                //!< Set type spec of container from type of elements
     
         charType&                               operator[](size_t i);                                               //!< Index op allowing change
@@ -53,20 +52,6 @@ namespace RevBayesCore {
 
 #include "CharacterState.h"
 #include "RbException.h"
-
-
-
-/**
- * Default constructor.
- * Does nothing except instanciating the object.
- */
-template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>::DiscreteTaxonData(void) : 
-    taxonName(""), 
-    sequence() 
-{
-    
-}
 
 
 /**
