@@ -19,112 +19,125 @@
 #ifndef RbConstIterator_H
 #define RbConstIterator_H
 
+#include "IsAbstract.h"
+#include "RbConstIteratorImpl.h"
+
 #include <vector>
 
 namespace RevBayesCore {
     
     template <class valueType>
-    class RbConstIterator {
+    class RbConstIterator : public RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is > {
         
     public:
         // constructor(s)
-        RbConstIterator(const typename std::vector<valueType*>::const_iterator &i);
-        RbConstIterator(const RbConstIterator<valueType> &v);
+        RbConstIterator(void);
+        RbConstIterator(const typename RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is >::iteratorType &i);
+//        RbConstIterator(const RbConstIterator<valueType> &v);
         
         // public (stl-like) vector functions
-        RbConstIterator&                                    operator++(void);                                                               //!< Increment index (prefix)
-        const RbConstIterator&                              operator++(void) const;                                                               //!< Increment index (prefix)
-        RbConstIterator&                                    operator--(void);                                                               //!< Decrement index (prefix)
-        const RbConstIterator&                              operator--(void) const;                                                               //!< Decrement index (prefix)
-        bool                                                operator==(const RbConstIterator& x) const;                                   //!< Equals operator
-        bool                                                operator!=(const RbConstIterator& x) const;                                   //!< Not-Equals operator
-        bool                                                operator<(const RbConstIterator& x) const; 
-        const valueType&                                    operator*(void) const;
-        const valueType*                                    operator->(void) const;
+//        RbConstIterator&                                    operator++(void);                                                               //!< Increment index (prefix)
+//        const RbConstIterator&                              operator++(void) const;                                                               //!< Increment index (prefix)
+//        RbConstIterator&                                    operator--(void);                                                               //!< Decrement index (prefix)
+//        const RbConstIterator&                              operator--(void) const;                                                               //!< Decrement index (prefix)
+//        bool                                                operator==(const RbConstIterator& x) const;                                   //!< Equals operator
+//        bool                                                operator!=(const RbConstIterator& x) const;                                   //!< Not-Equals operator
+//        bool                                                operator<(const RbConstIterator& x) const; 
+//        const valueType&                                    operator*(void) const;
+//        const valueType*                                    operator->(void) const;
         
     private:
         
         // private members
-		typename std::vector<valueType*>::const_iterator    it;
+
     };
     
 }
 
 
+
 template <class valueType>
-RevBayesCore::RbConstIterator<valueType>::RbConstIterator(const typename std::vector<valueType*>::const_iterator &i) : it( i ) {
+RevBayesCore::RbConstIterator<valueType>::RbConstIterator(void) : RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is>()
+{
     
 }
 
 
-template <typename valueType>
-RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator++(void) {
+template <class valueType>
+RevBayesCore::RbConstIterator<valueType>::RbConstIterator(const typename RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is >::iteratorType &i) : RbConstIteratorImpl<valueType, IsAbstract<valueType>::Is>( i )
+{
     
-    ++it;
-    
-    return *this;
 }
 
 
-template <typename valueType>
-const RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator++(void) const {
-    
-    ++it;
-    
-    return *this;
-}
-
-
-template <typename valueType>
-RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator--(void) {
-    
-    --it;
-    
-    return *this;
-}
-
-
-template <typename valueType>
-const RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator--(void) const {
-    
-    --it;
-    
-    return *this;
-}
-
-
-template <typename valueType>
-bool RevBayesCore::RbConstIterator<valueType>::operator==(const RbConstIterator<valueType> &x) const {
-    
-    return it == x.it;
-}
-
-
-template <typename valueType>
-bool RevBayesCore::RbConstIterator<valueType>::operator!=(const RbConstIterator<valueType> &x) const {
-    
-    return it != x.it;
-}
-
-
-template <typename valueType>
-bool RevBayesCore::RbConstIterator<valueType>::operator<(const RbConstIterator<valueType> &x) const {
-    
-    return it < x.it;
-}
-
-
-template <typename valueType>
-const valueType* RevBayesCore::RbConstIterator<valueType>::operator->(void) const {
-    
-    return (*it);
-}
-
-template <typename valueType>
-const valueType& RevBayesCore::RbConstIterator<valueType>::operator*(void) const {
-    
-    return *(*it);
-}
+//template <typename valueType>
+//RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator++(void) {
+//    
+//    ++it;
+//    
+//    return *this;
+//}
+//
+//
+//template <typename valueType>
+//const RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator++(void) const {
+//    
+//    ++it;
+//    
+//    return *this;
+//}
+//
+//
+//template <typename valueType>
+//RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator--(void) {
+//    
+//    --it;
+//    
+//    return *this;
+//}
+//
+//
+//template <typename valueType>
+//const RevBayesCore::RbConstIterator<valueType>& RevBayesCore::RbConstIterator<valueType>::operator--(void) const {
+//    
+//    --it;
+//    
+//    return *this;
+//}
+//
+//
+//template <typename valueType>
+//bool RevBayesCore::RbConstIterator<valueType>::operator==(const RbConstIterator<valueType> &x) const {
+//    
+//    return it == x.it;
+//}
+//
+//
+//template <typename valueType>
+//bool RevBayesCore::RbConstIterator<valueType>::operator!=(const RbConstIterator<valueType> &x) const {
+//    
+//    return it != x.it;
+//}
+//
+//
+//template <typename valueType>
+//bool RevBayesCore::RbConstIterator<valueType>::operator<(const RbConstIterator<valueType> &x) const {
+//    
+//    return it < x.it;
+//}
+//
+//
+//template <typename valueType>
+//const valueType* RevBayesCore::RbConstIterator<valueType>::operator->(void) const {
+//    
+//    return (*it);
+//}
+//
+//template <typename valueType>
+//const valueType& RevBayesCore::RbConstIterator<valueType>::operator*(void) const {
+//    
+//    return *(*it);
+//}
 
 
 #endif

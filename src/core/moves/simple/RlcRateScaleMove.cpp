@@ -20,7 +20,7 @@ using namespace RevBayesCore;
  * \param[in]   t    If the parameter should be tuned.
  * \param[in]   w    The weight how often the move will be used.
  */
-RlcRateScaleMove::RlcRateScaleMove(StochasticNode<std::vector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ), 
+RlcRateScaleMove::RlcRateScaleMove(StochasticNode< RbVector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ),
     variable(v),
     index( 0 ),
     lambda( l ),
@@ -161,6 +161,6 @@ void RlcRateScaleMove::swapNode(DagNode *oldN, DagNode *newN)
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
         
 }

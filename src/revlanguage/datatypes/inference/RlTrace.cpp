@@ -89,10 +89,8 @@ const MemberRules& Trace::getMemberRules(void) const {
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        //        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        //        modelMemberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
-        //        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
         
         rulesSet = true;
     }
@@ -102,24 +100,16 @@ const MemberRules& Trace::getMemberRules(void) const {
 
 
 /* Get method specifications */
-const MethodTable& Trace::getMethods(void) const {
+void Trace::initializeMethods(void) const
+{
     
-    static MethodTable methods = MethodTable();
-    static bool          methodsSet = false;
+    // necessary call for proper inheritance
+    RevObject::initializeMethods();
     
-    if ( methodsSet == false )
-    {
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
         
-        ArgumentRules* summarizeArgRules = new ArgumentRules();
-        summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-        methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
-    
-    return methods;
 }
 
 /** Get type spec */

@@ -1,6 +1,7 @@
 #ifndef ScalarVectorMultiplication_H
 #define ScalarVectorMultiplication_H
 
+#include "RbVector.h"
 #include "StringUtilities.h"    // For string concatenation through Multiplication
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
@@ -21,10 +22,10 @@ namespace RevBayesCore {
      *
      */
     template <class firstValueType, class secondValueType, class returnType>
-    class ScalarVectorMultiplication : public TypedFunction<std::vector<returnType> > {
+    class ScalarVectorMultiplication : public TypedFunction< RbVector<returnType> > {
         
     public:
-        ScalarVectorMultiplication(const TypedDagNode<firstValueType> *a, const TypedDagNode<std::vector<secondValueType> > *b);
+        ScalarVectorMultiplication(const TypedDagNode<firstValueType> *a, const TypedDagNode< RbVector<secondValueType> > *b);
         
         ScalarVectorMultiplication*                         clone(void) const;                                                          //!< Create a clon.
         void                                                update(void);                                                               //!< Recompute the value
@@ -34,7 +35,7 @@ namespace RevBayesCore {
         
     private:
         const TypedDagNode<firstValueType>*                 a;
-        const TypedDagNode<std::vector<secondValueType> >*  b;
+        const TypedDagNode< RbVector<secondValueType> >*  b;
         
     };
 }
@@ -42,7 +43,7 @@ namespace RevBayesCore {
 
 
 template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, returnType>::ScalarVectorMultiplication(const TypedDagNode<firstValueType> *l, const TypedDagNode<std::vector<secondValueType> > *r) : TypedFunction<std::vector<returnType> >( new std::vector<returnType>(r->getValue().size(),returnType()) ),
+RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, returnType>::ScalarVectorMultiplication(const TypedDagNode<firstValueType> *l, const TypedDagNode< RbVector<secondValueType> > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>(r->getValue().size(),returnType()) ),
     a( l ),
     b( r )
 {
@@ -71,7 +72,7 @@ void RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, r
     
     if (oldP == b)
     {
-        b = static_cast<const TypedDagNode<std::vector<secondValueType> >* >( newP );
+        b = static_cast<const TypedDagNode< RbVector<secondValueType> >* >( newP );
     }
 }
 
@@ -82,7 +83,7 @@ void RevBayesCore::ScalarVectorMultiplication<firstValueType, secondValueType, r
     // remove the old values
     
     const firstValueType &lhs = a->getValue();
-    const std::vector<secondValueType> &rhs = b->getValue();
+    const RbVector<secondValueType> &rhs = b->getValue();
     size_t l = rhs.size();
     for (size_t i=0; i<l; ++i)
     {

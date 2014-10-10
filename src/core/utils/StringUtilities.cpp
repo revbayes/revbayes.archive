@@ -303,12 +303,14 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
     }
     size_t firstGraph = i;
     
+    // Empty input; return empty oneliner
     if ( firstGraph >= input.size() )
     {
         return oneLiner;
     }
-    
-    for ( size_t i = begin; i < input.size() && i < maxLen; ++i )
+
+    // Construct the oneliner
+    for ( i = begin; i < input.size() && i < maxLen; ++i )
     {
         if ( input[ i ] == '\n' || input[ i ] == '\r' )
         {
@@ -317,7 +319,33 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
         oneLiner.push_back( input[ i ] );
     }
 
-    if ( oneLiner.size() == maxLen )
+    // If the oneliner was cut short by a newline, check whether there
+    // are more printable graphs in the input. If so, we append dots.
+    if ( input[i] == '\n' || input[i] == '\r' )
+    {
+        for ( ; i < input.size(); ++i )
+        {
+            if ( isgraph( input[i] ) )
+                break;
+        }
+        
+        if ( i < input.size() )
+        {
+            if ( maxLen - oneLiner.size() < 3 )
+            {
+                oneLiner[ maxLen - 1 ] = '.';
+                oneLiner[ maxLen - 2 ] = '.';
+                oneLiner[ maxLen - 3 ] = '.';
+            }
+            else
+            {
+                oneLiner += "...";
+            }
+        }
+    }
+    // If not, we check if the oneliner was cut short by the maximum length,
+    // and, if so, insert dots into the last three character positions
+    else if ( oneLiner.size() == maxLen )
     {
         oneLiner[ maxLen - 1 ] = '.';
         oneLiner[ maxLen - 2 ] = '.';

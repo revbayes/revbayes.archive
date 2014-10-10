@@ -35,8 +35,7 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-        const MethodTable&                              getMethods(void) const;                                                         //!< Get member methods
-        MethodTable                                     makeMethods(void) const;                                                        //!< Make member methods
+        void                                            initializeMethods(void) const;                                                  //!< Initialize member methods
 
         
         // Distribution functions you have to override
@@ -95,8 +94,8 @@ RevBayesCore::MixtureDistribution<typename valType::valueType>* RevLanguage::Dis
 {
 	
     // get the parameters
-    RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* v   = static_cast<const ModelVector<valType> &>( values->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< std::vector<double> >*                      p   = static_cast<const Simplex &>( probabilities->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* v   = static_cast<const ModelVector<valType> &>( values->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*                      p   = static_cast<const Simplex &>( probabilities->getRevObject() ).getDagNode();
     
     RevBayesCore::MixtureDistribution<typename valType::valueType>* d		= new RevBayesCore::MixtureDistribution<typename valType::valueType>(v,p);
     
@@ -147,26 +146,6 @@ const RevLanguage::MemberRules& RevLanguage::Dist_mixture<valType>::getMemberRul
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-template <typename valType>
-const RevLanguage::MethodTable& Dist_mixture<valType>::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getTypeSpec( void ) const
 {
@@ -179,19 +158,15 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getTypeSpec( vo
 
 /* Make member methods for this class */
 template <typename valType>
-RevLanguage::MethodTable Dist_mixture<valType>::makeMethods(void) const
+void Dist_mixture<valType>::initializeMethods(void) const
 {
-    
-    MethodTable methods = MethodTable();
+    // Insert inherited methods
+    TypedDistribution<valType>::initializeMethods();
     
     ArgumentRules* argRules = new ArgumentRules();
     
 //    methods.addFunction("getAllocationIndex", new DistributionMemberFunction<Dist_mixture<valType> , Natural>( this, argRules ) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( TypedDistribution<valType>::makeMethods() );
-    
-    return methods;
 }
 
 

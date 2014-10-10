@@ -30,11 +30,10 @@
 namespace RevBayesCore {
     
     template <class valueType>
-    class VectorFunction : public TypedFunction< std::vector<valueType> > {
+    class VectorFunction : public TypedFunction< RbVector<valueType> > {
         
     public:
         VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args);
-        VectorFunction(const VectorFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~VectorFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -60,7 +59,7 @@ namespace RevBayesCore {
 }
 
 template <class valueType>
-RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args) : TypedFunction< std::vector<valueType> >( new std::vector<valueType>() ), parameters( args ) {
+RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args) : TypedFunction< RbVector<valueType> >( new RbVector<valueType>() ), parameters( args ) {
 
     // add the lambda parameter as a parent
     typename std::vector<const TypedDagNode<valueType>* >::iterator it;
@@ -68,14 +67,6 @@ RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const 
     {
         this->addParameter( *it );
     }
-    
-    update();
-}
-
-
-template <class valueType>
-RevBayesCore::VectorFunction<valueType>::VectorFunction(const VectorFunction<valueType> &n) : TypedFunction< std::vector<valueType> >( n ), parameters( n.parameters ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -95,7 +86,7 @@ RevBayesCore::VectorFunction<valueType>* RevBayesCore::VectorFunction<valueType>
 
 template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::keep( DagNode *toucher ) {
-    TypedFunction<std::vector<valueType> >::keep( toucher );
+    TypedFunction< RbVector<valueType> >::keep( toucher );
     this->dagNode->clearTouchedElementIndices();
 }
 
@@ -103,7 +94,7 @@ void RevBayesCore::VectorFunction<valueType>::keep( DagNode *toucher ) {
 template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::restore( DagNode *toucher )
 {
-    TypedFunction<std::vector<valueType> >::restore( toucher );
+    TypedFunction< RbVector<valueType> >::restore( toucher );
     
     this->update();
     
@@ -164,7 +155,7 @@ template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher ) {
     
     //delegate to base class
-    TypedFunction<std::vector<valueType> >::touch( toucher );
+    TypedFunction< RbVector<valueType> >::touch( toucher );
     
     for (size_t i = 0; i < parameters.size(); ++i) 
     {

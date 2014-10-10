@@ -3,11 +3,12 @@
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
+#include "Natural.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RbException.h"
 #include "RevObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlAtlas.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
@@ -45,8 +46,8 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::AbstractCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractCharacterData>* >(ctmc_tdn);
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* >(ctmc_tdn);
     
     const RevBayesCore::TimeAtlas* atl = &( static_cast<const RlAtlas&>( atlas->getRevObject() ).getValue() );
     
@@ -94,7 +95,7 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getMemberRules(void) const {
     {
         
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("ctmc"      , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("ctmc"      , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("tree"      , TimeTree::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("atlas"     , RlAtlas::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("samplegen" , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Natural(1) ) );

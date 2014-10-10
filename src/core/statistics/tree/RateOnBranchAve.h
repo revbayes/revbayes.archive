@@ -19,6 +19,7 @@
 #define RateOnBranchAve_H
 
 //#include "Statistic.h"
+#include "RbVector.h"
 #include "TimeTree.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -33,15 +34,14 @@ namespace RevBayesCore {
     class RateOnBranchAve : public TypedFunction<double> {
         
     public:
-        RateOnBranchAve(const TypedDagNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *rr, const size_t idx);                                                                                   //!< Default constructor
-        RateOnBranchAve(const TypedDagNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *rr, const TypedDagNode< double >* sv, const size_t idx);                                                                                   //!< Default constructor
-        RateOnBranchAve(const RateOnBranchAve& t);                                                                                      //!< Copy constructor
+        RateOnBranchAve(const TypedDagNode< RbVector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *rr, const size_t idx);                                                                                   //!< Default constructor
+        RateOnBranchAve(const TypedDagNode< RbVector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *rr, const TypedDagNode< double >* sv, const size_t idx);                                                                                   //!< Default constructor
         virtual                                    ~RateOnBranchAve(void);                                                                  //!< Destructor
         
         RateOnBranchAve&                        operator=(const RateOnBranchAve& t);
         
         // Basic utility functions
-        RateOnBranchAve*                        clone(void) const;                                                                          //!< Clone object
+        RateOnBranchAve*                            clone(void) const;                                                                          //!< Clone object
         void                                        update(void);                                                                               //!< Clone the function
 		
     protected:
@@ -49,7 +49,7 @@ namespace RevBayesCore {
         
     private:
         // members
-		const TypedDagNode< std::vector<double> >*					nodeRates;
+		const TypedDagNode< RbVector<double> >*     nodeRates;
         const TypedDagNode<TimeTree>*               tree;
 		const TypedDagNode<double>*					rootRate;
 		const TypedDagNode< double >*				scaleValue;

@@ -9,6 +9,7 @@
 #ifndef PowermixFunction_h
 #define PowermixFunction_h
 
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -17,11 +18,10 @@
 
 namespace RevBayesCore {
     
-    class PowermixFunction : public TypedFunction<std::vector<double> > {
+    class PowermixFunction : public TypedFunction<RbVector<double> > {
         
     public:
-        PowermixFunction(const std::vector<const TypedDagNode< std::vector<double> > *> &args);
-        PowermixFunction(const PowermixFunction &n);                                                                                    //!< Copy constructor
+        PowermixFunction(const std::vector<const TypedDagNode< RbVector<double> > *> &args);
         virtual                                            ~PowermixFunction(void);                                                     //!< Virtual destructor
         
         // public member functions
@@ -34,7 +34,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        std::vector<const TypedDagNode< std::vector<double> >* >    parameters;
+        std::vector<const TypedDagNode< RbVector<double> >* >    parameters;
         
     };
 

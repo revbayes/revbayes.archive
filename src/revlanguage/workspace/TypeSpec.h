@@ -50,24 +50,19 @@ namespace RevLanguage {
         bool                        operator!=(const TypeSpec& x) const;                                            //!< Not equals operator
 
                                     // Regular functions
-        const size_t                getDim(void) const;                                                             //!< Get object dimensions
-        const size_t                getTotalDim(void) const;                                                        //!< Get object + element dimensions
         const std::string&          getElementType(void) const;                                                     //!< Get element type, if container
         const TypeSpec*             getElementTypeSpec(void) const;                                                 //!< Get element type spec, if container
         const std::string&          getParentType(void) const;                                                      //!< Get parent type
         const TypeSpec*             getParentTypeSpec(void) const;                                                  //!< Get parent type spec
         const std::string&          getType(void) const;                                                            //!< Get object type
         bool                        isDerivedOf(const TypeSpec& x) const;                                           //!< Test whether the type is the same or derived from x
-//        ModelVector<RlString>*      makeRevClass(void) const;                                                       //!< Make Rev representation of class vector
-//        RlString*                   makeRevType(void) const;                                                        //!< Make Rev representation of type string
 
     private:
-                                    // Helper functions
-        size_t                      getDimFromClass(void) const;                                                    //!< Get object dimensions using type spec hierarchy
+        
+        // Helper functions
         const TypeSpec*             getElementTypeSpecFromClass(void) const;                                        //!< Make element type spec, if container, using type spec hierarchy
 
-                                    // Member variables
-        size_t                      dim;                                                                            //!< The dimension of the type
+        // Member variables
         const TypeSpec*             element;                                                                        //!< Pointer to element type spec, if any
         const TypeSpec*             parent;                                                                         //!< Pointer to the parent type
         std::string                 type;                                                                           //!< The type

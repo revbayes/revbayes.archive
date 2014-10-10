@@ -146,7 +146,7 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
     for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it)
     {
         it->computeStatistics();
-        rv->push_back( new Trace( *it ) );
+        rv->push_back( Trace( *it ) );
     }
     
     // return the vector of traces

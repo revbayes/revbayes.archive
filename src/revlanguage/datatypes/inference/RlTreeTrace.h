@@ -46,8 +46,8 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
         
         // Member method inits
-        const MethodTable&                          getMethods(void) const;                                                     //!< Get methods
-        RevPtr<Variable>                            executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual void                                initializeMethods(void) const;                                              //!< Initialize methods
         
     protected:
         
@@ -156,24 +156,17 @@ const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getMemberRules
 
 /* Get method specifications */
 template <typename treeType>
-const RevLanguage::MethodTable& RevLanguage::TreeTrace<treeType>::getMethods(void) const {
+void RevLanguage::TreeTrace<treeType>::initializeMethods(void) const
+{
     
-    static MethodTable methods = MethodTable();
-    static bool          methodsSet = false;
+    // necessary call for proper inheritance
+    RevObject::initializeMethods();
     
-    if ( methodsSet == false )
-    {
-        
-        ArgumentRules* summarizeArgRules = new ArgumentRules();
-        summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-        methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
     
-    return methods;
+    
 }
 
 /** Get type spec */

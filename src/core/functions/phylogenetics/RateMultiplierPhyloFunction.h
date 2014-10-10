@@ -5,6 +5,7 @@
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 #include "TimeTree.h"
+#include "RbVector.h"
 
 #include <vector>
 
@@ -22,10 +23,10 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-03-29, version 1.0
      */
-    class RateMultiplierPhyloFunction : public TypedFunction< std::vector<double> > {
+    class RateMultiplierPhyloFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        RateMultiplierPhyloFunction(const TypedDagNode< TimeTree > *t, const TypedDagNode<std::vector<double> > *r, const TypedDagNode<double> *b);
+        RateMultiplierPhyloFunction(const TypedDagNode< TimeTree > *t, const TypedDagNode< RbVector<double> > *r, const TypedDagNode<double> *b);
         
         // public member functions
         RateMultiplierPhyloFunction*                        clone(void) const;                                                                                              //!< Create an independent clone
@@ -40,7 +41,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< double >*                       baseRate;                                                                                                       //!< The base rate that will be applied to the root
-        const TypedDagNode< std::vector<double> >*          rateMultipliers;                                                                                                //!< The branch-wise rate multipliers
+        const TypedDagNode< RbVector<double> >*             rateMultipliers;                                                                                                //!< The branch-wise rate multipliers
         const TypedDagNode< TimeTree >*                     tau;                                                                                                            //!< The phylogeny along which the multipliers change their rate.
         
     };

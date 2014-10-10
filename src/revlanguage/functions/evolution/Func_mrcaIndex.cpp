@@ -9,6 +9,7 @@
 #include "Clade.h"
 #include "Func_mrcaIndex.h"
 #include "ModelVector.h"
+#include "Natural.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RealPos.h"

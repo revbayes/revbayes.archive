@@ -36,7 +36,7 @@ RevPtr<Variable> Func_maximumTree::execute() {
    // RevBayesCore::TypedDagNode<std::vector<TimeTree> >* gTrees = static_cast<const ModelVector<TimeTree> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 
     
-    RevBayesCore::TypedDagNode<std::vector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::MaximumTreeFunction* f = new RevBayesCore::MaximumTreeFunction( gTrees );
     

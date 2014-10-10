@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-MaximumTreeFunction::MaximumTreeFunction( const TypedDagNode<std::vector<TimeTree> > *ts ) : TypedFunction<TimeTree>( new TimeTree() ), trees( ts ) {
+MaximumTreeFunction::MaximumTreeFunction( const TypedDagNode< RbVector<TimeTree> > *ts ) : TypedFunction<TimeTree>( new TimeTree() ), trees( ts ) {
     // add the lambda parameter as a parent
     addParameter( ts );
     
@@ -41,7 +41,7 @@ void MaximumTreeFunction::update( void )
 void MaximumTreeFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-        trees = static_cast<const TypedDagNode<std::vector<TimeTree> >* >( newP );
+        trees = static_cast<const TypedDagNode< RbVector<TimeTree> >* >( newP );
     
 }
 

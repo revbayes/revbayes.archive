@@ -36,9 +36,6 @@ namespace RevLanguage {
         static const TypeSpec&          getClassTypeSpec(void);                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                //!< Get language type of the object
         
-        // Member methods
-        const MethodTable&              getMethods(void) const;                 //!< Get member methods
-        
     };
     
 }

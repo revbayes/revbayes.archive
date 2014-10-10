@@ -25,6 +25,29 @@ RbHelpSystem::RbHelpSystem()
 }
 
 
+RbHelpSystem::RbHelpSystem( const RbHelpSystem &hs) :
+    helpFunctionNames( hs.helpFunctionNames ),
+    helpForFunctions( hs.helpForFunctions )
+{
+    
+}
+
+
+
+
+RbHelpSystem& RbHelpSystem::operator=( const RbHelpSystem &hs )
+{
+    
+    if ( this != &hs )
+    {
+        helpFunctionNames = hs.helpFunctionNames;
+        helpForFunctions  = hs.helpForFunctions;
+    }
+    
+    return *this;
+}
+
+
 const std::set<std::string>& RbHelpSystem::getFunctionEntries( void ) const
 {
     // return a constant reference to the internal value
@@ -87,18 +110,49 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
     {
     
-    
-        RbHelpFunction h = parser.parseHelpFunction( *it );
-        helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getName() , h) );
-        helpFunctionNames.insert( h.getName() );
         
-        
-        // also add all aliases
-        const std::vector<std::string> & aliases = h.getAliases();
-        for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
+//        std::cerr << *it << std::endl;
+        if ( *it == "help/mcmc.xml" )
         {
-            helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( *alias , h) );
+            std::cerr << *it << std::endl;
         }
+        
+        if ( parser.testHelpEntry( *it ) == RbHelpParser::FUNCTION )
+        {
+            
+            RbHelpFunction h = parser.parseHelpFunction( *it );
+            helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getName() , h) );
+            helpFunctionNames.insert( h.getName() );
+            
+            
+            // also add all aliases
+            const std::vector<std::string>& aliases = h.getAliases();
+            for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
+            {
+                helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( *alias , h) );
+            }
+            
+        }
+        
+        
+        
+        if ( parser.testHelpEntry( *it ) == RbHelpParser::TYPE )
+        {
+            
+            RbHelpType h = parser.parseHelpType( *it );
+//            helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getName() , h) );
+//            helpFunctionNames.insert( h.getName() );
+//            
+//            
+//            // also add all aliases
+//            const std::vector<std::string>& aliases = h.getAliases();
+//            for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
+//            {
+//                helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( *alias , h) );
+//            }
+            
+        }
+        
         
     }
     

@@ -34,15 +34,15 @@ Func_powermix* Func_powermix::clone( void ) const {
 
 RevPtr<Variable> Func_powermix::execute() {
     
-    std::vector<const RevBayesCore::TypedDagNode< std::vector<double> >* >  params;
+    std::vector<const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* >  params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const RevBayesCore::TypedDagNode< std::vector<double> >* val = static_cast<const Simplex &> ( args[i].getVariable()->getRevObject() ).getDagNode();
+        const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* val = static_cast<const Simplex &> ( args[i].getVariable()->getRevObject() ).getDagNode();
         params.push_back( val );
     }
     
     RevBayesCore::PowermixFunction *func = new RevBayesCore::PowermixFunction( params );
 
-    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
+    DeterministicNode<RevBayesCore::RbVector<double> > *detNode = new DeterministicNode<RevBayesCore::RbVector<double> >("", func, this->clone());
 
     Simplex *theSimplex = new Simplex( detNode );
     

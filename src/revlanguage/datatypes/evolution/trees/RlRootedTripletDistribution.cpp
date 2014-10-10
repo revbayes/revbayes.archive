@@ -120,25 +120,6 @@ const TypeSpec& RootedTripletDistribution::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& RootedTripletDistribution::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& RootedTripletDistribution::getTypeSpec( void ) const {
     
@@ -149,10 +130,12 @@ const TypeSpec& RootedTripletDistribution::getTypeSpec( void ) const {
 
 
 /** Make member methods for this class */
-RevLanguage::MethodTable RootedTripletDistribution::makeMethods( void ) const
+void RootedTripletDistribution::initializeMethods( void ) const
 {
-    MethodTable methods = MethodTable();
     
+    // Insert inherited methods
+    ModelObject<RevBayesCore::RootedTripletDistribution>::initializeMethods();
+
     ArgumentRules* nTripletsArgRules = new ArgumentRules();
     methods.addFunction("nTriplets", new MemberProcedure(Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
     
@@ -176,10 +159,6 @@ RevLanguage::MethodTable RootedTripletDistribution::makeMethods( void ) const
     ArgumentRules* extractTripletsArgRules = new ArgumentRules();
     extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("extractTriplets", new MemberProcedure(RlUtils::Void,            extractTripletsArgRules  ) );
-
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::RootedTripletDistribution>::makeMethods() );
     
-    return methods;
 }
 

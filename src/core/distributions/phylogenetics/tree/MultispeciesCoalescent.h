@@ -19,6 +19,7 @@
 #ifndef MultispeciesCoalescent_H
 #define MultispeciesCoalescent_H
 
+#include "RbVector.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -38,7 +39,7 @@ namespace RevBayesCore {
         MultispeciesCoalescent*                             clone(void) const;                                                                                  //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        void                                                setNes(TypedDagNode<std::vector<double> >* inputNes);
+        void                                                setNes(TypedDagNode<RbVector<double> >* inputNes);
         void                                                setNe(TypedDagNode<double>* inputNe);
 
         // Parameter management functions
@@ -58,7 +59,7 @@ namespace RevBayesCore {
    //     std::map<std::string, std::string>                  gene2species;
         std::vector<Taxon>                                  taxa;
         const TypedDagNode<TimeTree>*                       speciesTree;
-        const TypedDagNode<std::vector<double> >*           Nes;
+        const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
         size_t                                              numTaxa;
         double                                              logTreeTopologyProb;

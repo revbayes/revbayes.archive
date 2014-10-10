@@ -32,7 +32,7 @@ namespace RevLanguage {
     public:
         DiscreteCharacterData(void);                                                                                                            //!< Default constructor
         DiscreteCharacterData(RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v);                                          //!< Constructor with core object
-        DiscreteCharacterData(RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >*d);                                             //!< Constructor with DAG node
+        DiscreteCharacterData(RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData >*d);                                     //!< Constructor with DAG node
         
         typedef RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> valueType;
     
@@ -43,10 +43,9 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
          
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                                                             //!< Get member methods
-        MethodTable                         makeMethods(void) const;                                                                            //!< Make member methods
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);                          //!< Override to map member methods to internal functions
-            
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                          //!< Override to map member methods to internal functions
+        virtual void                        initializeMethods(void) const;                                                                      //!< Initialize member methods
+        
     };
     
 }
@@ -74,7 +73,7 @@ RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesC
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData > *d) :
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData > *d) :
     AbstractDiscreteCharacterData( d )
 {
 }
@@ -130,41 +129,19 @@ const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClas
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-template <typename rlType>
-const RevLanguage::MethodTable& RevLanguage::DiscreteCharacterData<rlType>::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Make member methods */
 template <typename rlType>
-RevLanguage::MethodTable RevLanguage::DiscreteCharacterData<rlType>::makeMethods( void ) const
+void RevLanguage::DiscreteCharacterData<rlType>::initializeMethods( void ) const
 {
-    MethodTable methods = MethodTable();
-
+    
+    // Insert inherited methods
+    AbstractDiscreteCharacterData::initializeMethods();
+    
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( AbstractCharacterData::makeMethods() );
-
-    return methods;
 }
 
 

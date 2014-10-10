@@ -11,7 +11,7 @@ using namespace RevBayesCore;
  * \param[in]   t    The time tree along which the process is applied.
  * \param[in]   d    A scaling parameter for the branch length.
  */
-RateMultiplierPhyloFunction::RateMultiplierPhyloFunction(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector<double> >* rm, const TypedDagNode< double > *br): TypedFunction< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ), 
+RateMultiplierPhyloFunction::RateMultiplierPhyloFunction(const TypedDagNode< TimeTree > *t, const TypedDagNode< RbVector<double> >* rm, const TypedDagNode< double > *br): TypedFunction< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ),
     baseRate( br ),
     rateMultipliers( rm ),
     tau( t ) 
@@ -81,7 +81,7 @@ void RateMultiplierPhyloFunction::swapParameterInternal(const DagNode *oldP, con
     
     if ( oldP == rateMultipliers ) 
     {
-        rateMultipliers = static_cast< const TypedDagNode< std::vector<double> >* >( newP );
+        rateMultipliers = static_cast< const TypedDagNode< RbVector<double> >* >( newP );
     }
     
     if ( oldP == baseRate ) 

@@ -260,6 +260,12 @@ void BranchHistory::print(void) const
 {
     std::set<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     std::vector<CharacterEvent*>::iterator it_v;
+    
+//    std::cout << parentCharacters.size() << "\n";
+//    for (size_t i = 0; i < parentCharacters.size(); i++)
+//        std::cout << parentCharacters[i] << " ";
+//    std::cout << "\n";
+    
     std::vector<CharacterEvent*> tmp = parentCharacters;
     
     std::cout << "BranchHistory " << index << " size=" << history.size() << "  " << this << "\n";

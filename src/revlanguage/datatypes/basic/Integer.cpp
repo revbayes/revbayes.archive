@@ -15,11 +15,15 @@ using namespace RevLanguage;
 /* Default constructor */
 Integer::Integer(void) : ModelObject<int>() {
     
+    setGuiVariableName("Integer");
+    setGuiLatexSymbol("Z");
 }
 
 
 Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v ) {
     
+    setGuiVariableName("Integer");
+    setGuiLatexSymbol("Z");
 }
 
 
@@ -27,12 +31,16 @@ Integer::Integer( RevBayesCore::TypedDagNode<int> *v ) : ModelObject<int>( v ) {
 /* Construct from int */
 Integer::Integer(int v) : ModelObject<int>( new int(v) ) {
 
+    setGuiVariableName("Integer");
+    setGuiLatexSymbol("Z");
 }
 
 
 /* Construct from unsigned int (ambiguous between int and bool otherwise) */
 Integer::Integer(unsigned int v) : ModelObject<int>( new int( int(v) ) ) {
     
+    setGuiVariableName("Integer");
+    setGuiLatexSymbol("Z");
 }
 
 
@@ -204,25 +212,6 @@ const TypeSpec& Integer::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& Integer::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
 }
 
 

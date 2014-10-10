@@ -269,8 +269,51 @@ std::set<const DagNode*> DagNode::getParents( void ) const
 }
 
 
-/** 
- * Get the reference count. 
+
+void DagNode::getPrintableChildren(std::set<DagNode *> &c) const
+{
+    
+    for (std::set<DagNode*>::const_iterator it = children.begin(); it != children.end(); ++it )
+    {
+        if ( (*it)->isHidden() == false )
+        {
+            // just insert this child
+            c.insert( (*it) );
+        }
+        else
+        {
+            // do not add this child but all the children below because we omit this node
+            (*it)->getPrintableChildren( c );
+        }
+    }
+    
+}
+
+
+
+void DagNode::getPrintableParents(std::set<const DagNode *> &p) const
+{
+    
+    std::set<const DagNode*> parents = getParents();
+    for (std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    {
+        if ( (*it)->isHidden() == false )
+        {
+            // just insert this child
+            p.insert( (*it) );
+        }
+        else
+        {
+            // do not add this child but all the children below because we omit this node
+            (*it)->getPrintableParents( p );
+        }
+    }
+    
+}
+
+
+/**
+ * Get the reference count.
  */
 size_t DagNode::getReferenceCount( void ) const 
 {
@@ -347,17 +390,6 @@ bool DagNode::isClamped( void ) const
 }
 
 
-/**
- * Is this node composite, that is, does it keep track of elements or member variables
- * of a single composite language object? The default is false; composite nodes in the
- * language layer need to override this method and return true.
- */
-bool DagNode::isComposite( void ) const
-{
-    return false;
-}
-
-
 bool DagNode::isConstant( void ) const
 {
     
@@ -371,18 +403,10 @@ bool DagNode::isHidden( void ) const
 }
 
 
-/** Is this a non-applicable (NA) value? */
-bool DagNode::isNAValue( void ) const
-{
-    return false;
-}
-
-
 /**
  * Is this variable a simple numeric variable?
- * This is asked for example by the model monitor that only wants to monitor simple
- * numeric variable because all others (e.g. trees and vectors/matrices) cannot be read
- * by Tracer. 
+ * This is asked for example by the model monitor that only wants to monitor simple numeric variable 
+ * because all others (e.g. trees and vectors/matrices) cannot be read by Tracer.
  */
 bool DagNode::isSimpleNumeric( void ) const 
 {
@@ -447,10 +471,22 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
     
     size_t currentLength = indent + 2;
     std::ostringstream s;
+    
+    // create my own copy of the pointers to the children
+    std::set<DagNode*> printableChildren = children;
+
+    // replace the children that should not be printed
+    if ( verbose == false )
+    {
+        
+        printableChildren.clear();
+        getPrintableChildren( printableChildren );
+        
+    }
 
     std::set<DagNode*>::const_iterator it;
     size_t i = 0;
-    for ( i = 0, it = children.begin(); it != children.end(); ++it, ++i )
+    for ( i = 0, it = printableChildren.begin(); it != printableChildren.end(); ++it, ++i )
     {
         std::ostringstream s;
         if ( (*it)->getName() == "" )
@@ -469,7 +505,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
             }
         }
         
-        if ( children.size() - i > 1 )
+        if ( printableChildren.size() - i > 1 )
         {
             s << ", ";
         }
@@ -498,7 +534,6 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
  */
 void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool verbose ) const
 {
-    const std::set<const DagNode*>& parents = getParents();
 
     std::string pad;
     for ( size_t i = 0; i < indent; ++i )
@@ -512,11 +547,23 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
     
     size_t currentLength = indent + 2;
     std::ostringstream s;
+    
+    // create my own copy of the pointers to the children
+    std::set<const DagNode*> printableParents = getParents();
+    
+    // replace the children that should not be printed
+    if ( verbose == false )
+    {
+        
+        printableParents.clear();
+        getPrintableParents( printableParents );
+        
+    }
 
     std::set<const DagNode*>::const_iterator it;
     size_t i = 0;
 
-    for ( i = 0, it = parents.begin(); it != parents.end(); ++it, ++i )
+    for ( i = 0, it = printableParents.begin(); it != printableParents.end(); ++it, ++i )
     {
         if ( (*it)->getName() == "" )
         {
@@ -534,7 +581,7 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
             }
         }
         
-        if ( parents.size() - i > 1 )
+        if ( printableParents.size() - i > 1 )
         {
             s << ", ";
         }
@@ -660,11 +707,36 @@ void DagNode::restoreAffected(void)
 }
 
 
+void DagNode::setHidden(bool tf)
+{
+    hidden = tf;
+}
+
+
 void DagNode::setName(std::string const &n)
 {
 
     name = n;
 
+}
+
+
+void DagNode::setParentNamePrefix(const std::string &p)
+{
+    
+    
+    std::set<const DagNode*> parents = getParents();
+    for (std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    {
+        if ( (*it)->getName().size() > 0 && (*it)->getName()[0] == '.' )
+        {
+            DagNode *parentNode = const_cast<DagNode *>( (*it) );
+            // just insert this child
+            parentNode->setName( p + parentNode->getName() );
+            parentNode->setParentNamePrefix( parentNode->getName() );
+        }
+    }
+    
 }
 
 

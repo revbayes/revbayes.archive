@@ -4,13 +4,11 @@
 
 using namespace RevBayesCore;
 
-DirichletDistribution::DirichletDistribution(const TypedDagNode< std::vector<double> > *a) : TypedDistribution< std::vector<double> >( new std::vector<double>() ), alpha( a ) {
+DirichletDistribution::DirichletDistribution(const TypedDagNode< RbVector<double> > *a) : TypedDistribution< RbVector<double> >( new RbVector<double>() ),
+    alpha( a )
+{
     
     *value = RbStatistics::Dirichlet::rv(alpha->getValue(), *GLOBAL_RNG);
-}
-
-
-DirichletDistribution::DirichletDistribution(const DirichletDistribution &n) : TypedDistribution<std::vector<double> >( n ), alpha( n.alpha ) {
 }
 
 
@@ -48,9 +46,12 @@ std::set<const DagNode*> DirichletDistribution::getParameters( void ) const
 
 
 /** Swap a parameter of the distribution */
-void DirichletDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == alpha) {
-        alpha = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+void DirichletDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
+    
+    if (oldP == alpha)
+    {
+        alpha = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 

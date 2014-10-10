@@ -30,10 +30,11 @@ namespace RevLanguage {
         void                                    printValue(std::ostream& o) const;                      //!< Print info about object
 
         // Regular functions
-        RevPtr<Variable>                        evaluateContent(Environment& env);                      //!< Get semantic value
+        RevPtr<Variable>                        evaluateContent(Environment& env, bool dynamic=false);  //!< Get semantic value
         bool                                    isConstExpression(void) const;                          //!< Is the expression constant?
 
     protected:
+        
         RevObject*                              value;                                                  //!< The constant value
     
     };

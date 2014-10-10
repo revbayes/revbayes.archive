@@ -77,8 +77,8 @@ template <typename valType>
 RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rep<valType>::execute( void )
 {
     
-    typename valType::valueType v   = static_cast<const valType &>( args[1].getVariable()->getRevObject() ).getValue();
-    int                         n   = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+    typename valType::valueType v   = static_cast<const valType &>( args[0].getVariable()->getRevObject() ).getValue();
+    int                         n   = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
     
     ModelVector<valType> *rep = new ModelVector<valType>();
     for ( int i=0; i<n; ++i )

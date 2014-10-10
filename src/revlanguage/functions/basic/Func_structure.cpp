@@ -43,11 +43,11 @@ RevPtr<Variable> Func_structure::execute( void )
     {
         o << "_variable     = " << args[0].getVariable()->getName() << std::endl;
     }
-    if ( args[0].getVariable()->isControlVar() && verbose == true )
+    if ( args[0].getVariable()->isWorkspaceVariable() && verbose == true )
     {
-        o << "_varType      = control" << std::endl;
+        o << "_varType      = workspace (control)" << std::endl;
     }
-    else if ( args[0].getVariable()->isReferenceVar() && verbose == true  )
+    else if ( args[0].getVariable()->isReferenceVariable() && verbose == true  )
     {
         o << "_varType      = reference" << std::endl;
         o << "_refVar       = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;

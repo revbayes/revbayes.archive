@@ -25,8 +25,35 @@ namespace RevLanguage {
     class AbstractModelObject : public RevObject {
     
     public:
+        
         virtual                                ~AbstractModelObject(void) {}                                                          //!< Virtual destructor
+        
+        std::string                             getGuiVariableName(void) { return guiVariableName; }
+        std::string                             getGuiLatexSymbol(void) { return guiLatexSymbol; }
+        bool                                    isModelObject(void) const;
+        void                                    setGuiVariableName(std::string s) { guiVariableName = s; }
+        void                                    setGuiLatexSymbol(std::string s) { guiLatexSymbol = s; }
 
+        // pure virtual methods
+        virtual RevObject*                      cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const = 0;  //!< Clone the model DAG connected to this node
+        virtual RevBayesCore::DagNode*          getDagNode(void) const = 0;                                                     //!< Get the internal DAG node
+//        bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
+//        bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
+//        void                                    makeConstantValue(void);                                                    //!< Convert to constant object
+//        void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert to conversion object
+//        ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
+//        void                                    makeUserFunctionValue(UserFunction* fxn);                                   //!< Convert to user-defined Rev function object
+//        virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
+//        void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
+        virtual void                            setDagNode(RevBayesCore::DagNode *newNode) = 0;                                 //!< Set or replace the internal dag node (and keep me)
+        virtual void                            setName(const std::string &n) = 0;                                              //!< Set the name of the variable (if applicable)
+        virtual void                            replaceVariable(RevObject *newVar) = 0;                                         //!< Replace the internal DAG node (and prepare to replace me...)
+        
+        
+     private:
+        
+        std::string                             guiVariableName;
+        std::string                             guiLatexSymbol;
 
     };
     

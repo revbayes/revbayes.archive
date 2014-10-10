@@ -1,8 +1,7 @@
 #ifndef SyntaxStochasticAssignment_H
 #define SyntaxStochasticAssignment_H
 
-#include "SyntaxElement.h"
-#include "SyntaxVariable.h"
+#include "SyntaxAssignment.h"
 
 #include <iostream>
 #include <list>
@@ -30,31 +29,21 @@ namespace RevLanguage {
      * from the distribution, and it is inserted into the variable
      * resulting from evaluation of the left-hand side expression.
      */
-    class SyntaxStochasticAssignment : public SyntaxElement {
+    class SyntaxStochasticAssignment : public SyntaxAssignment {
         
     public:
         SyntaxStochasticAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                                 //!< Basic constructor
-        SyntaxStochasticAssignment(const SyntaxStochasticAssignment& x);                                            //!< Copy constructor
         
 	    virtual                        ~SyntaxStochasticAssignment();                                               //!< Destructor
         
-        // Assignment operator
-        SyntaxStochasticAssignment&     operator=(const SyntaxStochasticAssignment& x);                             //!< Assignment operator
-        
         // Basic utility functions
         SyntaxStochasticAssignment*     clone() const;                                                              //!< Clone object
-        bool                            isAssignment(void) const;                                                   //!< Is this an assignment statement?
-        void                            printValue(std::ostream& o) const;                                          //!< Print info about object
-        
-        // Regular functions
-        RevPtr<Variable>                evaluateContent(Environment& env);                                          //!< Get semantic value
-        bool                            isFunctionSafe(const Environment&       env,
-                                                       std::set<std::string>&   localVars) const;                   //!< Is this element safe in a function?
         
     protected:
-        SyntaxElement*                  lhsExpression;                                                              //!< The lhs expression
-        SyntaxElement*                  rhsExpression;                                                              //!< The rhs expression
         
+        void                            assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);                       //!< The assignment operation.
+        bool                            isDynamic(void);                                                            //!< Should the rhs be evaluated dynamically?
+
     };
     
 }

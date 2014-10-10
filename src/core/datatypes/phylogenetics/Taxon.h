@@ -27,6 +27,7 @@ namespace RevBayesCore {
         bool                                operator==(const Taxon &t) const;           //!< Equals operators
         bool                                operator!=(const Taxon &t) const;           //!< Not-quals operators
         bool                                operator<(const Taxon &t) const;            //!< Less-than operators
+        bool                                operator<=(const Taxon &t) const;           //!< Less-than operators
         
         // public methods
         const TimeAndDate&                  getDate(void) const;                        //!< Get the date info for this taxon.

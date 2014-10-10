@@ -72,30 +72,13 @@ const TypeSpec& RateMap::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RateMap::getMethods( void ) const
+/** Initialize the member methods for this class */
+void RateMap::initializeMethods( void ) const
 {
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
     
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
+    // Insert inherited methods
+    ModelObject<RevBayesCore::RateMap>::initializeMethods();
     
-    return myMethods;
-}
-
-
-/** Make the member methods for this class */
-MethodTable RateMap::makeMethods( void ) const
-{
-    MethodTable methods = MethodTable();
-
     // add method for call "x.nChars()" as a function
     ArgumentRules* nCharsArgRules = new ArgumentRules();
     methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
@@ -104,10 +87,6 @@ MethodTable RateMap::makeMethods( void ) const
     ArgumentRules* nStatesArgRules = new ArgumentRules();
     methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::RateMap>::makeMethods() );
-    
-    return methods;
 }
 
 

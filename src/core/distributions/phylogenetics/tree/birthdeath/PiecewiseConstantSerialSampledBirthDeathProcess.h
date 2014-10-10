@@ -2,6 +2,7 @@
 #define PiecewiseConstantSerialSampledBirthDeathProcess_H
 
 #include "AbstractBirthDeathProcess.h"
+#include "RbVector.h"
 
 #include <vector>
 #include <set>
@@ -33,10 +34,10 @@ namespace RevBayesCore {
         
     public:
         PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
-                                                        const TypedDagNode<std::vector<double> > *s, const TypedDagNode<std::vector<double> > *st, 
-                                                        const TypedDagNode<std::vector<double> > *e, const TypedDagNode<std::vector<double> > *et, 
-                                                        const TypedDagNode<std::vector<double> > *p, const TypedDagNode<std::vector<double> > *pt, 
-                                                        const TypedDagNode<std::vector<double> > *r, const TypedDagNode<std::vector<double> > *rt,  
+                                                        const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
+                                                        const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
+                                                        const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
+                                                        const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
                                                         double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);        //!< Constructor
         
         // public member functions
@@ -60,14 +61,14 @@ namespace RevBayesCore {
         int                                                 survivors(double t) const;                                                                          //!< Number of species alive at time t.
         
         // members
-        const TypedDagNode<std::vector<double> >*           lambda;                                                                                             //!< The speciation rates.
-        const TypedDagNode<std::vector<double> >*           lambdaTimes;                                                                                        //!< The time of the speciation rate changes.
-        const TypedDagNode<std::vector<double> >*           mu;                                                                                                 //!< The extinction rates.
-        const TypedDagNode<std::vector<double> >*           muTimes;                                                                                            //!< The times of the extinction rate changes.
-        const TypedDagNode<std::vector<double> >*           psi;                                                                                                //!< The (fossil) sampling rates.
-        const TypedDagNode<std::vector<double> >*           psiTimes;                                                                                           //!< The times of the (fossil) sampling rate changes.
-        const TypedDagNode<std::vector<double> >*           rho;                                                                                                //!< The instantaneous sampling probability.
-        const TypedDagNode<std::vector<double> >*           rhoTimes;                                                                                           //!< The times of the instantaneous sampling events.
+        const TypedDagNode<RbVector<double> >*              lambda;                                                                                             //!< The speciation rates.
+        const TypedDagNode<RbVector<double> >*              lambdaTimes;                                                                                        //!< The time of the speciation rate changes.
+        const TypedDagNode<RbVector<double> >*              mu;                                                                                                 //!< The extinction rates.
+        const TypedDagNode<RbVector<double> >*              muTimes;                                                                                            //!< The times of the extinction rate changes.
+        const TypedDagNode<RbVector<double> >*              psi;                                                                                                //!< The (fossil) sampling rates.
+        const TypedDagNode<RbVector<double> >*              psiTimes;                                                                                           //!< The times of the (fossil) sampling rate changes.
+        const TypedDagNode<RbVector<double> >*              rho;                                                                                                //!< The instantaneous sampling probability.
+        const TypedDagNode<RbVector<double> >*              rhoTimes;                                                                                           //!< The times of the instantaneous sampling events.
         double                                              timeSinceLastSample;
         
         mutable std::vector<double>                         rateChangeTimes;

@@ -218,11 +218,11 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                     
                     if (this->dagNode->getValue().isHomologyEstablished() == true)
                     {
-                        numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
+                        numChar->push_back( int(this->dagNode->getValue().getNumberOfIncludedCharacters()) );
                     }
                     else
                     {
-                        numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
+                        numChar->push_back( int(this->dagNode->getValue().getNumberOfIncludedCharacters(i)) );
                     }
                     
                 }
@@ -448,32 +448,15 @@ const TypeSpec& AbstractCharacterData::getTypeSpec(void) const {
 }
 
 
-/* Get method specifications */
-const MethodTable& AbstractCharacterData::getMethods(void) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( methodsSet == false )
-    {
-        // Make methods
-        myMethods = makeMethods();
-        
-        // Set flag
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /**
  * We make the methods that belong to this abstract class here, to
  * serve derived classes.
  */
-MethodTable AbstractCharacterData::makeMethods( void ) const
+void AbstractCharacterData::initializeMethods( void ) const
 {
-    MethodTable methods;
+    
+    // Insert inherited methods
+    ModelObject<RevBayesCore::AbstractCharacterData>::initializeMethods();
     
     ArgumentRules* ncharArgRules               = new ArgumentRules();
     ArgumentRules* ncharArgRules2              = new ArgumentRules();
@@ -553,11 +536,7 @@ MethodTable AbstractCharacterData::makeMethods( void ) const
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-        
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::AbstractCharacterData>::makeMethods() );
 
-    return methods;
 }
 
 

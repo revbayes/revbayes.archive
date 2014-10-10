@@ -31,16 +31,22 @@ using namespace RevLanguage;
 /** Default constructor */
 RlBoolean::RlBoolean(void) : ModelObject<bool>() {
 
+    setGuiVariableName("Boolean");
+    setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
 RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<bool> *v) : ModelObject<bool>( v ) {
     
+    setGuiVariableName("Boolean");
+    setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
 RlBoolean::RlBoolean(bool v) : ModelObject<bool>( new bool(v) ) {
 
+    setGuiVariableName("Boolean");
+    setGuiLatexSymbol("B");
 }
 
 
@@ -85,25 +91,6 @@ const TypeSpec& RlBoolean::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RlBoolean::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
 }
 
 

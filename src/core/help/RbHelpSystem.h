@@ -36,9 +36,9 @@ namespace RevBayesCore {
         }
         
     private:
-        RbHelpSystem(void);                                                                     //!< Default constructor
-        //    Help(const Help&); //!< Copy constructor (hidden away as this is a singleton class)
-        //    Help& operator=(const Help&); //!< Assignment operator (hidden away as this is a singleton class)
+        RbHelpSystem(void);                                                                                                 //!< Default constructor
+        RbHelpSystem(const RbHelpSystem&);                                                                                  //!< Copy constructor (hidden away as this is a singleton class)
+        RbHelpSystem&                               operator=(const RbHelpSystem&);                                         //!< Assignment operator (hidden away as this is a singleton class)
         
         void                                        initializeHelp(const std::string &helpDir);                             //!< Initialize the help from an XML file
         

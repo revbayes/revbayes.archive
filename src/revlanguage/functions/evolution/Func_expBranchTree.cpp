@@ -12,6 +12,7 @@
 #include "Integer.h"
 #include "MatrixReal.h"
 #include "ModelVector.h"
+#include "Natural.h"
 #include "RealPos.h"
 #include "RlMultivariateRealNodeValTree.h"
 #include "RlRealNodeValTree.h"
@@ -126,7 +127,7 @@ RevPtr<Variable> Func_expBranchTree::execute() {
     
     RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, mvprocess, uniprocess, offset, traitindex );
 
-    DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
+    DeterministicNode< RevBayesCore::RbVector<double> >* dag = new DeterministicNode< RevBayesCore::RbVector<double> >("", result, this->clone());
     
     ModelVector<RealPos>* wrappedresult = new ModelVector<RealPos>(dag);
 

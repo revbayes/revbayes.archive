@@ -5,8 +5,8 @@ using namespace RevBayesCore;
 
 
 /** Standard constructor from appropriately typed DAG node */
-SimplexFromVectorFunction::SimplexFromVectorFunction( const TypedDagNode< std::vector<double> >* vec ) :
-    TypedFunction< std::vector<double> >( new std::vector<double>() ),
+SimplexFromVectorFunction::SimplexFromVectorFunction( const TypedDagNode< RbVector<double> >* vec ) :
+    TypedFunction< RbVector<double> >( new RbVector<double>() ),
     realPosVector( vec )
 {
     // add the vector parameter as a parent
@@ -19,7 +19,7 @@ SimplexFromVectorFunction::SimplexFromVectorFunction( const TypedDagNode< std::v
 
 /** Copy constructor. Note that parameter pointers are copied automatically. */
 SimplexFromVectorFunction::SimplexFromVectorFunction( const SimplexFromVectorFunction& f ) :
-    TypedFunction< std::vector<double> >( f ),
+    TypedFunction< RbVector<double> >( f ),
     realPosVector( f.realPosVector )
 {
     update();
@@ -63,6 +63,6 @@ void SimplexFromVectorFunction::update( void )
 void SimplexFromVectorFunction::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if ( oldP == realPosVector )
-        realPosVector = static_cast< const TypedDagNode< std::vector<double> >* >( newP );
+        realPosVector = static_cast< const TypedDagNode< RbVector<double> >* >( newP );
 }
 

@@ -37,7 +37,7 @@ namespace RevBayesCore {
         virtual const AbstractTaxonData&            operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
         
         // methods of the Cloneable interface
-        AbstractCharacterData*                      clone(void) const = 0;
+        virtual AbstractDiscreteCharacterData*      clone(void) const = 0;
         
         // Container functions
         virtual void                                clear(void) = 0;

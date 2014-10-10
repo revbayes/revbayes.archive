@@ -23,11 +23,11 @@ Func_powerVector* Func_powerVector::clone( void ) const {
 
 RevPtr<Variable> Func_powerVector::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* b = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* b = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* e = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::PowerVectorFunction* f = new RevBayesCore::PowerVectorFunction( b, e );
     
-    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", f, this->clone());
+    DeterministicNode<RevBayesCore::RbVector<double> > *detNode = new DeterministicNode<RevBayesCore::RbVector<double> >("", f, this->clone());
     
     ModelVector<RealPos>* value = new ModelVector<RealPos>( detNode );
     

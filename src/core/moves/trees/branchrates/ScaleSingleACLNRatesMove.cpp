@@ -11,7 +11,10 @@
 using namespace RevBayesCore;
 
 
-ScaleSingleACLNRatesMove::ScaleSingleACLNRatesMove(StochasticNode<std::vector<double> >* v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
+ScaleSingleACLNRatesMove::ScaleSingleACLNRatesMove(StochasticNode<RevBayesCore::RbVector<double> >* v, double l, bool t, double w) : SimpleMove( v, w, t ),
+    variable(v),
+    lambda( l )
+{
 
 }
 
@@ -24,7 +27,8 @@ ScaleSingleACLNRatesMove* ScaleSingleACLNRatesMove::clone( void ) const {
 
 
 
-const std::string& ScaleSingleACLNRatesMove::getMoveName( void ) const {
+const std::string& ScaleSingleACLNRatesMove::getMoveName( void ) const
+{
     static std::string name = "ScaleSingleBranchRateACLNMove";
     
     return name;
@@ -36,7 +40,7 @@ double ScaleSingleACLNRatesMove::performSimpleMove( void ) {
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 	
-    std::vector<double>& v = variable->getValue();
+    RevBayesCore::RbVector<double>& v = variable->getValue();
 
 	index = int(rng->uniform01() * v.size());
 	
@@ -77,7 +81,7 @@ void ScaleSingleACLNRatesMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
     
 }
 

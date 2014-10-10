@@ -34,11 +34,12 @@ Func_normalize* Func_normalize::clone( void ) const {
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 RevPtr<Variable> Func_normalize::execute( void ) {
     
-    const RevBayesCore::TypedDagNode< std::vector<double> > *params = static_cast< ModelVector<RealPos> & >( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> > *params = static_cast< ModelVector<RealPos> & >( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode< double > *sum = static_cast< RealPos& >( args[1].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( params );
+    RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( params, sum );
     
-    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
+    DeterministicNode< RevBayesCore::RbVector<double> > *detNode = new DeterministicNode< RevBayesCore::RbVector<double> >("", func, this->clone());
 
     ModelVector<RealPos> *theNormalizedVector = new ModelVector<RealPos>( detNode );
     
@@ -52,9 +53,11 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
         argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "sum", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         rulesSet = true;
     }
     

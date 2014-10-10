@@ -78,12 +78,11 @@ using namespace RevLanguage;
  */
 template<typename rlType>
 ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variable>& arg, const TypeSpec& ts ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    argument( arg ),
-    convertedObject( NULL ),
-    typeSpec( ts )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+argument( arg ),
+convertedObject( NULL ),
+typeSpec( ts )
 {
-    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Add us as a child to the argument DAG node
@@ -99,12 +98,11 @@ ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variabl
  */
 template<typename rlType>
 ConverterNode<rlType>::ConverterNode( const ConverterNode<rlType>& n ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    argument( n.argument ),
-    convertedObject( NULL ),
-    typeSpec( n.typeSpec )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+argument( n.argument ),
+convertedObject( NULL ),
+typeSpec( n.typeSpec )
 {
-    this->hidden = true;
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Add us as a child to the argument DAG node
@@ -324,7 +322,7 @@ void ConverterNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In keepMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
- 
+    
     // Pass the call on
     this->keepAffected();
 }
@@ -377,7 +375,7 @@ void ConverterNode<rlType>::printStructureInfo( std::ostream& o, bool verbose ) 
 template<typename rlType>
 void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
-
+    
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In restoreMe of Converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
@@ -400,7 +398,7 @@ void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 template<typename rlType>
 void ConverterNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-
+    
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In touchMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif

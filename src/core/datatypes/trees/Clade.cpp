@@ -76,6 +76,15 @@ bool Clade::operator<(const Clade &c) const
 }
 
 
+/**
+ * Less than operator so that we can sort the clades.
+ */
+bool Clade::operator<=(const Clade &c) const
+{
+    return operator<( c ) || operator==( c );
+}
+
+
 
 /**
  * Get the const-iterator to the first taxon name.

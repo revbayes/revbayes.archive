@@ -2,6 +2,9 @@
 #define RbHelpParser_H
 
 #include "RbHelpFunction.h"
+#include "RbHelpType.h"
+
+#include "pugixml.hpp"
 
 #include <string>
 #include <vector>
@@ -24,9 +27,16 @@ namespace RevBayesCore {
         
     public:
         
+        enum HelpEntryType { DISTRIBUTION, FUNCTION, MONITOR, MOVE, TYPE };
+
         RbHelpFunction                      parseHelpFunction(const std::string &fn);
+        RbHelpType                          parseHelpType(const std::string &fn);
+        HelpEntryType                       testHelpEntry(const std::string &fn);
                 
     private:
+
+        RbHelpFunction                      parseInternalHelpFunction(const pugi::xml_document &doc, const std::string &fn);
+
         
     };
     
