@@ -95,7 +95,7 @@ RevPtr<Variable> Func_fnNormalizedQuantile<valType>::execute( void ) {
 		gRates.push_back( tmp );
     }
     RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *discRates = new RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >( "", new RevBayesCore::VectorFunction<double>(gRates) );
-    RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( discRates );
+    RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( discRates, new RevBayesCore::ConstantNode<double>("", new double(1.0) ) );
     
     DeterministicNode< RevBayesCore::RbVector<double> > *detNode = new DeterministicNode< RevBayesCore::RbVector<double> >("", func, this->clone());
     
