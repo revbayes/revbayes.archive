@@ -52,8 +52,7 @@ namespace RevLanguage {
 
         // Member object functions
         virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args);      //!< Map member methods to internal methods
-        virtual const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
-        virtual MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
+        virtual void                                initializeMethods(void) const;                                                  //!< Initialize member methods
         
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
@@ -292,27 +291,6 @@ rlType* ModelVector<rlType>::getElement(size_t idx) const
 }
 
 
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-template <typename rlType>
-const MethodTable& ModelVector<rlType>::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = this->makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get the type spec (dynamic version) */
 template <typename rlType>
 const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
@@ -357,23 +335,20 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
 
 /** Make methods for this class */
 template <typename rlType>
-MethodTable ModelVector<rlType>::makeMethods(void) const
+void ModelVector<rlType>::initializeMethods(void) const
 {
-    MethodTable methods = MethodTable();
+    // Insert inherited methods
+    ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::initializeMethods();
     
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
     
     ArgumentRules* sortArgRules = new ArgumentRules();
-    methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::makeMethods() );
-    
-    return methods;
 }
 
 

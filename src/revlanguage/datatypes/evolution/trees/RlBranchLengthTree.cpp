@@ -101,25 +101,6 @@ const TypeSpec& BranchLengthTree::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& BranchLengthTree::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& BranchLengthTree::getTypeSpec( void ) const {
     
@@ -130,9 +111,11 @@ const TypeSpec& BranchLengthTree::getTypeSpec( void ) const {
 
 
 /** Make member methods for this class */
-RevLanguage::MethodTable BranchLengthTree::makeMethods( void ) const
+void BranchLengthTree::initializeMethods( void ) const
 {
-    MethodTable methods = MethodTable();
+
+    // Insert inherited methods
+    ModelObject<RevBayesCore::BranchLengthTree>::initializeMethods();
     
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
@@ -143,10 +126,6 @@ RevLanguage::MethodTable BranchLengthTree::makeMethods( void ) const
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::BranchLengthTree>::makeMethods() );
-
-    return methods;
 }
 
 

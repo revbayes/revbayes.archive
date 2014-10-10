@@ -46,13 +46,11 @@ namespace RevLanguage {
         // Utility functions you might want to override
         virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual RevPtr<Variable>                getMember(const std::string& name) const;                                   //!< Get member variable
-        virtual const MethodTable&              getMethods(void) const = 0;                                                 //!< Get member methods
-        virtual MethodTable                     makeMethods(void) const;                                                    //!< Make member methods
+        virtual void                            initializeMethods(void) const;                                              //!< Initialize member methods
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
         RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
-        bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue(void);                                                    //!< Convert to constant object
@@ -369,14 +367,6 @@ RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode
 }
 
 
-/** Make sure users understand we have an internal DAG node */
-template <typename rbType>
-bool RevLanguage::ModelObject<rbType>::hasDagNode( void ) const {
-    
-    return true;
-}
-
-
 /**
  * Has this object a member with the given name?
  *
@@ -506,37 +496,31 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
  * for the derived class in its argument rules, if necessary. See the setValue
  * function for an example.
  *
- * This mechanism makes it impossible for derived classes to construct their
- * static method tables from the call to our getMethods(), which is therefore
- * declared abstract.
  */
 template <typename rbType>
-RevLanguage::MethodTable RevLanguage::ModelObject<rbType>::makeMethods(void) const
+void RevLanguage::ModelObject<rbType>::initializeMethods(void) const
 {
-    MethodTable methods;
+    // add the inherited rules
+    AbstractModelObject::initializeMethods();
     
     if ( this->dagNode->isStochastic() )
     {
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
+        this->methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
     
         ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
+        this->methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
     
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+        this->methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
     
         ArgumentRules* unclampArgRules = new ArgumentRules();
-        methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
+        this->methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
    
     }
     
-    // add the inherited rules
-    methods.insertInheritedMethods( RevObject::makeMethods() );
-    
-    return methods;
 }
 
 

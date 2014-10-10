@@ -96,22 +96,15 @@ const MemberRules& PathSampler::getMemberRules(void) const {
 
 
 /* Get method specifications */
-const MethodTable& PathSampler::getMethods(void) const {
+void PathSampler::initializeMethods(void) const
+{
     
-    static MethodTable methods = MethodTable();
-    static bool          methodsSet = false;
+    // necessary call for proper inheritance
+    RevObject::initializeMethods();
     
-    if ( methodsSet == false )
-    {
-        ArgumentRules* marginalArgRules = new ArgumentRules();
-        methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
+    ArgumentRules* marginalArgRules = new ArgumentRules();
+    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
     
-    return methods;
 }
 
 /** Get type spec */

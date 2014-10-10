@@ -38,7 +38,7 @@ RevPtr<Variable> UserFunction::execute( void )
 
     RevObject* retVal = Workspace::userWorkspace().makeNewDefaultObject( getReturnType().getType() );
 
-    if ( retVal->hasDagNode() )
+    if ( retVal->isModelObject() )
     {
         retVal->makeUserFunctionValue( this->clone() );
 
@@ -119,7 +119,7 @@ std::set<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
 
     for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it )
     {
-        if ( (*it).getVariable()->getRevObject().hasDagNode() )
+        if ( (*it).getVariable()->getRevObject().isModelObject() )
             params.insert( (*it).getVariable()->getRevObject().getDagNode() );
     }
 

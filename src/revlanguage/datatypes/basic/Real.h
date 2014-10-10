@@ -71,9 +71,6 @@ namespace RevLanguage {
         virtual bool                    isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
-        // Member methods
-        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
-    
     };
     
 }

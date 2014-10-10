@@ -19,6 +19,7 @@
 
 #include "Cloneable.h"
 #include "DagNode.h"
+#include "MethodTable.h"
 #include "RevPtr.h"
 
 #include <ostream>
@@ -31,7 +32,6 @@ namespace RevLanguage {
     class Argument;
     class ArgumentRule;
     class ArgumentRules;
-    class MethodTable;
     class TypeSpec;
     class UserFunction;
     class UserFunctionCall;
@@ -69,8 +69,12 @@ namespace RevLanguage {
         virtual RevObject*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;      //!< Clone the model DAG connected to this node
         virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
         virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
         virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
-        virtual bool                        hasDagNode(void) const;                                                                         //!< Do I have an internal value node?
+        virtual RevPtr<Variable>            getMember(const std::string& name) const;                                                       //!< Get member variable
+        virtual const MemberRules&          getMemberRules(void) const;                                                                     //!< Get member rules
+        virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
+        virtual void                        initializeMethods(void) const;                                                                  //!< Initialize member methods
         virtual bool                        isAbstract(void) const;                                                                         //!< Is this an abstract type/object?
         virtual bool                        isAssignable(void) const;                                                                       //!< Is object or upstream members assignable?
         virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
@@ -83,21 +87,14 @@ namespace RevLanguage {
         virtual void                        printMemberInfo(std::ostream& o, bool verbose=false) const;                                     //!< Print member info of language object for user
         virtual void                        printStructure(std::ostream& o, bool verbose=false) const;                                      //!< Print structure of language object for user
         virtual void                        replaceVariable(RevObject *newObj);                                                             //!< Replace the internal DAG node and prepare to replace me
+        virtual void                        setConstMember(const std::string& name, const RevPtr<const Variable> &var);                     //!< Set member variable
+        virtual void                        setMember(const std::string& name, const RevPtr<Variable> &var);                                //!< Set member variable
         virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
 
         // Basic utility functions you should not have to override
         const std::string&                  getType(void) const;                                                                            //!< Get the type as a string
         bool                                isTypeSpec(const TypeSpec& typeSpec) const;                                                     //!< Does the language type of the object fit type specification typeSpec?
-
-        // Member variable functions you may want to override (member object types)
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
-        virtual RevPtr<Variable>            getMember(const std::string& name) const;                                                       //!< Get member variable
-        virtual const MemberRules&          getMemberRules(void) const;                                                                     //!< Get member rules
-        virtual const MethodTable&          getMethods(void) const;                                                                         //!< Get member methods
-        virtual MethodTable                 makeMethods(void) const;                                                                        //!< Make member methods
-        virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
-        virtual void                        setConstMember(const std::string& name, const RevPtr<const Variable> &var);                     //!< Set member variable
-        virtual void                        setMember(const std::string& name, const RevPtr<Variable> &var);                                //!< Set member variable
+        const MethodTable&                  getMethods(void) const;                                                                         //!< Get member methods
     
     protected:
         
@@ -106,6 +103,9 @@ namespace RevLanguage {
         virtual void                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         virtual void                        setMemberVariable(const std::string& name, const RevPtr<Variable> &var);                        //!< Set member variable
     
+        // members
+        mutable MethodTable                 methods;
+        mutable bool                        methodsInitialized;
     };
     
 }

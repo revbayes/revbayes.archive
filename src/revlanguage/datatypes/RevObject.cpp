@@ -189,23 +189,20 @@ RevPtr<Variable> RevObject::getMember(const std::string& name) const
 
 
 /**
- * Get common member methods. This function is used by all
- * Rev member objects, which only use the common member
- * methods.
+ * Get common member methods. Here we
  */
 const MethodTable& RevObject::getMethods( void ) const
 {
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
     
-    if ( !methodsSet )
+    // initialize the methods if it hasn't happened yet
+    if ( methodsInitialized == false )
     {
-        myMethods = makeMethods();
+        initializeMethods();
         
-        methodsSet = true;
+        methodsInitialized = true;
     }
     
-    return myMethods;
+    return methods;
 }
 
 
@@ -235,14 +232,6 @@ RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 bool RevObject::hasMember(std::string const &name) const
 {
     
-    return false;
-}
-
-
-/** Does this object have an internal DAG node? Default implementation returns false. */
-bool RevObject::hasDagNode(void) const
-{
-
     return false;
 }
 
@@ -359,9 +348,8 @@ RevObject* RevObject::makeIndirectReference(void)
  * 1) memberNames()
  * 2) get("name")
  */
-MethodTable RevObject::makeMethods(void) const
+void RevObject::initializeMethods(void) const
 {
-    MethodTable methods = MethodTable();
     
     ArgumentRules* getMembersArgRules = new ArgumentRules();
     ArgumentRules* getMethodsArgRules = new ArgumentRules();
@@ -377,7 +365,6 @@ MethodTable RevObject::makeMethods(void) const
     getArgRules->push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
     
-    return methods;
 }
 
 

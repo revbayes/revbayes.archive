@@ -96,26 +96,18 @@ const MemberRules& Model::getMemberRules(void) const {
 }
 
 /* Get method specifications */
-const MethodTable& Model::getMethods(void) const {
+void Model::initializeMethods(void) const
+{
     
-    static MethodTable   methods    = MethodTable();
-    static bool          methodsSet = false;
+    // necessary call for proper inheritance
+    RevObject::initializeMethods();
     
-    if ( methodsSet == false )
-    {
-        
-        ArgumentRules* dotArgRules = new ArgumentRules();
-        dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
-        dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
-        methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
+    ArgumentRules* dotArgRules = new ArgumentRules();
+    dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
+    methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
     
-    return methods;
 }
 
 /** Get type spec */

@@ -62,27 +62,6 @@ const MemberRules& Move::getMemberRules(void) const {
 }
 
 
-/** Return member methods */
-const MethodTable& Move::getMethods(void) const {
-    
-    static MethodTable memberMethods;
-    static bool methodsSet = false;
-    
-    if ( !methodsSet ) {
-//        memberMethods.push_back( new ArgumentRule( "weight", false, RealPos::getClassTypeSpec() ) );
-        
-        /* Inherit methods from WorkspaceObject, put them last */
-        //const MemberRules& inheritedRules = WorkspaceObject<RevBayesCore::Move>::getMemberRules();
-        //moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
-        
-        methodsSet = true;
-    }
-
-
-    return memberMethods;
-}
-
-
 /** Set a member variable */
 void Move::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     

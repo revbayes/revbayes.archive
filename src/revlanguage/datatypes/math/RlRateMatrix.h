@@ -43,9 +43,8 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Member method functions
-        const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
-        MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
+        virtual void                        initializeMethods(void) const;                                                  //!< Make member methods
         
     };
     

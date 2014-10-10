@@ -46,10 +46,8 @@ namespace RevLanguage {
         void                                        sort(void);                                                         //!< Sort vector
         void                                        unique(void);                                                       //!< Remove consecutive duplicates
         
-        // Member methods
-        const MethodTable&                          getMethods(void) const;                                             //!< Get member methods
-
     private:
+        
         RevBayesCore::RbVector<double>*             makeNormalizedValue(const RevBayesCore::RbVector<double>& v);                  //!< Help function
         
     };

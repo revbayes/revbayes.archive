@@ -37,9 +37,6 @@ namespace RevLanguage {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
-        // Member method functions
-        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
-        
     };
     
 }
