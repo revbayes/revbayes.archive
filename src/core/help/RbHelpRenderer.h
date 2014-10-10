@@ -2,6 +2,7 @@
 #define RbHelpRenderer_H
 
 #include "RbHelpFunction.h"
+#include "RbHelpType.h"
 
 namespace RevBayesCore {
     
@@ -19,8 +20,8 @@ namespace RevBayesCore {
     public:
         
         HelpRenderer(void);
-        //        void renderTypeHelp(TypeHelpEntry typeHelp);
         std::string                 renderFunctionHelp(const RbHelpFunction &functionHelp, size_t w);
+//        std::string                 renderTypeHelp(const RbHelpType &typeHelp, size_t w);
         
         
         
