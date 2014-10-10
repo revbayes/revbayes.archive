@@ -18,8 +18,6 @@ source("RevBayes_scripts/m_BD_bears.Rev")
 ### workspace model wrapper ###
 mymodel <- model(diversification)
 
-mymodel.graph("output/m_BD_modelgraph.dot")
-
 ### set up the monitors that will output parameter values to file and screen 
 monitors[1] <- mnFile(filename="output/BD_mcmc_bears.log",printgen=10,
 						   diversification, birth_rate, turnover, death_rate)
