@@ -1,5 +1,5 @@
-#ifndef AbstractSiteHomogeneousMixtureCharEvoModel_H
-#define AbstractSiteHomogeneousMixtureCharEvoModel_H
+#ifndef AbstractPhyloCTMCSiteHomogeneous_H
+#define AbstractPhyloCTMCSiteHomogeneous_H
 
 #include "AbstractDiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
@@ -64,17 +64,17 @@ namespace RevBayesCore {
      * @since 2012-06-17, version 1.0
      */
     template<class charType, class treeType>
-    class AbstractSiteHomogeneousMixtureCharEvoModel : public TypedDistribution< AbstractDiscreteCharacterData >, public TreeChangeEventListener {
+    class AbstractPhyloCTMCSiteHomogeneous : public TypedDistribution< AbstractDiscreteCharacterData >, public TreeChangeEventListener {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites);
-        AbstractSiteHomogeneousMixtureCharEvoModel(const AbstractSiteHomogeneousMixtureCharEvoModel &n);                                                                                          //!< Copy constructor
-        virtual                                                            ~AbstractSiteHomogeneousMixtureCharEvoModel(void);                                                              //!< Virtual destructor
+        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites);
+        AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
+        virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
         
         // public member functions
         // pure virtual
-        virtual AbstractSiteHomogeneousMixtureCharEvoModel*                 clone(void) const = 0;                                                                      //!< Create an independent clone
+        virtual AbstractPhyloCTMCSiteHomogeneous*                 clone(void) const = 0;                                                                      //!< Create an independent clone
     
         // non-virtual
         double                                                              computeLnProbability(void);
@@ -196,7 +196,7 @@ namespace RevBayesCore {
 //#define USE_SCALING
 
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) :
     TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
     numNodes( t->getValue().getNumberOfNodes() ),
     numSites( nSites ),
@@ -251,7 +251,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
 
 
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const AbstractSiteHomogeneousMixtureCharEvoModel &n) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n) :
     TypedDistribution< AbstractDiscreteCharacterData >( n ),
     numNodes( n.numNodes ),
     numSites( n.numSites ),
@@ -313,7 +313,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
  * when we die. All other parameters are handled by others.
  */
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~AbstractSiteHomogeneousMixtureCharEvoModel( void ) {
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::~AbstractPhyloCTMCSiteHomogeneous( void ) {
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
     // remove myself from the tree listeners
@@ -333,15 +333,15 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~A
 
 
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>* RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::clone( void ) const 
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>* RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::clone( void ) const 
 {
     
-    return new AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>( *this );
+    return new AbstractPhyloCTMCSiteHomogeneous<charType, treeType>( *this );
 }
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::compress( void ) 
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compress( void ) 
 {
     
 //    compressed = false;
@@ -576,7 +576,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::computeLnProbability( void ) 
+double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::computeLnProbability( void ) 
 {
 	
 	// TAH Run under prior
@@ -646,7 +646,7 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex) 
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex) 
 {    
     
     // check for recomputation
@@ -687,7 +687,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n )
 {
     
     // call a recursive flagging of all node above (closer to the root) and including this node
@@ -697,7 +697,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::keepSpecialization( DagNode* affecter )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::keepSpecialization( DagNode* affecter )
 {
     
     // test
@@ -720,7 +720,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
     
     // we need to flag this node and all ancestral nodes for recomputation
     size_t index = n.getIndex();
@@ -751,7 +751,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::redrawValue( void )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawValue( void )
 {
     
     // delete the old value first
@@ -821,7 +821,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::reInitialized( void )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::reInitialized( void )
 {
     
     // we need to recompress because the tree may have changed
@@ -830,7 +830,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::rescale( size_t nodeIndex )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::rescale( size_t nodeIndex )
 {
     //
     
@@ -889,7 +889,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::resizeLikelihoodVectors( void )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeLikelihoodVectors( void )
 {
     
     // we resize the partial likelihood vectors to the new dimensions
@@ -907,7 +907,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::restoreSpecialization( DagNode* affecter )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::restoreSpecialization( DagNode* affecter )
 {
     
     // reset the flags
@@ -934,7 +934,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setValue(AbstractDiscreteCharacterData *v)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValue(AbstractDiscreteCharacterData *v)
 {
     
     // delegate to the parent class
@@ -949,7 +949,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
 {
     
     // get the children of the node
@@ -1024,7 +1024,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-const std::vector<double>& RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::getRootFrequencies( void ) const
+const std::vector<double>& RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::getRootFrequencies( void ) const
 {
     
     if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL )
@@ -1040,7 +1040,7 @@ const std::vector<double>& RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoMo
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen)
 {
     
     // first, get the rate matrix for this branch
@@ -1084,7 +1084,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< double > *r)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setClockRate(const TypedDagNode< double > *r)
 {
     
     // remove the old parameter first
@@ -1114,7 +1114,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< RbVector< double > > *r)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setClockRate(const TypedDagNode< RbVector< double > > *r)
 {
     
     // remove the old parameter first
@@ -1144,7 +1144,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setPInv(const TypedDagNode< double > *r)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setPInv(const TypedDagNode< double > *r)
 {
     
     // remove the old parameter first
@@ -1167,7 +1167,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -1195,7 +1195,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -1223,7 +1223,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f)
 {
     
     // remove the old parameter first
@@ -1254,7 +1254,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setSiteRates(const TypedDagNode< RbVector< double > > *r) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setSiteRates(const TypedDagNode< RbVector< double > > *r) {
     
     // remove the old parameter first
     if ( siteRates != NULL )
@@ -1291,7 +1291,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 /** Get the parameters of the distribution */
 template<class charType, class treeType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::getParameters( void ) const
+std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::getParameters( void ) const
 {
     std::set<const DagNode*> parameters = std::set<const DagNode*>();
     
@@ -1312,7 +1312,7 @@ std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractSiteHomogeneousMixt
 
 /** Swap a parameter of the distribution */
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == homogeneousClockRate)
@@ -1360,7 +1360,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
     bool touchAll = false;
     
