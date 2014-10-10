@@ -1,7 +1,7 @@
-#ifndef NucleotideBranchHeterogeneousCharEvoModel_H
-#define NucleotideBranchHeterogeneousCharEvoModel_H
+#ifndef PhyloCTMCSiteHomogeneousNucleotide_H
+#define PhyloCTMCSiteHomogeneousNucleotide_H
 
-#include "AbstractSiteHomogeneousMixtureCharEvoModel.h"
+#include "AbstractPhyloCTMCSiteHomogeneous.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
@@ -13,14 +13,14 @@
 namespace RevBayesCore {
     
     template<class charType, class treeType>
-    class NucleotideBranchHeterogeneousCharEvoModel : public AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType> {
+    class PhyloCTMCSiteHomogeneousNucleotide : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
         
     public:
-        NucleotideBranchHeterogeneousCharEvoModel(const TypedDagNode< treeType > *t, bool c, size_t nSites);
-        virtual                                            ~NucleotideBranchHeterogeneousCharEvoModel(void);                                                                   //!< Virtual destructor
+        PhyloCTMCSiteHomogeneousNucleotide(const TypedDagNode< treeType > *t, bool c, size_t nSites);
+        virtual                                            ~PhyloCTMCSiteHomogeneousNucleotide(void);                                                                   //!< Virtual destructor
         
         // public member functions
-        NucleotideBranchHeterogeneousCharEvoModel*          clone(void) const;                                                                          //!< Create an independent clone
+        PhyloCTMCSiteHomogeneousNucleotide*                 clone(void) const;                                                                          //!< Create an independent clone
         
     protected:
         
@@ -60,28 +60,28 @@ namespace RevBayesCore {
 #endif
 
 template<class charType, class treeType>
-RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::NucleotideBranchHeterogeneousCharEvoModel(const TypedDagNode<treeType> *t, bool c, size_t nSites) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>(  t, 4, 1, c, nSites )
+RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::PhyloCTMCSiteHomogeneousNucleotide(const TypedDagNode<treeType> *t, bool c, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, 4, 1, c, nSites )
 {
     
 }
 
 template<class charType, class treeType>
-RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::~NucleotideBranchHeterogeneousCharEvoModel( void ) {
+RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::~PhyloCTMCSiteHomogeneousNucleotide( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
     
 }
 
 
 template<class charType, class treeType>
-RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>* RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::clone( void ) const {
+RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>* RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::clone( void ) const {
     
-    return new NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>( *this );
+    return new PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>( *this );
 }
 
 
 
 template<class charType, class treeType>
-void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right) 
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right) 
 {
     
     // reset the likelihood
@@ -211,7 +211,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
 }
 
 template<class charType, class treeType>
-void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
 {
     
     // reset the likelihood
@@ -346,7 +346,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
 
 
 template<class charType, class treeType>
-void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right) 
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right) 
 {   
     
     // compute the transition probability matrix
@@ -542,7 +542,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
 
 
 template<class charType, class treeType>
-void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
 {    
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;

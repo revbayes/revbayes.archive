@@ -48,8 +48,8 @@ namespace RevLanguage {
 }
 
 
-#include "GeneralBranchHeterogeneousCharEvoModel.h"
-#include "NucleotideBranchHeterogeneousCharEvoModel.h"
+#include "PhyloCTMCSiteHomogeneous.h"
+#include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "OptionRule.h"
 #include "RateMatrix.h"
 #include "RevNullObject.h"
@@ -111,8 +111,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     
     if ( dt == "DNA" ) 
     {
-        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist =
-            new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType> *dist =
+            new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -168,7 +168,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     } 
     else if ( dt == "RNA" )
     {
-        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -222,7 +222,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     }
     else if ( dt == "AA" || dt == "Protein" )
     {
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, 20, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, 20, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -291,7 +291,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::PomoState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::PomoState, typename treeType::valueType>(tau, nChars, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState, typename treeType::valueType>(tau, nChars, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -359,7 +359,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
