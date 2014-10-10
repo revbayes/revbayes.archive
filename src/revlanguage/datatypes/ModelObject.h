@@ -515,20 +515,25 @@ RevLanguage::MethodTable RevLanguage::ModelObject<rbType>::makeMethods(void) con
 {
     MethodTable methods;
     
-    ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
+    if ( this->dagNode->isStochastic() )
+    {
+        ArgumentRules* clampArgRules = new ArgumentRules();
+        clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
+        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
     
-    ArgumentRules* redrawArgRules = new ArgumentRules();
-    methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
+        ArgumentRules* redrawArgRules = new ArgumentRules();
+        methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
     
-    ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+        ArgumentRules* setValueArgRules = new ArgumentRules();
+        setValueArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
+        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
     
-    ArgumentRules* unclampArgRules = new ArgumentRules();
-    methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
+        ArgumentRules* unclampArgRules = new ArgumentRules();
+        methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
+   
+    }
     
+    // add the inherited rules
     methods.insertInheritedMethods( RevObject::makeMethods() );
     
     return methods;
