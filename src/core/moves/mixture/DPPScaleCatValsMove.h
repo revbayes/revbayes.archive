@@ -21,6 +21,7 @@
 #include <ostream>
 
 #include "MoveOld.h"
+#include "RbVector.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -28,7 +29,7 @@ namespace RevBayesCore {
     class DPPScaleCatValsMove : public MoveOld {
     
     public:
-        DPPScaleCatValsMove(StochasticNode<std::vector<double> >* v, double l, double w);                                                                      //!< Internal constructor
+        DPPScaleCatValsMove(StochasticNode< RbVector<double> >* v, double l, double w);                                                                      //!< Internal constructor
     
         // Basic utility functions
         DPPScaleCatValsMove*									clone(void) const;                                                                  //!< Clone object
@@ -46,7 +47,7 @@ namespace RevBayesCore {
         double													getCurrentLnProbabilityForMove(void);
 		
 		double													lambda;                                                                             //!< The scaling parameter of the move  
-        StochasticNode<std::vector<double> >*                   variable;
+        StochasticNode< RbVector<double> >*                     variable;
 		double													safeExponentiation(double x);
  
     };

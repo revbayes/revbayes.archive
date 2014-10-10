@@ -31,6 +31,7 @@ namespace RevBayesCore {
         size_t                              getIndex(void);
         unsigned int                        getState(void);
         std::string                         getStateStr(void);
+        void                                setIndex(size_t i);
         void                                setState(unsigned int s);
         void                                setTime(double t);
         void                                print(void);

@@ -124,6 +124,13 @@ bool Tree::operator<(const Tree &t) const {
 }
 
 
+bool Tree::operator<=(const Tree &t) const
+{
+    
+    return operator<(t) || operator==(t);
+}
+
+
 void Tree::addBranchParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly) {
     
     getRoot().addBranchParameter(name,parameters,internalOnly);

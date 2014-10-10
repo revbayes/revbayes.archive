@@ -23,6 +23,7 @@
 #define F81RateMatrixFunction_H
 
 #include "RateMatrix_F81.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -33,8 +34,7 @@ namespace RevBayesCore {
     class F81RateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
-        F81RateMatrixFunction(const TypedDagNode<std::vector<double> > *bf);
-        F81RateMatrixFunction(const F81RateMatrixFunction &n);                                                                              //!< Copy constructor
+        F81RateMatrixFunction(const TypedDagNode< RbVector<double> > *bf);
         virtual                                            ~F81RateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -47,7 +47,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           baseFrequencies;
+        const TypedDagNode< RbVector<double> >*             baseFrequencies;
         
     };
     

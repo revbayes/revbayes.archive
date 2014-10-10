@@ -25,13 +25,12 @@
 
 namespace RevBayesCore {
     
-    class AutocorrelatedLognormalRateDistribution : public TypedDistribution< std::vector<double> > {
+    class AutocorrelatedLognormalRateDistribution : public TypedDistribution< RbVector<double> > {
         
     public:
         // constructor(s)
         AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr);
         AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv);
-        AutocorrelatedLognormalRateDistribution(const AutocorrelatedLognormalRateDistribution &n);
         
         // public member functions
         AutocorrelatedLognormalRateDistribution*                clone(void) const;                                                                      //!< Create an independent clone
@@ -45,8 +44,8 @@ namespace RevBayesCore {
         void                                                    touchSpecialization(DagNode *toucher);
         
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
+        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         // helper methods

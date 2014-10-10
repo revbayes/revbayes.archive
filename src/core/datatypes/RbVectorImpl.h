@@ -34,35 +34,43 @@ namespace RevBayesCore {
     template <class valueType, int indicator>
     // general case: T is not abstract
     // use actual objects
-    class RbVectorImpl : public Cloneable {
+    class RbVectorImpl : public Cloneable, public std::vector<valueType> {
         
     public:
-        // constructor(s)
-        RbVectorImpl() {  }
-        RbVectorImpl(size_t n) { values = std::vector<valueType>(n, valueType() ); }
-        RbVectorImpl(size_t n, const valueType &v) { for (size_t i = 0; i < n; ++i) values.push_back( v ); }
-        RbVectorImpl(const RbVectorImpl<valueType,indicator> &v) { size_t n=v.size(); for (size_t i = 0; i < n; ++i) values.push_back( v[i] ); }
-        virtual                                            ~RbVectorImpl<valueType,indicator>(void) { clear(); }
         
+        typedef typename std::vector<valueType>                     vectorType;
         typedef typename std::vector<valueType>::iterator           iterator;
         typedef typename std::vector<valueType>::const_iterator     const_iterator;
 
+        // constructor(s)
+        RbVectorImpl() {  }
+        RbVectorImpl(size_t n) { for (size_t i = 0; i < n; ++i) this->push_back( valueType() ); }
+        RbVectorImpl(size_t n, const valueType &v) { for (size_t i = 0; i < n; ++i) this->push_back( v ); }
+        RbVectorImpl(const vectorType &v) { size_t n=v.size(); for (size_t i = 0; i < n; ++i) this->push_back( v[i] ); }
+        RbVectorImpl(const RbVectorImpl<valueType,indicator> &v) { size_t n=v.size(); for (size_t i = 0; i < n; ++i) this->push_back( v[i] ); }
+        virtual                                            ~RbVectorImpl<valueType,indicator>(void) { }
+        
         
         // public member functions
         virtual RbVectorImpl<valueType, indicator>*         clone(void) const = 0;                                                                      //!< Create an independent clone
         
         // public (stl-like) vector functions
-        valueType&                                          operator[](size_t i) { return values[i]; }
-        const valueType&                                    operator[](size_t i) const { return values[i]; }
-        void                                                clear(void) { values.clear(); }
-        void                                                insert(size_t i, const valueType &v) { values[i] = v; }
-        void                                                push_back(const valueType &v) { values.push_back( v ); }
-        virtual size_t                                      size(void) const = 0;
+        RbIterator<valueType>                               begin(void) { return RbIterator<valueType>( this->std::vector<valueType>::begin() ); }
+        RbConstIterator<valueType>                          begin(void) const { return RbConstIterator<valueType>( this->std::vector<valueType>::begin() ); }
+        RbIterator<valueType>                               end(void) { return RbIterator<valueType>( this->std::vector<valueType>::end() ); }
+        RbConstIterator<valueType>                          end(void) const { return RbConstIterator<valueType>( this->std::vector<valueType>::end() ); }
+
+//        valueType&                                          operator[](size_t i) { return values[i]; }
+//        const valueType&                                    operator[](size_t i) const { return values[i]; }
+//        void                                                clear(void) { values.clear(); }
+//        void                                                insert(size_t i, const valueType &v) { values[i] = v; }
+//        void                                                push_back(const valueType &v) { values.push_back( v ); }
+//        virtual size_t                                      size(void) const = 0;
 
     protected:
         
         // private members
-        std::vector<valueType>                              values;
+//        std::vector<valueType>                              values;
     };
     
     template <typename valueType>
@@ -71,15 +79,19 @@ namespace RevBayesCore {
     class RbVectorImpl<valueType,1> : public Cloneable {
         
     public:
+
+        typedef typename std::vector<valueType*>                     vectorType;
+        typedef typename std::vector<valueType*>::iterator           iterator;
+        typedef typename std::vector<valueType*>::const_iterator     const_iterator;
+
         // constructor(s)
         RbVectorImpl() {  }
         RbVectorImpl(size_t n) { values = std::vector<valueType*>(n, NULL); }
         RbVectorImpl(size_t n, const valueType &v) { for (size_t i = 0; i < n; ++i) values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v ) ); }
+        RbVectorImpl(const vectorType &v) { size_t n=v.size(); for (size_t i = 0; i < n; ++i) values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[i] ) ); }
         RbVectorImpl(const RbVectorImpl<valueType,1> &v) : values() { size_t n=v.size(); for (size_t i = 0; i < n; ++i) values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[i] ) ); }
         virtual                                            ~RbVectorImpl(void) { clear(); }
         
-        typedef typename std::vector<valueType*>::iterator           iterator;
-        typedef typename std::vector<valueType*>::const_iterator     const_iterator;
 
         
         // public member functions
@@ -88,6 +100,11 @@ namespace RevBayesCore {
         // public (stl-like) vector functions
         valueType&                                          operator[](size_t i) { return *values[i]; }
         const valueType&                                    operator[](size_t i) const { return *values[i]; }
+        bool                                                operator==(const RbVectorImpl<valueType,1>& x) const { return values == x.values; }                              //!< Equals operator
+        bool                                                operator!=(const RbVectorImpl<valueType,1>& x) const { return !operator==(x); }                              //!< Not-Equals operator
+        bool                                                operator<(const RbVectorImpl<valueType,1>& x) const { return values < x.values; }
+        bool                                                operator<=(const RbVectorImpl<valueType,1>& x) const { return operator<(x) || operator==(x); }
+
         void                                                clear(void) {
             size_t n = values.size();
             for (size_t i = 0; i < n; ++i)
@@ -100,8 +117,12 @@ namespace RevBayesCore {
         }
         void                                                insert(size_t i, const valueType &v) { delete values[i]; values[i] = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v ); }
         void                                                push_back(const valueType &v) { values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v ) ); }
-        virtual size_t                                      size(void) const = 0;
-        
+        RbIterator<valueType>                               begin(void) { return RbIterator<valueType>( this->values.begin() ); }
+        RbConstIterator<valueType>                          begin(void) const { return RbConstIterator<valueType>( this->values.begin() ); }
+        RbIterator<valueType>                               end(void) { return RbIterator<valueType>( this->values.end() ); }
+        RbConstIterator<valueType>                          end(void) const { return RbConstIterator<valueType>( this->values.end() ); }
+        size_t                                              size(void) const { return this->values.size(); }
+
     protected:
         
         // private members

@@ -67,30 +67,30 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
         ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     }
     // speciation rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* st    = static_cast<const ModelVector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* st    = static_cast<const ModelVector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
     // extinction rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* e     = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* e     = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
     // extinction rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* et    = static_cast<const ModelVector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* et    = static_cast<const ModelVector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
     // sampling rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* p     = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p     = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
     // sampling rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
     // sampling probabilities
-    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* r     = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
     // sampling times
-    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<Probability> &>( rhoTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt    = static_cast<const ModelVector<Probability> &>( rhoTimes->getRevObject() ).getDagNode();
     // condition
     const std::string& cond                                 = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names                   = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const RevBayesCore::RbVector<std::string> &names                   = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c               = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<RevBayesCore::Clade> &c               = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     // time between now and most recent sample, no need for the fossilized birth-death process
 
-    std::vector<RevBayesCore::Taxon> taxa;
+    RevBayesCore::RbVector<RevBayesCore::Taxon> taxa;
     for (size_t i = 0; i < names.size(); ++i) 
     {
         taxa.push_back( RevBayesCore::Taxon( names[i] ) );
@@ -150,11 +150,11 @@ const MemberRules& Dist_skyFossilBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge"     , RealPos::getClassTypeSpec()                 , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"      , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambdaTimes" , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"          , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"          , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( RevBayesCore::RbVector<double>(0.0) ) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"     , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"         , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"         , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( RevBayesCore::RbVector<double>(0.0) ) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"    , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>(std::vector<double>(0.0)) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>( RevBayesCore::RbVector<double>(0.0)) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"    , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>() ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );

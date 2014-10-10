@@ -70,7 +70,7 @@ SyntaxReferenceAssignment* SyntaxReferenceAssignment::clone () const
  * Note that the return variable is variable returned by the rhs expression.
  * We need not clone it.
  */
-RevPtr<Variable> SyntaxReferenceAssignment::evaluateContent( Environment& env )
+RevPtr<Variable> SyntaxReferenceAssignment::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating reference assignment\n" );

@@ -1,9 +1,6 @@
 #include "RbException.h"
 #include "TypeSpec.h"
 
-// #include "ModelVector.h"
-// #include "RlString.h"
-
 using namespace RevLanguage;
 
 
@@ -16,7 +13,7 @@ TypeSpec::TypeSpec( const std::string& objType, const TypeSpec* par ) :
     parent( par ),
     type( objType )
 {
-    dim = getDimFromClass();
+    
     element = getElementTypeSpecFromClass();
 }
 
@@ -31,7 +28,7 @@ TypeSpec::TypeSpec( const std::string& objType, const TypeSpec* par, const TypeS
     parent( par ),
     type( objType )
 {
-    dim = getDimFromClass();
+    
 }
 
 
@@ -53,49 +50,6 @@ bool TypeSpec::operator==( const TypeSpec& x ) const
 bool TypeSpec::operator!=( const TypeSpec& x ) const
 {
     return type != x.type;
-}
-
-
-/**
- * Get the dimension of the type by climbing the ladder to see whether
- * we are derived from ModelContainer or WorkspaceContainer, and then
- * simply count the number of "[" characters in the type string.
- */
-size_t TypeSpec::getDimFromClass( void ) const
-{
-    // If we reached the end, dim is 0
-    if ( parent == NULL )
-        return 0;
-    
-    // Get parent type
-    std::string parentType;
-    if ( parent != NULL )
-        parentType = parent->getType();
-    
-    // Check if we now have the answer
-    if ( parentType == "ModelContainer" || parentType == "WorkspaceContainer" )
-    {
-        size_t numDims = 0;
-        for ( size_t i = 0; i < type.size(); ++i )
-        {
-            if ( type[i] == '[' )
-                numDims++;
-        }
-        return numDims;
-    }
-
-    // If not, continue climbing up our derivation tree
-    return parent->getDim();
-}
-
-
-/**
- * Get dim. Simply return the dimension of the type, which
- * we computed in the constructor.
- */
-const size_t TypeSpec::getDim( void ) const
-{
-    return dim;
 }
 
 
@@ -175,26 +129,6 @@ const TypeSpec* TypeSpec::getParentTypeSpec( void ) const
 
 
 /**
- * Get total dim. A container may have as elements a type that
- * is derived from a generic container. In that case, the total
- * dimension of the Rev object includes both the container and
- * the element dimensions. The way that Rev objects are currently
- * created by the parser guarantees that there is no recursion;
- * that is, we cannot have generic containers containing generic
- * containers. However, by calling getTotalDim instead of getDim
- * for the element type spec, we support possible future recursive
- * generic containers.
- */
-const size_t TypeSpec::getTotalDim( void ) const
-{
-    if ( element != NULL )
-        return dim + element->getTotalDim();
-    else
-        return dim;
-}
-
-
-/**
  * Get the type string. Simply return the
  * type member variable.
  */
@@ -222,28 +156,6 @@ bool TypeSpec::isDerivedOf( const TypeSpec& x ) const
     // If not, continue climbing up our derivation tree
     return parent->isDerivedOf(x);
 }
-
-
-#if 0
-/**
- * Make an RlString object reflecting the type.
- * We provide this for the Rev "type" function.
- */
-RlString* TypeSpec::makeRevType( void ) const
-{
-    return new RlString( type );
-}
-
-
-/**
- * Make a ModelVector<RlString> object reflecting the class
- * vector. We provide this for the Rev "class" function.
- */
-ModelVector<RlString>* TypeSpec::makeRevClass( void ) const
-{
-    return new ModelVector<RlString>( type );
-}
-#endif
 
 
 /**

@@ -156,30 +156,24 @@ const MemberRules& ParallelMcmcmc::getMemberRules(void) const {
 
 
 /* Get method specifications */
-const MethodTable& ParallelMcmcmc::getMethods(void) const {
+void ParallelMcmcmc::initializeMethods(void) const
+{
     
-    static MethodTable   methods    = MethodTable();
-    static bool          methodsSet = false;
+    // necessary call for proper inheritance
+    RevObject::initializeMethods();
     
-    if ( methodsSet == false ) {
-        ArgumentRules* runArgRules = new ArgumentRules();
-        runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+    ArgumentRules* runArgRules = new ArgumentRules();
+    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
-        ArgumentRules* burninArgRules = new ArgumentRules();
-        burninArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    burninArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
-        ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-        methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
+    ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
+    methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
     
-    return methods;
 }
 
 /** Get type spec */

@@ -36,7 +36,7 @@ Func_pomoRootFrequencies* Func_pomoRootFrequencies::clone( void ) const {
 RevPtr<Variable> Func_pomoRootFrequencies::execute() {
     //Four arguments, root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* rbf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rbf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< double >* rpp = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
@@ -46,7 +46,7 @@ RevPtr<Variable> Func_pomoRootFrequencies::execute() {
 
     RevBayesCore::PomoRootFrequenciesFunction* pomorf = new RevBayesCore::PomoRootFrequenciesFunction( rbf, rpp, q, n );
     
-    DeterministicNode< std::vector< double >  > *detNode = new DeterministicNode< std::vector< double >  >("", pomorf, this->clone());
+    DeterministicNode< RevBayesCore::RbVector< double >  > *detNode = new DeterministicNode< RevBayesCore::RbVector< double >  >("", pomorf, this->clone());
     
     Simplex* value = new Simplex( detNode );
     

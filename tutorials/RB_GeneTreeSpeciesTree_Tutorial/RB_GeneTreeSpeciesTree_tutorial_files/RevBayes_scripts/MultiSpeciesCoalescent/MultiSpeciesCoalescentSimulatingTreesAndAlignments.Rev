@@ -54,6 +54,9 @@ speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
+write ("		True species tree: ")
+write(speciesTree)
+
 
 ###########################################
 # Gene-Tree multispecies coalescent model #

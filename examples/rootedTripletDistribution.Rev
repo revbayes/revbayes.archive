@@ -58,10 +58,7 @@ Ne, taxa=taxa)
 }
 
 td := rootedTripletDist(geneTrees, s_names)
-#td.setSpecies(s_names)
-#td.extractTriplets(speciesTree)
 write(td)
-#td.extractTriplets(geneTrees)
 
 write ("		True species tree: ")
 write(speciesTree)

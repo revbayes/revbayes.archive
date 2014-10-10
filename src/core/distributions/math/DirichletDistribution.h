@@ -22,6 +22,7 @@
 #ifndef DirichletDistribution_H
 #define DirichletDistribution_H
 
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -29,11 +30,10 @@
 
 namespace RevBayesCore {
     
-    class DirichletDistribution : public TypedDistribution< std::vector<double> > {
+    class DirichletDistribution : public TypedDistribution< RbVector<double> > {
         
     public:
-        DirichletDistribution(const TypedDagNode< std::vector<double> > *l);
-        DirichletDistribution(const DirichletDistribution &n);                                                                          //!< Copy constructor
+        DirichletDistribution(const TypedDagNode< RbVector<double> > *l);
         virtual                                            ~DirichletDistribution(void);                                                //!< Virtual destructor
         
         // public member functions
@@ -48,7 +48,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           alpha;
+        const TypedDagNode< RbVector<double> >*             alpha;
     };
     
 }

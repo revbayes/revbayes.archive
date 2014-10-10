@@ -67,11 +67,11 @@ RevLanguage::Func_workspaceVector<valType>* RevLanguage::Func_workspaceVector<va
 template <typename valType>
 RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_workspaceVector<valType>::execute( void )
 {
-    std::vector<valType*> params;
+    RevBayesCore::RbVector<valType> params;
     for ( size_t i = 0; i < args.size(); i++ )
     {
         const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
-        params.push_back( val.clone() );
+        params.push_back( val );
     }
     
     WorkspaceVector<valType> *theVector = new WorkspaceVector<valType>( params );

@@ -35,27 +35,41 @@ using namespace RevLanguage;
 
 /* Default constructor */
 Real::Real(void) : ModelObject<double>( new double(0.0) ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Construct from double */
 Real::Real(double v) : ModelObject<double>( new double(v) ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Construct from double */
 Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Construct from int */
 Real::Real(int v) : ModelObject<double>( new double(v) ) {
+
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
 /* Copy Construct */
 Real::Real(const Real& x) : ModelObject<double>( x ) {
     
+    setGuiVariableName("Real Number");
+    setGuiLatexSymbol("R");
 }
 
 
@@ -226,25 +240,6 @@ const TypeSpec& Real::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& Real::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
 }
 
 

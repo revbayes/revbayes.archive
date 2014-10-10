@@ -86,7 +86,7 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const
  *
  * @todo Resize the container to the lengths specification
  */
-RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
+RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating variable declaration\n" );
@@ -110,7 +110,7 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
         }
         else
         {
-            RevPtr<Variable> temp    = (*it)->evaluateContent( env );
+            RevPtr<Variable> temp    = (*it)->evaluateContent( env, dynamic );
             const RevObject& value   = temp->getRevObject();
             
             size_t theLength;
@@ -138,7 +138,8 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
         newObject = Workspace::userWorkspace().makeNewDefaultObject( elementTypeName );
     else
     {
-        newObject = Workspace::userWorkspace().makeNewEmptyContainer( elementTypeName, lengths.size() );
+        throw RbException("This needs replacements!!!");
+//        newObject = Workspace::userWorkspace().makeNewEmptyContainer( elementTypeName, lengths.size() );
 //        static_cast<Container*>( newObject )->resize( lengths );
     }
 

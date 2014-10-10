@@ -38,7 +38,7 @@ namespace RevLanguage {
         
         // Basic utility functions you have to override (also getClassTypeSpec()!)
         virtual WorkspaceObject*            clone(void) const = 0;                              //!< Clone object
-        virtual void                        constructInternalObject(void) = 0;                  //!< We construct the a new internal object.
+//        virtual void                        constructInternalObject(void) = 0;                  //!< We construct the a new internal object.
         static const std::string&           getClassType(void);                                 //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                        //!< Get the type spec of the instance

@@ -29,12 +29,12 @@ Func_simplexFromVector* Func_simplexFromVector::clone( void ) const
 RevPtr<Variable> Func_simplexFromVector::execute( void )
 {
     
-    const RevBayesCore::TypedDagNode< std::vector<double> >* vec;
+    const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* vec;
     vec = static_cast< const ModelVector<RealPos>& >( args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::SimplexFromVectorFunction*    func    = new RevBayesCore::SimplexFromVectorFunction( vec );
     
-    DeterministicNode< std::vector<double> >*   detNode = new DeterministicNode< std::vector<double> >( "", func, this->clone() );
+    DeterministicNode< RevBayesCore::RbVector<double> >*   detNode = new DeterministicNode< RevBayesCore::RbVector<double> >( "", func, this->clone() );
     
     Simplex *theSimplex = new Simplex( detNode );
     

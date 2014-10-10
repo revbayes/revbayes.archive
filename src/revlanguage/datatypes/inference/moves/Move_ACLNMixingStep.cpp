@@ -37,8 +37,8 @@ void Move_ACLNMixingStep::constructInternalObject( void ) {
     // now allocate a new sliding move
     double ep = static_cast<const RealPos &>( epsilon->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmpNR = static_cast<const ModelVector<RealPos> &>( nodeRates->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<std::vector<double> > *nr = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmpNR );
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmpNR = static_cast<const ModelVector<RealPos> &>( nodeRates->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *nr = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *>( tmpNR );
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmpTre = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *tre = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmpTre );
     RevBayesCore::TypedDagNode<double>* tmpRR = static_cast<const Real &>( rootRate->getRevObject() ).getDagNode();

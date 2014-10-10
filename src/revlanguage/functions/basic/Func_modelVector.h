@@ -1,7 +1,7 @@
 #ifndef Func_modelVector_H
 #define Func_modelVector_H
 
-#include "Function.h"
+#include "RlFunction.h"
 #include <map>
 #include <string>
 
@@ -77,7 +77,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_modelVector<valType
     
     RevBayesCore::VectorFunction<typename valType::valueType>* func = new RevBayesCore::VectorFunction<typename valType::valueType>( params );
     
-    DeterministicNode<std::vector<typename valType::valueType> >* detNode = new DeterministicNode<std::vector<typename valType::valueType> >("", func, this->clone());
+    DeterministicNode< RevBayesCore::RbVector<typename valType::valueType> >* detNode = new DeterministicNode< RevBayesCore::RbVector<typename valType::valueType> >("", func, this->clone());
     
     ModelVector<valType>* theVector = new ModelVector<valType>( detNode );
     

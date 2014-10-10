@@ -17,22 +17,9 @@ using namespace RevLanguage;
  * \param[in]   lhsExpr     The left-hand side expression.
  * \param[in]   rhsExpr     The right-hand side expression.
  */
-SyntaxSubtractionAssignment::SyntaxSubtractionAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
-    SyntaxElement(),
-    lhsExpression( lhsExpr ),
-    rhsExpression( rhsExpr )
+SyntaxSubtractionAssignment::SyntaxSubtractionAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) : SyntaxAssignment(lhsExpr,rhsExpr)
 {
-}
 
-
-/**
- * Deep copy constructor.
- */
-SyntaxSubtractionAssignment::SyntaxSubtractionAssignment( const SyntaxSubtractionAssignment& x ) :
-    SyntaxElement(x)
-{
-    lhsExpression = x.lhsExpression->clone();
-    rhsExpression = x.rhsExpression->clone();
 }
 
 
@@ -41,28 +28,7 @@ SyntaxSubtractionAssignment::SyntaxSubtractionAssignment( const SyntaxSubtractio
  */
 SyntaxSubtractionAssignment::~SyntaxSubtractionAssignment()
 {
-    delete lhsExpression;
-    delete rhsExpression;
-}
 
-
-/**
- * Assignment operator performing deep assignment.
- */
-SyntaxSubtractionAssignment& SyntaxSubtractionAssignment::operator=( const SyntaxSubtractionAssignment& x )
-{
-    if ( this != &x )
-    {
-        SyntaxElement::operator=( x );
-        
-        delete lhsExpression;
-        delete rhsExpression;
-        
-        lhsExpression = x.lhsExpression->clone();
-        rhsExpression = x.rhsExpression->clone();
-    }
-    
-    return ( *this );
 }
 
 
@@ -82,7 +48,7 @@ SyntaxSubtractionAssignment* SyntaxSubtractionAssignment::clone () const
  * Evaluate the content of this syntax element. This will perform a
  * subtraction assignment operation.
  */
-RevPtr<Variable> SyntaxSubtractionAssignment::evaluateContent( Environment& env )
+void SyntaxSubtractionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating subtraction assignment\n" );
@@ -90,24 +56,28 @@ RevPtr<Variable> SyntaxSubtractionAssignment::evaluateContent( Environment& env 
     
     // Get variable from lhs. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
-    RevPtr<Variable> theVariable = lhsExpression->evaluateContent( env );
-    if ( theVariable == NULL )
+    if ( lhs == NULL )
+    {
         throw RbException( "Invalid NULL variable returned by lhs expression in subtraction assignment" );
+    }
     
     // Make sure that the variable is constant
-    if ( !theVariable->getRevObject().isConstant() )
+    if ( !lhs->getRevObject().isConstant() )
+    {
         throw RbException( "Invalid subtraction assignment to dynamic variable" );
+    }
     
-    // Record whether it is a control variable
-    bool isControlVar = theVariable->isControlVar();
+    // Record whether it is a workspace (control) variable
+    bool isWorkspaceVar = lhs->isWorkspaceVariable();
     
     // Get a reference to the lhs value object
-    const RevObject& lhs_value = theVariable->getRevObject();
+    const RevObject& lhs_value = lhs->getRevObject();
     
     // Evaluate the rhs expression
-    const RevPtr<Variable>& rhs = rhsExpression->evaluateContent( env );
     if ( rhs == NULL )
+    {
         throw RbException( "Invalid NULL variable returned by rhs expression in subtraction assignment" );
+    }
     
     // Get a reference to the rhs value object
     const RevObject& rhs_value = rhs->getRevObject();
@@ -116,66 +86,17 @@ RevPtr<Variable> SyntaxSubtractionAssignment::evaluateContent( Environment& env 
     RevObject *newValue = lhs_value.subtract( rhs_value );
     
     // Fill the slot with the new variable
-    theVariable->setRevObject( newValue );
+    lhs->setRevObject( newValue );
     
-    // Reset it as control variable, if it was a control variable before the assignment.
-    // When we fill the slot, the control variable property is reset to false by default.
-    if ( isControlVar )
-        theVariable->setControlVarState( true );
+    // Reset it as workspace (control) variable, if it was a workspace (control) variable before the assignment.
+    // When we fill the slot, the workspace (control) variable property is reset to false by default.
+    if ( isWorkspaceVar )
+    {
+        lhs->setWorkspaceVariableState( true );
+    }
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
-    
-    // Return the variable for further assignment
-    return theVariable;
-}
-
-
-/**
- * Is this an assignment operation?
- * Sure it is.
- *
- * \return     TRUE.
- */
-bool SyntaxSubtractionAssignment::isAssignment( void ) const
-{
-    return true;
-}
-
-
-/**
- * Is the syntax element safe for use in a function (as
- * opposed to a procedure)? The assignment is safe
- * if its lhs and rhs expressions are safe, and the
- * assignment is not to an external variable.
- */
-bool SyntaxSubtractionAssignment::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
-{
-    // Check lhs and rhs expressions
-    if ( !lhsExpression->isFunctionSafe( env, localVars ) || !rhsExpression->isFunctionSafe( env, localVars ) )
-        return false;
-    
-    // Check whether assignment is to external variable (not function-safe)
-    if ( lhsExpression->retrievesExternVar( env, localVars, true ) )
-        return false;
-    
-    // All tests passed
-    return true;
-}
-
-
-/**
- * Print info about the syntax element
- */
-void SyntaxSubtractionAssignment::printValue(std::ostream& o) const
-{
-    o << "SyntaxSubtractionAssignment:" << std::endl;
-    o << "lhsExpression = ";
-    lhsExpression->printValue(o);
-    o << std::endl;
-    o << "rhsExpression = ";
-    rhsExpression->printValue(o);
-    o << std::endl;
 }
 

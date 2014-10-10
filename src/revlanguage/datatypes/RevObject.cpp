@@ -32,14 +32,6 @@
 using namespace RevLanguage;
 
 
-
-
-/** Constructor: we set member variables here from member rules */
-RevObject::RevObject(const MemberRules& memberRules) {
-    
-}
-
-
 /** 
  * Destructor. 
  * Nothing to do here because we don't own anything.
@@ -156,16 +148,6 @@ RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::ve
 }
 
 
-/**
- * Find or create an element variable of a container. Default implementation throws
- * an error. Override in container objects.
- */
-RevPtr<Variable> RevObject::findOrCreateElement( const std::vector<size_t>& indices )
-{
-    throw RbException( "Object of type '" + getType() + "' does not have any elements" );
-}
-
-
 /** Get class vector describing type of object */
 const std::string& RevObject::getClassType(void)
 {
@@ -207,23 +189,20 @@ RevPtr<Variable> RevObject::getMember(const std::string& name) const
 
 
 /**
- * Get common member methods. This function is used by all
- * Rev member objects, which only use the common member
- * methods.
+ * Get common member methods. Here we
  */
 const MethodTable& RevObject::getMethods( void ) const
 {
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
     
-    if ( !methodsSet )
+    // initialize the methods if it hasn't happened yet
+    if ( methodsInitialized == false )
     {
-        myMethods = makeMethods();
+        initializeMethods();
         
-        methodsSet = true;
+        methodsInitialized = true;
     }
     
-    return myMethods;
+    return methods;
 }
 
 
@@ -249,35 +228,10 @@ RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 }
 
 
-/**
- * Get the number of dimensions. We use 0 for scalars, 1 for vectors,
- * 2 for matrices, etc.
- */
-size_t RevObject::getDim( void ) const
-{
-    return 0;
-}
-
-
-/** Get a constant element value. Default implementation throws an error */
-RevPtr<Variable> RevObject::getElement( const std::vector<size_t>& indices )
-{
-    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
-}
-
-
 /** Does this object have a member called "name" */
 bool RevObject::hasMember(std::string const &name) const
 {
     
-    return false;
-}
-
-
-/** Does this object have an internal DAG node? Default implementation returns false. */
-bool RevObject::hasDagNode(void) const
-{
-
     return false;
 }
 
@@ -344,6 +298,17 @@ bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const
 
 
 /**
+ * The default implementation is that the variable is not a model object. Only variables which actually store
+ * internally DAG nodes are model objects.
+ */
+bool RevObject::isModelObject( void ) const
+{
+    
+    return false;
+}
+
+
+/**
   * Converting the value of the internal variable to a constant. The default implementation does nothing because we don't have a DAG node as our internal variable.
   * Note, RevLanguage types which can be used as types in the DAG should overwrite this method.
   */
@@ -365,13 +330,6 @@ void RevObject::makeConversionValue( RevPtr<Variable> var )
 }
 
 
-/** Get a deterministic lookup of an element. Default implementation throws an error */
-RevObject* RevObject::makeElementLookup( const RevPtr<Variable>& var, const std::vector< RevPtr<Variable> >& indices )
-{
-    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
-}
-
-
 /**
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
@@ -390,9 +348,8 @@ RevObject* RevObject::makeIndirectReference(void)
  * 1) memberNames()
  * 2) get("name")
  */
-MethodTable RevObject::makeMethods(void) const
+void RevObject::initializeMethods(void) const
 {
-    MethodTable methods = MethodTable();
     
     ArgumentRules* getMembersArgRules = new ArgumentRules();
     ArgumentRules* getMethodsArgRules = new ArgumentRules();
@@ -408,7 +365,6 @@ MethodTable RevObject::makeMethods(void) const
     getArgRules->push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
     
-    return methods;
 }
 
 

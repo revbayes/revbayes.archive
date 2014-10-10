@@ -41,36 +41,10 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<double
     return o;
 }
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<std::vector<double> >& x) {
-    o << "(";
-    for (std::vector<std::vector<double> >::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<int>& x) {
     o << "(";
     for (std::vector<int>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<std::vector<int> >& x) {
-    o << "(";
-    for (std::vector<std::vector<int> >::const_iterator it = x.begin(); it != x.end(); ++it) {
         if ( it != x.begin() ) {
             o << ", ";
         }
@@ -99,76 +73,6 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<unsign
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<std::string>& x) {
     o << "(";
     for (std::vector<std::string>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Clade>& x) {
-    o << "(";
-    for (std::vector<Clade>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Taxon>& x) {
-    o << "(";
-    for (std::vector<Taxon>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<TimeTree>& x) {
-    o << "(";
-    for (std::vector<TimeTree>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<BranchLengthTree>& x) {
-    o << "(";
-    for (std::vector<BranchLengthTree>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Trace>& x) {
-    o << "(";
-    for (std::vector<Trace>::const_iterator it = x.begin(); it != x.end(); ++it) {
         if ( it != x.begin() ) {
             o << ", ";
         }

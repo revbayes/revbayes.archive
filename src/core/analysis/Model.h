@@ -59,6 +59,10 @@ namespace RevBayesCore {
         std::set<const DagNode*>                                    sources;                                                        //!< Set of source nodes for the model graph.
     };
     
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const Model& x);                                //!< Overloaded output operator
+
+    
 }
 
 #endif

@@ -82,8 +82,6 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  * Fit a variable into an argument according to the argument rule. If necessary and
  * appropriate, we do type conversion or type promotion.
  *
- * @todo The constant flag is currently not used correctly in ArgumentRule. Therefore,
- *       we ignore it here for now. This needs to be changed.
  *
  * @todo We need to check whether workspace objects with member variables are
  *       modifiable by the user.
@@ -97,14 +95,13 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  */
 Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
-    //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
-    //    if ( isConstant() || !theVar->isAssignable() )
-    if ( evalType == BY_VALUE )
+
+    RevPtr<Variable> theVar = arg.getVariable();
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() )
     {
         once = true;
     }
     
-    RevPtr<Variable> theVar = arg.getVariable();
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
@@ -129,35 +126,51 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             theVar->setRevObject( convertedObject );
             theVar->setRevObjectTypeSpec( *it );
             if ( !isEllipsis() )
-                return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+            {
+                return Argument( theVar, getArgumentLabel(), false );
+            }
             else
-                return Argument( theVar, arg.getLabel(), true );
+            {
+                return Argument( theVar, arg.getLabel(), false );
+            }
+            
         }
         else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
         {
             // Fit by type conversion
-            if ( once || !theVar->getRevObject().hasDagNode() )
+            if ( once )
             {
                 RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
                 Variable*  convertedVar    = new Variable( convertedObject );
                 convertedVar->setRevObjectTypeSpec( *it );
 
                 if ( !isEllipsis() )
+                {
                     return Argument( convertedVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                }
                 else
+                {
                     return Argument( convertedVar, arg.getLabel(), true );
+                }
+                
             }
             else
             {
                 RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
                 conversionObject->makeConversionValue( theVar );
                 Variable*  conversionVar    = new Variable( conversionObject );
+                conversionVar->setHiddenVariableState( true );
                 conversionVar->setRevObjectTypeSpec( *it );
                 
                 if ( !isEllipsis() )
+                {
                     return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                }
                 else
+                {
                     return Argument( conversionVar, arg.getLabel(), true );
+                }
+                
             }
         }
     }
@@ -227,10 +240,7 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
         return false;
     }
     
-//    TODO: Use this code when the constant flag in ArgumentRule is used correctly
-//    if ( isConstant() || !var->isAssignable() )
-//    if ( isConstant() )
-    if ( evalType == BY_VALUE )
+    if ( evalType == BY_VALUE || var->isWorkspaceVariable() )
     {
         once = true;
     }

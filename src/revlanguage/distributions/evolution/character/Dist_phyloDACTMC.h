@@ -23,14 +23,13 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-//        const MethodTable&                              getMethods(void) const;                                                         //!< Get member methods
 //        RevPtr<RevLanguage::Variable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
 //        MethodTable                                     makeMethods(void) const;
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
         // Distribution functions you have to override
-        RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >*      createDistribution(void) const;
+        RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >*      createDistribution(void) const;
         
     protected:
         
@@ -78,7 +77,7 @@ RevLanguage::Dist_phyloDACTMC<treeType>* RevLanguage::Dist_phyloDACTMC<treeType>
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLanguage::Dist_phyloDACTMC<treeType>::createDistribution( void ) const {
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* RevLanguage::Dist_phyloDACTMC<treeType>::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
@@ -87,13 +86,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     size_t nChars = rm->getValue().getNumberOfCharacters();
     
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
+    RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData > *d = NULL;
     
     if ( dt == "biogeo" )
     {
         bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
         bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
-        const RevBayesCore::TypedDagNode< std::vector< double > > *csf = NULL;
+        const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *csf = NULL;
         
         if ( cladoStateFreqs->getRevObject() != RevNullObject::getInstance() )
         {
@@ -179,21 +178,6 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
     
     return distMemberRules;
 }
-
-//template <class treeType>
-//const RevLanguage::MethodTable& RevLanguage::Dist_phyloDACTMC<treeType>::getMethods( void ) const
-//{
-//    static MethodTable  myMethods   = MethodTable();
-//    static bool         methodsSet  = false;
-//    
-//    if ( !methodsSet )
-//    {quit
-//        myMethods = makeMethods();
-//        methodsSet = true;
-//    }
-//    
-//    return myMethods;
-//}
 
 
 template <class treeType>

@@ -11,27 +11,33 @@
 using namespace RevBayesCore;
 
 
-VectorSingleElementScaleMove::VectorSingleElementScaleMove(StochasticNode<std::vector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
+VectorSingleElementScaleMove::VectorSingleElementScaleMove(StochasticNode<RbVector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ),
+    variable(v),
+    lambda( l )
+{
     
 }
 
 
 /** Clone object */
-VectorSingleElementScaleMove* VectorSingleElementScaleMove::clone( void ) const {
+VectorSingleElementScaleMove* VectorSingleElementScaleMove::clone( void ) const
+{
     
     return new VectorSingleElementScaleMove( *this );
 }
 
 
 
-const std::string& VectorSingleElementScaleMove::getMoveName( void ) const {
+const std::string& VectorSingleElementScaleMove::getMoveName( void ) const
+{
     static std::string name = "VectorSingleElementMove";
     
     return name;
 }
 
 
-double VectorSingleElementScaleMove::performSimpleMove( void ) {
+double VectorSingleElementScaleMove::performSimpleMove( void )
+{
         
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -77,12 +83,13 @@ void VectorSingleElementScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
     
 }
 
 
-void VectorSingleElementScaleMove::tune( void ) {
+void VectorSingleElementScaleMove::tune( void )
+{
     double rate = numAccepted / double(numTried);
     
     if ( rate > 0.44 ) {

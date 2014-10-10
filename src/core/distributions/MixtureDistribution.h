@@ -19,6 +19,7 @@
 #ifndef MixtureDistribution_H
 #define MixtureDistribution_H
 
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -29,7 +30,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p);
+        MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p);
         
         // public member functions
         MixtureDistribution*                                clone(void) const;                                                                      //!< Create an independent clone
@@ -58,8 +59,8 @@ namespace RevBayesCore {
         const mixtureType&                                  simulate();
         
         // private members
-        const TypedDagNode<std::vector<mixtureType> >*      parameterValues;
-        const TypedDagNode<std::vector<double> >*           probabilities;
+        const TypedDagNode< RbVector<mixtureType> >*        parameterValues;
+        const TypedDagNode< RbVector<double> >*             probabilities;
         
         size_t                                              index;
     };
@@ -72,7 +73,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class mixtureType>
-RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p) : TypedDistribution<mixtureType>( new mixtureType( v->getValue()[0]) ),
+RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p) : TypedDistribution<mixtureType>( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v->getValue()[0] ) ),
     parameterValues( v ),
     probabilities( p ),
     index( 0 )
@@ -221,11 +222,11 @@ void RevBayesCore::MixtureDistribution<mixtureType>::swapParameter( const DagNod
 {
     if (oldP == parameterValues)
     {
-        parameterValues = static_cast<const TypedDagNode<std::vector<mixtureType> >* >( newP );
+        parameterValues = static_cast<const TypedDagNode< RbVector<mixtureType> >* >( newP );
     }
     else if (oldP == probabilities)
     {
-        probabilities = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        probabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 
@@ -247,7 +248,7 @@ template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType const &v)
 {
     
-    const std::vector<mixtureType> &vals = parameterValues->getValue();
+    const RbVector<mixtureType> &vals = parameterValues->getValue();
     // we need to catch the value and increment the index
     for (index = 0; index < vals.size(); ++index)
     {

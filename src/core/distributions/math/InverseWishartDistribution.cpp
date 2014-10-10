@@ -27,7 +27,7 @@ dim(0)  {
     redrawValue();
 }
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<std::vector<double> > *inkappaVector, const TypedDagNode<int>* indf)  :
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<int>* indf)  :
 TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( inkappaVector->getValue().size()) ),
     sigma0(NULL),
     kappaVector(inkappaVector),
@@ -87,7 +87,7 @@ void InverseWishartDistribution::swapParameter(const DagNode *oldP, const DagNod
         sigma0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
     }
     if (oldP == kappaVector)  {
-        kappaVector = static_cast<const TypedDagNode<std::vector<double> >* >(newP);
+        kappaVector = static_cast<const TypedDagNode<RbVector<double> >* >(newP);
     }
     if (oldP == kappa)  {
         kappa = static_cast<const TypedDagNode<double>* >(newP);

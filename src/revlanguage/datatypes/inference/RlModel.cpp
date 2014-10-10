@@ -96,26 +96,18 @@ const MemberRules& Model::getMemberRules(void) const {
 }
 
 /* Get method specifications */
-const MethodTable& Model::getMethods(void) const {
+void Model::initializeMethods(void) const
+{
     
-    static MethodTable   methods    = MethodTable();
-    static bool          methodsSet = false;
+    // necessary call for proper inheritance
+    RevObject::initializeMethods();
     
-    if ( methodsSet == false )
-    {
-        
-        ArgumentRules* dotArgRules = new ArgumentRules();
-        dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
-        dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
-        methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
+    ArgumentRules* dotArgRules = new ArgumentRules();
+    dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
+    methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
     
-    return methods;
 }
 
 /** Get type spec */
@@ -135,7 +127,20 @@ void Model::printValue(std::ostream &o) const {
 
     o << std::endl;
     std::stringstream s;
-    s << "Model with " << theNodes.size() << " nodes";
+    
+    // compute the number of nodes by only counting nodes that are not hidden
+    size_t numNodes = 0;
+    for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
+    {
+    
+        if ( (*it)->isHidden() == false )
+        {
+            ++numNodes;
+        }
+    
+    }
+    
+    s << "Model with " << numNodes << " nodes";
     o << s.str() << std::endl;
     for ( size_t i = 0; i < s.str().size(); ++i )
         o << "=";
@@ -143,10 +148,20 @@ void Model::printValue(std::ostream &o) const {
     
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
+        // skip hidden nodes
+        if ( (*it)->isHidden() == true )
+        {
+            continue;
+        }
+        
         if ( (*it)->getName() != "" )
-            o << (*it)->getName() <<  " <" << (*it) << "> :" << std::endl;
+        {
+            o << (*it)->getName() <<  " :" << std::endl;
+        }
         else
+        {
             o << "<" << (*it) << "> :" << std::endl;
+        }
         
         o << "_value        = ";
         std::ostringstream o1;

@@ -61,6 +61,7 @@ namespace RevBayesCore {
         void                                        setDagNodes(const std::set<DagNode *>& args);
         void                                        setDagNodes(const std::vector<DagNode *>& args);
         void                                        setMcmc(Mcmc* m);
+        void                                        setNumCycles(size_t n) { numCycles = n; }                           //!< Set num cycles to monitor
 
     protected:
     
@@ -69,8 +70,12 @@ namespace RevBayesCore {
         Mcmc*                                       mcmc;
         std::vector<DagNode *>                      nodes;
         const Model*                                model;
-    
+        size_t                                      numCycles;                                                          //!< Total number of cycles to monitor
     };
+    
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const Monitor& x);                                //!< Overloaded output operator
+
     
 }
 

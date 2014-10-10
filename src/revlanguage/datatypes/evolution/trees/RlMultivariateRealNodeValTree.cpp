@@ -98,25 +98,6 @@ const TypeSpec& MultivariateRealNodeValTree::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& MultivariateRealNodeValTree::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& MultivariateRealNodeValTree::getTypeSpec( void ) const {
     
@@ -127,10 +108,11 @@ const TypeSpec& MultivariateRealNodeValTree::getTypeSpec( void ) const {
 
 
 /* Make member methods for this class */
-RevLanguage::MethodTable MultivariateRealNodeValTree::makeMethods(void) const
+void MultivariateRealNodeValTree::initializeMethods(void) const
 {
     
-    MethodTable methods = MethodTable();
+    // Insert inherited methods
+    ModelObject<RevBayesCore::MultivariateRealNodeContainer>::initializeMethods();
     
     ArgumentRules* argRules = new ArgumentRules();
     argRules->push_back(new ArgumentRule("index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ));
@@ -151,10 +133,6 @@ RevLanguage::MethodTable MultivariateRealNodeValTree::makeMethods(void) const
     clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::MultivariateRealNodeContainer>::makeMethods() );
-    
-    return methods;
 }
 
 

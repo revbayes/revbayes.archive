@@ -33,8 +33,8 @@ Func_gtr* Func_gtr::clone( void ) const {
 
 RevPtr<Variable> Func_gtr::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* er = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     if ( er->getValue().size() != (bf->getValue().size() * (bf->getValue().size()-1) / 2.0) )
     {

@@ -38,6 +38,7 @@ namespace RevBayesCore {
         RbVector();
         RbVector(size_t n);
         RbVector(size_t n, const valueType &v);
+        RbVector(const typename RbVectorImpl<valueType, IsAbstract<valueType>::Is >::vectorType &v);
         RbVector(const RbVector<valueType> &v);
         virtual                                            ~RbVector(void);
         
@@ -49,13 +50,19 @@ namespace RevBayesCore {
         RbVector<valueType>*                                clone(void) const;                                                                      //!< Create an independent clone
         
         // public (stl-like) vector functions
-        RbIterator<valueType>                               begin(void);
-        RbConstIterator<valueType>                          begin(void) const;
-        RbIterator<valueType>                               end(void);
-        RbConstIterator<valueType>                          end(void) const;
-        size_t                                              size(void) const;
+//        RbIterator<valueType>                               begin(void);
+//        RbConstIterator<valueType>                          begin(void) const;
+//        RbIterator<valueType>                               end(void);
+//        RbConstIterator<valueType>                          end(void) const;
+//        size_t                                              size(void) const;
+        void                                                sort(void);
         
     private:
+        
+        // private methods
+        int                                                 pivot(int l, int r);
+        void                                                quicksort(int l, int r);
+        void                                                swap( valueType& a, valueType& b);
         
         // private members
 
@@ -95,6 +102,13 @@ RevBayesCore::RbVector<valueType>::RbVector(size_t n, const valueType &v) : RbVe
 
 
 template <class valueType>
+RevBayesCore::RbVector<valueType>::RbVector( const typename RbVectorImpl<valueType, IsAbstract<valueType>::Is >::vectorType &v ) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(v)
+{
+    
+}
+
+
+template <class valueType>
 RevBayesCore::RbVector<valueType>::RbVector( const RbVector<valueType> &v ) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(v)
 {
     
@@ -109,60 +123,107 @@ RevBayesCore::RbVector<valueType>::~RbVector( void )
 
 
 template <class valueType>
-RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) {
-    
-    return RbIterator<valueType>( this->values.begin() );
-}
-
-
-template <class valueType>
-RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) const {
-    
-    return RbConstIterator<valueType>( this->values.begin() );
-}
-
-
-template <class valueType>
 RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void) const {
     
     return new RbVector<valueType>( *this );
 }
 
-
+/**
+ * Find and return the index of pivot element.
+ * @param a - The array.
+ * @param first - The start of the sequence.
+ * @param last - The end of the sequence.
+ * @return - the pivot element
+ */
 template <class valueType>
-RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) {
+int RevBayesCore::RbVector<valueType>::pivot(int first, int last)
+{
+    int  p = first;
+    const valueType& pivotElement = this->operator[](first);
     
-    return RbIterator<valueType>( this->values.end() );
+    for(int i = first+1 ; i <= last ; i++)
+    {
+        /* If you want to sort the list in the other order, change "<=" to ">" */
+        if(this->operator[](i) <= pivotElement)
+        {
+            p++;
+            
+            valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( this->operator[](i) );
+            this->operator[](i) = this->operator[](p);
+            this->operator[](p) = *temp;
+            
+            delete temp;
+        }
+    }
+    
+    valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( this->operator[](p) );
+    this->operator[](p) = this->operator[](first);
+    this->operator[](first) = *temp;
+    
+    delete temp;
+    
+    return p;
 }
 
 
 template <class valueType>
-RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) const {
-   
-    return RbConstIterator<valueType>( this->values.end() );
+void RevBayesCore::RbVector<valueType>::quicksort(int first, int last)
+{
+    
+    if(first < last)
+    {
+        int pivotElement = pivot(first, last);
+        quicksort(first, pivotElement-1);
+        quicksort(pivotElement+1, last);
+    }
 }
 
 
 template <class valueType>
-size_t RevBayesCore::RbVector<valueType>::size(void) const {
+void RevBayesCore::RbVector<valueType>::sort(void)
+{
+    // just delegate to our internal quicksort method.
+    quicksort(0, int(this->size())-1);
+}
+
+
+/**
+ * Swap the parameters.
+ * @param a - The first parameter.
+ * @param b - The second parameter.
+ */
+template <class valueType>
+void RevBayesCore::RbVector<valueType>::swap( valueType& a, valueType& b)
+{
+    valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( a );
+    a = b;
+    b = *temp;
     
-    return this->values.size();
+    delete temp;
 }
 
 
 template <class valueType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x) {
     
-    o << "(";
+    size_t lineLength = 75;
+    
+    o << "[ ";
+    size_t curLength = 2;
+
     for (RbConstIterator<valueType> it = x.begin(); it != x.end(); ++it) 
     {
         if ( it != x.begin() ) 
         {
             o << ", ";
         }
-        o << *it;
+        const valueType& v = *it;
+        o << v;
     }
-    o << ")";
+    if ( curLength + 2 > lineLength )
+        o << std::endl << "]";
+    else
+        o << " ]";
     
     return o;
 }

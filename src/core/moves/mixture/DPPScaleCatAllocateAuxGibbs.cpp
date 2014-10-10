@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-RevBayesCore::DPPScaleCatAllocateAuxGibbs::DPPScaleCatAllocateAuxGibbs(StochasticNode<std::vector<double> >* v, double l, int na, double w) : MoveOld( v, w, false ), variable( v ) {
+RevBayesCore::DPPScaleCatAllocateAuxGibbs::DPPScaleCatAllocateAuxGibbs(StochasticNode< RbVector<double> >* v, double l, int na, double w) : MoveOld( v, w, false ), variable( v ) {
     
 	// set isGibbs to true
 	lambda = l;
@@ -205,7 +205,7 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::swapNode(DagNode *oldN, DagNode 
     // call the parent method
     MoveOld::swapNode(oldN, newN);
     
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
 }
 
 double RevBayesCore::DPPScaleCatAllocateAuxGibbs::getCurrentLnProbabilityForMove(void) {

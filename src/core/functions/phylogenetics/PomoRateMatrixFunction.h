@@ -23,6 +23,7 @@
 #define PomoRateMatrixFunction_H
 
 #include "RateMatrix_Pomo.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -33,15 +34,13 @@ namespace RevBayesCore {
     class PomoRateMatrixFunction : public TypedFunction<RateMatrix> {
 
     public:
-        PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< std::vector<double>  > *sc);
-        
-// MJL 140822: caused compile error
-       PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< std::vector<double>  > *sc);
+        PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc);
+        PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< RbVector<double>  > *sc);
 
         virtual                                            ~PomoRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        PomoRateMatrixFunction*                              clone(void) const;                                                              //!< Create an independent clone
+        PomoRateMatrixFunction*                             clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -51,11 +50,11 @@ namespace RevBayesCore {
         
         // members
 
-        const TypedDagNode< int >*                 populationSize;
-        const TypedDagNode< std::vector<double> >*           mutationRates;
+        const TypedDagNode< int >*                          populationSize;
+        const TypedDagNode< RbVector<double> >*             mutationRates;
         const TypedDagNode< RateMatrix >*                   mutationMatrix;
-        const TypedDagNode<std::vector<double> >*    selectionCoefficients;
-        bool                                             useMutationMatrix;
+        const TypedDagNode< RbVector<double> >*             selectionCoefficients;
+        bool                                                useMutationMatrix;
         
         // private member functions
         std::vector<double> setMutationRates(const RateMatrix& mm);

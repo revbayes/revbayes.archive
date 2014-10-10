@@ -26,15 +26,14 @@ namespace RevBayesCore {
     
     template<class valueType>
     class ConstantNode : public TypedDagNode<valueType> {
-    
+        
     public:
         ConstantNode(const std::string &n, valueType *v);
         ConstantNode(const ConstantNode<valueType> &c);                                                                                 //!< Copy constructor
         virtual                                            ~ConstantNode(void);                                                         //!< Virtual destructor
-    
+        
         ConstantNode<valueType>*                            clone(void) const;                                                          //!< Create a clone of this node.
         DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;               //!< Clone the entire DAG which is connected to this node
-        double                                              getEntireLnLikelihood(void);                                                    //!< Compute the entire likelihood of this node AND all its children
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
@@ -49,11 +48,11 @@ namespace RevBayesCore {
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
-
+        
     private:
         // members
         valueType*                                          value;
-
+        
     };
     
     
@@ -108,7 +107,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ ) 
+    for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
     {
         (*i)->cloneDAG( newNodes );
     }
@@ -117,7 +116,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
 }
 
 
-/** 
+/**
  * Get the affected nodes.
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
@@ -127,13 +126,6 @@ void RevBayesCore::ConstantNode<valueType>::getAffected(std::set<DagNode *> &aff
     // do nothing
     throw RbException("You should never call getAffected() of a constant node!!!");
     
-}
-
-
-template<class valueType>
-double RevBayesCore::ConstantNode<valueType>::getEntireLnLikelihood( void ) {
-    
-    return 0.0;
 }
 
 
@@ -175,7 +167,7 @@ bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const {
 template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter )
 {
-    // nothing to do    
+    // nothing to do
 }
 
 
@@ -188,26 +180,12 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, 
     {
         o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     }
-    else
-    {
-        if ( this->name != "")
-            o << "_dagNode      = " << this->name << std::endl;
-        else
-            o << "_dagNode      = <" << this << ">" << std::endl;
-    }
     
     o << "_dagType      = Constant DAG node" << std::endl;
     
     if ( verbose == true )
     {
         o << "_refCount     = " << this->getReferenceCount() << std::endl;
-    }
-    
-    if ( verbose == true )
-    {
-        o << "_parents      = ";
-        this->printParents(o, 16, 70, verbose);
-        o << std::endl;
     }
     
     o << "_children     = ";

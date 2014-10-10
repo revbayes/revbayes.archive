@@ -22,7 +22,7 @@ using namespace RevBayesCore;
  * \param[in]   l    A scaling parameter for the branch length.
  * \param[in]   r    The instantaneous jump probability.
  */
-BranchRateJumpProcess::BranchRateJumpProcess(TypedDistribution<double> *d, const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* l, const TypedDagNode< double >* r): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes()-1, 1.0 ) ), 
+BranchRateJumpProcess::BranchRateJumpProcess(TypedDistribution<double> *d, const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* l, const TypedDagNode< double >* r): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes()-1, 1.0 ) ),
     valueDistribution( d ),
     tau( t ), 
     lambda( l ),

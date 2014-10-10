@@ -79,7 +79,7 @@ void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP
     {
         std::cerr << "omega0??\n";
         exit(1);
-        omega0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
+//        omega0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
     }
     if (oldP == kappa)
     {

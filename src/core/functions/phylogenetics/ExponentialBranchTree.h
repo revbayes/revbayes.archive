@@ -14,6 +14,7 @@
 #include <cstdlib>
 
 #include "RateMatrix.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 #include "TimeTree.h"
@@ -24,11 +25,10 @@
 
 namespace RevBayesCore {
     
-    class ExponentialBranchTree : public TypedFunction< std::vector<double> > {
+    class ExponentialBranchTree : public TypedFunction< RbVector<double> > {
         
     public:
         ExponentialBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode< RealNodeContainer > *up, const TypedDagNode<double>* o, const TypedDagNode< int > *i);
-        ExponentialBranchTree(const ExponentialBranchTree &n);                                                                              //!< Copy constructor
         virtual                                            ~ExponentialBranchTree(void) {}                                                         //!< Virtual destructor
         
         // public member functions

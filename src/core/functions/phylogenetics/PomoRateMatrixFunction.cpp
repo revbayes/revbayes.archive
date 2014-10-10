@@ -4,7 +4,12 @@
 
 using namespace RevBayesCore;
 
-PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< std::vector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mr->getValue(), sc->getValue()) ), populationSize( ps ), mutationRates( mr ), selectionCoefficients ( sc ) {
+PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mr->getValue(), sc->getValue()) ),
+    populationSize( ps ),
+    mutationRates( mr ),
+    selectionCoefficients ( sc )
+{
+
     useMutationMatrix = false;
     // add the lambda parameter as a parent
     addParameter( populationSize );
@@ -16,7 +21,7 @@ PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, co
 
 
  //MJL 140822: caused compile error
-PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< std::vector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mm->getValue(), sc->getValue()) ), populationSize( ps ), mutationMatrix( mm ), selectionCoefficients ( sc ) {
+PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mm->getValue(), sc->getValue()) ), populationSize( ps ), mutationMatrix( mm ), selectionCoefficients ( sc ) {
     useMutationMatrix = true;
     // add the lambda parameter as a parent
     addParameter( populationSize );
@@ -69,11 +74,11 @@ void PomoRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Da
     
     if (oldP == mutationRates)
     {
-        mutationRates = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        mutationRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == selectionCoefficients)
     {
-        selectionCoefficients = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        selectionCoefficients = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

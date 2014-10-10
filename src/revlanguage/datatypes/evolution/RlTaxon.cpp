@@ -122,25 +122,6 @@ const TypeSpec& Taxon::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& Taxon::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& Taxon::getTypeSpec( void ) const {
     
@@ -171,21 +152,20 @@ void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const V
 }
 
 
-/** Make methods for this class */
-RevLanguage::MethodTable Taxon::makeMethods(void) const
-{ 
-    MethodTable methods = MethodTable();
+/** Initialize methods for this class */
+void Taxon::initializeMethods(void) const
+{
+    
+    // Insert inherited methods
+    ModelObject<RevBayesCore::Taxon>::initializeMethods();
         
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
     methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
 
 //    ArgumentRules* namesArgRules = new ArgumentRules();
 //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::Taxon>::makeMethods() );
+    
 
-    return methods;
 }
 
 

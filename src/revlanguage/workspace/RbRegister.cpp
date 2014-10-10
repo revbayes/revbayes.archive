@@ -29,6 +29,8 @@
 #include <cstdlib>
 
 /* Files including helper classes */
+#include "AddWorkspaceVectorType.h"
+#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RevAbstractType.h"
 #include "RlUserInterface.h"
@@ -51,9 +53,6 @@
 
 /* Container types (in folder "datatypes/container") */
 #include "ModelVector.h"
-#include "ModelVectorAbstractElement.h"
-#include "ModelVectorAbstractRbElement.h"
-#include "RevObjectVector.h"
 #include "WorkspaceVector.h"
 
 /* Evolution types (in folder "datatypes/evolution") */
@@ -139,7 +138,6 @@
 #include "Move_DPPGibbsConcentration.h"
 #include "Move_DPPScaleCatAllocateAux.h"
 #include "Move_MixtureAllocation.h"
-#include "Move_RbMixtureAllocation.h"
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -228,7 +226,6 @@
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
 #include "Dist_mixture.h"
-#include "Dist_rlmixture.h"
 
 /// Functions ///
 
@@ -248,18 +245,17 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_about.h"
 #include "Func_citation.h"
 #include "Func_clear.h"
 #include "Func_contacts.h"
-#include "Func_contributors.h"
+#include "Func_exists.h"
 #include "Func_getwd.h"
 #include "Func_help.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
 #include "Func_modelVector.h"
-#include "Func_modelVectorAbstractElement.h"
-#include "Func_modelVectorAbstractRbElement.h"
 #include "Func_printSeed.h"
 #include "Func_quit.h"
 #include "Func_range.h"
@@ -343,7 +339,6 @@
 #include "Func__or.h"
 #include "Func__unot.h"
 #include "Func__rladd.h"
-#include "Func__rlvectorIndexOperator.h"
 #include "Func__scalarVectorAdd.h"
 #include "Func__scalarVectorDiv.h"
 #include "Func__scalarVectorMult.h"
@@ -409,68 +404,33 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        addType( new Complex()                  );
-        addType( new Integer()                  );
-        addType( new Natural()                  );
-        addType( new Probability()              );
-        addType( new Real()                     );
-        addType( new RealPos()                  );
-        addType( new RlBoolean()                );
-        addType( new RlString()                 );
+        addType( new Complex() );
+//        AddWorkspaceVectorType<Complex,5>::addTypeToWorkspace( *this, new Complex() );
+        AddWorkspaceVectorType<Integer,5>::addTypeToWorkspace( *this, new Integer() );
+        AddWorkspaceVectorType<Natural,5>::addTypeToWorkspace( *this, new Natural() );
+        AddWorkspaceVectorType<Probability,5>::addTypeToWorkspace( *this, new Probability() );
+        AddWorkspaceVectorType<Real,5>::addTypeToWorkspace( *this, new Real() );
+        AddWorkspaceVectorType<RealPos,5>::addTypeToWorkspace( *this, new RealPos() );
+        AddWorkspaceVectorType<RlBoolean,5>::addTypeToWorkspace( *this, new RlBoolean() );
+        AddWorkspaceVectorType<RlString,5>::addTypeToWorkspace( *this, new RlString() );
+        AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
         
-        /* Add container types (in folder "datatypes/container") (alphabetic order) */
-
-        // Note: Only these types of containers can be created implicitly by assignment
-        // or explicitly using the v function or the "[ x1, x2, ... ]" syntax.
-
-        // Model vectors
-        addType( new ModelVector<Integer>()          );
-        addType( new ModelVector<Natural>()          );
-        addType( new ModelVector<Real>()             );
-        addType( new ModelVector<RealPos>()          );
-        addType( new ModelVector<Probability>()      );
-        addType( new ModelVector<RlBoolean>()        );
-        addType( new ModelVector<RlString>()         );
-        addType( new ModelVector<Simplex>()          );
-        addType( new ModelVector<ModelVector<RealPos> >()   );
-        addType( new ModelVector<ModelVector<Real> >()      );
-        addType( new ModelVector<ModelVector<Natural> >()   );
-        addType( new ModelVector<ModelVector<Integer> >()   );
-        addType( new ModelVector<TimeTree>());
-        addType( new ModelVector<Taxon>());
-
+        AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
+        AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
-        // Model vectors of abstract elements
-//        addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
-//        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
-        addType( new ModelVectorAbstractElement<RateMatrix>() );
-
-        // Workspace vectors
-        addType( new WorkspaceVector<Mcmc>()         );
-        addType( new WorkspaceVector<Model>()        );
-        addType( new WorkspaceVector<Monitor>()      );
-        addType( new WorkspaceVector<Move>()         );
-
-        // RevObject vectors
-        addType( new RevObjectVector<Function>()     );
-        addType( new RevObjectVector<Distribution>() );
-        addType( new RevObjectVector<RevObject>()    );
-
+        AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
+        
+//        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
+        addFunction("v", new Func_workspaceVector<Monitor>() );
+        
+        //        AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
+        addFunction("v", new Func_workspaceVector<Move>() );
+        
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         
         /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
-        addType( new AminoAcidState()   );
-        addType( new DnaState()         );
-        addType( new RnaState()         );
-        addType( new StandardState()    );
         
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
-        addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
-        addType( new RevAbstractType( AbstractDiscreteCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
-        addType( new DiscreteCharacterData<AminoAcidState>()    );
-        addType( new DiscreteCharacterData<DnaState>()          );
-        addType( new DiscreteCharacterData<RnaState>()          );
-        addType( new DiscreteCharacterData<StandardState>()     );
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
@@ -479,6 +439,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
         addTypeWithConstructor( "taxon",            new Taxon() );
+        
+        /* Add math types (in folder "datatypes/math") */
+        addType( new RateMap()              );
+        addType( new RealMatrix()           );
+
 
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
@@ -556,7 +521,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_RbMixtureAllocation<RateMatrix>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateMatrix>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
@@ -592,11 +557,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
         addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
 
-        /* Add math types (in folder "datatypes/math") */
-        addType( new RateMap()              );
-        addType( new RateMatrix()           );
-        addType( new RealMatrix()           );
-        addType( new Simplex()              );
         
 
         ///////////////////////////////////////////////////
@@ -750,7 +710,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnMixture",       new Dist_mixture<Natural>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
-		addDistribution( "dnMixture",       new Dist_rlmixture<RateMatrix>() );
+		addDistribution( "dnMixture",       new Dist_mixture<RateMatrix>() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -765,10 +725,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
         
         // regular functions
+        addFunction( "about",                    new Func_about()                    );
         addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "contacts",                 new Func_contacts()                 );
-        addFunction( "contributors",             new Func_contributors()             );
+        addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
         addFunction( "help",                     new Func_help()                     );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
@@ -791,23 +752,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "structure",                new Func_structure()                );
         addFunction( "system",                   new Func_system()                   );
         addFunction( "type",                     new Func_type()                     );
-
-        // vector functions
-        addFunction( "v",         new Func_workspaceVector<Monitor>()                );
-        addFunction( "v",         new Func_workspaceVector<Move>()                   );
-        addFunction( "v",         new Func_modelVectorAbstractElement<AbstractCharacterData>()          );
-        addFunction( "v",         new Func_modelVectorAbstractElement<AbstractDiscreteCharacterData>()  );
-        addFunction( "v",         new Func_modelVectorAbstractRbElement<RateMatrix>()                   );
-        addFunction( "v",         new Func_modelVector<Natural>()                    );
-        addFunction( "v",         new Func_modelVector<Integer>()                    );
-        addFunction( "v",         new Func_modelVector<Real>()                       );
-        addFunction( "v",         new Func_modelVector<RealPos>()                    );
-        addFunction( "v",         new Func_modelVector<Probability>()                );
-        addFunction( "v",         new Func_modelVector<RlBoolean>()                  );
-        addFunction( "v",         new Func_modelVector<Clade>()                      );
-        addFunction( "v",         new Func_modelVector<RlString>()                   );
-        addFunction( "v",         new Func_modelVector<TimeTree>()                   );
-        addFunction( "v",         new Func_modelVector<ModelVector<Natural> >()                    );
         
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
@@ -977,16 +921,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // exponentiation
         addFunction( "_exp",      new Func_power() );
         addFunction( "_exp",      new Func_powerVector() );
-        
-        // index operator '[]'
-        addFunction( "[]",         new Func__vectorIndexOperator<Natural>()                    );
-        addFunction( "[]",         new Func__vectorIndexOperator<Integer>()                    );
-        addFunction( "[]",         new Func__vectorIndexOperator<Real>()                       );
-        addFunction( "[]",         new Func__vectorIndexOperator<RealPos>()                    );
-        addFunction( "[]",         new Func__vectorIndexOperator<RlBoolean>()                  );
-        addFunction( "[]",         new Func__vectorIndexOperator<Clade>()                      );
-        addFunction( "[]",         new Func__vectorIndexOperator<RlString>()                   );
-        addFunction( "[]",         new Func__vectorIndexOperator<TimeTree>()                   );
         
 
         /* Input/output functions (in folder "functions/io") */

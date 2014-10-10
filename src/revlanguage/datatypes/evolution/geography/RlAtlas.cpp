@@ -61,7 +61,7 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
         for (size_t i = 0; i < areas[0].size(); ++i)
         {
             std::string name = areas[0][i]->getName();
-            n->push_back( RlString( name ) );
+            n->push_back( name );
         }
         return new Variable( n );
     }
@@ -86,25 +86,6 @@ const TypeSpec& RlAtlas::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& RlAtlas::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RlAtlas::getTypeSpec(void) const {
     
@@ -112,9 +93,11 @@ const TypeSpec& RlAtlas::getTypeSpec(void) const {
     return typeSpec;
 }
 
-MethodTable RlAtlas::makeMethods( void ) const
+void RlAtlas::initializeMethods( void ) const
 {
-    MethodTable methods;
+    
+    // Insert inherited methods
+    ModelObject<RevBayesCore::TimeAtlas>::initializeMethods();
     
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
     ArgumentRules* nEpochsArgRules              = new ArgumentRules();
@@ -128,9 +111,5 @@ MethodTable RlAtlas::makeMethods( void ) const
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::TimeAtlas>::makeMethods() );
-    
-    return methods;
 }
 

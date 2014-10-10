@@ -63,22 +63,21 @@ const std::string& RevNullObject::getClassType(void) {
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& RevNullObject::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
 	return revTypeSpec; 
 }
 
+
 /** Get type spec */
 const TypeSpec& RevNullObject::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
+    return getClassTypeSpec();
 }
-
 
 
 /** Print the value. We just print "NULL" */

@@ -87,22 +87,6 @@ void Clade::constructInternalObject( void )
 }
 
 
-/* Map calls to member methods */
-RevLanguage::RevPtr<Variable> Clade::executeMethod( const std::string& name, const std::vector<Argument>& args )
-{
-//    if (name == "nnodes") {
-//        size_t n = this->value->getValue().getNumberOfNodes();
-//        return new Natural( n );
-//    }
-//    else if (name == "names") {
-//        const std::vector<std::string>& n = this->value->getValue().getNames();
-//        return new ModelVector<RlString>( n );
-//    } 
-    
-    return ModelObject<RevBayesCore::Clade>::executeMethod( name, args );
-}
-
-
 
 /** Return member rules (no members) */
 const MemberRules& Clade::getMemberRules(void) const {
@@ -135,25 +119,6 @@ const TypeSpec& Clade::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& Clade::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
 }
 
 

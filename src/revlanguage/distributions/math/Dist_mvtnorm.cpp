@@ -38,7 +38,7 @@ Dist_mvtnorm* Dist_mvtnorm::clone( void ) const {
 RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( void ) const {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<std::vector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric >* p = static_cast<const RealSymmetricMatrix &>( precision->getRevObject() ).getDagNode();
     RevBayesCore::MultivariateNormalDistribution* d     = new RevBayesCore::MultivariateNormalDistribution( m,p );
     

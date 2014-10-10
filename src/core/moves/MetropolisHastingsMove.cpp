@@ -34,6 +34,14 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
         (*it)->getAffectedNodes( affectedNodes );
     }
     
+    // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
+    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); it++)
+    {
+        if ( nodes.find(*it) != nodes.end() )
+        {
+            affectedNodes.erase(*it);
+        }
+    }
 }
 
 
@@ -133,7 +141,6 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // that will set the flags for recomputation
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        
         (*it)->touch();
     }
     
@@ -143,7 +150,14 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        lnPriorRatio += (*it)->getLnProbabilityRatio();
+        if ( (*it)->isClamped() )
+        {
+            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+        }
+        else
+        {
+            lnPriorRatio += (*it)->getLnProbabilityRatio();
+        }
     }
     
     // then we recompute the probability for all the affected nodes
@@ -151,9 +165,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     {
         if ( (*it)->isClamped() )
         {
-            
             lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-            
         }
         else
         {
@@ -357,6 +369,13 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->getAffectedNodes( affectedNodes );
+    }
+    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); it++)
+    {
+        if ( nodes.find(*it) != nodes.end() )
+        {
+            affectedNodes.erase(*it);
+        }
     }
     
     proposal->swapNode(oldN, newN);

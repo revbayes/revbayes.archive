@@ -1,6 +1,7 @@
 #ifndef SimplexFromVectorFunction_H
 #define SimplexFromVectorFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -14,10 +15,10 @@ namespace RevBayesCore {
      * This class implements a function that constructs a simplex from a vector of
      * real positive values.
      */
-    class SimplexFromVectorFunction : public TypedFunction< std::vector<double> > {
+    class SimplexFromVectorFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        SimplexFromVectorFunction(const TypedDagNode< std::vector<double> >* vec);                                              //!< Basic constructor
+        SimplexFromVectorFunction(const TypedDagNode< RbVector<double> >* vec);                                              //!< Basic constructor
         SimplexFromVectorFunction(const SimplexFromVectorFunction &n);                                                          //!< Copy constructor
 
         virtual                                         ~SimplexFromVectorFunction(void);                                       //!< Virtual destructor for derived classes
@@ -32,7 +33,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< std::vector<double> >*      realPosVector;                                                          //!< Real positive vector parameter
+        const TypedDagNode< RbVector<double> >*      realPosVector;                                                          //!< Real positive vector parameter
         
     };
     

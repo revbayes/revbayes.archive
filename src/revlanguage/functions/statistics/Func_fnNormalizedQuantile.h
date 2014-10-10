@@ -94,10 +94,10 @@ RevPtr<Variable> Func_fnNormalizedQuantile<valType>::execute( void ) {
         RevBayesCore::DeterministicNode<double> *tmp = new RevBayesCore::DeterministicNode<double>("", new RevBayesCore::QuantileFunction(quant,  dist));
 		gRates.push_back( tmp );
     }
-    RevBayesCore::DeterministicNode<std::vector<double> > *discRates = new RevBayesCore::DeterministicNode<std::vector<double> >( "", new RevBayesCore::VectorFunction<double>(gRates) );
-    RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( discRates );
+    RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *discRates = new RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >( "", new RevBayesCore::VectorFunction<double>(gRates) );
+    RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( discRates, new RevBayesCore::ConstantNode<double>("", new double(1.0) ) );
     
-    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
+    DeterministicNode< RevBayesCore::RbVector<double> > *detNode = new DeterministicNode< RevBayesCore::RbVector<double> >("", func, this->clone());
     
     ModelVector<valType> *theNormalizedVector = new ModelVector<valType>( detNode );
     

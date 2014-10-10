@@ -2,6 +2,7 @@
 #ifndef PowerVectorFunction_H
 #define PowerVectorFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -17,10 +18,10 @@ namespace RevBayesCore {
      * @since 2014-08-29, version 1.0
      *
      */
-    class PowerVectorFunction : public TypedFunction<std::vector<double> > {
+    class PowerVectorFunction : public TypedFunction<RbVector<double> > {
         
     public:
-        PowerVectorFunction(const TypedDagNode<std::vector<double> > *b, const TypedDagNode<double> *e);
+        PowerVectorFunction(const TypedDagNode<RbVector<double> > *b, const TypedDagNode<double> *e);
         
         PowerVectorFunction*                        clone(void) const;                                                  //!< Create a clon.
         void                                        update(void);                                                       //!< Recompute the value
@@ -29,7 +30,7 @@ namespace RevBayesCore {
         void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Implementation of swaping parameters
         
     private:
-        const TypedDagNode<std::vector<double> >*   base;
+        const TypedDagNode<RbVector<double> >*      base;
         const TypedDagNode<double>*                 exponent;
     };
 }
