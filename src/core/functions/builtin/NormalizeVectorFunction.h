@@ -33,7 +33,7 @@ namespace RevBayesCore {
     class NormalizeVectorFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        NormalizeVectorFunction(const TypedDagNode< RbVector<double> > * v);
+        NormalizeVectorFunction(const TypedDagNode< RbVector<double> > * v, const TypedDagNode< double > * s);
 //        NormalizeVectorFunction(const NormalizeVectorFunction &n);                                                                                        //!< Copy constructor
 //        virtual                                            ~NormalizeVectorFunction(void);                                                       //!< Virtual destructor
         
@@ -48,6 +48,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< RbVector<double> >*             vals;
+        const TypedDagNode< double >*                       sum;
         
     };
     
