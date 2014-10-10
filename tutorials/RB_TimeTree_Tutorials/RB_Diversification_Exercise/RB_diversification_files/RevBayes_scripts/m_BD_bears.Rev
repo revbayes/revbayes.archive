@@ -25,9 +25,9 @@ birth_rate := diversification / (denom)
 death_rate := (turnover * diversification) / (denom)
 
 ### rho is the probability of sampling species at the present
-### fix this to 0.68, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
+### fix this to 0.068, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
 ### and we have sampled 10
-rho <- 0.68
+rho <- 0.068
 
 ### the BDP is conditioned on the root time, we can get this value from our tree and set a constant node
 root_time <- treeHeight(T)
