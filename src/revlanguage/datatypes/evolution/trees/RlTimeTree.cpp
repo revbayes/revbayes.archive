@@ -101,25 +101,6 @@ const TypeSpec& TimeTree::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& TimeTree::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& TimeTree::getTypeSpec( void ) const {
     
@@ -130,9 +111,10 @@ const TypeSpec& TimeTree::getTypeSpec( void ) const {
 
 
 /** Make member methods for this class */
-RevLanguage::MethodTable TimeTree::makeMethods( void ) const
+void TimeTree::initializeMethods( void ) const
 {
-    MethodTable methods = MethodTable();
+    // Insert inherited methods
+    ModelObject<RevBayesCore::TimeTree>::initializeMethods();
     
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
@@ -150,9 +132,5 @@ RevLanguage::MethodTable TimeTree::makeMethods( void ) const
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::TimeTree>::makeMethods() );
-    
-    return methods;
 }
 

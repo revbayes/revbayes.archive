@@ -23,7 +23,6 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-//        const MethodTable&                              getMethods(void) const;                                                         //!< Get member methods
 //        RevPtr<RevLanguage::Variable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
 //        MethodTable                                     makeMethods(void) const;
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
@@ -179,21 +178,6 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
     
     return distMemberRules;
 }
-
-//template <class treeType>
-//const RevLanguage::MethodTable& RevLanguage::Dist_phyloDACTMC<treeType>::getMethods( void ) const
-//{
-//    static MethodTable  myMethods   = MethodTable();
-//    static bool         methodsSet  = false;
-//    
-//    if ( !methodsSet )
-//    {quit
-//        myMethods = makeMethods();
-//        methodsSet = true;
-//    }
-//    
-//    return myMethods;
-//}
 
 
 template <class treeType>

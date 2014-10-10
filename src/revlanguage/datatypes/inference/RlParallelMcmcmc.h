@@ -37,8 +37,8 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
         // Member method inits
-        const MethodTable&                          getMethods(void) const;                                                 //!< Get methods
-        RevPtr<Variable>                            executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual void                                initializeMethods(void) const;                                          //!< Initialize methods
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         

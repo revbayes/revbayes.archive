@@ -87,25 +87,6 @@ const TypeSpec& RateMatrix::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RateMatrix::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateMatrix::getTypeSpec(void) const {
     
@@ -115,9 +96,11 @@ const TypeSpec& RateMatrix::getTypeSpec(void) const {
 
 
 /** Make member methods for this class */
-MethodTable RateMatrix::makeMethods( void ) const
+void RateMatrix::initializeMethods( void ) const
 {
-    MethodTable methods = MethodTable();
+    
+    // Insert inherited methods
+    ModelObject<RevBayesCore::RateMatrix>::initializeMethods();
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
@@ -129,9 +112,5 @@ MethodTable RateMatrix::makeMethods( void ) const
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::RateMatrix>::makeMethods() );
-    
-    return methods;
 }
 

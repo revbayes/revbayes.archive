@@ -454,33 +454,15 @@ const TypeSpec& AbstractDiscreteCharacterData::getTypeSpec(void) const {
 }
 
 
-/* Get method specifications */
-const MethodTable& AbstractDiscreteCharacterData::getMethods(void) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( methodsSet == false )
-    {
-        // Make methods
-        myMethods = makeMethods();
-        
-        // Set flag
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /**
  * We make the methods that belong to this abstract class here, to
  * serve derived classes.
  */
-MethodTable AbstractDiscreteCharacterData::makeMethods( void ) const
+void AbstractDiscreteCharacterData::initializeMethods( void ) const
 {
-    MethodTable methods;
-    
+    // Insert inherited methods
+    ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::initializeMethods();
+
     ArgumentRules* ncharArgRules               = new ArgumentRules();
     ArgumentRules* ncharArgRules2              = new ArgumentRules();
     ArgumentRules* namesArgRules               = new ArgumentRules();
@@ -560,10 +542,6 @@ MethodTable AbstractDiscreteCharacterData::makeMethods( void ) const
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
     
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::makeMethods() );
-    
-    return methods;
 }
 
 

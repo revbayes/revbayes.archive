@@ -33,7 +33,7 @@ namespace RevLanguage {
         
         PowerPosterior(void);                                                                                                        //!< Default constructor
         
-                                                    // Basic utility functions
+        // Basic utility functions
         virtual PowerPosterior*                     clone(void) const;                                                          //!< Clone object
         void                                        constructInternalObject(void);                                              //!< We construct the a new internal PowerPosterior object.
         static const std::string&                   getClassType(void);                                                         //!< Get Rev type
@@ -42,9 +42,9 @@ namespace RevLanguage {
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
         
-                                                    // Member method inits
-        const MethodTable&                          getMethods(void) const;                                                     //!< Get methods
-        RevPtr<Variable>                            executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        // Member method inits
+        virtual void                                initializeMethods(void) const;                                              //!< Get methods
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         

@@ -354,34 +354,26 @@ const MemberRules& BurninEstimationConvergenceAssessment::getMemberRules(void) c
 
 
 /* Get method specifications */
-const MethodTable& BurninEstimationConvergenceAssessment::getMethods(void) const {
-    
-    static MethodTable   methods    = MethodTable();
-    static bool          methodsSet = false;
-    
-    if ( methodsSet == false )
-    {
-        ArgumentRules* runArgRules = new ArgumentRules();
-        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+void BurninEstimationConvergenceAssessment::initializeMethods(void) const
+{
+    // necessary call for proper inheritance
+    RevObject::initializeMethods();
+
+    ArgumentRules* runArgRules = new ArgumentRules();
+    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
-        std::vector<std::string> options;
-        options.push_back( "ESS" );
-        options.push_back( "SEM" );
+    std::vector<std::string> options;
+    options.push_back( "ESS" );
+    options.push_back( "SEM" );
         
-        ArgumentRules* burninMethodArgRules = new ArgumentRules();
-        burninMethodArgRules->push_back( new OptionRule("method", options ) );
-        methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
+    ArgumentRules* burninMethodArgRules = new ArgumentRules();
+    burninMethodArgRules->push_back( new OptionRule("method", options ) );
+    methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
         
-        ArgumentRules* verboseArgRules = new ArgumentRules();
-        verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
+    ArgumentRules* verboseArgRules = new ArgumentRules();
+    verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
         
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
-    
-    return methods;
 }
 
 /** Get type spec */
