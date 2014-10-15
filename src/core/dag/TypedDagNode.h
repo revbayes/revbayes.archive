@@ -153,7 +153,7 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const st
                 o << sep;
             }
             std::stringstream ss;
-            ss << RbUtils::sub_vector<valueType>::getElement( getValue(), i );
+            RbUtils::sub_vector<valueType>::printElement( ss, getValue(), i );
             std::string s = ss.str();
             if ( l > 0 )
             {

@@ -188,6 +188,7 @@ namespace RevBayesCore {
 #include "DiscreteCharacterData.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RateMatrix_JC.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 

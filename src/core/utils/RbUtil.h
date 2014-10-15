@@ -17,20 +17,23 @@
 #ifndef RbUtil_H
 #define RbUtil_H
 
-#include "BranchLengthTree.h"
-#include "Taxon.h"
-#include "TimeTree.h"
-#include "Trace.h"
-#include "RateMatrix_GTR.h"
-#include "RateMatrix_JC.h"
+#include "RbContainer.h"
 #include "RbVector.h"
 
-#include <ostream>
+#include <iostream>
 #include <string>
 #include <vector>
 
 
 namespace RevBayesCore {
+    
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const std::vector<bool>& x);                            //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const std::vector<double>& x);                          //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const std::vector<int>& x);                             //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const std::vector<unsigned int>& x);                    //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::string>& x);                     //!< Overloaded output operator
+
     
     namespace RbUtils {
         
@@ -42,7 +45,7 @@ namespace RevBayesCore {
         // for testing if a (template) type is an stl-vector
         template <typename T>
         struct is_vector {
-            static const bool value = false;
+            static const bool value = IsDerivedFrom<T, Container>::Is;
         };
         
         template <typename T,typename Alloc>
@@ -51,26 +54,74 @@ namespace RevBayesCore {
         };
         
         
+        template <typename T, int>
+        class sub_vector_impl {
+        public:
+            //            static const T&  getElement(const T &obj, size_t i) { return obj; }
+            static size_t    size(const T &obj) { return 1; }
+            static void      printElement(std::ostream &o, const T &obj, size_t i) { o << obj; }
+        };
+        
+        
+        template <typename T>
+        class sub_vector_impl<T,1> {
+        public:
+            //            static const T&  getElement(const T &obj, size_t i) { return obj; }
+            static size_t    size(const T &obj) {
+                const Container *c = static_cast<const Container*>( &obj );
+                return c->size();
+            }
+            static void    printElement(std::ostream &o, const T &obj, size_t i) {
+                const Container *c = static_cast<const Container*>( &obj );
+                c->printElement(o,i);
+            }
+        };
+        
+        
         template <typename T>
         class sub_vector {
         public:
-            static const T&  getElement(const T &obj, size_t i) { return obj; }
-            static size_t    size(const T &obj) { return 1; }
+//            static const T&  getElement(const T &obj, size_t i) { return obj; }
+            static size_t    size(const T &obj) { return sub_vector_impl< T, IsDerivedFrom<T, Container>::Is >::size(obj); }
+            static void      printElement(std::ostream &o, const T &obj, size_t i) { return sub_vector_impl< T, IsDerivedFrom<T, Container>::Is >::printElement(o, obj, i); }
         };
         
-        template <typename T>
-        class sub_vector< RbVector<T> > {
+        
+        template <>
+        class sub_vector<double> {
         public:
-            static const T&  getElement(const RbVector<T> &obj, size_t i) { return obj[i]; }
-            static size_t    size(const RbVector<T> &obj) { return obj.size(); }
+            //            static const T&  getElement(const T &obj, size_t i) { return obj; }
+            static size_t    size(const double &obj) { return 1; }
+            static void      printElement(std::ostream &o, const double &obj, size_t i) { o << obj; }
+        };
+        template <>
+        class sub_vector<int> {
+        public:
+            //            static const T&  getElement(const T &obj, size_t i) { return obj; }
+            static size_t    size(const int &obj) { return 1; }
+            static void      printElement(std::ostream &o, const int &obj, size_t i) { o << obj; }
+        };
+        template <>
+        class sub_vector<bool> {
+        public:
+            //            static const T&  getElement(const T &obj, size_t i) { return obj; }
+            static size_t    size(const bool &obj) { return 1; }
+            static void      printElement(std::ostream &o, const bool &obj, size_t i) { o << obj; }
+        };
+        template <>
+        class sub_vector<std::string> {
+        public:
+            //            static const T&  getElement(const T &obj, size_t i) { return obj; }
+            static size_t    size(const std::string &obj) { return 1; }
+            static void      printElement(std::ostream &o, const std::string &obj, size_t i) { o << obj; }
         };
 
-        template <typename T,typename Alloc>
-        class sub_vector<std::vector<T,Alloc> > {
-        public:
-            static const T&  getElement(const std::vector<T,Alloc> &obj, size_t i) { return obj[i]; }
-            static size_t    size(const std::vector<T,Alloc> &obj) { return obj.size(); }
-        };
+//        template <typename T,typename Alloc>
+//        class sub_vector<std::vector<T,Alloc> > {
+//        public:
+//            static const T&  getElement(const std::vector<T,Alloc> &obj, size_t i) { return obj[i]; }
+//            static size_t    size(const std::vector<T,Alloc> &obj) { return obj.size(); }
+//        };
 
 
         
@@ -89,13 +140,6 @@ namespace RevBayesCore {
         };
     }
     
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<bool>& x);                            //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<double>& x);                          //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<int>& x);                             //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<unsigned int>& x);                    //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::string>& x);                     //!< Overloaded output operator
-    
     std::vector<int>                    operator+(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded addition operator
     std::vector<double>                 operator+(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded addition operator
     std::vector<int>                    operator-(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded subtraction operator
@@ -106,6 +150,7 @@ namespace RevBayesCore {
     std::vector<double>                 operator/(const std::vector<double>& x, const std::vector<int>&    y);              //!< Overloaded division operator
     std::vector<double>                 operator/(const std::vector<int>&    x, const std::vector<double>& y);              //!< Overloaded division operator
     std::vector<double>                 operator/(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded division operator
+
     
 }
 

@@ -252,7 +252,7 @@ void MoveOld::tune( void ) {
 }
 
 std::ostream& operator<<(std::ostream& o, const MoveOld& x) {
-    o << "Move";
+    o << "Old-Move";
     
     return o;
 }

@@ -6,6 +6,7 @@
 #include "RbConstants.h"
 #include "StochasticNode.h"
 
+#include <cmath>
 #include <iostream>
 
 

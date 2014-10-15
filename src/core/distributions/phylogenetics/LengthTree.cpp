@@ -6,7 +6,10 @@
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //LengthTree
 
+
 #include "LengthTree.h"
+
+#include <cmath>
 
 using namespace RevBayesCore;
 

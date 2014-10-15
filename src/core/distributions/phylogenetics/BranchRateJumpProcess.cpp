@@ -6,6 +6,7 @@
 #include "StochasticNode.h"
 
 #include <iostream>
+#include <cmath>
 
 
 

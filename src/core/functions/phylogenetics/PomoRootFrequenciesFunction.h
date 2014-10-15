@@ -22,6 +22,7 @@
 #ifndef PomoRootFrequenciesFunction_H
 #define PomoRootFrequenciesFunction_H
 
+#include "RateMatrix.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"

@@ -346,6 +346,8 @@
 #include "Func__sub.h"
 #include "Func__uminus.h"
 #include "Func__vectorIndexOperator.h"
+#include "Func__vectorScalarDiv.h"
+#include "Func__vectorScalarSub.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -878,18 +880,18 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_div",      new Func__div< ModelVector<Real>                  , ModelVector<Integer>  , ModelVector<Real>         >(  )  );
         addFunction( "_div",      new Func__div< ModelVector<RealPos>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( "_div",      new Func__div< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<RealPos>      >(  )  );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Natural>    , RealPos               , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<RealPos>    , Natural               , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , ModelVector<Natural>  , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Natural                 , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Integer>    , Real                  , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Real>       , Integer               , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , ModelVector<Integer>  , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Integer                 , ModelVector<Real>     , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Real>       , Real                  , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , ModelVector<Real>     , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<RealPos>    , RealPos               , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Natural                 , RealPos               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<RealPos                 , Natural               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Integer                 , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Real                    , Integer               , Real                      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , Natural               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Natural                 , RealPos               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , Integer               , Real                      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Integer                 , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
         
         // multiplication
         addFunction( "_mul",      new Func__mult< Natural               , Natural               , Natural               >(  )  );
@@ -910,10 +912,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_sub",      new Func__sub< Real                               , Real                  , Real                  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Integer>               , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<Real>     >(  )  );
-        addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , ModelVector<Integer>  , ModelVector<Integer>  >(  )   );
-        addFunction( "_sub",      new Func__scalarVectorSub<ModelVector<Integer>    , Integer               , ModelVector<Integer>  >(  )   );
-        addFunction( "_sub",      new Func__scalarVectorSub<Real                    , ModelVector<Real>     , ModelVector<Real>     >(  )   );
-        addFunction( "_sub",      new Func__scalarVectorSub<ModelVector<Real>       , Real                  , ModelVector<Real>     >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarDiv<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( "_sub",      new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
         
         // modulo
         addFunction( "_mod",      new Func__mod() );

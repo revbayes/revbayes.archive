@@ -19,10 +19,11 @@
 #ifndef AutocorrelatedBranchMatrixDistribution_H
 #define AutocorrelatedBranchMatrixDistribution_H
 
-#include "TypedDagNode.h"
-#include "TypedDistribution.h"
 #include "RateMatrix_GTR.h"
 #include "RbVector.h"
+#include "TimeTree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
