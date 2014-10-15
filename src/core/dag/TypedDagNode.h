@@ -44,7 +44,6 @@ namespace RevBayesCore {
         virtual bool                                        isSimpleNumeric(void) const;                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
         virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;         //!< Monitor/Print this variable
         virtual void                                        printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;        //!< Monitor/Print this variable
-//        virtual void                                        printValue(std::ostream &o, size_t i, size_t l=12, bool left=false) const;                  //!< Monitor/Print the i-th element of this variable
 
         // getters and setters
         virtual valueType&                                  getValue(void) = 0;
@@ -143,62 +142,15 @@ template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const std::string &sep, int l, bool left) const
 {
     
-    if ( RbUtils::is_vector<valueType>::value ) 
+    std::stringstream ss;
+    ss << getValue();
+    std::string s = ss.str();
+    if ( l > 0 )
     {
-        size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
-        for (size_t i = 0; i < numElements; ++i) 
-        {
-            if ( i > 0 ) 
-            {
-                o << sep;
-            }
-            std::stringstream ss;
-            RbUtils::sub_vector<valueType>::printElement( ss, getValue(), i );
-            std::string s = ss.str();
-            if ( l > 0 )
-            {
-                StringUtilities::fillWithSpaces(s, l, left);
-            }
-            o << s;
-        }
-    } 
-    else 
-    {
-        std::stringstream ss;
-        ss << getValue();
-        std::string s = ss.str();
-        if ( l > 0 )
-        {
-            StringUtilities::fillWithSpaces(s, l, left);
-        }
-        o << s;
+        StringUtilities::fillWithSpaces(s, l, left);
     }
+    o << s;
 }
-
-
-//template<class valueType>
-//void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, size_t index) const {
-//    
-//    if ( RbUtils::is_vector<valueType>::value ) 
-//    {
-//        o << RbUtils::sub_vector<valueType>::getElement( getValue(), index );
-//    } 
-//    else 
-//    {
-//        o << getValue();
-//    }
-//    
-//}
-
-
-//template <typename T, typename Alloc>
-//void RevBayesCore::TypedDagNode<std::vector<T,Alloc> >::printValue(std::ostream &o, size_t index) const {
-////    if ( is_vector<valueType>::value ) {
-//        o << getValue()[index];
-////    } else {
-////        o << getValue();
-////    }
-//}
 
 #endif
 

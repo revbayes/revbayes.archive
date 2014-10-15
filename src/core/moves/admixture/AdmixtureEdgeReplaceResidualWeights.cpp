@@ -20,7 +20,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReplaceResidualWeights::AdmixtureEdgeReplaceResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, double d, int ag, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), branchRates(br), residuals(res), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa), activeGen(ag), delta(d) {
+AdmixtureEdgeReplaceResidualWeights::AdmixtureEdgeReplaceResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode< RbVector<double> >* res, double d, int ag, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), branchRates(br), residuals(res), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa), activeGen(ag), delta(d) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
@@ -656,7 +656,7 @@ void AdmixtureEdgeReplaceResidualWeights::swapNode(DagNode *oldN, DagNode *newN)
     }
     else if (oldN == residuals)
     {
-        residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
+        residuals = static_cast<DeterministicNode< RbVector<double> >* >(newN);
     }
     
     for (size_t i = 0; i < branchRates.size(); i++)

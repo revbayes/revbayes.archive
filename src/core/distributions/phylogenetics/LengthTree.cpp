@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-LengthTree::LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std::vector<double> > *v) : TypedFunction< std::vector<double> >( new std::vector<double>(v->getValue().size(), 1.0) ), vals( v ), tree( t ) {
+LengthTree::LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< RbVector<double> > *v) : TypedFunction< RbVector<double> >( new RbVector<double>(v->getValue().size(), 1.0) ), vals( v ), tree( t ) {
     // add the parameters as parents
     this->addParameter( vals );
     this->addParameter( tree );
@@ -22,7 +22,7 @@ LengthTree::LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std
 }
 
 
-LengthTree::LengthTree(const LengthTree& l) : TypedFunction<std::vector<double> >(l), vals(l.vals), tree(l.tree) {}
+LengthTree::LengthTree(const LengthTree& l) : TypedFunction< RbVector<double> >(l), vals(l.vals), tree(l.tree) {}
 
 
 LengthTree* LengthTree::clone( void ) const {
@@ -63,7 +63,7 @@ void LengthTree::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
     
     if ( oldP == vals )
     {
-        vals = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        vals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

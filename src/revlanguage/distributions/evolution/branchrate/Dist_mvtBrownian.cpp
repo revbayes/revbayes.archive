@@ -34,7 +34,7 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* sig  = static_cast<const RealSymmetricMatrix&>( sigma->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode< RbVector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
     
 //    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
     RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, sig );

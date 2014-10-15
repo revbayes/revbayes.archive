@@ -70,7 +70,7 @@ namespace RevBayesCore {
         
         void setSpecies ( std::vector< std::string > s );
         void setTaxa ( std::vector< Taxon > t );
-       // void setTrees( TypedDagNode< std::vector< Tree > >* ts ) ;
+       // void setTrees( TypedDagNode< RbVector< Tree > >* ts ) ;
         void setTrees ( const std::vector< TimeTree >& ts );
         void setTrees ( const std::vector< BranchLengthTree >& ts );
         std::vector< std::string > getSpecies ( ) const;

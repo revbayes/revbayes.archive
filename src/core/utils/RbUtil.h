@@ -28,11 +28,11 @@
 namespace RevBayesCore {
     
     // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<bool>& x);                            //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<double>& x);                          //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<int>& x);                             //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<unsigned int>& x);                    //!< Overloaded output operator
-    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::string>& x);                     //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const std::vector<bool>& x);                            //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const std::vector<double>& x);                          //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const std::vector<int>& x);                             //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const std::vector<unsigned int>& x);                    //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::string>& x);                     //!< Overloaded output operator
 
     
     namespace RbUtils {

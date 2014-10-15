@@ -16,10 +16,10 @@
 
 namespace RevBayesCore {
     
-    class LengthTree : public TypedFunction< std::vector<double> > {
+    class LengthTree : public TypedFunction< RbVector<double> > {
         
     public:
-        LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std::vector<double> > * v);
+        LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< RbVector<double> > * v);
         
         LengthTree(const LengthTree& l);
         
@@ -35,7 +35,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode< RbVector<double> >*           vals;
         const TypedDagNode< TimeTree >*                     tree;
     };
     
