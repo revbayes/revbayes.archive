@@ -6,18 +6,22 @@
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#include "RateMatrix_FreeK.h"
+#include "EigenSystem.h"
+#include "MatrixComplex.h"
 #include "MatrixReal.h"
+#include "RateMatrix_FreeK.h"
 #include "RbException.h"
+#include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
+#include <string>
 #include <iomanip>
 
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeK::RateMatrix_FreeK(void) : GeneralRateMatrix( n ){
+RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ){
     
     theEigenSystem       = new EigenSystem(theRateMatrix);
     c_ijk.resize(numStates * numStates * numStates);
@@ -76,29 +80,29 @@ void RateMatrix_FreeK::fillRateMatrix( void )
     
     MatrixReal& m = *theRateMatrix;
     
-    // set the off-diagonal portions of the rate matrix
-    m[0][0] = -transitionRates[1];
-    m[0][1] = transitionRates[1];
-    m[1][0] = transitionRates[0];
-    m[1][1] = -transitionRates[0];
+    // fill the rate matrix
+    for (size_t i=0, k=0; i<numStates; i++)
+    {
+        double sum = 0.0;
+        
+        // off-diagonal
+        for (size_t j=0; j<numStates; j++)
+        {
+            if (i==j)
+                continue;
+            double r = transitionRates[k] * 1.0; // stationaryFreqs[j];
+            sum += r;
+            m[i][j] = r;
+            k++;
+        }
+        
+        // diagonal
+        m[i][i] = -sum;
+    }
     
     // set flags
     needsUpdate = true;
 }
-
-
-void RateMatrix_FreeK::updateMatrix( void ) {
-    
-    if ( needsUpdate )
-    {
-        fillRateMatrix();
-        
-        // clean flags
-        needsUpdate = false;
-    }
-}
-
-
 
 /** Do precalculations on eigenvectors */
 void RateMatrix_FreeK::calculateCijk(void)
@@ -240,13 +244,14 @@ void RateMatrix_FreeK::updateMatrix( void ) {
     if ( needsUpdate )
     {
         // compute the off-diagonal values
-        computeOffDiagonal();
+//        computeOffDiagonal();
         
         // set the diagonal values
-        setDiagonal();
+//        setDiagonal();
         
         // rescale
-        rescaleToAverageRate( 1.0 );
+//        rescaleToAverageRate( 1.0 );
+        fillRateMatrix();
         
         // now update the eigensystem
         updateEigenSystem();
