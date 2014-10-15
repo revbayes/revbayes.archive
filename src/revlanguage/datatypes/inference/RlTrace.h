@@ -54,6 +54,10 @@ namespace RevLanguage {
         void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
     };
+
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const Trace& x);                                //!< Overloaded output operator
+
     
 }
 

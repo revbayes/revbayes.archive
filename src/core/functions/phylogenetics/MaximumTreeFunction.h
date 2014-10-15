@@ -25,6 +25,7 @@
 
 #include "RateMatrix_GTR.h"
 #include "RbVector.h"
+#include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 

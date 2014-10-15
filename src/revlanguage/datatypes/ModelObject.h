@@ -97,6 +97,7 @@ namespace RevLanguage {
 #include "Workspace.h"
 
 #include <cassert>
+#include <cmath>
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject() :

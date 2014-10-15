@@ -374,8 +374,6 @@ clear()
 
 
 
-
-# testing the function definition
 # Testing function definitions
 
 # simple square function
@@ -384,6 +382,7 @@ function square (x) { x * x }
 a <- square(5.0)
 print(filename = "Test_basic.txt", append = TRUE, a)
 
+print(filename = "Test_basic.txt", append = TRUE, "Computing the factorial")
 # function for computing the factorial
 function Natural fac(i) {
    if (i > 1) {

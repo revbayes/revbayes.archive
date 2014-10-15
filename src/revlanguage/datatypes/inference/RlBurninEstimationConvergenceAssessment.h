@@ -1,6 +1,7 @@
 #ifndef RlBurninEstimationConvergenceAssessment_H
 #define RlBurninEstimationConvergenceAssessment_H
 
+#include "Trace.h"
 #include "TypedDagNode.h"
 #include "RevObject.h"
 

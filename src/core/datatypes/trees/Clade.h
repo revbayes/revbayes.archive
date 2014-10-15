@@ -23,6 +23,8 @@ namespace RevBayesCore {
                                                     Clade(void);                                            //! Default constructor: empty clade of age 0.0
                                                     Clade(const std::vector<std::string> &n, double a);     //!< Default constructor with optional index
         
+        virtual                                    ~Clade() {}
+        
         std::vector<std::string>::const_iterator    begin(void) const;
         std::vector<std::string>::iterator          begin(void);
         std::vector<std::string>::const_iterator    end(void) const;

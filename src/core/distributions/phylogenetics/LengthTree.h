@@ -9,8 +9,8 @@
 #ifndef revbayes_LengthTree_h
 #define revbayes_LengthTree_h
 
+#include "TimeTree.h"
 #include "TypedFunction.h"
-
 #include "TypedDistribution.h"
 
 

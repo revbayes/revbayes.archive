@@ -545,3 +545,10 @@ std::ostream& operator<<(std::ostream& o, const RevObject& x) {
     return o;
 }
 
+/** Make sure we can print the value of the object easily */
+std::ostream& RevLanguage::operator<<(std::ostream& o, const RevObject& x) {
+    
+    x.printValue(o);
+    return o;
+}
+

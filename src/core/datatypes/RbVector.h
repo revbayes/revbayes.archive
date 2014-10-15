@@ -48,6 +48,7 @@ namespace RevBayesCore {
         
         // public member functions
         RbVector<valueType>*                                clone(void) const;                                                                      //!< Create an independent clone
+        void                                                printElement(std::ostream &o, size_t i) const;                                          //!< Print the i-th element
         
         // public (stl-like) vector functions
 //        RbIterator<valueType>                               begin(void);
@@ -163,6 +164,17 @@ int RevBayesCore::RbVector<valueType>::pivot(int first, int last)
     delete temp;
     
     return p;
+}
+
+
+
+
+template <class valueType>
+void RevBayesCore::RbVector<valueType>::printElement(std::ostream& o, size_t i) const
+{
+    
+    o << this->operator[](i);
+    
 }
 
 

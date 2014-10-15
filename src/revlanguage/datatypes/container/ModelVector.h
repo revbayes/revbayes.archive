@@ -1,7 +1,7 @@
 #ifndef ModelVector_H
 #define ModelVector_H
 
-#include "Container.h"
+#include "RlContainer.h"
 #include "ModelObject.h"
 #include "RbVector.h"
 
