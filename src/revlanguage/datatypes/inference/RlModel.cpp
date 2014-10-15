@@ -215,6 +215,8 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                 nname << (*it);
             std::string stname = nname.str();
             std::replace( stname.begin(), stname.end(), '[', '_');
+			std::replace( stname.begin(), stname.end(), '.', '_');
+
             stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
                   
             std::stringstream rl;
@@ -308,6 +310,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                     nname << (*it);
                 std::string stname = nname.str();
                 std::replace( stname.begin(), stname.end(), '[', '_');
+				std::replace( stname.begin(), stname.end(), '.', '_');
                 stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
 
                 if((*it)->getNumberOfChildren() > 0){
