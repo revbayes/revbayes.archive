@@ -298,6 +298,7 @@
 #include "Func_dayhoff.h"
 #include "Func_f81.h"
 #include "Func_FreeBinary.h"
+#include "Func_FreeK.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
 #include "Func_t92.h"
@@ -950,6 +951,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "fnFreeBinary", new Func_FreeBinary());
+        addFunction( "fnFreeK",      new Func_FreeK());
         addFunction( "blosum62", new Func_blosum62());
         addFunction( "cpRev",    new Func_cpRev()   );
         addFunction( "dayhoff",  new Func_dayhoff() );

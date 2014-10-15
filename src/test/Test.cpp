@@ -24,6 +24,7 @@
 #include "TestDistributions.h"
 #include "TestCharacterHistory.h"
 #include "TestDPPRelClock.h"
+#include "TestFreeK.h"
 #include "TestGtrGammaLikelihood.h"
 #include "TestGtrGammaModel.h"
 #include "TestGtrModel.h"
@@ -154,7 +155,18 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestPathSampling testPs = TestPathSampling();
-        testPs.run();
+//        testPs.run();
+    }
+    catch (RbException &e)
+    {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    
+    try
+    {
+        TestFreeK testFk = TestFreeK();
+        testFk.run();
     }
     catch (RbException &e)
     {

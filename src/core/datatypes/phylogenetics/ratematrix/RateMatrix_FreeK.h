@@ -1,13 +1,13 @@
 //
-//  RateMatrix_FreeBinary.h
+//  RateMatrix_FreeK.h
 //  rb_mlandis
 //
 //  Created by Michael Landis on 4/4/14.
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__RateMatrix_FreeBinary__
-#define __rb_mlandis__RateMatrix_FreeBinary__
+#ifndef __rb_mlandis__RateMatrix_FreeK__
+#define __rb_mlandis__RateMatrix_FreeK__
 
 #include "GeneralRateMatrix.h"
 #include <complex>
@@ -18,20 +18,20 @@ namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
     
-    class RateMatrix_FreeBinary : public GeneralRateMatrix {
+    class RateMatrix_FreeK : public GeneralRateMatrix {
         
     public:
-        RateMatrix_FreeBinary(size_t n);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_FreeBinary(const RateMatrix_FreeBinary& m);                                                                                //!< Copy constructor
-        virtual                         ~RateMatrix_FreeBinary(void);                                                              //!< Destructor
+        RateMatrix_FreeK(size_t n);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_FreeK(const RateMatrix_FreeK& m);                                                                                //!< Copy constructor
+        virtual                         ~RateMatrix_FreeK(void);                                                              //!< Destructor
         
         // overloaded operators
-        RateMatrix_FreeBinary&          operator=(const RateMatrix_FreeBinary& r);
+        RateMatrix_FreeK&          operator=(const RateMatrix_FreeK& r);
         
         // RateMatrix functions
         double                          averageRate(void) const;
         void                            calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
-        RateMatrix_FreeBinary*          clone(void) const;
+        RateMatrix_FreeK*               clone(void) const;
         void                            fillRateMatrix(void);
         void                            updateMatrix(void);
         
@@ -48,4 +48,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__RateMatrix_FreeBinary__) */
+#endif /* defined(__rb_mlandis__RateMatrix_FreeK__) */
