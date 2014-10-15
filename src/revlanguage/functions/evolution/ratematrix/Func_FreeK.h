@@ -1,10 +1,17 @@
+//
+//  Func_FreeK.h
+//  rb_mlandis
+//
+//  Created by Michael Landis on 9/19/14.
+//  Copyright (c) 2014 Michael Landis. All rights reserved.
+//
+
 /**
  * @file
- * This file contains the declaration of the RevLanguage dec_biogeo function, 
- * which is used to created deterministic variable associated with the dec_biogeo
- * function.
+ * This file contains the declaration of the RevLanguage Jukes-Cantor (JC) function, which
+ * is used to create deterministic variable associated with the jc function.
  *
- * @brief Declaration and implementation of Func_biogeo_de
+ * @brief Declaration and implementation of RlFunc_FreeK
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -16,8 +23,8 @@
  */
 
 
-#ifndef Func_biogeo_de_H
-#define Func_biogeo_de_H
+#ifndef Func_FreeK_H
+#define Func_FreeK_H
 
 #include "RlFunction.h"
 
@@ -26,13 +33,13 @@
 
 namespace RevLanguage {
     
-    class Func_biogeo_de :  public Function {
+    class Func_FreeK :  public Function {
         
     public:
-        Func_biogeo_de( void );
+        Func_FreeK( void );
         
         // Basic utility functions
-        Func_biogeo_de*                                clone(void) const;                                                              //!< Clone the object
+        Func_FreeK*                                     clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -41,7 +48,9 @@ namespace RevLanguage {
         RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        
     };
+    
 }
 
 #endif

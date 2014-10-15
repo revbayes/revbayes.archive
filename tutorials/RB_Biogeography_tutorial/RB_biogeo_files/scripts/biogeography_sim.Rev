@@ -23,13 +23,14 @@ for (i in 1:n_species) {
 
 # Birth-Death process priors
 speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+extinction ~ exponential(20.0)
 tree_height ~ unif(5.0,10.0)
 
 # override drawn values
-speciation.setValue(0.05)
-extinction.setValue(0.01)
 tree_height.setValue(1.0)
+speciation.setValue(0.6)
+extinction.setValue(0.5)
+
 
 # Species tree from birth-death process
 tree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=names)
@@ -39,6 +40,9 @@ tree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_speci
 #########################
 # range evolution model #
 #########################
+
+fe <- false
+uc <- false
 
 # Per-area gain and loss rates 
 #   glr[1]: 1->0, glr[2]: 0->1
@@ -50,18 +54,21 @@ Q_site 		:= fnFreeBinary(glr)
 
 # dp is the distance-dependence power parameter, beta
 dp          ~ dnExponential(10.0)
+dp.setValue(0.000001)
 
 # grm is the geographical rate modifier function, eta
 grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
 
 # Q models the dispersal-extinction process (CTMC)
-Q_area      := fnBiogeoDE(gainLossRates=Q_site, geoRateMod=grm, numAreas=n_areas, forbidExtinction=true)
+#Q_area      := fnBiogeoDE(gainLossRates=Q_site, geoRateMod=grm, numAreas=n_areas, forbidExtinction=true)
+Q_area      := fnBiogeoDE(gainLossRates=Q_site, numAreas=n_areas, forbidExtinction=fe)
 
 # csf models the cladogenic state frequencies (sympatry, peripatry, allopatry)
 P_csf 		~  dnDirichlet([100,1,1])
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
-d           ~  dnPhyloDACTMC(tree=tree, Q=Q_area, C=P_csf, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+
+d           ~  dnPhyloDACTMC(tree=tree, Q=Q_area, C=P_csf, type="Biogeo", forbidExtinction=fe, useCladogenesis=uc)
 d.redraw()
 
 ###########################
@@ -69,10 +76,10 @@ d.redraw()
 ###########################
 
 # Making a backup for future reference:
-tree_true <- tree
-glr_true <- glr
-dp_true <- dp
-P_csf_true <- P_csf
+#tree_true <- tree
+#glr_true <- glr
+#dp_true <- dp
+#P_csf_true <- P_csf
 
 
 
@@ -87,7 +94,7 @@ P_csf_true <- P_csf
 
 # We need to save the species tree, the gene trees, and the gene alignments
 # Saving the species tree
-write(tree_true, filename=in_fp + "tree_true.tree")
+write(tree, filename=in_fp + "range.tree")
 
 # Saving the gene alignments
 writeNexus(d, filename=in_fp+"range.nex")
