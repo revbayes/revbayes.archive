@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class AdmixtureDivergenceSwap : public MoveOld {
         
     public:
-        AdmixtureDivergenceSwap( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);                                                          //!<  constructor
+        AdmixtureDivergenceSwap( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode< RbVector<double> >* res, int ag, bool asa, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         AdmixtureDivergenceSwap*              clone(void) const;                                                                  //!< Clone object
@@ -51,7 +51,7 @@ namespace RevBayesCore {
         // member variables
         StochasticNode<AdmixtureTree>*  variable;
         StochasticNode<double>*         rate;
-        DeterministicNode<std::vector<double> >* residuals;
+        DeterministicNode<RbVector<double> >* residuals;
         std::vector< ContinuousStochasticNode*> branchRates;
         bool                            changed;
         bool                            failed;

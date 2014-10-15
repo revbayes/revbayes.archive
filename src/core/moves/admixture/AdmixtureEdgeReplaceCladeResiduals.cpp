@@ -19,9 +19,9 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReplaceCladeResiduals::AdmixtureEdgeReplaceCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), branchRates(br), residuals(res), activeGen(ag), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa) {
+AdmixtureEdgeReplaceCladeResiduals::AdmixtureEdgeReplaceCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode< RbVector<double> >* res, int ag, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), branchRates(br), residuals(res), activeGen(ag), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa) {
 
-//AdmixtureEdgeReplaceCladeResiduals::AdmixtureEdgeReplaceCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), maxEvents(me), allowSisterAdmixture(asa), numNodes(0) {
+//AdmixtureEdgeReplaceCladeResiduals::AdmixtureEdgeReplaceCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode< RbVector<double> >* res, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), maxEvents(me), allowSisterAdmixture(asa), numNodes(0) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
@@ -487,7 +487,7 @@ void AdmixtureEdgeReplaceCladeResiduals::swapNode(DagNode *oldN, DagNode *newN) 
     }
     else if (oldN == residuals)
     {
-        residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
+        residuals = static_cast<DeterministicNode< RbVector<double> >* >(newN);
     }
     
     

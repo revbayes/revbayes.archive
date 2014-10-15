@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector< double > > * s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
+AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< RbVector< double > > * s, const TypedDagNode< double >* rr): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
 tau( t ), 
 sigma( s ), 
 rootRate( rr ),
@@ -26,7 +26,7 @@ scaleValue( new ConstantNode<double>(" ", new double(1.0) )) {
     simulate();
 }
 
-AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, TypedDagNode< std::vector< double > > *s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
+AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, TypedDagNode< RbVector< double > > *s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
 tau( t ), 
 sigma( s ), 
 rootRate( rr ),
@@ -36,7 +36,7 @@ scaleValue( sv ) {
 }
 
 
-AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ), scaleValue( n.scaleValue ) {
+AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n): TypedDistribution< RbVector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ), scaleValue( n.scaleValue ) {
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -178,7 +178,7 @@ void AutocorrelatedLognormalRateBranchwiseVarDistribution::swapParameter(const D
     }
     
     if ( oldP == sigma ) {
-        sigma = static_cast< const TypedDagNode< std::vector<double> > * >( newP );
+        sigma = static_cast< const TypedDagNode< RbVector<double> > * >( newP );
     }
     
     if ( oldP == rootRate ) {

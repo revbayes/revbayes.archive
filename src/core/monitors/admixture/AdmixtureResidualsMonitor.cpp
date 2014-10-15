@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(TypedDagNode< std::vector< double > >* r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,r), outStream(), residuals(r), taxonNames(tn), filename( fname ), separator( del ), posterior( pp ),  prior( pr ), likelihood( l ), append(ap)
+AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(TypedDagNode< RbVector< double > >* r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,r), outStream(), residuals(r), taxonNames(tn), filename( fname ), separator( del ), posterior( pp ),  prior( pr ), likelihood( l ), append(ap)
 {
 
 }
@@ -188,7 +188,7 @@ void AdmixtureResidualsMonitor::swapNode(DagNode *oldN, DagNode *newN) {
     
     if (oldN == residuals)
     {
-        residuals = static_cast<TypedDagNode<std::vector<double> >* >(newN);
+        residuals = static_cast<TypedDagNode< RbVector<double> >* >(newN);
     }
     
     else {

@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class MeanVecContinuousValStatistic : public TypedFunction<double> {
         
     public:
-																MeanVecContinuousValStatistic(const TypedDagNode< std::vector<double> >* v);	//!< Default constructor
+																MeanVecContinuousValStatistic(const TypedDagNode< RbVector<double> >* v);	//!< Default constructor
 																MeanVecContinuousValStatistic(const MeanVecContinuousValStatistic& t);			//!< Copy constructor
         virtual													~MeanVecContinuousValStatistic(void);											//!< Destructor
         
@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
     private:
         // members
-        const TypedDagNode< std::vector<double> >*			elementVals;
+        const TypedDagNode< RbVector<double> >*			elementVals;
     };
 }
 

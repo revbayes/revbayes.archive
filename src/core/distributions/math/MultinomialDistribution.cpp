@@ -12,13 +12,16 @@
 
 using namespace RevBayesCore;
 
-MultinomialDistribution::MultinomialDistribution(const TypedDagNode< std::vector<double> > *p, const TypedDagNode<int> *n) : TypedDistribution< std::vector<int> >( new std::vector<int>() ), p( p ), n( n ) {
+MultinomialDistribution::MultinomialDistribution(const TypedDagNode< RbVector<double> > *p, const TypedDagNode<int> *n) : TypedDistribution< RbVector<int> >( new RbVector<int>() ),
+    p( p ),
+    n( n )
+{
         
     *value = RbStatistics::Multinomial::rv(p->getValue(), size_t( n->getValue() ), *GLOBAL_RNG);
 }
 
 
-MultinomialDistribution::MultinomialDistribution(const MultinomialDistribution &m) : TypedDistribution<std::vector<int> >( m ), p( m.p ), n (m.n) {
+MultinomialDistribution::MultinomialDistribution(const MultinomialDistribution &m) : TypedDistribution< RbVector<int> >( m ), p( m.p ), n (m.n) {
 }
 
 
@@ -61,7 +64,7 @@ void MultinomialDistribution::swapParameter(const DagNode *oldP, const DagNode *
     
     if (oldP == p)
     {
-        p = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        p = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == n)
     {

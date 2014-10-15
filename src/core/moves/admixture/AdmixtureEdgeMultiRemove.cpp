@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeMultiRemove::AdmixtureEdgeMultiRemove(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, double p, int ag, double w) : MoveOld( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), changed(false), failed(false), activeGen(ag), delta(d), pRemove(p) {
+AdmixtureEdgeMultiRemove::AdmixtureEdgeMultiRemove(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode< RbVector<double> >* res, double d, double p, int ag, double w) : MoveOld( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), changed(false), failed(false), activeGen(ag), delta(d), pRemove(p) {
     
     //nodes.insert(rate);
     nodes.insert(residuals);
@@ -186,7 +186,7 @@ void AdmixtureEdgeMultiRemove::swapNode(DagNode *oldN, DagNode *newN) {
     */
     else if (oldN == residuals)
     {
-        residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
+        residuals = static_cast<DeterministicNode< RbVector<double> >* >(newN);
     }
     else if (oldN == admixtureCount)
     {

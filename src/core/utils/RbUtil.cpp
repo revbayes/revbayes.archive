@@ -11,77 +11,77 @@
 #include "Clade.h"
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<bool>& x) {
-    o << "(";
-    for (std::vector<bool>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        if ( *it ) {
-            o << "TRUE";
-        } else {
-            o << "FALSE";
-        }
-    }
-    o << ")";
-    
-    return o;
-}
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<double>& x) {
-    o << "(";
-    for (std::vector<double>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<int>& x) {
-    o << "(";
-    for (std::vector<int>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<unsigned int>& x) {
-    o << "(";
-    for (std::vector<unsigned int>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<std::string>& x) {
-    o << "(";
-    for (std::vector<std::string>::const_iterator it = x.begin(); it != x.end(); ++it) {
-        if ( it != x.begin() ) {
-            o << ", ";
-        }
-        o << *it;
-    }
-    o << ")";
-    
-    return o;
-}
+//std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<bool>& x) {
+//    o << "(";
+//    for (std::vector<bool>::const_iterator it = x.begin(); it != x.end(); ++it) {
+//        if ( it != x.begin() ) {
+//            o << ", ";
+//        }
+//        if ( *it ) {
+//            o << "TRUE";
+//        } else {
+//            o << "FALSE";
+//        }
+//    }
+//    o << ")";
+//    
+//    return o;
+//}
+//
+//std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<double>& x) {
+//    o << "(";
+//    for (std::vector<double>::const_iterator it = x.begin(); it != x.end(); ++it) {
+//        if ( it != x.begin() ) {
+//            o << ", ";
+//        }
+//        o << *it;
+//    }
+//    o << ")";
+//    
+//    return o;
+//}
+//
+//
+//std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<int>& x) {
+//    o << "(";
+//    for (std::vector<int>::const_iterator it = x.begin(); it != x.end(); ++it) {
+//        if ( it != x.begin() ) {
+//            o << ", ";
+//        }
+//        o << *it;
+//    }
+//    o << ")";
+//    
+//    return o;
+//}
+//
+//
+//std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<unsigned int>& x) {
+//    o << "(";
+//    for (std::vector<unsigned int>::const_iterator it = x.begin(); it != x.end(); ++it) {
+//        if ( it != x.begin() ) {
+//            o << ", ";
+//        }
+//        o << *it;
+//    }
+//    o << ")";
+//    
+//    return o;
+//}
+//
+//
+//std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<std::string>& x) {
+//    o << "(";
+//    for (std::vector<std::string>::const_iterator it = x.begin(); it != x.end(); ++it) {
+//        if ( it != x.begin() ) {
+//            o << ", ";
+//        }
+//        o << *it;
+//    }
+//    o << ")";
+//    
+//    return o;
+//}
 
 
 std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::vector<int>& y)

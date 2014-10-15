@@ -19,7 +19,7 @@
 namespace RevBayesCore {
     
     template<class treeType>
-    class MrcaFunction : public TypedFunction<std::vector<std::vector<TopologyNode*> > >
+    class MrcaFunction : public TypedFunction< RbVector<std::vector<TopologyNode*> > >
     {
     public:
         MrcaFunction(const TypedDagNode<treeType>* t);
@@ -59,7 +59,7 @@ using namespace RevBayesCore;
 
 template<class treeType>
 MrcaFunction<treeType>::MrcaFunction(const TypedDagNode<treeType>* t) :
-    TypedFunction<std::vector<std::vector<TopologyNode*> > >(new std::vector<std::vector<TopologyNode*> >)
+    TypedFunction< RbVector<std::vector<TopologyNode*> > >(new std::vector<std::vector<TopologyNode*> >)
     ,tau(t)
 {
     addParameter(tau);
@@ -69,7 +69,7 @@ MrcaFunction<treeType>::MrcaFunction(const TypedDagNode<treeType>* t) :
 
 template<class treeType>
 MrcaFunction<treeType>::MrcaFunction(const MrcaFunction& n) :
-    TypedFunction<std::vector<std::vector<TopologyNode*> > >( n ),
+    TypedFunction< RbVector<std::vector<TopologyNode*> > >( n ),
     tau(n.tau),
     numTaxa(n.numTaxa)
 {

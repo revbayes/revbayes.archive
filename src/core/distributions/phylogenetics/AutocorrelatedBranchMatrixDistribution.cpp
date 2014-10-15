@@ -14,7 +14,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-AutocorrelatedBranchMatrixDistribution::AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< std::vector< double > >* rf, const TypedDagNode< std::vector< double > >* er, const TypedDagNode< double >* a): TypedDistribution< RbVector< RateMatrix > >( new RbVector<RateMatrix>(t->getValue().getNumberOfNodes()-1, RateMatrix_GTR(rf->getValue().size()) ) ), tau( t ), changeProbability( p ), rootFrequencies( rf ), exchangeabilityRates( er ), alpha( a ) {
+AutocorrelatedBranchMatrixDistribution::AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< RbVector< double > >* rf, const TypedDagNode< RbVector< double > >* er, const TypedDagNode< double >* a): TypedDistribution< RbVector< RateMatrix > >( new RbVector<RateMatrix>(t->getValue().getNumberOfNodes()-1, RateMatrix_GTR(rf->getValue().size()) ) ), tau( t ), changeProbability( p ), rootFrequencies( rf ), exchangeabilityRates( er ), alpha( a ) {
     
     delete value;
     value = simulate();
@@ -169,12 +169,12 @@ void AutocorrelatedBranchMatrixDistribution::swapParameter( const DagNode *oldP,
     
     if ( oldP == rootFrequencies )
     {
-        rootFrequencies = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
+        rootFrequencies = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
     if ( oldP == exchangeabilityRates )
     {
-        exchangeabilityRates = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
+        exchangeabilityRates = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
     if ( oldP == alpha )

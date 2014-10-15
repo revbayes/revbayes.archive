@@ -25,8 +25,8 @@ namespace RevBayesCore {
     class AdmixtureEdgeAddResidualWeights : public MoveOld {
         
     public:
-//        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, int me, bool asa, double weight);                                                          //!<  constructor
-        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double weight);                                                          //!<  constructor
+//        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode< RbVector<double> >* res, ConstantNode<int>* dt, int me, bool asa, double weight);                                                          //!<  constructor
+        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode< RbVector<double> >* res, double d, int ag, int me, bool asa, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeAddResidualWeights*              clone(void) const;                                                                  //!< Clone object
@@ -49,7 +49,7 @@ namespace RevBayesCore {
         StochasticNode<AdmixtureTree>*  variable;
         StochasticNode<double>*         rate;
         StochasticNode<int>*            admixtureCount;
-        DeterministicNode<std::vector<double> >* residuals;
+        DeterministicNode< RbVector<double> >* residuals;
         //ConstantNode<int>*              delayTimer;
         unsigned long                   activeGen;
         bool                            changed;

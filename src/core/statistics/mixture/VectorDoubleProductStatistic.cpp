@@ -24,15 +24,15 @@
 
 using namespace RevBayesCore;
 
-VectorDoubleProductStatistic::VectorDoubleProductStatistic(const TypedDagNode< std::vector<double> >* v, const TypedDagNode< double >* r) : 
-TypedFunction< std::vector<double> >( new std::vector<double>() ), elementVals( v ), multiplier( r ) {
+VectorDoubleProductStatistic::VectorDoubleProductStatistic(const TypedDagNode< RbVector<double> >* v, const TypedDagNode< double >* r) : 
+TypedFunction< RbVector<double> >( new RbVector<double>() ), elementVals( v ), multiplier( r ) {
     // add the tree parameter as a parent
     addParameter( elementVals );
     addParameter( multiplier );
     update();
 }
 
-VectorDoubleProductStatistic::VectorDoubleProductStatistic(const VectorDoubleProductStatistic &t) : TypedFunction< std::vector<double> >( t ), elementVals( t.elementVals ), multiplier( t.multiplier ) {
+VectorDoubleProductStatistic::VectorDoubleProductStatistic(const VectorDoubleProductStatistic &t) : TypedFunction< RbVector<double> >( t ), elementVals( t.elementVals ), multiplier( t.multiplier ) {
     // no need to add parameters, happens automatically
 }
 
@@ -58,7 +58,7 @@ void VectorDoubleProductStatistic::update( void ) {
 void VectorDoubleProductStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
 	
     if (oldP == elementVals) {
-        elementVals = static_cast< const TypedDagNode< std::vector<double> >* >( newP );
+        elementVals = static_cast< const TypedDagNode< RbVector<double> >* >( newP );
     }
     if (oldP == multiplier) {
         multiplier = static_cast< const TypedDagNode< double >* >( newP );

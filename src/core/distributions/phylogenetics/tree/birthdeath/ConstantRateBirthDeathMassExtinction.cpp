@@ -14,7 +14,7 @@
 using namespace RevBayesCore;
 
 ConstantRateBirthDeathMassExtinction::ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-                                                     const TypedDagNode< std::vector<double> >* met, const TypedDagNode< std::vector<double> >* mep, 
+                                                     const TypedDagNode< RbVector<double> >* met, const TypedDagNode< RbVector<double> >* mep, 
                                                      const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
                                                      const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, ro, r, ss, cdt, tn, c),
     speciation( s ),
@@ -164,11 +164,11 @@ void ConstantRateBirthDeathMassExtinction::swapParameter(const DagNode *oldP, co
     }
     else if (oldP == massExtinctionTimes) 
     {
-        massExtinctionTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        massExtinctionTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == massExtinctionSurvivalProbabilities)
     {
-        massExtinctionSurvivalProbabilities = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        massExtinctionSurvivalProbabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else
     {

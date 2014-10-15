@@ -43,8 +43,8 @@ namespace RevBayesCore {
     class AdmixtureEdgeMultiRemove : public MoveOld {
         
     public:
-        //AdmixtureEdgeMultiRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor
-        AdmixtureEdgeMultiRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double delta, double p, int ag, double weight);                                            //!<  constructor
+        //AdmixtureEdgeMultiRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode< RbVector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor
+        AdmixtureEdgeMultiRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode< RbVector<double> >* res, double delta, double p, int ag, double weight);                                            //!<  constructor
         
         
         // Basic utility functions
@@ -70,7 +70,7 @@ namespace RevBayesCore {
         StochasticNode<AdmixtureTree>*  variable;
         StochasticNode<double>*         rate;
         StochasticNode<int>*            admixtureCount;
-        DeterministicNode<std::vector<double> >* residuals;
+        DeterministicNode< RbVector<double> >* residuals;
 
         bool changed;
         bool failed;
