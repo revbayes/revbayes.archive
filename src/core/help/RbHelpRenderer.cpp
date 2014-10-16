@@ -1,5 +1,6 @@
 #include "RbHelpRenderer.h"
 
+#include "RbException.h"
 #include "RbHelpArgument.h"
 #include "RlUserInterface.h"
 #include "StringUtilities.h"
@@ -91,7 +92,7 @@ HelpRenderer::HelpRenderer(void){
 //
 //}
 
-std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp, size_t w)
+std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t w)
 {
     
     std::string result = "";
@@ -305,4 +306,114 @@ std::string HelpRenderer::renderFunctionHelp(const RbHelpFunction &functionHelp,
     
     return result;
     
+}
+
+std::string HelpRenderer::renderHelp(const RbHelpEntry &entryHelp, size_t w)
+{
+    if ( dynamic_cast< const RbHelpFunction *>( &entryHelp ) != NULL)
+    {
+        return renderHelp( static_cast<const RbHelpFunction &>( entryHelp ), w);
+    }
+    else if ( dynamic_cast< const RbHelpType *>( &entryHelp ) != NULL)
+    {
+        return renderHelp( static_cast<const RbHelpType &>( entryHelp ), w);
+    }
+    
+    throw RbException("Unexpected help type.");
+}
+
+std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
+{
+    std::string result = "";
+    
+    // we do not print the name at the top
+    
+    // title
+    result.append( typeHelp.getTitle() );
+    result.append( lineBreak );
+    result.append( sectionBreak );
+    
+    // description
+    result.append( TerminalFormatter::makeUnderlined("Description"));
+    result.append( sectionBreak );
+    
+    const std::vector<std::string> & descriptions = typeHelp.getDescription();
+    for (std::vector<std::string>::const_iterator it = descriptions.begin(); it != descriptions.end(); ++it)
+    {
+        result.append( StringUtilities::formatTabWrap(*it, 1, w) );
+        result.append( lineBreak );
+        result.append( sectionBreak );
+    }
+    
+    // constructors
+    if ( typeHelp.getConstructors().size() > 0)
+    {
+        // check if we have multiple arguments
+        if ( typeHelp.getConstructors().size() == 1 )
+        {
+            result.append( TerminalFormatter::makeUnderlined("Constructor") );
+        }
+        else
+        {
+            result.append( TerminalFormatter::makeUnderlined("Constructors") );
+        }
+        result.append( sectionBreak );
+        
+        const std::vector<RbHelpFunction>& ctors = typeHelp.getConstructors();
+        for (std::vector<RbHelpFunction>::const_iterator it = ctors.begin(); it != ctors.end(); ++it)
+        {
+            result.append( StringUtilities::formatTabWrap(it->getUsage(),1,w,true) );
+            result.append( lineBreak );
+
+            const std::vector<std::string> & d = it->getDescription();
+            for (std::vector<std::string>::const_iterator desc_it = d.begin(); desc_it != d.end(); ++desc_it)
+            {
+                result.append( StringUtilities::formatTabWrap(*desc_it, 2, w) );
+                result.append( lineBreak );
+                result.append( sectionBreak );
+            }
+
+        }
+        
+        result.append( lineBreak );
+    }
+    
+    // methods
+    if ( typeHelp.getConstructors().size() > 0)
+    {
+        // check if we have multiple arguments
+        if ( typeHelp.getMethods().size() == 1 )
+        {
+            result.append( TerminalFormatter::makeUnderlined("Method") );
+        }
+        else
+        {
+            result.append( TerminalFormatter::makeUnderlined("Methods") );
+        }
+        result.append( sectionBreak );
+        
+        const std::vector<RbHelpFunction>& methods = typeHelp.getMethods();
+        for (std::vector<RbHelpFunction>::const_iterator it = methods.begin(); it != methods.end(); ++it)
+        {
+            result.append( StringUtilities::formatTabWrap(it->getUsage(),1,w,true) );
+            result.append( lineBreak );
+            
+            const std::vector<std::string> & d = it->getDescription();
+            for (std::vector<std::string>::const_iterator desc_it = d.begin(); desc_it != d.end(); ++desc_it)
+            {
+                result.append( StringUtilities::formatTabWrap(*desc_it, 2, w) );
+                result.append( sectionBreak );
+            }
+            
+        }
+        
+        result.append( lineBreak );
+        std::string methodCall = "For more detailed information on methods type, for example, '?" + typeHelp.getName() + "." + methods[0].getName() + "'";
+        result.append( StringUtilities::formatTabWrap( methodCall, 1, w) );
+        result.append( lineBreak );
+    }
+    
+    
+    return result;
+
 }

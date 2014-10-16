@@ -27,7 +27,9 @@ RbHelpSystem::RbHelpSystem()
 
 RbHelpSystem::RbHelpSystem( const RbHelpSystem &hs) :
     helpFunctionNames( hs.helpFunctionNames ),
-    helpForFunctions( hs.helpForFunctions )
+    helpForFunctions( hs.helpForFunctions ),
+    helpTypeNames( hs.helpTypeNames ),
+    helpForTypes( hs.helpForTypes )
 {
     
 }
@@ -40,8 +42,10 @@ RbHelpSystem& RbHelpSystem::operator=( const RbHelpSystem &hs )
     
     if ( this != &hs )
     {
-        helpFunctionNames = hs.helpFunctionNames;
-        helpForFunctions  = hs.helpForFunctions;
+        helpFunctionNames   = hs.helpFunctionNames;
+        helpForFunctions    = hs.helpForFunctions;
+        helpTypeNames       = hs.helpTypeNames;
+        helpForTypes        = hs.helpForTypes;
     }
     
     return *this;
@@ -56,20 +60,50 @@ const std::set<std::string>& RbHelpSystem::getFunctionEntries( void ) const
 
 
 /** Retrieve the help entry */
-const RbHelpFunction& RbHelpSystem::getHelp(const std::string &qs)
+const RbHelpEntry& RbHelpSystem::getHelp(const std::string &qs)
 {
     
-    HelpRenderer r = HelpRenderer();
-    
-    std::map<std::string, RbHelpFunction>::iterator it = helpForFunctions.find( qs );
-    if ( it == helpForFunctions.end() )
+    std::map<std::string, RbHelpFunction>::iterator itFunction = helpForFunctions.find( qs );
+    std::map<std::string, RbHelpType>::iterator itType = helpForTypes.find( qs );
+    if ( itFunction != helpForFunctions.end() )
+    {
+        return itFunction->second;
+    }
+    else if ( itType != helpForTypes.end() )
+    {
+        return itType->second;
+    }
+    else
     {
         throw RbException("Could not find help for '" + qs + "'.");
     }
     
-    const RbHelpFunction& h = it->second;
+}
+
+
+/** Retrieve the help entry */
+const RbHelpEntry& RbHelpSystem::getHelp(const std::string &baseQuery, const std::string &qs)
+{
     
-    return h;
+    // find the corresponding base type
+    std::map<std::string, std::map<std::string, RbHelpFunction> >::iterator itMethods = helpForMethods.find( baseQuery );
+    if ( itMethods != helpForMethods.end() )
+    {
+        const std::map<std::string, RbHelpFunction> &methods = itMethods->second;
+        
+        // find the corresponding method
+        std::map<std::string, RbHelpFunction>::const_iterator itFunction = methods.find( qs );
+        
+        // check if we found it
+        if ( itFunction != methods.end() )
+        {
+            return itFunction->second;
+        }
+        
+    }
+
+    throw RbException("Could not find help for '" + baseQuery + "." + qs + "'.");
+    
 }
 
 
@@ -109,13 +143,6 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
 
     for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
     {
-    
-        
-//        std::cerr << *it << std::endl;
-        if ( *it == "help/mcmc.xml" )
-        {
-            std::cerr << *it << std::endl;
-        }
         
         if ( parser.testHelpEntry( *it ) == RbHelpParser::FUNCTION )
         {
@@ -140,17 +167,21 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
         {
             
             RbHelpType h = parser.parseHelpType( *it );
-//            helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( h.getName() , h) );
-//            helpFunctionNames.insert( h.getName() );
-//            
-//            
-//            // also add all aliases
-//            const std::vector<std::string>& aliases = h.getAliases();
-//            for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
-//            {
-//                helpForFunctions.insert( std::pair<std::string,RbHelpFunction>( *alias , h) );
-//            }
+            helpForTypes.insert( std::pair<std::string,RbHelpType>( h.getName() , h) );
+            helpTypeNames.insert( h.getName() );
             
+            
+            // create a map for all methods for this type
+            std::map<std::string, RbHelpFunction> methodsHelp;
+            const std::vector<RbHelpFunction>& method = h.getMethods();
+            for (std::vector<RbHelpFunction>::const_iterator m = method.begin(); m != method.end(); ++m)
+            {
+                methodsHelp.insert( std::pair<std::string,RbHelpFunction>( m->getName() , *m) );
+            }
+            
+            // add the methods to our global map
+            helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(h.getName(),methodsHelp) );
+                        
         }
         
         
@@ -163,5 +194,12 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
 bool RbHelpSystem::isHelpAvailableForQuery(const std::string &query)
 {
     // test if we have a help entry for this query string
-    return helpForFunctions.find( query ) != helpForFunctions.end();
+    return helpForFunctions.find( query ) != helpForFunctions.end() || helpForTypes.find( query ) != helpForTypes.end();
+}
+
+
+bool RbHelpSystem::isHelpAvailableForQuery(const std::string &baseQuery, const std::string &query)
+{
+    // test if we have a help entry for this query string
+    return helpForTypes.find( baseQuery ) != helpForTypes.end();
 }

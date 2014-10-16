@@ -27,13 +27,23 @@ RbHelpFunction RbHelpParser::parseHelpFunction(const std::string &fn)
         throw RbException( result.description() );
     }
     
-    RbHelpFunction helpEntry = parseInternalHelpFunction(doc, "//function-help-entry/");
+    std::vector<RbHelpFunction> functions;
+//    pugi::xpath_node node = doc.select_single_node( "//function-help-entry" );
+    pugi::xpath_node_set nodeSet = doc.select_nodes( "//function-help-entry" );
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+        RbHelpFunction helpEntryFunction = parseInternalHelpFunction( node );
+        functions.push_back( helpEntryFunction );
+    }
+
+    RbHelpFunction helpEntry = functions[0];
     
     return helpEntry;
 }
 
 
-RbHelpFunction RbHelpParser::parseInternalHelpFunction(const pugi::xml_document &doc, const std::string &prefix)
+RbHelpFunction RbHelpParser::parseInternalHelpFunction(const pugi::xpath_node &node)
 {
     // create the help function entry that we will fill with some values later on
     RbHelpFunction helpEntry = RbHelpFunction();
@@ -43,12 +53,10 @@ RbHelpFunction RbHelpParser::parseInternalHelpFunction(const pugi::xml_document 
     std::string entry = "";
     
     // name
-    entry = prefix + "name";
-    helpEntry.setName( doc.select_single_node( entry.c_str() ).node().child_value() );
+    helpEntry.setName( node.node().select_single_node( "name" ).node().child_value() );
     
     // aliases
-    entry = prefix + "alias";
-    nodeSet = doc.select_nodes( entry.c_str() );
+    nodeSet = node.node().select_nodes( "alias" );
     std::vector<std::string> aliases = std::vector<std::string>();
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
@@ -59,48 +67,44 @@ RbHelpFunction RbHelpParser::parseInternalHelpFunction(const pugi::xml_document 
     helpEntry.setAliases( aliases );
     
     // title
-    entry = prefix + "title";
-    helpEntry.setTitle( doc.select_single_node( entry.c_str() ).node().child_value() );
+    helpEntry.setTitle( node.node().select_single_node( "title" ).node().child_value() );
     
     // description
     std::vector<std::string> desc = std::vector<std::string>();
-    entry = prefix + "description/p";
-    nodeSet = doc.select_nodes( entry.c_str() );
+    nodeSet = node.node().select_nodes( "description/p" );
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
-        pugi::xpath_node node = *it;
-        desc.push_back(node.node().child_value());
+        pugi::xpath_node subnode = *it;
+        desc.push_back(subnode.node().child_value());
     }
     helpEntry.setDescription( desc );
     
     // usage
-    entry = prefix + "usage";
-    helpEntry.setUsage( doc.select_single_node( entry.c_str() ).node().child_value() );
+    helpEntry.setUsage( node.node().select_single_node( "usage" ).node().child_value() );
     
     // arguments
-    entry = prefix + "argument";
-    nodeSet = doc.select_nodes( entry.c_str() );
+    nodeSet = node.node().select_nodes( "argument" );
     int loop = 1;
     std::vector<RbHelpArgument> arguments = std::vector<RbHelpArgument>();
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
-        pugi::xpath_node node = *it;
+        pugi::xpath_node subnode = *it;
         RbHelpArgument argument = RbHelpArgument();
-        argument.setLabel(                  node.node().child_value("label")                    );
-        argument.setDescription(            node.node().child_value("description")              );
-        argument.setArgumentDagNodeType(    node.node().child_value("argumentNodeType")         );
-        argument.setArgumentPassingMethod(  node.node().child_value("argumentPassingMethod")    );
-        argument.setValueType(              node.node().child_value("valueType")                );
-        argument.setDefaultValue(           node.node().child_value("defaultValue")             );
+        argument.setLabel(                  subnode.node().child_value("label")                    );
+        argument.setDescription(            subnode.node().child_value("description")              );
+        argument.setArgumentDagNodeType(    subnode.node().child_value("argumentNodeType")         );
+        argument.setArgumentPassingMethod(  subnode.node().child_value("argumentPassingMethod")    );
+        argument.setValueType(              subnode.node().child_value("valueType")                );
+        argument.setDefaultValue(           subnode.node().child_value("defaultValue")             );
         
         // loop options
         std::vector<std::string> options = std::vector<std::string>();
-        std::string s = prefix + "argument[" + StringUtilities::to_string(loop) + "]/option"; // xpath search expression
-        subSet = node.node().select_nodes(s.c_str());
+        std::string s =  "argument[" + StringUtilities::to_string(loop) + "]/option"; // xpath search expression
+        subSet = subnode.node().select_nodes( s.c_str() );
         for (pugi::xpath_node_set::const_iterator it = subSet.begin(); it != subSet.end(); ++it)
         {
-            pugi::xpath_node subNode = *it;
-            std::string option = std::string(subNode.node().child_value());
+            pugi::xpath_node subsubNode = *it;
+            std::string option = std::string( subsubNode.node().child_value() );
             options.push_back( option );
         }
         argument.setOptions( options );
@@ -113,51 +117,45 @@ RbHelpFunction RbHelpParser::parseInternalHelpFunction(const pugi::xml_document 
     helpEntry.setArguments( arguments );
     
     // return value
-    entry = prefix + "returnValue";
-    helpEntry.setReturnValue(doc.select_single_node( entry.c_str() ).node().child_value());
+    helpEntry.setReturnValue( node.node().select_single_node( "returnValue" ).node().child_value());
     
     // details
     std::vector<std::string> details = std::vector<std::string>();
-    entry = prefix + "details/p";
-    nodeSet = doc.select_nodes( entry.c_str() );
+    nodeSet = node.node().select_nodes( "details/p" );
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it) {
-        pugi::xpath_node node = *it;
-        details.push_back(node.node().child_value());
+        pugi::xpath_node subnode = *it;
+        details.push_back( subnode.node().child_value());
     }
     helpEntry.setDetails( details );
     
     // example
-    entry = prefix + "example";
-    helpEntry.setExample(doc.select_single_node( entry.c_str() ).node().child_value());
+    helpEntry.setExample( node.node().select_single_node( "example" ).node().child_value());
     
     // reference
     std::vector<RbHelpReference> references = std::vector<RbHelpReference>();
-    entry = prefix + "reference";
-    nodeSet = doc.select_nodes( entry.c_str() );
+    nodeSet = node.node().select_nodes( "reference" );
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
-        pugi::xpath_node node = *it;
+        pugi::xpath_node subnode = *it;
         RbHelpReference ref = RbHelpReference();
         
-        ref.setCitation(node.node().child_value("citation"));
-        ref.setDoi(node.node().child_value("doi"));
-        ref.setUrl(node.node().child_value("url"));
-        references.push_back(ref);
+        ref.setCitation( subnode.node().child_value("citation") );
+        ref.setDoi( subnode.node().child_value("doi") );
+        ref.setUrl( subnode.node().child_value("url") );
+        references.push_back( ref );
     }
     helpEntry.setReferences( references );
     
     // author
-    entry = prefix + "author";
-    helpEntry.setAuthor(doc.select_single_node( entry.c_str() ).node().child_value());
+    helpEntry.setAuthor( node.node().select_single_node( "author" ).node().child_value());
     
     // see also
     std::vector<std::string> seeAlso = std::vector<std::string>();
-    entry = prefix + "seeAlso/entry";
-    nodeSet = doc.select_nodes( entry.c_str() );
+    nodeSet = node.node().select_nodes( "seeAlso/entry" );
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
-        pugi::xpath_node node = *it;
-        seeAlso.push_back(node.node().child_value());
+        pugi::xpath_node subnode = *it;
+        seeAlso.push_back( subnode.node().child_value());
     }
     helpEntry.setSeeAlso(seeAlso);
     
@@ -188,16 +186,44 @@ RbHelpType RbHelpParser::parseHelpType(const std::string &fn)
     
     RbHelpType helpEntry = RbHelpType();
     
-    std::vector<RbHelpFunction> constructors;
-    RbHelpFunction helpEntryConstructor = parseInternalHelpFunction(doc, "//type-help-entry/constructor-help-entry/");
-    constructors.push_back( helpEntryConstructor );
+    // name
+    helpEntry.setName( doc.select_single_node( "//type-help-entry/name" ).node().child_value() );
     
+    // title
+    helpEntry.setTitle( doc.select_single_node( "//type-help-entry/title" ).node().child_value() );
+    
+    // description
+    std::vector<std::string> desc = std::vector<std::string>();
+    pugi::xpath_node_set nodeSet = doc.select_nodes( "//type-help-entry/description/p" );
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node subnode = *it;
+        desc.push_back(subnode.node().child_value());
+    }
+    helpEntry.setDescription( desc );
+    
+    
+    std::vector<RbHelpFunction> constructors;
+    nodeSet = doc.select_nodes( "//type-help-entry/constructor-help-entry" );
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+        RbHelpFunction helpEntryConstructor = parseInternalHelpFunction( node );
+        constructors.push_back( helpEntryConstructor );
+    }
+    // set the constructors
     helpEntry.setConstructors( constructors );
     
+
     std::vector<RbHelpFunction> methods;
-    RbHelpFunction helpEntryMethod = parseInternalHelpFunction(doc, "//type-help-entry/method-help-entry/");
-    methods.push_back( helpEntryMethod );
-    
+    nodeSet = doc.select_nodes( "//type-help-entry/method-help-entry" );
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node node = *it;
+        RbHelpFunction helpEntryMethod = parseInternalHelpFunction( node );
+        methods.push_back( helpEntryMethod );
+    }
+    // set the methods
     helpEntry.setMethods( methods );
     
     // now return the help entry

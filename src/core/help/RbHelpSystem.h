@@ -1,7 +1,9 @@
 #ifndef RbHelpSystem_H
 #define RbHelpSystem_H
 
+#include "RbHelpEntry.h"
 #include "RbHelpFunction.h"
+#include "RbHelpType.h"
 
 #include <set>
 #include <string>
@@ -26,8 +28,11 @@ namespace RevBayesCore {
     public:
         
         const std::set<std::string>&                getFunctionEntries(void) const;
-        const RbHelpFunction&                       getHelp(const std::string &qs);                                         //!< Format the help information for printing to the terminal
-        bool                                        isHelpAvailableForQuery(const std::string&query);
+        const std::set<std::string>&                getTypeEntries(void) const;
+        const RbHelpEntry&                          getHelp(const std::string &qs);                                         //!< Format the help information for printing to the terminal
+        const RbHelpEntry&                          getHelp(const std::string &bq, const std::string &q);                   //!< Format the help information for printing to the terminal
+        bool                                        isHelpAvailableForQuery(const std::string &q);
+        bool                                        isHelpAvailableForQuery(const std::string &bq, const std::string &q);
         
         static RbHelpSystem&                        getHelpSystem(void)                                                     //!< Return a reference to the singleton help
         {
@@ -43,8 +48,11 @@ namespace RevBayesCore {
         void                                        initializeHelp(const std::string &helpDir);                             //!< Initialize the help from an XML file
         
         
-        std::set<std::string>                       helpFunctionNames;                                                      //!< Set of finction names without aliases
-        std::map<std::string, RbHelpFunction>       helpForFunctions;
+        std::map<std::string, RbHelpFunction>                           helpForFunctions;
+        std::map<std::string, std::map<std::string, RbHelpFunction> >   helpForMethods;
+        std::map<std::string, RbHelpType>                               helpForTypes;
+        std::set<std::string>                                           helpFunctionNames;                                                      //!< Set of finction names without aliases
+        std::set<std::string>                                           helpTypeNames;                                                          //!< Set of finction names without aliases
         
     };
     

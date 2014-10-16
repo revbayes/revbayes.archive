@@ -20,8 +20,9 @@ namespace RevBayesCore {
     public:
         
         HelpRenderer(void);
-        std::string                 renderFunctionHelp(const RbHelpFunction &functionHelp, size_t w);
-//        std::string                 renderTypeHelp(const RbHelpType &typeHelp, size_t w);
+        std::string                 renderHelp(const RbHelpEntry &entryHelp, size_t w);
+        std::string                 renderHelp(const RbHelpFunction &functionHelp, size_t w);
+        std::string                 renderHelp(const RbHelpType &typeHelp, size_t w);
         
         
         
