@@ -100,12 +100,12 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
     // we do not print the name at the top
     
     // title
-    result.append(functionHelp.getTitle());
+    result.append( functionHelp.getTitle() );
     result.append( lineBreak );
     result.append( sectionBreak );
     
     // description
-    result.append(TerminalFormatter::makeUnderlined("Description"));
+    result.append( TerminalFormatter::makeUnderlined("Description") );
     result.append( sectionBreak );
     
     const std::vector<std::string> & descriptions = functionHelp.getDescription();
@@ -120,10 +120,11 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
     if (functionHelp.getUsage().size() > 0)
     {
         result.append( TerminalFormatter::makeUnderlined("Usage") );
-        result.append( lineBreak );
+        result.append( sectionBreak );
         
-        result.append( StringUtilities::formatTabWrap(functionHelp.getUsage(), 1, w, false) );
+        result.append( StringUtilities::formatTabWrap(functionHelp.getUsage(), 1, w, true) );
         result.append( lineBreak );
+        result.append( sectionBreak );
     }
     
     // argument
@@ -268,15 +269,29 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
         {
             const RbHelpReference &ref = *it;
             
-            result.append( StringUtilities::formatTabWrap(ref.getCitation(), 1, w) );
+            if ( ref.getCitation() != "" )
+            {
+                result.append( StringUtilities::formatTabWrap(ref.getCitation(), 1, w) );
+                result.append( lineBreak );
+            }
+            
+            if ( ref.getUrl() != "" )
+            {
+                result.append( StringUtilities::formatTabWrap(ref.getUrl(), 1, w) );
+                result.append( lineBreak );
+            }
+            
+            if ( ref.getDoi() != "" )
+            {
+                result.append( StringUtilities::formatTabWrap(ref.getDoi(), 1, w) );
+                result.append( lineBreak );
+            }
             result.append( lineBreak );
             
-            result.append( StringUtilities::formatTabWrap(ref.getUrl(), 1, w) );
-            result.append( lineBreak );
             
-            result.append( StringUtilities::formatTabWrap(ref.getDoi(), 1, w) );
-            result.append( sectionBreak );
         }
+        
+        result.append( lineBreak );
         
     }
     
@@ -410,7 +425,7 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
         result.append( lineBreak );
         std::string methodCall = "For more detailed information on methods type, for example, '?" + typeHelp.getName() + "." + methods[0].getName() + "'";
         result.append( StringUtilities::formatTabWrap( methodCall, 1, w) );
-        result.append( lineBreak );
+        result.append( sectionBreak );
     }
     
     
