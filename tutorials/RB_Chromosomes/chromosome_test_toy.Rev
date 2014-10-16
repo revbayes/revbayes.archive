@@ -48,6 +48,8 @@ Q := chromosomes(max_chromo, lambda, delta, rho)
 ## here we set the root state to 4
 root_frequencies := simplex(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
+# instead use simplex(1,1,1,1,1,...,1) made by function simplex(rep(n, 1))
+
 ##############
 # set up moves
 #############
@@ -79,5 +81,9 @@ monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbay
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
 #mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(1000000)
+mymcmc.run(100)
+
+ancestraltrace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log", separator="	")
+#mapAncestralState(ancestraltrace, psi, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.tree")
+
 
