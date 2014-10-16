@@ -356,22 +356,25 @@ GeographyRateModifier* GeographyRateModifier::clone(void) const
 
 void GeographyRateModifier::update(void)
 {
-    for (size_t i = 0; i < numEpochs; i++)
+    if (useDistanceDependence)
     {
-        unsigned iOffset = (unsigned)(i*epochOffset);
-        for (size_t j = 0; j < numAreas; j++)
+        for (size_t i = 0; i < numEpochs; i++)
         {
-            unsigned jOffset = (unsigned)(j*areaOffset);
-            for (size_t k = 0; k < j; k++)
+            unsigned iOffset = (unsigned)(i*epochOffset);
+            for (size_t j = 0; j < numAreas; j++)
             {
-                //double d = exp(-distancePower * geographicDistances[ iOffset + jOffset + k ]); //, -distancePower);
-                
-                double d = 1.0;
-                if (distancePower != 0.0)
-                    d = pow(geographicDistances[ iOffset + jOffset + k ], -distancePower);
+                unsigned jOffset = (unsigned)(j*areaOffset);
+                for (size_t k = 0; k < j; k++)
+                {
+                    //double d = exp(-distancePower * geographicDistances[ iOffset + jOffset + k ]); //, -distancePower);
+                    
+                    double d = 1.0;
+                    if (distancePower != 0.0)
+                        d = pow(geographicDistances[ iOffset + jOffset + k ], -distancePower);
 
-                geographicDistancePowers[ iOffset + jOffset + k ] = d;
-                geographicDistancePowers[ iOffset + k*areaOffset + j ] = d;
+                    geographicDistancePowers[ iOffset + jOffset + k ] = d;
+                    geographicDistancePowers[ iOffset + k*areaOffset + j ] = d;
+                }
             }
         }
     }
@@ -403,47 +406,19 @@ void GeographyRateModifier::initializeDistances(void)
     }
 }
 
-//void GeographyRateModifier::initializeDispersalExtinctionValues(void)
-//{
-//    for (unsigned i = 0; i < numEpochs; i++)
-//    {
-//        for (unsigned j = 0; j < numAreas; j++)
-//        {
-//            const std::vector<double>& dvs = areas[numAreas*i + j]->getDispersalValues();
-//            const std::vector<double>& evs = areas[numAreas*i + j]->getExtinctionValues();
-//            
-//            extinctionValues[numEpochs*i + j] = evs[0];
-//            for (unsigned k = 0; k < numAreas; k++)
-//            {
-//                dispersalValues[epochOffset*i + areaOffset*j + k] = dvs[k];
-//            }
-//        }
-//    }
-//}
-
 void GeographyRateModifier::initializeAdjacentAreas(void)
 {
     adjacentAreaSet.resize(numEpochs*numAreas);
     availableAreaSet.resize(numEpochs);
     
     for (size_t i = 0; i < availableAreaSet.size(); i++)
-//    {
         availableAreaSet[i].clear();
-//        std::set<size_t>::iterator it = availableAreaSet[i].begin();
-//        std::cout << i << ": ";
-//        for (; it != availableAreaSet[i].end(); it++)
-//        {
-//            std::cout << *it << " ";
-//        }
-//        std::cout << "\n";
-//    }
     
     for (unsigned i = 0; i < numEpochs; i++)
     {
         for (unsigned j = 0; j < numAreas; j++)
         {
             const std::vector<double>& dvs = areas[numAreas*i + j]->getDispersalValues();
-//            const std::vector<double>& evs = areas[numAreas*i + j]->getExtinctionValues();
             for (unsigned k = 0; k < numAreas; k++)
             {
                 double d = 0.0;
@@ -470,19 +445,6 @@ void GeographyRateModifier::initializeAdjacentAreas(void)
             }
         }
     }
-    
-//    for (size_t i = 0; i < availableAreaSet.size(); i++)
-//    {
-//        std::set<size_t>::iterator it = availableAreaSet[i].begin();
-//        std::cout << i << ": ";
-//        for (; it != availableAreaSet[i].end(); it++)
-//        {
-//            std::cout << *it << " ";
-//        }
-//        std::cout << "\n";
-//    }
-//    
-//    std::cout << "\n";
 }
 
 
