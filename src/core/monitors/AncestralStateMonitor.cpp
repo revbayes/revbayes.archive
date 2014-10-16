@@ -120,10 +120,9 @@ void AncestralStateMonitor::monitor(unsigned long gen)
 			// add a separator before every new element
 			outStream << separator;
 			
-			// for each node print a NEXUS metacomment in the format:
-			// [&site_1={state1=prob1,state2=prob2},site_2={state1=prob1,state2=prob2}]
-			outStream << "[&";
-
+			// for each node print
+			// site1,site2,site3
+			
 			TopologyNode* the_node = nodes[i];
 			
 			// get the node index
@@ -136,14 +135,11 @@ void AncestralStateMonitor::monitor(unsigned long gen)
 			// print out ancestral states....
 			for (int j = 0; j < ancestralStates.size(); j++)
 			{
-				// TODO: modify this to print the marginal likelihood of each state
-				// in the NEXUS metacomment format
 				outStream << ancestralStates[j].getStringValue();
 				if (j != ancestralStates.size()-1) {
 					outStream << ",";
 				}
 			}
-			outStream << "]";
         }
         outStream << std::endl;
         
