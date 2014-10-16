@@ -35,7 +35,7 @@ namespace RevBayesCore {
                 
     private:
 
-        RbHelpFunction                      parseInternalHelpFunction(const pugi::xml_document &doc, const std::string &fn);
+        RbHelpFunction                      parseInternalHelpFunction(const pugi::xpath_node &node);
 
         
     };

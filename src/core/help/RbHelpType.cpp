@@ -38,13 +38,6 @@ const std::vector<RbHelpFunction>& RbHelpType::getMethods( void ) const
 }
 
 
-//const std::string& RbHelpType::getName( void ) const
-//{
-//    // return a const reference to the internal value
-//    return name;
-//}
-
-
 //const std::vector<RbHelpReference>& RbHelpType::getReferences( void ) const
 //{
 //    // return a const reference to the internal value
@@ -99,13 +92,6 @@ void RbHelpType::setMethods( const std::vector<RbHelpFunction>& m )
     // overwrite the internal value with the new value
     methods = m;
 }
-
-
-//void RbHelpType::setName(const std::string &n)
-//{
-//    // overwrite the internal value with the new value
-//    name = n;
-//}
 
 
 //void RbHelpType::setReferences(const std::vector<RbHelpReference> &r)

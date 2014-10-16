@@ -299,6 +299,26 @@ prog    :       END_OF_INPUT
                     delete $2;
                     return rv;
                 }
+        |       '?' identifier '.' identifier '\n'
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Bison trying to get help for symbol\n");
+#endif
+                    int rv =  parser.help(*$2, *$4);
+                    delete $2;
+                    delete $4;
+                    return rv;
+                }
+        |       '?' identifier '.' identifier ';'
+                {
+#ifdef DEBUG_BISON_FLEX
+                printf("Bison trying to get help for symbol\n");
+#endif
+                int rv =  parser.help(*$2, *$4);
+                delete $2;
+                delete $4;
+                return rv;
+                }
         |       '?' functionCall '\n'
                 {
 #ifdef DEBUG_BISON_FLEX

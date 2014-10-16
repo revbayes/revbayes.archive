@@ -2,6 +2,12 @@
 
 using namespace RevBayesCore;
 
+
+RbHelpFunction::RbHelpFunction( void ) : RbHelpEntry()
+{
+    
+}
+
 const std::vector<std::string>& RbHelpFunction::getAliases( void ) const
 {
     // return a const reference to the internal value
@@ -22,13 +28,6 @@ const std::string& RbHelpFunction::getAuthor( void ) const
 }
 
 
-const std::vector<std::string>& RbHelpFunction::getDescription( void ) const
-{
-    // return a const reference to the internal value
-    return description;
-}
-
-
 const std::vector<std::string>& RbHelpFunction::getDetails( void ) const
 {
     // return a const reference to the internal value
@@ -40,13 +39,6 @@ const std::string& RbHelpFunction::getExample( void ) const
 {
     // return a const reference to the internal value
     return example;
-}
-
-
-const std::string& RbHelpFunction::getName( void ) const
-{
-    // return a const reference to the internal value
-    return name;
 }
 
 
@@ -68,13 +60,6 @@ const std::vector<std::string>& RbHelpFunction::getSeeAlso( void ) const
 {
     // return a const reference to the internal value
     return seeAlso;
-}
-
-
-const std::string& RbHelpFunction::getTitle( void ) const
-{
-    // return a const reference to the internal value
-    return title;
 }
 
 
@@ -105,12 +90,6 @@ void RbHelpFunction::setAuthor(const std::string &a)
     author = a;
 }
 
-void RbHelpFunction::setDescription(const std::vector<std::string> &d)
-{
-    // overwrite the internal value with the new value
-    description = d;
-}
-
 
 void RbHelpFunction::setDetails(const std::vector<std::string> &d)
 {
@@ -123,13 +102,6 @@ void RbHelpFunction::setExample(const std::string &e)
 {
     // overwrite the internal value with the new value
     example = e;
-}
-
-
-void RbHelpFunction::setName(const std::string &n)
-{
-    // overwrite the internal value with the new value
-    name = n;
 }
 
 
@@ -151,13 +123,6 @@ void RbHelpFunction::setReturnValue(const std::string &r)
 {
     // overwrite the internal value with the new value
     returnValue = r;
-}
-
-
-void RbHelpFunction::setTitle(const std::string &t)
-{
-    // overwrite the internal value with the new value
-    title = t;
 }
 
 

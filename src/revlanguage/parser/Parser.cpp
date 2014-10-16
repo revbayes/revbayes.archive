@@ -253,9 +253,9 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
     RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
     if ( hs.isHelpAvailableForQuery(symbol) )
     {
-        const RevBayesCore::RbHelpFunction& h = hs.getHelp( symbol );
+        const RevBayesCore::RbHelpEntry& h = hs.getHelp( symbol );
         RevBayesCore::HelpRenderer hRenderer;
-        std::string hStr = hRenderer.renderFunctionHelp(h, RbSettings::userSettings().getLineWidth() - RevBayesCore::RbUtils::PAD.size());
+        std::string hStr = hRenderer.renderHelp(h, RbSettings::userSettings().getLineWidth() - RevBayesCore::RbUtils::PAD.size());
         UserInterface::userInterface().output("\n", true);
         UserInterface::userInterface().output("\n", true);
         UserInterface::userInterface().output(hStr, true);
@@ -267,6 +267,35 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
         
     }
 
+    // Return success
+    return 0;
+}
+
+
+/** This function gets help info about a symbol */
+int RevLanguage::Parser::help(const std::string& baseSymbol, const std::string& symbol) const
+{
+    
+    std::ostringstream msg;
+    
+    // Get some help
+    RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
+    if ( hs.isHelpAvailableForQuery( baseSymbol, symbol) )
+    {
+        const RevBayesCore::RbHelpEntry& h = hs.getHelp( baseSymbol, symbol );
+        RevBayesCore::HelpRenderer hRenderer;
+        std::string hStr = hRenderer.renderHelp(h, RbSettings::userSettings().getLineWidth() - RevBayesCore::RbUtils::PAD.size());
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output(hStr, true);
+    }
+    else
+    {
+        
+        RBOUT("Help is not available for \"" + baseSymbol + "." + symbol + "\"");
+        
+    }
+    
     // Return success
     return 0;
 }
