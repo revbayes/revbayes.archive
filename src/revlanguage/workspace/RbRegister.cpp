@@ -364,6 +364,7 @@
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"
 #include "Func_readTreeTrace.h"
+#include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
 #include "Func_TaxonReader.h"
 #include "Func_write.h"
@@ -1122,13 +1123,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
         addFunction( "print",                       new Func_write()                       );
         addFunction( "readAtlas",                   new Func_readAtlas()                   );
-		addFunction( "readChromosomes",             new Func_readChromosomes()                   );
+		addFunction( "readChromosomes",             new Func_readChromosomes()             );
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
         addFunction( "readTaxonData",               new Func_TaxonReader()                 );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "readTrees",                   new Func_readTrees()                   );
 		addFunction( "readBranchLengthTrees",       new Func_readBranchLengthTrees()       );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()               );
+		addFunction( "readAncestralStateTrace",     new Func_readAncestralStateTrace()	   );
         addFunction( "source",                      new Func_source()                      );
         addFunction( "write",                       new Func_write()                       );
         addFunction( "writeFasta",                  new Func_writeFasta()                  );
