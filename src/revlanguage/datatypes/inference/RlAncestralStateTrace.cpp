@@ -24,10 +24,13 @@ AncestralStateTrace::AncestralStateTrace() : WorkspaceObject<RevBayesCore::Ances
 
 
 
-AncestralStateTrace::AncestralStateTrace(const RevBayesCore::AncestralStateTrace&m) : WorkspaceObject<RevBayesCore::AncestralStateTrace>( new RevBayesCore::AncestralStateTrace( m ) ) {
+AncestralStateTrace::AncestralStateTrace(const RevBayesCore::AncestralStateTrace& m) : WorkspaceObject<RevBayesCore::AncestralStateTrace>( new RevBayesCore::AncestralStateTrace( m ) ) {
     
 }
 
+AncestralStateTrace::AncestralStateTrace(const AncestralStateTrace& m) : WorkspaceObject<RevBayesCore::AncestralStateTrace>( m ) {
+    
+}
 
 /** Clone object */
 
@@ -79,11 +82,7 @@ const MemberRules& AncestralStateTrace::getMemberRules(void) const {
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-		//        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-		//        modelMemberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
-		//        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
-        
+    if ( !rulesSet ) {        
         rulesSet = true;
     }
     

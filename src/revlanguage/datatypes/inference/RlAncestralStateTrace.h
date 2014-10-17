@@ -25,9 +25,10 @@ namespace RevLanguage {
         
     public:
         
-        AncestralStateTrace(void);                                                                                                        //!< Default constructor
-        AncestralStateTrace(const RevBayesCore::AncestralStateTrace& x);                                                                 //!< Copy constructor
-        
+        AncestralStateTrace(void);                                                                                              //!< Default constructor
+        AncestralStateTrace(const RevBayesCore::AncestralStateTrace& x);														//!< Copy constructor                                                                                           //!< Copy constructor
+        AncestralStateTrace(const AncestralStateTrace& x);
+		
         // Basic utility functions
         virtual AncestralStateTrace*                          clone(void) const;                                                          //!< Clone object
         void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
