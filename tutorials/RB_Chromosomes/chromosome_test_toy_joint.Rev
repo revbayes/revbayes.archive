@@ -177,20 +177,25 @@ mymodel <- model(chromo)
 
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
-monitors[2] <- modelmonitor(filename="output/chromosome_test_toy_joint2.log", printgen=10, separator = "	")
-monitors[3] <- filemonitor(filename="output/chromosome_test_toy_joint2.trees", printgen=10, separator = "   ", phylogeny)
+monitors[2] <- filemonitor(filename="output/chromosome_test_toy_joint2.trees", printgen=10, separator = "	", phylogeny)
+#monitors[3] <- mnAncestralState(filename="output/chromosome_test_toy_joint2_anc_state.log",printgen=10, separator = "	", timetree=phylogeny, character=chromo)
+
 
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
 #mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(10000)
+mymcmc.run(100)
 
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
-#treetrace <- readTreeTrace("output/chromosome_test_toy_joint.trees", treetype="non-clock", separator="    ")
+treetrace <- readTreeTrace("output/chromosome_test_toy_joint2.trees", treetype="non-clock", separator="	")
 # and get the summary of the tree trace
 #treetrace.summarize()
 
-#mapTree(treetrace, "output/chromosome_test_toy_joint.tree")
+mapTree(treetrace, "output/chromosome_test_toy_joint2_map.tree")
+
+#ancestraltrace <- readAncestralTrace("output/chromosome_test_toy_joint2_anc_state.log", separator="	")
+#mapAncestralState(ancestraltrace, "output/chromosome_test_toy_joint2_map.tree", "output/chromosome_test_toy_joint2_map_anc_state.tree")
+
 
