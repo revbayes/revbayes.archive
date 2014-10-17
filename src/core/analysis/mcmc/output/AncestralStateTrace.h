@@ -29,7 +29,7 @@ namespace RevBayesCore {
         AncestralStateTrace(void);
         AncestralStateTrace(const AncestralStateTrace& t);                                                                          //!< copy constructor
         virtual                    ~AncestralStateTrace();
-		
+				
         // overloaded functions from RbObject
         AncestralStateTrace*                  clone(void) const;                                                          //!< Clone object
         void                        printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -62,7 +62,7 @@ namespace RevBayesCore {
         void                        setFileName(std::string fn)                     { fileName = fn; }
         void                        setParameterName(std::string pm)                { parmName = pm; }
         void                        setStepSize( int s)                             { stepSize = s; }
-        void                        setValues(const std::vector<std::string> &v)       { values = v; }
+        void                        setValues(const std::vector<std::string> &v)    { values = v; }
         void                        setConverged(bool c)                            { converged = c; }
         void                        setPassedEssThreshold(int p)                    { passedEssThreshold = p; }
         void                        setPassedGelmanRubinTest(int p)                 { passedGelmanRubinTest = p; }
@@ -95,9 +95,9 @@ namespace RevBayesCore {
         int                     passedSemThreshold;                         //!< Whether this parameter passed the threshold for the SEM.
         int                     passedIidBetweenChainsStatistic;            //!< Whether this parameter passed the iid test of chains.
         int                     passedGelmanRubinTest;                      //!< Whether this parameter passed the Gelman-Rubin statistic.
-		
+
     };
-    
+		
 }
 
 
