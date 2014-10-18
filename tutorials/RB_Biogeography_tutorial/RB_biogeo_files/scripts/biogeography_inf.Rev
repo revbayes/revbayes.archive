@@ -8,8 +8,9 @@
 
 n_species <- 40
 n_nodes <- 2 * n_species - 1
-atlas_fn <- "earth23.atlas.txt"
+#atlas_fn <- "earth23.atlas.txt"
 #atlas_fn <- "100area.atlas.txt"
+atlas_fn <- "area5.atlas.txt"
 in_fp <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
 out_fp <- "/Users/mlandis/data/bayarea/output/"
 out_str <- "range_sim"
@@ -52,8 +53,8 @@ ud <- false # use distance
 
 # Per-area gain and loss rates 
 #   glr[1]: 1->0, glr[2]: 0->1
-glr[1] 		~ dnExponential(200.0)
-glr[2] 		~ dnExponential(200.0)
+glr[1] 		~ dnExponential(1.0/0.02)
+glr[2] 		~ dnExponential(1.0/0.002)
 glr[1].setValue(0.02)
 glr[2].setValue(0.002)
 Q_site 		:= fnFreeBinary(glr)
@@ -92,10 +93,15 @@ d.clamp(d)
 my_model <- model(glr)
 
 # monitors
+nGens <- 5000
 #monitors[1] <- screenmonitor(printgen=10, glr, P_csf, dp)
 #monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt", printgen=10, glr, P_csf, dp)
 monitors[1] <- screenmonitor(printgen=10, glr)
 monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt", printgen=10, glr)
+monitors[3] <- mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=d, tree=tree, printgen=10, style="events")
+monitors[4] <- mnCharHistoryNewick(filename=out_fp+out_str+".counts.txt", ctmc=d, tree=tree, printgen=10, style="counts")
+monitors[5] <- mnCharHistoryNhx(filename=out_fp+out_str+".nhx.txt", ctmc=d, tree=tree, atlas=atlas, samplegen=10, maxgen=nGens, burnin=0.25)
+
 
 # moves
 mi <- 0
@@ -109,7 +115,7 @@ moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.5, ty
 # MCMC
 my_mcmc <- mcmc(my_model, monitors, moves)
 #my_mcmc.burnin(generations=500, tuningInterval=50)
-my_mcmc.run(generations=2000)
+my_mcmc.run(generations=nGens)
 
 
 

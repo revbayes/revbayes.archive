@@ -35,7 +35,7 @@ extinction.setValue(0.5)
 # Species tree from birth-death process
 tree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=names)
 #tree <- readTrees(in_fp + "16tip_100areas.nex")[1]
-
+true_tree <- tree
 
 #########################
 # range evolution model #
@@ -80,7 +80,6 @@ d.redraw()
 #glr_true <- glr
 #dp_true <- dp
 #P_csf_true <- P_csf
-
 
 
 ######################################
