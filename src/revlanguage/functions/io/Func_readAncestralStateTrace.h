@@ -40,7 +40,7 @@ namespace RevLanguage {
     private:
 		
         void                            formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr);                //!< Format the error string when (mis)reading files
-		std::vector<RevBayesCore::AncestralStateTrace>     readAncestralStates(const std::string &fns, const std::string &d);
+		std::vector<RevBayesCore::AncestralStateTrace*>     readAncestralStates(const std::string &fns, const std::string &d);
     };
     
 }

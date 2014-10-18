@@ -137,6 +137,12 @@ void Tree::addNodeParameter(std::string const &name, const std::vector<double> &
     
 }
 
+void Tree::addNodeParameter(std::string const &name, const std::vector<std::string*> &parameters, bool internalOnly) {
+    
+    getRoot().addParameter(name,parameters,internalOnly);
+    
+}
+
 
 void Tree::clearBranchParameters() {
     

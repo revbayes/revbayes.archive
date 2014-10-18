@@ -43,12 +43,11 @@ Q := chromosomes(max_chromo, lambda, delta, rho)
 ## TODO: properly estimate root state!!!
 #########
 
-## need to create a chromosomeRF (see pomoRF) function that takes the root state (uniform 1 to max_chromo) parameter
-## and returns a simplex:
-## here we set the root state to 4
+
+## here we set the root state to 4 just to keep things simple
 root_frequencies := simplex(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
-# instead use simplex(1,1,1,1,1,...,1) made by function simplex(rep(n, 1))
+# typically we would use simplex(1,1,1,1,1,...,1) made by function simplex(rep(max_chromo, 1))
 
 ##############
 # set up moves
@@ -75,7 +74,7 @@ mymodel <- model(Q)
 
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
-monitors[2] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_test_toy2.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.trees", printgen=10, separator = "	", psi)
 monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log",printgen=10, separator = "	", timetree=psi, character=seq)
  
 # set up mcmc
@@ -83,7 +82,8 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 #mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(100)
 
-ancestraltrace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log", separator="	")
-#mapAncestralState(ancestraltrace, psi, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.tree")
+treetrace <- readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.trees", treetype="non-clock", separator="	"); 
+ancestraltrace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log", separator="	"); 
+mapAncestralState(ancestraltrace, treetrace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.tree")
 
 
