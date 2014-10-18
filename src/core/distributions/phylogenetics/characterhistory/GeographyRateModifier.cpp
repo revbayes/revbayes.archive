@@ -151,6 +151,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     double sum = 0.0;
     double r = 0.0;
     
+    double eps = 1e-4;
+    
     unsigned s = newState->getState();
     unsigned charIdx = newState->getIndex();
     bool areaAvailable = availableAreaVector[epochIdx*numAreas + charIdx] > 0.0;
@@ -160,7 +162,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     {
         r = 1.0;
 
-        if (!true)
+        if (false)
+//        if (useAreaAdjacency || useDistanceDependence)
         {
             // determine which areas are present and which are absent
             present.clear();
@@ -170,53 +173,54 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
             std::set<size_t>::iterator it;
             for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                if (currState[*it]->getState() == 0)
-                {
-                    absent.insert(currState[*it]);
-                }
-                else
+                if (currState[*it]->getState() == 1)
                 {
                     present.insert(currState[*it]);
                 }
             }
             
+            // impossible state?
             if (present.size() == 0)
-                return 1.0;
+                return 10e6;
             
-            std::set<CharacterEvent*>::iterator it_p;
-            std::set<CharacterEvent*>::iterator it_a;
-
-            for (it_p = present.begin(); it_p != present.end(); it_p++)
+            std::set<CharacterEvent*>::iterator it_p1;
+            std::set<CharacterEvent*>::iterator it_p2;
+            
+            // focal present area
+            double sum = 0.0;
+            for (it_p1 = present.begin(); it_p1 != present.end(); it_p1++)
             {
-                size_t idx_p = (*it_p)->getIndex();
+                size_t idx_p1 = (*it_p1)->getIndex();
+                double d = 1.0;
+//                std::cout << idx_p1 << " " <<  d << "\n";
                 
-                for (it_a = present.begin(); it_a != present.end(); it_a++)
+                // adjacent present areas
+                for (it_p2 = present.begin(); it_p2 != present.end(); it_p2++)
                 {
-                    size_t idx_a = (*it_a)->getIndex();
-                    size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
+                    size_t idx_p2 = (*it_p2)->getIndex();
+                    size_t idx_e = epochIdx * epochOffset + idx_p1 * areaOffset + idx_p2;
                     
-                    //                std::cout << "  " << idx_p << " " << idx_a << " " << idx_p << "\n";
-                    double d = adjacentAreaVector[idx_e];
+                    double v = adjacentAreaVector[idx_e];
                     
                     // extinction depends on distance to adjacent areas?
-                    if (useDistanceDependence && d != 0.0)
+                    if (useDistanceDependence && v != 0.0)
                     {
-                        d = geographicDistancePowers[idx_e];
+                        v *= geographicDistancePowers[idx_e];
                     }
-                    
-                    d += 1.0; // += alpha??
-                    
-                    sum += d;
-                    
-                    if (idx_a == charIdx)
-                        rate += d;
+                    d += v;
                 }
+                sum += d;
+                
+                if (idx_p1 == charIdx)
+                    rate = d;
+
             }
-            r = sum / present.size() * rate;
+//            std::cout <<source("/Users/mlandis/Documents/code/revbayes-code/tutorials/RB_Biogeography_tutorial/RB_biogeo_files/scripts/biogeography_inf.Rev") rate << " " << sum << " " << present.size() << "\n";
+            r = (rate / sum) * present.size();
         }
     }
     
-    // area does not exist and is lost
+    // area does not exist and is lostsource("/Users/mlandis/Documents/code/revbayes-code/tutorials/RB_Biogeography_tutorial/RB_biogeo_files/scripts/biogeography_inf.Rev")
     if (!areaAvailable && s == 0)
     {
         r = 1e10;
@@ -241,7 +245,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         std::set<size_t>::iterator it;
         for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
         {
-            if (currState[*it]->getState() == 0)
+            if (currState[*it]->getState() == 0 &&
+                ( useAreaAdjacency && adjacentAreaVector[epochIdx*epochOffset + charIdx*areaOffset + *it] > eps ) )
             {
                 absent.insert(currState[*it]);
 //                std::cout << "a " << absent.size() << "\n";
@@ -258,33 +263,38 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         
         std::set<CharacterEvent*>::iterator it_p;
         std::set<CharacterEvent*>::iterator it_a;
-        for (it_p = present.begin(); it_p != present.end(); it_p++)
+        size_t n = 0;
+        for (it_a = absent.begin(); it_a != absent.end(); it_a++)
         {
-            size_t idx_p = (*it_p)->getIndex();
-            
-            for (it_a = absent.begin(); it_a != absent.end(); it_a++)
+            size_t idx_a = (*it_a)->getIndex();
+            double d = 0.0;
+            for (it_p = present.begin(); it_p != present.end(); it_p++)
             {
-                size_t idx_a = (*it_a)->getIndex();
+                size_t idx_p = (*it_p)->getIndex();
                 size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
                 
-//                std::cout << "  " << idx_p << " " << idx_a << " " << idx_p << "\n";
-                double d = adjacentAreaVector[idx_e];
-                if (useDistanceDependence && d != 0.0)
+                double v = adjacentAreaVector[idx_e];
+                if (useAreaAdjacency && v > eps)
+                    n += 1;
+                
+                if (useDistanceDependence && v != 0.0)
                 {
-                    d = geographicDistancePowers[idx_e];
+                    v *= geographicDistancePowers[idx_e];
                 }
-//                else if (d == 0.useAreaAdjacency == 0.0)
-//                {
-//                    d = 1e-10;
-//                }
-                
-                sum += d;
-                
-                if (idx_a == charIdx)
-                    rate += d;
+
+                d += v;
             }
+
+            sum += d;
+//            std::cout << sum << " " << d << "\n";
+            if (idx_a == charIdx)
+                rate += d;
         }
+        if (!useAreaAdjacency)
+            n = absent.size();
         
+//        r = n * rate / sum;
+//        r = rate / (sum / n);
         r = absent.size() * rate / sum;
 //        std::cout << "rateMod " << r << " = " << absent.size() << " * " << rate << " / " << sum << "\n";
     }
