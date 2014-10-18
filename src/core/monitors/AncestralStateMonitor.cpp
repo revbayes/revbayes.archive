@@ -108,9 +108,8 @@ void AncestralStateMonitor::monitor(unsigned long gen)
 		AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> *dist
 			= (AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree>*) &char_stoch->getDistribution();
 		
-		// TODO: 
 		// call update for the marginal node likelihoods
-		//dist->updateMarginalNodeLikelihoods();
+		dist->updateMarginalNodeLikelihoods();
         
 		std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
 		
