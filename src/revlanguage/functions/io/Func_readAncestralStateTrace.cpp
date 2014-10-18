@@ -52,9 +52,9 @@ RevPtr<Variable> Func_readAncestralStateTrace::execute( void ) {
 	} else {
 		
 		WorkspaceVector<AncestralStateTrace> *rv = new WorkspaceVector<AncestralStateTrace>();
-		std::vector<RevBayesCore::AncestralStateTrace> tmp = readAncestralStates(myFileManager.getFullFileName(), sep);
-		for (std::vector<RevBayesCore::AncestralStateTrace>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
-			rv->push_back( new AncestralStateTrace( *it ) );
+		std::vector<RevBayesCore::AncestralStateTrace*> tmp = readAncestralStates(myFileManager.getFullFileName(), sep);
+		for (std::vector<RevBayesCore::AncestralStateTrace*>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
+			rv->push_back( new AncestralStateTrace( **it ) );
 		}
 		
 		// return the vector of traces, 1 trace for each node
@@ -141,12 +141,12 @@ const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const {
 }
 
 
-std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::readAncestralStates(const std::string &fileName, const std::string &delimitter)
+std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::readAncestralStates(const std::string &fileName, const std::string &delimitter)
 {
     
     
-    std::vector<RevBayesCore::AncestralStateTrace> data;
-    
+    std::vector<RevBayesCore::AncestralStateTrace*> data;
+	
 	bool hasHeaderBeenRead = false;
 
 	
@@ -189,26 +189,26 @@ std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::rea
 		if (!hasHeaderBeenRead) {
 			
 			for (size_t j=1; j<columns.size(); j++) {
-				
+								
 				// set up AncestralStateTrace objects for each node
-				RevBayesCore::AncestralStateTrace t = RevBayesCore::AncestralStateTrace();
+				RevBayesCore::AncestralStateTrace *t = new RevBayesCore::AncestralStateTrace();
 				std::string parmName = columns[j];
-				t.setParameterName(parmName);
-				t.setFileName(fileName);
+				t->setParameterName(parmName);
+				t->setFileName(fileName);
 				data.push_back( t );
-				
 			}
 			
 			hasHeaderBeenRead = true;
 			
 		} else {
-		
+			
 			for (size_t j=1; j<columns.size(); j++) {
 				
 				// add values to the AncestralStateTrace objects
-				RevBayesCore::AncestralStateTrace t = data[j-1];
+				RevBayesCore::AncestralStateTrace *t = data[j-1];
 				std::string anc_state = columns[j];
-				t.addObject( anc_state );
+				t->addObject( anc_state );
+				
 			}
 		}
 	}

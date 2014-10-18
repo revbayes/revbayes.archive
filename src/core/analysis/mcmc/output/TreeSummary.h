@@ -25,9 +25,11 @@
 #include "Sample.h"
 #include "TreeTrace.h"
 #include "TreeUtilities.h"
+#include "AncestralStateTrace.h"
 
 #include <algorithm>
 #include <map>
+#include <boost/lexical_cast.hpp>
 
 namespace RevBayesCore {
 
@@ -39,6 +41,7 @@ namespace RevBayesCore {
         TreeSummary(const TreeTrace<treeType> &t);
     
         treeType*                                                               map(int burnin=-1);
+		treeType*                                                               mapAncestralState(std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin=-1);
         void                                                                    summarize(int burnin=-1);
         void                                                                    printTreeSummary(std::ostream& o);
         void                                                                    printCladeSummary(void);
@@ -55,7 +58,7 @@ namespace RevBayesCore {
         std::vector<Sample<std::string> >                                       cladeSamples;
         std::map<std::string, std::map<std::string, std::vector<double> > >     conditionalCladeFrequencies;
     };
-    
+	
     
     template <>
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
@@ -207,6 +210,116 @@ RevBayesCore::TreeSummary<treeType>::TreeSummary( const TreeTrace<treeType> &t) 
     
 }
 
+
+template <class treeType>
+treeType* RevBayesCore::TreeSummary<treeType>::mapAncestralState(std::vector<AncestralStateTrace> &ancestralstate_traces, int b )
+{	
+	treeType* mapTree = map( b );
+	
+	const std::vector<TopologyNode*> &nodes = mapTree->getNodes();
+	
+	// 2-d vectors [node][ancestral_state]
+	std::vector<std::vector<double> > pp(nodes.size(),std::vector<double>());
+	std::vector<std::vector<std::string> > states(nodes.size(),std::vector<std::string>());
+	
+	double weight = 1.0 / (trace.size()-burnin);
+	
+	// loop through all trees in tree trace
+	for (size_t i = burnin; i < trace.size(); i++)
+	{
+		treeType& tree = trace.objectAt( i );
+		const TopologyNode& root = tree.getRoot();
+		// loop through all nodes in MAP tree
+		for (size_t j = 0; j < nodes.size(); j++)
+		{
+			
+			if ( root.containsClade(nodes[j], true) )
+			{
+				
+				// if the node in the MAP tree is also in the tree from the tree trace
+				// we get the ancestral character state from the ancestral state trace
+				size_t cladeIndex = root.getCladeIndex( nodes[j] );
+				
+				// get AncestralStateTrace for this node
+				AncestralStateTrace ancestralstate_trace = ancestralstate_traces[cladeIndex];
+				
+				// get ancestral state vector for this iteration
+				std::vector<std::string> ancestralstate_vector = ancestralstate_trace.getValues();
+				
+				std::string ancestralstate = ancestralstate_vector[i];
+				
+				bool state_found = false;
+				int k = 0;
+				for (; k < pp[j].size(); k++) {
+					if (states[j][k] == ancestralstate) {
+						state_found = true;
+						break;
+					}
+				}
+				// update the pp and states vectors
+				if (!state_found) {
+					pp[j].push_back(weight);
+					states[j].push_back(ancestralstate);
+				} else {
+					pp[j][k] += weight;
+				}
+				
+			}
+		}
+	}
+	// find the 3 most probable ancestral states for each node and add them to the tree as parameters
+	//std::vector<std::string*> best_states(nodes.size(), "");
+	std::vector<std::string*> best_states;
+	for (int i = 0; i < nodes.size(); i++) {
+		
+		double state1_pp = 0.0; 
+		double state2_pp = 0.0; 
+		double state3_pp = 0.0;
+		
+		std::string state1 = ""; 
+		std::string state2 = ""; 
+		std::string state3 = "";
+		
+		// loop through all states for this node
+		for (int j = 0; j < pp[i].size(); j++) {
+			if (pp[i][j] > state1_pp) {
+				state3_pp = state2_pp;
+				state2_pp = state1_pp;
+				state1_pp = pp[i][j];
+				state3 = state2;
+				state2 = state1;
+				state1 = states[i][j];
+			} else if (pp[i][j] > state2_pp) {
+				state3_pp = state2_pp;
+				state2_pp = pp[i][j];
+				state3 = state2;
+				state2 = states[i][j];
+			} else if (pp[i][j] > state3_pp) {
+				state3_pp = pp[i][j];
+				state3 = states[i][j];
+			}
+		}
+		std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp);
+		if (state2_pp > 0) {
+			final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp);
+		}
+		if (state3_pp > 0) {
+			final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp);
+		}
+		if ((1 - (state1_pp+state2_pp+state3_pp)) > 0) {
+			double other_states = 1.0 - (state1_pp+state2_pp+state3_pp);
+			final_state = final_state + "," + "other=" + boost::lexical_cast<std::string>(other_states);
+		} 
+		final_state += "}";
+		
+		// make parameter string for this node
+		std::string *s = new std::string(final_state);
+		best_states.push_back(s);
+	}
+	mapTree->addNodeParameter("ancestralstates",best_states,true);
+	
+	return mapTree;
+}
 
 
 /**

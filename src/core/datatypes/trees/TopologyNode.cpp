@@ -251,6 +251,25 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
     }
 }
 
+void TopologyNode::addParameter(std::string const &n, const std::vector<std::string*> &p, bool internalOnly)
+{
+    
+    if ( !internalOnly || !isTip()  )
+    {
+        std::stringstream o;
+        o << n << "=" << *p[index];
+        std::string comment = o.str();
+        nodeComments.push_back( comment );
+        
+        newickNeedsRefreshing = true;
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
+            (*it)->addParameter(n, p, internalOnly);
+        }
+    }
+}
+
 
 /* Build newick string */
 std::string TopologyNode::buildNewickString( void )
