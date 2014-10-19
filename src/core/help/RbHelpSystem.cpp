@@ -64,14 +64,14 @@ const RbHelpEntry& RbHelpSystem::getHelp(const std::string &qs)
 {
     
     std::map<std::string, RbHelpFunction>::iterator itFunction = helpForFunctions.find( qs );
-    std::map<std::string, RbHelpType>::iterator itType = helpForTypes.find( qs );
+    std::map<std::string, RbHelpType*>::iterator itType = helpForTypes.find( qs );
     if ( itFunction != helpForFunctions.end() )
     {
         return itFunction->second;
     }
     else if ( itType != helpForTypes.end() )
     {
-        return itType->second;
+        return *(itType->second);
     }
     else
     {
@@ -163,25 +163,50 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
         
         
         
-        if ( parser.testHelpEntry( *it ) == RbHelpParser::TYPE )
+        if ( parser.testHelpEntry( *it ) == RbHelpParser::TYPE || parser.testHelpEntry( *it ) == RbHelpParser::DISTRIBUTION || parser.testHelpEntry( *it ) == RbHelpParser::MONITOR || parser.testHelpEntry( *it ) == RbHelpParser::MOVE )
         {
             
-            RbHelpType h = parser.parseHelpType( *it );
-            helpForTypes.insert( std::pair<std::string,RbHelpType>( h.getName() , h) );
-            helpTypeNames.insert( h.getName() );
+            RbHelpType* h = NULL;
+            if ( parser.testHelpEntry( *it ) == RbHelpParser::TYPE )
+            {
+                h = parser.parseHelpType( *it );
+            }
+            else if ( parser.testHelpEntry( *it ) == RbHelpParser::DISTRIBUTION )
+            {
+                h = parser.parseHelpDistribution( *it );
+            }
+            else if ( parser.testHelpEntry( *it ) == RbHelpParser::MONITOR )
+            {
+                h = parser.parseHelpMonitor( *it );
+            }
+            else if ( parser.testHelpEntry( *it ) == RbHelpParser::MOVE )
+            {
+                h = parser.parseHelpMove( *it );
+            }
+
+            helpForTypes.insert( std::pair<std::string,RbHelpType*>( h->getName() , h) );
+            helpTypeNames.insert( h->getName() );
             
             
             // create a map for all methods for this type
             std::map<std::string, RbHelpFunction> methodsHelp;
-            const std::vector<RbHelpFunction>& method = h.getMethods();
+            const std::vector<RbHelpFunction>& method = h->getMethods();
             for (std::vector<RbHelpFunction>::const_iterator m = method.begin(); m != method.end(); ++m)
             {
                 methodsHelp.insert( std::pair<std::string,RbHelpFunction>( m->getName() , *m) );
             }
             
             // add the methods to our global map
-            helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(h.getName(),methodsHelp) );
-                        
+            helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(h->getName(),methodsHelp) );
+            
+            
+            // also add all aliases
+            const std::vector<std::string>& aliases = h->getAliases();
+            for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
+            {
+                helpForTypes.insert( std::pair<std::string,RbHelpType*>( *alias , h) );
+                helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(*alias,methodsHelp) );
+            }
         }
         
         

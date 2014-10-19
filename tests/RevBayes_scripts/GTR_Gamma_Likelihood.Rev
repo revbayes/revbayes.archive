@@ -1,0 +1,27 @@
+D <- readCharacterData("data/Primates.nex")
+
+tau <- readTrees("data/primates.tree")[1]
+
+# substition model priors
+pi <- simplex(1,1,1,1)
+er <- simplex(1,1,1,1,1,1)
+
+
+# the rate matrix
+Q := fnGTR(er,pi)
+
+shape <- 0.5
+gamma_rates := fnDiscretizeGamma( shape, shape, 4, TRUE )
+
+
+clockRate <- 1.0
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=tau, Q=Q, siteRates=gamma_rates, branchRates=clockRate, type="DNA")
+
+# attach the data
+seq.clamp(D)
+
+write("BEAST LnL:       -6281.4026")
+write("RevBayes LnL:   ",seq.lnProb)
+

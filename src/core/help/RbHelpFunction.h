@@ -28,7 +28,6 @@ namespace RevBayesCore {
         RbHelpFunction();
         
         // getter
-        const std::vector<std::string>&             getAliases(void) const;
         const std::vector<RbHelpArgument>&          getArguments(void) const;
         const std::string&                          getAuthor(void) const;
         const std::vector<std::string>&             getDetails(void) const;
@@ -39,7 +38,6 @@ namespace RevBayesCore {
         const std::string&                          getUsage(void) const;
 
         // setters
-        void                                        setAliases(const std::vector<std::string> &a);
         void                                        setArguments(const std::vector<RbHelpArgument> &a);
         void                                        setAuthor(const std::string &a);
         void                                        setDetails(const std::vector<std::string> &d);
@@ -52,7 +50,6 @@ namespace RevBayesCore {
         
     private:
         
-        std::vector<std::string>                    aliases;
         std::vector<RbHelpArgument>                 arguments;
         std::string                                 author;
         std::vector<std::string>                    details;

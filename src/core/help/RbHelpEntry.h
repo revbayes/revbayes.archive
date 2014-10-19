@@ -25,11 +25,13 @@ namespace RevBayesCore {
         virtual                                     ~RbHelpEntry() {}
         
         // getter
+        const std::vector<std::string>&             getAliases(void) const;
         const std::vector<std::string>&             getDescription(void) const;
         const std::string&                          getName(void) const;
         const std::string&                          getTitle(void) const;
         
         // setters
+        void                                        setAliases(const std::vector<std::string> &a);
         void                                        setDescription(const std::vector<std::string> &d);
         void                                        setName(const std::string &n);
         void                                        setTitle(const std::string &t);
@@ -37,6 +39,7 @@ namespace RevBayesCore {
         
     private:
         
+        std::vector<std::string>                    aliases;
         std::vector<std::string>                    description;
         std::string                                 name;
         std::string                                 title;

@@ -5,6 +5,13 @@ using namespace RevBayesCore;
 
 
 
+const std::vector<std::string>& RbHelpEntry::getAliases( void ) const
+{
+    // return a const reference to the internal value
+    return aliases;
+}
+
+
 const std::vector<std::string>& RbHelpEntry::getDescription( void ) const
 {
     // return a const reference to the internal value
@@ -23,6 +30,13 @@ const std::string& RbHelpEntry::getTitle( void ) const
 {
     // return a const reference to the internal value
     return title;
+}
+
+
+void RbHelpEntry::setAliases(const std::vector<std::string> &a)
+{
+    // overwrite the internal value with the new value
+    aliases = a;
 }
 
 
