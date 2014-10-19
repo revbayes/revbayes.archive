@@ -1,13 +1,3 @@
-/**
- * @file
- * This file contains the implementation of the uniform time tree distribution.
- *
- * @brief Implementation of the uniform time tree distribution class.
- *
- * @author Fredrik Ronquist
- *
- */
-
 #include "Clade.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"

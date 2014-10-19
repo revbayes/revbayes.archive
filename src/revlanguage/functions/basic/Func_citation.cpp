@@ -1,14 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_citation, which is
- * the function used to provide basic help.
- *
- * @brief Implementation of Func_citation
- *
- * @author Fredrik Ronquist
- * @license GPL version 3
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_citation.h"
@@ -44,21 +33,16 @@ RevPtr<Variable> Func_citation::execute( void )
     RBOUT( "45678901234567890123456789012345678901234567890123456789012345678901234567890" );
 #endif
 
-    RBOUT( "\n" );
+    RBOUT( "" );
     RBOUT( "Citing RevBayes\n" );
     RBOUT( "===============\n" );
-    RBOUT( "\n" );
-    RBOUT( "The RevBayes release note has not been published yet. However, the core ideas\n" );
-    RBOUT( "behind graphical model representation in phylogenetics have been outlined\n" );
-    RBOUT( "in the following paper:\n" );
-    RBOUT( "\n" );
-    RBOUT( "Hohna S, Heath TA, Boussau B, Landis MJ, Ronquist F, Huelsenbeck JP (2014)\n" );
-    RBOUT( "Probabilistic graphical model representation in phylogenetics. Systematic\n" );
-    RBOUT( "Biology 63: 753-771.\n" );
-    RBOUT( "\n" );
-    RBOUT( "Until a release note appears, we suggest you cite this paper together with\n" );
-    RBOUT( "the program web site at http://revbayes.net.\n" );
-    RBOUT( "\n" );
+    RBOUT( "" );
+    RBOUT( "The RevBayes release note has not been published yet. However, the core ideas behind graphical model representation in phylogenetics have been outlined in the following paper:\n" );
+    RBOUT( "" );
+    RBOUT( "Höhna S, Heath TA, Boussau B, Landis MJ, Ronquist F, Huelsenbeck JP (2014) Probabilistic graphical model representation in phylogenetics. Systematic Biology 63: 753-771.\n" );
+    RBOUT( "" );
+    RBOUT( "Until a release note appears, we suggest you cite this paper together with the program web site at http://www.RevBayes.com.\n" );
+    RBOUT( "" );
     
     return NULL;
 }

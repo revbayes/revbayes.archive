@@ -8,7 +8,7 @@
 >
     <function-help-entry>
     
-        <name>pexp</name>
+        <name>exists</name>
 
         <alias>anotherNameForTheSameFunction</alias>
         <alias>yetAnotherNameForTheSameFunction</alias>
@@ -23,35 +23,19 @@
 
         <usage>
             <![CDATA[
-             pexp( RealPos x, RealPos lambda = 1, RealPos offset = 0 )
+             exists( String name )
              ]]> 
         </usage>
     
         <argument>
-            <label>x</label>
-            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <label>name</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
             <description>A description of the argument.</description>
-            <valueType>RealPos</valueType>
-        </argument>
-        <argument>
-            <label>lambda</label>
-            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-            <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
-            <valueType>RealPos</valueType>
-            <defaultValue>1</defaultValue>
-        </argument>
-        <argument>
-            <label>offset</label>
-            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-            <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
-            <valueType>RealPos</valueType>
-            <defaultValue>0</defaultValue>
+            <valueType>String</valueType>
         </argument>
 
-        <returnValue>Probability, RealPos, Real, RevObject</returnValue>
+        <returnValue>Bool, RevObject</returnValue>
 
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
