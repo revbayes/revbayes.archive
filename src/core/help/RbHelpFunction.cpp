@@ -43,10 +43,10 @@ const std::vector<RbHelpReference>& RbHelpFunction::getReferences( void ) const
 }
 
 
-const std::string& RbHelpFunction::getReturnValue( void ) const
+const std::string& RbHelpFunction::getReturnType( void ) const
 {
     // return a const reference to the internal value
-    return returnValue;
+    return returnType;
 }
 
 
@@ -106,10 +106,10 @@ void RbHelpFunction::setReferences(const std::vector<RbHelpReference> &r)
 }
 
 
-void RbHelpFunction::setReturnValue(const std::string &r)
+void RbHelpFunction::setReturnType(const std::string &r)
 {
     // overwrite the internal value with the new value
-    returnValue = r;
+    returnType = r;
 }
 
 
