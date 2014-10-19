@@ -54,12 +54,13 @@ void writeFunctionBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, s
         outStream << "" << std::endl;
         outStream << tabbing << "    <title>Some title you want to give this function</title>" << std::endl;
         outStream << tabbing << "" << std::endl;
+        outStream << tabbing << "    <description>" << std::endl;
+        outStream << tabbing << "        <p>" << std::endl;
+        outStream << tabbing << "        This is a 'brief' description of the amazing function you have implemented." << std::endl;
+        outStream << tabbing << "        </p>"<< std::endl;
+        outStream << tabbing << "    </description>" << std::endl;
     }
-    outStream << tabbing << "    <description>" << std::endl;
-    outStream << tabbing << "        <p>" << std::endl;
-    outStream << tabbing << "        This is a 'brief' description of the amazing function you have implemented." << std::endl;
-    outStream << tabbing << "        </p>"<< std::endl;
-    outStream << tabbing << "    </description>" << std::endl;
+
     outStream << "" << std::endl;
     outStream << tabbing << "    <usage>" << std::endl;
     outStream << tabbing << "        <![CDATA[" << std::endl;
@@ -257,7 +258,7 @@ void writeTypeBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, std::
         if ( func->getName() != "methods" && func->getName() != "members" && func->getName() != "get" )
         {
             outStream << tabbing << "    <method-help-entry>" << std::endl;
-            writeFunctionBodyXmlTemplate(outStream, indentLevel+1, func->getName(), func);
+            writeFunctionBodyXmlTemplate(outStream, indentLevel+1, func->getName(), func, false);
             outStream << tabbing << "    </method-help-entry>" << std::endl;
             outStream << tabbing << "" << std::endl;
             outStream << tabbing << "" << std::endl;
@@ -295,6 +296,7 @@ void writeTypeXmlTemplate(std::fstream &outStream, std::string typeName, RevLang
     writeTypeBodyXmlTemplate(outStream, 1, typeName, ctor, obj);
     
     outStream << "    </type-help-entry>" << std::endl;
+    outStream << "" << std::endl;
     outStream << "</revbayes-help>" << std::endl;
     outStream << "" << std::endl;
 
@@ -309,6 +311,7 @@ void writeDistributionXmlTemplate(std::fstream &outStream, std::string typeName,
     writeTypeBodyXmlTemplate(outStream, 1, typeName, ctor, d);
     
     outStream << "    </distribution-help-entry>" << std::endl;
+    outStream << "" << std::endl;
     outStream << "</revbayes-help>" << std::endl;
     outStream << "" << std::endl;
     
@@ -323,6 +326,7 @@ void writeMoveXmlTemplate(std::fstream &outStream, std::string typeName, RevLang
     writeTypeBodyXmlTemplate(outStream, 1, typeName, ctor, mv);
     
     outStream << "    </move-help-entry>" << std::endl;
+    outStream << "" << std::endl;
     outStream << "</revbayes-help>" << std::endl;
     outStream << "" << std::endl;
     
@@ -337,6 +341,7 @@ void writeMonitorXmlTemplate(std::fstream &outStream, std::string typeName, RevL
     writeTypeBodyXmlTemplate(outStream, 1, typeName, ctor, mntr);
     
     outStream << "    </monitor-help-entry>" << std::endl;
+    outStream << "" << std::endl;
     outStream << "</revbayes-help>" << std::endl;
     outStream << "" << std::endl;
     
@@ -348,9 +353,10 @@ void writeStandardFunctionXmlTemplate(std::fstream &outStream, std::string funcN
     
     outStream << "    <function-help-entry>" << std::endl;
     
-    writeFunctionBodyXmlTemplate(outStream, 1, funcName, func);
+    writeFunctionBodyXmlTemplate(outStream, 1, funcName, func, false);
     
     outStream << "    </function-help-entry>" << std::endl;
+    outStream << "" << std::endl;
     outStream << "</revbayes-help>" << std::endl;
     outStream << "" << std::endl;
     

@@ -1,14 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_license, which is
- * the function used to provide license information.
- *
- * @brief Implementation of Func_license
- *
- * @author Fredrik Ronquist
- * @license GPL version 3
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_license.h"
@@ -38,21 +27,14 @@ Func_license* Func_license::clone( void ) const {
 /** Execute function */
 RevPtr<Variable> Func_license::execute( void )
 {
-    RBOUT( "\n" );
-    RBOUT( "RevBayes license\n" );
-    RBOUT( "================\n" );
-    RBOUT( "\n" );
-    RBOUT( "This program is free software: you can redistribute it and/or modify\n" );
-    RBOUT( "it under the terms of the GNU General Public License as published by\n" );
-    RBOUT( "the Free Software Foundation, either version 3 of the License, or\n" );
-    RBOUT( "(at your option) any later version.\n" );
-    RBOUT( "\n" );
-    RBOUT( "This program is distributed in the hope that it will be useful,\n" );
-    RBOUT( "but WITHOUT ANY WARRANTY; without even the implied warranty of\n" );
-    RBOUT( "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" );
-    RBOUT( "GNU General Public License (http://www.gnu.org/licenses/) for more\n" );
-    RBOUT( "details.\n" );
-    RBOUT( "\n" );
+    RBOUT( "" );
+    RBOUT( "RevBayes license" );
+    RBOUT( "================" );
+    RBOUT( "" );
+    RBOUT( "This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version." );
+    RBOUT( "" );
+    RBOUT( "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License (http://www.gnu.org/licenses/) for more details." );
+    RBOUT( "" );
     
     return NULL;
 }

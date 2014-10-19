@@ -151,7 +151,9 @@ namespace RevBayesCore {
     std::vector<double>                 operator/(const std::vector<int>&    x, const std::vector<double>& y);              //!< Overloaded division operator
     std::vector<double>                 operator/(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded division operator
 
-    
+//    std::ostream&                       operator<<(std::ostream& o, const bool& x);                                         //!< Overloaded output operator
+//    std::ostream&                       operator<<(std::ostream& o, const char& x);                                         //!< Overloaded output operator
+
 }
 
 #endif

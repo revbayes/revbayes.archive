@@ -6,155 +6,201 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
 >
-<function-help-entry>
+    <distribution-help-entry>
 
-    <name>dnBDP</name>
+        <name>dnBDP</name>
 
-    <alias>anotherNameForTheSameFunction</alias>
-    <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>dnBirthDeathConstant</alias>
+        <alias>dnBDPConst</alias>
 
-    <title>Some title you want to give this function</title>
+        <title>Constant-rate birth-death process</title>
 
-    <description>
-        <p>
-        This is a 'brief' description of the amazing function you have implemented.
-        </p>
-    </description>
+        <description>
+            <p>
+                The constant-rate birth-death process specifies a prior probability distribution on time trees. The birth (speciation) and death (extinction)
+                rates are assumed to be constant over time. Unlike some implementations, cBDP does not constrain the birth rate to be larger than the death
+                rate.
+            </p>
+        </description>
 
-    <usage>
-        <![CDATA[
-         dnBDP(
-               RealPos        lambda,
-               RealPos        mu = 0,
-               RealPos        origin = NULL,
-               RealPos        rootAge = NULL,
-               Probability        rho = 1,
-               String        samplingStrategy = uniform,
-               String        condition = survival,
-               Natural        nTaxa,
-               String[]        names,
-               Clade[]        constraints = 
-               )
-         ]]> 
-    </usage>
+        <constructor-help-entry>
+        
+            <usage>
+                <![CDATA[
+                 dnBDP( RealPos lambda, RealPos mu = 0, RealPos origin = NULL, RealPos rootAge = NULL, Probability rho = 1, String samplingStrategy = "uniform", String condition = "survival", Natural nTaxa, String[] names, Clade[] constraints = [  ] )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>lambda</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Birth (speciation) rate.</description>
+                <valueType>RealPos</valueType>
+            </argument>
+            <argument>
+                <label>mu</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Death (extinction) rate.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>0</defaultValue>
+            </argument>
+            <argument>
+                <label>origin</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The time of the process since the origin.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>NULL</defaultValue>
+            </argument>
+            <argument>
+                <label>rootAge</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The time of the process since the root (most recent common ancestor).</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>NULL</defaultValue>
+            </argument>
+            <argument>
+                <label>rho</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The taxon sampling probability.</description>
+                <valueType>Probability</valueType>
+                <defaultValue>1</defaultValue>
+            </argument>
+            <argument>
+                <label>samplingStrategy</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The sampling strategy used if the taxon sampling is incomplete.</description>
+                <valueType>String</valueType>
+                <option>"uniform"</option>
+                <option>"diversified"</option>
+                <defaultValue>"uniform"</defaultValue>
+            </argument>
+            <argument>
+                <label>condition</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The condition of the process. For details, see below</description>
+                <valueType>String</valueType>
+                <option>"time"</option>
+                <option>"survival"</option>
+                <option>"nTaxa"</option>
+                <defaultValue>"survival"</defaultValue>
+            </argument>
+            <argument>
+                <label>nTaxa</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The number of taxa. This is only needed for simulation/initialization purposes when a tree with exactly n taxa is needed in the model.</description>
+                <valueType>Natural</valueType>
+            </argument>
+            <argument>
+                <label>names</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The taxon labels that will be applied to the simulated tree.</description>
+                <valueType>String[]</valueType>
+            </argument>
+            <argument>
+                <label>constraints</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The topological constraints applied to the tree, i.e., conditioning on monphyly of a given clade.</description>
+                <valueType>Clade[]</valueType>
+                <defaultValue>[  ]</defaultValue>
+            </argument>
 
-    <argument>
-        <label>lambda</label>
-        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>RealPos</valueType>
-    </argument>
-    <argument>
-        <label>mu</label>
-        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>RealPos</valueType>
-        <defaultValue>0</defaultValue>
-    </argument>
-    <argument>
-        <label>origin</label>
-        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>RealPos</valueType>
-        <defaultValue>NULL</defaultValue>
-    </argument>
-    <argument>
-        <label>rootAge</label>
-        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>RealPos</valueType>
-        <defaultValue>NULL</defaultValue>
-    </argument>
-    <argument>
-        <label>rho</label>
-        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Probability</valueType>
-        <defaultValue>1</defaultValue>
-    </argument>
-    <argument>
-        <label>samplingStrategy</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"uniform"</option>
-        <option>"diversified"</option>
-        <defaultValue>uniform</defaultValue>
-    </argument>
-    <argument>
-        <label>condition</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>String</valueType>
-        <option>"time"</option>
-        <option>"survival"</option>
-        <option>"nTaxa"</option>
-        <defaultValue>survival</defaultValue>
-    </argument>
-    <argument>
-        <label>nTaxa</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Natural</valueType>
-    </argument>
-    <argument>
-        <label>names</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>String[]</valueType>
-    </argument>
-    <argument>
-        <label>constraints</label>
-        <argumentPassingMethod>by-value</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Clade[]</valueType>
-        <defaultValue></defaultValue>
-    </argument>
+            <returnValue>Dist_bdp, BirthDeathProcess, Distribution__TimeTree, Distribution, RevObject</returnValue>
 
-    <returnValue>Dist_bdp, BirthDeathProcess, Distribution__TimeTree, Distribution, RevObject</returnValue>
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                    The implementation of the constant-rate birth-death process is based on Nee et al. (1994). The unconditioned process results in an improper probability
+                    distribution, so the process needs to be conditioned on something. Possibilities include to condition the process on the time (duration), on survival
+                    (non-extinction), on obtaining a tree, or on obtaining the number of observed taxa. The condition of the process is controlled by the 'condition'
+                    parameter.
+                </p>
+                <p>
+                    The process gives rise to trees with extinct branches, but observed trees typically do not include extinct branches. As implemented here, we
+                    assume that it is trees without extinct branches, so-called reconstructed trees, that we observe. The probability distribution is modified accordingly.
+                </p>
+                <p>
+                    It is commonly the case that the observed tree does not include all tips. The included tips may have been sampled uniformly at random from the available
+                    complete tree. A particularly common bias is that the investigator has tried to maximize the diversity in the sampled tree, by including tips that are as
+                    distantly related to each other as possible. This is referred to as diversified sampling. It is critical to model the sampling process
+                    correctly to obtain accurate estimates of the birth and death rates (Hoehna et al. 2011); particularly the estimate of the death rate is sensitive to
+                    violations of the sampling assumptions.
+                </p>
+            </details>
 
-    <details>
-        <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-        <p>
-        The implementation of this fancy function ... 
-        </p>
-    </details>
+            <example>
+                <![CDATA[
+                    trueTree <- readTrees("data/primates.tree")[1]
+                    
+                    names <- trueTree.names()
+                    taxaCount <- names.size()
+                    
+                    # Birth-Death process priors
+                    speciation ~ dnExponential(0.1)
+                    extinction ~ dnExponential(0.1)
+                    org ~ dnUniform(0.0,50.0)
+                    
+                    # moves for the birth-death parameters
+                    moves[1] = mvScale(speciation, lambda=1, tune=true, weight=2)
+                    moves[2] = mvScale(extinction, lambda=1, tune=true, weight=2)
+                    moves[3] = mvSlide(org, delta=1.0, weight=2.0)
+                    
+                    # tree from birth-death process
+                    tau ~ dnBDP(origin=org, lambda=speciation, mu=extinction, nTaxa=taxaCount, names=names)
+                    
+                    tau.clamp( trueTree )
+                    
+                    monitors[1] = modelmonitor(filename="testBirthDeath.log",printgen=10, separator = "	")
+                    monitors[2] = screenmonitor(printgen=1000, separator = "	", speciation)
+                    
+                    mymodel = model(tau)
+                    
+                    mymcmc = mcmc(mymodel, monitors, moves)
+                    
+                    mymcmc.burnin(generations=20000,tuningInterval=100)
+                    mymcmc.run(generations=200000)
+                    mymcmc.operatorSummary()
+                 ]]>
 
-    <example>
-        <![CDATA[
-         # an executable example of the function described here
-         trueTree <- readTrees("data/primates.tree")[1]
-         ...
-         ]]>
+            </example>
 
-    </example>
+            <reference>
+                <citation>
+                    Nee, S., May, R.M., and Harvey, P.H. 1994. The Reconstructed Evolutionary Process. Philosophical Transactions: Biological Sciences, 344, 305-311
+                </citation>
+                <url>http://rstb.royalsocietypublishing.org/content/344/1309/305.short</url>
+                <doi>10.1098/rstb.1994.0068</doi>
+            </reference>
+            <reference>
+                <citation>
+                    Höhna, S., Stadler, T., Ronquist, F, and Britton, T. 2011. Inferring speciation and extinction rates under different species sampling schemes. Molecular Biology and Evolution, 28, 2577-2589.
+                </citation>
+                <url>http://mbe.oxfordjournals.org/content/28/9/2577.short</url>
+                <doi>10.1093/molbev/msr095</doi>
+            </reference>
+            
+            <author>Sebastian Hoehna</author>
 
-    <reference>
-        <citation>
-            First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-        </citation>
-        <url>An optional URL to the paper</url>
-        <doi>An optional DOI to the paper</doi>
-    </reference>
-
-    <author>Your name here</author>
-
-    <seeAlso>
-        <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-        <entry>similar function</entry>
-    </seeAlso>
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnBDPSerial</entry>
+                <entry>dnBDPSkySerial</entry>
+                <entry>dnYuleDivDep</entry>
+            </seeAlso>
 
 
-    </function-help-entry>
+        </constructor-help-entry>
+    
+    </distribution-help-entry>
+
 </revbayes-help>
 

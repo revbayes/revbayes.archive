@@ -23,6 +23,7 @@
 
 #include "DagNode.h"
 #include "RbUtil.h"
+#include "StringUtilities.h"
 
 #include <ostream>
 #include <string>
@@ -65,6 +66,16 @@ namespace RevBayesCore {
     template<>
     inline bool                                  TypedDagNode<RbVector<double> >::isSimpleNumeric(void) const { return true; }
 
+    template<>
+    inline void                                  TypedDagNode<bool>::printValue(std::ostream &o, const std::string &sep, int l, bool left) const {
+                                                        std::stringstream ss;
+                                                        if ( this->getValue() == true ) ss << "TRUE"; else ss << "FALSE";
+                                                        std::string s = ss.str();
+                                                        if ( l > 0 ) StringUtilities::fillWithSpaces(s, l, left);
+                                                        o << s;
+                                                    }
+    
+    
 }
 
 #include "RbUtil.h"

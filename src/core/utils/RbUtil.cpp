@@ -11,6 +11,31 @@
 #include "Clade.h"
 
 
+//std::ostream& RevBayesCore::operator<<(std::ostream& o, const bool& x)
+//{
+//
+//    if ( x == true )
+//    {
+//        o << "TRUE";
+//    }
+//    else
+//    {
+//        o << "FALSE";
+//    }
+//
+//    return o;
+//}
+
+
+//std::ostream& RevBayesCore::operator<<(std::ostream& o, const char& x)
+//{
+//    std::string tmp = std::string(&x);
+//    o << tmp;
+//    
+//    return o;
+//}
+
+
 //std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<bool>& x) {
 //    o << "(";
 //    for (std::vector<bool>::const_iterator it = x.begin(); it != x.end(); ++it) {
