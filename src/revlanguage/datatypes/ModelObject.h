@@ -504,7 +504,7 @@ void RevLanguage::ModelObject<rbType>::initializeMethods(void) const
     // add the inherited rules
     AbstractModelObject::initializeMethods();
     
-    if ( this->dagNode->isStochastic() )
+    if ( this->dagNode != NULL && this->dagNode->isStochastic() )
     {
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );

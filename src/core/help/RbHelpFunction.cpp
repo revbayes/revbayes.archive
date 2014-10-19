@@ -8,12 +8,6 @@ RbHelpFunction::RbHelpFunction( void ) : RbHelpEntry()
     
 }
 
-const std::vector<std::string>& RbHelpFunction::getAliases( void ) const
-{
-    // return a const reference to the internal value
-    return aliases;
-}
-
 const std::vector<RbHelpArgument>& RbHelpFunction::getArguments( void ) const
 {
     // return a const reference to the internal value
@@ -67,13 +61,6 @@ const std::string& RbHelpFunction::getUsage( void ) const
 {
     // return a const reference to the internal value
     return usage;
-}
-
-
-void RbHelpFunction::setAliases(const std::vector<std::string> &a)
-{
-    // overwrite the internal value with the new value
-    aliases = a;
 }
 
 

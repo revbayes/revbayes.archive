@@ -29,14 +29,17 @@ namespace RevBayesCore {
         
         enum HelpEntryType { DISTRIBUTION, FUNCTION, MONITOR, MOVE, TYPE };
 
+        RbHelpType*                         parseHelpDistribution(const std::string &fn);
         RbHelpFunction                      parseHelpFunction(const std::string &fn);
-        RbHelpType                          parseHelpType(const std::string &fn);
+        RbHelpType*                         parseHelpMonitor(const std::string &fn);
+        RbHelpType*                         parseHelpMove(const std::string &fn);
+        RbHelpType*                         parseHelpType(const std::string &fn);
         HelpEntryType                       testHelpEntry(const std::string &fn);
                 
     private:
 
         RbHelpFunction                      parseInternalHelpFunction(const pugi::xpath_node &node);
-
+        void                                parseInternalHelpType(const pugi::xpath_node &node, RbHelpType *helpEntry);
         
     };
     

@@ -30,22 +30,26 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Clade::Clade(void) : ModelObject<RevBayesCore::Clade>() {
+Clade::Clade(void) : ModelObject<RevBayesCore::Clade>()
+{
     
 }
 
 /** Construct from core Clade */
-Clade::Clade(RevBayesCore::Clade *c) : ModelObject<RevBayesCore::Clade>( c ) {
+Clade::Clade(RevBayesCore::Clade *c) : ModelObject<RevBayesCore::Clade>( c )
+{
     
 }
 
 /** Construct from core Clade */
-Clade::Clade(const RevBayesCore::Clade &t) : ModelObject<RevBayesCore::Clade>( new RevBayesCore::Clade( t ) ) {
+Clade::Clade(const RevBayesCore::Clade &t) : ModelObject<RevBayesCore::Clade>( new RevBayesCore::Clade( t ) )
+{
     
 }
 
 /** Construct from DAG node */
-Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : ModelObject<RevBayesCore::Clade>( n ) {
+Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : ModelObject<RevBayesCore::Clade>( n )
+{
     
 }
 

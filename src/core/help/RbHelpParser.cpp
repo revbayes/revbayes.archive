@@ -1,5 +1,8 @@
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "RbHelpDistribution.h"
+#include "RbHelpMonitor.h"
+#include "RbHelpMove.h"
 #include "RbHelpParser.h"
 #include "StringUtilities.h"
 #include "XmlDocument.h"
@@ -166,8 +169,7 @@ RbHelpFunction RbHelpParser::parseInternalHelpFunction(const pugi::xpath_node &n
 
 
 
-
-RbHelpType RbHelpParser::parseHelpType(const std::string &fn)
+RbHelpType* RbHelpParser::parseHelpDistribution(const std::string &fn)
 {
     
     // first we need to load the file
@@ -184,27 +186,130 @@ RbHelpType RbHelpParser::parseHelpType(const std::string &fn)
         throw RbException( result.description() );
     }
     
-    RbHelpType helpEntry = RbHelpType();
+    RbHelpDistribution* helpEntry = new RbHelpDistribution();
+    
+    pugi::xpath_node node = doc.select_single_node( "//distribution-help-entry" );
+    parseInternalHelpType( node, helpEntry );
+    
+    // now return the help entry
+    return helpEntry;
+}
+
+
+
+RbHelpType* RbHelpParser::parseHelpMonitor(const std::string &fn)
+{
+    
+    // first we need to load the file
+    std::ifstream readStream;
+    RbFileManager fm = RbFileManager(fn);
+    fm.openFile( readStream );
+    
+    // try to load the xml file
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(fn.c_str(), pugi::parse_default);
+    if (result.status != pugi::status_ok)
+    {
+        std::cerr << "Problem while parsing file " << fn << std::endl;
+        throw RbException( result.description() );
+    }
+    
+    RbHelpMonitor* helpEntry = new RbHelpMonitor();
+    
+    pugi::xpath_node node = doc.select_single_node( "//type-help-entry" );
+    parseInternalHelpType( node, helpEntry );
+    
+    // now return the help entry
+    return helpEntry;
+}
+
+
+RbHelpType* RbHelpParser::parseHelpMove(const std::string &fn)
+{
+    
+    // first we need to load the file
+    std::ifstream readStream;
+    RbFileManager fm = RbFileManager(fn);
+    fm.openFile( readStream );
+    
+    // try to load the xml file
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(fn.c_str(), pugi::parse_default);
+    if (result.status != pugi::status_ok)
+    {
+        std::cerr << "Problem while parsing file " << fn << std::endl;
+        throw RbException( result.description() );
+    }
+    
+    RbHelpMove* helpEntry = new RbHelpMove();
+    
+    pugi::xpath_node node = doc.select_single_node( "//type-help-entry" );
+    parseInternalHelpType( node, helpEntry );
+    
+    // now return the help entry
+    return helpEntry;
+}
+
+
+RbHelpType* RbHelpParser::parseHelpType(const std::string &fn)
+{
+    
+    // first we need to load the file
+    std::ifstream readStream;
+    RbFileManager fm = RbFileManager(fn);
+    fm.openFile( readStream );
+    
+    // try to load the xml file
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(fn.c_str(), pugi::parse_default);
+    if (result.status != pugi::status_ok)
+    {
+        std::cerr << "Problem while parsing file " << fn << std::endl;
+        throw RbException( result.description() );
+    }
+    
+    RbHelpType* helpEntry = new RbHelpType();
+    
+    pugi::xpath_node node = doc.select_single_node( "//type-help-entry" );
+    parseInternalHelpType( node, helpEntry );
+    
+    // now return the help entry
+    return helpEntry;
+}
+
+void RbHelpParser::parseInternalHelpType(const pugi::xpath_node &node, RbHelpType *helpEntry)
+{
     
     // name
-    helpEntry.setName( doc.select_single_node( "//type-help-entry/name" ).node().child_value() );
+    helpEntry->setName( node.node().select_single_node( "name" ).node().child_value() );
     
     // title
-    helpEntry.setTitle( doc.select_single_node( "//type-help-entry/title" ).node().child_value() );
+    helpEntry->setTitle( node.node().select_single_node( "title" ).node().child_value() );
+    
+    // aliases
+    pugi::xpath_node_set nodeSet = node.node().select_nodes( "alias" );
+    std::vector<std::string> aliases = std::vector<std::string>();
+    for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
+    {
+        pugi::xpath_node subNode = *it;
+        std::string alias = std::string(subNode.node().child_value());
+        aliases.push_back( alias );
+    }
+    helpEntry->setAliases( aliases );
     
     // description
     std::vector<std::string> desc = std::vector<std::string>();
-    pugi::xpath_node_set nodeSet = doc.select_nodes( "//type-help-entry/description/p" );
+    nodeSet = node.node().select_nodes( "description/p" );
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
         pugi::xpath_node subnode = *it;
         desc.push_back(subnode.node().child_value());
     }
-    helpEntry.setDescription( desc );
+    helpEntry->setDescription( desc );
     
     
     std::vector<RbHelpFunction> constructors;
-    nodeSet = doc.select_nodes( "//type-help-entry/constructor-help-entry" );
+    nodeSet = node.node().select_nodes( "constructor-help-entry" );
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
         pugi::xpath_node node = *it;
@@ -212,11 +317,11 @@ RbHelpType RbHelpParser::parseHelpType(const std::string &fn)
         constructors.push_back( helpEntryConstructor );
     }
     // set the constructors
-    helpEntry.setConstructors( constructors );
+    helpEntry->setConstructors( constructors );
     
 
     std::vector<RbHelpFunction> methods;
-    nodeSet = doc.select_nodes( "//type-help-entry/method-help-entry" );
+    nodeSet = node.node().select_nodes( "method-help-entry" );
     for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it)
     {
         pugi::xpath_node node = *it;
@@ -224,10 +329,8 @@ RbHelpType RbHelpParser::parseHelpType(const std::string &fn)
         methods.push_back( helpEntryMethod );
     }
     // set the methods
-    helpEntry.setMethods( methods );
-    
-    // now return the help entry
-    return helpEntry;
+    helpEntry->setMethods( methods );
+        
 }
 
 
@@ -257,6 +360,24 @@ RbHelpParser::HelpEntryType RbHelpParser::testHelpEntry(const std::string &fn)
     if ( nodeSet.size() > 0 )
     {
         return TYPE;
+    }
+    
+    nodeSet = doc.select_nodes("//distribution-help-entry");
+    if ( nodeSet.size() > 0 )
+    {
+        return DISTRIBUTION;
+    }
+    
+    nodeSet = doc.select_nodes("//move-help-entry");
+    if ( nodeSet.size() > 0 )
+    {
+        return MOVE;
+    }
+    
+    nodeSet = doc.select_nodes("//monitor-help-entry");
+    if ( nodeSet.size() > 0 )
+    {
+        return MONITOR;
     }
     
     
