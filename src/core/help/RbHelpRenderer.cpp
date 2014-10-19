@@ -159,9 +159,9 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
     }
     
     // return value
-    result.append( TerminalFormatter::makeUnderlined("Value") );
+    result.append( TerminalFormatter::makeUnderlined("Return type") );
     result.append( sectionBreak );
-    result.append( StringUtilities::formatTabWrap(functionHelp.getReturnValue(), 1, w) );
+    result.append( StringUtilities::formatTabWrap(functionHelp.getReturnType(), 1, w) );
     result.append( lineBreak );
     result.append( sectionBreak );
     
@@ -432,7 +432,7 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
             // return value
             result.append( TerminalFormatter::makeUnderlined("Value") );
             result.append( sectionBreak );
-            result.append( StringUtilities::formatTabWrap(functionHelp.getReturnValue(), 1, w) );
+            result.append( StringUtilities::formatTabWrap(functionHelp.getReturnType(), 1, w) );
             result.append( lineBreak );
             result.append( sectionBreak );
             

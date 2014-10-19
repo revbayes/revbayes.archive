@@ -120,7 +120,7 @@ RbHelpFunction RbHelpParser::parseInternalHelpFunction(const pugi::xpath_node &n
     helpEntry.setArguments( arguments );
     
     // return value
-    helpEntry.setReturnValue( node.node().select_single_node( "returnValue" ).node().child_value());
+    helpEntry.setReturnType( node.node().select_single_node( "returnValue" ).node().child_value());
     
     // details
     std::vector<std::string> details = std::vector<std::string>();

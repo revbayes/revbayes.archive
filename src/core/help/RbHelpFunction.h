@@ -33,7 +33,7 @@ namespace RevBayesCore {
         const std::vector<std::string>&             getDetails(void) const;
         const std::string&                          getExample(void) const;
         const std::vector<RbHelpReference>&         getReferences(void) const;
-        const std::string&                          getReturnValue(void) const;
+        const std::string&                          getReturnType(void) const;
         const std::vector<std::string>&             getSeeAlso(void) const;
         const std::string&                          getUsage(void) const;
 
@@ -44,7 +44,7 @@ namespace RevBayesCore {
         void                                        setExample(const std::string &e);
         void                                        setSeeAlso(const std::vector<std::string> &s);
         void                                        setReferences(const std::vector<RbHelpReference> &r);
-        void                                        setReturnValue(const std::string &r);
+        void                                        setReturnType(const std::string &r);
         void                                        setUsage(const std::string &u);
         
         
@@ -55,7 +55,7 @@ namespace RevBayesCore {
         std::vector<std::string>                    details;
         std::string                                 example;
         std::vector<RbHelpReference>                references;
-        std::string                                 returnValue;
+        std::string                                 returnType;
         std::vector<std::string>                    seeAlso;
         std::string                                 usage;
         
