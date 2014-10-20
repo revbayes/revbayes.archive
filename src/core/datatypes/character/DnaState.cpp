@@ -22,13 +22,19 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-DnaState::DnaState(void) : DiscreteCharacterState(), state( char(0xFF) ), stateIndex(0xFF) {
+DnaState::DnaState(void) : DiscreteCharacterState(),
+    state( char(0xFF) ),
+    stateIndex(4)
+{
     
 }
 
 
 /** Copy constructor */
-DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(), state( s.state ), stateIndex( s.stateIndex ) {
+DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(),
+    state( s.state ),
+    stateIndex( s.stateIndex )
+{
     
 }
 
@@ -95,6 +101,7 @@ void DnaState::operator++( int i ) {
 
     state <<= 1;
     ++stateIndex;
+    if (stateIndex > 3)
 
 }
 
@@ -107,8 +114,9 @@ void DnaState::operator--( void ) {
 }
 
 
-void DnaState::operator--( int i ) {
-
+void DnaState::operator--( int i )
+{
+    
     state >>= 1;
     --stateIndex;
 
@@ -188,6 +196,11 @@ unsigned int DnaState::getNumberObservedStates(void) const  {
     
     char v = state;     // count the number of bits set in v
     char c;             // c accumulates the total bits set in v
+    
+    if ( state == '\x80' && stateIndex == 7)
+    {
+        std::cerr << "ohoh\n";
+    }
     
     for (c = 0; v; v >>= 1)
     {
