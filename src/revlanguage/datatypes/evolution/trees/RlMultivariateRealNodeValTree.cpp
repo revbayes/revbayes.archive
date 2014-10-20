@@ -145,7 +145,7 @@ void MultivariateRealNodeValTree::printValue(std::ostream &o) const {
     std::fixed( o );
     o.precision( 3 );
     
-    dagNode->printValue( o, "" );
+    dagNode->printValue( o );
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

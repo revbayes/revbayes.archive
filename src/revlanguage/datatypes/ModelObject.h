@@ -567,9 +567,14 @@ template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
 {
     if ( dagNode == NULL )
+    {
         o << "NA";
+    }
     else
-        dagNode->printValue(o, "" );
+    {
+        dagNode->printValue( o );
+    }
+    
 }
 
 

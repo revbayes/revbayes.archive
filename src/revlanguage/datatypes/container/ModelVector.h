@@ -396,7 +396,7 @@ template <typename rlType>
 void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
     
-    this->getDagNode()->printValue( o, "" );
+    this->getDagNode()->printValue( o );
 
 }
 

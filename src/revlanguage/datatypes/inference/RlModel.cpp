@@ -165,7 +165,7 @@ void Model::printValue(std::ostream &o) const {
         
         o << "_value        = ";
         std::ostringstream o1;
-        (*it)->printValue( o1, ", " );
+        (*it)->printValueElements( o1, ", " );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
 #if defined (DEBUG_STRUCTURE)
@@ -230,7 +230,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             if((*it)->getDagNodeType() == "constant"){
                 std::stringstream trl;
                 if((*it)->isSimpleNumeric())  
-                    (*it)->printValue(trl," ");
+                    (*it)->printValueElements(trl," ");
                 else 
                     trl << " ... ";
                 if(trl.str() != "" || vb){
@@ -301,7 +301,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
         if( !(*it)->isHidden() || vb){
             std::stringstream trl;
-            (*it)->printValue(trl,",");
+            (*it)->printValueElements(trl,",");
             if(trl.str() != "" || vb){
                 std::stringstream nname;
                 if ( (*it)->getName() != "" )

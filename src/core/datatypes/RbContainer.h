@@ -28,14 +28,14 @@ namespace RevBayesCore {
         virtual                                     ~Container(void) {}
         
         // Container functions you have to override
-        virtual size_t                              size(void) const = 0;                                               //!< Get number of elements in container
-        virtual void                                printElement(std::ostream &o, size_t i) const = 0;                  //!< Print the i-th element 
+        virtual size_t                              size(void) const = 0;                                                                                   //!< Get number of elements in container
+        virtual void                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const = 0;                  //!< Print the i-th element
         
         
     protected:
-        Container(void) {}                                                                                                //!< Default constructor
+        Container(void) {}                                                                                                                                  //!< Default constructor
         
-        //        Container&                                  operator=(const Container& x);                                      //!< Assignment operator
+        //        Container&                                  operator=(const Container& x);                                                                //!< Assignment operator
         
     };
     

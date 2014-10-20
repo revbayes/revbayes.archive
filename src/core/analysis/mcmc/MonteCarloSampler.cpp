@@ -313,7 +313,7 @@ void MonteCarloSampler::initializeChain( bool priorOnly )
             if ( !RbMath::isAComputableNumber(lnProb) )
             {
                 std::cerr << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
-                node->printValue(std::cerr,"");
+                node->printValue(std::cerr);
                 std::cerr << std::endl;
             }
             lnProbability += lnProb;

@@ -42,7 +42,6 @@
 #include "RevObject.h"
 
 /* Primitive types (in folder "datatypes/basic") */
-#include "Complex.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
@@ -404,8 +403,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        addType( new Complex() );
-//        AddWorkspaceVectorType<Complex,5>::addTypeToWorkspace( *this, new Complex() );
         AddWorkspaceVectorType<Integer,5>::addTypeToWorkspace( *this, new Integer() );
         AddWorkspaceVectorType<Natural,5>::addTypeToWorkspace( *this, new Natural() );
         AddWorkspaceVectorType<Probability,5>::addTypeToWorkspace( *this, new Probability() );
