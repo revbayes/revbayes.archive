@@ -973,17 +973,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulat
         for ( size_t i = 0; i < numSites; ++i ) 
         {
             // get the ancestral character for this site
-            unsigned long parentState = parent.getCharacter( i ).getState();
-            size_t p = 0;
-            while ( parentState != 1 ) 
-            {
-                // shift to the next state
-                parentState >>= 1;
-                // increase the index
-                ++p;
-            }
+            unsigned long parentState = parent.getCharacter( i ).getStateIndex();
             
-            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ p ];
+            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ parentState ];
             
             // create the character
             charType c;
