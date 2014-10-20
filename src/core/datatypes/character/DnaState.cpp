@@ -86,6 +86,7 @@ bool DnaState::operator<(const CharacterState &x) const {
 void DnaState::operator++( void ) {
     
     state <<= 1;
+    ++stateIndex;
 
 }
 
@@ -93,6 +94,7 @@ void DnaState::operator++( void ) {
 void DnaState::operator++( int i ) {
 
     state <<= 1;
+    ++stateIndex;
 
 }
 
@@ -100,6 +102,7 @@ void DnaState::operator++( int i ) {
 void DnaState::operator--( void ) {
     
     state >>= 1;
+    --stateIndex;
 
 }
 
@@ -107,6 +110,7 @@ void DnaState::operator--( void ) {
 void DnaState::operator--( int i ) {
 
     state >>= 1;
+    --stateIndex;
 
 }
 
@@ -307,9 +311,11 @@ void DnaState::setState(char symbol)
     
 }
 
-void DnaState::setToFirstState( void ) {
+void DnaState::setToFirstState( void )
+{
     
     state = 0x1;
+    stateIndex = 0;
 
 }
 
