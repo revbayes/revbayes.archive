@@ -982,11 +982,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulat
             c.setToFirstState();
             // draw the state
             double u = rng->uniform01();
-            while ( true ) 
+            size_t stateIndex = 0;
+            while ( true )
             {
                 u -= *freqs;
+                ++stateIndex;
                 
-                if ( u > 0.0 )
+                if ( u > 0.0 && stateIndex < this->numChars)
                 {
                     ++c;
                     ++freqs;
@@ -995,6 +997,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulat
                 {
                     break;
                 }
+                
             }
             
             // add the character to the sequence
