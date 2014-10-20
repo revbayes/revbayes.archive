@@ -244,9 +244,7 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
-#include "Func_citation.h"
 #include "Func_clear.h"
-#include "Func_contributors.h"
 #include "Func_exists.h"
 #include "Func_getwd.h"
 #include "Func_ifelse.h"
@@ -722,9 +720,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
         
         // regular functions
-        addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
-        addFunction( "contributors",             new Func_contributors()             );
         addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
@@ -1080,6 +1076,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("punif", new DistributionFunctionCdf( new Dist_positiveUnif() ) );
         addFunction("qunif", new DistributionFunctionQuantile( new Dist_positiveUnif() ) );
         addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_positiveUnif() ) );
+        
+        
+        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<TimeTree>() ) );
+        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<BranchLengthTree>() ) );
 
 
     }
