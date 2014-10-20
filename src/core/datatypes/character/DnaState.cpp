@@ -101,7 +101,6 @@ void DnaState::operator++( int i ) {
 
     state <<= 1;
     ++stateIndex;
-    if (stateIndex > 3)
 
 }
 
