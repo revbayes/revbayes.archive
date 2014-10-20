@@ -26,7 +26,8 @@ Move_RateAgeBetaShift* Move_RateAgeBetaShift::clone(void) const {
 }
 
 
-void Move_RateAgeBetaShift::constructInternalObject( void ) {
+void Move_RateAgeBetaShift::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     

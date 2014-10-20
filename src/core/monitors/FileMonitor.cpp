@@ -185,7 +185,7 @@ void FileMonitor::monitor(unsigned long gen)
             DagNode *node = *i;
             
             // print the value
-            node->printValue(outStream, separator);
+            node->printValueElements(outStream, separator);
         }
 
         outStream << std::endl;
