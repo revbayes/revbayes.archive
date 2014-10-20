@@ -26,11 +26,30 @@ RbHelpSystem::RbHelpSystem()
 
 
 RbHelpSystem::RbHelpSystem( const RbHelpSystem &hs) :
-    helpFunctionNames( hs.helpFunctionNames ),
     helpForFunctions( hs.helpForFunctions ),
-    helpTypeNames( hs.helpTypeNames ),
-    helpForTypes( hs.helpForTypes )
+    helpForMethods( hs.helpForMethods ),
+    helpForTypes(  ),
+    helpFunctionNames( hs.helpFunctionNames ),
+    helpTypeNames( hs.helpTypeNames )
 {
+    
+    for ( std::map<std::string, RbHelpType*>::const_iterator it = hs.helpForTypes.begin(); it != hs.helpForTypes.end(); ++it)
+    {
+        helpForTypes.insert( std::pair<std::string, RbHelpType*>( it->first, it->second->clone() ) );
+    }
+    
+}
+
+
+RbHelpSystem::~RbHelpSystem( void )
+{
+    
+    // free the pointers to the help types
+    for ( std::map<std::string, RbHelpType*>::const_iterator it = helpForTypes.begin(); it != helpForTypes.end(); ++it)
+    {
+        delete it->second;
+    }
+    helpForTypes.clear();
     
 }
 
@@ -42,10 +61,23 @@ RbHelpSystem& RbHelpSystem::operator=( const RbHelpSystem &hs )
     
     if ( this != &hs )
     {
+        
+        // free the pointers to the help types
+        for ( std::map<std::string, RbHelpType*>::const_iterator it = helpForTypes.begin(); it != helpForTypes.end(); ++it)
+        {
+            delete it->second;
+        }
+        helpForTypes.clear();
+        
         helpFunctionNames   = hs.helpFunctionNames;
         helpForFunctions    = hs.helpForFunctions;
         helpTypeNames       = hs.helpTypeNames;
-        helpForTypes        = hs.helpForTypes;
+        helpForMethods      = hs.helpForMethods;
+        
+        for ( std::map<std::string, RbHelpType*>::const_iterator it = hs.helpForTypes.begin(); it != hs.helpForTypes.end(); ++it)
+        {
+            helpForTypes.insert( std::pair<std::string, RbHelpType*>( it->first, it->second->clone() ) );
+        }
     }
     
     return *this;

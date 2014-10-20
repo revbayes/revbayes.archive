@@ -26,7 +26,8 @@ namespace RevBayesCore {
         
         RbHelpDistribution();
         
-        
+        virtual RbHelpDistribution*                     clone(void) const;                                                   //!< Clone this object
+
     private:
         
         

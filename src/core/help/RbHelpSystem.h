@@ -27,6 +27,8 @@ namespace RevBayesCore {
         
     public:
         
+        virtual                                     ~RbHelpSystem();
+        
         const std::set<std::string>&                getFunctionEntries(void) const;
         const std::set<std::string>&                getTypeEntries(void) const;
         const RbHelpEntry&                          getHelp(const std::string &qs);                                         //!< Format the help information for printing to the terminal
