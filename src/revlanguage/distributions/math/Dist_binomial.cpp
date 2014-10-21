@@ -63,7 +63,7 @@ const TypeSpec& Dist_binomial::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_binomial::getMemberRules(void) const {
+const MemberRules& Dist_binomial::getParameterRules(void) const {
     
     static MemberRules distBinMemberRules;
     static bool rulesSet = false;
@@ -104,7 +104,7 @@ void Dist_binomial::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_binomial::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_binomial::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
         
     if ( name == "p" ) 
         {
@@ -116,6 +116,6 @@ void Dist_binomial::setConstMemberVariable(const std::string& name, const RevPtr
         }
     else
         {
-        TypedDistribution<Natural>::setConstMemberVariable(name, var);
+        TypedDistribution<Natural>::setConstParameter(name, var);
         }
 }

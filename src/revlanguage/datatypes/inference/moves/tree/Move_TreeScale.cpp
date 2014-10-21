@@ -72,7 +72,7 @@ const TypeSpec& Move_TreeScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_TreeScale::getMemberRules(void) const
+const MemberRules& Move_TreeScale::getParameterRules(void) const
 {
     
     static MemberRules moveMemberRules;
@@ -86,7 +86,7 @@ const MemberRules& Move_TreeScale::getMemberRules(void) const
         moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -124,7 +124,7 @@ void Move_TreeScale::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_TreeScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void Move_TreeScale::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
     
     if ( name == "tree" )
@@ -145,7 +145,7 @@ void Move_TreeScale::setConstMemberVariable(const std::string& name, const RevPt
     }
     else
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 
 }

@@ -22,7 +22,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
 //        RevPtr<RevLanguage::Variable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
 //        MethodTable                                     makeMethods(void) const;
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
@@ -33,7 +33,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
@@ -156,7 +156,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getClassTy
 
 /** Return member rules (no members) */
 template <class treeType>
-const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -228,7 +228,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::printValue(std::ostream& o) const 
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_phyloDACTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" )
     {
@@ -255,7 +255,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::
         cladoStateFreqs = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

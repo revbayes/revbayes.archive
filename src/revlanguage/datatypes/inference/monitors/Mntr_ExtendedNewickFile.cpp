@@ -69,7 +69,7 @@ const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_ExtendedNewickFile::getMemberRules(void) const {
+const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const {
     
     static MemberRules Mntr_ExtendedNewickFileMemberRules;
     static bool rulesSet = false;
@@ -110,7 +110,7 @@ void Mntr_ExtendedNewickFile::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mntr_ExtendedNewickFile::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_ExtendedNewickFile::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );
@@ -137,6 +137,6 @@ void Mntr_ExtendedNewickFile::setConstMemberVariable(const std::string& name, co
         likelihood = var;
     }
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

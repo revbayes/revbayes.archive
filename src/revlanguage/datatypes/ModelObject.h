@@ -45,10 +45,8 @@ namespace RevLanguage {
     
         // Utility functions you might want to override
         virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual RevPtr<Variable>                getMember(const std::string& name) const;                                   //!< Get member variable
         virtual void                            initializeMethods(void) const;                                              //!< Initialize member methods
-        virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
-
+        
         // Basic utility functions you should not have to override
         RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
         bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
@@ -317,39 +315,6 @@ const RevLanguage::TypeSpec& RevLanguage::ModelObject<rlType>::getClassTypeSpec(
 }
 
 
-/* Find member variables */
-template <typename rbType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::getMember(std::string const &name) const
-{
-    
-    // check whether the variable is actually a stochastic node
-    if ( dagNode->isStochastic() )
-    {
-        if ( name == "prob" || name == "probability" ) 
-        {
-            // convert the node
-            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-            double lnProb = stochNode->getLnProbability();
-            RevObject *p = RlUtils::RlTypeConverter::toReal( exp(lnProb) );
-            
-            return new Variable( p );
-        } 
-        else if ( name == "lnProb" || name == "lnProbability" ) 
-        {
-            // convert the node
-            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-            double lnProb = stochNode->getLnProbability();
-            RevObject *p = RlUtils::RlTypeConverter::toReal( lnProb );
-            
-            return new Variable( p );
-            
-        }
-    }
-
-    return RevObject::getMember( name );
-}
-
-
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
@@ -365,33 +330,6 @@ template <typename rbType>
 RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
     
     return dagNode;
-}
-
-
-/**
- * Has this object a member with the given name?
- *
- */
-template<typename rbType>
-bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const 
-{
-    // first the general members ...
-    // if ( name == )
-    
-    // members that all stochastic variables have
-    if ( dagNode->isStochastic() )
-    {
-        if ( name == "prob" || name == "probability" ) 
-        {
-            return true;
-        } 
-        else if ( name == "lnProb" || name == "lnProbability" ) 
-        {
-            return true;
-        }
-    } 
-    
-    return false;
 }
 
 
@@ -554,8 +492,6 @@ void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o, bool ver
     RevObject::printStructure( o, verbose );
 
     dagNode->printStructureInfo( o, verbose );
-
-    printMemberInfo( o );
 }
 
 

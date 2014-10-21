@@ -65,7 +65,7 @@ const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_DPPGibbsConcentration::getMemberRules(void) const {
+const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const {
     
     static MemberRules dppMove;
     static bool rulesSet = false;
@@ -80,7 +80,7 @@ const MemberRules& Move_DPPGibbsConcentration::getMemberRules(void) const {
         dppMove.push_back( new ArgumentRule( "numElements"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
        
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -125,7 +125,7 @@ void Move_DPPGibbsConcentration::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_DPPGibbsConcentration::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_DPPGibbsConcentration::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "concentration" ) {
         cp = var;
@@ -143,6 +143,6 @@ void Move_DPPGibbsConcentration::setConstMemberVariable(const std::string& name,
         numElements = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

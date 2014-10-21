@@ -24,18 +24,9 @@ using namespace RevLanguage;
 /** Construct from identifier and index */
 SyntaxVariable::SyntaxVariable( const std::string &n ) :
 SyntaxElement(),
-identifier( n ),
-baseVariable( NULL )
+identifier( n )
 {
-}
-
-
-/** Construct from base variable (member object), identifier and index */
-SyntaxVariable::SyntaxVariable( SyntaxElement* baseVar, const std::string &n ) :
-SyntaxElement(),
-identifier( n ),
-baseVariable( baseVar )
-{
+    
 }
 
 
@@ -45,15 +36,6 @@ SyntaxElement( x ),
 identifier( x.identifier )
 {
     
-    if ( x.baseVariable != NULL )
-    {
-        baseVariable = x.baseVariable->clone();
-    }
-    else
-    {
-        baseVariable = NULL;
-    }
-    
 }
 
 
@@ -61,7 +43,6 @@ identifier( x.identifier )
 SyntaxVariable::~SyntaxVariable()
 {
     
-    delete baseVariable;
 }
 
 
@@ -72,19 +53,7 @@ SyntaxVariable& SyntaxVariable::operator=( const SyntaxVariable& x )
     {
         SyntaxElement::operator=( x );
         
-        
-        delete baseVariable;
-        
         identifier   = x.identifier;
-        
-        if ( x.baseVariable != NULL )
-        {
-            baseVariable = x.baseVariable->clone();
-        }
-        else
-        {
-            baseVariable = NULL;
-        }
     }
     
     return (*this);
@@ -116,20 +85,9 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
     
     RevPtr<Variable> theVar;
     
-    if ( baseVariable == NULL )
-    {
-        // Get variable from the environment (no dynamic version of identifier)
-        theVar = env.getVariable( identifier );
-    }
-    else
-    {
-        
-        // Get the base variable
-        theVar = baseVariable->evaluateContent( env, dynamic );
-        
-        // Find member variable (no dynamic version of identifier)
-        theVar = theVar->getRevObject().getMember( identifier );
-    }
+    // Get variable from the environment (no dynamic version of identifier)
+    theVar = env.getVariable( identifier );
+    
     
     if ( theVar->isVectorVariable() )
     {
@@ -191,28 +149,16 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
 {
     RevPtr<Variable> theVar;
     
-    if ( baseVariable == NULL )
+    // Find or create the variable
+    if ( env.existsVariable( identifier ) )
     {
-        // Find or create the variable
-        if ( env.existsVariable( identifier ) )
-        {
-            theVar = env.getVariable( identifier );
-        }
-        else    // add it
-        {
-            theVar = new Variable( NULL, identifier );
-            env.addVariable( identifier, theVar );
-        }
+        theVar = env.getVariable( identifier );
     }
-    else {
-        
-        // Get the base variable. Note that we do not create the variable in this case.
-        theVar = baseVariable->evaluateContent( env );
-        
-        // Find member variable based on its name
-        theVar = theVar->getRevObject().getMember( identifier );
+    else    // add it
+    {
+        theVar = new Variable( NULL, identifier );
+        env.addVariable( identifier, theVar );
     }
-    
     
     // Return the variable for assignment
     return theVar;
@@ -225,14 +171,6 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
 std::string SyntaxVariable::getFullName( Environment& env ) const
 {
     std::ostringstream theName;
-    if ( baseVariable != NULL )
-    {
-        SyntaxVariable *v = dynamic_cast<SyntaxVariable*>( baseVariable );
-        if ( v != NULL )
-        {
-            theName << v->getFullName( env ) << ".";
-        }
-    }
     
     theName << identifier;
     
@@ -248,12 +186,6 @@ void SyntaxVariable::printValue(std::ostream& o) const
     
     o << std::endl;
     
-    if ( baseVariable != NULL )
-    {
-        o << "base variable   = <" << baseVariable << "> ";
-        baseVariable->printValue(o);
-        o << std::endl;
-    }
 }
 
 
@@ -267,9 +199,6 @@ void SyntaxVariable::printValue(std::ostream& o) const
  */
 bool SyntaxVariable::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
-    
-    if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env, localVars ) )
-        return false;
     
     return true;
 }
@@ -301,8 +230,6 @@ bool SyntaxVariable::isFunctionSafe( const Environment& env, std::set<std::strin
  */
 bool SyntaxVariable::retrievesExternVar( const Environment& env, std::set<std::string>& localVars, bool inLHS ) const
 {
-    if ( baseVariable != NULL )
-        return baseVariable->retrievesExternVar( env, localVars, inLHS );
     
     // Named variable. Check if it is already defined as a local variable.
     if ( localVars.find( identifier ) != localVars.end() )

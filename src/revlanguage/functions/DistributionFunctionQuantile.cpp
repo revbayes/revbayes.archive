@@ -26,7 +26,7 @@ using namespace RevLanguage;
 DistributionFunctionQuantile::DistributionFunctionQuantile( ContinuousDistribution *d ) : Function(), templateObject( d ), templateObjectPositive( NULL ) {
     
     argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObject->getMemberRules();
+    const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
     }
@@ -36,7 +36,7 @@ DistributionFunctionQuantile::DistributionFunctionQuantile( ContinuousDistributi
 DistributionFunctionQuantile::DistributionFunctionQuantile( PositiveContinuousDistribution *d ) : Function(), templateObject( NULL ), templateObjectPositive( d ) {
     
     argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObjectPositive->getMemberRules();
+    const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
     }
@@ -104,7 +104,8 @@ DistributionFunctionQuantile* DistributionFunctionQuantile::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RevPtr<Variable> DistributionFunctionQuantile::execute( void ) {
+RevPtr<Variable> DistributionFunctionQuantile::execute( void )
+{
     
     Real* value = NULL;
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -112,12 +113,16 @@ RevPtr<Variable> DistributionFunctionQuantile::execute( void ) {
     if ( templateObject != NULL ) {
         ContinuousDistribution* copyObject = templateObject->clone();
     
-        for ( size_t i = 1; i < args.size(); i++ ) {
+        for ( size_t i = 1; i < args.size(); i++ )
+        {
         
-            if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-            } else {
-                copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+            if ( args[i].isConstant() )
+            {
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+            }
+            else
+            {
+                copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
             }
         }
         
@@ -130,13 +135,18 @@ RevPtr<Variable> DistributionFunctionQuantile::execute( void ) {
     {
         PositiveContinuousDistribution* copyObject = templateObjectPositive->clone();
         
-        for ( size_t i = 1; i < args.size(); i++ ) {
+        for ( size_t i = 1; i < args.size(); i++ )
+        {
             
-            if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-            } else {
-                copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+            if ( args[i].isConstant() )
+            {
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
             }
+            else
+            {
+                copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
+            }
+            
         }
         
         RevBayesCore::ContinuousDistribution *d = copyObject->createDistribution();

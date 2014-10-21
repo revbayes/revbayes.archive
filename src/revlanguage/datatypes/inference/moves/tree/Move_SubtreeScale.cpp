@@ -62,7 +62,7 @@ const TypeSpec& Move_SubtreeScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_SubtreeScale::getMemberRules(void) const {
+const MemberRules& Move_SubtreeScale::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -73,7 +73,7 @@ const MemberRules& Move_SubtreeScale::getMemberRules(void) const {
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -107,12 +107,12 @@ void Move_SubtreeScale::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_SubtreeScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_SubtreeScale::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

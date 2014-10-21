@@ -38,7 +38,7 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal model object.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)
+        const MemberRules&                          getParameterRules(void) const;                                             //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
@@ -49,7 +49,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         void                                        printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc);
         
         std::set<RevPtr<const Variable> >           sources;

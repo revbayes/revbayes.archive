@@ -75,7 +75,7 @@ const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& SteppingStoneSampler::getMemberRules(void) const {
+const MemberRules& SteppingStoneSampler::getParameterRules(void) const {
     
     static MemberRules samplerMemberRules;
     static bool rulesSet = false;
@@ -123,7 +123,7 @@ void SteppingStoneSampler::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SteppingStoneSampler::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void SteppingStoneSampler::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "likelihoodColumnName")
     {
@@ -143,6 +143,6 @@ void SteppingStoneSampler::setConstMemberVariable(const std::string& name, const
     }
     else
     {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

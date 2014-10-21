@@ -26,7 +26,7 @@ using namespace RevLanguage;
 DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : Function(), templateObject( d ), templateObjectPositive( NULL ) {
     
     argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObject->getMemberRules();
+    const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
     }
@@ -36,7 +36,7 @@ DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : 
 DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution *d ) : Function(), templateObject( NULL ), templateObjectPositive( d ) {
     
     argRules.push_back( new ArgumentRule("x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObjectPositive->getMemberRules();
+    const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
         argRules.push_back( (*it)->clone() );
@@ -108,37 +108,48 @@ DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RevPtr<Variable> DistributionFunctionCdf::execute( void ) {
+RevPtr<Variable> DistributionFunctionCdf::execute( void )
+{
     
     RevBayesCore::ContinuousDistribution *d = NULL;
     
-    if ( templateObject != NULL ) {
+    if ( templateObject != NULL )
+    {
     
         ContinuousDistribution* copyObject = templateObject->clone();
     
-        for ( size_t i = 1; i < args.size(); i++ ) {
+        for ( size_t i = 1; i < args.size(); i++ )
+        {
         
-            if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-            } else {
-                copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+            if ( args[i].isConstant() )
+            {
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+            }
+            else
+            {
+                copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
             }
         }
         
         d = copyObject->createDistribution();
         
     }
-    else {
+    else
+    {
         
         
         PositiveContinuousDistribution* copyObject = templateObjectPositive->clone();
         
-        for ( size_t i = 1; i < args.size(); i++ ) {
+        for ( size_t i = 1; i < args.size(); i++ )
+        {
             
-            if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-            } else {
-                copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+            if ( args[i].isConstant() )
+            {
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+            }
+            else
+            {
+                copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
             }
         }
         

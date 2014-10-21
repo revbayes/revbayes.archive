@@ -110,7 +110,7 @@ const TypeSpec& Move_RLCRateScale::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Move_RLCRateScale::getMemberRules(void) const 
+const MemberRules& Move_RLCRateScale::getParameterRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -124,7 +124,7 @@ const MemberRules& Move_RLCRateScale::getMemberRules(void) const
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -175,7 +175,7 @@ void Move_RLCRateScale::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_RLCRateScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_RLCRateScale::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 
@@ -192,7 +192,7 @@ void Move_RLCRateScale::setConstMemberVariable(const std::string& name, const Re
     }
     else
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
     
 }

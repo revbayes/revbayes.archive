@@ -69,7 +69,7 @@ const TypeSpec& Mntr_Screen::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_Screen::getMemberRules(void) const
+const MemberRules& Mntr_Screen::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -109,7 +109,7 @@ void Mntr_Screen::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Mntr_Screen::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void Mntr_Screen::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
     
     if ( name == "" )
@@ -134,6 +134,6 @@ void Mntr_Screen::setConstMemberVariable(const std::string& name, const RevPtr<c
     }
     else
     {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

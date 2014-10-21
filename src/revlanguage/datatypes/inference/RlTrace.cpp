@@ -84,7 +84,7 @@ const TypeSpec& Trace::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Trace::getMemberRules(void) const {
+const MemberRules& Trace::getParameterRules(void) const {
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
@@ -139,13 +139,13 @@ void Trace::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Trace::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Trace::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "xxx") {
         
     } 
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }
 

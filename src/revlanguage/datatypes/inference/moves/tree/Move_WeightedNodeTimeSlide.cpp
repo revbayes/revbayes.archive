@@ -64,7 +64,7 @@ const TypeSpec& Move_WeightedNodeTimeSlide::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_WeightedNodeTimeSlide::getMemberRules(void) const {
+const MemberRules& Move_WeightedNodeTimeSlide::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -76,7 +76,7 @@ const MemberRules& Move_WeightedNodeTimeSlide::getMemberRules(void) const {
         memberRules.push_back( new ArgumentRule( "blocks", Natural::getClassTypeSpec() , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Natural(8) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -110,7 +110,7 @@ void Move_WeightedNodeTimeSlide::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_WeightedNodeTimeSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_WeightedNodeTimeSlide::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
@@ -119,6 +119,6 @@ void Move_WeightedNodeTimeSlide::setConstMemberVariable(const std::string& name,
         blocks = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

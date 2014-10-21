@@ -20,7 +20,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
@@ -29,7 +29,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
@@ -441,7 +441,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getClassType
 
 /** Return member rules (no members) */
 template <class treeType>
-const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -543,7 +543,7 @@ void RevLanguage::Dist_phyloCTMC<treeType>::printValue(std::ostream& o) const
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::Dist_phyloCTMC<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void RevLanguage::Dist_phyloCTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
     
     if ( name == "tree" ) 
@@ -580,7 +580,7 @@ void RevLanguage::Dist_phyloCTMC<treeType>::setConstMemberVariable(const std::st
     }
     else
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
     
 }

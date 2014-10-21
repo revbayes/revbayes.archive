@@ -154,7 +154,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
         // usage help on a function
         SyntaxVariable* rootPtr = dynamic_cast<SyntaxVariable*>( (SyntaxElement*)root);
         SyntaxVariable* theVariable = rootPtr;
-        if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
+        if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL ) {
 
             const std::string& fxnName = theVariable->getIdentifier();
             const std::vector<Function*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName );

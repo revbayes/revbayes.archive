@@ -72,7 +72,7 @@ template <class valueType>
 RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf( TypedDistribution<valueType> *d ) : Function(), templateObject( d ) {
     
     argRules.push_back( new ArgumentRule("x", valueType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObject->getMemberRules();
+    const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
     }
@@ -106,7 +106,8 @@ RevLanguage::DistributionFunctionPdf<valueType>& RevLanguage::DistributionFuncti
 
 /** Clone the object */
 template <class valueType>
-RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFunctionPdf<valueType>::clone(void) const {
+RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFunctionPdf<valueType>::clone(void) const
+{
     
     return new DistributionFunctionPdf<valueType>(*this);
 }
@@ -114,16 +115,21 @@ RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFuncti
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionFunctionPdf<valueType>::execute( void )
+{
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     
-    for ( size_t i = 1; i < (args.size()-1); i++ ) {
+    for ( size_t i = 1; i < (args.size()-1); i++ )
+    {
         
-        if ( args[i].isConstant() ) {
-            copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-        } else {
-            copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+        if ( args[i].isConstant() )
+        {
+            copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+        }
+        else
+        {
+            copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
         }
     }
     

@@ -142,7 +142,7 @@ const TypeSpec& Move_NodeCharacterHistoryRejectionSample::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Move_NodeCharacterHistoryRejectionSample::getMemberRules(void) const
+const MemberRules& Move_NodeCharacterHistoryRejectionSample::getParameterRules(void) const
 {
     
     static MemberRules nodeChrsMoveMemberRules;
@@ -162,7 +162,7 @@ const MemberRules& Move_NodeCharacterHistoryRejectionSample::getMemberRules(void
         nodeChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         nodeChrsMoveMemberRules.insert( nodeChrsMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -213,7 +213,7 @@ void Move_NodeCharacterHistoryRejectionSample::printValue(std::ostream &o) const
  * \param[in]    var      Pointer to the variable.
  */
 
-void Move_NodeCharacterHistoryRejectionSample::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void Move_NodeCharacterHistoryRejectionSample::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
     
     if ( name == "ctmc" )
@@ -238,7 +238,7 @@ void Move_NodeCharacterHistoryRejectionSample::setConstMemberVariable(const std:
     }
     else
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
     
 }

@@ -30,7 +30,6 @@ namespace RevLanguage {
         
     public:
         SyntaxVariable(const std::string &n);                                                                                       //!< Global variable
-        SyntaxVariable(SyntaxElement* baseVar, const std::string &n);                                                               //!< Member variable
         SyntaxVariable(const SyntaxVariable& x);                                                                                    //!< Copy constructor
         
         virtual                            ~SyntaxVariable(void);                                                                   //!< Destructor deletes variable, identifier and index
@@ -49,7 +48,6 @@ namespace RevLanguage {
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         bool                                isFunctionSafe(const Environment&       env,
                                                            std::set<std::string>&   localVars) const;                               //!< Is this element safe in a function?
-        bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
         bool                                retrievesExternVar(const Environment&       env,
                                                                std::set<std::string>&   localVars,
                                                                bool                     inLHS) const;                               //!< Does this element retrieve an external variable?
@@ -57,8 +55,7 @@ namespace RevLanguage {
     protected:
 
         std::string                         identifier;                                                                             //!< The name of the variable, if identified by name
-        SyntaxElement*                      baseVariable;                                                                           //!< Base variable (pointing to a Rev member object)
-    
+        
     };
     
 }

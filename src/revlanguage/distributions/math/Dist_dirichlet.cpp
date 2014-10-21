@@ -66,7 +66,7 @@ const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_dirichlet::getMemberRules(void) const {
+const MemberRules& Dist_dirichlet::getParameterRules(void) const {
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -103,7 +103,7 @@ void Dist_dirichlet::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_dirichlet::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_dirichlet::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "alpha" ) 
     {
@@ -111,6 +111,6 @@ void Dist_dirichlet::setConstMemberVariable(const std::string& name, const RevPt
     }
     else 
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

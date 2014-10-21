@@ -73,7 +73,7 @@ const TypeSpec& Mntr_File::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_File::getMemberRules(void) const {
+const MemberRules& Mntr_File::getParameterRules(void) const {
     
     static MemberRules filemonitorMemberRules;
     static bool rulesSet = false;
@@ -114,7 +114,7 @@ void Mntr_File::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mntr_File::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_File::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.push_back( var );
@@ -147,6 +147,6 @@ void Mntr_File::setConstMemberVariable(const std::string& name, const RevPtr<con
         append = var;
     }
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

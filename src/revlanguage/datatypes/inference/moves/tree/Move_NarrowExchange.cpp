@@ -62,7 +62,7 @@ const TypeSpec& Move_NarrowExchange::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_NarrowExchange::getMemberRules(void) const {
+const MemberRules& Move_NarrowExchange::getParameterRules(void) const {
     
     static MemberRules narrowMemberRules;
     static bool rulesSet = false;
@@ -72,7 +72,7 @@ const MemberRules& Move_NarrowExchange::getMemberRules(void) const {
         narrowMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         narrowMemberRules.insert( narrowMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -106,13 +106,13 @@ void Move_NarrowExchange::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NarrowExchange::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NarrowExchange::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) 
     {
         tree = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

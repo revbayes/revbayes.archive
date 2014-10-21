@@ -41,7 +41,7 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
         static const std::string&                   getClassType(void);                                                         //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules (const)
+        const MemberRules&                          getParameterRules(void) const;                                                 //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
         
@@ -51,7 +51,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
                 
     };
     
@@ -137,7 +137,7 @@ const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(
 
 /** Return member rules (no members) */
 template <typename treeType>
-const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getParameterRules(void) const {
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
@@ -189,13 +189,13 @@ void RevLanguage::TreeTrace<treeType>::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 template <typename treeType>
-void RevLanguage::TreeTrace<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::TreeTrace<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "xxx") {
         
     } 
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }
 

@@ -42,7 +42,7 @@ const TypeSpec& Move::getClassTypeSpec(void) {
 
 
 /** Return member rules */
-const MemberRules& Move::getMemberRules(void) const {
+const MemberRules& Move::getParameterRules(void) const {
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -52,7 +52,7 @@ const MemberRules& Move::getMemberRules(void) const {
         moveMemberRules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
         
         /* Inherit variables from WorkspaceObject, put them last */
-        const MemberRules& inheritedRules = WorkspaceObject<RevBayesCore::Move>::getMemberRules();
+        const MemberRules& inheritedRules = WorkspaceObject<RevBayesCore::Move>::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -63,7 +63,7 @@ const MemberRules& Move::getMemberRules(void) const {
 
 
 /** Set a member variable */
-void Move::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "weight" ) 
     {
@@ -71,7 +71,7 @@ void Move::setConstMemberVariable(const std::string& name, const RevPtr<const Va
     }
     else 
     {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }
 

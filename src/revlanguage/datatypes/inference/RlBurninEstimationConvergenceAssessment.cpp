@@ -332,7 +332,7 @@ const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& BurninEstimationConvergenceAssessment::getMemberRules(void) const
+const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -475,7 +475,7 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
 
 
 /** Set a member variable */
-void BurninEstimationConvergenceAssessment::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void BurninEstimationConvergenceAssessment::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "filename")
     {
@@ -500,7 +500,7 @@ void BurninEstimationConvergenceAssessment::setConstMemberVariable(const std::st
     }
     else
     {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
     
 }

@@ -30,13 +30,13 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                                                     //!< Get member rules (const)
+        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
     protected:
     
-        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
         RevPtr<const Variable>                      x;                                                                                              //!< The variable holding the real valued vector.
         RevPtr<const Variable>                      lambda;                                                                                         //!< The variable for the tuning parameter.

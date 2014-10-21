@@ -123,7 +123,7 @@ const TypeSpec& ParallelMcmcmc::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& ParallelMcmcmc::getMemberRules(void) const {
+const MemberRules& ParallelMcmcmc::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -193,7 +193,7 @@ void ParallelMcmcmc::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void ParallelMcmcmc::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void ParallelMcmcmc::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "model") {
         model = var;
@@ -230,6 +230,6 @@ void ParallelMcmcmc::setConstMemberVariable(const std::string& name, const RevPt
         swapInterval = var;
     }
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

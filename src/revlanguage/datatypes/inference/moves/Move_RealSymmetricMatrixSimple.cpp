@@ -72,7 +72,7 @@ const TypeSpec& Move_RealSymmetricMatrixSimple::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_RealSymmetricMatrixSimple::getMemberRules(void) const
+const MemberRules& Move_RealSymmetricMatrixSimple::getParameterRules(void) const
 {
     
     static MemberRules moveMemberRules;
@@ -86,7 +86,7 @@ const MemberRules& Move_RealSymmetricMatrixSimple::getMemberRules(void) const
         moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -119,7 +119,7 @@ void Move_RealSymmetricMatrixSimple::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_RealSymmetricMatrixSimple::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_RealSymmetricMatrixSimple::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         mat = var;
@@ -134,6 +134,6 @@ void Move_RealSymmetricMatrixSimple::setConstMemberVariable(const std::string& n
         tune = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

@@ -78,7 +78,7 @@ const TypeSpec& Model::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Model::getMemberRules(void) const {
+const MemberRules& Model::getParameterRules(void) const {
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
@@ -180,13 +180,13 @@ void Model::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Model::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Model::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "" || name == "x") {
         sources.insert( var );
     }
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }
 

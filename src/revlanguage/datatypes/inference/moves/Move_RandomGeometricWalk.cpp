@@ -101,7 +101,7 @@ const TypeSpec& Move_RandomGeometricWalk::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Move_RandomGeometricWalk::getMemberRules(void) const 
+const MemberRules& Move_RandomGeometricWalk::getParameterRules(void) const 
 {
     
     static MemberRules moveMemberRules;
@@ -114,7 +114,7 @@ const MemberRules& Move_RandomGeometricWalk::getMemberRules(void) const
         moveMemberRules.push_back( new ArgumentRule( "tune", RlBoolean::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -165,7 +165,7 @@ void Move_RandomGeometricWalk::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_RandomGeometricWalk::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_RandomGeometricWalk::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 
@@ -182,7 +182,7 @@ void Move_RandomGeometricWalk::setConstMemberVariable(const std::string& name, c
     }
     else 
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
     
 }

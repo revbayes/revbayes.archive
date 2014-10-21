@@ -70,7 +70,7 @@ const TypeSpec& BirthDeathProcess::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& BirthDeathProcess::getMemberRules(void) const 
+const MemberRules& BirthDeathProcess::getParameterRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -111,7 +111,7 @@ const MemberRules& BirthDeathProcess::getMemberRules(void) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void BirthDeathProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "origin" ) 
@@ -148,7 +148,7 @@ void BirthDeathProcess::setConstMemberVariable(const std::string& name, const Re
     }
     else 
     {
-        TypedDistribution<TimeTree>::setConstMemberVariable(name, var);
+        TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
 }
