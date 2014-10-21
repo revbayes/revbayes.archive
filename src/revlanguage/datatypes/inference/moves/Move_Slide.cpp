@@ -60,7 +60,7 @@ const TypeSpec& Move_Slide::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_Slide::getMemberRules(void) const {
+const MemberRules& Move_Slide::getParameterRules(void) const {
     
     static MemberRules slidingMoveMemberRules;
     static bool rulesSet = false;
@@ -73,7 +73,7 @@ const MemberRules& Move_Slide::getMemberRules(void) const {
         slidingMoveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         slidingMoveMemberRules.insert( slidingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
         rulesSet = true;
@@ -102,7 +102,7 @@ void Move_Slide::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_Slide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_Slide::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) 
     {
@@ -118,7 +118,7 @@ void Move_Slide::setConstMemberVariable(const std::string& name, const RevPtr<co
     }
     else 
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
     
 }

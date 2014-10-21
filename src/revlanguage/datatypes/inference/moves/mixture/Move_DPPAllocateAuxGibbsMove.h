@@ -32,13 +32,13 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                                                     //!< Get member rules (const)
+        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
         RevPtr<const Variable>                      x;                                                                                              //!< The variable holding the real valued vector.
         RevPtr<const Variable>                      nAux;                                                                                         //!< The variable for the tuning parameter.
@@ -115,7 +115,7 @@ const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassType
 
 /** Return member rules (no members) */
 template <class valType>
-const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getMemberRules(void) const {
+const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void) const {
     
     static MemberRules dppMove;
     static bool rulesSet = false;
@@ -127,7 +127,7 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getMemberRules(void) c
         dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -163,7 +163,7 @@ void Move_DPPAllocateAuxGibbsMove<valType>::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 template <class valType>
-void Move_DPPAllocateAuxGibbsMove<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_DPPAllocateAuxGibbsMove<valType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;
@@ -172,7 +172,7 @@ void Move_DPPAllocateAuxGibbsMove<valType>::setConstMemberVariable(const std::st
         nAux = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }
 

@@ -97,7 +97,7 @@ const TypeSpec& Move_RandomIntegerWalk::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Move_RandomIntegerWalk::getMemberRules(void) const 
+const MemberRules& Move_RandomIntegerWalk::getParameterRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -108,7 +108,7 @@ const MemberRules& Move_RandomIntegerWalk::getMemberRules(void) const
         scalingMoveMemberRules.push_back( new ArgumentRule( "x", Integer::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -159,7 +159,7 @@ void Move_RandomIntegerWalk::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_RandomIntegerWalk::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_RandomIntegerWalk::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 
@@ -168,7 +168,7 @@ void Move_RandomIntegerWalk::setConstMemberVariable(const std::string& name, con
     }
     else 
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
     
 }

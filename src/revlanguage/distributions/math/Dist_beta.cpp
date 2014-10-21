@@ -78,7 +78,7 @@ const TypeSpec& Dist_beta::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_beta::getMemberRules(void) const {
+const MemberRules& Dist_beta::getParameterRules(void) const {
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
@@ -123,7 +123,7 @@ void Dist_beta::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_beta::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_beta::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
         
     if ( name == "alpha" ) 
     {
@@ -135,6 +135,6 @@ void Dist_beta::setConstMemberVariable(const std::string& name, const RevPtr<con
     }
     else
     {
-        TypedDistribution<Probability>::setConstMemberVariable(name, var);
+        TypedDistribution<Probability>::setConstParameter(name, var);
     }
 }

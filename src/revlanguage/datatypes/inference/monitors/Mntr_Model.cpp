@@ -77,7 +77,7 @@ const TypeSpec& Mntr_Model::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_Model::getMemberRules(void) const {
+const MemberRules& Mntr_Model::getParameterRules(void) const {
     
     static MemberRules modelMonitorMemberRules;
     static bool rulesSet = false;
@@ -120,7 +120,7 @@ void Mntr_Model::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Mntr_Model::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Mntr_Model::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "filename" ) 
@@ -157,7 +157,7 @@ void Mntr_Model::setConstMemberVariable(const std::string& name, const RevPtr<co
     }
     else 
     {
-        Monitor::setConstMemberVariable(name, var);
+        Monitor::setConstParameter(name, var);
     }
     
 }

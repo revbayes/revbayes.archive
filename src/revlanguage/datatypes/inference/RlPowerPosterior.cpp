@@ -111,7 +111,7 @@ const TypeSpec& PowerPosterior::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& PowerPosterior::getMemberRules(void) const {
+const MemberRules& PowerPosterior::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -169,7 +169,7 @@ void PowerPosterior::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void PowerPosterior::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void PowerPosterior::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "model")
     {
@@ -201,6 +201,6 @@ void PowerPosterior::setConstMemberVariable(const std::string& name, const RevPt
     }
     else
     {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

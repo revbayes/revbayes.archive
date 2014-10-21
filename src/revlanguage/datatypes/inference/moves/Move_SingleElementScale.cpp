@@ -66,7 +66,7 @@ const TypeSpec& Move_SingleElementScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_SingleElementScale::getMemberRules(void) const {
+const MemberRules& Move_SingleElementScale::getParameterRules(void) const {
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -79,7 +79,7 @@ const MemberRules& Move_SingleElementScale::getMemberRules(void) const {
         moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -112,7 +112,7 @@ void Move_SingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_SingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_SingleElementScale::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;
@@ -124,6 +124,6 @@ void Move_SingleElementScale::setConstMemberVariable(const std::string& name, co
         tune = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

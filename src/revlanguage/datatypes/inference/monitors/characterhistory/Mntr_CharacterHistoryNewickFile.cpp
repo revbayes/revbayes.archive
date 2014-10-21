@@ -94,7 +94,7 @@ const TypeSpec& Mntr_CharacterHistoryNewickFile::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_CharacterHistoryNewickFile::getMemberRules(void) const {
+const MemberRules& Mntr_CharacterHistoryNewickFile::getParameterRules(void) const {
     
     static MemberRules Mntr_CharacterHistoryNewickFileMemberRules;
     static bool rulesSet = false;
@@ -149,7 +149,7 @@ void Mntr_CharacterHistoryNewickFile::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mntr_CharacterHistoryNewickFile::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_CharacterHistoryNewickFile::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );
@@ -188,6 +188,6 @@ void Mntr_CharacterHistoryNewickFile::setConstMemberVariable(const std::string& 
         append = var;
     }
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

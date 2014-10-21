@@ -68,7 +68,7 @@ const TypeSpec& Move_VectorSingleElementScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_VectorSingleElementScale::getMemberRules(void) const {
+const MemberRules& Move_VectorSingleElementScale::getParameterRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -81,7 +81,7 @@ const MemberRules& Move_VectorSingleElementScale::getMemberRules(void) const {
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -114,7 +114,7 @@ void Move_VectorSingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_VectorSingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_VectorSingleElementScale::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         v = var;
@@ -129,6 +129,6 @@ void Move_VectorSingleElementScale::setConstMemberVariable(const std::string& na
         tune = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

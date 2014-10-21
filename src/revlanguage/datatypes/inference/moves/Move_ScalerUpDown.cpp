@@ -75,7 +75,7 @@ const TypeSpec& Move_ScalerUpDown::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ScalerUpDown::getMemberRules(void) const {
+const MemberRules& Move_ScalerUpDown::getParameterRules(void) const {
     
     static MemberRules mixingStepMemberRules;
     static bool rulesSet = false;
@@ -87,7 +87,7 @@ const MemberRules& Move_ScalerUpDown::getMemberRules(void) const {
         mixingStepMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         mixingStepMemberRules.insert( mixingStepMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -120,7 +120,7 @@ void Move_ScalerUpDown::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_ScalerUpDown::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_ScalerUpDown::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "value_1" ) {
         scaleUp = var;
@@ -138,6 +138,6 @@ void Move_ScalerUpDown::setConstMemberVariable(const std::string& name, const Re
         tune = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

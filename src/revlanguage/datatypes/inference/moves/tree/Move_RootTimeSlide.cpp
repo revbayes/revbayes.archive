@@ -65,7 +65,7 @@ const TypeSpec& Move_RootTimeSlide::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_RootTimeSlide::getMemberRules(void) const {
+const MemberRules& Move_RootTimeSlide::getParameterRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
@@ -76,7 +76,7 @@ const MemberRules& Move_RootTimeSlide::getMemberRules(void) const {
         nniMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -110,7 +110,7 @@ void Move_RootTimeSlide::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_RootTimeSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_RootTimeSlide::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
@@ -122,6 +122,6 @@ void Move_RootTimeSlide::setConstMemberVariable(const std::string& name, const R
         tune = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

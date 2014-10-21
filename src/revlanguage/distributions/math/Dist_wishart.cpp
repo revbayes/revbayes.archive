@@ -90,7 +90,7 @@ const TypeSpec& Dist_wishart::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_wishart::getMemberRules(void) const {
+const MemberRules& Dist_wishart::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -141,7 +141,7 @@ void Dist_wishart::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_wishart::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_wishart::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "omega" ) {
 //        omega = var;
@@ -156,6 +156,6 @@ void Dist_wishart::setConstMemberVariable(const std::string& name, const RevPtr<
         dim = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

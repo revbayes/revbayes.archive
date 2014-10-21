@@ -60,7 +60,7 @@ const TypeSpec& Move_DPPScaleCatValsMove::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_DPPScaleCatValsMove::getMemberRules(void) const {
+const MemberRules& Move_DPPScaleCatValsMove::getParameterRules(void) const {
     
     static MemberRules dppMove;
     static bool rulesSet = false;
@@ -72,7 +72,7 @@ const MemberRules& Move_DPPScaleCatValsMove::getMemberRules(void) const {
         dppMove.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(1.0) ) );
 
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -105,7 +105,7 @@ void Move_DPPScaleCatValsMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_DPPScaleCatValsMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_DPPScaleCatValsMove::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;
@@ -114,6 +114,6 @@ void Move_DPPScaleCatValsMove::setConstMemberVariable(const std::string& name, c
         lambda = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

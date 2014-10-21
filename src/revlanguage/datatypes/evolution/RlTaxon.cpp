@@ -86,7 +86,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string cons
 
 
 /** Return member rules (no members) */
-const MemberRules& Taxon::getMemberRules(void) const {
+const MemberRules& Taxon::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -132,7 +132,7 @@ const TypeSpec& Taxon::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Taxon::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "taxonName") 
     {
@@ -147,7 +147,7 @@ void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const V
         date = var ;
     } 
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }
 

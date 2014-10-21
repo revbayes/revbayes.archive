@@ -61,7 +61,7 @@ const TypeSpec& Move_DPPScaleCatAllocateAux::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_DPPScaleCatAllocateAux::getMemberRules(void) const
+const MemberRules& Move_DPPScaleCatAllocateAux::getParameterRules(void) const
 {
     
     static MemberRules dppMove;
@@ -75,7 +75,7 @@ const MemberRules& Move_DPPScaleCatAllocateAux::getMemberRules(void) const
         dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -108,7 +108,7 @@ void Move_DPPScaleCatAllocateAux::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_DPPScaleCatAllocateAux::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_DPPScaleCatAllocateAux::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;
@@ -120,6 +120,6 @@ void Move_DPPScaleCatAllocateAux::setConstMemberVariable(const std::string& name
         nAux = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

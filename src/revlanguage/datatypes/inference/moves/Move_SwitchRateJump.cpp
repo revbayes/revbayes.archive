@@ -107,7 +107,7 @@ const TypeSpec& Move_SwitchRateJump::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Move_SwitchRateJump::getMemberRules(void) const 
+const MemberRules& Move_SwitchRateJump::getParameterRules(void) const 
 {
     
     static MemberRules moveMemberRules;
@@ -118,7 +118,7 @@ const MemberRules& Move_SwitchRateJump::getMemberRules(void) const
         moveMemberRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -169,7 +169,7 @@ void Move_SwitchRateJump::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_SwitchRateJump::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_SwitchRateJump::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 
@@ -178,7 +178,7 @@ void Move_SwitchRateJump::setConstMemberVariable(const std::string& name, const 
     }
     else 
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
     
 }

@@ -64,7 +64,7 @@ const TypeSpec& Move_NNINonclock::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_NNINonclock::getMemberRules(void) const {
+const MemberRules& Move_NNINonclock::getParameterRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
@@ -75,7 +75,7 @@ const MemberRules& Move_NNINonclock::getMemberRules(void) const {
         nniMemberRules.push_back( new ArgumentRule( "tree", Topology::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -109,12 +109,12 @@ void Move_NNINonclock::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NNINonclock::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NNINonclock::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

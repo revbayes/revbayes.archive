@@ -49,7 +49,7 @@ namespace RevLanguage {
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
-     //   void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+     //   void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
 
         

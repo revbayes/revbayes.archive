@@ -74,7 +74,7 @@ const TypeSpec& Move_ACLNMixingStep::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ACLNMixingStep::getMemberRules(void) const
+const MemberRules& Move_ACLNMixingStep::getParameterRules(void) const
 {
     
     static MemberRules mixingStepMemberRules;
@@ -90,7 +90,7 @@ const MemberRules& Move_ACLNMixingStep::getMemberRules(void) const
         mixingStepMemberRules.push_back( new ArgumentRule( "tune"     , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( false ) ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         mixingStepMemberRules.insert( mixingStepMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -123,7 +123,7 @@ void Move_ACLNMixingStep::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_ACLNMixingStep::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_ACLNMixingStep::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
@@ -144,6 +144,6 @@ void Move_ACLNMixingStep::setConstMemberVariable(const std::string& name, const 
         tune = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

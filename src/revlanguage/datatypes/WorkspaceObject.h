@@ -42,7 +42,6 @@ namespace RevLanguage {
         static const std::string&           getClassType(void);                                 //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                        //!< Get the type spec of the instance
-        virtual void                        printStructure(std::ostream& o, bool verbose=false) const;  //!< Print structure of language object for user
         virtual void                        printValue(std::ostream& o) const = 0;              //!< Print value for user
 
                 
@@ -144,17 +143,6 @@ template <typename rbType>
 rbType& RevLanguage::WorkspaceObject<rbType>::getValue( void ) const
 {
     return *value;
-}
-
-
-
-/** Print structure info for user */
-template <typename rbType>
-void RevLanguage::WorkspaceObject<rbType>::printStructure( std::ostream &o, bool verbose ) const
-{
-    RevObject::printStructure( o, verbose );
-    
-    printMemberInfo( o );
 }
 
 

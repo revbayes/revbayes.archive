@@ -86,7 +86,7 @@ const TypeSpec& Mntr_CharacterHistoryNhxFile::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_CharacterHistoryNhxFile::getMemberRules(void) const {
+const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const {
     
     static MemberRules Mntr_CharacterHistoryNhxFileMemberRules;
     static bool rulesSet = false;
@@ -134,7 +134,7 @@ void Mntr_CharacterHistoryNhxFile::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mntr_CharacterHistoryNhxFile::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_CharacterHistoryNhxFile::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );
@@ -176,6 +176,6 @@ void Mntr_CharacterHistoryNhxFile::setConstMemberVariable(const std::string& nam
         type = var;
     }
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

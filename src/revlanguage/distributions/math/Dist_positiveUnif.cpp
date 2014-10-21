@@ -64,7 +64,7 @@ const TypeSpec& Dist_positiveUnif::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_positiveUnif::getMemberRules(void) const {
+const MemberRules& Dist_positiveUnif::getParameterRules(void) const {
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
@@ -108,7 +108,7 @@ void Dist_positiveUnif::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_positiveUnif::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_positiveUnif::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "lower" ) 
     {
@@ -120,6 +120,6 @@ void Dist_positiveUnif::setConstMemberVariable(const std::string& name, const Re
     }
     else 
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

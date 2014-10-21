@@ -43,7 +43,7 @@ namespace RevLanguage {
         void                                constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
         static const std::string&           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
-        const MemberRules&                  getMemberRules(void) const;                                                             //!< Get member rules (const)
+        const MemberRules&                  getParameterRules(void) const;                                                             //!< Get member rules (const)
         const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method inits
@@ -51,7 +51,7 @@ namespace RevLanguage {
         virtual void                        initializeMethods(void) const;                                                          //!< Initialize member methods
         
     protected:
-        void                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         RevPtr<const Variable>              taxon;
         RevPtr<const Variable>              species;

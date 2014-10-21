@@ -93,7 +93,7 @@ void Clade::constructInternalObject( void )
 
 
 /** Return member rules (no members) */
-const MemberRules& Clade::getMemberRules(void) const {
+const MemberRules& Clade::getParameterRules(void) const {
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
@@ -136,14 +136,14 @@ const TypeSpec& Clade::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Clade::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Clade::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "taxonName" || name == "") 
     {
         names.push_back( var );
     } 
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }
 

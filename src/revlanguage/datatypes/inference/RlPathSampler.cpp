@@ -75,7 +75,7 @@ const TypeSpec& PathSampler::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& PathSampler::getMemberRules(void) const {
+const MemberRules& PathSampler::getParameterRules(void) const {
     
     static MemberRules samplerMemberRules;
     static bool rulesSet = false;
@@ -124,7 +124,7 @@ void PathSampler::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void PathSampler::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void PathSampler::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "likelihoodColumnName")
     {
@@ -144,6 +144,6 @@ void PathSampler::setConstMemberVariable(const std::string& name, const RevPtr<c
     }
     else
     {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

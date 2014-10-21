@@ -28,7 +28,7 @@ namespace RevLanguage {
         virtual BirthDeathProcess*                          clone(void) const = 0;                                                              //!< Clone the object
 
         // Basic utility functions you may want to overwrite
-        const MemberRules&                                  getMemberRules(void) const;                                                         //!< Get member rules (const)
+        const MemberRules&                                  getParameterRules(void) const;                                                         //!< Get member rules (const)
         
         // Basic utility functions
         static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
@@ -40,7 +40,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var); //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const Variable> &var); //!< Set member variable
     
         // members        
         RevPtr<const Variable>                              origin;                                                                             //!< The time of the process since the origin

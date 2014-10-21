@@ -103,7 +103,7 @@ const TypeSpec& Mcmc::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mcmc::getMemberRules(void) const {
+const MemberRules& Mcmc::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -168,7 +168,7 @@ void Mcmc::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mcmc::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mcmc::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "model") {
         model = var;
@@ -183,6 +183,6 @@ void Mcmc::setConstMemberVariable(const std::string& name, const RevPtr<const Va
         moveSchedule = var;
     }
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }

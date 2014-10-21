@@ -67,7 +67,7 @@ const TypeSpec& Move_MultivariateRealNodeValTreeSliding::getClassTypeSpec(void) 
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_MultivariateRealNodeValTreeSliding::getMemberRules(void) const {
+const MemberRules& Move_MultivariateRealNodeValTreeSliding::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -78,7 +78,7 @@ const MemberRules& Move_MultivariateRealNodeValTreeSliding::getMemberRules(void)
         memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec()                  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
 
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -124,7 +124,7 @@ void Move_MultivariateRealNodeValTreeSliding::printValue(std::ostream &o) const 
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_MultivariateRealNodeValTreeSliding::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_MultivariateRealNodeValTreeSliding::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "process" ) {
         process = var;
@@ -136,6 +136,6 @@ void Move_MultivariateRealNodeValTreeSliding::setConstMemberVariable(const std::
         tuning = var;
     }
     else {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }

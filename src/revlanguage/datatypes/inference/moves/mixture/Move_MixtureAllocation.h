@@ -31,13 +31,13 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                                                     //!< Get member rules (const)
+        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
         RevPtr<const Variable>                      x;                                                                                              //!< The variable holding the real valued vector.
         
@@ -114,7 +114,7 @@ const RevLanguage::TypeSpec& RevLanguage::Move_MixtureAllocation<rlValueType>::g
 
 /** Return member rules (no members) */
 template <class rlValueType>
-const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>::getMemberRules(void) const
+const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>::getParameterRules(void) const
 {
     
     static MemberRules moveMemberRules;
@@ -125,7 +125,7 @@ const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>
         moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        const MemberRules& inheritedRules = Move::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
@@ -165,7 +165,7 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::printValue(std::ostream &
 
 /** Set a member variable */
 template <class rlValueType>
-void RevLanguage::Move_MixtureAllocation<rlValueType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Move_MixtureAllocation<rlValueType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" )
     {
@@ -173,7 +173,7 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::setConstMemberVariable(co
     }
     else
     {
-        Move::setConstMemberVariable(name, var);
+        Move::setConstParameter(name, var);
     }
 }
 
