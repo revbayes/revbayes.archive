@@ -21,9 +21,9 @@ beta ~ dnUnif(-10,10)
 alpha.setValue(0.0)
 beta.setValue(0.0)
 
-mi <- 0
-moves[mi++] <- mvSlide(alpha)
-moves[mi++] <- mvSlide(beta)
+mi <- 1
+moves[mi++] = mvSlide(alpha)
+moves[mi++] = mvSlide(beta)
 
 for (i in 1:x.size() ) {
     lambda[i] := exp( alpha + beta * x[i] )
@@ -31,12 +31,12 @@ for (i in 1:x.size() ) {
     y[i].clamp(observed_fatalities[i])
 }
 
-mymodel <- model( alpha )
+mymodel = model( alpha )
 
-monitors[1] <- mnModel(filename="output/airline_fatalities.log",printgen=1, separator = "	")
-monitors[2] <- mnScreen(printgen=1, alpha, beta)
+monitors[1] = mnModel(filename="output/airline_fatalities.log",printgen=1, separator = TAB)
+monitors[2] = mnScreen(printgen=1, alpha, beta)
 
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.run(generations=10000)
 

@@ -26,7 +26,7 @@ namespace StringUtilities {
                                                         const std::string  &firstLinePad,
                                                         const std::string  &hangingPad,
                                                         size_t              screenWidth);                           //!< Format string for output to screen
-    std::string                 formatTabWrap(std::string s, size_t tabs, size_t width, bool removeFormat=true);          //!< Wraps texts.
+    std::string                 formatTabWrap(std::string s, size_t tabs, size_t width, bool removeFormat=true);    //!< Wraps texts.
     std::string                 getFileContentsAsString(const std::string& s);                                      //!< Convert the file contents to a string
     std::string                 getStringWithDeletedLastPathComponent(const std::string& s);                        //!< Convert the file contents to a string
     std::string                 getLastPathComponent(const std::string& s);                                         //!< Find the last component of a file path

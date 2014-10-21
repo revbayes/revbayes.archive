@@ -77,9 +77,9 @@ RevPtr<Variable> Func_source::execute( void ) {
         if (echo_on) {
 
             if ( result == 1 )
-                RBOUT("RevBayes + " + line);
+                RBOUT("+ " + line);
             else
-                RBOUT("RevBayes > " + line);
+                RBOUT("> " + line);
         }
         
         // If previous result was 1 (append to command), we do this

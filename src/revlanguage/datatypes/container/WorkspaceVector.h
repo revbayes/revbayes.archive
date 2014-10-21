@@ -1,7 +1,7 @@
 #ifndef WorkspaceVector_H
 #define WorkspaceVector_H
 
-#include "Container.h"
+#include "RlContainer.h"
 #include "RbVector.h"
 #include "WorkspaceObject.h"
 

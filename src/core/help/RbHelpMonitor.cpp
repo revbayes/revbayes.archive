@@ -7,3 +7,11 @@ RbHelpMonitor::RbHelpMonitor( void ) : RbHelpType()
     
 }
 
+
+
+RbHelpMonitor* RbHelpMonitor::clone( void ) const
+{
+    
+    // call the copy constructor
+    return new RbHelpMonitor(*this);
+}

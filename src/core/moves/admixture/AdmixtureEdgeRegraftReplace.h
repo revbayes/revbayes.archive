@@ -44,7 +44,7 @@ namespace RevBayesCore {
     class AdmixtureEdgeRegraftReplace : public MoveOld {
         
     public:
-        AdmixtureEdgeRegraftReplace( StochasticNode<AdmixtureTree> *n, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double weight);                                            //!<  constructor
+        AdmixtureEdgeRegraftReplace( StochasticNode<AdmixtureTree> *n, DeterministicNode< RbVector<double> >* res, double d, int ag, int me, bool asa, double weight);                                            //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeRegraftReplace*       clone(void) const;                                                                  //!< Clone object
@@ -67,7 +67,7 @@ namespace RevBayesCore {
         
         // member variables
         StochasticNode<AdmixtureTree>*  variable;
-        DeterministicNode<std::vector<double> >* residuals;
+        DeterministicNode< RbVector<double> >* residuals;
         bool changed;
         bool failed;
         unsigned long activeGen;

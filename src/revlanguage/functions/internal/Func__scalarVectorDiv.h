@@ -26,7 +26,7 @@ namespace RevLanguage {
      *
      */
     template <typename firstValType, typename secondValType, typename retType>
-    class Func__scalarVectorDiv :  public TypedFunction<retType> {
+    class Func__scalarVectorDiv :  public TypedFunction< ModelVector< retType > > {
         
     public:
         Func__scalarVectorDiv( void );
@@ -38,7 +38,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
         
         // Implementations of pure virtual functions of the base class(es)
-        RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a random variable from this distribution
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector<typename retType::valueType> >*       createFunction(void) const ;                    //!< Create a random variable from this distribution
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
         const TypeSpec&                                                 getReturnType(void) const;                      //!< Get type of return value
         
@@ -55,7 +55,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__scalarVectorDiv<firstValType, secondValType, retType>::Func__scalarVectorDiv( void ) : TypedFunction<retType>( )
+RevLanguage::Func__scalarVectorDiv<firstValType, secondValType, retType>::Func__scalarVectorDiv( void ) : TypedFunction<ModelVector<retType> >( )
 {
     
 }
@@ -71,10 +71,10 @@ RevLanguage::Func__scalarVectorDiv<firstValType, secondValType, retType>* RevLan
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevBayesCore::TypedFunction<typename retType::valueType>* RevLanguage::Func__scalarVectorDiv<firstValType, secondValType, retType>::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<typename retType::valueType> >* RevLanguage::Func__scalarVectorDiv<firstValType, secondValType, retType>::createFunction( void ) const
 {
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename secondValType::valueType> >* secondArg = static_cast<const ModelVector<secondValType> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ScalarVectorDivision<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::ScalarVectorDivision<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
     
     return func;
@@ -93,7 +93,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__scalarVectorDiv<firstValTyp
     {
         
         argumentRules.push_back( new ArgumentRule( "first" , firstValType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "second", secondValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "second", ModelVector<secondValType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     

@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class BrownianMotionAdmixtureGraph : public TypedDistribution< ContinuousCharacterData > {
         
     public:
-        BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< std::vector< double > > *br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls=1.0);
+        BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< RbVector< double > > *br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls=1.0);
         BrownianMotionAdmixtureGraph(const BrownianMotionAdmixtureGraph &n);
         virtual                                     ~BrownianMotionAdmixtureGraph(void);
         
@@ -128,7 +128,7 @@ namespace RevBayesCore {
         const TypedDagNode<AdmixtureTree>*                              tau;
         const TypedDagNode<double>*                                     diffusionRate;
         const TypedDagNode<double>*                                     admixtureRate;
-        const TypedDagNode< std::vector< double > >*                    branchRates;
+        const TypedDagNode< RbVector< double > >*                    branchRates;
 
         // RevBayes eigensystem for Wishart dist
         MatrixReal                                                      rbCovariance;

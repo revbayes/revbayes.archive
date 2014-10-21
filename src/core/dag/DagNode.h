@@ -44,8 +44,7 @@ namespace RevBayesCore {
         virtual size_t                                              getNumberOfElements(void) const = 0;                                                        //!< Get the number of elements for this value
         virtual void                                                printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const = 0;     //!< Monitor/Print this variable
         virtual void                                                printStructureInfo(std::ostream &o, bool verbose=false) const = 0;                          //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
-        virtual void                                                printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const = 0;    //!< Monitor/Print this variable
-//        virtual void                                                printValue(std::ostream &o,size_t i) const = 0;                                 //!< Monitor/Print the i-th element of this variable 
+        virtual void                                                printValue(std::ostream &o, int l=-1, bool left=true) const = 0;                            //!< Monitor/Print this variable
         virtual void                                                redraw(void) = 0;                                                                           //!< Redraw the current value of the node (applies only to stochastic nodes)
         
         // public member functions
@@ -62,6 +61,7 @@ namespace RevBayesCore {
         DagNode*                                                    getFirstChild(void) const;                                                                  //!< Get the first child from a our set
         const std::string&                                          getName(void) const;                                                                        //!< Get the of the node
         size_t                                                      getNumberOfChildren(void) const;                                                            //!< Get the number of children for this node
+        virtual std::set<const DagNode*>                            getParents(void) const;                                                                     //!< Get the set of parents (empty set here)
         size_t                                                      getReferenceCount(void) const;                                                              //!< Get the reference count for reference counting in smart pointers
         const std::set<size_t>&                                     getTouchedElementIndices(void) const;                                                       //!< Get the indices of the touches elements. If the set is empty, then all elements might have changed.
         void                                                        incrementReferenceCount(void) const;                                                        //!< Increment the reference count for reference counting in smart pointers
@@ -73,6 +73,7 @@ namespace RevBayesCore {
         virtual bool                                                isStochastic(void) const;                                                                   //!< Is this DAG node stochastic?
         void                                                        keep(void);
         virtual void                                                keepAffected(void);                                                                         //!< Keep value of affected nodes
+        virtual void                                                printValueElements(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;//!< Monitor/Print this variable by printing its elements separated by this separator
         virtual void                                                reInitialized(void);                                                                        //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeAffected(void);                                                                 //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeMe(void);                                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff
@@ -84,12 +85,10 @@ namespace RevBayesCore {
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
         void                                                        setParentNamePrefix(const std::string &p);
         virtual void                                                setPriorOnly(bool tf);                                                                      //!< Set whether we want to have the probability of the prior only.
+        virtual void                                                swapParent(const DagNode *oldP, const DagNode *newP);                                       //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
         void                                                        touch(void);
         virtual void                                                touchAffected(void);                                                                        //!< Touch affected nodes (flag for recalculation)
 
-        // Parent management functions that nodes with parents need to override. Here we just return an empty set or throw an error.
-        virtual std::set<const DagNode*>                            getParents(void) const;                                                                     //!< Get the set of parents (empty set here)
-        virtual void                                                swapParent(const DagNode *oldP, const DagNode *newP);                                       //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
         
     protected:
                                                                     DagNode(const std::string &n);                                                              //!< Constructor

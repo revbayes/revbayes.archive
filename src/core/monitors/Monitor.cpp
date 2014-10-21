@@ -121,7 +121,7 @@ void Monitor::swapNode(DagNode *oldN, DagNode *newN)
 }
 
 
-std::ostream& operator<<(std::ostream& o, const Monitor& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Monitor& x) {
     o << "Monitor";
     
     return o;

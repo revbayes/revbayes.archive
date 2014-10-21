@@ -41,9 +41,9 @@ int main(int argc, const char * argv[]) {
 
         /* Print prompt based on state after previous iteration */
         if (result == 0 || result == 2)
-            std::cout << "RevBayes > ";
+            std::cout << "> ";
         else
-            std::cout << "RevBayes + ";
+            std::cout << "+ ";
 
         /* Get the line */
         std::istream& retStream = getline(std::cin, line);

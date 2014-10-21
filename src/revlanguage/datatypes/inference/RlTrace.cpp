@@ -148,3 +148,19 @@ void Trace::setConstMemberVariable(const std::string& name, const RevPtr<const V
         RevObject::setConstMemberVariable(name, var);
     }
 }
+
+
+std::ostream& RevLanguage::operator<<(std::ostream& o, const RevLanguage::Trace& x) {
+//    o << x.getParameterName();
+    o << "Trace (";
+//    const std::vector<double>& values = x.getValues();
+//    for (std::vector<double>::const_iterator it = values.begin(); it != values.end(); ++it) {
+//        if ( it != values.begin() ) {
+//            o << ", ";
+//        }
+//        o << *it;
+//    }
+    o << ")";
+    
+    return o;
+}

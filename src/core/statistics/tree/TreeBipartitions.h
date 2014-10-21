@@ -32,7 +32,7 @@
 
 namespace RevBayesCore {
     
-    class TreeBipartitions : public TypedFunction< std::vector<boost::dynamic_bitset<> > > {
+    class TreeBipartitions : public TypedFunction< RbVector<boost::dynamic_bitset<> > > {
         
     public:
         TreeBipartitions(const TypedDagNode<TimeTree> *t);                                            //!< Default constructor

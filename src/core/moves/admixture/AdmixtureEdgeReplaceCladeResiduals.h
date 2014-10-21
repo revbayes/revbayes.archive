@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class AdmixtureEdgeReplaceCladeResiduals : public MoveOld {
         
     public:
-         AdmixtureEdgeReplaceCladeResiduals( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);
+         AdmixtureEdgeReplaceCladeResiduals( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode< RbVector<double> >* res, int ag, bool asa, double weight);
         
         // Basic utility functions
         AdmixtureEdgeReplaceCladeResiduals*              clone(void) const;                                                                  //!< Clone object
@@ -52,7 +52,7 @@ namespace RevBayesCore {
         StochasticNode<double>*         rate;
         //StochasticNode<int>*            admixtureCount;
         std::vector< ContinuousStochasticNode*> branchRates;
-        DeterministicNode<std::vector<double> >* residuals;
+        DeterministicNode< RbVector<double> >* residuals;
         //ConstantNode<int>*              delayTimer;
         unsigned long                    activeGen;
         bool                            changed;

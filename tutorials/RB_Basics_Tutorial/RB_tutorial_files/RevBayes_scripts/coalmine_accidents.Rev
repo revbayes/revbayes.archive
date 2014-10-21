@@ -18,11 +18,11 @@ lambda ~ dnGamma(2.0,eta)
 gamma ~ dnGamma(2.0,eta)
 theta ~ dnUnif(1852.0,1962.0)
 
-mi <- 0
-moves[mi++] <- mvScale(eta)
-moves[mi++] <- mvScale(lambda)
-moves[mi++] <- mvScale(gamma)
-moves[mi++] <- mvSlide(theta)
+mi <- 1
+moves[mi++] = mvScale(eta)
+moves[mi++] = mvScale(lambda)
+moves[mi++] = mvScale(gamma)
+moves[mi++] = mvSlide(theta)
 
 observed_fatalities <-  v(4, 5, 4, 1, 0, 4, 3, 4, 0, 6, 3, 3, 4, 0, 2, 6, 3, 3, 5, 4, 5, 3, 1, 4, 4, 1, 5, 5, 3, 4, 2, 5, 2, 2, 3, 4, 2, 1, 3, 2, 2, 1, 1, 1, 1, 3, 0, 0, 1, 0, 1, 1, 0, 0, 3, 1, 0, 3, 2, 2, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 2, 1, 0, 0, 0, 1, 1, 0, 2, 3, 3, 1, 1, 2, 1, 1, 1, 1, 2, 3, 3, 0, 0, 0, 1, 4, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1)
 year <- 1851:1962
@@ -33,12 +33,12 @@ for (i in 1:year.size() ) {
     y[i].clamp(observed_fatalities[i])
 }
 
-mymodel <- model( theta )
+mymodel = model( theta )
 
-monitors[1] <- mnModel(filename="output/coal_accidents.log",printgen=10, separator = "	")
-monitors[2] <- mnScreen(printgen=10, eta, lambda, gamma, theta)
+monitors[1] = mnModel(filename="output/coal_accidents.log",printgen=10, separator = TAB)
+monitors[2] = mnScreen(printgen=10, eta, lambda, gamma, theta)
 
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.run(generations=10000)
 

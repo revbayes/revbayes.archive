@@ -77,18 +77,19 @@ namespace RevLanguage {
         enum ParserMode { CHECKING, EXECUTING };                                    //!< Parser modes
         
         // Regular functions
-        int                 execute(SyntaxElement* root, Environment &env) const;   //!< Execute the syntax tree
-        void                getline(char* buf, size_t maxsize);                     //!< Give flex one line to process
-        int                 help(const std::string& symbol) const;                  //!< Get help for a symbol
-        int                 help(const SyntaxFunctionCall* root) const;             //!< Get help for a function call
-        int                 processCommand(std::string& command, Environment *env); //!< Process command with help from Bison
+        int                 execute(SyntaxElement* root, Environment &env) const;                   //!< Execute the syntax tree
+        void                getline(char* buf, size_t maxsize);                                     //!< Give flex one line to process
+        int                 help(const std::string& symbol) const;                                  //!< Get help for a symbol
+        int                 help(const std::string& baseSymbol, const std::string& symbol) const;   //!< Get help for a symbol
+        int                 help(const SyntaxFunctionCall* root) const;                             //!< Get help for a function call
+        int                 processCommand(std::string& command, Environment *env);                 //!< Process command with help from Bison
         
         // State checking functions
-        bool                isChecking(void) { return parserMode == CHECKING; }                 //!< Are we in state-checking mode?
-        void                setBaseVariable(SyntaxVariable* var) { baseVariableExpr = var; }    //!< Set base variable expression
-        void                executeBaseVariable(void);                                          //!< Execute base variable expression
-        void                setFunctionName( const std::string& n ) { functionName = n; }       //!< Set function name
-        void                setArgumentLabel( const std::string& n ) { argumentLabel = n; }     //!< Set argument label
+        bool                isChecking(void) { return parserMode == CHECKING; }                     //!< Are we in state-checking mode?
+        void                setBaseVariable(SyntaxVariable* var) { baseVariableExpr = var; }        //!< Set base variable expression
+        void                executeBaseVariable(void);                                              //!< Execute base variable expression
+        void                setFunctionName( const std::string& n ) { functionName = n; }           //!< Set function name
+        void                setArgumentLabel( const std::string& n ) { argumentLabel = n; }         //!< Set argument label
         
         /** Get singleton parser */
         static Parser& getParser( void ) {
@@ -98,21 +99,21 @@ namespace RevLanguage {
         
         
     private:
-        Parser(void);                                           //!< Prevent public construction
-        Parser(const Parser& x) {}                              //!< Prevent copy construction
+        Parser(void);                                                                               //!< Prevent public construction
+        Parser(const Parser& x) {}                                                                  //!< Prevent copy construction
         
-        Parser&             operator=(const Parser& w) { return (*this); }          //! Prevent assignment
+        Parser&             operator=(const Parser& w) { return (*this); }                          //! Prevent assignment
         
         // Help functions
         void                breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
-        void                setParserMode(ParserMode mode);                         //!< Set the parser mode
+        void                setParserMode(ParserMode mode);                                         //!< Set the parser mode
         
         // Member variables
-        ParserMode          parserMode;                                             //!< The current parser mode
-        std::string         functionName;                                           //!< Function name of end state, if any
-        std::string         argumentLabel;                                          //!< Argument label of end state, if any
-        SyntaxVariable*     baseVariableExpr;                                       //!< Base variable expression of end state
-        RevPtr<Variable>    baseVariable;                                           //!< Base variable of end state
+        ParserMode          parserMode;                                                             //!< The current parser mode
+        std::string         functionName;                                                           //!< Function name of end state, if any
+        std::string         argumentLabel;                                                          //!< Argument label of end state, if any
+        SyntaxVariable*     baseVariableExpr;                                                       //!< Base variable expression of end state
+        RevPtr<Variable>    baseVariable;                                                           //!< Base variable of end state
         
     };
     

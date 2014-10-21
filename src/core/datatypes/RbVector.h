@@ -25,6 +25,9 @@
 #include "RbIterator.h"
 #include "RbConstIterator.h"
 
+#include <boost/dynamic_bitset.hpp>
+
+
 #include <vector>
 #include <iostream>
 
@@ -48,6 +51,7 @@ namespace RevBayesCore {
         
         // public member functions
         RbVector<valueType>*                                clone(void) const;                                                                      //!< Create an independent clone
+        void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const;                                          //!< Print the i-th element
         
         // public (stl-like) vector functions
 //        RbIterator<valueType>                               begin(void);
@@ -67,7 +71,37 @@ namespace RevBayesCore {
         // private members
 
     };
- 
+    
+    template <>
+    inline void RbVector<double>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        o << this->operator[](idx);
+    }
+    
+    template <>
+    inline void RbVector<int>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        o << this->operator[](idx);
+    }
+    
+    template <>
+    inline void RbVector<bool>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        o << this->operator[](idx);
+    }
+    
+    template <>
+    inline void RbVector<std::string>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        o << this->operator[](idx);
+    }
+    
+    template <>
+    inline void RbVector<boost::dynamic_bitset<> >::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        o << this->operator[](idx);
+    }
+    
     
     template <class valueType>
     std::ostream&                       operator<<(std::ostream& o, const RbVector<valueType>& x);                            //!< Overloaded output operator
@@ -163,6 +197,32 @@ int RevBayesCore::RbVector<valueType>::pivot(int first, int last)
     delete temp;
     
     return p;
+}
+
+
+template <class valueType>
+void RevBayesCore::RbVector<valueType>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+{
+    
+    const valueType &element = this->operator[](idx);
+
+    const Container *c = dynamic_cast< const Container *>( &element );
+    if ( c == NULL )
+    {
+        o << element;
+    }
+    else
+    {
+        for (size_t i=0; i<c->size(); ++i)
+        {
+            if ( i > 0)
+            {
+                o << sep;
+            }
+            c->printElement(o, i, sep, l+1, left);
+        }
+    }
+    
 }
 
 

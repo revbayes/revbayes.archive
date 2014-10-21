@@ -20,17 +20,18 @@
 #define AutocorrelatedLognormalRateBranchwiseVarDistribution_H
 
 #include "RbVector.h"
+#include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
-    class AutocorrelatedLognormalRateBranchwiseVarDistribution : public TypedDistribution< std::vector<double> > {
+    class AutocorrelatedLognormalRateBranchwiseVarDistribution : public TypedDistribution< RbVector<double> > {
         
     public:
         // constructor(s)
-		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector< double > > *s, const TypedDagNode< double >* rr);
-		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, TypedDagNode< std::vector< double > > *s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv);
+		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< RbVector< double > > *s, const TypedDagNode< double >* rr);
+		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, TypedDagNode< RbVector< double > > *s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv);
 		AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n);
         
         // public member functions
@@ -57,7 +58,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< std::vector< double > >*			sigma;
+        const TypedDagNode< RbVector< double > >*			sigma;
         const TypedDagNode< double >*                           rootRate;
         const TypedDagNode< double >*                           scaleValue;
         

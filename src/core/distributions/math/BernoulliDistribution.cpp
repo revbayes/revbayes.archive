@@ -3,6 +3,8 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 
+#include <cmath>
+
 using namespace RevBayesCore;
 
 BernoulliDistribution::BernoulliDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ), p( q ) {

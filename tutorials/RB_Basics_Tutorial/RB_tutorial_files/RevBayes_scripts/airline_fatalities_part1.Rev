@@ -23,9 +23,10 @@ beta[1] <- -0.01      # you can also use runif(-1.0,1.0)
 write("iteration","alpha","beta",file="airline_fatalities.log")
 write(0,alpha[1],beta[1],file="airline_fatalities.log",append=TRUE)
 
-for (i in 2:10000) {
-   alpha_prime <- rdnNorm(1,alpha[i-1],delta_alpha)[1]
-   beta_prime <- rdnNorm(1,beta[i-1],delta_beta)[1]
+#for (i in 2:10000) {
+i = 2
+   alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)[1]
+   beta_prime <- rnorm(1,beta[i-1],delta_beta)[1]
    ln_prior_ratio <- dunif(alpha_prime,-10.0,10.0,log=TRUE) + dunif(beta_prime,-10.0,10.0,log=TRUE) - dunif(alpha[i-1],-10.0,10.0,log=TRUE) - dunif(beta[i-1],-10.0,10.0,log=TRUE)
    ln_likelihood_ratio <- 0
    for (j in 1:x.size() ) {
@@ -48,7 +49,7 @@ for (i in 2:10000) {
 # output to the screen
 #   write("alpha[",i,"] = ",alpha[i],sep="")
 #   write("beta[",i,"] = ",beta[i],sep="")
-}
+#}
 
 mean(alpha)
 mean(beta)

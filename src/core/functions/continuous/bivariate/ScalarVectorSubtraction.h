@@ -11,9 +11,9 @@ namespace RevBayesCore {
     /**
      * \brief Subtraction between a scalar and a vector.
      *
-     * Here we add a scalar to a vector as a function to enable the use in deterministic expressions.
+     * Here we divide a scalar to a vector as a function to enable the use in deterministic expressions.
      * This class has three template parameters to specify the corresponding types.
-     * We completely rely on overloade operator- functionality.
+     * We completely rely on overloade operator/ functionality.
      *
      * \copyright (c) Copyright 2009-2013 (GPL version 3)
      * \author The RevBayes Development Core Team (Sebastian Hoehna)
@@ -21,20 +21,20 @@ namespace RevBayesCore {
      *
      */
     template <class firstValueType, class secondValueType, class returnType>
-    class ScalarVectorSubtraction : public TypedFunction<returnType> {
+    class ScalarVectorSubtraction : public TypedFunction< RbVector<returnType> > {
         
     public:
-        ScalarVectorSubtraction(const TypedDagNode<firstValueType> *a, const TypedDagNode<secondValueType> *b);
+        ScalarVectorSubtraction(const TypedDagNode<firstValueType> *a, const TypedDagNode<RbVector<secondValueType> > *b);
         
-        ScalarVectorSubtraction*                            clone(void) const;                                                          //!< Create a clon.
+        ScalarVectorSubtraction*                               clone(void) const;                                                          //!< Create a clon.
         void                                                update(void);                                                               //!< Recompute the value
-
+        
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
         
     private:
         const TypedDagNode<firstValueType>*                 a;
-        const TypedDagNode<secondValueType>*                b;
+        const TypedDagNode<RbVector<secondValueType> >*     b;
         
     };
 }
@@ -42,9 +42,9 @@ namespace RevBayesCore {
 
 
 template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, returnType>::ScalarVectorSubtraction(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<returnType>( new returnType() ),
-    a( l ),
-    b( r )
+RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, returnType>::ScalarVectorSubtraction(const TypedDagNode<firstValueType> *l, const TypedDagNode< RbVector<secondValueType> > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>() ),
+a( l ),
+b( r )
 {
     this->addParameter( l );
     this->addParameter( r );
@@ -60,7 +60,6 @@ RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, returnTyp
 }
 
 
-
 template<class firstValueType, class secondValueType, class returnType>
 void RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
@@ -72,7 +71,7 @@ void RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, retu
     
     if (oldP == b)
     {
-        b = static_cast<const TypedDagNode<secondValueType>* >( newP );
+        b = static_cast<const TypedDagNode< RbVector<secondValueType> >* >( newP );
     }
 }
 
@@ -80,16 +79,9 @@ void RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, retu
 template<class firstValueType, class secondValueType, class returnType>
 void RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, returnType>::update( void )
 {
+    // remove the old values
     
-    size_t l = 0;
-    if ( RbUtils::is_vector<firstValueType>::value )
-    {
-        l = RbUtils::sub_vector<firstValueType>::size( a->getValue() );
-    }
-    else if ( RbUtils::is_vector<secondValueType>::value )
-    {
-        l = RbUtils::sub_vector<secondValueType>::size( b->getValue() );
-    }
+    size_t l = b->getValue().size();
     
     if ( this->value->size() != l )
     {
@@ -99,7 +91,7 @@ void RevBayesCore::ScalarVectorSubtraction<firstValueType, secondValueType, retu
     for (size_t i = 0; i < l; ++i)
     {
         
-        (*this->value)[i] = RbUtils::sub_vector<firstValueType>::getElement( a->getValue(), i ) - RbUtils::sub_vector<secondValueType>::getElement( b->getValue(), i );
+        (*this->value)[i] = a->getValue() - b->getValue()[i];
     }
     
 }

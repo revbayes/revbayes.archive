@@ -23,6 +23,7 @@ namespace RevBayesCore {
     public:
                                             Taxon(void);                                            //!< Default constructor required by revlanguage use
                                             Taxon(const std::string &n, const std::string &sn="");  //!< Regular constructor
+        virtual                             ~Taxon() {}
         
         bool                                operator==(const Taxon &t) const;           //!< Equals operators
         bool                                operator!=(const Taxon &t) const;           //!< Not-quals operators

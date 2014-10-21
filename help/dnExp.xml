@@ -6,79 +6,84 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
 >
-<function-help-entry>
+    <distribution-help-entry>
 
-    <name>dnExp</name>
+        <name>dnExp</name>
 
-    <alias>anotherNameForTheSameFunction</alias>
-    <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>anotherNameForTheSameFunction</alias>
+        <alias>yetAnotherNameForTheSameFunction</alias>
 
-    <title>Some title you want to give this function</title>
+        <title>Some title you want to give this function</title>
 
-    <description>
-        <p>
-        This is a 'brief' description of the amazing function you have implemented.
-        </p>
-    </description>
+        <description>
+            <p>
+            This is a 'brief' description of the amazing function you have implemented.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
 
-    <usage>
-        <![CDATA[
-         dnExp(
-               RealPos        lambda,
-               Real        offset
-               )
-         ]]> 
-    </usage>
+            <usage>
+                <![CDATA[
+                 dnExp( RealPos lambda, Real offset )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>lambda</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>A description of the argument.</description>
+                <valueType>RealPos</valueType>
+            </argument>
+            <argument>
+                <label>offset</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>A description of the argument.</description>
+                <valueType>Real</valueType>
+            </argument>
 
-    <argument>
-        <label>lambda</label>
-        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>RealPos</valueType>
-    </argument>
-    <argument>
-        <label>offset</label>
-        <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-        <argumentNodeType>any-DAG-node</argumentNodeType>
-        <description>A description of the argument.</description>
-        <valueType>Real</valueType>
-    </argument>
+            <returnValue>Dist_offsetExponential, ContinuousDistribution, Distribution__Real, Distribution, RevObject</returnValue>
 
-    <returnValue>Dist_offsetExponential, ContinuousDistribution, Distribution__Real, Distribution, RevObject</returnValue>
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                The implementation of this fancy function ... 
+                </p>
+            </details>
 
-    <details>
-        <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-        <p>
-        The implementation of this fancy function ... 
-        </p>
-    </details>
+            <example>
+                <![CDATA[
+                 # an executable example of the function described here
+                 trueTree <- readTrees("data/primates.tree")[1]
+                 ...
+                 ]]>
 
-    <example>
-        <![CDATA[
-         # an executable example of the function described here
-         trueTree <- readTrees("data/primates.tree")[1]
-         ...
-         ]]>
+            </example>
 
-    </example>
+            <reference>
+                <citation>
+                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                </citation>
+                <url>An optional URL to the paper</url>
+                <doi>An optional DOI to the paper</doi>
+            </reference>
 
-    <reference>
-        <citation>
-            First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-        </citation>
-        <url>An optional URL to the paper</url>
-        <doi>An optional DOI to the paper</doi>
-    </reference>
+            <author>Your name here</author>
 
-    <author>Your name here</author>
-
-    <seeAlso>
-        <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-        <entry>similar function</entry>
-    </seeAlso>
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>similar function</entry>
+            </seeAlso>
 
 
-    </function-help-entry>
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
 </revbayes-help>
 

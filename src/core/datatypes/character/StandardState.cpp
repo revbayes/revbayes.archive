@@ -83,23 +83,31 @@ bool StandardState::operator<(const CharacterState &x) const {
 }
 
 
-void StandardState::operator++( void ) {
+void StandardState::operator++( void )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
 
-void StandardState::operator++( int i ) {
+void StandardState::operator++( int i )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
 
-void StandardState::operator--( void ) {
+void StandardState::operator--( void )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
-void StandardState::operator--( int i ) {
+void StandardState::operator--( int i )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
@@ -224,7 +232,10 @@ void StandardState::setState(std::string s) {
     }
 }
 
-void StandardState::setToFirstState( void ) {
+void StandardState::setToFirstState( void )
+{
     state = 0x01;
+    stateIndex = 0;
+    
 }
 
