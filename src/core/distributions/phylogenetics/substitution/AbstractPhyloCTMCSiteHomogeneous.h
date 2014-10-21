@@ -188,6 +188,7 @@ namespace RevBayesCore {
 #include "DiscreteCharacterData.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RateMatrix_JC.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 
@@ -972,28 +973,22 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulat
         for ( size_t i = 0; i < numSites; ++i ) 
         {
             // get the ancestral character for this site
-            unsigned long parentState = parent.getCharacter( i ).getState();
-            size_t p = 0;
-            while ( parentState != 1 ) 
-            {
-                // shift to the next state
-                parentState >>= 1;
-                // increase the index
-                ++p;
-            }
+            unsigned long parentState = parent.getCharacter( i ).getStateIndex();
             
-            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ p ];
+            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ parentState ];
             
             // create the character
             charType c;
             c.setToFirstState();
             // draw the state
             double u = rng->uniform01();
-            while ( true ) 
+            size_t stateIndex = 0;
+            while ( true )
             {
                 u -= *freqs;
+                ++stateIndex;
                 
-                if ( u > 0.0 )
+                if ( u > 0.0 && stateIndex < this->numChars)
                 {
                     ++c;
                     ++freqs;
@@ -1002,6 +997,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulat
                 {
                     break;
                 }
+                
             }
             
             // add the character to the sequence

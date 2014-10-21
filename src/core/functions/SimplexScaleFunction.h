@@ -28,10 +28,10 @@
 
 namespace RevBayesCore {
     
-    class SimplexScaleFunction : public TypedFunction<std::vector<double> > {
+    class SimplexScaleFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        SimplexScaleFunction(const TypedDagNode< std::vector<double> > *s, const TypedDagNode< double > *f, const TypedDagNode< int > *i);
+        SimplexScaleFunction(const TypedDagNode< RbVector<double> > *s, const TypedDagNode< double > *f, const TypedDagNode< int > *i);
         SimplexScaleFunction(const SimplexScaleFunction &n);                                                                            //!< Copy constructor
         virtual                                            ~SimplexScaleFunction(void);                                                 //!< Virtual destructor
         
@@ -45,7 +45,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< std::vector< double > >*        simplex;
+        const TypedDagNode< RbVector< double > >*        simplex;
         const TypedDagNode< double >*                       factor;
         const TypedDagNode< int >*                          index;
     };

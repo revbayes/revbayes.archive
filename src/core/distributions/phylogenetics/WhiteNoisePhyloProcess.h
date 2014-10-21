@@ -20,6 +20,7 @@
 #define WhiteNoisePhyloProcess_H
 
 #include "RbVector.h"
+#include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 

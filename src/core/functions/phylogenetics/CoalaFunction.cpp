@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-CoalaFunction::CoalaFunction(const TypedDagNode<std::vector<double> > *coords, const MatrixReal &ca, const std::vector<double> &cw) : TypedFunction< std::vector<double> >( new std::vector<double>(coords->getValue().size()) ), coordinates( coords ), coa( ca ), colWeights( cw ) {
+CoalaFunction::CoalaFunction(const TypedDagNode< RbVector<double> > *coords, const MatrixReal &ca, const std::vector<double> &cw) : TypedFunction< RbVector<double> >( new RbVector<double>(coords->getValue().size()) ), coordinates( coords ), coa( ca ), colWeights( cw ) {
     // add the coordinates parameter as a parent
     addParameter( coordinates );
     
@@ -12,7 +12,7 @@ CoalaFunction::CoalaFunction(const TypedDagNode<std::vector<double> > *coords, c
 }
 
 
-CoalaFunction::CoalaFunction(const CoalaFunction &n) : TypedFunction< std::vector<double> >( n ), coordinates( n.coordinates ), coa( n.coa ), colWeights( n.colWeights ) {
+CoalaFunction::CoalaFunction(const CoalaFunction &n) : TypedFunction< RbVector<double> >( n ), coordinates( n.coordinates ), coa( n.coa ), colWeights( n.colWeights ) {
     // no need to add parameters, happens automatically
 }
 
@@ -70,7 +70,7 @@ void CoalaFunction::swapParameterInternal(const DagNode *oldP, const DagNode *ne
     
     if ( oldP == coordinates ) 
     {
-        coordinates = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        coordinates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 

@@ -24,7 +24,7 @@
 
 using namespace RevBayesCore;
 
-MeanVecContinuousValStatistic::MeanVecContinuousValStatistic(const TypedDagNode< std::vector<double> >* v) : TypedFunction<double>( new double(0.0) ), elementVals( v ) {
+MeanVecContinuousValStatistic::MeanVecContinuousValStatistic(const TypedDagNode< RbVector<double> >* v) : TypedFunction<double>( new double(0.0) ), elementVals( v ) {
     // add the tree parameter as a parent
     addParameter( elementVals );
     update();
@@ -58,7 +58,7 @@ void MeanVecContinuousValStatistic::update( void ) {
 void MeanVecContinuousValStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
 	
     if (oldP == elementVals) {
-        elementVals = static_cast< const TypedDagNode< std::vector<double> >* >( newP );
+        elementVals = static_cast< const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 

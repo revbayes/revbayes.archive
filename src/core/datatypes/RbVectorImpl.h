@@ -23,8 +23,9 @@
 #include "Cloner.h"
 #include "Cloneable.h"
 #include "IsDerivedFrom.h"
-#include "RbIterator.h"
 #include "RbConstIterator.h"
+#include "RbContainer.h"
+#include "RbIterator.h"
 
 #include <vector>
 #include <iostream>
@@ -34,7 +35,7 @@ namespace RevBayesCore {
     template <class valueType, int indicator>
     // general case: T is not abstract
     // use actual objects
-    class RbVectorImpl : public Cloneable, public std::vector<valueType> {
+    class RbVectorImpl : public std::vector<valueType>, public Cloneable, public Container {
         
     public:
         
@@ -65,7 +66,7 @@ namespace RevBayesCore {
 //        void                                                clear(void) { values.clear(); }
 //        void                                                insert(size_t i, const valueType &v) { values[i] = v; }
 //        void                                                push_back(const valueType &v) { values.push_back( v ); }
-//        virtual size_t                                      size(void) const = 0;
+        virtual size_t                                      size(void) const { return this->std::vector<valueType>::size(); }
 
     protected:
         
@@ -76,7 +77,7 @@ namespace RevBayesCore {
     template <typename valueType>
     // T is abstract
     // uses pointers
-    class RbVectorImpl<valueType,1> : public Cloneable {
+    class RbVectorImpl<valueType,1> : public Cloneable, public Container {
         
     public:
 

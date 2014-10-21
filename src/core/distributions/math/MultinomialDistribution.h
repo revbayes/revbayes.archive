@@ -16,10 +16,10 @@
 
 namespace RevBayesCore {
     
-    class MultinomialDistribution : public TypedDistribution< std::vector<int> > {
+    class MultinomialDistribution : public TypedDistribution< RbVector<int> > {
         
     public:
-        MultinomialDistribution(const TypedDagNode< std::vector<double> > *p, const TypedDagNode<int> *n);
+        MultinomialDistribution(const TypedDagNode< RbVector<double> > *p, const TypedDagNode<int> *n);
         MultinomialDistribution(const MultinomialDistribution &m);                                                                          //!< Copy constructor
         virtual                                            ~MultinomialDistribution(void);                                                //!< Virtual destructor
         
@@ -35,7 +35,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           p;
+        const TypedDagNode< RbVector<double> >*           p;
         const TypedDagNode<int>*                            n;
     };
     

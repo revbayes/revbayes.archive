@@ -11,9 +11,9 @@ namespace RevLanguage {
     
     
     /**
-     * The RevLanguage wrapper of the scalar-vector-Subtraction function.
+     * The RevLanguage wrapper of the scalar-vector-subtraction function.
      *
-     * The RevLanguage wrapper of the scalar-vector-Subtraction function connects
+     * The RevLanguage wrapper of the scalar-vector-subtraction function connects
      * the variables/parameters of the function and creates the internal ScalarVectorSubtraction object.
      * RevBayes > a <- [1,2,3]
      * RevBayes > b <- 2
@@ -26,7 +26,7 @@ namespace RevLanguage {
      *
      */
     template <typename firstValType, typename secondValType, typename retType>
-    class Func__scalarVectorSub :  public TypedFunction< retType > {
+    class Func__scalarVectorSub :  public TypedFunction< ModelVector< retType > > {
         
     public:
         Func__scalarVectorSub( void );
@@ -38,7 +38,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
         
         // Implementations of pure virtual functions of the base class(es)
-        RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a random variable from this distribution
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector<typename retType::valueType> >*       createFunction(void) const ;                    //!< Create a random variable from this distribution
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
         const TypeSpec&                                                 getReturnType(void) const;                      //!< Get type of return value
         
@@ -48,7 +48,6 @@ namespace RevLanguage {
     
 }
 
-#include "BinarySubtraction.h"
 #include "ScalarVectorSubtraction.h"
 #include "RlDeterministicNode.h"
 #include "StringUtilities.h"
@@ -56,7 +55,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::Func__scalarVectorSub( void ) : TypedFunction<retType>( )
+RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::Func__scalarVectorSub( void ) : TypedFunction<ModelVector<retType> >( )
 {
     
 }
@@ -72,11 +71,10 @@ RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>* RevLan
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevBayesCore::TypedFunction<typename retType::valueType>* RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<typename retType::valueType> >* RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::createFunction( void ) const
 {
-
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<typename secondValType::valueType >* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename secondValType::valueType> >* secondArg = static_cast<const ModelVector<secondValType> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ScalarVectorSubtraction<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::ScalarVectorSubtraction<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
     
     return func;
@@ -93,8 +91,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__scalarVectorSub<firstValTyp
     
     if ( !rulesSet )
     {
+        
         argumentRules.push_back( new ArgumentRule( "first" , firstValType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "second", secondValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "second", ModelVector<secondValType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     
@@ -107,7 +106,7 @@ const std::string& RevLanguage::Func__scalarVectorSub<firstValType, secondValTyp
 {
     static std::string revType = "Func__scalarVectorSub<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
-	return revType;
+    return revType;
 }
 
 /* Get class type spec describing type of object */
@@ -117,7 +116,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func__scalarVectorSub<firstValType, se
     
     static TypeSpec revTypeSpec = TypeSpec( Func__scalarVectorSub<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+    return revTypeSpec;
 }
 
 

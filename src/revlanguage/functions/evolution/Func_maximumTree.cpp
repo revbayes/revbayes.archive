@@ -33,7 +33,7 @@ Func_maximumTree* Func_maximumTree::clone( void ) const {
 
 RevPtr<Variable> Func_maximumTree::execute() {
     
-   // RevBayesCore::TypedDagNode<std::vector<TimeTree> >* gTrees = static_cast<const ModelVector<TimeTree> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+   // RevBayesCore::TypedDagNode< RbVector<TimeTree> >* gTrees = static_cast<const ModelVector<TimeTree> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

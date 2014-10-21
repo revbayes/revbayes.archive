@@ -30,7 +30,7 @@
 
 namespace RevBayesCore {
     
-    class NucleotideFrequenciesFromGcContentFunction : public TypedFunction< std::vector<double> > {
+    class NucleotideFrequenciesFromGcContentFunction : public TypedFunction< RbVector<double> > {
         
     public:
         NucleotideFrequenciesFromGcContentFunction(const TypedDagNode<double > *Gc);

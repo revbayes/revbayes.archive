@@ -11,7 +11,7 @@ using namespace RevBayesCore;
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-TreeBipartitions::TreeBipartitions(const TypedDagNode<TimeTree> *t) : TypedFunction< std::vector<boost::dynamic_bitset<> > >( new std::vector<boost::dynamic_bitset<> > ),
+TreeBipartitions::TreeBipartitions(const TypedDagNode<TimeTree> *t) : TypedFunction< RbVector<boost::dynamic_bitset<> > >( new RbVector<boost::dynamic_bitset<> > ),
 tree( t )
 {
     // add the tree parameter as a parent

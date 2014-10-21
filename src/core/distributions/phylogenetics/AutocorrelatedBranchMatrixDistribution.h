@@ -19,10 +19,11 @@
 #ifndef AutocorrelatedBranchMatrixDistribution_H
 #define AutocorrelatedBranchMatrixDistribution_H
 
-#include "TypedDagNode.h"
-#include "TypedDistribution.h"
 #include "RateMatrix_GTR.h"
 #include "RbVector.h"
+#include "TimeTree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
@@ -30,7 +31,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< std::vector< double > >* rf, const TypedDagNode< std::vector< double > >* er, const TypedDagNode< double >* a);
+        AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< RbVector< double > >* rf, const TypedDagNode< RbVector< double > >* er, const TypedDagNode< double >* a);
         AutocorrelatedBranchMatrixDistribution(const AutocorrelatedBranchMatrixDistribution &n);
         
         // public member functions
@@ -57,8 +58,8 @@ namespace RevBayesCore {
         // private members
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< double >*                           changeProbability;
-        const TypedDagNode< std::vector< double > >*            rootFrequencies;
-        const TypedDagNode< std::vector< double > >*            exchangeabilityRates;
+        const TypedDagNode< RbVector< double > >*            rootFrequencies;
+        const TypedDagNode< RbVector< double > >*            exchangeabilityRates;
         const TypedDagNode< double >*                           alpha;                                                                                  //!< Concentration parameter
         
         RbVector<RateMatrix>                                    uniqueMatrices;

@@ -13,6 +13,7 @@
 #include "TimeAtlas.h"
 #include "GeographicArea.h"
 #include "StochasticNode.h"
+#include "TopologyNode.h"
 #include <string>
 
 namespace RevBayesCore

@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReplaceNNI::AdmixtureEdgeReplaceNNI(StochasticNode<AdmixtureTree> *v, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double w) : MoveOld( v, w), variable( v ), residuals(res), changed(false), failed(false), activeGen(ag), delta(d), maxEvents(me), allowSisterAdmixture(asa) {
+AdmixtureEdgeReplaceNNI::AdmixtureEdgeReplaceNNI(StochasticNode<AdmixtureTree> *v, DeterministicNode< RbVector<double> >* res, double d, int ag, int me, bool asa, double w) : MoveOld( v, w), variable( v ), residuals(res), changed(false), failed(false), activeGen(ag), delta(d), maxEvents(me), allowSisterAdmixture(asa) {
     
     //nodes.insert(rate);
     nodes.insert(residuals);
@@ -480,7 +480,7 @@ void AdmixtureEdgeReplaceNNI::swapNode(DagNode *oldN, DagNode *newN) {
     }
     else if (oldN == residuals)
     {
-        residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
+        residuals = static_cast<DeterministicNode< RbVector<double> >* >(newN);
     }
 }
 

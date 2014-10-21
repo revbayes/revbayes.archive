@@ -37,7 +37,7 @@
 
 using namespace RevBayesCore;
 
-BrownianMotionAdmixtureGraph::BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< std::vector< double > >* br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls) :
+BrownianMotionAdmixtureGraph::BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< RbVector< double > >* br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls) :
 TypedDistribution<ContinuousCharacterData >( new ContinuousCharacterData() ),
 snps(s),
 tau(t),
@@ -202,7 +202,7 @@ void BrownianMotionAdmixtureGraph::swapParameter( const DagNode *oldP, const Dag
     }
     else if (oldP == branchRates)
     {
-        branchRates = static_cast<const TypedDagNode< std::vector< double > >* >(newP);
+        branchRates = static_cast<const TypedDagNode< RbVector< double > >* >(newP);
     }
     else
     {

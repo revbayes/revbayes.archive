@@ -1,7 +1,7 @@
 #ifndef ModelVector_H
 #define ModelVector_H
 
-#include "Container.h"
+#include "RlContainer.h"
 #include "ModelObject.h"
 #include "RbVector.h"
 
@@ -29,13 +29,9 @@ namespace RevLanguage {
 
         // STL-like vector functions provided here
         const elementType&                          operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
-//        void                                        pop_back(void);                                             //!< Drop element from back
-//        void                                        pop_front(void);                                            //!< Drop element from front
         void                                        push_back(const rlType& x);                                 //!< Push Rev object element onto back
         void                                        push_back(const RevObject &x);                              //!< Append element to end
         void                                        push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
-//        void                                        push_front(const rlType& x);                                //!< Push Rev object element onto front
-//        void                                        push_front(const elementType& x);                           //!< Push internal value of Rev object element onto front
         
         // Basic utility functions you have to override
         virtual ModelVector<rlType>*                clone(void) const;                                          //!< Clone object
@@ -63,15 +59,10 @@ namespace RevLanguage {
         virtual void                                sort(void);                                                                     //!< Sort vector
         virtual void                                unique(void);                                                                   //!< Remove consecutive duplicates
 
-    protected:
-
-        // Helper function
-//        RevPtr<Variable>                            getElementFromValue(size_t oneOffsetIndex) const;                                     //!< Get element from value (single index)
-
     private:
         
         struct comparator {
-            bool operator() (elementType A, elementType B) const { return ( A < B ); }
+            bool operator() (elementType & A, elementType & B) const { return ( A < B ); }
         } myComparator;
     
     };
@@ -405,7 +396,7 @@ template <typename rlType>
 void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
     
-    this->getDagNode()->printValue( o, "" );
+    this->getDagNode()->printValue( o );
 
 }
 

@@ -77,26 +77,35 @@ bool AminoAcidState::operator<(const CharacterState &x) const {
     return false;
 }
 
-void AminoAcidState::operator++( void ) {
+void AminoAcidState::operator++( void )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
-void AminoAcidState::operator++( int i ) {
+void AminoAcidState::operator++( int i )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
 
-void AminoAcidState::operator--( void ) {
+void AminoAcidState::operator--( void )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
-void AminoAcidState::operator--( int i ) {
+void AminoAcidState::operator--( int i )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
-void AminoAcidState::addState(char symbol) {
+void AminoAcidState::addState(char symbol)
+{
     state |= computeState( symbol );
 }
 
@@ -304,6 +313,7 @@ void AminoAcidState::setState(char symbol) {
 
 void AminoAcidState::setToFirstState( void ) {
     state = 0x1;
+    stateIndex = 0;
 }
 
 

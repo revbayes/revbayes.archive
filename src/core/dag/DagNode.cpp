@@ -600,6 +600,20 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
 
 
 /**
+ * Print the elements of the value separated by the specified separator.
+ * By default we assume that this is a simple value that doesn't have elements
+ * and therefore we delegate the call to printValue.
+ * DAG nodes holding container/vectors need to overwrite this function.
+ */
+void DagNode::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+{
+    
+    // just delegate the call
+    printValue(o, l, left);
+}
+
+
+/**
  * By default we do not need to do anything when re-initializiating.
  */
 void DagNode::reInitialized( void )

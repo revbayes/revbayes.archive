@@ -4,6 +4,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 
+#include <cmath>
 
 using namespace RevBayesCore;
 

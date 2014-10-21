@@ -42,7 +42,6 @@
 #include "RevObject.h"
 
 /* Primitive types (in folder "datatypes/basic") */
-#include "Complex.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
@@ -245,13 +244,9 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
-#include "Func_about.h"
-#include "Func_citation.h"
 #include "Func_clear.h"
-#include "Func_contacts.h"
 #include "Func_exists.h"
 #include "Func_getwd.h"
-#include "Func_help.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
@@ -346,6 +341,8 @@
 #include "Func__sub.h"
 #include "Func__uminus.h"
 #include "Func__vectorIndexOperator.h"
+#include "Func__vectorScalarDiv.h"
+#include "Func__vectorScalarSub.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -404,8 +401,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        addType( new Complex() );
-//        AddWorkspaceVectorType<Complex,5>::addTypeToWorkspace( *this, new Complex() );
         AddWorkspaceVectorType<Integer,5>::addTypeToWorkspace( *this, new Integer() );
         AddWorkspaceVectorType<Natural,5>::addTypeToWorkspace( *this, new Natural() );
         AddWorkspaceVectorType<Probability,5>::addTypeToWorkspace( *this, new Probability() );
@@ -725,13 +720,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
         
         // regular functions
-        addFunction( "about",                    new Func_about()                    );
-        addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
-        addFunction( "contacts",                 new Func_contacts()                 );
         addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
-        addFunction( "help",                     new Func_help()                     );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
@@ -878,18 +869,18 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_div",      new Func__div< ModelVector<Real>                  , ModelVector<Integer>  , ModelVector<Real>         >(  )  );
         addFunction( "_div",      new Func__div< ModelVector<RealPos>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
         addFunction( "_div",      new Func__div< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<RealPos>      >(  )  );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Natural>    , RealPos               , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<RealPos>    , Natural               , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , ModelVector<Natural>  , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Natural                 , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Integer>    , Real                  , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Real>       , Integer               , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , ModelVector<Integer>  , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Integer                 , ModelVector<Real>     , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Real>       , Real                  , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , ModelVector<Real>     , ModelVector<Real>         >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<RealPos>    , RealPos               , ModelVector<RealPos>      >(  )   );
-        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Natural                 , RealPos               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<RealPos                 , Natural               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Integer                 , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Real                    , Integer               , Real                      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__vectorScalarDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , Natural               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Natural                 , RealPos               , RealPos                   >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , Integer               , Real                      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Integer                 , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
         
         // multiplication
         addFunction( "_mul",      new Func__mult< Natural               , Natural               , Natural               >(  )  );
@@ -910,10 +901,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_sub",      new Func__sub< Real                               , Real                  , Real                  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Integer>               , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<Real>     >(  )  );
-        addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , ModelVector<Integer>  , ModelVector<Integer>  >(  )   );
-        addFunction( "_sub",      new Func__scalarVectorSub<ModelVector<Integer>    , Integer               , ModelVector<Integer>  >(  )   );
-        addFunction( "_sub",      new Func__scalarVectorSub<Real                    , ModelVector<Real>     , ModelVector<Real>     >(  )   );
-        addFunction( "_sub",      new Func__scalarVectorSub<ModelVector<Real>       , Real                  , ModelVector<Real>     >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarDiv<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( "_sub",      new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
         
         // modulo
         addFunction( "_mod",      new Func__mod() );
@@ -1085,6 +1076,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("punif", new DistributionFunctionCdf( new Dist_positiveUnif() ) );
         addFunction("qunif", new DistributionFunctionQuantile( new Dist_positiveUnif() ) );
         addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_positiveUnif() ) );
+        
+        
+        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<TimeTree>() ) );
+        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<BranchLengthTree>() ) );
 
 
     }

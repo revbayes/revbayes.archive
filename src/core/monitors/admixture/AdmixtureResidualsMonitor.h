@@ -26,7 +26,7 @@ namespace RevBayesCore
         
     public:
         // Constructors and Destructors
-        AdmixtureResidualsMonitor(TypedDagNode<std::vector<double> > *r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);
+        AdmixtureResidualsMonitor(TypedDagNode< RbVector<double> > *r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);
         AdmixtureResidualsMonitor(const AdmixtureResidualsMonitor& f);
         
         // basic methods
@@ -49,7 +49,7 @@ namespace RevBayesCore
         std::fstream                        outStream;
         
         // parameters
-        TypedDagNode< std::vector< double > >* residuals;
+        TypedDagNode< RbVector< double > >* residuals;
         
         std::set<DagNode *>                 nodeVariables;
         std::vector<std::string>            taxonNames;

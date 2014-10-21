@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-NucleotideFrequenciesFromGcContentFunction::NucleotideFrequenciesFromGcContentFunction(const TypedDagNode< double > *Gc) : TypedFunction< std::vector<double> >( new std::vector<double>( 4 ) ), gc( Gc ) {
+NucleotideFrequenciesFromGcContentFunction::NucleotideFrequenciesFromGcContentFunction(const TypedDagNode< double > *Gc) : TypedFunction< RbVector<double> >( new RbVector<double>( 4 ) ), gc( Gc ) {
     // add the lambda parameter as a parent
     addParameter( gc );
     
@@ -11,7 +11,7 @@ NucleotideFrequenciesFromGcContentFunction::NucleotideFrequenciesFromGcContentFu
 }
 
 
-NucleotideFrequenciesFromGcContentFunction::NucleotideFrequenciesFromGcContentFunction(const NucleotideFrequenciesFromGcContentFunction &n) : TypedFunction< std::vector<double> >( n ), gc( n.gc ) {
+NucleotideFrequenciesFromGcContentFunction::NucleotideFrequenciesFromGcContentFunction(const NucleotideFrequenciesFromGcContentFunction &n) : TypedFunction< RbVector<double> >( n ), gc( n.gc ) {
     // no need to add parameters, happens automatically
 }
 

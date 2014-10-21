@@ -76,23 +76,31 @@ bool RnaState::operator<(const CharacterState &x) const {
 }
 
 
-void RnaState::operator++( void ) {
+void RnaState::operator++( void )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
 
-void RnaState::operator++( int i ) {
+void RnaState::operator++( int i )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
 
-void RnaState::operator--( void ) {
+void RnaState::operator--( void )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
-void RnaState::operator--( int i ) {
+void RnaState::operator--( int i )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
@@ -270,7 +278,9 @@ char RnaState::computeState(char symbol) const {
 }
 
 
-void RnaState::setToFirstState( void ) {
+void RnaState::setToFirstState( void )
+{
     state = 0x01;
+    stateIndex = 0;
 }
 

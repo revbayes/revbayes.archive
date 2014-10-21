@@ -29,7 +29,7 @@ namespace RevLanguage {
         Move_RateAgeBetaShift(void);                                                                                                //!< Default constructor
         
         // Basic utility functions
-        virtual Move_RateAgeBetaShift*                   clone(void) const;                                                      //!< Clone object
+        virtual Move_RateAgeBetaShift*              clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

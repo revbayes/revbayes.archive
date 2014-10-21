@@ -8,6 +8,7 @@
 #ifndef MATRIXREALSINGLEELEMENTSLIDINGMOVE_H
 #define	MATRIXREALSINGLEELEMENTSLIDINGMOVE_H
 
+#include "MatrixReal.h"
 #include "SimpleMove.h"
 #include "StochasticNode.h"
 

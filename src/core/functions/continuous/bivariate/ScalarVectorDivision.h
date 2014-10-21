@@ -11,7 +11,7 @@ namespace RevBayesCore {
     /**
      * \brief Division between a scalar and a vector.
      *
-     * Here we add a scalar to a vector as a function to enable the use in deterministic expressions.
+     * Here we divide a scalar to a vector as a function to enable the use in deterministic expressions.
      * This class has three template parameters to specify the corresponding types.
      * We completely rely on overloade operator/ functionality.
      *
@@ -21,10 +21,10 @@ namespace RevBayesCore {
      *
      */
     template <class firstValueType, class secondValueType, class returnType>
-    class ScalarVectorDivision : public TypedFunction<returnType> {
+    class ScalarVectorDivision : public TypedFunction< RbVector<returnType> > {
         
     public:
-        ScalarVectorDivision(const TypedDagNode<firstValueType> *a, const TypedDagNode<secondValueType> *b);
+        ScalarVectorDivision(const TypedDagNode<firstValueType> *a, const TypedDagNode<RbVector<secondValueType> > *b);
         
         ScalarVectorDivision*                               clone(void) const;                                                          //!< Create a clon.
         void                                                update(void);                                                               //!< Recompute the value
@@ -34,7 +34,7 @@ namespace RevBayesCore {
         
     private:
         const TypedDagNode<firstValueType>*                 a;
-        const TypedDagNode<secondValueType>*                b;
+        const TypedDagNode<RbVector<secondValueType> >*     b;
         
     };
 }
@@ -42,7 +42,7 @@ namespace RevBayesCore {
 
 
 template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::ScalarVectorDivision<firstValueType, secondValueType, returnType>::ScalarVectorDivision(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<returnType>( new returnType() ),
+RevBayesCore::ScalarVectorDivision<firstValueType, secondValueType, returnType>::ScalarVectorDivision(const TypedDagNode<firstValueType> *l, const TypedDagNode< RbVector<secondValueType> > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>() ),
     a( l ),
     b( r )
 {
@@ -71,7 +71,7 @@ void RevBayesCore::ScalarVectorDivision<firstValueType, secondValueType, returnT
     
     if (oldP == b)
     {
-        b = static_cast<const TypedDagNode<secondValueType>* >( newP );
+        b = static_cast<const TypedDagNode< RbVector<secondValueType> >* >( newP );
     }
 }
 
@@ -81,15 +81,7 @@ void RevBayesCore::ScalarVectorDivision<firstValueType, secondValueType, returnT
 {
     // remove the old values
     
-    size_t l = 0;
-    if ( RbUtils::is_vector<firstValueType>::value )
-    {
-        l = RbUtils::sub_vector<firstValueType>::size( a->getValue() );
-    }
-    else if ( RbUtils::is_vector<secondValueType>::value )
-    {
-        l = RbUtils::sub_vector<secondValueType>::size( b->getValue() );
-    }
+    size_t l = b->getValue().size();
     
     if ( this->value->size() != l )
     {
@@ -99,7 +91,7 @@ void RevBayesCore::ScalarVectorDivision<firstValueType, secondValueType, returnT
     for (size_t i = 0; i < l; ++i)
     {
         
-        (*this->value)[i] = RbUtils::sub_vector<firstValueType>::getElement( a->getValue(), i ) / RbUtils::sub_vector<secondValueType>::getElement( b->getValue(), i );
+        (*this->value)[i] = a->getValue() / b->getValue()[i];
     }
     
 }

@@ -24,7 +24,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, bool sm, bool sr, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);
+        ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< RbVector< double > >* br, bool sm, bool sr, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);
         ExtendedNewickAdmixtureTreeMonitor(const ExtendedNewickAdmixtureTreeMonitor& f);
         
         // basic methods
@@ -48,7 +48,7 @@ namespace RevBayesCore {
         
         // parameters
         TypedDagNode<AdmixtureTree>*        tree;
-        TypedDagNode< std::vector< double > >* branchRates;
+        TypedDagNode< RbVector< double > >* branchRates;
         std::set<DagNode *>                 nodeVariables;
         std::string                         filename;
         std::string                         separator;

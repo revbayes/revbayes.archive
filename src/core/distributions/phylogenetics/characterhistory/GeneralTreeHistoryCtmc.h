@@ -55,8 +55,8 @@ namespace RevBayesCore {
         
         void                                                setRateMap(const TypedDagNode< RateMap > *rm);
         void                                                setRateMap(const TypedDagNode< RbVector< RateMap > > *rm);
-        void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
-        void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
+        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
+        void                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
         // Parameter management functions
         std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
@@ -75,8 +75,8 @@ namespace RevBayesCore {
         
     private:
         // members
-        const TypedDagNode< std::vector< double > >*        rootFrequencies;
-        const TypedDagNode< std::vector< double > >*        siteRates;
+        const TypedDagNode< RbVector< double > >*        rootFrequencies;
+        const TypedDagNode< RbVector< double > >*        siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         
@@ -101,7 +101,7 @@ template<class charType, class treeType>
 RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
     // initialize with default parameters
-    rootFrequencies             = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(nChars, 1.0/nChars));
+    rootFrequencies             = new ConstantNode< RbVector<double> >("rootFrequencies", new std::vector<double>(nChars, 1.0/nChars));
     siteRates                   = NULL;
     homogeneousRateMap          = NULL;
     heterogeneousRateMaps       = NULL;
@@ -518,7 +518,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMap(const 
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f) {
     
     // remove the old parameter first
     if ( rootFrequencies != NULL )
@@ -549,7 +549,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRootFrequencie
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(const TypedDagNode< std::vector< double > > *r) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(const TypedDagNode< RbVector< double > > *r) {
     
     // remove the old parameter first
     if ( siteRates != NULL )
@@ -778,11 +778,11 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameter( co
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == siteRates)
     {
-        siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        siteRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else
     {

@@ -108,10 +108,11 @@ namespace RevLanguage {
         mutable bool                        methodsInitialized;
     };
     
+    // Global functions using the class
+    std::ostream&                           operator<<(std::ostream& o, const RevLanguage::RevObject& x);                                   //!< Overloaded output operator
+
 }
 
-// Global functions using the class
-std::ostream&                           operator<<(std::ostream& o, const RevLanguage::RevObject& x);                                   //!< Overloaded output operator
 
 
 
