@@ -12,17 +12,17 @@
 
 using namespace RevLanguage;
 
-Monitor::Monitor(void) : WorkspaceObject<RevBayesCore::Monitor>() {
+Monitor::Monitor(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>() {
     
 }
 
 
-Monitor::Monitor(RevBayesCore::Monitor *m) : WorkspaceObject<RevBayesCore::Monitor>( m ) {
+Monitor::Monitor(RevBayesCore::Monitor *m) : WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>( m ) {
     
 }
 
 
-Monitor::Monitor(const Monitor &m) : WorkspaceObject<RevBayesCore::Monitor>( m ) {
+Monitor::Monitor(const Monitor &m) : WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>( m ) {
     
 }
 
@@ -38,7 +38,7 @@ const std::string& Monitor::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Monitor::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Monitor>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

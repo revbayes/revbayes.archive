@@ -18,7 +18,7 @@
 
 using namespace RevLanguage;
 
-Model::Model() : WorkspaceObject<RevBayesCore::Model>() {
+Model::Model() : WorkspaceToCoreWrapperObject<RevBayesCore::Model>() {
     
 }
 
@@ -70,7 +70,7 @@ const std::string& Model::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

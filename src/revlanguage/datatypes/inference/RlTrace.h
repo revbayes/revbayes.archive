@@ -20,14 +20,14 @@
 
 #include "Trace.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Trace : public WorkspaceObject<RevBayesCore::Trace> {
+    class Trace : public WorkspaceToCoreWrapperObject<RevBayesCore::Trace> {
         
     public:
         

@@ -18,7 +18,7 @@
 
 using namespace RevLanguage;
 
-Mcmc::Mcmc() : WorkspaceObject<RevBayesCore::Mcmc>() {
+Mcmc::Mcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::Mcmc>() {
     
 }
 
@@ -93,9 +93,10 @@ const std::string& Mcmc::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mcmc::getClassTypeSpec(void) { 
+const TypeSpec& Mcmc::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

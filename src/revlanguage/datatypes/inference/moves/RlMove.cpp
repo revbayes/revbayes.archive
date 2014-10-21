@@ -13,12 +13,12 @@
 
 using namespace RevLanguage;
 
-Move::Move(void) : WorkspaceObject<RevBayesCore::Move>() {
+Move::Move(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>() {
     
 }
 
 
-Move::Move(const Move &m) : WorkspaceObject<RevBayesCore::Move>( m ) {
+Move::Move(const Move &m) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>( m ) {
     
 }
 
@@ -34,7 +34,7 @@ const std::string& Move::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Move::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Move>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Move>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -52,7 +52,7 @@ const MemberRules& Move::getParameterRules(void) const {
         moveMemberRules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
         
         /* Inherit variables from WorkspaceObject, put them last */
-        const MemberRules& inheritedRules = WorkspaceObject<RevBayesCore::Move>::getParameterRules();
+        const MemberRules& inheritedRules = WorkspaceObject::getParameterRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;

@@ -20,14 +20,14 @@
 
 #include "Monitor.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Monitor : public WorkspaceObject<RevBayesCore::Monitor> {
+    class Monitor : public WorkspaceToCoreWrapperObject<RevBayesCore::Monitor> {
         
     public:
         

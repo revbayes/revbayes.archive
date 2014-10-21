@@ -3,7 +3,7 @@
 
 #include "PathSampler.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
@@ -23,7 +23,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2012-06-17
      *
      */
-    class PathSampler : public WorkspaceObject<RevBayesCore::PathSampler> {
+    class PathSampler : public WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler> {
         
     public:
         

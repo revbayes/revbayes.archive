@@ -356,7 +356,7 @@ void Variable::replaceRevObject( RevObject *newObj )
     
     try
     {
-        if ( revObject != NULL && revObject->getDagNode() != NULL )
+        if ( revObject != NULL && revObject->isModelObject() == true && revObject->getDagNode() != NULL )
         {
             revObject->getDagNode()->setHidden( isHiddenVar );
         }
@@ -383,10 +383,19 @@ void Variable::setHiddenVariableState(bool flag)
     
     isHiddenVar = flag;
     
-    if ( revObject != NULL && revObject->getDagNode() != NULL )
-    {
-        revObject->getDagNode()->setHidden( flag );
+    try {
+        
+        if ( revObject != NULL && revObject->getDagNode() != NULL )
+        {
+            revObject->getDagNode()->setHidden( flag );
+        }
+        
     }
+    catch (RbException e)
+    {
+        // do nothing
+    }
+
 }
 
 

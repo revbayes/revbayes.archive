@@ -54,25 +54,48 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     
     // present time 
     double tipTime = value->getTipNode(0).getTime();
-    double org = origin->getValue();
+    
+    // present time
+    double ra = value->getRoot().getAge();
+    double presentTime = 0.0;
     
     // test that the time of the process is larger or equal to the present time
-    if ( tipTime > org ) 
+    if ( startsAtRoot == false )
+    {
+        double org = origin->getValue();
+        presentTime = org;
+        
+    }
+    else
+    {
+        presentTime = ra;
+    }
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( tipTime > presentTime )
     {
         return RbConstants::Double::neginf;
     }
     
-    double presentTime = org;
+    
+    // add the survival of a second species if we condition on the MRCA
+    int numInitialSpecies = 1;
+    
+    // if we started at the root then we square the survival prob
+    if ( startsAtRoot == true )
+    {
+        ++numInitialSpecies;
+    }
     
     // retrieved the speciation times
     std::vector<double>* times = divergenceTimesSinceOrigin();
     
-    int n = 1;
+    int n = numInitialSpecies;
     double b = initialSpeciation->getValue();
     int k = capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
-    for (size_t i = 0; i < numTaxa-1; ++i) 
+    for (size_t i = numInitialSpecies-1; i < numTaxa-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 

@@ -23,7 +23,7 @@
 
 using namespace RevLanguage;
 
-PowerPosterior::PowerPosterior() : WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>() {
+PowerPosterior::PowerPosterior() : WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorMcmc>() {
     
 }
 
@@ -101,9 +101,10 @@ const std::string& PowerPosterior::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& PowerPosterior::getClassTypeSpec(void) { 
+const TypeSpec& PowerPosterior::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

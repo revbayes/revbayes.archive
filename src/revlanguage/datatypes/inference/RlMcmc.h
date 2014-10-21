@@ -3,7 +3,7 @@
 
 #include "Mcmc.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
@@ -22,7 +22,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2012-09-06
      *
      */
-    class Mcmc : public WorkspaceObject<RevBayesCore::Mcmc> {
+    class Mcmc : public WorkspaceToCoreWrapperObject<RevBayesCore::Mcmc> {
         
     public:
         

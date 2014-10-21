@@ -17,18 +17,17 @@
 #ifndef RevNullObject_H
 #define RevNullObject_H
 
-#include "RevObject.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
 
-class RevNullObject : public RevObject {
+class RevNullObject : public WorkspaceObject {
     
 public:
     RevNullObject(void);    
-    RevNullObject(const RevNullObject& n);                                                                          //!< Default constructor
     virtual                            ~RevNullObject(void) {}                                                      //!< Virtual destructor
     
     bool                                operator==(void* ptr);                                                      //!< Compare to NULL pointer

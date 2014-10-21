@@ -489,9 +489,24 @@ void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn 
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o, bool verbose ) const
 {
-    RevObject::printStructure( o, verbose );
+    o << "_RevType      = " << getType() << std::endl;
+    o << "_RevTypeSpec  = [ " << getTypeSpec() << " ]" << std::endl;
+    o << "_value        = ";
+    
+    std::ostringstream o1;
+    printValue( o1 );
+    o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
     dagNode->printStructureInfo( o, verbose );
+    
+    
+    const MethodTable& methods = getMethods();
+    for ( MethodTable::const_iterator it = methods.begin(); it != methods.end(); ++it )
+    {
+        o << "." << (*it).first << " = ";
+        (*it).second->printValue( o );
+        o << std::endl;
+    }
 }
 
 

@@ -25,12 +25,7 @@ using namespace RevLanguage;
 // Declarations
 std::ostream& operator<<(std::ostream& o, const RevNullObject& x);
 
-RevNullObject::RevNullObject(void) : RevObject() {
-    
-}
-
-
-RevNullObject::RevNullObject(const RevNullObject& n) : RevObject(n) {
+RevNullObject::RevNullObject(void) : WorkspaceObject() {
     
 }
 
@@ -67,7 +62,7 @@ const std::string& RevNullObject::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RevNullObject::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceObject::getClassTypeSpec() );
     
 	return revTypeSpec; 
 }

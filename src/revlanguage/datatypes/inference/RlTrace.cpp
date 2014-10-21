@@ -16,17 +16,17 @@
 
 using namespace RevLanguage;
 
-Trace::Trace() : WorkspaceObject<RevBayesCore::Trace>() {
+Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>() {
     
 }
 
 
-Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceObject<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) ) {
+Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) ) {
     
 }
 
 
-Trace::Trace(const Trace &t) : WorkspaceObject<RevBayesCore::Trace>( t ) {
+Trace::Trace(const Trace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>( t ) {
     
 }
 
@@ -76,7 +76,7 @@ const std::string& Trace::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Trace::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

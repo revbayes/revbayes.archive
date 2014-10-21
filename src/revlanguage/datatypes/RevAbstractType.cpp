@@ -7,8 +7,7 @@ using namespace RevLanguage;
 
 
 /** Constructor from type specification */
-RevAbstractType::RevAbstractType( const TypeSpec& t, RevObject* obj ) :
-    RevObject(),
+RevAbstractType::RevAbstractType( const TypeSpec& t, RevObject* obj ) : WorkspaceObject(),
     myTypeSpec( t ),
     exampleObject( obj )
 {
@@ -16,8 +15,7 @@ RevAbstractType::RevAbstractType( const TypeSpec& t, RevObject* obj ) :
 
 
 /** Copy constructor (really not needed) */
-RevAbstractType::RevAbstractType(const RevAbstractType& x) :
-    RevObject( x ),
+RevAbstractType::RevAbstractType(const RevAbstractType& x) : WorkspaceObject( x ),
     myTypeSpec( x.myTypeSpec )
 {
 }

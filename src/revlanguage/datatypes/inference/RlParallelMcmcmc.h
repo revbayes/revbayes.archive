@@ -13,14 +13,14 @@
 #include "ParallelMcmcmc.h"
 #include "Mcmc.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class ParallelMcmcmc : public WorkspaceObject<RevBayesCore::ParallelMcmcmc> {
+    class ParallelMcmcmc : public WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc> {
         
     public:
         

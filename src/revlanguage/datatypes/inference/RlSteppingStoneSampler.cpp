@@ -12,7 +12,7 @@
 
 using namespace RevLanguage;
 
-SteppingStoneSampler::SteppingStoneSampler() : WorkspaceObject<RevBayesCore::SteppingStoneSampler>() {
+SteppingStoneSampler::SteppingStoneSampler() : WorkspaceToCoreWrapperObject<RevBayesCore::SteppingStoneSampler>() {
     
 }
 
@@ -67,7 +67,7 @@ const std::string& SteppingStoneSampler::getClassType(void)
 const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }

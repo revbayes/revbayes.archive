@@ -4,6 +4,7 @@
 #include "Trace.h"
 #include "TypedDagNode.h"
 #include "RevObject.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
@@ -13,7 +14,8 @@ namespace RevLanguage {
     /**
      * @brief Rev-wrapper of BurninEstimationConvergenceAssessment class.
      *
-     * This class is the Rev-wrapper for BurninEstimationConvergenceAssessment core objetcs. See BurninEstimationConvergenceAssessment.h for more information.
+     * This class is the Rev-wrapper for BurninEstimationConvergenceAssessment core objetcs. 
+     * See BurninEstimationConvergenceAssessment.h for more information.
      *
      *
      *
@@ -22,7 +24,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2012-09-06
      *
      */
-    class BurninEstimationConvergenceAssessment : public RevObject {
+    class BurninEstimationConvergenceAssessment : public WorkspaceObject {
         
     public:
         
