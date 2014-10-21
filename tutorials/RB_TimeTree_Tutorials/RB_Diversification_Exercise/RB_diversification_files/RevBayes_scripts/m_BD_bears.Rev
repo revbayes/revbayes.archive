@@ -6,14 +6,14 @@
 ### assume an exponential prior distribution 
 ### and apply a scale proposal
 diversification ~ dnExponential(10.0) 
-moves[mi++] <- mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
+moves[mi++] = mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
 
 ### turnover = death_rate / birth_rate
 ### this parameter can only take values between 0 and 1
 ### use a Beta prior distribution
 ### and a slide move
 turnover ~ dnBeta(2.0, 2.0) 
-moves[mi++] <- mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
+moves[mi++] = mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
 
 ### the parameters of the BDP include birth and death rates
 ### these are deterministic variables of the diversification & turnover
