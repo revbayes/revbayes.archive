@@ -20,31 +20,32 @@
 
 #include "Move.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Move : public WorkspaceObject<RevBayesCore::Move> {
+    class Move : public WorkspaceToCoreWrapperObject<RevBayesCore::Move> {
         
     public:
         
-                                                    Move(void);                                                             //!< Default constructor (0.0)
-                                                    Move(const Move& x);                                                    //!< Copy constructor
+                                                    Move(void);                                                                         //!< Default constructor (0.0)
+                                                    Move(const Move& x);                                                                //!< Copy constructor
         
         // Overloaded operators
         
         // Basic utility functions
-        virtual Move*                               clone(void) const = 0;                                                  //!< Clone object
-        static const std::string&                   getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        virtual const MemberRules&                  getParameterRules(void) const;                                             //!< Get member rules (const)
+        virtual Move*                               clone(void) const = 0;                                                              //!< Clone object
+        virtual void                                constructInternalObject(void) = 0;                                                  //!< We construct the a new internal object.
+        static const std::string&                   getClassType(void);                                                                 //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                                             //!< Get class type spec
+        virtual const MemberRules&                  getParameterRules(void) const;                                                      //!< Get member rules (const)
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);      //!< Set member variable
 
         RevPtr<const Variable>                      weight;
 

@@ -20,7 +20,7 @@
 
 #include "TreeTrace.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
@@ -28,7 +28,7 @@
 namespace RevLanguage {
     
     template <typename treeType>
-    class TreeTrace : public WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> > {
+    class TreeTrace : public WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> > {
         
     public:
         
@@ -66,18 +66,18 @@ namespace RevLanguage {
 #include "TreeSummary.h"
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >() {
+RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >() {
     
 }
 
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) ) {
+RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) ) {
     
 }
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const TreeTrace &m) : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( m ) {
+RevLanguage::TreeTrace<treeType>::TreeTrace(const TreeTrace &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( m ) {
     
 }
 
@@ -128,7 +128,7 @@ const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void) {
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

@@ -62,6 +62,7 @@ namespace RevLanguage {
         static const std::string&           getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
+        virtual void                        printStructure(std::ostream& o, bool verbose=false) const = 0;                                  //!< Print structure of language object for user
         virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
         virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
@@ -82,7 +83,6 @@ namespace RevLanguage {
         virtual void                        makeConversionValue(RevPtr<Variable> var);                                                      //!< Convert the object to a conversion object
         virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
         virtual void                        makeUserFunctionValue(UserFunction* fxn);                                                       //!< Convert to deterministic object with a userdefined Rev function
-        virtual void                        printStructure(std::ostream& o, bool verbose=false) const;                                      //!< Print structure of language object for user
         virtual void                        replaceVariable(RevObject *newObj);                                                             //!< Replace the internal DAG node and prepare to replace me
         virtual void                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);                  //!< Set member variable
         virtual void                        setParameter(const std::string& name, const RevPtr<Variable> &var);                             //!< Set member variable

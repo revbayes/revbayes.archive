@@ -29,12 +29,12 @@
 
 using namespace RevLanguage;
 
-ParallelMcmcmc::ParallelMcmcmc() : WorkspaceObject<RevBayesCore::ParallelMcmcmc>() {
+ParallelMcmcmc::ParallelMcmcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc>() {
     
 }
 
 
-ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m) : WorkspaceObject<RevBayesCore::ParallelMcmcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
+ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m) : WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
     
 }
 
@@ -115,7 +115,7 @@ const std::string& ParallelMcmcmc::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& ParallelMcmcmc::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }

@@ -12,7 +12,7 @@
 
 using namespace RevLanguage;
 
-PathSampler::PathSampler() : WorkspaceObject<RevBayesCore::PathSampler>() {
+PathSampler::PathSampler() : WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler>() {
     
 }
 
@@ -67,7 +67,7 @@ const std::string& PathSampler::getClassType(void)
 const TypeSpec& PathSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }

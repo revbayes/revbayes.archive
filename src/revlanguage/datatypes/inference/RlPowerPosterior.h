@@ -20,14 +20,14 @@
 
 #include "PowerPosteriorMcmc.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class PowerPosterior : public WorkspaceObject<RevBayesCore::PowerPosteriorMcmc> {
+    class PowerPosterior : public WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorMcmc> {
         
     public:
         

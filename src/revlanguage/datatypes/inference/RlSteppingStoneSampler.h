@@ -3,7 +3,7 @@
 
 #include "SteppingStoneSampler.h"
 #include "TypedDagNode.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
 #include <string>
@@ -23,7 +23,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2012-06-17
      *
      */
-    class SteppingStoneSampler : public WorkspaceObject<RevBayesCore::SteppingStoneSampler> {
+    class SteppingStoneSampler : public WorkspaceToCoreWrapperObject<RevBayesCore::SteppingStoneSampler> {
         
     public:
         

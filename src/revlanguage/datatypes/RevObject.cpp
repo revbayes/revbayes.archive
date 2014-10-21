@@ -195,7 +195,7 @@ const std::string& RevObject::getType( void ) const
 RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 {
     
-    throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of a '" + getClassType() + "'.");
+    throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of type '" + getClassType() + "'.");
     
     return NULL;
 }
@@ -347,25 +347,6 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
     throw RbException("Cannot multiply a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
     
     return NULL;
-}
-
-
-/**
- * Print the structural information for this object. Here we print the
- * type and type spec, as well as the value. Objects that have more
- * complex structure need to override this function, best by calling
- * it first and then provide the additional information.
- */
-void RevObject::printStructure( std::ostream &o, bool verbose ) const
-{
-    o << "_RevType      = " << getType() << std::endl;
-    o << "_RevTypeSpec  = [ " << getTypeSpec() << " ]" << std::endl;
-    o << "_value        = ";
-    
-    std::ostringstream o1;
-    printValue( o1 );
-    o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
-
 }
 
 

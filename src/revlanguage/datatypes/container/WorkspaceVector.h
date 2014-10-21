@@ -3,7 +3,7 @@
 
 #include "RlContainer.h"
 #include "RbVector.h"
-#include "WorkspaceObject.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 #include <iostream>
 #include <vector>
@@ -26,7 +26,7 @@ namespace RevLanguage {
      * For Rev objects that are not model objects or workspace objects, see RevObjectVector.
      */
     template <typename rlType>
-    class WorkspaceVector : public WorkspaceObject<RevBayesCore::RbVector<rlType> >, public Container {
+    class WorkspaceVector : public WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >, public Container {
         
     public:
         typedef typename rlType::valueType          elementType;
@@ -82,7 +82,7 @@ using namespace RevLanguage;
  */
 template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( void ) :
-    WorkspaceObject<RevBayesCore::RbVector< rlType > >()
+    WorkspaceToCoreWrapperObject<RevBayesCore::RbVector< rlType > >()
 {
     this->value = new RevBayesCore::RbVector< rlType >();
     
@@ -97,7 +97,7 @@ WorkspaceVector<rlType>::WorkspaceVector( void ) :
  * after we are done.
  */
 template <typename rlType>
-WorkspaceVector<rlType>::WorkspaceVector( const RevBayesCore::RbVector<rlType>& v ) : WorkspaceObject<RevBayesCore::RbVector<rlType> >()
+WorkspaceVector<rlType>::WorkspaceVector( const RevBayesCore::RbVector<rlType>& v ) : WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >()
 {
     // just to be safe
     delete this->value;
@@ -115,7 +115,7 @@ WorkspaceVector<rlType>::WorkspaceVector( const RevBayesCore::RbVector<rlType>& 
  */
 template <typename rlType>
 WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
-    WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> >()
+    WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<typename rlType::valueType> >()
 {
     *this->value = v;
 }
@@ -130,7 +130,7 @@ WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
  * elements vector.
  */
 template <typename rlType>
-WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) : WorkspaceObject<RevBayesCore::RbVector< rlType > >()
+WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) : WorkspaceToCoreWrapperObject<RevBayesCore::RbVector< rlType > >()
 {
 
 //    for ( typename vectorRlPtr::const_iterator it = v.begin(); it != v.end(); ++it )
@@ -195,7 +195,7 @@ const std::string& WorkspaceVector<rlType>::getClassType(void)
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
 	return revTypeSpec;
 }

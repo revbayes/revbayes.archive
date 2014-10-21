@@ -34,7 +34,7 @@ namespace RevLanguage {
         Move_VectorSingleElementSlide(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Move_VectorSingleElementSlide*     clone(void) const;                                                      //!< Clone object
+        virtual Move_VectorSingleElementSlide*      clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

@@ -22,7 +22,7 @@
 
 using namespace RevLanguage;
 
-BurninEstimationConvergenceAssessment::BurninEstimationConvergenceAssessment() : RevObject(),
+BurninEstimationConvergenceAssessment::BurninEstimationConvergenceAssessment() : WorkspaceObject(),
     delimiter( "\t" ),
     filenames(),
     burninMethod( "ESS" ),
