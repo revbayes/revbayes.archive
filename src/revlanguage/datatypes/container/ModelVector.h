@@ -62,7 +62,7 @@ namespace RevLanguage {
     private:
         
         struct comparator {
-            bool operator() (elementType A, elementType B) const { return ( A < B ); }
+            bool operator() (elementType & A, elementType & B) const { return ( A < B ); }
         } myComparator;
     
     };
