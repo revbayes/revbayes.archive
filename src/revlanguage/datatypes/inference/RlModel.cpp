@@ -203,7 +203,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
     o << "/* Graphical model description in DOT language                                    */\n";
     o << "/*    To view graph:                                                              */\n";
     o << "/*       open this file in the program Graphviz: http://www.graphviz.org          */\n";
-    o << "/*       or paste contents into an online viewer: http://graphviz-dev.appspot.com */\n\n";
+    o << "/*       or paste contents into an online viewer: http://stamm-wilbrandt.de/GraphvizFiddle */\n\n";
 	o << "digraph REVDAG {\n";
     std::string nrank = "   {rank=same";
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
