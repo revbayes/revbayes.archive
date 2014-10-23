@@ -25,8 +25,8 @@ extern "C" {
 #include "EditorState.h"
 #include "lineeditUtils.h"
 #include "EditorMachineObserver.h"
-#include "RepoClient.h"
-#include "IRepoObserver.h"
+
+#include "RbFileManager.h"
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
@@ -43,32 +43,32 @@ typedef std::vector<std::string> StringVector;
 bool debug = false;
 
 const char* nl = (char*) "\n\r";
-const char* default_prompt = (char*) "RevBayes > ";
-const char* incomplete_prompt = (char*) "RevBayes + ";
+const char* default_prompt = (char*) "> ";
+const char* incomplete_prompt = (char*) "+ ";
 const char* esc_prompt = (char*) "? > ";
 const char* prompt = default_prompt;
 char *line;
 
 EditorMachine editorMachine;
 WorkspaceUtils workspaceUtils;
-Options *opt;
-Configuration *config;
 
 void setDefaultCompletions();
 StringVector getDefaultCompletions();
 
-std::string getWd() {
+std::string getWd()
+{
     RbSettings& s = RbSettings::userSettings();
     const std::string& wd = s.getWorkingDirectory();
     return wd;
 }
 
-StringVector getFileList(std::string path) {
+StringVector getFileList(std::string path)
+{
     StringVector v;
+    
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(getWd(), path);
+    fm.setStringWithNamesOfFilesInDirectory( v );
 
-    BOOST_FOREACH(std::string s, Filesystem::getFileList(getWd(), path)) {
-        v.push_back(s);
-    }
     return v;
 }
 
@@ -564,14 +564,10 @@ void completion(const char *buf, linenoiseCompletions *lc) {
  * @param options
  * @param configuration
  */
-void RbClient::startInterpretor(Options *options, Configuration *configuration) {
+void RbClient::startInterpretor( void )
+{
 
     editorMachine.setObserver(this);
-
-    opt = options;
-    config = configuration;
-    RepoClient repoClient;
-    repoClient.setObserver(this);
 
     /* Set tab completion callback */
     linenoiseSetCompletionCallback(completion);
@@ -620,8 +616,6 @@ void RbClient::startInterpretor(Options *options, Configuration *configuration) 
             debug = false;
         } else if (cmd == "debug=true") {
             debug = true;
-        } else if (repoClient.processCommand(config->getRepositories(), cmd)) {
-
         } else if (cmd == "?") {
             printGeneralHelp("", 0, 'c');
         } else {            
@@ -662,60 +656,3 @@ void RbClient::eventStateChanged(EditorState *state, EditorStateChangeType type)
     }
 }
 
-/**
- * fired by repo client when some error occurs
- * @param error
- */
-void RbClient::notifyError(std::string error) {
-    std::cout << nl << "Repository Client Error: " << error << nl;
-}
-
-/**
- * fired by repo client when some data is available
- */
-void RbClient::notifyGetIndexComplete(HttpResponse httpResponse, RepositoryInfo revRepository) {
-
-    if (httpResponse.code != 200 || httpResponse.exception.size() > 0) {
-        std::cout << nl << "The request to fetch index from '" << revRepository.GetName() << "' failed: \n" << httpResponse.exception << nl;
-
-    } else {
-        //linenoiseClearScreen();
-        std::cout << nl << TerminalFormatter::makeUnderlined("File index of '" + revRepository.GetName() + "'") << nl;
-
-        for (int i = 0; i < httpResponse.data.size() - 1; i += 2) {
-            std::cout << std::setw(8) << httpResponse.data.at(i) << httpResponse.data.at(i + 1) << nl;
-        }
-    }
-    std::cout << nl;
-}
-
-/**
- * fired by repo client when some data is available
- */
-void RbClient::notifyGetFileComplete(HttpResponse httpResponse, RepositoryInfo revRepository) {
-
-    std::cout << nl;
-    if (httpResponse.code != 200 || httpResponse.exception.size() > 0) {
-        std::cout << "The request to fetch file '" << httpResponse.data.at(0) << "' from '" << revRepository.GetName() << "' failed: \n" << httpResponse.exception << nl;
-
-    } else {
-        std::cout << nl << nl << TerminalFormatter::makeUnderlined("Content of '" + httpResponse.data.at(0) + "'") << nl << nl;
-        std::string tmp = "    " + boost::regex_replace(httpResponse.data.at(1), boost::regex("\n"), "\n    ");
-        std::cout << tmp << nl << nl;
-
-        fs::path saveDir = getWd();
-        saveDir /= "downloads";
-        std::cout << "Save file to '" + saveDir.string() + "' Y/N ?: (Y) ";
-        char answer;
-        std::cin.get(answer);
-        if (answer == 'y' || answer == 'Y' || answer == '\n') {
-
-            if (Filesystem::saveToFile(httpResponse.data.at(0), saveDir.string(), httpResponse.data.at(1))) {
-                std::cout << "File saved!" << nl;
-            } else {
-                std::cout << "Something went wrong and the file couldn't be saved!" << nl;
-            }
-        }
-    }
-    std::cout << nl;
-}

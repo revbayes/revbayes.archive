@@ -1,9 +1,10 @@
 ################################################################################
 #
-# RevBayes Exercise: Compute the posterior probabilities of a Poisson regression model 
-#                               for airline fatalities
+# RevBayes Exercise: Compute the posterior probabilities of a Poisson regression 
+#                    model for airline fatalities
 # 
-# This file: Specifies the full model parameters and moves for the model and runs the analysis
+# This file: Specifies the full model parameters and moves for the model 
+#            and runs the analysis
 #
 # authors: Sebastian Hoehna
 #
@@ -11,7 +12,7 @@
 
 
 
-observed_fatalities <- v(24,25,31,31,22,21,26,20,16,22)
+observed_fatalities <- [24,25,31,31,22,21,26,20,16,22]
 x <- 1976:1985 - mean(1976:1985)
 
 delta_alpha <- 0.1
@@ -23,8 +24,7 @@ beta[1] <- -0.01      # you can also use runif(-1.0,1.0)
 write("iteration","alpha","beta",file="airline_fatalities.log")
 write(0,alpha[1],beta[1],file="airline_fatalities.log",append=TRUE)
 
-#for (i in 2:10000) {
-i = 2
+for (i in 2:10000) {
    alpha_prime <- rnorm(1,alpha[i-1],delta_alpha)[1]
    beta_prime <- rnorm(1,beta[i-1],delta_beta)[1]
    ln_prior_ratio <- dunif(alpha_prime,-10.0,10.0,log=TRUE) + dunif(beta_prime,-10.0,10.0,log=TRUE) - dunif(alpha[i-1],-10.0,10.0,log=TRUE) - dunif(beta[i-1],-10.0,10.0,log=TRUE)

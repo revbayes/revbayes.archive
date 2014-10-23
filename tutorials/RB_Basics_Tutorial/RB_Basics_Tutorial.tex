@@ -74,14 +74,14 @@
 
 \section*{Overview}
 
-\RevBayes~has as a central idea that any statistical model, for example a phylogenetic model, is composed of smaller parts that can be decomposed and put back together in a modular fashion. This comes from considering (phylogenetic) models as \textit{probabilistic graphical models}, which lends flexibility and enhances the capabilities of the program. 
-Users interact with \RevBayes~ via an interactive shell.
-Users communicate commands using a language specifically designed for \RevBayes, called \Rev; an R-like language (complete with control statements, user-defined functions, and loops) that enables the user to build up (phylogenetic) models from simple parts (random variables, transformations, models, and constants of different sorts).
+\RevBayes~has as its central idea that any statistical model, for example a phylogenetic model, is composed of smaller parts that can be decomposed and put back together in a modular fashion. This comes from considering (phylogenetic) models as \textit{probabilistic graphical models}, which lends flexibility and enhances the capabilities of the program. 
+Users interact with \RevBayes~via an interactive shell.
+Users communicate commands using a language specifically designed for \RevBayes, called \Rev; an R-like language (complete with control statements, user-defined functions, and loops) that enables the user to build up (phylogenetic) models from simple parts (random variables, variable/parameter transformations, models, and constants of different sorts).
  
 
-This tutorial demonstrates the basic syntactical features of \RevBayes~and \Rev~and shows to set up and perform an analysis on toy statistical models for linear regression. 
+This tutorial demonstrates the basic syntactical features of \RevBayes~and \Rev~and shows how to set up and perform an analysis on ``toy'' statistical models for linear regression. 
 This tutorial focuses on explaining probabilistic graphical models and the language \Rev.
-A good reference for probabilistic graphical models for Bayesian phylogenetic inference is given in  \citep{hoehnaGM2014}.
+A good reference for probabilistic graphical models for Bayesian phylogenetic inference is given in  \cite{hoehnaGM2014}.
 The statistical examples are borrowed from a fourth year statistics course taught in the fall term 2011 at Stockholm University.
 
 
@@ -89,7 +89,7 @@ The statistical examples are borrowed from a fourth year statistics course taugh
 \subsection*{Probabilistic Graphical Models}
 
 \RevBayes~uses \textit{probabilistic graphical models} for model specification, visualization, and implementation \citep{hoehnaGM2014}. 
-Graphical models are frequently used in machine learning and statistics to visually represent the conditional dependence structure of complex statistical models with many parameters \citep{Gilks1994,lunn00,Jordan2004,Koller2009,Lunn2009}. 
+Graphical models are frequently used in machine learning and statistics to conceptually represent the conditional dependence structure of complex statistical models with many parameters \citep{Gilks1994,lunn00,Jordan2004,Koller2009,Lunn2009}. 
 The graphical model tool kit allows for flexible model specification and implementation and reduces redundant code. 
 This framework provides a set of symbols for depicting a \href{http://en.wikipedia.org/wiki/Directed_acyclic_graph}{\textit{directed acyclic graph}} (DAG). 
 \citet{hoehnaGM2014} described the use of probabilistic graphical models for phylogenetics. 
@@ -115,12 +115,12 @@ In this model, we observe a set of states for parameter $x$.
 We assume that the values of $x$ are samples from a lognormal distribution with a location parameter (log mean) $\mu$ and a standard deviation $\sigma$. 
 It is more straightforward to model our uncertainty in the expectation of a lognormal distribution, rather than $\mu$, thus we place a gamma distribution on the mean $M$. 
 This gamma hyperprior has two parameters that we specify with fixed values (constant nodes): the shape $\alpha$ and rate $\beta$. 
-With this prior density, the variable $M$ is a stochastic node.
+The variable $M$ is a stochastic node with this prior density.
 The standard deviation, $\sigma$, is also a stochastic node with an exponential prior density with rate parameter $\lambda$.
 For any value of $M$ and any value of $\sigma$ we can compute the deterministic variable $\mu$ using the formula $\mu = \ln(M) - \frac{\sigma^2}{2}$. 
 This formula is known from using simple algebra on the equation for the mean of any \href{http://en.wikipedia.org/wiki/Log-normal_distribution}{lognormal distribution}.
 With this model structure, we can then calculate the probability of the data conditional on the model (the likelihood): 
-$\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma)$. With this, we can get the posterior probability using Bayes' theorem:
+$\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma)$. Now we can get the posterior probability using Bayes' theorem:
 $$\mathbb{P}(M,\sigma \mid \boldsymbol{x}, \alpha, \beta, \lambda) = \frac{\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma) \mathbb{P}(M \mid \alpha,\beta) \mathbb{P}(\sigma \mid \lambda)}{\mathbb{P}(\boldsymbol{x})}.$$
 \begin{figure}[h!]
 \centering
@@ -138,7 +138,7 @@ The stochastic variable $\sigma$ is exponentially distributed with fixed value f
 
 
 \bigskip
-\subsection*{The \Rev~Language}
+\subsection*{\Rev: The \RevBayes~Language}
 
 In \RevBayes~models and analyses are specified using an interpreted language called \Rev. 
 \Rev~bears similarities to the compiled language in WinBUGS and the interpreted \R~language. 
@@ -146,42 +146,42 @@ Setting up and executing a statistical analysis in \RevBayes~requires the user t
 By using an interpreted language, \RevBayes~enables the practitioner to build complex, hierarchical models and to check the current states of variables while building the model. 
 
 Differently to \R~and BUGS, \Rev~is a strongly but implicitly typed language.
-It is implicitly typed, and thus similar to Python, because you do not need to provide the type of a variable (which you need to in language such as C++ and Java).
+It is implicitly typed, and thus similar to Python, because you do not need to provide the type of a variable (which you need to in languages such as C++ and Java).
 We do implicit typing to help users who do not know about the actual types of the variables.
 However, strongly typed means that every variable has a type and arguments of functions need to match the required types.
 The strong type requirements ensures that you build meaningful model graphs. 
 For example, the variance parameter of a normal distribution needs to be a positive number, and thus you can only use variables that are positive real numbers.
-We do automatic type conversion, although some parts of it are still under construction.
+\RevBayes~does automatic type conversion.
 
 \bigskip
 \subsubsection*{Specifying Models}
 
 \begin{table}[h!]
 \centering
-\caption{Rev language node assignment operators, clamp function, and plate/loop syntax.}\label{operatorTable}
+\caption{\Rev~assignment operators, clamp function, and plate/loop syntax.}\label{operatorTable}
 \begin{tabular}{@{\extracolsep{\fill}}l  c r }
 \hline
-\multicolumn{1}{l}{\textbf{Operator}} & \multicolumn{1}{c}{ } & \multicolumn{1}{r}{\textbf{Node}}  \\ 
+\multicolumn{1}{l}{\textbf{Operator}} & \multicolumn{1}{c}{ } & \multicolumn{1}{r}{\textbf{Variable}}  \\ 
 \hline
-\cl{<-} & \hspace{10mm} &  constant node\\
-\cl{\rbdn} & \hspace{10mm} &  stochastic node\\
-\cl{:=} & \hspace{10mm} &  deterministic node\\
-\cl{node.clamp(data)} & \hspace{10mm} &  clamped node\\
+\cl{<-} & \hspace{10mm} &  constant variable\\
+\cl{\rbdn} & \hspace{10mm} &  stochastic variable\\
+\cl{:=} & \hspace{10mm} &  deterministic variable\\
+\cl{node.clamp(data)} & \hspace{10mm} &  clamped variable\\
 \cl{for(i in 1:N)\{...\}} & \hspace{10mm} &  plate\\
 \hline
 \end{tabular}
 \end{table}
 
-The nodes representing parameters of a statistical model are created using different operators in \Rev~(Table \ref{operatorTable}). 
+The variables/parameters of a statistical model are created using different operators in \Rev~(Table \ref{operatorTable}). 
 In Figure \ref{revgmexample}, the \Rev~syntax for creating the model in Figure \ref{simpleGM} is provided.
-Because \Rev~is an interpreted language, it is important to consider the order in which you specify your model (cf. BUGS where the order is not important). 
-Thus, typically the first nodes that are instantiated are \emph{constant nodes}. 
-Constant nodes require you to assign a fixed value to the parameter using the \cl{<-} operator. 
-Stochastic nodes are initialized using the \cl{\rbdn} operator followed by the constructor function for a distribution. 
+Because \Rev~is an interpreted language, it is important to consider the order in which you specify your variables (cf. BUGS where the order is not important). 
+Thus, typically the first variables that are instantiated are \emph{constant variables}. 
+Constant variables require you to assign a fixed value using the \cl{<-} operator. 
+Stochastic variables are initialized using the \cl{\rbdn} operator followed by the constructor function for a distribution. 
 In \Rev, the naming convention for distributions is \cl{dn*}, where \cl{*} is a wildcard representing the name of the distribution. 
-Each distribution function requires hyperparameters passed in as arguments. 
+Each distribution function requires hyper-parameters passed in as arguments. 
 This is effectively linking nodes using arrows in the graphical model.
-The following code snippet creates a stochastic node called \cl{M} which is assigned a gamma-distributed hyperprior, with shape \cl{alpha} and rate \cl{beta}:
+The following code snippet creates a stochastic variable called \cl{M} which is assigned a gamma-distributed hyperprior, with shape \cl{alpha} and rate \cl{beta}:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 alpha <- 2.0
@@ -199,14 +199,14 @@ mean_2 <- 2.0
 sd_1 <- 1.0
 sd_2 <- 1.0
 weight <- 0.5
-M ~ dnBimodalLdnNorm(mean_1, mean_2, sd_1, sd_2, weight)
+M ~ dnBimodalLnorm(mean_1, mean_2, sd_1, sd_2, weight)
 \end{lstlisting}
 \end{snugshade*}}
 
-\Rev~does allows you to specify constant-node values in the distribution constructor function, therefore this also works:
+\Rev~does allow you to specify constant-variable values in the distribution constructor function, therefore this also works:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-M ~ dnBimodalLdnNorm(0.5, 2.0, 1.0, 1.0, 0.5)
+M ~ dnBimodalLnorm(0.5, 2.0, 1.0, 1.0, 0.5)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -230,38 +230,38 @@ Since we observe values of $x$, we \emph{clamp} this node.
 \label{revgmexample}
 \end{figure}
 
-Deterministic nodes are variable transformations and initialized using the \cl{:=} operator followed by the function or formula for calculating the value. 
-Thus, if you had an exponentially distributed stochastic node and you also wanted to monitor the square root of that variable, you can create a deterministic node:
+Deterministic variables are parameter transformations and initialized using the \cl{:=} operator followed by the function or formula for calculating the value. 
+Previously we create a variable for the expectation of the lognormal distribution.
+Now, if you had an exponentially distributed stochastic variable $\sigma$ , you can create a deterministic variable for the mean $\mu$:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-p ~ dnExponential(1.0)
-sq_p := sqrt(p)
+lambda <- 1.0
+sgima ~ dnExponential(lambda)
+mu := ln(M) - (sigma^2)/2.0
 \end{lstlisting}
 \end{snugshade*}}
 
 Replication over lists of variables as a plate object is specified using \cl{for} loops. 
 A for-loop is an iterator statement that performs a function a given number of times. 
-In \Rev~you can use this syntax to create a vector of 12 stochastic nodes, each drawn from a Poisson distribution:
+In \Rev~you can use this syntax to create a vector of 7 stochastic variables, each drawn from a lognormal distribution:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-rate <- 2.5
-for( i in 1:12 ){
-  p[i] ~ dnPoisson(rate)
+for( i in 1:7 ){
+  x[i] ~ dnLognormal(mu, sigma)
 }
 \end{lstlisting}
 \end{snugshade*}}
 
-A clamped node is attached to observed data. 
-Thus, you must first read in or input the data as a constant node, then clamp it to a stochastic node. 
-In Figure \ref{revgmexample} the observations are assigned and clamped to the stochastic nodes.
-If we observed 7 values for \cl{x} we would create 7 clamped nodes:
+A clamped node/variable has observed data attached to it. 
+Thus, you must first read in or input the data, then clamp it to a stochastic variable. 
+In Figure \ref{revgmexample} the observations are assigned and clamped to the stochastic variables.
+If we observed 7 values for \cl{x} we would create 7 clamped variables:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 observations <- [0.20, 0.21, 0.03, 0.40, 0.65, 0.87, 0.22]
 N <- observations.size()
 for( i in 1:N ){
-  x[i] ~ dnLognormal(mu, sigma)
-  x[i].clamp(observations.clamp)
+  x[i].clamp(observations)
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -269,20 +269,14 @@ for( i in 1:N ){
 
 
 \subsection*{Getting help in \RevBayes}
-%\taha{will there be help information by this time?}
-%
-%This displays a list of the different elements and commands available in RevBayes. The \cl{help} command also provides more detailed information about each of these items.
-%
-%For example, we can view the \cl{help()} information about the \cl{log()} function:
-%
 
-
-Currently, the help-system of \RevBayes~is virtually nonexistent. 
-This will not always be the case, but is par for the course when using new/experimental software. 
-The most complete help file available is for the \cl{mcmc()} function. Display the help for this function using the \cl{?} symbol:
+\RevBayes~provides an elaborate help system. 
+You can display the help for a function, distribution or any other type using the \cl{?} symbol followed by the command you want help for:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
+RevBayes > ?dnNorm
 RevBayes > ?mcmc
+RevBayes > ?mcmc.run
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -291,8 +285,7 @@ Additionally, \RevBayes~will print the correct usage of a function if it is exec
 \begin{lstlisting}
 RevBayes > mcmc()
    Error:   Argument mismatch for call to function 'mcmc'( ). Correct usage is:
-   MCMC function (Model model, VectorRbPointer<Monitor> monitors,
-   VectorRbPointer<Move> moves, String moveschedule = sequential|random|single)
+   MCMC function (Model model, Monitor[] monitors, Move[] moves, String moveschedule = "sequential" | "random" | "single"
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -381,7 +374,7 @@ In addition to these simple mathematical operations, we provide some standard ma
     RevBayes > power(2,2)                       # power function: power(a,b) = a^b
 \end{lstlisting}
 \end{snugshade*}}
-Notice that \Rev~is case-sensitive. That means \Rev~distinguishes upper and lower case letterd for both variable names and function names. For example, only the first of these two calls will work
+Notice that \Rev~is case-sensitive. That means \Rev~distinguishes upper and lower case letter for both variable names and function names. For example, only the first of these two calls will work
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > exp(1)                           # correct lower case name
@@ -392,14 +385,34 @@ Moreover, we provide functions for the common statistical distributions.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # distribution functions
-    RevBayes > dexp(x=1,rate=1)         # exponential distribution density function
+    RevBayes > dexp(x=1,lambda=1)       # exponential distribution density function
     RevBayes > qexp(0.5,1)              # exponential distribution quantile function
     RevBayes > rexp(n=10,1)             # random draws from an exponential distribution
-    RevBayes > ddnNorm(-2.0,0.0,1.0)              # normal distribution density function
-    RevBayes > rdnNorm(n=10,0,1)                  # random draws from a normal distribution
+    RevBayes > dnorm(-2.0,0.0,1.0)      # normal distribution density function
+    RevBayes > rnorm(n=10,0,1)          # random draws from a normal distribution
 \end{lstlisting}
 \end{snugshade*}}
-If you do not remember what the parameter or parameter names of a function are, then you can simply type in the function name and \RevBayes~will tell you the possible parameters with their names.
+You may have noticed that we sometimes provided labels of the arguments and sometimes not. 
+You can always provide the argument labels and then \RevBayes~will match the arguments based on the labels.
+{\tt \begin{snugshade*}
+\begin{lstlisting}    
+    RevBayes > dnorm(x=0.5,mean=0.0,sd=1)       # normal distribution density function
+\end{lstlisting}
+\end{snugshade*}}
+If you do not provide the argument labels, then \RevBayes~ will match the arguments by the best fitting types and the order in which you provided the arguments.
+{\tt \begin{snugshade*}
+\begin{lstlisting}    
+    RevBayes > dnorm(0.5,0.0,1)         # correct order
+    RevBayes > dnorm(0.0,0.5,1)         # mismatched order
+\end{lstlisting}
+\end{snugshade*}}
+You may provide also just some arguments with labels and leave the other arguments without labels.
+{\tt \begin{snugshade*}
+\begin{lstlisting}    
+    RevBayes > dnorm(0.0,x=0.5,1)       # partially labeled
+\end{lstlisting}
+\end{snugshade*}}
+If you do not remember what the parameter name or parameter names of a function are, then you can simply type in the function name and \RevBayes~will tell you the possible parameters with their names.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > rexponential
@@ -500,8 +513,8 @@ You can see the value and the probability (or log-probability) of the current va
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > x                                # print value of stochastic node 'x'
-    RevBayes > x.probability                    # print the probability if 'x'
-    RevBayes > x.lnProbability                  # print the log-probability if 'x'
+    RevBayes > x.probability()                  # print the probability if 'x'
+    RevBayes > x.lnProbability()                # print the log-probability if 'x'
     RevBayes > str(x)                           # printing all the information of 'x'
 \end{lstlisting}
 \end{snugshade*}}
@@ -511,8 +524,8 @@ Similarly, we create a random variable \cl{y} from a normal distribution by
     RevBayes > mu <- 0
     RevBayes > sigma <- 1
     RevBayes > y ~ dnNorm(mu,sigma)	
-    RevBayes > y.probability                    # print the probability of 'y'
-    RevBayes > y.lnProbability                  # print the log-probability if 'y'
+    RevBayes > y.probability()                  # print the probability of 'y'
+    RevBayes > y.lnProbability()                # print the log-probability if 'y'
     RevBayes > str(y)                           # printing all the information of 'y'
 \end{lstlisting}
 \end{snugshade*}}
@@ -526,7 +539,6 @@ You can increment (\cl{++}) and decrement (\cl{--}) a variable.
 The increment operation increases the current value of a variable by 1 and the decrement operation decreases the value by 1.
 A post increment (\cl{a++}) increases the value after returning the value, that is, the old value is returned.
 A pre increment (\cl{++a}) increases the value before returning the value, that is, the new value is returned.
-Note that currently both the post- and pre-increment operations use a pre-increment functionality.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > index <- 1
@@ -582,19 +594,14 @@ There are other useful built-in functions that produce vectors.
 \end{lstlisting}
 \end{snugshade*}} 
 
-Vectors in \Rev~belong to the class of objects that have members and/or methods.
-You can get the member of such a member-object by calling
+Vectors in \Rev~belong to the class of objects that have methods.
+You  can call a member method by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > x.<member name>
+    RevBayes > x.<method name>(<arguments>)                 
 \end{lstlisting}
 \end{snugshade*}} 
-Similarly, you can call a member method by
-{\tt \begin{snugshade*}
-\begin{lstlisting}    
-    RevBayes > x.<member name>(<arguments>)                 
-\end{lstlisting}
-\end{snugshade*}} 
+You have seen two methods previously, \cl{probability} and \cl{lnProbability}.
 If you don't remember what the methods were called, or if this object has any member methods, then you can get these by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    

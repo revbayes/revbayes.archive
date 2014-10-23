@@ -255,7 +255,7 @@ void writeTypeBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, std::
         
         RevLanguage::Function *func = it->second;
         
-        if ( func->getName() != "methods" && func->getName() != "members" && func->getName() != "get" )
+        if ( func->getName() != "methods" )
         {
             outStream << tabbing << "    <method-help-entry>" << std::endl;
             writeFunctionBodyXmlTemplate(outStream, indentLevel+1, func->getName(), func, false);
