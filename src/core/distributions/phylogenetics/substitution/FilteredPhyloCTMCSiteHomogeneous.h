@@ -1,5 +1,5 @@
-#ifndef PhyloCTMCSiteHomogeneous_H
-#define PhyloCTMCSiteHomogeneous_H
+#ifndef FilteredPhyloCTMCSiteHomogeneous_H
+#define FilteredPhyloCTMCSiteHomogeneous_H
 
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
 #include "DnaState.h"
@@ -13,14 +13,14 @@
 namespace RevBayesCore {
     
     template<class charType, class treeType>
-    class PhyloCTMCSiteHomogeneous : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
+    class FilteredPhyloCTMCSiteHomogeneous : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
         
     public:
-        PhyloCTMCSiteHomogeneous(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
-        virtual                                            ~PhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
+        FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
+        virtual                                            ~FilteredPhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
         
         // public member functions
-        PhyloCTMCSiteHomogeneous*                           clone(void) const;                                                                          //!< Create an independent clone
+        FilteredPhyloCTMCSiteHomogeneous*                           clone(void) const;                                                                          //!< Create an independent clone
         
         
     protected:
@@ -51,29 +51,29 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::PhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, c, nSites )
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, c, nSites )
 {
     
 }
 
 
 template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::~PhyloCTMCSiteHomogeneous( void ) {
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::~FilteredPhyloCTMCSiteHomogeneous( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
     
 }
 
 
 template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>* RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::clone( void ) const {
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>* RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::clone( void ) const {
     
-    return new PhyloCTMCSiteHomogeneous<charType, treeType>( *this );
+    return new FilteredPhyloCTMCSiteHomogeneous<charType, treeType>( *this );
 }
 
 
 
 template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right) 
+void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right) 
 {
     
     // reset the likelihood
@@ -166,7 +166,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeRootLike
 
 
 template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
 {
     
     // reset the likelihood
@@ -263,7 +263,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeRootLike
 
 
 template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {   
     
     // compute the transition probability matrix
@@ -323,7 +323,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeInternal
 
 
 template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
+void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
 {    
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
@@ -402,7 +402,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeTipLikel
                         
                         // store the likelihood
                         p_site_mixture[c1] = tmp;
-                         
+                        
                     }
                     else // no ambiguous characters in use
                     {

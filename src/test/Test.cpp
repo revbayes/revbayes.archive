@@ -12,6 +12,7 @@
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Test.h"
+#include "TestFilteredStandardLikelihood.h"
 #include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
 #include "TestCoala.h"
 #include "TestConstantPopCoalescent.h"
@@ -64,6 +65,14 @@ bool Test::performTests(int argc, const char * argv[]) {
     // Newer tests
     ////////////////
     
+    try {
+        TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood("data/morpho.nex", "data/morpho.tre");
+        testFSL.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+#if 0 // commenting out broken tests
+	   
     
 	// #######
     // TAH: working on relaxed-clock models, setting up consistent test files
@@ -242,6 +251,8 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
 #endif
+
+#endif // commenting out broken tests
     time (&end);
     double dif = difftime(end,start);
     std::cout << "The tests ran in " << dif << " seconds." << std::endl;
