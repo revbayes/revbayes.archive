@@ -10,14 +10,13 @@
 
         <name>mvACLNMixingStep</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>A compound mixing MOVE for node rates and node ages when using the ACLN relaxed-clock model.</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This move, described in (ref), improves the mixing of node rates and node ages when the relaxed clock model
+            is the autocorrelated lognormal model (refs). This move proportionally changes the node rates 
+            and node ages such that the likelihood is unchanged. more ...
             </p>
         </description>
     
@@ -34,21 +33,21 @@
                 <label>tree</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The time-tree for which new node ages are proposed.</description>
                 <valueType>TimeTree</valueType>
             </argument>
             <argument>
                 <label>nodeRates</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The vector of node-specific substitution rates for which new values are proposed</description>
                 <valueType>RealPos[]</valueType>
             </argument>
             <argument>
                 <label>rootRate</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The rate value at the root node. This is also rescaled by the same factor as all other node rates.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
@@ -102,11 +101,11 @@
                 <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Your name here</author>
+            <author>Tracy Heath</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>dnACLN</entry>
             </seeAlso>
 
 
