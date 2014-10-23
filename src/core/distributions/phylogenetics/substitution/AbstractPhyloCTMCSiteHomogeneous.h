@@ -11,6 +11,7 @@
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
+#include "ConstantNode.h"
 
 #include <memory.h>
 
