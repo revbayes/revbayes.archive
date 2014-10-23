@@ -25,6 +25,7 @@ TestFilteredStandardLikelihood::~TestFilteredStandardLikelihood() {
 
 
 bool TestFilteredStandardLikelihood::run( void ) {
+    std::cerr << "  starting TestFilteredStandardLikelihood...\n" ;
     /* First, we read in the data */
     // the matrix
     NclReader& reader = NclReader::getInstance();
@@ -41,9 +42,9 @@ bool TestFilteredStandardLikelihood::run( void ) {
     StochasticNode< AbstractDiscreteCharacterData > *charactermodel = new StochasticNode< AbstractDiscreteCharacterData >("S", td);
     charactermodel->clamp( datum );
     double lnp = charactermodel->getLnProbability();
-    std::cout << "lnProb = " << lnp << std::endl;
+    std::cerr << "    lnProb = " << lnp << std::endl;
     if (lnp >= 0.0) {
-        std::cerr << "lnProb is too high!" << std::endl;
+        std::cerr << "    lnProb is too high!" << std::endl;
         return false;
     }
     return true;
