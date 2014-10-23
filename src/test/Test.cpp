@@ -60,14 +60,21 @@ Test::~Test() {
 bool Test::performTests(int argc, const char * argv[]) {
     time_t start,end;
     time (&start);
+    int numPassed = 0;
+    int numAttempted = 0;
     
     ////////////////
     // Newer tests
     ////////////////
     
     try {
+        numAttempted += 1;
         TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood("data/morpho.nex", "data/morpho.tre");
-        testFSL.run();
+        if (testFSL.run()) {
+            numPassed += 1;
+        } else {
+            std::cerr << "TestFilteredStandardLikelihood failed!" << std::endl;
+        }
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -256,7 +263,11 @@ bool Test::performTests(int argc, const char * argv[]) {
     time (&end);
     double dif = difftime(end,start);
     std::cout << "The tests ran in " << dif << " seconds." << std::endl;
-    std::cout << "Finished Tests!!!" << std::endl;
-    
-    return 0;
+    if (numPassed == numAttempted) {
+        std::cout << "Finished Tests!!!" << std::endl;
+        return true;
+    }
+    std::cout << "Unfortunately, only " << numPassed << " out of " << numAttempted << " tests passed." << std::endl;
+    return false;
+
 }

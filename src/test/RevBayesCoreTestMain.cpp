@@ -4,12 +4,9 @@
 
 int main (int argc, const char * argv[])
 {
-    
     Test t = Test(argc, argv);
-    t.performTests(argc, argv);
-    
+    bool passed = t.performTests(argc, argv);
     std::cout << "Done!!!" << std::endl;
-    
-    return 0;
+    return (passed ? 0 : 1);
 }
 

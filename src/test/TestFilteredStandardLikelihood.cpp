@@ -27,7 +27,6 @@ TestFilteredStandardLikelihood::~TestFilteredStandardLikelihood() {
 bool TestFilteredStandardLikelihood::run( void ) {
     /* First, we read in the data */
     // the matrix
-    std::cout << "hi there\n" << std::endl;
     NclReader& reader = NclReader::getInstance();
     std::vector<AbstractCharacterData*> data = reader.readMatrices(alignmentFilename);
     AbstractDiscreteCharacterData * datum = dynamic_cast<AbstractDiscreteCharacterData *>(data[0]);
@@ -41,6 +40,11 @@ bool TestFilteredStandardLikelihood::run( void ) {
     TypedDistribution<AbstractDiscreteCharacterData> *td = charModel;
     StochasticNode< AbstractDiscreteCharacterData > *charactermodel = new StochasticNode< AbstractDiscreteCharacterData >("S", td);
     charactermodel->clamp( datum );
-    std::cout << "RevBayes LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
+    double lnp = charactermodel->getLnProbability();
+    std::cout << "lnProb = " << lnp << std::endl;
+    if (lnp >= 0.0) {
+        std::cerr << "lnProb is too high!" << std::endl;
+        return false;
+    }
     return true;
 }
