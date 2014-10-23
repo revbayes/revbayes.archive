@@ -37,7 +37,8 @@ namespace RevBayesCore {
 
     public:
                                 RbFileManager(void);                                                                                //!< Default constructor
-                                RbFileManager(std::string s);                                                                       //!< Constructor with file/directory name
+                                RbFileManager(const std::string &fn);                                                               //!< Constructor with file/directory name
+                                RbFileManager(const std::string &pn, const std::string &fn);                                        //!< Constructor with path name and file/directory name
 
         void                    closeFile(std::ifstream& strm);                                                                     //!< Close input file
         void                    closeFile(std::ofstream& strm);                                                                     //!< Close output file
@@ -50,6 +51,7 @@ namespace RevBayesCore {
         const std::string&      getFullFileName(void) const;
         std::string             getFullFilePath(void) const;                                                                            //!< Returns the name of the path
         std::string             getLastPathComponent(std::string& s);
+        const std::string&      getPathSeparator(void) const;                                                                       //!< Returns the path separator
         std::string             getStringByDeletingLastPathComponent(std::string& s);
         bool                    isDirectory(void) const;                                                                            //!< Is this a directory
         bool                    isFile(void) const;                                                                                 //!< Is this a file
