@@ -27,6 +27,38 @@ double homogeneousComputeRootLikelihood(const double *p_left,
                                         const double p_inv,
                                         const std::vector<bool> & siteInvariant,
                                         const std::vector<size_t> & invariantSiteIndex);
+double homogeneousComputeRootLikelihood(const double *p_left,
+                                        const double *p_right,
+                                        const double *p_middle,
+                                        const size_t numSiteRates,
+                                        const double * rootFreq,
+                                        const size_t numStates,
+                                        const size_t * patternCounts,
+                                        const size_t numPatterns,
+                                        const size_t siteOffset,
+                                        const size_t mixtureOffset,
+                                        const double p_inv,
+                                        const std::vector<bool> & siteInvariant,
+                                        const std::vector<size_t> & invariantSiteIndex);
+void homogeneousComputeInternalNodeLikelihoood(double * p_node,
+                                               const double *p_left,
+                                               const double *p_right,
+                                               const size_t numSiteRates,
+                                               const size_t numStates,
+                                               const size_t numPatterns,
+                                               const size_t siteOffset,
+                                               const size_t mixtureOffset,
+                                               const double ** tpMats);
+void homogeneousComputeTipNodeLikelihoood(double * p_node,
+                                          const size_t numSiteRates,
+                                          const size_t numStates,
+                                          const size_t numPatterns,
+                                          const size_t siteOffset,
+                                          const size_t mixtureOffset,
+                                          const double ** tpMats,
+                                          const std::vector<bool> &gap_node,
+                                          const std::vector<unsigned long> &char_node,
+                                          const bool usingAmbiguousCharacters);
     /**
      * @brief Homogeneous distribution of character state evolution along a tree class (PhyloCTMC).
      *
@@ -195,6 +227,7 @@ double homogeneousComputeRootLikelihood(const double *p_left,
 }
 
 
+#include "ConstantNode.h"
 #include "DiscreteCharacterState.h"
 #include "DiscreteCharacterData.h"
 #include "RandomNumberFactory.h"

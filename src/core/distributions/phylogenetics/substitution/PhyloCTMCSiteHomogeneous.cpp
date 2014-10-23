@@ -110,7 +110,7 @@ double RevBayesCore::homogeneousComputeRootLikelihood(const double *p_left,
             if ( siteInvariant[site] ) {
                 prob = p_inv * rootFreq[ invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates;
             } else {
-                prob += oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates;
+                prob = oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates;
             }
             lnProb += log(prob) * patternCounts[site];
         }
@@ -158,8 +158,6 @@ void RevBayesCore::homogeneousComputeInternalNodeLikelihoood(double * p_node,
 }
 
 void RevBayesCore::homogeneousComputeTipNodeLikelihoood(double * p_node,
-                                                             const double *p_left,
-                                                             const double *p_right,
                                                              const size_t numSiteRates,
                                                              const size_t numStates,
                                                              const size_t numPatterns,
@@ -167,21 +165,22 @@ void RevBayesCore::homogeneousComputeTipNodeLikelihoood(double * p_node,
                                                              const size_t mixtureOffset,
                                                              const double ** tpMats,
                                                              const std::vector<bool> &gap_node,
-                                                             const std::vector<unsigned long> &char_node) {
+                                                             const std::vector<unsigned long> &char_node,
+                                                             const bool usingAmbiguousCharacters) {
     double*   p_mixture      = p_node;
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < numSiteRates; ++mixture) {
         // the transition probability matrix for this mixture category
-        const double*                       tp_begin    = transitionProbMatrices[mixture].theMatrix;
+        const double* tp_begin = tpMats[mixture];
         // get the pointer to the likelihoods for this site and mixture category
         double*     p_site_mixture      = p_mixture;
         // iterate over all sites
-        for (size_t site = 0; site != this->numPatterns; ++site) {
+        for (size_t site = 0; site != numPatterns; ++site) {
             // is this site a gap?
             if ( gap_node[site] ) {
                 // since this is a gap we need to assume that the actual state could have been any state
                 // iterate over all initial states for the transitions
-                for (size_t c1 = 0; c1 < this->numStates; ++c1) {
+                for (size_t c1 = 0; c1 < numStates; ++c1) {
                     // store the likelihood
                     p_site_mixture[c1] = 1.0;
                 }
@@ -189,13 +188,13 @@ void RevBayesCore::homogeneousComputeTipNodeLikelihoood(double * p_node,
                 // get the original character
                 unsigned long org_val = char_node[site];
                 // iterate over all possible initial states
-                for (size_t c1 = 0; c1 < this->numStates; ++c1) {
-                    if ( this->usingAmbiguousCharacters ) {
+                for (size_t c1 = 0; c1 < numStates; ++c1) {
+                    if ( usingAmbiguousCharacters ) {
                         // compute the likelihood that we had a transition from state c1 to the observed state org_val
                         // note, the observed state could be ambiguous!
                         unsigned long val = org_val;
                         // get the pointer to the transition probabilities for the terminal states
-                        const double* d  = tp_begin+(this->numStates*c1);
+                        const double* d  = tp_begin+(numStates*c1);
                         double tmp = 0.0;
                         while ( val != 0 ) // there are still observed states left
                         {
@@ -214,15 +213,15 @@ void RevBayesCore::homogeneousComputeTipNodeLikelihoood(double * p_node,
                     } else // no ambiguous characters in use
                     {
                         // store the likelihood
-                        p_site_mixture[c1] = tp_begin[c1*this->numStates+org_val];
+                        p_site_mixture[c1] = tp_begin[c1*numStates+org_val];
                     }
                 } // end-for over all possible initial character for the branch
             } // end-if a gap state
             // increment the pointers to next site
-            p_site_mixture+=this->siteOffset; 
+            p_site_mixture+=siteOffset; 
         } // end-for over all sites/patterns in the sequence
         // increment the pointers to next mixture category
-        p_mixture+=this->mixtureOffset;
+        p_mixture+=mixtureOffset;
     } // end-for over all mixture categories
 }
 
