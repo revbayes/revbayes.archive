@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RbFileManager, which 
- * handles the opening, closing, testing presence of, etc. files.
- *
- * @brief Declaration of RbFileManager
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbSettings.h"
@@ -65,7 +48,7 @@ RbFileManager::RbFileManager( void )
 
 
 /** Constructor taking as an argument a string containing a file path and (maybe) a file name */
-RbFileManager::RbFileManager(std::string s) 
+RbFileManager::RbFileManager(const std::string &fn)
 {
     
 #	ifdef WIN32
@@ -83,7 +66,7 @@ RbFileManager::RbFileManager(std::string s)
 //    setCurrentDirectory( findCurrentDirectory() );
     
     // set the path and file for the string
-    parsePathFileNames(s);
+    parsePathFileNames( fn );
     
     fullFileName = filePath;
     if ( fullFileName == "") 
@@ -94,6 +77,39 @@ RbFileManager::RbFileManager(std::string s)
     fullFileName += pathSeparator + fileName;
     
 }
+
+
+/** Constructor taking as an argument a string containing a file path and (maybe) a file name */
+RbFileManager::RbFileManager(const std::string &pn, const std::string &fn)
+{
+    
+#	ifdef WIN32
+    pathSeparator = "\\";
+#	else
+    pathSeparator = "/";
+#   endif
+    
+    // make certain the current file/path information is empty
+    //    setCurrentDirectory("");
+    setFileName("");
+    setFilePath("");
+    
+    // initialize the current directory to be the directory the binary is sitting in
+    //    setCurrentDirectory( findCurrentDirectory() );
+    
+    // set the path and file for the string
+    parsePathFileNames( pn + pathSeparator + fn);
+    
+    fullFileName = filePath;
+    if ( fullFileName == "")
+    {
+        fullFileName = ".";
+    }
+    
+    fullFileName += pathSeparator + fileName;
+    
+}
+
 
 
 /** Closes an input file */
@@ -205,6 +221,12 @@ std::string RbFileManager::getFullFilePath( void ) const
 //    }
 //    std::string tmp = d->d_name;
     return RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
+}
+
+
+const std::string& RbFileManager::getPathSeparator( void ) const
+{
+    return pathSeparator;
 }
 
 
