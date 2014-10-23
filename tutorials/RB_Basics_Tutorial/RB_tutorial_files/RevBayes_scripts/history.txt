@@ -1,0 +1,61 @@
+alpha <- 2.0
+beta <- 4.0
+M ~ dnGamma(alpha, beta)
+M
+str(M)
+getwd()
+q()
+contributors()
+a = 1
+q()
+?dnBDP
+alpha <- 1
+b ~ dnExponential(alpha)
+b
+rate <- 2.5
+for ( i in 1:12 ) {
+p[i] ~ dnPoisson(rate)
+}
+p
+observations <- [0.20,0.21,0.03,0.04,0.65,0.87,0.22]
+N <- observations.size()
+for ( i in 1:N ) {
+x[i] ~ dnLognormal(mu,sigma)
+x[i].clamp(observations)
+}
+mcmc()
+pi <- simplex(1,1,1,1)
+er <- simplex(1:6)
+fnGTR(er,pi)
+er
+t <- simplex([1,1,1,1])
+t
+mean(pi)
+meam(er)
+mean(er)
+source("RevBayes_scripts/basics.Rev")
+getwd()
+source("basics.Rev")
+1 + 1
+1+1
+10-5
+5*5
+10/2
+2^3
+5%2
+1+1;2+2
+exp(1) # some comment
+ln(1)
+sqrt(16)
+power(2,2)
+exp(1)
+Exp(1)
+dexp(x=1,rate=1)
+dexp(x=1,lambda=1)
+qexp(0.5,1)
+rexp(10,1)
+dnorm(-2.0,0.0,1.0)
+dnorm(x=0.5,mean=0.0,sigma=1)
+dnorm(0.0,x=0.5,1)
+dnorm(0.0,0.5,1)
+dnorm(0.5,0.0,1)

@@ -14,9 +14,11 @@ enum EditorStateChangeType {
     STATE_ADDED, STATE_RELEASED, STATE_CANCELLED, NOOP
 };
 
-class EditorMachineObserver{
-public:
+class EditorMachineObserver {
+
+    public:
     virtual void eventStateChanged(EditorState *state, EditorStateChangeType type) = 0;
+
 };
 
 #endif	/* EDITORMACHINEOBSERVER_H */

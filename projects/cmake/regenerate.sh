@@ -137,7 +137,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
-find ui libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -152,6 +152,7 @@ add_subdirectory(revlanguage)
 # basic rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+
 
 # extended rev-bayes binary
 ' >> "$HERE/CMakeLists.txt"
