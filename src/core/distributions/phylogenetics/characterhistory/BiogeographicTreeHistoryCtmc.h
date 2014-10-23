@@ -315,8 +315,32 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             }
             
             // lnL for stepwise events for p(x->y)
+            
+        
+//            for (size_t i = 0; i < currState.size(); i++)
+//            {
+//                if ( (*it_h)->getIndex() == i )
+//                {
+//                    if ((*it_h)->getState())
+//                        std::cout << "G";
+//                    else
+//                        std::cout << "L";
+//                }
+//                else
+//                {
+//                    if (currState[i]->getState() == 0)
+//                        std::cout << " ";
+//                    else
+//                        std::cout << ".";
+//                }
+//                if (i % 5 == 4)
+//                    std::cout << "\n";
+//            }
+//            std:: cout << "\n";
+            
             double tr = rm.getRate(node, currState, *it_h, counts, currAge);
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
+            
             lnL += -(sr * da) + log(tr);
             
 //            if ( lnL < -1E20 )
@@ -1284,8 +1308,9 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     
     // simulate path
+    double sum_rates = rm->getSiteRate(node, 0, 1) + rm->getSiteRate(node, 1, 0);
     std::set<CharacterEvent*,CharacterEventCompare> history;
-    double startAge = ( node.isRoot() ? node.getAge()*5 : node.getParent().getAge() );
+    double startAge = ( node.isRoot() ? node.getAge() * 20 / sum_rates : node.getParent().getAge() );
     double branchLength = startAge - node.getAge();
     
     
@@ -1417,7 +1442,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
         for (size_t i = 0; i < this->numSites; i++)
         {
             unsigned s = 0;
-            if (rm->isAreaAvailable(i, node.getAge()))
+            if (rm->isAreaAvailable(i, node.getAge()) && GLOBAL_RNG->uniform01() < 0.25)
                 s = 1;
             parentState.push_back(new CharacterEvent(i, s, node.getAge()*5));
         }

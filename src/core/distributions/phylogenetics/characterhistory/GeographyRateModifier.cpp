@@ -162,8 +162,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     {
         r = 1.0;
 
-        if (false)
-//        if (useAreaAdjacency || useDistanceDependence)
+//        if (false)
+        if (useAreaAdjacency) // || useDistanceDependence)
         {
             // determine which areas are present and which are absent
             present.clear();
@@ -195,28 +195,45 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
 //                std::cout << idx_p1 << " " <<  d << "\n";
                 
                 // adjacent present areas
+                double n_adj = 0;
                 for (it_p2 = present.begin(); it_p2 != present.end(); it_p2++)
                 {
                     size_t idx_p2 = (*it_p2)->getIndex();
                     size_t idx_e = epochIdx * epochOffset + idx_p1 * areaOffset + idx_p2;
                     
                     double v = adjacentAreaVector[idx_e];
+                    n_adj += v;
                     
                     // extinction depends on distance to adjacent areas?
                     if (useDistanceDependence && v != 0.0)
                     {
                         v *= geographicDistancePowers[idx_e];
                     }
-                    d += v;
+//                    d += v;
                 }
+
+                d /= n_adj;
                 sum += d;
-                
+//                std::cout << d << " " << n_adj << " " << sum << "\n";                
                 if (idx_p1 == charIdx)
                     rate = d;
 
             }
-//            std::cout <<source("/Users/mlandis/Documents/code/revbayes-code/tutorials/RB_Biogeography_tutorial/RB_biogeo_files/scripts/biogeography_inf.Rev") rate << " " << sum << " " << present.size() << "\n";
-            r = (rate / sum) * present.size();
+         
+            
+//            for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
+//            {
+//                std::cout << currState[*it]->getState();
+//                if (*it % 5 == 4)
+//                    std::cout << "\n";
+//            }
+//            
+//            std::cout << rate << " " << sum << " " << present.size() << "\n";
+            size_t n_p = present.size();
+            
+//            r = (rate / sum) * n_p;
+            r = rate / (sum / n_p);
+//            std::cout << "\n";
         }
     }
     
@@ -235,29 +252,50 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     // area exists and is gained
     if (areaAvailable && s == 1)
     {
-        // ignore graph structure for now!
-//        return 1.0;
-        
         // determine which areas are present and which are absent
         present.clear();
         absent.clear();
-        
         std::set<size_t>::iterator it;
-        for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
+        
+        if (!useAreaAdjacency)
         {
-            if (currState[*it]->getState() == 0 &&
-                ( useAreaAdjacency && adjacentAreaVector[epochIdx*epochOffset + charIdx*areaOffset + *it] > eps ) )
+            for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                absent.insert(currState[*it]);
-//                std::cout << "a " << absent.size() << "\n";
+                std::cout << currState[*it]->getState();
+                if (currState[*it]->getState() == 0)
+                {
+                    absent.insert(currState[*it]);
+                }
+                else
+                {
+                   present.insert(currState[*it]);
+                }
             }
-            else
+        }
+        else if (useAreaAdjacency)
+        {
+            for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                present.insert(currState[*it]);
-//                std::cout << "p " << present.size() << "\n";
+                if (currState[*it]->getState() == 1)
+                {
+                    std::set<size_t>::const_iterator it_adj;
+                    const std::set<size_t> adj = adjacentAreaSet[epochIdx*numAreas + *it];
+                    int n = 0;
+                    for (it_adj = adj.begin(); it_adj != adj.end(); it_adj++)
+                    {
+                        if (currState[*it_adj]->getState() == 0)
+                        {
+                            absent.insert(currState[*it_adj]);
+                            n++;
+                        }
+                    }
+                    if (n > 0)
+                        present.insert(currState[*it]);
+                }
             }
         }
         
+        // in case forbid extinction is enabled
         if (present.size() == 0)
             return 1.0;
         
@@ -286,17 +324,22 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
             }
 
             sum += d;
-//            std::cout << sum << " " << d << "\n";
             if (idx_a == charIdx)
                 rate += d;
         }
-        if (!useAreaAdjacency)
-            n = absent.size();
+//        if (!useAreaAdjacency)
+//            n = absent.size();
+
+        double w = 1.0;
+        if (useAreaAdjacency)
+            w = double(present.size()) / absent.size();
         
-//        r = n * rate / sum;
-//        r = rate / (sum / n);
-        r = absent.size() * rate / sum;
-//        std::cout << "rateMod " << r << " = " << absent.size() << " * " << rate << " / " << sum << "\n";
+        
+        r = w * rate / (sum/absent.size());
+//        std::cout << "n = " << n << "\n";
+//        std::cout << "n0 = " << absent.size() << " n1 = " << present.size() << "\n";
+//        std::cout << r << " = " << w << " * " << rate << " / ( " << sum << " / " << absent.size() << " )\n";
+//        r = absent.size() * rate / sum;
     }
 
     return r;
@@ -418,6 +461,8 @@ void GeographyRateModifier::initializeDistances(void)
 
 void GeographyRateModifier::initializeAdjacentAreas(void)
 {
+    availableAreaSet.clear();
+    adjacentAreaSet.clear();
     adjacentAreaSet.resize(numEpochs*numAreas);
     availableAreaSet.resize(numEpochs);
     
@@ -443,7 +488,11 @@ void GeographyRateModifier::initializeAdjacentAreas(void)
                 }
                 
                 adjacentAreaVector[epochOffset*i + areaOffset*j + k] = d;
-                adjacentAreaSet[numAreas*i + j].insert(k);
+                
+                if (dvs[k] == 1.0)
+                {
+                    adjacentAreaSet[numAreas*i + j].insert(k);
+                }
 //                std::cout << epochOffset*i + areaOffset*j + k << " " << i << " " << j << " " << k << " " << d << "\n";
                 
                 if (j == k)
@@ -513,6 +562,113 @@ const std::vector<double>& GeographyRateModifier::getAvailableAreaVector(void) c
     return availableAreaVector;
 }
 
+const bool GeographyRateModifier::getUseAreaAdjacency(void) const
+{
+    return useAreaAdjacency;
+}
+
+const bool GeographyRateModifier::getUseAreaAvailable(void) const
+{
+    return useAreaAvailable;
+}
+
+unsigned GeographyRateModifier::getNumAvailableAreas(const TopologyNode& node, std::vector<CharacterEvent*> currState, double age)
+{
+    unsigned epochIdx = getEpochIndex(age);
+    double eps = 1e-4;
+    
+//    unsigned s = newState->getState();
+//    unsigned charIdx = newState->getIndex();
+//    bool areaAvailable = availableAreaVector[epochIdx*numAreas + charIdx] > 0.0;
+    
+    present.clear();
+    absent.clear();
+       
+    std::set<size_t>::iterator it;
+    for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
+    {
+        if (currState[*it]->getState() == 0)
+        {
+            absent.insert(currState[*it]);
+        }
+        else
+        {
+            present.insert(currState[*it]);
+        }
+    }
+    
+    std::set<size_t> gainableAreas;
+    std::set<CharacterEvent*>::iterator it_p;
+    std::set<CharacterEvent*>::iterator it_a;
+    for (it_a = absent.begin(); it_a != absent.end(); it_a++)
+    {
+        size_t idx_a = (*it_a)->getIndex();
+        bool found = false;
+        for (it_p = present.begin(); it_p != present.end(); it_p++)
+        {
+            size_t idx_p = (*it_p)->getIndex();
+            size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
+            
+            double v = adjacentAreaVector[idx_e];
+            if (useAreaAdjacency && v > eps)
+            {
+                found = true;
+                gainableAreas.insert(idx_a);
+                break;
+            }
+        }
+    }
+    return gainableAreas.size();
+}
+
+unsigned GeographyRateModifier::getNumEmigratableAreas(const TopologyNode& node, std::vector<CharacterEvent*> currState, double age)
+{
+    unsigned epochIdx = getEpochIndex(age);
+    double eps = 1e-4;
+    
+    //    unsigned s = newState->getState();
+    //    unsigned charIdx = newState->getIndex();
+    //    bool areaAvailable = availableAreaVector[epochIdx*numAreas + charIdx] > 0.0;
+    
+    present.clear();
+    absent.clear();
+    
+    std::set<size_t>::iterator it;
+    for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
+    {
+        if (currState[*it]->getState() == 0)
+        {
+            absent.insert(currState[*it]);
+        }
+        else
+        {
+            present.insert(currState[*it]);
+        }
+    }
+    
+    std::set<size_t> emigratableAreas;
+    std::set<CharacterEvent*>::iterator it_p;
+    std::set<CharacterEvent*>::iterator it_a;
+    for (it_p = present.begin(); it_p != present.end(); it_p++)
+    {
+        size_t idx_p = (*it_p)->getIndex();
+        bool found = false;
+        for (it_a = absent.begin(); it_a != absent.end(); it_a++)
+        {
+            size_t idx_a = (*it_a)->getIndex();
+            size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
+            
+            double v = adjacentAreaVector[idx_e];
+            if (useAreaAdjacency && v > eps)
+            {
+                found = true;
+                emigratableAreas.insert(idx_p);
+                break;
+            }
+        }
+    }
+    return emigratableAreas.size();
+}
 
 double GeographyRateModifier::computePairwiseDistances(int i, int j, int k)
 {
