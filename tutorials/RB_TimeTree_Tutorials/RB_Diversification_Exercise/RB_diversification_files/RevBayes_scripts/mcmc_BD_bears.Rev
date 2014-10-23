@@ -10,21 +10,21 @@ n_taxa <- T.ntips()
 names <- T.names()
 
 ## Moves iterator
-mi <- 0 
+mi = 1 
 
 ### load the model from file 
 source("RevBayes_scripts/m_BD_bears.Rev")
 
 ### workspace model wrapper ###
-mymodel <- model(diversification)
+mymodel = model(diversification)
 
 ### set up the monitors that will output parameter values to file and screen 
-monitors[1] <- mnFile(filename="output/BD_mcmc_bears.log",printgen=10,
+monitors[1] = mnFile(filename="output/BD_mcmc_bears.log",printgen=10,
 						   diversification, birth_rate, turnover, death_rate)
-monitors[2] <- mnScreen(printgen=1000, turnover)
+monitors[2] = mnScreen(printgen=1000, turnover)
 
 ### workspace mcmc ###
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 
 ### pre-burnin to tune the proposals ###
 mymcmc.burnin(generations=10000,tuningInterval=1000)
