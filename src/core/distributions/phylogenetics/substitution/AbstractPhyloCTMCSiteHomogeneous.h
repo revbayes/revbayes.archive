@@ -15,7 +15,18 @@
 #include <memory.h>
 
 namespace RevBayesCore {
-    
+double homogeneousComputeRootLikelihood(const double *p_left,
+                                        const double *p_right,
+                                        const size_t numSiteRates,
+                                        const double * rootFreq,
+                                        const size_t numStates,
+                                        const size_t * patternCounts,
+                                        const size_t numPatterns,
+                                        const size_t siteOffset,
+                                        const size_t mixtureOffset,
+                                        const double p_inv,
+                                        const std::vector<bool> & siteInvariant,
+                                        const std::vector<size_t> & invariantSiteIndex);
     /**
      * @brief Homogeneous distribution of character state evolution along a tree class (PhyloCTMC).
      *
