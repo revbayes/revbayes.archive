@@ -2,34 +2,7 @@
 #include <vector>
 #include <cmath>
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
-template<typename T>
-void debug_vec(const char * pref, const T *x, size_t s) {
-    std::cerr << pref << " at " << (long) pref << " = [";
-    for (size_t i = 0; i < s; ++i) {
-        if (i != 0) {
-            std::cerr << ", ";
-        }
-        std::cerr << x[i];
-    }
-    std::cerr << "]\n";
-}
-template<typename T>
-void debug_mat(const char * pref, const T *x, size_t n, size_t m) {
-    std::cerr << pref << " at " << (long) pref << " =  [";
-    for (size_t j = 0; j < n; ++j) {
-        if (j != 0) {
-            std::cerr << ",";
-        }
-        std::cerr << "\n  ";
-        for (size_t i = 0; i < m; ++i) {
-            if (i != 0) {
-                std::cerr << ", ";
-            }
-            std::cerr << x[i];
-        }
-    }
-    std::cerr << "]\n";
-}
+#include "DebugIO.h"
 double RevBayesCore::computeRootLikelihood2Nodes(const double *p_left,
                                                       const double *p_right,
                                                       const size_t numSiteRates,

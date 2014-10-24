@@ -85,8 +85,8 @@ project(RevBayes)
 
 if ! test -z $DEBUG_REVBAYES
 then
-	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
-	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
+	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
+	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
 else
 if [ "$mavericks" = "true" ]
 then
