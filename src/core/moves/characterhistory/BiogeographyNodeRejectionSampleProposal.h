@@ -9,6 +9,7 @@
 #ifndef __rb_mlandis__BiogeographyNodeRejectionSampleProposal__
 #define __rb_mlandis__BiogeographyNodeRejectionSampleProposal__
 
+#include "AbstractProposal.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
@@ -49,7 +50,7 @@ namespace RevBayesCore {
      */
     
     template<class charType, class treeType>
-    class BiogeographyNodeRejectionSampleProposal : public Proposal {
+    class BiogeographyNodeRejectionSampleProposal : public AbstractProposal {
         
     public:
         BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
@@ -120,6 +121,7 @@ namespace RevBayesCore {
         bool                                    sampleNodeIndex;
         bool                                    sampleSiteIndexSet;
         bool                                    swapBudTrunk;
+        bool                                    useAreaAdjacency;
     };
 }
 
@@ -131,7 +133,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : AbstractProposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -144,7 +146,8 @@ trunkTpMatrix(2),
 budTpMatrix(2),
 lambda(l),
 sampleNodeIndex(true),
-sampleSiteIndexSet(true)
+sampleSiteIndexSet(true),
+useAreaAdjacency(false)
 
 {
     
@@ -179,7 +182,7 @@ sampleSiteIndexSet(true)
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : AbstractProposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -192,7 +195,8 @@ trunkTpMatrix(2),
 budTpMatrix(2),
 lambda(l),
 sampleNodeIndex(true),
-sampleSiteIndexSet(true)
+sampleSiteIndexSet(true),
+useAreaAdjacency(false)
 
 {
     
@@ -228,6 +232,11 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     rightProposal->cleanProposal();
     leftProposal->cleanProposal();
     
+    if (node->isRoot())
+    {
+        std::cout << "root accept\n";
+    }
+
 //    std::cout << "ACCEPT\n";
 //    
 //    std::cout << "\n";
@@ -369,8 +378,19 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
     double leftLnProb = leftProposal->doProposal();
     double rightLnProb = rightProposal->doProposal();
 
+    
+    if (node->isRoot())
+    {
+        
+        std::cout << "wha!\n";
+        ;
+    }
+    
 // return storedLnProb - proposedLnProb + nodeLnProb + leftLnProb + rightLnProb;
-    proposedLnProb += nodeLnProb + leftLnProb + rightLnProb;
+    proposedLnProb += nodeLnProb;
+    proposedLnProb += leftLnProb;
+    proposedLnProb += rightLnProb;
+    
     return proposedLnProb;
 }
 
@@ -382,6 +402,7 @@ template<class charType, class treeType>
 void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::prepareProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
     
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
@@ -398,6 +419,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
         };
     }
     sampleNodeIndex = true;
+    BranchHistory* bh = &(p->getHistory(*(this->node)));
     
     // propose new bud
     const std::vector<int>& buddingState = p->getBuddingStates();
@@ -429,14 +451,30 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     {
         siteIndexSet.clear();
         siteIndexSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
-        for (size_t i = 0; i < numCharacters; i++)
+        if (useAreaAdjacency || !true)
         {
-            // just resample all states for now, try something clever later
-//            if (GLOBAL_RNG->uniform01() < lambda)
+            const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
+            for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
             {
-                siteIndexSet.insert(i);
+                if (GLOBAL_RNG->uniform01() < this->lambda)
+                {
+                    this->siteIndexSet.insert(*s_it);
+                }
             }
         }
+        else
+        {
+            for (size_t i = 0; i < numCharacters; i++)
+            {
+                // just resample all states for now, try something clever later
+                //            if (GLOBAL_RNG->uniform01() < lambda)
+                {
+                    siteIndexSet.insert(i);
+                }
+            }
+        }
+        
+
     }
     sampleSiteIndexSet = true;
     
@@ -785,6 +823,12 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
         budParentState[*it]->setState(storedBudState[*it]);
         trunkParentState[*it]->setState(storedTrunkState[*it]);
     }
+    
+//    
+//    if (node->isRoot())
+//    {
+//        std::cout << "root reject\n";
+//    }
     
     // restore root state
     if (node->isRoot())

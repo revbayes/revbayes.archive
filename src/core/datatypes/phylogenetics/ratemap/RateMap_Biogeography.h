@@ -14,7 +14,8 @@
 #include <vector>
 
 namespace RevBayesCore {
-        
+    
+    class BranchHistory;
     class RateMap_Biogeography : public RateMap {
         
     public:
@@ -39,6 +40,7 @@ namespace RevBayesCore {
         double                                      getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
         const bool                                  isAreaAvailable(size_t charIdx, double age=0.0) const;
         const bool                                  areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age=0.0) const;
+        const std::set<size_t>                      getRangeAndFrontierSet(const TopologyNode& node, BranchHistory* bh, double age=0.0) const;
         void                                        updateMap(void);
         
         // public methods

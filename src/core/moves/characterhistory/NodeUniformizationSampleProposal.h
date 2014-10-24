@@ -9,6 +9,7 @@
 #ifndef __rb_mlandis__NodeUniformizationSampleProposal__
 #define __rb_mlandis__NodeUniformizationSampleProposal__
 
+#include "AbstractProposal.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
 #include "DiscreteCharacterData.h"
@@ -47,7 +48,7 @@ namespace RevBayesCore {
      */
     
     template<class charType, class treeType>
-    class NodeUniformizationSampleProposal : public Proposal {
+    class NodeUniformizationSampleProposal : public AbstractProposal {
         
     public:
         NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
@@ -118,7 +119,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : AbstractProposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -149,7 +150,7 @@ sampleSiteIndexSet(true)
 
 
 template<class charType, class treeType>
-RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : AbstractProposal(),
 ctmc(n),
 tau(t),
 qmap(q),

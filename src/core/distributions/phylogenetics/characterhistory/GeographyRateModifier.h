@@ -40,6 +40,7 @@ namespace RevBayesCore
         const std::vector<double>&          getExtinctionValues(void) const;
         const std::vector<double>&          getAvailableAreaVector(void) const;
         const std::vector<double>&          getAdjacentAreaVector(void) const;
+        const std::vector<std::set<size_t> >&      getAdjacentAreaSet(void) const;
         const bool                          getUseAreaAvailable(void) const;
         const bool                          getUseAreaAdjacency(void) const;
         

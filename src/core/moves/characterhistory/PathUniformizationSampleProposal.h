@@ -9,6 +9,7 @@
 #ifndef __rb_mlandis__PathUniformizationSampleProposal__
 #define __rb_mlandis__PathUniformizationSampleProposal__
 
+#include "AbstractProposal.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
 #include "DiscreteCharacterData.h"
@@ -48,7 +49,7 @@ namespace RevBayesCore {
      */
     
     template<class charType, class treeType>
-    class PathUniformizationSampleProposal : public Proposal {
+    class PathUniformizationSampleProposal : public AbstractProposal {
         
     public:
         PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
@@ -116,7 +117,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
+RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : AbstractProposal(),
 ctmc(n),
 tau(t),
 qmap(q),

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
+#include "BranchHistory.h"
 #include "RateMap_Biogeography.h"
 #include <cmath>
 
@@ -569,6 +570,35 @@ const bool RateMap_Biogeography::areAreasAdjacent(size_t fromCharIdx, size_t toC
     size_t epochIdx = getEpochIndex(age);
     return adjacentAreaVector[epochIdx*epochOffset + this->numCharacters*fromCharIdx + toCharIdx] > 0.0;
 
+}
+
+const std::set<size_t> RateMap_Biogeography::getRangeAndFrontierSet(const TopologyNode& node, BranchHistory* bh, double age) const
+{
+    std::set<size_t> ret;
+    const std::vector<CharacterEvent*>& from = bh->getParentCharacters();
+    const std::vector<CharacterEvent*>& to = bh->getParentCharacters();
+    size_t epochIdx = getEpochIndex(age);
+    const std::vector<std::set<size_t> >& adjacentAreaSet = geographyRateModifier->getAdjacentAreaSet();
+    
+//    std::set<size_t>
+    for (size_t i = 0; i < from.size(); i++)
+    {
+        if (from[i]->getState() == 1)
+        {
+            ret.insert(i);
+            const std::set<size_t> adj = adjacentAreaSet[epochIdx*from.size() + i];
+            std::set<size_t>::const_iterator it_adj;
+            for (it_adj = adj.begin(); it_adj != adj.end(); it_adj++)
+            {
+                if (from[*it_adj]->getState() == 0)
+                {
+                    ret.insert(*it_adj);
+                }
+            }
+        }
+    }
+    
+    return ret;
 }
 
 const std::vector<double>& RateMap_Biogeography::getEpochs(void) const
