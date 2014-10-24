@@ -71,9 +71,9 @@ namespace RevLanguage {
         virtual RevObject*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;      //!< Clone the model DAG connected to this node
         virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
         virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
         virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
-        virtual const MemberRules&          getParameterRules(void) const;                                                                     //!< Get member rules
+        virtual const MemberRules&          getParameterRules(void) const;                                                                  //!< Get member rules
         virtual bool                        isAbstract(void) const;                                                                         //!< Is this an abstract type/object?
         virtual bool                        isAssignable(void) const;                                                                       //!< Is object or upstream members assignable?
         virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
@@ -95,7 +95,7 @@ namespace RevLanguage {
     
     protected:
         
-        RevObject(void);                                                                                                                    //!< No objects of this class
+        RevObject( bool includeMemberMethods=true );                                                                                                  //!< Constructor without member methods.
     
         // members
         MethodTable                         methods;

@@ -46,18 +46,19 @@ void SteppingStoneSampler::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args)
+RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "marginal")
     {
+        found = true;
         
         double ml = value->marginalLikelihood();
         
         return new Variable( new Real( ml ) );
     }
     
-    return RevObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args, found );
 }
 
 

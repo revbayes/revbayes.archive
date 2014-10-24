@@ -30,15 +30,15 @@ namespace RevLanguage {
         typedef RevBayesCore::MultivariateRealNodeContainer valueType;
         
         // Basic utility functions
-        MultivariateRealNodeValTree*        clone(void) const;                                                              //!< Clone object
-        static const std::string&           getClassType(void);                                                             //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
+        MultivariateRealNodeValTree*        clone(void) const;                                                                      //!< Clone object
+        static const std::string&           getClassType(void);                                                                     //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method functions
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
         
-        void                                printValue(std::ostream& o) const;                                              //!< Print value (for user)
+        void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
     };
     
 }

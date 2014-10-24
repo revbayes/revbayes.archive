@@ -52,9 +52,13 @@ void Model::constructInternalObject( void ) {
 }
 
 /* Map calls to member methods */
-RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "graph") {
+    if (name == "graph")
+    {
+        found = true;
+        
         const std::string&   fn      = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
         bool vb = static_cast< const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         const std::string&   bg      = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
@@ -63,7 +67,7 @@ RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector
         return NULL;
     }
     
-    return RevObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args, found );
 }
 
 /** Get Rev type of object */

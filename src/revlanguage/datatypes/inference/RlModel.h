@@ -31,19 +31,19 @@ namespace RevLanguage {
         
     public:
         
-        Model(void);                                                                                                        //!< Default constructor
+        Model(void);                                                                                                                        //!< Default constructor
         
         // Basic utility functions
-        virtual Model*                              clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal model object.
-        static const std::string&                   getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                             //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        virtual Model*                              clone(void) const;                                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal model object.
+        static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
+        virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
 
         // Member method inits
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
         
     protected:

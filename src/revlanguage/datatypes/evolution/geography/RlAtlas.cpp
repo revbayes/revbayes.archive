@@ -74,19 +74,25 @@ RlAtlas* RlAtlas::clone() const {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args) {
-    
+RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
     if (name == "nAreas")
     {
+        found = true;
+        
         return new Variable(new Natural((int)this->dagNode->getValue().getNumAreas())) ;
     }
     else if (name == "nEpochs")
     {
+        found = true;
+        
         return new Variable(new Natural((int)this->dagNode->getValue().getNumEpochs())) ;
     }
     else if (name == "names")
     {
+        found = true;
+        
         ModelVector<RlString> *n = new ModelVector<RlString>();
         const std::vector<std::vector<RevBayesCore::GeographicArea*> >& areas = this->dagNode->getValue().getAreas();
         for (size_t i = 0; i < areas[0].size(); ++i)
@@ -96,7 +102,8 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
         }
         return new Variable( n );
     }
-    return ModelObject<RevBayesCore::TimeAtlas>::executeMethod( name, args );
+    
+    return ModelObject<RevBayesCore::TimeAtlas>::executeMethod( name, args, found );
 }
 
 

@@ -384,15 +384,18 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::clone() const
 
 
 /* Map calls to member methods */
-RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args)
+RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     if (name == "chartype")
     {
+        found = true;
         
         return new Variable( new RlString( this->dagNode->getValue().getDatatype() ) );
     }
     else if (name == "excludeCharacter")
     {
+        found = true;
+        
         const RevObject& argument = args[0].getVariable()->getRevObject();
         if ( argument.isType( Natural::getClassTypeSpec() ) )
         {
@@ -416,6 +419,7 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "setCodonPartition")
     {
+        found = true;
         
         const RevObject& argument = args[0].getVariable()->getRevObject();
         RevBayesCore::AbstractDiscreteCharacterData &v = dagNode->getValue();
@@ -472,6 +476,8 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "excludeAll")
     {
+        found = true;
+        
         RevBayesCore::AbstractDiscreteCharacterData &v = dagNode->getValue();
         size_t nChars = v.getNumberOfCharacters();
         
@@ -482,6 +488,8 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "includeCharacter")
     {
+        found = true;
+        
         const RevObject& argument = args[0].getVariable()->getRevObject();
         if ( argument.isType( Natural::getClassTypeSpec() ) )
         {
@@ -505,6 +513,8 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "includeAll")
     {
+        found = true;
+        
         RevBayesCore::AbstractDiscreteCharacterData &v = dagNode->getValue();
         size_t nChars = v.getNumberOfCharacters();
         
@@ -518,6 +528,8 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "names")
     {
+        found = true;
+        
         ModelVector<RlString> *n = new ModelVector<RlString>();
         for (size_t i = 0; i < this->dagNode->getValue().getNumberOfTaxa(); ++i)
         {
@@ -528,6 +540,8 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "nchar")
     {
+        found = true;
+        
         // no arguments, return vector of number of chars per taxon
         if ( args.size() == 0 )
         {
@@ -587,18 +601,24 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "ntaxa")
     {
+        found = true;
+        
         int n = (int)this->dagNode->getValue().getNumberOfTaxa();
         
         return new Variable( new Natural(n) );
     }
     else if (name == "size")
     {
+        found = true;
+        
         int n = (int)this->dagNode->getValue().getNumberOfTaxa();
         
         return new Variable( new Natural(n) );
     }
     else if (name == "removeTaxa" || name == "removeTaxon" )
     {
+        found = true;
+        
         const RevObject& argument = args[0].getVariable()->getRevObject();
         if ( argument.isType( RlString::getClassTypeSpec() ) )
         {
@@ -619,6 +639,8 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "setTaxonName")
     {
+        found = true;
+        
         const RevObject& current = args[0].getVariable()->getRevObject();
         if ( current.isType( RlString::getClassTypeSpec() ) )
         {
@@ -703,6 +725,7 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     //    }
     else if (name == "show")
     {
+        found = true;
         
         size_t nt = this->dagNode->getValue().getNumberOfTaxa();
         for (size_t i=0; i<nt; i++)
@@ -734,12 +757,14 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
     }
     else if (name == "ishomologous")
     {
+        found = true;
+        
         bool ih = this->dagNode->getValue().isHomologyEstablished();
         
         return new Variable( new RlBoolean(ih) );
     }
     
-    return ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::executeMethod( name, args, found );
 }
 
 

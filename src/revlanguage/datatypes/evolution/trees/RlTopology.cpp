@@ -68,19 +68,26 @@ Topology* Topology::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<Variable> Topology::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<Variable> Topology::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "nnodes") {
+    if (name == "nnodes")
+    {
+        found = true;
+        
         size_t n = this->dagNode->getValue().getNumberOfNodes();
         return new Variable( new Natural( n ) );
     }
-    else if (name == "names") {
+    else if (name == "names")
+    {
+        found = true;
+        
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
         RevBayesCore::RbVector<std::string> tmp = RevBayesCore::RbVector<std::string>(n);
         return new Variable( new ModelVector<RlString>( tmp ) );
     } 
     
-    return ModelObject<RevBayesCore::Topology>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::Topology>::executeMethod( name, args, found );
 }
 
 

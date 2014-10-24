@@ -30,21 +30,21 @@ namespace RevLanguage {
     class TimeTree : public ModelObject<RevBayesCore::TimeTree> {
         
     public:
-        TimeTree(void);                                                                                                     //!< Constructor requires character type
-        TimeTree(RevBayesCore::TimeTree *v);                                                                                //!< Constructor requires character type
-        TimeTree(const RevBayesCore::TimeTree &v);                                                                          //!< Constructor requires character type
-        TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n);                                                    //!< Constructor requires character type
+        TimeTree(void);                                                                                                             //!< Constructor requires character type
+        TimeTree(RevBayesCore::TimeTree *v);                                                                                        //!< Constructor requires character type
+        TimeTree(const RevBayesCore::TimeTree &v);                                                                                  //!< Constructor requires character type
+        TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n);                                                            //!< Constructor requires character type
         
         typedef RevBayesCore::TimeTree valueType;
         
         // Basic utility functions
-        TimeTree*                           clone(void) const;                                                              //!< Clone object
-        static const std::string&           getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&              getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
+        TimeTree*                           clone(void) const;                                                                      //!< Clone object
+        static const std::string&           getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
 
         // Member method functions
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
         
         
     };

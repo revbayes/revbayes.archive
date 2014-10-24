@@ -32,24 +32,24 @@ namespace RevLanguage {
         
     public:
         
-        TreeTrace(void);                                                                                                        //!< Default constructor
+        TreeTrace(void);                                                                                                                    //!< Default constructor
         TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType>& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
-        virtual TreeTrace*                          clone(void) const;                                                          //!< Clone object
-        void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
-        static const std::string&                   getClassType(void);                                                         //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                 //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
+        virtual TreeTrace*                          clone(void) const;                                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
+        static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
+        virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
         // Member method inits
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);          //!< Set member variable
                 
     };
     
@@ -101,9 +101,12 @@ void RevLanguage::TreeTrace<treeType>::constructInternalObject( void ) {
 
 /* Map calls to member methods */
 template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "summarize") {
+    if (name == "summarize")
+    {
+        found = true;
         
         int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
@@ -113,7 +116,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::exe
         return NULL;
     } 
     
-    return RevObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args, found );
 }
 
 

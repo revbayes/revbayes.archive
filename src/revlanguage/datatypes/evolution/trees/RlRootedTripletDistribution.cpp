@@ -141,30 +141,41 @@ RootedTripletDistribution* RootedTripletDistribution::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<RevLanguage::Variable> RootedTripletDistribution::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RootedTripletDistribution::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
     if (name == "nTriplets")
     {
+        found = true;
+        
         size_t n = this->dagNode->getValue().getNumberOfTriplets();
         return new Variable( new Natural( n ) );
     }
     else if (name == "nTrees")
     {
+        found = true;
+        
         size_t n = this->dagNode->getValue().getNumberOfTrees();
         return new Variable( new Natural( n ) );
     }
     else if (name == "species")
     {
+        found = true;
+        
         const std::vector<std::string>& n = this->dagNode->getValue().getSpecies();
         return new Variable( new ModelVector<RlString>( n ) );
     }
     else if (name == "taxa")
     {
+        found = true;
+        
         const std::vector<RevBayesCore::Taxon>& n = this->dagNode->getValue().getTaxa();
         return new Variable( new ModelVector<Taxon>( n ) );
     }
     else if (name == "setTaxa")
     {
+        found = true;
+        
         std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon>  &>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::RootedTripletDistribution &dist = dagNode->getValue();
         dist.setTaxa(t);
@@ -173,6 +184,8 @@ RevLanguage::RevPtr<RevLanguage::Variable> RootedTripletDistribution::executeMet
     }
     else if (name == "setSpecies")
     {
+        found = true;
+        
         std::vector<std::string> t = static_cast<const ModelVector<RlString>  &>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::RootedTripletDistribution &dist = dagNode->getValue();
         dist.setSpecies(t);
@@ -188,7 +201,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RootedTripletDistribution::executeMet
         return NULL;
     }*/
 
-    return ModelObject<RevBayesCore::RootedTripletDistribution>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::RootedTripletDistribution>::executeMethod( name, args, found );
 }
 
 

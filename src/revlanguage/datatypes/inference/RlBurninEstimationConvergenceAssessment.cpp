@@ -58,12 +58,15 @@ BurninEstimationConvergenceAssessment* BurninEstimationConvergenceAssessment::cl
 
 
 /* Map calls to member methods */
-RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
     RevPtr<Variable> retVar;
     
     if (name == "run")
     {
+        found = true;
+        
         bool passed = true;
         
         RBOUT("\n\t*********************************************");
@@ -309,19 +312,23 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
     }
     else if (name == "setBurninMethod")
     {
+        found = true;
+        
         // get the member with give index
         burninMethod = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
         
     }
     else if (name == "verbose")
     {
+        found = true;
+        
         // get the member with give index
         verbose = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
         
     }
     else
     {
-        retVar = RevObject::executeMethod( name, args );
+        retVar = RevObject::executeMethod( name, args, found );
     }
     
     return retVar;

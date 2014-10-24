@@ -19,23 +19,6 @@ AbstractMemberFunction::AbstractMemberFunction(const TypeSpec retType, ArgumentR
 }
 
 
-/** Execute function: call the object's internal implementation through executeOperation */
-RevPtr<Variable> AbstractMemberFunction::execute( void )
-{
-//    
-//    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-//    const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
-//    RevBayesCore::TmrcaStatistic* f = new RevBayesCore::TmrcaStatistic( tau, c );
-//    
-//    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-//    
-//    RealPos* value = new RealPos( detNode );
-    
-    return object->getRevObject().executeMethod( funcName, args );
-    
-}
-
-
 /** Get class name of object */
 const std::string& AbstractMemberFunction::getClassType(void) { 
     
