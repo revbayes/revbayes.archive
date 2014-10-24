@@ -36,7 +36,7 @@ bool TestFilteredStandardLikelihood::run( void ) {
     ConstantNode<BranchLengthTree> *tau = new ConstantNode<BranchLengthTree>( "tau", new BranchLengthTree( *(*trees)[0] ) );
     // and the character model
     size_t numChar = data[0]->getNumberOfCharacters();
-    FilteredPhyloCTMCSiteHomogeneous<StandardState, BranchLengthTree> *charModel = new FilteredPhyloCTMCSiteHomogeneous<StandardState, BranchLengthTree>(tau, 3, false, numChar );
+    AbstractPhyloCTMCSiteHomogeneous<StandardState, BranchLengthTree> *charModel = new FilteredPhyloCTMCSiteHomogeneous<StandardState, BranchLengthTree>(tau, 3, false, numChar );
     charModel->setRateMatrix( q );
     TypedDistribution<AbstractDiscreteCharacterData> *td = charModel;
     StochasticNode< AbstractDiscreteCharacterData > *charactermodel = new StochasticNode< AbstractDiscreteCharacterData >("S", td);
