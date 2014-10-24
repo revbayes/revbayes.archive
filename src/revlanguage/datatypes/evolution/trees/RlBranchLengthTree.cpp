@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RlBoolean, which is
- * a RevBayes wrapper around a regular bool.
- *
- * @brief Implementation of RlBoolean
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-09-04 20:14:58 +0200 (Tue, 04 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: RlBoolean.cpp 1793 2012-09-04 18:14:58Z hoehna $
- */
-
-
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RlBranchLengthTree.h"
@@ -30,13 +11,33 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-BranchLengthTree::BranchLengthTree(void) : ModelObject<RevBayesCore::BranchLengthTree>() {
+BranchLengthTree::BranchLengthTree(void) : ModelObject<RevBayesCore::BranchLengthTree>()
+{
+
+    ArgumentRules* nnodesArgRules = new ArgumentRules();
+    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
     
+    ArgumentRules* heightArgRules = new ArgumentRules();
+    methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
+    
+    ArgumentRules* namesArgRules = new ArgumentRules();
+    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+
 }
 
 /** Construct from bool */
-BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : ModelObject<RevBayesCore::BranchLengthTree>( t ) {
+BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : ModelObject<RevBayesCore::BranchLengthTree>( t )
+{
+
+    ArgumentRules* nnodesArgRules = new ArgumentRules();
+    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
     
+    ArgumentRules* heightArgRules = new ArgumentRules();
+    methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
+    
+    ArgumentRules* namesArgRules = new ArgumentRules();
+    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+
 }
 
 /** Construct from bool */
@@ -45,15 +46,18 @@ BranchLengthTree::BranchLengthTree(const RevBayesCore::BranchLengthTree &t) : Mo
 }
 
 /** Construct from bool */
-BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::BranchLengthTree> *n) : ModelObject<RevBayesCore::BranchLengthTree>( n ) {
+BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::BranchLengthTree> *n) : ModelObject<RevBayesCore::BranchLengthTree>( n )
+{
+
+    ArgumentRules* nnodesArgRules = new ArgumentRules();
+    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
     
-}
-
-
-
-/** Construct from bool */
-BranchLengthTree::BranchLengthTree(const BranchLengthTree &t) : ModelObject<RevBayesCore::BranchLengthTree>( t ) {
+    ArgumentRules* heightArgRules = new ArgumentRules();
+    methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
     
+    ArgumentRules* namesArgRules = new ArgumentRules();
+    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+
 }
 
 
@@ -108,24 +112,4 @@ const TypeSpec& BranchLengthTree::getTypeSpec( void ) const {
     
     return typeSpec;
 }
-
-
-/** Make member methods for this class */
-void BranchLengthTree::initializeMethods( void ) const
-{
-
-    // Insert inherited methods
-    ModelObject<RevBayesCore::BranchLengthTree>::initializeMethods();
-    
-    ArgumentRules* nnodesArgRules = new ArgumentRules();
-    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
-    
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
-    
-    ArgumentRules* namesArgRules = new ArgumentRules();
-    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
-    
-}
-
 

@@ -23,8 +23,18 @@
 
 using namespace RevLanguage;
 
-PowerPosterior::PowerPosterior() : WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorMcmc>() {
+PowerPosterior::PowerPosterior() : WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorMcmc>()
+{
+
+    ArgumentRules* runArgRules = new ArgumentRules();
+    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
     
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
+
 }
 
 
@@ -134,24 +144,6 @@ const MemberRules& PowerPosterior::getParameterRules(void) const {
     return memberRules;
 }
 
-
-/* Get method specifications */
-void PowerPosterior::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
-        
-    ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
-        
-}
 
 /** Get type spec */
 const TypeSpec& PowerPosterior::getTypeSpec( void ) const {

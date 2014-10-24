@@ -105,7 +105,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( theVar->getRevObject().isTypeSpec( *it ) )
+        if ( theVar->getRevObject().isType( *it ) )
         {
             // For now, change the required type of the incoming variable wrapper
             theVar->setRevObjectTypeSpec( *it );
@@ -247,7 +247,7 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( var->getRevObject().isTypeSpec( *it ) )
+        if ( var->getRevObject().isType( *it ) )
         {
             return true;
         }

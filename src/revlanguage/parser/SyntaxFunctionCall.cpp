@@ -142,7 +142,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         {
             RevObject &theObject = env.getRevObject( functionName );
             
-            if ( theObject.isTypeSpec( Function::getClassTypeSpec() ) )
+            if ( theObject.isType( Function::getClassTypeSpec() ) )
             {
                 func = &( static_cast<Function&>( theObject ) );
                 found = func->checkArguments(args, NULL, !dynamic);

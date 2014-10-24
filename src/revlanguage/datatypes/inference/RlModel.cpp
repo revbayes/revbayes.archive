@@ -18,8 +18,15 @@
 
 using namespace RevLanguage;
 
-Model::Model() : WorkspaceToCoreWrapperObject<RevBayesCore::Model>() {
-    
+Model::Model() : WorkspaceToCoreWrapperObject<RevBayesCore::Model>()
+{
+ 
+    ArgumentRules* dotArgRules = new ArgumentRules();
+    dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
+    methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
+
 }
 
 
@@ -95,20 +102,6 @@ const MemberRules& Model::getParameterRules(void) const {
     return modelMemberRules;
 }
 
-/* Get method specifications */
-void Model::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* dotArgRules = new ArgumentRules();
-    dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
-    dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
-    methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
-    
-}
 
 /** Get type spec */
 const TypeSpec& Model::getTypeSpec( void ) const {

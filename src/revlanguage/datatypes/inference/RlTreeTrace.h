@@ -34,7 +34,6 @@ namespace RevLanguage {
         
         TreeTrace(void);                                                                                                        //!< Default constructor
         TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType>& x);                                                                                              //!< Copy constructor
-        TreeTrace(const TreeTrace& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
         virtual TreeTrace*                          clone(void) const;                                                          //!< Clone object
@@ -47,7 +46,6 @@ namespace RevLanguage {
         
         // Member method inits
         virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual void                                initializeMethods(void) const;                                              //!< Initialize methods
         
     protected:
         
@@ -66,19 +64,24 @@ namespace RevLanguage {
 #include "TreeSummary.h"
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >() {
-    
+RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >()
+{
+
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+
 }
 
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) ) {
-    
-}
+RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) )
+{
 
-template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const TreeTrace &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( m ) {
-    
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+
 }
 
 
@@ -153,21 +156,6 @@ const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getParameterRu
     return modelMemberRules;
 }
 
-
-/* Get method specifications */
-template <typename treeType>
-void RevLanguage::TreeTrace<treeType>::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-    this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
-    
-    
-}
 
 /** Get type spec */
 template <typename treeType>

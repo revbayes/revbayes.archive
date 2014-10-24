@@ -44,7 +44,6 @@ namespace RevLanguage {
          
         // Member method inits
         virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                          //!< Override to map member methods to internal functions
-        virtual void                        initializeMethods(void) const;                                                                      //!< Initialize member methods
         
     };
     
@@ -59,23 +58,41 @@ namespace RevLanguage {
 #include "RlTaxonData.h"
 
 
-template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData(void) : AbstractDiscreteCharacterData() {
-    
+template <class rlType>
+RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData(void) : AbstractDiscreteCharacterData()
+{
+
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+
 }
 
 
-template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v) :
+template <class rlType>
+RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlType::valueType> *v) :
     AbstractDiscreteCharacterData( v )
 {
+
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+
 }
 
 
-template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData > *d) :
+template <class rlType>
+RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData > *d) :
     AbstractDiscreteCharacterData( d )
 {
+
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+
 }
 
 
@@ -88,8 +105,8 @@ RevLanguage::DiscreteCharacterData<charType>* RevLanguage::DiscreteCharacterData
 
 
 /* Map calls to member methods */
-template <typename charType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+template <typename rlType>
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "[]") 
     {
@@ -101,9 +118,9 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<ch
             throw RbException("Index out of bounds in []");
         }
             
-        const RevBayesCore::DiscreteTaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename charType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+        const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename rlType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
     
-        return new Variable( new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) ) );
+        return new Variable( new DiscreteTaxonData<rlType>( new RevBayesCore::DiscreteTaxonData<typename rlType::valueType>( element ) ) );
     }
     
     return AbstractDiscreteCharacterData::executeMethod( name, args );
@@ -126,22 +143,6 @@ const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClas
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractDiscreteCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
 	return revClassTypeSpec; 
-}
-
-
-/** Make member methods */
-template <typename rlType>
-void RevLanguage::DiscreteCharacterData<rlType>::initializeMethods( void ) const
-{
-    
-    // Insert inherited methods
-    AbstractDiscreteCharacterData::initializeMethods();
-    
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
-    
 }
 
 

@@ -11,30 +11,51 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>() {
+Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>()
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+
 }
 
 /** Construct from core Taxon */
-Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c ) {
+Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c )
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+
 }
 
 /** Construct from core Taxon */
-Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( new RevBayesCore::Taxon( t ) ) {
+Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( new RevBayesCore::Taxon( t ) )
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+
 }
 
 /** Construct from DAG node */
-Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<RevBayesCore::Taxon>( n ) {
+Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<RevBayesCore::Taxon>( n )
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
-}
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
 
-
-
-/** Construct */
-Taxon::Taxon(const Taxon &t) : ModelObject<RevBayesCore::Taxon>( t ) {
-    
 }
 
 
@@ -149,23 +170,6 @@ void Taxon::setConstParameter(const std::string& name, const RevPtr<const Variab
     else {
         RevObject::setConstParameter(name, var);
     }
-}
-
-
-/** Initialize methods for this class */
-void Taxon::initializeMethods(void) const
-{
-    
-    // Insert inherited methods
-    ModelObject<RevBayesCore::Taxon>::initializeMethods();
-        
-    ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
-
-//    ArgumentRules* namesArgRules = new ArgumentRules();
-//    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-    
-
 }
 
 

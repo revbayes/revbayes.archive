@@ -59,3 +59,7 @@ dnorm(x=0.5,mean=0.0,sigma=1)
 dnorm(0.0,x=0.5,1)
 dnorm(0.0,0.5,1)
 dnorm(0.5,0.0,1)
+a <- 1
+str(a)
+type(a)
+q()

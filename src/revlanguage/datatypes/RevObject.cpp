@@ -1,21 +1,4 @@
-/**
- * @file
- * This file contains the implementation of some of the functions
- * in the abstract base class for language objects, RevObject.
- *
- * @brief Partial implementation of RevObject
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-09-02, version 1.0
- * @extends RevObject
- *
- * $Id$
- */
-
+#include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "ModelVector.h"
@@ -30,6 +13,20 @@
 #include <stdio.h>
 
 using namespace RevLanguage;
+
+
+/**
+ * Default constructor.
+ */
+RevObject::RevObject( void ) : RevMemberObject()
+{
+    
+    ArgumentRules* getMethodsArgRules = new ArgumentRules();
+    
+    // Add the 'methods()' method
+    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+    
+}
 
 
 /** 
@@ -162,18 +159,10 @@ const MemberRules& RevObject::getParameterRules(void) const
 
 
 /**
- * Get common member methods. Here we
+ * Get common member methods.
  */
 const MethodTable& RevObject::getMethods( void ) const
 {
-    
-    // initialize the methods if it hasn't happened yet
-    if ( methodsInitialized == false )
-    {
-        initializeMethods();
-        
-        methodsInitialized = true;
-    }
     
     return methods;
 }
@@ -255,7 +244,7 @@ bool RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
 
 
 /* Are we of specified language type? */
-bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const
+bool RevObject::isType(const TypeSpec& typeSpec) const
 {
     
     return getTypeSpec().isDerivedOf( typeSpec );
@@ -304,22 +293,6 @@ RevObject* RevObject::makeIndirectReference(void)
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
     throw RbException( msg );
-}
-
-
-/**
- * Make methods common to all member objects.
- * We support one method:
- * 1) methods()
- */
-void RevObject::initializeMethods(void) const
-{
-    
-    ArgumentRules* getMethodsArgRules = new ArgumentRules();
-    
-    // Add the 'methods()' method
-    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
-        
 }
 
 

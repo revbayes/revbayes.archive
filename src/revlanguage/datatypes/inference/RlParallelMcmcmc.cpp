@@ -29,13 +29,21 @@
 
 using namespace RevLanguage;
 
-ParallelMcmcmc::ParallelMcmcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc>() {
-    
-}
+ParallelMcmcmc::ParallelMcmcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc>()
+{
 
-
-ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m) : WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
+    ArgumentRules* runArgRules = new ArgumentRules();
+    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
     
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    burninArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
+    
+    ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
+    methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
+
 }
 
 
@@ -154,27 +162,6 @@ const MemberRules& ParallelMcmcmc::getParameterRules(void) const {
     return memberRules;
 }
 
-
-/* Get method specifications */
-void ParallelMcmcmc::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
-        
-    ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
-        
-    ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-    methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
-    
-}
 
 /** Get type spec */
 const TypeSpec& ParallelMcmcmc::getTypeSpec( void ) const {

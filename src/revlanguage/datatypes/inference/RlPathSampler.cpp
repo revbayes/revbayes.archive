@@ -12,8 +12,12 @@
 
 using namespace RevLanguage;
 
-PathSampler::PathSampler() : WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler>() {
-    
+PathSampler::PathSampler() : WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler>()
+{
+
+    ArgumentRules* marginalArgRules = new ArgumentRules();
+    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
+
 }
 
 
@@ -94,18 +98,6 @@ const MemberRules& PathSampler::getParameterRules(void) const {
     return samplerMemberRules;
 }
 
-
-/* Get method specifications */
-void PathSampler::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* marginalArgRules = new ArgumentRules();
-    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
-    
-}
 
 /** Get type spec */
 const TypeSpec& PathSampler::getTypeSpec( void ) const {

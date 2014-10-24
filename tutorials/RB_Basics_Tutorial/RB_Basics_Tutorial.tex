@@ -402,30 +402,31 @@ You can always provide the argument labels and then \RevBayes~will match the arg
 If you do not provide the argument labels, then \RevBayes~ will match the arguments by the best fitting types and the order in which you provided the arguments.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > dnorm(0.5,0.0,1)         # correct order
-    RevBayes > dnorm(0.0,0.5,1)         # mismatched order
+    RevBayes > dnorm(0.5,0.5,1)         # correct order
+    RevBayes > dnorm(0.5,1,0.5)         # mismatched order
 \end{lstlisting}
 \end{snugshade*}}
 You may provide also just some arguments with labels and leave the other arguments without labels.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > dnorm(0.0,x=0.5,1)       # partially labeled
+    RevBayes > dnorm(0.0,x=0.5,sd=1)    # partially labeled
 \end{lstlisting}
 \end{snugshade*}}
 If you do not remember what the parameter name or parameter names of a function are, then you can simply type in the function name and \RevBayes~will tell you the possible parameters with their names.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
-    RevBayes > rexponential
+    RevBayes > dnorm
 \end{lstlisting}
 \end{snugshade*}}
 
+\subsection{Variable Declaration}
 The next, and very important feature of \RevBayes~is variable declaration. 
-We have three types of variables, namely constant, deterministic and stochastic variables, which represent the same three types of DAG nodes. 
+We have three types of (model) variables, namely constant, deterministic and stochastic variables, which represent the same three types of DAG nodes. 
 Here we show how to construct the different variables and how they behave differently. 
-First, we focus on the difference between constant and deterministic variables: 
+First, we focus on the difference between constant and deterministic variables.
 
-First, we create a constant variable with name \cl{a} and assigned the value 1 to it. 
-The left arrow assignment (\cl{<-}) will always create a constant variable.
+Let us begin by creating a constant variable with name \cl{a} and assigned the value 1 to it. 
+The left arrow assignment (\cl{<-}) always creates a constant variable.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # Variable assignment: constant and deterministic
@@ -442,16 +443,24 @@ If you want to see which type of variable (constant, deterministic or stochastic
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > str(a)                           # printing the structure information of 'a'
+   _variable     = a
+   _RevType      = Natural
+   _RevTypeSpec  = [ Natural, Integer, RevObject ]
+   _value        = 1
+   _dagType      = Constant DAG node
+   _children     = [  ]
+   .methods = void function ()
 \end{lstlisting}
 \end{snugshade*}}
 An additional quite useful built-in function in \RevBayes~ is the \cl{type} function which gives you only the type information of the variable and thus is a subset of the \cl{str} function.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > type(a)                          # printing the type information of 'a'
+    Natural
 \end{lstlisting}
 \end{snugshade*}}
 
-Next, we created a deterministic variable computed by \cl{:=} and another deterministic variable \cl{c} computed by \cl{ln(b)}. 
+Next, we create a deterministic variable \cl{b} using the \cl{:=} assignment computed by \cl{exp(a)} and another deterministic variable \cl{c} computed by \cl{ln(b)}. 
 Deterministic variables are always created using the colon-equal assignment (\cl{:=}). 
 
 {\tt \begin{snugshade*}

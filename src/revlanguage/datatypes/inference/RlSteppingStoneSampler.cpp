@@ -12,19 +12,25 @@
 
 using namespace RevLanguage;
 
-SteppingStoneSampler::SteppingStoneSampler() : WorkspaceToCoreWrapperObject<RevBayesCore::SteppingStoneSampler>() {
-    
+SteppingStoneSampler::SteppingStoneSampler() : WorkspaceToCoreWrapperObject<RevBayesCore::SteppingStoneSampler>()
+{
+
+    ArgumentRules* marginalArgRules = new ArgumentRules();
+    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
+
 }
 
 
 /** Clone object */
-SteppingStoneSampler* SteppingStoneSampler::clone(void) const {
+SteppingStoneSampler* SteppingStoneSampler::clone(void) const
+{
     
 	return new SteppingStoneSampler(*this);
 }
 
 
-void SteppingStoneSampler::constructInternalObject( void ) {
+void SteppingStoneSampler::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -40,7 +46,8 @@ void SteppingStoneSampler::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args)
+{
     
     if (name == "marginal")
     {
@@ -75,7 +82,8 @@ const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& SteppingStoneSampler::getParameterRules(void) const {
+const MemberRules& SteppingStoneSampler::getParameterRules(void) const
+{
     
     static MemberRules samplerMemberRules;
     static bool rulesSet = false;
@@ -93,21 +101,9 @@ const MemberRules& SteppingStoneSampler::getParameterRules(void) const {
     return samplerMemberRules;
 }
 
-
-/* Get method specifications */
-void SteppingStoneSampler::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* marginalArgRules = new ArgumentRules();
-    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
-    
-}
-
 /** Get type spec */
-const TypeSpec& SteppingStoneSampler::getTypeSpec( void ) const {
+const TypeSpec& SteppingStoneSampler::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -116,14 +112,16 @@ const TypeSpec& SteppingStoneSampler::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void SteppingStoneSampler::printValue(std::ostream &o) const {
+void SteppingStoneSampler::printValue(std::ostream &o) const
+{
     
     o << "SteppingStoneSampler";
 }
 
 
 /** Set a member variable */
-void SteppingStoneSampler::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void SteppingStoneSampler::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+{
     
     if ( name == "likelihoodColumnName")
     {

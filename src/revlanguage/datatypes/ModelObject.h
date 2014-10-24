@@ -45,7 +45,6 @@ namespace RevLanguage {
     
         // Utility functions you might want to override
         virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual void                            initializeMethods(void) const;                                              //!< Initialize member methods
         
         // Basic utility functions you should not have to override
         RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
@@ -87,6 +86,8 @@ namespace RevLanguage {
 #include "ConverterNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
+//#include "Real.h"
+//#include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
@@ -237,7 +238,37 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::exe
         stochNode->clamp( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
         
         return NULL;
-    } 
+    }
+    else if (name == "lnProbability")
+    {
+        // check whether the variable is actually a stochastic node
+        if ( !dagNode->isStochastic() )
+        {
+            throw RbException("You can only get the probability for stochastic variables.");
+        }
+        // convert the pointer to the DAG node
+        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
+        
+        // redraw the value
+//        Real *rv = new Real( stochNode->getLnProbability() );
+//
+//        return RevPtr<Variable>( new Variable(rv,"") );
+    }
+    else if (name == "probability")
+    {
+        // check whether the variable is actually a stochastic node
+        if ( !dagNode->isStochastic() )
+        {
+            throw RbException("You can only get the probability for stochastic variables.");
+        }
+        // convert the pointer to the DAG node
+        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
+        
+//        // redraw the value
+//        RealPos *rv = new RealPos( stochNode->getProbability() );
+//        
+//        return RevPtr<Variable>( new Variable(rv,"") );
+    }
     else if (name == "redraw")
     {
         // check whether the variable is actually a stochastic node
@@ -285,11 +316,6 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::exe
         stochNode->unclamp();
         
         return NULL;
-    }
-    
-    if ( dagNode->isStochastic() )
-    {
-        
     }
     
     return RevObject::executeMethod( name, args );
@@ -424,42 +450,6 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
     newObj->setDagNode( newNode );
     
     return newObj;
-}
-
-
-/**
- * In this function we make member methods that belong to this level to serve
- * derived classes when they construct their static member method tables.
- * Using this mechanism, we ensure that the methods constructed at this
- * level for each derived class can use the appropriate type specification
- * for the derived class in its argument rules, if necessary. See the setValue
- * function for an example.
- *
- */
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::initializeMethods(void) const
-{
-    // add the inherited rules
-    AbstractModelObject::initializeMethods();
-    
-    if ( this->dagNode != NULL && this->dagNode->isStochastic() )
-    {
-        ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-        this->methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
-    
-        ArgumentRules* redrawArgRules = new ArgumentRules();
-        this->methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
-    
-        ArgumentRules* setValueArgRules = new ArgumentRules();
-        setValueArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-        this->methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
-    
-        ArgumentRules* unclampArgRules = new ArgumentRules();
-        this->methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
-   
-    }
-    
 }
 
 

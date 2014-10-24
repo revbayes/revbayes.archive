@@ -16,18 +16,23 @@
 
 using namespace RevLanguage;
 
-Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>() {
-    
+Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>()
+{
+
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+
 }
 
 
-Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) ) {
-    
-}
+Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) )
+{
 
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
 
-Trace::Trace(const Trace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>( t ) {
-    
 }
 
 
@@ -98,19 +103,6 @@ const MemberRules& Trace::getParameterRules(void) const {
     return modelMemberRules;
 }
 
-
-/* Get method specifications */
-void Trace::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
-        
-}
 
 /** Get type spec */
 const TypeSpec& Trace::getTypeSpec( void ) const {

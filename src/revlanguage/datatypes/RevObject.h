@@ -20,6 +20,7 @@
 #include "Cloneable.h"
 #include "DagNode.h"
 #include "MethodTable.h"
+#include "RevMemberObject.h"
 #include "RevPtr.h"
 
 #include <ostream>
@@ -39,7 +40,7 @@ namespace RevLanguage {
 
     typedef ArgumentRules MemberRules;                                                                                                  //!< Member rules type def, for convenience
 
-    class RevObject : public RevBayesCore::Cloneable {
+    class RevObject : public RevBayesCore::Cloneable, public RevMemberObject {
     
     public:
         virtual                            ~RevObject(void);                                                                                //!< Virtual destructor
@@ -73,7 +74,6 @@ namespace RevLanguage {
         virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
         virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
         virtual const MemberRules&          getParameterRules(void) const;                                                                     //!< Get member rules
-        virtual void                        initializeMethods(void) const;                                                                  //!< Initialize member methods
         virtual bool                        isAbstract(void) const;                                                                         //!< Is this an abstract type/object?
         virtual bool                        isAssignable(void) const;                                                                       //!< Is object or upstream members assignable?
         virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
@@ -90,16 +90,16 @@ namespace RevLanguage {
 
         // Basic utility functions you should not have to override
         const std::string&                  getType(void) const;                                                                            //!< Get the type as a string
-        bool                                isTypeSpec(const TypeSpec& typeSpec) const;                                                     //!< Does the language type of the object fit type specification typeSpec?
+        bool                                isType(const TypeSpec& typeSpec) const;                                                         //!< Does the language type of the object fit type specification typeSpec?
         const MethodTable&                  getMethods(void) const;                                                                         //!< Get member methods
     
     protected:
         
-        RevObject(void) { }                                                                                                                  //!< No objects of this class
+        RevObject(void);                                                                                                                    //!< No objects of this class
     
         // members
-        mutable MethodTable                 methods;
-        mutable bool                        methodsInitialized;
+        MethodTable                         methods;
+
     };
     
     // Global functions using the class

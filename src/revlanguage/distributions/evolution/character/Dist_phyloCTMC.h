@@ -121,7 +121,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         dist->setPInv( pInvNode );
         
         // set the clock rates
-        if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
@@ -141,7 +141,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
@@ -176,7 +176,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         // set the probability for invariant site (by default this pInv=0.0)
         dist->setPInv( pInvNode );
         
-        if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
@@ -195,7 +195,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
@@ -230,7 +230,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         // set the probability for invariant site (by default this pInv=0.0)
         dist->setPInv( pInvNode );
         
-        if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
@@ -249,7 +249,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
@@ -280,7 +280,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
         // set the rate matrix
         size_t nChars = 1;
-        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue()[0].getNumberOfStates();
@@ -299,7 +299,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         // set the probability for invariant site (by default this pInv=0.0)
         dist->setPInv( pInvNode );
         
-        if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
@@ -318,7 +318,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
@@ -348,7 +348,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         // we get the number of states from the rates matrix
         // set the rate matrix
         size_t nChars = 1;
-        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue()[0].getNumberOfStates();
@@ -367,7 +367,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         // set the probability for invariant site (by default this pInv=0.0)
         dist->setPInv( pInvNode );
         
-        if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
             
@@ -386,7 +386,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         
         // set the rate matrix
-        if ( q->getRevObject().isTypeSpec( ModelVector<RateMatrix>::getClassTypeSpec() ) )
+        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
             
