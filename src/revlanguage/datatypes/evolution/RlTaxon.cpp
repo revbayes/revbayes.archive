@@ -90,9 +90,13 @@ void Taxon::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "getSpeciesName") {
+    if (name == "getSpeciesName")
+    {
+        found = true;
+        
         std::string n = this->dagNode->getValue().getSpeciesName();
         return RevPtr<Variable>( new Variable( new RlString( n ) ) );
     }
@@ -101,7 +105,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string cons
 //        return new ModelVector<RlString>( n );
 //    } 
     
-    return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args, found );
 }
 
 

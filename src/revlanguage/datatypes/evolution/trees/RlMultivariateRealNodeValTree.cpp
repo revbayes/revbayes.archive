@@ -131,15 +131,21 @@ MultivariateRealNodeValTree* MultivariateRealNodeValTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "newick") {        
+    if (name == "newick")
+    {
+        found = true;
+        
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
         std::string newick = this->dagNode->getValue().getNewick(k->getValue());
         return new Variable( new RlString( newick ) );
     }
     else if ( name == "clampAt" )
     {
+        found = true;
+        
         RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* l = static_cast<const Integer &>( args[2].getVariable()->getRevObject() ).getDagNode();
@@ -150,7 +156,7 @@ RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::st
         return new Variable( new Real( 0 ) );
     }
 
-    return ModelObject<RevBayesCore::MultivariateRealNodeContainer>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::MultivariateRealNodeContainer>::executeMethod( name, args, found );
 }
 
 

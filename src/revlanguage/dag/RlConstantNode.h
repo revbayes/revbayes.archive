@@ -16,7 +16,8 @@ namespace RevLanguage {
         
         // public methods
         ConstantNode<valueType>*            clone(void) const;                                                  //!< Clone the node
-        
+        const MethodTable&                  getMethods( void ) const;                                           //!< Get the member methods
+
     private:
 
         MethodTable                         methods;

@@ -15,18 +15,18 @@ namespace RevLanguage {
         
     public:
         
-        RlAtlas(void);                                                                                  //!< Default constructor
-        RlAtlas(RevBayesCore::TimeAtlas *m);                                                            //!< Default constructor
-        RlAtlas(RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *d);                                //!< Default constructor
+        RlAtlas(void);                                                                                                              //!< Default constructor
+        RlAtlas(RevBayesCore::TimeAtlas *m);                                                                                        //!< Default constructor
+        RlAtlas(RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *d);                                                            //!< Default constructor
         
         // Basic utility functions
-        RlAtlas*                            clone(void) const;                                                          //!< Clone object
-        static const std::string&           getClassType(void);                                                         //!< Get Rev type
-        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        RlAtlas*                            clone(void) const;                                                                      //!< Clone object
+        static const std::string&           getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method inits
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
     };
     
 }

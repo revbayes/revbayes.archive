@@ -33,7 +33,9 @@ namespace RevLanguage {
         void                                printStructureInfo(std::ostream &o, bool verbose=false) const;      //!< Print information on structure
 
     private:
+
         Function*                           rlFunction;                                                         //!< Rev function
+
     };
     
 }

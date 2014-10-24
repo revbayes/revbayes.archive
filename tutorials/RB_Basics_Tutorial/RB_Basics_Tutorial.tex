@@ -271,7 +271,8 @@ for( i in 1:N ){
 \subsection*{Getting help in \RevBayes}
 
 \RevBayes~provides an elaborate help system. 
-You can display the help for a function, distribution or any other type using the \cl{?} symbol followed by the command you want help for:
+Most of the help is found online on our website http://www.RevBayes.com.
+Within \RevBayes~you can display the help for a function, distribution or any other type using the \cl{?} symbol followed by the command you want help for:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > ?dnNorm
@@ -506,6 +507,7 @@ This has the consequence that all deterministic variables that use 'a' as a para
 \end{lstlisting}
 \end{snugshade*}}
 Since variable \cl{d} was a constant variable it did not change its value. 
+This also means that \cl{e} is now false.
 
 Finally, we show you how to create the third type of variables in \Rev: the stochastic variables. 
 We will create a random variable \cl{x} from an exponential distribution with parameter \cl{lambda}.  

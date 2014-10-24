@@ -18,13 +18,16 @@ using namespace RevLanguage;
 /**
  * Default constructor.
  */
-RevObject::RevObject( void ) : RevMemberObject()
+RevObject::RevObject( bool includeMemberMethods ) : RevMemberObject()
 {
     
-//    ArgumentRules* getMethodsArgRules = new ArgumentRules();
-//    
-//    // Add the 'methods()' method
-//    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+    if ( includeMemberMethods == true )
+    {
+        ArgumentRules* getMethodsArgRules = new ArgumentRules();
+    
+        // Add the 'methods()' method
+        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+    }
     
 }
 
@@ -108,20 +111,23 @@ RevObject* RevObject::divide(const RevObject &rhs) const
 /** 
  * Execute simple method. 
  */
-RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-     if ( name == "methods" )
+    if ( name == "methods" )
     {
+        found = true;
+        
         // just print the method names (including inherited methods)
         const MethodTable &m = getMethods();
         m.printValue(std::cout, true);
         
         return NULL;
     }
-    else 
-    {
-        throw RbException( "No mapping from member method '" + name + "' to internal function call provided" );
-    }
+    
+    found = false;
+    
+    return NULL;
 }
 
 

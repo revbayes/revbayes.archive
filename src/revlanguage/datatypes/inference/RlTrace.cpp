@@ -54,9 +54,12 @@ void Trace::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> Trace::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Trace::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "summarize") {
+    if (name == "summarize")
+    {
+        found = true;
         
 //        int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
 //        RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
@@ -66,7 +69,7 @@ RevPtr<Variable> Trace::executeMethod(std::string const &name, const std::vector
         return NULL;
     } 
     
-    return RevObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args, found );
 }
 
 

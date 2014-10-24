@@ -43,7 +43,7 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
          
         // Member method inits
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                          //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);                 //!< Override to map member methods to internal functions
         
     };
     
@@ -106,10 +106,13 @@ RevLanguage::DiscreteCharacterData<charType>* RevLanguage::DiscreteCharacterData
 
 /* Map calls to member methods */
 template <typename rlType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
     if (name == "[]") 
     {
+        found = true;
+        
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
             
@@ -123,7 +126,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<rl
         return new Variable( new DiscreteTaxonData<rlType>( new RevBayesCore::DiscreteTaxonData<typename rlType::valueType>( element ) ) );
     }
     
-    return AbstractDiscreteCharacterData::executeMethod( name, args );
+    return AbstractDiscreteCharacterData::executeMethod( name, args, found );
 }
 
 

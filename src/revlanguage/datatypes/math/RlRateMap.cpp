@@ -56,21 +56,25 @@ RateMap* RateMap::clone() const {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args) {
-    
+RevPtr<Variable> RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
    
     if (name == "nChars")
     {
+        found = true;
+        
         int n = (int)this->dagNode->getValue().getNumberOfCharacters();
         return new Variable( new Natural(n) );
     }
     else if (name == "nStates")
     {
+        found = true;
+        
         int n = (int)this->dagNode->getValue().getNumberOfStates();
         return new Variable( new Natural(n) );
     }
 
-    return ModelObject<RevBayesCore::RateMap>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::RateMap>::executeMethod( name, args, found );
 }
 
 

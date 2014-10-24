@@ -80,16 +80,24 @@ void PowerPosterior::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "run") {
+    if (name == "run")
+    {
+        
+        found = true;
+        
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->run( size_t(gen) );
         
         return NULL;
     } 
-    else if (name == "burnin") {
+    else if (name == "burnin")
+    {
+        found = true;
+        
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
@@ -98,7 +106,7 @@ RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const st
         return NULL;
     } 
     
-    return RevObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args, found );
 }
 
 

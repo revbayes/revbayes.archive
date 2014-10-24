@@ -31,25 +31,25 @@ namespace RevLanguage {
         
     public:
         
-        Trace(void);                                                                                                        //!< Default constructor
-        Trace(const RevBayesCore::Trace& x);                                                                                              //!< Copy constructor
+        Trace(void);                                                                                                                        //!< Default constructor
+        Trace(const RevBayesCore::Trace& x);                                                                                                //!< Copy constructor
         
         // Basic utility functions
-        virtual Trace*                              clone(void) const;                                                          //!< Clone object
+        virtual Trace*                              clone(void) const;                                                                      //!< Clone object
         void                                        computeStatistics(void);
-        void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
-        static const std::string&                   getClassType(void);                                                         //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                 //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
+        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
+        static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
+        virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
         // Member method inits
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);          //!< Set member variable
         
     };
 

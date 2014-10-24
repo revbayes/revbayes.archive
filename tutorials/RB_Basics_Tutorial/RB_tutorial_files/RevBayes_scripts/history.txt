@@ -63,3 +63,23 @@ a <- 1
 str(a)
 type(a)
 q()
+a <- 1
+a
+str(a)
+type(a)
+b := exp(a)
+b
+c := ln(b)
+c
+str(b)
+d <- ln(b)
+d
+str(d)
+e := (c == d)
+e
+a <- 2
+a
+b
+c
+d
+e
