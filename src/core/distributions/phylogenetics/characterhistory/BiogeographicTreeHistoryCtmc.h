@@ -250,6 +250,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
     
     if (node.isRoot() && useTail == false)
     {
+       
         return lnL;
     }
     
@@ -1310,7 +1311,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
     // simulate path
     double sum_rates = rm->getSiteRate(node, 0, 1) + rm->getSiteRate(node, 1, 0);
     std::set<CharacterEvent*,CharacterEventCompare> history;
-    double startAge = ( node.isRoot() ? node.getAge() * 20 / sum_rates : node.getParent().getAge() );
+    double startAge = ( node.isRoot() ? node.getAge() * 5 : node.getParent().getAge() );
     double branchLength = startAge - node.getAge();
     
     
@@ -1444,7 +1445,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
             unsigned s = 0;
             if (rm->isAreaAvailable(i, node.getAge()) && GLOBAL_RNG->uniform01() < 0.25)
                 s = 1;
-            parentState.push_back(new CharacterEvent(i, s, node.getAge()*5));
+            parentState.push_back(new CharacterEvent(i, s, node.getAge() * 5));
         }
         
         bh->setParentCharacters(parentState);

@@ -31,6 +31,7 @@ namespace RevBayesCore {
         virtual Proposal*                                       clone(void) const = 0;                                                                  //!< Make a deep copy
         virtual double                                          doProposal(void) = 0;                                                                   //!< Actually do the proposal.
         virtual const std::set<DagNode*>&                       getNodes(void) const = 0;                                                               //!< Get the vector of nodes for which the proposal is drawing new values.
+        virtual const std::set<DagNode*>&                       getAuxillaryNodes(void) const = 0;
         virtual const std::string&                              getProposalName(void) const = 0;                                                        //!< Get the name of this proposal used for printing out info.
         virtual void                                            prepareProposal(void) = 0;                                                              //!< Propose a new state
         virtual void                                            printParameterSummary(std::ostream &o) const = 0;                                       //!< Print the parameter summary

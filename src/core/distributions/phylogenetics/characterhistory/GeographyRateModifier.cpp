@@ -562,6 +562,11 @@ const std::vector<double>& GeographyRateModifier::getAvailableAreaVector(void) c
     return availableAreaVector;
 }
 
+const std::vector<std::set<size_t> >& GeographyRateModifier::getAdjacentAreaSet() const
+{
+    return adjacentAreaSet;
+}
+
 const bool GeographyRateModifier::getUseAreaAdjacency(void) const
 {
     return useAreaAdjacency;

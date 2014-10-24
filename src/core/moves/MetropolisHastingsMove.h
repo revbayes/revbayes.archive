@@ -8,7 +8,7 @@
 
 namespace RevBayesCore {
     
-    class Proposal;
+    class AbstractProposal;
     
     /**
      * Base class for all Metropolis-Hastings within an MCMC. 
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class MetropolisHastingsMove : public AbstractMove {
         
     public:
-        MetropolisHastingsMove(Proposal *p, double w, bool autoTune = false);                                                                           //!< Constructor
+        MetropolisHastingsMove(AbstractProposal *p, double w, bool autoTune = false);                                                                           //!< Constructor
         MetropolisHastingsMove(const MetropolisHastingsMove &m);                                                                                        //!< Copy constructor
         virtual                                                ~MetropolisHastingsMove(void);                                                           //!< Destructor
 
@@ -50,8 +50,9 @@ namespace RevBayesCore {
         // parameters
         std::set<DagNode*>                                      affectedNodes;                                                                          //!< The affected nodes by this move.
         std::set<DagNode*>                                      nodes;                                                                                  //!< The set of nodes this move is working on
+        std::set<DagNode*>                                      auxillaryNodes;
         unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
-        Proposal*                                               proposal;                                                                               //!< The proposal distribution
+        AbstractProposal*                                       proposal;                                                                               //!< The proposal distribution
     };
     
 }

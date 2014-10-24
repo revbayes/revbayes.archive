@@ -9,6 +9,7 @@
 #ifndef __rb_mlandis__BiogeographyPathRejectionSampleProposal__
 #define __rb_mlandis__BiogeographyPathRejectionSampleProposal__
 
+#include "AbstractProposal.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
@@ -63,6 +64,7 @@ namespace RevBayesCore {
         
         unsigned                                    getEpochIndex(double age) const;
         std::vector<double>                         epochs;
+        bool                                        useAreaAdjacency;
         
     };
 }
@@ -75,6 +77,7 @@ RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::Bioge
 
     const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
     epochs = rm.getEpochs();
+    useAreaAdjacency = false;
 }
 
 template<class charType, class treeType>
@@ -83,6 +86,7 @@ RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::Bioge
     if (this != &m)
     {
         epochs = m.epochs;
+        useAreaAdjacency = m.useAreaAdjacency;
     }
 }
 
@@ -361,6 +365,8 @@ template<class charType, class treeType>
 void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::prepareProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType,treeType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
+    const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
+
     
     this->storedHistory.clear();
     this->proposedHistory.clear();
@@ -374,20 +380,39 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
         this->node = &this->tau->getValue().getNode(nodeIndex);
     }
     this->sampleNodeIndex = true;
+    BranchHistory* bh = &p.getHistory(*(this->node));
+    
+    
     
     if (this->sampleSiteIndexSet)
     {
         this->siteIndexSet.clear();
         this->siteIndexSet.insert(GLOBAL_RNG->uniform01() * this->numCharacters); // at least one is inserted
-        for (size_t i = 0; i < this->numCharacters; i++)
+        if (useAreaAdjacency || !true)
         {
-            if (GLOBAL_RNG->uniform01() < this->lambda)
+            const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
+            for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
             {
-                this->siteIndexSet.insert(i);
+                if (GLOBAL_RNG->uniform01() < this->lambda)
+                {
+                    this->siteIndexSet.insert(*s_it);
+                }
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < this->numCharacters; i++)
+            {
+                if (GLOBAL_RNG->uniform01() < this->lambda)
+                {
+                    this->siteIndexSet.insert(i);
+                }
             }
         }
     }
     this->sampleSiteIndexSet = true;
+    
+  
     
     //    std::cout << "Sites: ";
     //    for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
@@ -399,8 +424,23 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
 //        return;
 //    }
     
-    BranchHistory* bh = &p.getHistory(*(this->node));
+    
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
+    
+    
+        
+//    for (std::set<size_t>::iterator it = testSet.begin(); it != testSet.end(); it++)
+//    {
+//        std::cout << *it << " ";
+//    }
+//    std::cout << "\n";
+//    
+//    for (size_t i = 0; i < bh->getParentCharacters().size(); i++)
+//    {
+//        std::cout << bh->getParentCharacters()[i]->getState();
+//        if (i % 5 == 4)
+//            std::cout << "\n";
+//    }
     
     // store history for events in siteIndexSet
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
@@ -429,7 +469,5 @@ const std::string& RevBayesCore::BiogeographyPathRejectionSampleProposal<charTyp
     
     return name;
 }
-
-
 
 #endif /* defined(__rb_mlandis__BiogeographyPathRejectionSampleProposal__) */

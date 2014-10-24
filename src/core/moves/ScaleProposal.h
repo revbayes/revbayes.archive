@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-#include "Proposal.h"
+#include "AbstractProposal.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -22,7 +22,7 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class ScaleProposal : public Proposal {
+    class ScaleProposal : public AbstractProposal {
         
     public:
         ScaleProposal( StochasticNode<double> *n, double l);                                                                //!<  constructor
@@ -31,6 +31,7 @@ namespace RevBayesCore {
         void                            cleanProposal(void);                                                                //!< Clean up proposal
         ScaleProposal*                  clone(void) const;                                                                  //!< Clone object
         double                          doProposal(void);                                                                   //!< Perform proposal
+        const std::set<DagNode*>&       getAuxillaryNodes(void) const;
         const std::set<DagNode*>&       getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
         const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -46,6 +47,7 @@ namespace RevBayesCore {
         double                          storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                          lambda;                                                                             //!< The scaling parameter of the Proposal
         std::set<DagNode*>              nodes;
+        std::set<DagNode*>              auxillaryNodes;
         double                          proposedValue;                                                                      //!< The value we propose.
     };
     
