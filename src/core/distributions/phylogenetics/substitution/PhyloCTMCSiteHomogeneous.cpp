@@ -2,6 +2,34 @@
 #include <vector>
 #include <cmath>
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
+template<typename T>
+void debug_vec(const char * pref, const T *x, size_t s) {
+    std::cerr << pref << " at " << (long) pref << " = [";
+    for (size_t i = 0; i < s; ++i) {
+        if (i != 0) {
+            std::cerr << ", ";
+        }
+        std::cerr << x[i];
+    }
+    std::cerr << "]\n";
+}
+template<typename T>
+void debug_mat(const char * pref, const T *x, size_t n, size_t m) {
+    std::cerr << pref << " at " << (long) pref << " =  [";
+    for (size_t j = 0; j < n; ++j) {
+        if (j != 0) {
+            std::cerr << ",";
+        }
+        std::cerr << "\n  ";
+        for (size_t i = 0; i < m; ++i) {
+            if (i != 0) {
+                std::cerr << ", ";
+            }
+            std::cerr << x[i];
+        }
+    }
+    std::cerr << "]\n";
+}
 double RevBayesCore::computeRootLikelihood2Nodes(const double *p_left,
                                                       const double *p_right,
                                                       const size_t numSiteRates,
@@ -19,6 +47,11 @@ double RevBayesCore::computeRootLikelihood2Nodes(const double *p_left,
     // get pointers the likelihood for both subtrees
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
+    std::cerr << "computeRootLikelihood2Nodes numStates = " << numStates << " numPatterns = " << numPatterns << " p_inv = " << p_inv << "\n";
+    debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
+    debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
+    debug_vec("rootFreq", rootFreq, numStates);
+    debug_vec("patternCounts", patternCounts, numPatterns);
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < numSiteRates; ++mixture) {
         // get pointers to the likelihood for this mixture category
@@ -77,6 +110,12 @@ double RevBayesCore::computeRootLikelihood3Nodes(const double *p_left,
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     const double*   p_mixture_middle   = p_middle;
+    std::cerr << "computeRootLikelihood3Nodes numStates = " << numStates << " numPatterns = " << numPatterns << " p_inv = " << p_inv << "\n";
+    debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
+    debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
+    debug_vec("p_middle", p_middle, numStates * numSiteRates * numPatterns);
+    debug_vec("rootFreq", rootFreq, numStates);
+    debug_vec("patternCounts", patternCounts, numPatterns);
     for (size_t mixture = 0; mixture < numSiteRates; ++mixture) {
         const double*   p_site_mixture_left     = p_mixture_left;
         const double*   p_site_mixture_right    = p_mixture_right;
@@ -129,6 +168,10 @@ void RevBayesCore::computeInternalNodeLikelihood(double * p_node,
                                                              const size_t siteOffset,
                                                              const size_t mixtureOffset,
                                                              const double ** tpMats) {
+    std::cerr << "computeInternalNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
+    debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
+    debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
+    debug_mat("tpMats", tpMats, numSiteRates, numStates*numStates);
     for (size_t mixture = 0; mixture < numSiteRates; ++mixture) {
         const double*    tp_begin                = tpMats[mixture];
         size_t offset = mixture*mixtureOffset;
@@ -148,6 +191,7 @@ void RevBayesCore::computeInternalNodeLikelihood(double * p_node,
             p_site_mixture_left+=siteOffset; p_site_mixture_right+=siteOffset; p_site_mixture+=siteOffset;
         }
     }
+    debug_vec("p_node", p_node, numStates * numSiteRates * numPatterns);
 }
 
 void RevBayesCore::computeTipNodeLikelihood(double * p_node,
@@ -160,6 +204,9 @@ void RevBayesCore::computeTipNodeLikelihood(double * p_node,
                                              const std::vector<bool> &gap_node,
                                              const std::vector<unsigned long> &char_node,
                                              const bool usingAmbiguousCharacters) {
+    std::cerr << "computeTipNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
+    debug_vec("char_node", &(char_node[0]), numPatterns);
+    debug_mat("tpMats", tpMats, numSiteRates, numStates*numStates);
     double*   p_mixture      = p_node;
     for (size_t mixture = 0; mixture < numSiteRates; ++mixture) {
         const double* tp_begin = tpMats[mixture];
@@ -196,5 +243,6 @@ void RevBayesCore::computeTipNodeLikelihood(double * p_node,
         }
         p_mixture+=mixtureOffset;
     }
+    debug_vec("p_node", p_node, numStates * numSiteRates * numPatterns);
 }
 

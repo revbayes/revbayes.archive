@@ -25,7 +25,6 @@ TestFilteredStandardLikelihood::~TestFilteredStandardLikelihood() {
 
 
 bool TestFilteredStandardLikelihood::run( void ) {
-    std::cerr << "  starting TestFilteredStandardLikelihood...\n" ;
     /* First, we read in the data */
     // the matrix
     NclReader& reader = NclReader::getInstance();
