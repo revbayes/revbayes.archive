@@ -41,6 +41,7 @@ double RevBayesCore::computeRootFilteredLikelihood2Nodes(const double *p_left,
                                    double & uncorrectedLnProb,
                                    double & ascBiasLnProb
                                    ) {
+    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection2Node(ascRight, numSiteRates, rootFreq, numStates, patternCounts, p_inv, siteInvariant, invariantSiteIndex);
     uncorrectedLnProb = computeRootLikelihood2Nodes(p_left,
                                                       p_right,
                                                       numSiteRates,
@@ -53,7 +54,6 @@ double RevBayesCore::computeRootFilteredLikelihood2Nodes(const double *p_left,
                                                       p_inv,
                                                       siteInvariant,
                                                       invariantSiteIndex);
-    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection2Node(ascRight, numSiteRates, rootFreq, numStates, patternCounts, p_inv, siteInvariant, invariantSiteIndex);
     return ascBiasLnProb + uncorrectedLnProb;
 }
 double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
@@ -74,6 +74,7 @@ double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
                                    const AscertainmentBiasCorrectionStruct *ascMiddle,
                                    double & uncorrectedLnProb,
                                    double & ascBiasLnProb) {
+    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection3Node(ascRight, ascMiddle, numSiteRates, rootFreq, numStates, patternCounts, p_inv, siteInvariant, invariantSiteIndex);
     uncorrectedLnProb = RevBayesCore::computeRootLikelihood3Nodes(p_left,
                                                  p_right,
                                                  p_middle,
@@ -87,7 +88,6 @@ double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
                                                  p_inv,
                                                  siteInvariant,
                                                  invariantSiteIndex);
-    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection3Node(ascRight, ascMiddle, numSiteRates, rootFreq, numStates, patternCounts, p_inv, siteInvariant, invariantSiteIndex);
     return ascBiasLnProb + uncorrectedLnProb;
 }
 void RevBayesCore::computeInternalNodeFilteredLikelihood(double * p_node,
@@ -102,8 +102,8 @@ void RevBayesCore::computeInternalNodeFilteredLikelihood(double * p_node,
                                     const double ** tpMats,
                                    const AscertainmentBiasCorrectionStruct *ascLeft,
                                    const AscertainmentBiasCorrectionStruct *ascRight) {
-    computeInternalNodeLikelihood(p_node, p_left, p_right, numSiteRates, numStates, numPatterns, siteOffset, mixtureOffset, tpMats);
     ascNode->computeInternalAscBias(ascLeft, ascRight, numSiteRates, numStates, numPatterns, tpMats);
+    computeInternalNodeLikelihood(p_node, p_left, p_right, numSiteRates, numStates, numPatterns, siteOffset, mixtureOffset, tpMats);
 }
 void RevBayesCore::computeTipNodeFilteredLikelihood(double * p_node,
                                             AscertainmentBiasCorrectionStruct *ascNode,
@@ -116,7 +116,7 @@ void RevBayesCore::computeTipNodeFilteredLikelihood(double * p_node,
                                const std::vector<bool> &gap_node,
                                const std::vector<unsigned long> &char_node,
                                const bool usingAmbiguousCharacters) {
-    computeTipNodeLikelihood(p_node, numSiteRates, numStates, numPatterns, siteOffset, mixtureOffset, tpMats, gap_node, char_node, usingAmbiguousCharacters);
     ascNode->computeTipAscBias(numSiteRates, numStates, numPatterns, tpMats, gap_node, char_node, usingAmbiguousCharacters);
+    computeTipNodeLikelihood(p_node, numSiteRates, numStates, numPatterns, siteOffset, mixtureOffset, tpMats, gap_node, char_node, usingAmbiguousCharacters);
 }
 
