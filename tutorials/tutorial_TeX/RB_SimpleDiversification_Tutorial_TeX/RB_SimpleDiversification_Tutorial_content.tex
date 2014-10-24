@@ -202,7 +202,7 @@ names <- T.names()
 Additionally, we can initialize an iterator variable for our vector of moves:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mi <- 0 
+mi = 1 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -225,7 +225,7 @@ We need to create a vector of moves and we can do this by using vector indexing 
 We will use a scaling move on $\lambda$ called \cl{mvScale}.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-moves[mi++] <- mvScale(birth_rate,lambda=1,tune=true,weight=3)
+moves[mi++] = mvScale(birth_rate,lambda=1,tune=true,weight=3)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -288,14 +288,14 @@ mymodel = model(birth_rate)
 \end{snugshade*}}
 
 The \cl{model()} function traversed all of the connections and found all of the nodes we specified. 
-We can now visualize our graphical model using the \cl{.gv()} member method of the model object. 
+We can now visualize our graphical model using the \cl{.graph()} member method of the model object. 
 This function writes a file in the \href{http://en.wikipedia.org/wiki/DOT_(graph_description_language)}{DOT graph-description language}.
 The contents of this file describes the nodes and edges of the model DAG and can be read by an interpreter program called \href{http://www.graphviz.org/}{Graphviz}.
-First create the model graph file using the \cl{.gv()} method. Set the flag for extra output (good for development debugging) to false: \cl{verbose=false}.
+First create the model graph file using the \cl{.graph()} method. Set the flag for extra output (good for development debugging) to false: \cl{verbose=false}.
 And specify a \href{http://web.njit.edu/~kevin/rgb.txt.html}{named RBG color} for the background (for this graph, we like \cl{"honeydew2"}). 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mymodel.gv("output/m_Yule_bears_GM.dot", verbose=false, bg="honeydew2")
+mymodel.graph("output/m_Yule_bears_GM.dot", verbose=false, bg="honeydew2")
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -327,7 +327,7 @@ This method computes a vector of powers from a beta distribution, then executes 
 First, we create the variable containing the power posterior. This requires us to provide a model and vector of moves, as well as an output file name. The \cl{cats} argument sets the number of power steps.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-pow_p <- powerPosterior(mymodel, moves, "output/Yule_bears_powp.out", cats=50) 
+pow_p = powerPosterior(mymodel, moves, "output/Yule_bears_powp.out", cats=50) 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -348,7 +348,7 @@ pow_p.run(generations=1000)
 Once the power posteriors have been saved to file, create a stepping stone sampler. This function can read any file of power posteriors and compute the marginal likelihood using stepping-stone sampling. 
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-ss <- steppingStoneSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss = steppingStoneSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -362,7 +362,7 @@ ss.marginal()
 Path sampling is an alternative to stepping-stone sampling and also takes the same power posteriors as input. 
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-ps <- pathSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -446,7 +446,7 @@ Initialize the useful variables:
 \begin{lstlisting}
 n_taxa <- T.ntips()
 names <- T.names()
-mi <- 0 
+mi = 1 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -457,7 +457,7 @@ We will assume an exponential prior on \cl{diversification} and assign it a scal
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 diversification ~ dnExponential(10.0) 
-moves[mi++] <- mvScale(diversification,lambda=1.0,tune=true,weight=3.0) 
+moves[mi++] = mvScale(diversification,lambda=1.0,tune=true,weight=3.0) 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -465,7 +465,7 @@ The \cl{turnover} parameter can only take values between 0 and 1, thus we will a
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 turnover ~ dnBeta(2.0, 2.0) 
-moves[mi++] <- mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
+moves[mi++] = mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -525,13 +525,13 @@ timetree.clamp(T)
 Now set the workspace model variable.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mymodel <- model(diversification)
+mymodel = model(diversification)
 \end{lstlisting}
 \end{snugshade*}}
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mymodel.gv("output/m_BD_bears_GM.dot", verbose=false, bg="LightSteelBlue2")
+mymodel.graph("output/m_BD_bears_GM.dot", bg="LightSteelBlue2")
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -550,7 +550,7 @@ mymodel.gv("output/m_BD_bears_GM.dot", verbose=false, bg="LightSteelBlue2")
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-pow_p <- powerPosterior(mymodel, moves, "output/BD_bears_powp.out", cats=50) 
+pow_p = powerPosterior(mymodel, moves, "output/BD_bears_powp.out", cats=50) 
 pow_p.burnin(generations=10000,tuningInterval=1000)
 pow_p.run(generations=1000)  
 \end{lstlisting}
@@ -559,7 +559,7 @@ pow_p.run(generations=1000)
 Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ss} variable and record the value in Table \ref{ssTable}.
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-ss <- steppingStoneSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss = steppingStoneSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ss.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
@@ -567,7 +567,7 @@ ss.marginal()
 Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ps} variable and record the value in Table \ref{ssTable}.
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-ps <- pathSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
@@ -664,7 +664,7 @@ Initialize the useful variables:
 \begin{lstlisting}
 n_taxa <- T.ntips()
 names <- T.names()
-mi <- 0 
+mi = 1 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -679,7 +679,7 @@ source("RevBayes_scripts/m_*_bears.Rev")
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mymodel <- model(birth_rate)
+mymodel = model(birth_rate)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -689,8 +689,8 @@ mymodel <- model(birth_rate)
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-monitors[1] <- mnFile(filename="output/BDR_mcmc_bears.log",printgen=10, diversification, birth_rate, turnover, death_rate)
-monitors[2] <- mnScreen(printgen=1000, turnover)
+monitors[1] = mnFile(filename="output/BDR_mcmc_bears.log",printgen=10, diversification, birth_rate, turnover, death_rate)
+monitors[2] = mnScreen(printgen=1000, turnover)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -698,7 +698,7 @@ monitors[2] <- mnScreen(printgen=1000, turnover)
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 \end{lstlisting}
 \end{snugshade*}}
 

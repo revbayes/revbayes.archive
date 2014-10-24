@@ -10,14 +10,16 @@
 
         <name>dnDPP</name>
 
+<!-- 
         <alias>anotherNameForTheSameFunction</alias>
         <alias>yetAnotherNameForTheSameFunction</alias>
+ -->
 
-        <title>Some title you want to give this function</title>
+        <title>The Dirichlet process prior distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This function returns a Dirichlet process prior (DPP) distribution. 
             </p>
         </description>
     

@@ -10,7 +10,7 @@
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
-#include "GeneralBranchHeterogeneousCharEvoModel.h"
+#include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "GtrRateMatrixFunction.h"
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
@@ -178,7 +178,7 @@ bool TestBranchHeterogeneousGtrModel::run( void ) {
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // and the character model
-    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters() );
+    PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters() );
     // set the branch heterogeneous substitution matrices
     // if you set instead of a vector a single matrix, then you get a homogeneous model
     charModel->setRateMatrix( qs_node );

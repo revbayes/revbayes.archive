@@ -1,10 +1,11 @@
+#include "AbstractPhyloCTMCSiteHomogeneous.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "GammaDistribution.h"
-#include "GeneralBranchHeterogeneousCharEvoModel.h"
+#include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "GtrRateMatrixFunction.h"
 #include "NclReader.h"
-#include "NucleotideBranchHeterogeneousCharEvoModel.h"
+//#include "NucleotideBranchHeterogeneousCharEvoModel.h"
 #include "NormalizeVectorFunction.h"
 #include "QuantileFunction.h"
 #include "RbFileManager.h"
@@ -14,6 +15,7 @@
 #include "TreeUtilities.h"
 #include "UniformDistribution.h"
 #include "VectorFunction.h"
+#include "RbVector.h"
 
 #include <vector>
 
@@ -34,7 +36,10 @@ bool TestGtrGammaLikelihood::run( void ) {
     // the matrix
     NclReader& reader = NclReader::getInstance();
     std::vector<AbstractCharacterData*> data = reader.readMatrices(alignmentFilename);
-    std::cout << "Read " << data.size() << " matrices." << std::endl;
+	
+	AbstractDiscreteCharacterData *discrD = dynamic_cast<AbstractDiscreteCharacterData* >(data[0]);
+    
+	std::cout << "Read " << data.size() << " matrices." << std::endl;
     
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
@@ -47,8 +52,8 @@ bool TestGtrGammaLikelihood::run( void ) {
     //////////////////////
         
     // then the parameters
-    ConstantNode<std::vector<double> > *pi = new ConstantNode<std::vector<double> >( "pi", new std::vector<double>(4, 1.0/4.0) );
-    ConstantNode<std::vector<double> > *er = new ConstantNode<std::vector<double> >( "er", new std::vector<double>(6, 1.0/6.0) );
+    ConstantNode<RbVector<double> > *pi = new ConstantNode<RbVector<double> >( "pi", new RbVector<double>(4, 1.0/4.0) );
+    ConstantNode<RbVector<double> > *er = new ConstantNode<RbVector<double> >( "er", new RbVector<double>(6, 1.0/6.0) );
     
     //Rate heterogeneity
     ConstantNode<double> *alpha = new ConstantNode<double>("alpha", new double(0.5) );
@@ -76,14 +81,15 @@ bool TestGtrGammaLikelihood::run( void ) {
     gamma_rates.push_back(q3_value);
     gamma_rates.push_back(q4_value);
     
-    DeterministicNode<std::vector<double> > *site_rates = new DeterministicNode<std::vector<double> >( "site_rates", new VectorFunction<double>(gamma_rates) );
+    DeterministicNode<RbVector<double> > *site_rates = new DeterministicNode<RbVector<double> >( "site_rates", new VectorFunction<double>(gamma_rates) );
+    ConstantNode<double> *sumNV = new ConstantNode<double>("sumnv", new double(1.0) );
 //    ConstantNode<std::vector<double> > *site_rate_probs = new ConstantNode<std::vector<double> >( "site_rate_probs", new std::vector<double>(4,1.0/4.0) );
         
-    std::cout << "pi:\t" << pi->getValue() << std::endl;
-    std::cout << "er:\t" << er->getValue() << std::endl;
+//    std::cout << "pi:\t" << pi->getValue() << std::endl;
+//    std::cout << "er:\t" << er->getValue() << std::endl;
     std::cout << "rates:\t" << site_rates->getValue() << std::endl;
     
-    DeterministicNode<std::vector<double> > *site_rates_norm = new DeterministicNode<std::vector<double> >( "site_rates_norm", new NormalizeVectorFunction(site_rates) );
+    DeterministicNode<RbVector<double> > *site_rates_norm = new DeterministicNode<RbVector<double> >( "site_rates_norm", new NormalizeVectorFunction(site_rates, sumNV) );
     std::cout << "rates:\t" << site_rates_norm->getValue() << std::endl;
     
     DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
@@ -96,13 +102,13 @@ bool TestGtrGammaLikelihood::run( void ) {
     // and the character model
     size_t numChar = data[0]->getNumberOfCharacters();
 //    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, numChar );
-    NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, true, numChar );
+    PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree>(tau, true, numChar );
     charModel->setRateMatrix( q );
     charModel->setSiteRates( site_rates_norm );
 //    charModel->setClockRate( clockRate );
     
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", charModel );
-    charactermodel->clamp( data[0] );
+    StochasticNode< AbstractDiscreteCharacterData > *charactermodel = new StochasticNode< AbstractDiscreteCharacterData >("S", charModel );
+    charactermodel->clamp( discrD );
     
     std::cout << "BEAST LnL:\t\t\t\t" << -6281.4026 << std::endl;
     std::cout << "RevBayes LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
