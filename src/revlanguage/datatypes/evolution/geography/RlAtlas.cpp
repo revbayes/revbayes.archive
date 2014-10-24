@@ -1,11 +1,3 @@
-//
-//  RlAtlas.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 4/5/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "TimeAtlas.h"
 #include "GeographicArea.h"
@@ -22,17 +14,56 @@
 
 using namespace RevLanguage;
 
-RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( ) {
+RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
+{
+
+    ArgumentRules* nAreasArgRules               = new ArgumentRules();
+    ArgumentRules* nEpochsArgRules              = new ArgumentRules();
+    ArgumentRules* namesArgRules                = new ArgumentRules();
+    
+    methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
+    methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
+    methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
+    
+    // Add method for call "size" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
 
 }
 
 
-RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAtlas>( v ) {
+RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAtlas>( v )
+{
+
+    ArgumentRules* nAreasArgRules               = new ArgumentRules();
+    ArgumentRules* nEpochsArgRules              = new ArgumentRules();
+    ArgumentRules* namesArgRules                = new ArgumentRules();
+    
+    methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
+    methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
+    methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
+    
+    // Add method for call "size" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
 
 }
 
 
-RlAtlas::RlAtlas( RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *m) : ModelObject<RevBayesCore::TimeAtlas>( m ) {
+RlAtlas::RlAtlas( RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *m) : ModelObject<RevBayesCore::TimeAtlas>( m )
+{
+
+    ArgumentRules* nAreasArgRules               = new ArgumentRules();
+    ArgumentRules* nEpochsArgRules              = new ArgumentRules();
+    ArgumentRules* namesArgRules                = new ArgumentRules();
+    
+    methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
+    methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
+    methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
+    
+    // Add method for call "size" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
 
 }
 
@@ -91,25 +122,5 @@ const TypeSpec& RlAtlas::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
-}
-
-void RlAtlas::initializeMethods( void ) const
-{
-    
-    // Insert inherited methods
-    ModelObject<RevBayesCore::TimeAtlas>::initializeMethods();
-    
-    ArgumentRules* nAreasArgRules               = new ArgumentRules();
-    ArgumentRules* nEpochsArgRules              = new ArgumentRules();
-    ArgumentRules* namesArgRules                = new ArgumentRules();
-    
-    methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
-    methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    
-    // Add method for call "size" as a function
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-    
 }
 

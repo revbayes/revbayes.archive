@@ -34,7 +34,6 @@ namespace RevLanguage {
         Topology(RevBayesCore::Topology *v);                                                                                //!< Constructor requires character type
         Topology(const RevBayesCore::Topology &v);                                                                          //!< Constructor requires character type
         Topology(RevBayesCore::TypedDagNode<RevBayesCore::Topology> *n);                                                    //!< Constructor requires character type
-        Topology(const Topology& d);                                                                                        //!< Constructor requires character type
         
         typedef RevBayesCore::Topology valueType;
         
@@ -45,7 +44,6 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Member method functions
-        void                                initializeMethods(void) const;                                                  //!< Initialize member methods
         RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
         
     };

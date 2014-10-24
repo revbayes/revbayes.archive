@@ -44,7 +44,6 @@ namespace RevLanguage {
 
         // Member method inits
         virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual void                                initializeMethods(void) const;                                           //!< Initialize methods
         
         
     protected:

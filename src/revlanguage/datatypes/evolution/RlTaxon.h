@@ -34,7 +34,6 @@ namespace RevLanguage {
         Taxon(RevBayesCore::Taxon *v);                                                                                              //!< Constructor requires character type
         Taxon(const RevBayesCore::Taxon &v);                                                                                        //!< Constructor requires character type
         Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n);                                                                  //!< Constructor requires character type
-        Taxon(const Taxon& d);                                                                                                      //!< Constructor requires character type
         
         typedef RevBayesCore::Taxon valueType;
         
@@ -48,7 +47,6 @@ namespace RevLanguage {
         
         // Member method inits
         virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Map member methods to internal functions
-        virtual void                        initializeMethods(void) const;                                                          //!< Initialize member methods
         
     protected:
         void                                setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable

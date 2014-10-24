@@ -23,30 +23,103 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-MultivariateRealNodeValTree::MultivariateRealNodeValTree(void) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>() {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(void) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>()
+{
+
+    ArgumentRules* argRules = new ArgumentRules();
+    argRules->push_back(new ArgumentRule("index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ));
     
+    methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("rootVal", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 /** Construct from bool */
-MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::MultivariateRealNodeContainer *t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( t ) {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::MultivariateRealNodeContainer *t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( t )
+{
+
+    ArgumentRules* argRules = new ArgumentRules();
+    argRules->push_back(new ArgumentRule("index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ));
     
+    methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("rootVal", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 /** Construct from bool */
-MultivariateRealNodeValTree::MultivariateRealNodeValTree(const RevBayesCore::MultivariateRealNodeContainer &t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( new RevBayesCore::MultivariateRealNodeContainer( t ) ) {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(const RevBayesCore::MultivariateRealNodeContainer &t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( new RevBayesCore::MultivariateRealNodeContainer( t ) )
+{
+
+    ArgumentRules* argRules = new ArgumentRules();
+    argRules->push_back(new ArgumentRule("index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ));
     
+    methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("rootVal", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 /** Construct from bool */
-MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *n) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( n ) {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *n) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( n )
+{
+
+    ArgumentRules* argRules = new ArgumentRules();
+    argRules->push_back(new ArgumentRule("index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ));
     
-}
-
-
-
-/** Construct from bool */
-MultivariateRealNodeValTree::MultivariateRealNodeValTree(const MultivariateRealNodeValTree &t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( t ) {
+    methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
     
+    methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("rootVal", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 
@@ -104,35 +177,6 @@ const TypeSpec& MultivariateRealNodeValTree::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/* Make member methods for this class */
-void MultivariateRealNodeValTree::initializeMethods(void) const
-{
-    
-    // Insert inherited methods
-    ModelObject<RevBayesCore::MultivariateRealNodeContainer>::initializeMethods();
-    
-    ArgumentRules* argRules = new ArgumentRules();
-    argRules->push_back(new ArgumentRule("index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ));
-    
-    methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
-    
-    methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
-    
-    methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
-    
-    methods.addFunction("rootVal", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
-    
-    methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
-    
-    ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
-    clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
-    
 }
 
 

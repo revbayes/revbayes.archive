@@ -25,7 +25,6 @@ namespace RevLanguage {
     public:
         
         ParallelMcmcmc(void);                                                                                               //!< Default constructor
-        ParallelMcmcmc(const ParallelMcmcmc& x);                                                                            //!< Copy constructor
         
         // Basic utility functions
         virtual ParallelMcmcmc*                     clone(void) const;                                                      //!< Clone object
@@ -37,7 +36,6 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
         // Member method inits
-        virtual void                                initializeMethods(void) const;                                          //!< Initialize methods
         virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:

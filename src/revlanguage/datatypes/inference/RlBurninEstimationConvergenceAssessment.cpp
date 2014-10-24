@@ -29,6 +29,22 @@ BurninEstimationConvergenceAssessment::BurninEstimationConvergenceAssessment() :
     verbose( false )
 {
     
+    ArgumentRules* runArgRules = new ArgumentRules();
+    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+    
+    std::vector<std::string> options;
+    options.push_back( "ESS" );
+    options.push_back( "SEM" );
+    
+    ArgumentRules* burninMethodArgRules = new ArgumentRules();
+    burninMethodArgRules->push_back( new OptionRule("method", options ) );
+    methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
+    
+    ArgumentRules* verboseArgRules = new ArgumentRules();
+    verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
+
+    
 }
 
 
@@ -352,29 +368,6 @@ const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void
     return memberRules;
 }
 
-
-/* Get method specifications */
-void BurninEstimationConvergenceAssessment::initializeMethods(void) const
-{
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-
-    ArgumentRules* runArgRules = new ArgumentRules();
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
-        
-    std::vector<std::string> options;
-    options.push_back( "ESS" );
-    options.push_back( "SEM" );
-        
-    ArgumentRules* burninMethodArgRules = new ArgumentRules();
-    burninMethodArgRules->push_back( new OptionRule("method", options ) );
-    methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
-        
-    ArgumentRules* verboseArgRules = new ArgumentRules();
-    verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
-        
-}
 
 /** Get type spec */
 const TypeSpec& BurninEstimationConvergenceAssessment::getTypeSpec( void ) const {

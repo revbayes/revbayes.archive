@@ -1,11 +1,3 @@
-//
-//  RlRateMap.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 4/5/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlRateMap.h"
 
 #include "ArgumentRule.h"
@@ -16,18 +8,45 @@
 
 using namespace RevLanguage;
 
-RateMap::RateMap(void) : ModelObject<RevBayesCore::RateMap>() {
+RateMap::RateMap(void) : ModelObject<RevBayesCore::RateMap>()
+{
     
+    // add method for call "x.nChars()" as a function
+    ArgumentRules* nCharsArgRules = new ArgumentRules();
+    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
+    
+    // add method for call "x.nStates()" as a function
+    ArgumentRules* nStatesArgRules = new ArgumentRules();
+    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
+
 }
 
 
-RateMap::RateMap( RevBayesCore::RateMap *v) : ModelObject<RevBayesCore::RateMap>( v ) {
+RateMap::RateMap( RevBayesCore::RateMap *v) : ModelObject<RevBayesCore::RateMap>( v )
+{
+
+    // add method for call "x.nChars()" as a function
+    ArgumentRules* nCharsArgRules = new ArgumentRules();
+    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
     
+    // add method for call "x.nStates()" as a function
+    ArgumentRules* nStatesArgRules = new ArgumentRules();
+    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
+
 }
 
 
-RateMap::RateMap( RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *m) : ModelObject<RevBayesCore::RateMap>( m ) {
+RateMap::RateMap( RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *m) : ModelObject<RevBayesCore::RateMap>( m )
+{
+
+    // add method for call "x.nChars()" as a function
+    ArgumentRules* nCharsArgRules = new ArgumentRules();
+    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
     
+    // add method for call "x.nStates()" as a function
+    ArgumentRules* nStatesArgRules = new ArgumentRules();
+    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
+
 }
 
 
@@ -69,24 +88,6 @@ const TypeSpec& RateMap::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/** Initialize the member methods for this class */
-void RateMap::initializeMethods( void ) const
-{
-    
-    // Insert inherited methods
-    ModelObject<RevBayesCore::RateMap>::initializeMethods();
-    
-    // add method for call "x.nChars()" as a function
-    ArgumentRules* nCharsArgRules = new ArgumentRules();
-    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
-    
-    // add method for call "x.nStates()" as a function
-    ArgumentRules* nStatesArgRules = new ArgumentRules();
-    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
-    
 }
 
 

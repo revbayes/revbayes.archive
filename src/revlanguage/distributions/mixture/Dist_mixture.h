@@ -35,7 +35,6 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
-        void                                            initializeMethods(void) const;                                                  //!< Initialize member methods
 
         
         // Distribution functions you have to override
@@ -153,20 +152,6 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getTypeSpec( vo
     static TypeSpec ts = getClassTypeSpec();
     
     return ts;
-}
-
-
-/* Make member methods for this class */
-template <typename valType>
-void Dist_mixture<valType>::initializeMethods(void) const
-{
-    // Insert inherited methods
-    TypedDistribution<valType>::initializeMethods();
-    
-    ArgumentRules* argRules = new ArgumentRules();
-    
-//    methods.addFunction("getAllocationIndex", new DistributionMemberFunction<Dist_mixture<valType> , Natural>( this, argRules ) );
-    
 }
 
 

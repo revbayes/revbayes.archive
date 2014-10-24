@@ -473,7 +473,7 @@ void Variable::setRevObjectTypeSpec(const TypeSpec &ts)
     if ( theObject != RevNullObject::getInstance() )
     {
         
-        if ( !theObject.isTypeSpec( ts ) )
+        if ( !theObject.isType( ts ) )
         {
             throw RbException( "Existing variable object is not of the required type" );
         }

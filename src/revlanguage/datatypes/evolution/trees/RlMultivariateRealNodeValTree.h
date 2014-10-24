@@ -26,7 +26,6 @@ namespace RevLanguage {
         MultivariateRealNodeValTree(RevBayesCore::MultivariateRealNodeContainer *v);                                                                                                    //!< Constructor requires character type
         MultivariateRealNodeValTree(const RevBayesCore::MultivariateRealNodeContainer &v);                                                                                              //!< Constructor requires character type
         MultivariateRealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *n);                                                                        //!< Constructor requires character type
-        MultivariateRealNodeValTree(const MultivariateRealNodeValTree& d);                                                                                                            //!< Constructor requires character type
         
         typedef RevBayesCore::MultivariateRealNodeContainer valueType;
         
@@ -37,7 +36,6 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Member method functions
-        virtual void                        initializeMethods(void) const;                                                  //!< Initialize member methods
         RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
         
         void                                printValue(std::ostream& o) const;                                              //!< Print value (for user)

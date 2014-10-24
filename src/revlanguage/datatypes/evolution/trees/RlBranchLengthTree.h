@@ -34,7 +34,6 @@ namespace RevLanguage {
         BranchLengthTree(RevBayesCore::BranchLengthTree *v);                                                                                                    //!< Constructor requires character type
         BranchLengthTree(const RevBayesCore::BranchLengthTree &v);                                                                                              //!< Constructor requires character type
         BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::BranchLengthTree> *n);                                                                        //!< Constructor requires character type
-        BranchLengthTree(const BranchLengthTree& d);                                                                                                            //!< Constructor requires character type
         
         typedef RevBayesCore::BranchLengthTree valueType;
         
@@ -46,7 +45,6 @@ namespace RevLanguage {
         
         // Member method functions
         RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);                          //!< Map member methods to internal functions
-        void                                initializeMethods(void) const;                                                                      //!< Initialize member methods
         
     };
     

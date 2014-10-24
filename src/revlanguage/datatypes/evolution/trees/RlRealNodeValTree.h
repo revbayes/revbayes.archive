@@ -27,7 +27,6 @@ namespace RevLanguage {
         RealNodeValTree(RevBayesCore::RealNodeContainer *v);                                                                //!< Constructor requires character type
         RealNodeValTree(const RevBayesCore::RealNodeContainer &v);                                                          //!< Constructor requires character type
         RealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::RealNodeContainer> *n);                                    //!< Constructor requires character type
-        RealNodeValTree(const RealNodeValTree& d);                                                                          //!< Constructor requires character type
         
         typedef RevBayesCore::RealNodeContainer valueType;
         
@@ -39,7 +38,6 @@ namespace RevLanguage {
         
         // Member method functions
         virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
-        virtual void                        initializeMethods(void) const;                                                  //!< Make member methods
         
         void                                printValue(std::ostream& o) const;                                              //!< Print value (for user)
     };

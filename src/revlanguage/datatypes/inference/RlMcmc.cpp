@@ -18,8 +18,22 @@
 
 using namespace RevLanguage;
 
-Mcmc::Mcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::Mcmc>() {
+Mcmc::Mcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::Mcmc>()
+{
+
+    ArgumentRules* runArgRules = new ArgumentRules();
+    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
     
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
+    
+    ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
+    methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
+
 }
 
 
@@ -127,29 +141,6 @@ const MemberRules& Mcmc::getParameterRules(void) const {
     }
     
     return memberRules;
-}
-
-
-/* Get method specifications */
-void Mcmc::initializeMethods(void) const
-{
-    
-    // necessary call for proper inheritance
-    RevObject::initializeMethods();
-    
-    ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
-    runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
-        
-    ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
-        
-    ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-    methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
-        
 }
 
 /** Get type spec */

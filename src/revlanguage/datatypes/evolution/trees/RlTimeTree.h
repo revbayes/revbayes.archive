@@ -34,7 +34,6 @@ namespace RevLanguage {
         TimeTree(RevBayesCore::TimeTree *v);                                                                                //!< Constructor requires character type
         TimeTree(const RevBayesCore::TimeTree &v);                                                                          //!< Constructor requires character type
         TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n);                                                    //!< Constructor requires character type
-        TimeTree(const TimeTree& d);                                                                                        //!< Constructor requires character type
         
         typedef RevBayesCore::TimeTree valueType;
         
@@ -45,7 +44,6 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Member method functions
-        virtual void                        initializeMethods(void) const;                                                  //!< Initialize member methods
         virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
         
         

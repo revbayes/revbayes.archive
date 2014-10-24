@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Real, which is the
- * primitive RevBayes type for real numbers.
- *
- * @brief Declaration of Real
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id$
- */
-
 #ifndef Real_H
 #define Real_H
 

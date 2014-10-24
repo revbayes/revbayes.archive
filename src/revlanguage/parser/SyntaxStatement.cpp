@@ -401,7 +401,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
     if ( temp == NULL )
         return false;
     
-    if ( temp->getRevObject().isTypeSpec( RlBoolean::getClassTypeSpec() ) )
+    if ( temp->getRevObject().isType( RlBoolean::getClassTypeSpec() ) )
     {
         bool retValue = static_cast<const RlBoolean&>( temp->getRevObject() ).getValue();
         
