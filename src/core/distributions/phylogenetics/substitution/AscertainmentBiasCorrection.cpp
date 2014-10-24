@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
-#include <AscertainmentBiasCorrection.h>
+#include "AscertainmentBiasCorrection.h"
 using namespace RevBayesCore;
 RevBayesCore::VariableOnlyAscertainmentBiasCorrectionStruct::VariableOnlyAscertainmentBiasCorrectionStruct(const size_t ns, const size_t nm)
     :numStates(ns),
