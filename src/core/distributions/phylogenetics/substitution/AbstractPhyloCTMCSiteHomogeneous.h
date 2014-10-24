@@ -15,50 +15,51 @@
 #include <memory.h>
 
 namespace RevBayesCore {
-double homogeneousComputeRootLikelihood(const double *p_left,
-                                        const double *p_right,
-                                        const size_t numSiteRates,
-                                        const double * rootFreq,
-                                        const size_t numStates,
-                                        const size_t * patternCounts,
-                                        const size_t numPatterns,
-                                        const size_t siteOffset,
-                                        const size_t mixtureOffset,
-                                        const double p_inv,
-                                        const std::vector<bool> & siteInvariant,
-                                        const std::vector<size_t> & invariantSiteIndex);
-double homogeneousComputeRootLikelihood(const double *p_left,
-                                        const double *p_right,
-                                        const double *p_middle,
-                                        const size_t numSiteRates,
-                                        const double * rootFreq,
-                                        const size_t numStates,
-                                        const size_t * patternCounts,
-                                        const size_t numPatterns,
-                                        const size_t siteOffset,
-                                        const size_t mixtureOffset,
-                                        const double p_inv,
-                                        const std::vector<bool> & siteInvariant,
-                                        const std::vector<size_t> & invariantSiteIndex);
-void homogeneousComputeInternalNodeLikelihoood(double * p_node,
-                                               const double *p_left,
-                                               const double *p_right,
-                                               const size_t numSiteRates,
-                                               const size_t numStates,
-                                               const size_t numPatterns,
-                                               const size_t siteOffset,
-                                               const size_t mixtureOffset,
-                                               const double ** tpMats);
-void homogeneousComputeTipNodeLikelihoood(double * p_node,
-                                          const size_t numSiteRates,
-                                          const size_t numStates,
-                                          const size_t numPatterns,
-                                          const size_t siteOffset,
-                                          const size_t mixtureOffset,
-                                          const double ** tpMats,
-                                          const std::vector<bool> &gap_node,
-                                          const std::vector<unsigned long> &char_node,
-                                          const bool usingAmbiguousCharacters);
+const size_t numActiveLikelihoods = 2; // compile-time constant, but should be runtime...
+double computeRootLikelihood2Nodes(const double *p_left,
+                                   const double *p_right,
+                                   const size_t numSiteRates,
+                                   const double * rootFreq,
+                                   const size_t numStates,
+                                   const size_t * patternCounts,
+                                   const size_t numPatterns,
+                                   const size_t siteOffset,
+                                   const size_t mixtureOffset,
+                                   const double p_inv,
+                                   const std::vector<bool> & siteInvariant,
+                                   const std::vector<size_t> & invariantSiteIndex);
+double computeRootLikelihood3Nodes(const double *p_left,
+                                   const double *p_right,
+                                   const double *p_middle,
+                                   const size_t numSiteRates,
+                                   const double * rootFreq,
+                                   const size_t numStates,
+                                   const size_t * patternCounts,
+                                   const size_t numPatterns,
+                                   const size_t siteOffset,
+                                   const size_t mixtureOffset,
+                                   const double p_inv,
+                                   const std::vector<bool> & siteInvariant,
+                                   const std::vector<size_t> & invariantSiteIndex);
+void computeInternalNodeLikelihood(double * p_node,
+                                    const double *p_left,
+                                    const double *p_right,
+                                    const size_t numSiteRates,
+                                    const size_t numStates,
+                                    const size_t numPatterns,
+                                    const size_t siteOffset,
+                                    const size_t mixtureOffset,
+                                    const double ** tpMats);
+void computeTipNodeLikelihood(double * p_node,
+                               const size_t numSiteRates,
+                               const size_t numStates,
+                               const size_t numPatterns,
+                               const size_t siteOffset,
+                               const size_t mixtureOffset,
+                               const double ** tpMats,
+                               const std::vector<bool> &gap_node,
+                               const std::vector<unsigned long> &char_node,
+                               const bool usingAmbiguousCharacters);
     /**
      * @brief Homogeneous distribution of character state evolution along a tree class (PhyloCTMC).
      *
@@ -249,9 +250,9 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numSiteRates( nMix ),
     tau( t ), 
     transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
-    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
+    partialLikelihoods( new double[numActiveLikelihoods*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
-    scalingFactors( std::vector<double>(numNodes*2, 1.0) ),
+    scalingFactors( std::vector<double>(numNodes*numActiveLikelihoods, 1.0) ),
     charMatrix(), 
     gapMatrix(),
     patternCounts(),
@@ -304,7 +305,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numSiteRates( n.numSiteRates ),
     tau( n.tau ), 
     transitionProbMatrices( n.transitionProbMatrices ),
-    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
+    partialLikelihoods( new double[numActiveLikelihoods*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( n.activeLikelihood ),
     scalingFactors( n.scalingFactors ),
     charMatrix( n.charMatrix ), 
@@ -342,7 +343,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     tau->incrementReferenceCount();
     
     // copy the partial likelihoods
-    memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
+    memcpy(partialLikelihoods, n.partialLikelihoods, numActiveLikelihoods*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
     
     activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
@@ -939,7 +940,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeL
     
     // we resize the partial likelihood vectors to the new dimensions
     delete [] partialLikelihoods;
-    partialLikelihoods = new double[2*numNodes*numSiteRates*numPatterns*numChars];
+    partialLikelihoods = new double[numActiveLikelihoods*numNodes*numSiteRates*numPatterns*numChars];
     
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
     
