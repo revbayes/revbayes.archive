@@ -2,25 +2,19 @@
 #include <vector>
 #include <cmath>
 #include <FilteredPhyloCTMCSiteHomogeneous.h>
+#include <AscertainmentBiasCorrection.h>
 using namespace RevBayesCore;
-class RevBayesCore::AscertainmentBiasCorrectionStruct {
-    public:
-        void computeInternalAscBias(const AscertainmentBiasCorrectionStruct * ascLeft, const AscertainmentBiasCorrectionStruct * ascRight, size_t numSiteRates, size_t numStates, size_t numPatterns, const double ** tpMats);
-        void computeTipAscBias(size_t numSiteRates, size_t numStates, size_t numPatterns, const double ** tpMats,  const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node, bool usingAmbiguousCharacters);
-        double computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const;
-        double computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight, const AscertainmentBiasCorrectionStruct * ascMiddle, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const;
-};
-
-std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes) {
+std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes, const size_t numStates, const size_t numMixtures) {
     std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> x(numCopies*numNodes, 0L);
     try{ 
         for (size_t i = 0 ; i < numCopies*numNodes; ++i) {
-            x[i] = new RevBayesCore::AscertainmentBiasCorrectionStruct();
+            x[i] = new RevBayesCore::VariableOnlyAscertainmentBiasCorrectionStruct(numStates, numMixtures);
         }
     } catch (...) {
         freeAscBiasCorrStructs(x);
         throw;
     }
+    return x;
 }
 
 void RevBayesCore::freeAscBiasCorrStructs(std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> &x) {

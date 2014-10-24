@@ -104,7 +104,7 @@ void computeTipNodeFilteredLikelihood(double * p_node,
         double uncorrectedLnProb;
         double ascBiasLnProb;
     };
-    std::vector<AscertainmentBiasCorrectionStruct *> allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes);
+    std::vector<AscertainmentBiasCorrectionStruct *> allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes, const size_t numStates, const size_t numMixtures=0);
     void freeAscBiasCorrStructs(std::vector<AscertainmentBiasCorrectionStruct *> &);
 }
 
@@ -121,7 +121,7 @@ void computeTipNodeFilteredLikelihood(double * p_node,
 
 template<class charType, class treeType>
 RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, bool compressed, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, compressed, nSites ) {
-    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes);
+    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes, nChars);
 }
 
 
