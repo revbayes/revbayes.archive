@@ -1,7 +1,8 @@
 #include <cstdlib>
 #include <vector>
 #include <cmath>
-#include <AbstractPhyloCTMCSiteHomogeneous.h>
+#include "AbstractPhyloCTMCSiteHomogeneous.h"
+
 double RevBayesCore::homogeneousComputeRootLikelihood(const double *p_left,
                                                       const double *p_right,
                                                       const size_t numSiteRates,
