@@ -21,10 +21,10 @@ using namespace RevLanguage;
 RevObject::RevObject( void ) : RevMemberObject()
 {
     
-    ArgumentRules* getMethodsArgRules = new ArgumentRules();
-    
-    // Add the 'methods()' method
-    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+//    ArgumentRules* getMethodsArgRules = new ArgumentRules();
+//    
+//    // Add the 'methods()' method
+//    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
     
 }
 
