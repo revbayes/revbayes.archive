@@ -10,20 +10,17 @@
     
         <name>fnNumUniqueInVector</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The number of unique elements in a vector</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This function counts the number of unique elements in a vector.
             </p>
         </description>
 
         <usage>
             <![CDATA[
-             fnNumUniqueInVector( Simplex[] vector )
+             fnNumUniqueInVector( <any-type>[] vector )
              ]]> 
         </usage>
     
@@ -31,8 +28,8 @@
             <label>vector</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
-            <valueType>Simplex[]</valueType>
+            <description>The vector of elements.</description>
+            <valueType>any-type[]</valueType>
         </argument>
 
         <returnValue>Natural, Integer, RevObject</returnValue>
@@ -40,19 +37,37 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            This function loops through a vector and computes the number unique elements present. 
+            As a deterministic function, fnNumUniqueInVector() is needed for the Gibbs move on the 
+            concentration parameter of the Dirichlet process prior (mvDPPGibbsConcentration); when a hyperprior on that parameter
+            is used. 
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             ## number of DPP elements
+             N <- 10
+             
+             ## prior mean number of categories
+             k <- 8
+             
+             ## concentration parameter of the DPP
+             a <- fnDPPConcFromMean(k, N)
+             
+             ## G_0 distribution
+             g_0 = dnExponential(1.0)
+             
+             ## DPP distribution constructior
+             rates ~ dnDPP(a, g_0, N)
+             
+             ## deterministic node for number of categories
+             num_cats := fnNumUniqueInVector(rates)
              ]]>
 
         </example>
 
+<!-- 
         <reference>
             <citation>
                 First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
@@ -60,12 +75,14 @@
             <url>An optional URL to the paper</url>
             <doi>An optional DOI to the paper</doi>
         </reference>
+ -->
 
-        <author>Your name here</author>
+        <author>Tracy A. Heath</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>mvDPPGibbsConcentration</entry>
+            <entry>fnDPP</entry>
         </seeAlso>
 
 
