@@ -66,6 +66,7 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, Re
 template<class valueType>
 RevLanguage::StochasticNode<valueType>::StochasticNode( const RevLanguage::StochasticNode<valueType> &n ) :
     RevBayesCore::StochasticNode<valueType>( n ),
+    rlDistribution( n.rlDistribution->clone() ),
     methods( n.methods )
 {
     
@@ -75,6 +76,8 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const RevLanguage::Stoch
 template<class valueType>
 RevLanguage::StochasticNode<valueType>::~StochasticNode( void )
 {
+    
+    delete rlDistribution;
     
 }
 
@@ -174,6 +177,22 @@ const RevLanguage::MethodTable& RevLanguage::StochasticNode<valueType>::getMetho
     
     // return the internal value
     return methods;
+}
+
+
+template<class valueType>
+RevLanguage::Distribution& RevLanguage::StochasticNode<valueType>::getRlDistribution( void )
+{
+    
+    return *rlDistribution;
+}
+
+
+template<class valueType>
+const RevLanguage::Distribution& RevLanguage::StochasticNode<valueType>::getRlDistribution( void ) const
+{
+    
+    return *rlDistribution;
 }
 
 

@@ -61,6 +61,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 
 RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const RevLanguage::ContinuousStochasticNode &n ) :
     RevBayesCore::ContinuousStochasticNode( n ),
+    rlDistribution( n.rlDistribution->clone() ),
     methods( n.methods )
 {
     
@@ -167,4 +168,18 @@ const RevLanguage::MethodTable& RevLanguage::ContinuousStochasticNode::getMethod
     
     // return the internal value
     return methods;
+}
+
+
+RevLanguage::Distribution& RevLanguage::ContinuousStochasticNode::getRlDistribution( void )
+{
+    
+    return *rlDistribution;
+}
+
+
+const RevLanguage::Distribution& RevLanguage::ContinuousStochasticNode::getRlDistribution( void ) const
+{
+    
+    return *rlDistribution;
 }

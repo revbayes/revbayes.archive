@@ -17,7 +17,7 @@
 #ifndef Func_uminus_H
 #define Func_uminus_H
 
-#include "Function.h"
+#include "TypedFunction.h"
 
 #include <map>
 #include <string>
@@ -25,19 +25,19 @@
 namespace RevLanguage {
 
 template <typename firstValType, typename retType>
-class Func__uminus :  public Function {
+class Func__uminus :  public TypedFunction<retType> {
     
 public:
     Func__uminus( void );
     
     // Basic utility functions
-    Func__uminus*                                    clone(void) const;                                                              //!< Clone the object
+    Func__uminus*                                   clone(void) const;                                                              //!< Clone the object
     static const std::string&                       getClassType(void);                                                             //!< Get Rev type
     static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
     
     // Function functions you have to override
-    RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+    RevBayesCore::TypedFunction<typename retType::valueType>*     createFunction(void) const;                                       //!< Create a function object
     const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
     
@@ -53,7 +53,7 @@ private:
 
 /** default constructor */
 template <typename firstValType, typename retType>
-RevLanguage::Func__uminus<firstValType, retType>::Func__uminus( void ) : Function( ) {
+RevLanguage::Func__uminus<firstValType, retType>::Func__uminus( void ) : TypedFunction<retType>( ) {
     
 }
 
@@ -67,16 +67,13 @@ RevLanguage::Func__uminus<firstValType, retType>* RevLanguage::Func__uminus<firs
 
 
 template <typename firstValType, typename retType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__uminus<firstValType, retType>::execute() {
+RevBayesCore::TypedFunction<typename retType::valueType>* RevLanguage::Func__uminus<firstValType, retType>::createFunction(void) const
+{
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::UnaryMinus<typename firstValType::valueType> *func = new RevBayesCore::UnaryMinus<typename firstValType::valueType>(firstArg);
 
-    DeterministicNode<typename retType::valueType> *detNode = new DeterministicNode<typename retType::valueType>("", func, this->clone());
-    
-    retType* value = new retType( detNode );
-    
-    return new Variable( value );
+    return func;
 }
 
 
