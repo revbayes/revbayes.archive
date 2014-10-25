@@ -22,16 +22,17 @@ FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string,
 /** Copy constructor */
 FunctionTable::FunctionTable(const FunctionTable& x) {
     
-    for (std::multimap<std::string, Function *>::const_iterator i=x.begin(); i!=x.end(); i++)
+    for (std::multimap<std::string, Function *>::const_iterator it=x.begin(); it!=x.end(); ++it)
     {
-        insert(std::pair<std::string, Function *>( (*i).first, ( (*i).second->clone() )));
+        insert(std::pair<std::string, Function *>( it->first, ( it->second->clone() )));
     }
     parentTable = x.parentTable;
 }
 
 
 /** Destructor. We own the functions so we need to delete them. */
-FunctionTable::~FunctionTable(void) {
+FunctionTable::~FunctionTable(void)
+{
 
     clear();
     

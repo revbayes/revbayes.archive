@@ -43,7 +43,7 @@ namespace RevLanguage {
         
         
         // Class-specific functions you have to override
-        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                             //!< Create a random variable from this distribution
+        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                             //!< Create a function object
         
         
     protected:
@@ -77,7 +77,8 @@ RevLanguage::TypedFunction<valueType>::~TypedFunction() {
 
 
 template <typename valueType>
-RevPtr<Variable> RevLanguage::TypedFunction<valueType>::execute(void) {
+RevPtr<Variable> RevLanguage::TypedFunction<valueType>::execute(void)
+{
     
     RevBayesCore::TypedFunction<typename valueType::valueType>* d = createFunction();
     DeterministicNode<typename valueType::valueType>* rv  = new DeterministicNode<typename valueType::valueType>("", d, this->clone());

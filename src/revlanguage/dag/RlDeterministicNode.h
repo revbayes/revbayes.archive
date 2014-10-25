@@ -19,22 +19,27 @@ namespace RevLanguage {
      */
 
     template<class valueType>
-    class DeterministicNode : public RevBayesCore::DeterministicNode<valueType> {
+    class DeterministicNode : public RevBayesCore::DeterministicNode<valueType>, public RevMemberObject {
     
     public:
                                             DeterministicNode(const std::string& n, RevBayesCore::TypedFunction<valueType>* fxn, Function* rlFxn);
                                             DeterministicNode(const DeterministicNode<valueType> &n);
         virtual                            ~DeterministicNode(void);
         
+        DeterministicNode<valueType>&       operator=(const DeterministicNode<valueType> &dn);                                              //!< Assignment operator
+        
         // public methods
-        DeterministicNode<valueType>*       clone(void) const;                                                  //!< Clone the node
-        Function&                           getRlFunction(void);                                                //!< Get the Rev function
-        const Function&                     getRlFunction(void) const;                                          //!< Get the Rev function (const)
-        void                                printStructureInfo(std::ostream &o, bool verbose=false) const;      //!< Print information on structure
+        DeterministicNode<valueType>*       clone(void) const;                                                                              //!< Clone the node
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        const MethodTable&                  getMethods( void ) const;                                                                       //!< Get the member methods
+        Function&                           getRlFunction(void);                                                                            //!< Get the Rev function
+        const Function&                     getRlFunction(void) const;                                                                      //!< Get the Rev function (const)
+        void                                printStructureInfo(std::ostream &o, bool verbose=false) const;                                  //!< Print information on structure
 
     private:
 
-        Function*                           rlFunction;                                                         //!< Rev function
+        Function*                           rlFunction;                                                                                     //!< Rev function
+        MethodTable                         methods;
 
     };
     
@@ -44,16 +49,17 @@ namespace RevLanguage {
 template<class valueType>
 RevLanguage::DeterministicNode<valueType>::DeterministicNode( const std::string& n, RevBayesCore::TypedFunction<valueType>* fxn, RevLanguage::Function* rlFxn ) :
     RevBayesCore::DeterministicNode<valueType>( n, fxn ),
-    rlFunction( rlFxn )
+    rlFunction( rlFxn ),
+    methods()
 {
 
 }
 
 
 template<class valueType>
-RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n )
-    : RevBayesCore::DeterministicNode<valueType>( n ),
-    rlFunction( n.rlFunction->clone() )
+RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n ) : RevBayesCore::DeterministicNode<valueType>( n ),
+    rlFunction( n.rlFunction->clone() ),
+    methods( n.methods )
 {
 
 }
@@ -68,10 +74,50 @@ RevLanguage::DeterministicNode<valueType>::~DeterministicNode( void )
 
 
 template<class valueType>
+RevLanguage::DeterministicNode<valueType>& RevLanguage::DeterministicNode<valueType>::operator=(const DeterministicNode<valueType> &dn)
+{
+    
+    if ( this != &dn )
+    {
+        delete rlFunction;
+        
+        methods     = dn.methods;
+        rlFunction  = dn.rlFunction->clone();
+    }
+    
+    return *this;
+}
+
+
+
+template<class valueType>
 RevLanguage::DeterministicNode<valueType>* RevLanguage::DeterministicNode<valueType>::clone( void ) const
 {
     
     return new DeterministicNode<valueType>( *this );
+}
+
+
+/* Execute calls to member methods */
+template <typename valueType>
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DeterministicNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
+    
+    found = false;
+    
+    return NULL;
+}
+
+
+/**
+ * Get common member methods.
+ */
+template<class valueType>
+const RevLanguage::MethodTable& RevLanguage::DeterministicNode<valueType>::getMethods( void ) const
+{
+    
+    // return the internal value
+    return methods;
 }
 
 

@@ -86,8 +86,7 @@ namespace RevLanguage {
 #include "ConverterNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
-//#include "Real.h"
-//#include "RealPos.h"
+#include "RlConstantNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
@@ -251,8 +250,8 @@ const std::string& RevLanguage::ModelObject<rbType>::getClassType(void) {
 
 
 /** Get class type spec describing type of object */
-template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::ModelObject<rlType>::getClassTypeSpec(void) {
+template <typename rbType>
+const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
@@ -310,7 +309,8 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
     else
     {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
-        RevBayesCore::ConstantNode<rbType>* newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
+        RevBayesCore::ConstantNode<rbType>* newNode = new ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
+//        RevBayesCore::ConstantNode<rbType>* newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
         dagNode->replace(newNode);
         
         // delete the value if there are no other references to it.

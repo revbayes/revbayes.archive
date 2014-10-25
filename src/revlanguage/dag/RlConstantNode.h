@@ -10,13 +10,14 @@ namespace RevLanguage {
     class ConstantNode : public RevBayesCore::ConstantNode<valueType>, public RevMemberObject {
         
     public:
-        ConstantNode(const std::string& n);
+        ConstantNode(const std::string& n, valueType *v);
         ConstantNode(const ConstantNode<valueType> &n);
         virtual                            ~ConstantNode(void);
         
         // public methods
-        ConstantNode<valueType>*            clone(void) const;                                                  //!< Clone the node
-        const MethodTable&                  getMethods( void ) const;                                           //!< Get the member methods
+        ConstantNode<valueType>*            clone(void) const;                                                                              //!< Clone the node
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        const MethodTable&                  getMethods( void ) const;                                                                       //!< Get the member methods
 
     private:
 
@@ -29,8 +30,9 @@ namespace RevLanguage {
 
 
 template<class valueType>
-RevLanguage::ConstantNode<valueType>::ConstantNode( const std::string& n ) :
-    RevBayesCore::ConstantNode<valueType>( n, fxn )
+RevLanguage::ConstantNode<valueType>::ConstantNode( const std::string& n, valueType *v ) :
+    RevBayesCore::ConstantNode<valueType>( n, v ),
+    methods( )
 {
     
 }
@@ -57,6 +59,17 @@ RevLanguage::ConstantNode<valueType>* RevLanguage::ConstantNode<valueType>::clon
 {
     
     return new ConstantNode<valueType>( *this );
+}
+
+
+/* Execute calls to member methods */
+template <typename valueType>
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ConstantNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
+    
+    found = false;
+    
+    return NULL;
 }
 
 
