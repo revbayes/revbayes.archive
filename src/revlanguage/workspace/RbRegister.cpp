@@ -410,6 +410,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<RlString,5>::addTypeToWorkspace( *this, new RlString() );
         AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
         
+        AddWorkspaceVectorType<RealNodeValTree,1>::addTypeToWorkspace( *this, new RealNodeValTree() );
+        
+        
         AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
         AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
