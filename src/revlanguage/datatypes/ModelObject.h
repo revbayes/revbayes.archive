@@ -136,7 +136,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
-    AbstractModelObject(),
+    AbstractModelObject( v ),
     dagNode( NULL )
 {
     if ( v.dagNode != NULL )
@@ -173,7 +173,6 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
         // delegate to base class
         AbstractModelObject::operator=( v );
         
-        // free the memory
         // free the old value
         if ( dagNode != NULL )
         {
