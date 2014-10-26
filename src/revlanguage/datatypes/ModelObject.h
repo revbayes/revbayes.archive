@@ -170,6 +170,9 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
     
     if ( this != &v ) 
     {
+        // delegate to base class
+        AbstractModelObject::operator=( v );
+        
         // free the memory
         // free the old value
         if ( dagNode != NULL )

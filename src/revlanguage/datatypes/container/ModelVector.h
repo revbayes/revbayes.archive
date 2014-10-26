@@ -113,6 +113,16 @@ template <typename rlType>
 ModelVector<rlType>::ModelVector( const valueType &v ) :
     ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( v.clone() )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
 }
 
 
@@ -124,6 +134,16 @@ template <typename rlType>
 ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
     ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( n )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
 }
 
 
