@@ -381,7 +381,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
     if (node->isRoot())
     {
         
-        std::cout << "wha!\n";
+//        std::cout << "wha!\n";
         ;
     }
     
