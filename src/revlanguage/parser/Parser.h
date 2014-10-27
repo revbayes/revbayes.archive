@@ -12,6 +12,18 @@
 
 namespace RevLanguage {
 
+    class ParserInfo {
+    public:
+        bool inQuote;
+        bool inComment;
+        std::list<std::string> lines; 
+        int result;
+        std::string message;
+        std::string functionName;
+        std::string argumentLabel;
+        RevPtr<Variable> baseVariable;
+    };
+    
     class SyntaxElement;
     class SyntaxFunctionCall;
     class SyntaxVariable;
@@ -72,10 +84,11 @@ namespace RevLanguage {
      * functionName, baseVariableExpression etc, as well as some of the public functions
      * support this use case.
      */
+        
     class Parser {
 
     public:
-
+        
         enum ParserMode { CHECKING, EXECUTING };                                    //!< Parser modes
 
         // Regular functions
@@ -91,6 +104,8 @@ namespace RevLanguage {
         void                executeBaseVariable(void);                                          //!< Execute base variable expression
         void                setFunctionName( const std::string& n ) { functionName = n; }       //!< Set function name
         void                setArgumentLabel( const std::string& n ) { argumentLabel = n; }     //!< Set argument label
+        
+        ParserInfo  checkCommand(std::string& command, Environment *env);           //!< Parse command without executing it
         
         /** Get singleton parser */
         static Parser& getParser( void ) {
@@ -110,7 +125,8 @@ namespace RevLanguage {
         Parser&             operator=(const Parser& w) { return (*this); }          //! Prevent assignment
 
         // Help functions
-        void                breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
+        ParserInfo          breakIntoLines(const std::string& cmd, std::list<std::string>& lines, bool validate) const;    //!< Break a command string buffer into Rev lines
+        ParserInfo          breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
         void                setParserMode(ParserMode mode);                         //!< Set the parser mode
         
         // Member variables
