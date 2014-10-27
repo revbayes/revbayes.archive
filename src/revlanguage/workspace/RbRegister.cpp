@@ -67,6 +67,7 @@
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
 #include "RlAbstractCharacterData.h"
 #include "RlDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
@@ -1058,7 +1059,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_add",      new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
         
         addFunction( "_add",      new Func__rladd< AbstractCharacterData  , AbstractCharacterData , AbstractCharacterData >(  )   );
-        
+        addFunction( "_add",      new Func__rladd< ContinuousCharacterData  , ContinuousCharacterData , ContinuousCharacterData >(  )   );
+
         // division
         addFunction( "_div",      new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
         addFunction( "_div",      new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
