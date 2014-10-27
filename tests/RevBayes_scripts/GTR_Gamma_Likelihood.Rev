@@ -23,5 +23,6 @@ seq ~ dnPhyloCTMC(tree=tau, Q=Q, siteRates=gamma_rates, branchRates=clockRate, t
 seq.clamp(D)
 
 write("BEAST LnL:       -6281.4026")
-write("RevBayes LnL:   ",seq.lnProb)
+write("RevBayes LnL:   ",seq.lnProbability())
 
+q()

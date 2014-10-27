@@ -1,7 +1,11 @@
-revbayes RevBayes_scripts/normal.Rev
+rb RevBayes_scripts/normal.Rev
 
-revbayes RevBayes_scripts/GTR.Rev
+rb RevBayes_scripts/GTR.Rev
 
-revbayes RevBayes_scripts/partition.Rev
+rb RevBayes_scripts/GTR_Gamma_Likelihood.Rev
 
-revbayes RevBayes_scripts/test_biogeography_DEC.Rev
+rb RevBayes_scripts/partition.Rev
+
+rb RevBayes_scripts/DPP_clock.Rev
+
+rb RevBayes_scripts/test_biogeography_DEC.Rev

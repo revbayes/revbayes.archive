@@ -33,6 +33,7 @@ monitors[3] = mnScreen(printgen=1000, pi)
  
 mymcmc = mcmc(mymodel, monitors, moves,moveschedule="single")
 
-mymcmc.burnin(generations=1000,100)
-mymcmc.run(generations=10000)
+mymcmc.burnin(generations=300,50)
+mymcmc.run(generations=400)
 
+q()

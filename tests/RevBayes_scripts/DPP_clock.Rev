@@ -127,13 +127,14 @@ monitors[3] <- screenmonitor(printgen=10, pi1, mean_brate, n_cats, concentration
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-##mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(generations=10000)
+mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.run(generations=400)
 
 mymcmc.operatorSummary()
 
-#treetrace <- readTreeTrace("./dpp_rclock_test.trees")
-#treetrace.summarize()
+treetrace <- readTreeTrace("dpp_rclock_test.trees")
+treetrace.summarize()
 
+mapTree(treetrace,"dpp_rclock_test_MAP.tre")
 
-#mapTree(treetrace,"dpp_rclock_test_MAP.tre")
+q()
