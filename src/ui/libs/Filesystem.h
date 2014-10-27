@@ -1,10 +1,3 @@
-/* 
- * File:   filesystem.h
- * Author: johadunf
- *
- * Created on May 6, 2014, 2:17 PM
- */
-
 #ifndef FILESYSTEM_H
 #define	FILESYSTEM_H
 
@@ -76,47 +69,38 @@ public:
         }
         return path;
     }
-    
+
     /**
-     * List all files  in the given directory.
      * 
-     * @param directory     directory in which to search     
+     * @param basePath
+     * @param relativePath : search expression
      * @return 
      */
     static StringVector getFileList(std::string basePath, std::string relativePath) {
-        fs::path p(relativePath);
-        fs::path bp(basePath);
-        fs::path _path;        
+        fs::path _relativePath(relativePath);
+        fs::path _basePath(basePath);
+        fs::path _combined = _basePath / _relativePath;
 
         StringVector v;
 
-        // construct search path
-        if (p.is_relative()) {            
-            _path = bp / p;            
-        } else {
-            _path = p;
+        if (!fs::exists(_combined)) {
+            _combined = _combined.parent_path();
+            _relativePath = _relativePath.parent_path();
+            if (!fs::exists(_combined)) {
+                return v; // non existing path
+            } 
         }
 
-        if (!fs::exists(_path)) {
+        if (!fs::is_directory(_combined)) {
+            return v; // is an existing file
+        }
 
-            //std::cout << "\n\rpath " << _path.string() << " does not exist\n\r";
-            //std::cout << "parent path " << _path.parent_path().string() << "\n\r";
-            _path = _path.parent_path();
-            
-            if (!fs::exists(_path)) {
-                return v;
-            }
-            
-        }
-        if (!fs::is_directory(_path)) {
-            //std::cout << "\n\rpath " << _path.string() << " is not a directory\n\r";
-            return v;
-        }
-        
         fs::directory_iterator end_itr; // Default ctor yields past-the-end
-        for (fs::directory_iterator i(_path); i != end_itr; ++i) {            
-            v.push_back((i->path().filename()).string());            
+        for (fs::directory_iterator i(_combined); i != end_itr; ++i) {         
+            std::string s = (_relativePath.string() / i->path().filename()).string();            
+            v.push_back(s);
         }
+
         return v;
     }
 
