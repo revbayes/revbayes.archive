@@ -27,6 +27,8 @@
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
 
+#include "TabTest.h"
+
 namespace fs = boost::filesystem;
 
 int main(int argc, const char* argv[]) {
@@ -62,9 +64,14 @@ int main(int argc, const char* argv[]) {
     }
     
     if (!options->isDisableReadline()) {
+        // remove on production
+//        TabTest t;
+//        t.run();
+        
+        // enable on production
         RbClient c;
         c.startInterpretor(help, options, configuration);
-        return 0;
+        
     }
 
 
