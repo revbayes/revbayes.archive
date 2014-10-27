@@ -41,9 +41,7 @@ namespace RevLanguage {
         RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
-        
     };
-    
 }
 
 #endif

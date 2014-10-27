@@ -7,7 +7,7 @@
 //
 
 #include "GeneralRateMapFunction.h"
-#include "RateMatrix_Blosum62.h"
+#include "RateMatrix_JC.h"
 #include "RateMap.h"
 #include "ConstantNode.h"
 #include "RbException.h"
@@ -16,11 +16,11 @@ using namespace RevBayesCore;
 
 GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap(ns, nc) )
 {
-    homogeneousRateMatrix               = new ConstantNode<RateMatrix>("homogeneousRateMatrix", new RateMatrix_Blosum62());
+    homogeneousRateMatrix               = new ConstantNode<RateMatrix>("homogeneousRateMatrix", new RateMatrix_JC(ns));
     heterogeneousRateMatrices           = NULL;
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
-    rootFrequencies                     = new ConstantNode<RevBayesCore::RbVector<double> >("rootFrequencies", new RevBayesCore::RbVector<double>(20,0.05));
+    rootFrequencies                     = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(ns,1.0/ns));
     
     branchHeterogeneousClockRates       = false;
     branchHeterogeneousRateMatrices    = false;
@@ -129,7 +129,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     this->addParameter( homogeneousClockRate );
 }
 
-void GeneralRateMapFunction::setClockRate(const TypedDagNode< RevBayesCore::RbVector< double > > *r) {
+void GeneralRateMapFunction::setClockRate(const TypedDagNode< std::vector< double > > *r) {
     
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
@@ -152,7 +152,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< RevBayesCore::RbVe
     
 }
 
-void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<RevBayesCore::RbVector<double> > *f)
+void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<std::vector<double> > *f)
 {
     if (rootFrequencies != NULL)
     {
@@ -180,11 +180,11 @@ void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const Da
     }
     else if (oldP == heterogeneousClockRates)
     {
-        heterogeneousClockRates = static_cast<const TypedDagNode< RevBayesCore::RbVector< double > >* >( newP );
+        heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< RevBayesCore::RbVector<double> >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
 }
 

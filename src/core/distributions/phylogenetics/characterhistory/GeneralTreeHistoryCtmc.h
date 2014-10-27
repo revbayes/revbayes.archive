@@ -28,6 +28,7 @@
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "PathUniformizationSampleProposal.h"
+#include "PathRejectionSampleProposal.h"
 
 #include <cmath>
 #include <cstring>
@@ -285,56 +286,66 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeValue( 
 template<class charType, class treeType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void )
 {
-    if (this->tipsInitialized == false)
-        initializeValue();
-    
-    std::set<size_t> indexSet;
-    for (size_t i = 0; i < this->numSites; i++)
-        indexSet.insert(i);
-    
-    // sample node states
-    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
-    for (size_t i = 0; i < nodes.size(); i++)
+    if (!true)
     {
-        TopologyNode* nd = nodes[i];
+        if (this->tipsInitialized == false)
+            initializeValue();
         
-        int samplePathEndCount = 0;
-        do
-        {
-            samplePathEndCount++;
-        } while (samplePathEnd(*nd,indexSet) == false && samplePathEndCount < 100);
+        std::set<size_t> indexSet;
+        for (size_t i = 0; i < this->numSites; i++)
+            indexSet.insert(i);
         
-        int samplePathStartCount = 0;
-        do
-        {
-            samplePathStartCount++;
-        } while (samplePathStart(*nd,indexSet) == false && samplePathStartCount < 100);
-    }
-    
-    // sample paths
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        TopologyNode* nd = nodes[i];
-        
-        int samplePathHistoryCount = 0;
-        do
-        {
-            
-            samplePathHistoryCount++;
-        } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
-        
-        this->histories[i]->print();
-    }
-    
-    double lnL = this->computeLnProbability();
-    
-    if (lnL == RbConstants::Double::neginf)
-    {
+        // sample node states
+        std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
         for (size_t i = 0; i < nodes.size(); i++)
         {
-            this->fireTreeChangeEvent(*nodes[i]);
+            TopologyNode* nd = nodes[i];
+            
+            int samplePathEndCount = 0;
+            do
+            {
+                samplePathEndCount++;
+            } while (samplePathEnd(*nd,indexSet) == false && samplePathEndCount < 100);
+            
+            int samplePathStartCount = 0;
+            do
+            {
+                samplePathStartCount++;
+            } while (samplePathStart(*nd,indexSet) == false && samplePathStartCount < 100);
         }
-        redrawValue();
+        
+        // sample paths
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            TopologyNode* nd = nodes[i];
+            
+            int samplePathHistoryCount = 0;
+            do
+            {
+                
+                samplePathHistoryCount++;
+            } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
+            
+            this->histories[i]->print();
+        }
+        
+        double lnL = this->computeLnProbability();
+        
+        if (lnL == RbConstants::Double::neginf)
+        {
+            for (size_t i = 0; i < nodes.size(); i++)
+            {
+                this->fireTreeChangeEvent(*nodes[i]);
+            }
+            redrawValue();
+        }
+    }
+    else
+    {
+        if (this->dagNode->isClamped())
+            initializeValue();
+        
+        simulate();
     }
 }
 
@@ -709,7 +720,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
     {
         // simulate anagenic changes
         simulateHistory(node, bh);
-        bh->print();
+//        bh->print();
     }
     
     const std::vector<CharacterEvent*>& childState = bh->getChildCharacters();
@@ -723,7 +734,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
         
     if ( node.isTip() )
     {
-        std::cout << "adding " << node.getName() << "\n";
+//        std::cout << "adding " << node.getName() << "\n";
         taxa[nodeIndex].setTaxonName( node.getName() );
     }
     else

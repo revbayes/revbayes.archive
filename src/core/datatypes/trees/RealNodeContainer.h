@@ -40,6 +40,9 @@ namespace RevBayesCore {
         double                                      getStdev() const;
         void                                        recursiveGetStats(const TopologyNode& from, double& e1, double& e2, int& n) const;
         void                                        recursiveGetStatsOverTips(const TopologyNode& from, double& e1, double& e2, int& n) const;
+        ContinuousCharacterData*                    getTipValues() const;
+        void                                        recursiveGetTipValues(const TopologyNode& from, ContinuousCharacterData& nameToVal) const ;
+
 
         std::string                                 getNewick() const;
         std::string                                 recursiveGetNewick(const TopologyNode& from) const;

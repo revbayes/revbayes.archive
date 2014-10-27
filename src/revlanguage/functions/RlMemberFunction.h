@@ -21,7 +21,8 @@ namespace RevLanguage {
         
         // pure virtual functions
         RevPtr<Variable>                    execute(void);                                                              //!< Execute function
-        
+        void                                setMemberObject(const RevPtr<Variable> &obj);                               //!< Set the member object to which this function belongs
+
     private:
         
         const memberObjectType*             theMemberObject;
@@ -101,6 +102,16 @@ const RevLanguage::TypeSpec& RevLanguage::MemberFunction<memberObjectType, retTy
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+
+template <typename memberObjectType, typename retType>
+void RevLanguage::MemberFunction<memberObjectType, retType>::setMemberObject( const RevPtr<Variable> &obj) {
+    
+    // we do not own the object itself because one object can have multiple member functions
+    object = obj;
+    theMemberObject = static_cast< const memberObjectType *>( &(obj->getRevObject()) );
 }
 
 

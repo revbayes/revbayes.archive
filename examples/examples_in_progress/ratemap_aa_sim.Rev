@@ -1,0 +1,90 @@
+################################################################################
+#
+# RevBayes Example: Simulation of amino acid data using a RateMap
+#
+# authors: Michael Landis
+#
+################################################################################
+
+n_species <- 50
+n_branches <- 2 * n_species - 3
+char_str <- "DNA"
+if (char_str == "DNA" || char_str == "RNA") {
+	n_states <- 4
+} else if (char_str == "AA" || char_str == "Protein") {
+	n_states <- 20
+} else if (char_str == "Standard") {
+	n_states <- 2 # USER MUST PROVIDE
+}
+n_chars <- 500
+in_fp <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
+
+
+##############
+# Tree model #
+##############
+
+# Species names
+for (i in 1:n_species) {
+	names[i] <- "Taxon_" + i
+}
+
+# Birth-Death process priors
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0.5,1.5)
+
+# override drawn values
+speciation.setValue(0.05)
+extinction.setValue(0.01)
+tree_height.setValue(1.0)
+
+# Species tree from birth-death process
+tree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=names)
+#tree <- readTrees(in_fp + "16tip_100areas.nex")[1]
+
+
+###############
+# Clock model #
+###############
+
+clockRate ~ dnExponential(1.0)
+
+######################
+# AA evolution model #
+######################
+
+# per-site rate matrix
+pi_pr <- rep(n_states,1)
+er_pr <- rep(1*(n_states*(n_states-1)/2),1)
+pi ~ dnDirichlet(pi_pr)
+er ~ dnDirichlet(er_pr)
+Q_site 		:= gtr(er,pi)
+
+# per-sequence rate map
+Q_seq       := fnGeneralRateMap(qSite=Q_site,rfSite=pi,numChars=n_chars)
+
+# M is focal model, the range data given the tree, the atlas, and the DEC process
+d           ~  dnPhyloDACTMC(tree=tree, Q=Q_seq, type=char_str)
+d.redraw()
+
+
+###########################
+# save true model objects #
+###########################
+
+# Making a backup for future reference:
+tree_true <- tree
+er_true <- er
+pi_true <- pi
+
+
+############################
+# write simulation to file #
+############################
+
+# Saving the species tree
+write(tree_true, filename=in_fp + "ratemap_" + char_str + ".tree")
+
+# Saving the amino acid alignment
+writeNexus(d, filename=in_fp+"ratemap_" + char_str + ".nex")
