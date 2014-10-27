@@ -28,3 +28,5 @@ mymcmc.run(generations=10000)
 
 # now check how the operators have done
 mymcmc.operatorSummary()
+
+q()

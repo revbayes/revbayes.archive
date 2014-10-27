@@ -38,11 +38,12 @@ RbFileManager::RbFileManager( void )
 	setFilePath("");
     
     fullFileName = filePath;
-    if ( fullFileName == "") 
+    if ( fullFileName != "")
     {
-        fullFileName = ".";
+        fullFileName += pathSeparator;
     }
-    fullFileName += pathSeparator + fileName;
+    
+    fullFileName += fileName;
     
 }
 
@@ -69,12 +70,12 @@ RbFileManager::RbFileManager(const std::string &fn)
     parsePathFileNames( fn );
     
     fullFileName = filePath;
-    if ( fullFileName == "") 
+    if ( fullFileName != "")
     {
-        fullFileName = ".";
+        fullFileName += pathSeparator;
     }
     
-    fullFileName += pathSeparator + fileName;
+    fullFileName += fileName;
     
 }
 
@@ -101,12 +102,12 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn)
     parsePathFileNames( pn + pathSeparator + fn);
     
     fullFileName = filePath;
-    if ( fullFileName == "")
+    if ( fullFileName != "")
     {
-        fullFileName = ".";
+        fullFileName += pathSeparator;
     }
     
-    fullFileName += pathSeparator + fileName;
+    fullFileName += fileName;
     
 }
 
@@ -135,7 +136,23 @@ void RbFileManager::closeFile(std::ofstream& strm)
 void RbFileManager::createDirectoryForFile( void )
 {
     
-    std::string dir_path = getLastPathComponent( fullFileName );
+    std::string dir_path = getStringByDeletingLastPathComponent( fullFileName );
+    
+    std::vector<std::string> pathComponents;
+    StringUtilities::stringSplit(filePath, pathSeparator, pathComponents);
+    
+    std::string directoryName = "";
+    for ( std::vector<std::string>::const_iterator it=pathComponents.begin(); it != pathComponents.end(); ++it)
+    {
+        directoryName += *it;
+        
+        if ( isDirectoryPresent(directoryName) == false )
+        {
+            makeDirectory( directoryName );
+        }
+        
+        directoryName += pathSeparator;
+    }
     
 //    boost::filesystem::path dir(dir_path);
 //	if(boost::filesystem::create_directory(dir))
@@ -400,6 +417,29 @@ bool RbFileManager::openFile(std::ifstream& strm)
 	}
     
     return true;
+}
+
+
+/**
+ * Make a directory for the given path.
+ */
+bool RbFileManager::makeDirectory(const std::string &dn)
+{
+    
+#	ifdef WIN32
+    
+    std::string cmd = "mkdir " + dn;
+    system( cmd.c_str() );
+    
+#	else
+
+    std::string cmd = "mkdir " + dn;
+    system( cmd.c_str() );
+
+#   endif
+    
+    return true;
+    
 }
 
 

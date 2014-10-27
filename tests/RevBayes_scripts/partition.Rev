@@ -111,10 +111,10 @@ monitors[3] = mnScreen(printgen=10, shape[1], shape[2], shape[3], shape[4], tree
 mymcmc = mcmc(mymodel, monitors, moves)
 
 # Start the chain and burn-in for several generations #
-mymcmc.burnin(generations=500,tuningInterval=100)
+mymcmc.burnin(generations=200,tuningInterval=50)
 
 # Run the MCMC and sample states #
-mymcmc.run(generations=3000)
+mymcmc.run(generations=400)
 
 
 ## Summarize MCMC output (tree topology/branch lengths) ##
@@ -125,5 +125,5 @@ treetrace.summarize()
 # Write the maximum a posteriori tree to file #
 mapTree(treetrace,"output/conifer_genecodon_map.tre")
 
-#q()
+q()
 
