@@ -34,7 +34,8 @@ namespace RevLanguage {
         // pure virtual functions
         virtual AbstractMemberFunction*     clone(void) const = 0;                                                      //!< Clone the object
         virtual RevPtr<Variable>            execute(void) = 0;                                                          //!< Execute function
-
+        virtual void                        setMemberObject(const RevPtr<Variable> &obj) = 0;                           //!< Set the member object to which this function belongs
+        
         // Basic utility functions
         static const std::string&           getClassType(void);                                                         //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
@@ -43,7 +44,6 @@ namespace RevLanguage {
         // Regular functions
         const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
-        void                                setMemberObject(const RevPtr<Variable> &obj);                               //!< Set the member object to which this function belongs
         void                                setMethodName(const std::string& name);                                     //!< Set name of member method
     
 
