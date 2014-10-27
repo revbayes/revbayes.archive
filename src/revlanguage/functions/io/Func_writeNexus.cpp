@@ -39,11 +39,20 @@ RevPtr<Variable> Func_writeNexus::execute( void )
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
-    
     RevBayesCore::NexusWriter fw( fn.getValue() );
     fw.openStream();
-    fw.writeNexusBlock( data );
+
+    if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( AbstractDiscreteCharacterData::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
+    else if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ContinuousCharacterData::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::ContinuousCharacterData &data = static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
+
     fw.closeStream();
     
     return NULL;

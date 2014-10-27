@@ -30,6 +30,9 @@ namespace RevLanguage {
         // Operators
         
         // Basic utility functions
+        ContinuousCharacterData*              add(const RevObject& d) const;                                                          //!< Addition operator used for example in '+=' statements
+        ContinuousCharacterData*              add(const ContinuousCharacterData& d) const;                                              //!< Addition operator used for example in '+=' statements
+
         ContinuousCharacterData*        clone(void) const;                                                      //!< Clone object
         RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassType(void);                                                     //!< Get Rev type

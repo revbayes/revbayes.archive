@@ -397,7 +397,7 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                 const RevBayesCore::CharacterState& o = taxonData[j];
                 std::string s = o.getStringValue();
                 
-                std::cout << s;
+                std::cout << s << " ";
                 if ( (j+1) % 100 == 0 && (j+1) != nc )
                 {
                     std::cout << std::endl << "   ";
