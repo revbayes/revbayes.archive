@@ -44,6 +44,7 @@ RevLanguage::Parser::Parser(void) {
 RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const {
     return breakIntoLines(cmd, lines, false);
 }
+
 RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& cmd, std::list<std::string>& lines, bool validate) const {
 
     bool inComment, inQuote;
