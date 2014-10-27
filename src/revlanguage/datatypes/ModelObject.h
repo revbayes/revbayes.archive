@@ -83,6 +83,7 @@ namespace RevLanguage {
 #include "ArgumentRules.h"
 #include "Cloner.h"
 #include "ConstantNode.h"
+#include "ContinuousCharacterData.h"
 #include "ConverterNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"

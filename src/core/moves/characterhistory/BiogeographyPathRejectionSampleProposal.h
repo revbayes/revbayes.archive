@@ -57,8 +57,7 @@ namespace RevBayesCore {
         virtual double                              computeLnProposal(const TopologyNode& nd, const BranchHistory& bh);
 //        virtual double                              computeLnProposal_test(const TopologyNode& nd, const BranchHistory& bh);
         virtual double                              doProposal(void);                                                                   //!< Perform proposal
-//        virtual double                              doProposal_test(void);
-//        virtual double                              undoProposal(void);
+        virtual const std::string&                  getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         
     protected:
         
@@ -158,7 +157,8 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
         }
         
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getIndex() ], *it_h, currAge);
+        CharacterEvent* evt = *it_h;
+        double tr = rm.getSiteRate(nd, currState[ evt->getIndex() ], evt, currAge);
         double sr = rm.getSumOfRates(nd, currState, counts, currAge);
         lnP += -(sr * da) + log(tr);
         if (debug) std::cout << "event " << lnP << " " << currAge  << " "  << epochIdx << " da=" << da << " " << s << " " << tr << " " << sr << "\n";
@@ -421,6 +421,15 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
     
     
 }
+
+template<class charType, class treeType>
+const std::string& RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::getProposalName( void ) const
+{
+    static std::string name = "BiogeographyPathRejectionSampleProposal";
+    
+    return name;
+}
+
 
 
 #endif /* defined(__rb_mlandis__BiogeographyPathRejectionSampleProposal__) */

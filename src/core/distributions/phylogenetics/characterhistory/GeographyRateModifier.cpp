@@ -151,6 +151,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     double sum = 0.0;
     double r = 0.0;
     
+    double eps = 1e-4;
+    
     unsigned s = newState->getState();
     unsigned charIdx = newState->getIndex();
     bool areaAvailable = availableAreaVector[epochIdx*numAreas + charIdx] > 0.0;
@@ -159,9 +161,66 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     if (areaAvailable && s == 0)
     {
         r = 1.0;
+
+        if (false)
+//        if (useAreaAdjacency || useDistanceDependence)
+        {
+            // determine which areas are present and which are absent
+            present.clear();
+            absent.clear();
+            
+            // which areas are in the range?
+            std::set<size_t>::iterator it;
+            for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
+            {
+                if (currState[*it]->getState() == 1)
+                {
+                    present.insert(currState[*it]);
+                }
+            }
+            
+            // impossible state?
+            if (present.size() == 0)
+                return 10e6;
+            
+            std::set<CharacterEvent*>::iterator it_p1;
+            std::set<CharacterEvent*>::iterator it_p2;
+            
+            // focal present area
+            double sum = 0.0;
+            for (it_p1 = present.begin(); it_p1 != present.end(); it_p1++)
+            {
+                size_t idx_p1 = (*it_p1)->getIndex();
+                double d = 1.0;
+//                std::cout << idx_p1 << " " <<  d << "\n";
+                
+                // adjacent present areas
+                for (it_p2 = present.begin(); it_p2 != present.end(); it_p2++)
+                {
+                    size_t idx_p2 = (*it_p2)->getIndex();
+                    size_t idx_e = epochIdx * epochOffset + idx_p1 * areaOffset + idx_p2;
+                    
+                    double v = adjacentAreaVector[idx_e];
+                    
+                    // extinction depends on distance to adjacent areas?
+                    if (useDistanceDependence && v != 0.0)
+                    {
+                        v *= geographicDistancePowers[idx_e];
+                    }
+                    d += v;
+                }
+                sum += d;
+                
+                if (idx_p1 == charIdx)
+                    rate = d;
+
+            }
+//            std::cout <<source("/Users/mlandis/Documents/code/revbayes-code/tutorials/RB_Biogeography_tutorial/RB_biogeo_files/scripts/biogeography_inf.Rev") rate << " " << sum << " " << present.size() << "\n";
+            r = (rate / sum) * present.size();
+        }
     }
     
-    // area does not exist and is lost
+    // area does not exist and is lostsource("/Users/mlandis/Documents/code/revbayes-code/tutorials/RB_Biogeography_tutorial/RB_biogeo_files/scripts/biogeography_inf.Rev")
     if (!areaAvailable && s == 0)
     {
         r = 1e10;
@@ -186,7 +245,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         std::set<size_t>::iterator it;
         for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
         {
-            if (currState[*it]->getState() == 0)
+            if (currState[*it]->getState() == 0 &&
+                ( useAreaAdjacency && adjacentAreaVector[epochIdx*epochOffset + charIdx*areaOffset + *it] > eps ) )
             {
                 absent.insert(currState[*it]);
 //                std::cout << "a " << absent.size() << "\n";
@@ -203,33 +263,38 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         
         std::set<CharacterEvent*>::iterator it_p;
         std::set<CharacterEvent*>::iterator it_a;
-        for (it_p = present.begin(); it_p != present.end(); it_p++)
+        size_t n = 0;
+        for (it_a = absent.begin(); it_a != absent.end(); it_a++)
         {
-            size_t idx_p = (*it_p)->getIndex();
-            
-            for (it_a = absent.begin(); it_a != absent.end(); it_a++)
+            size_t idx_a = (*it_a)->getIndex();
+            double d = 0.0;
+            for (it_p = present.begin(); it_p != present.end(); it_p++)
             {
-                size_t idx_a = (*it_a)->getIndex();
+                size_t idx_p = (*it_p)->getIndex();
                 size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
                 
-//                std::cout << "  " << idx_p << " " << idx_a << " " << idx_p << "\n";
-                double d = adjacentAreaVector[idx_e];
-                if (useDistanceDependence && d != 0.0)
+                double v = adjacentAreaVector[idx_e];
+                if (useAreaAdjacency && v > eps)
+                    n += 1;
+                
+                if (useDistanceDependence && v != 0.0)
                 {
-                    d = geographicDistancePowers[idx_e];
+                    v *= geographicDistancePowers[idx_e];
                 }
-//                else if (d == 0.useAreaAdjacency == 0.0)
-//                {
-//                    d = 1e-10;
-//                }
-                
-                sum += d;
-                
-                if (idx_a == charIdx)
-                    rate += d;
+
+                d += v;
             }
+
+            sum += d;
+//            std::cout << sum << " " << d << "\n";
+            if (idx_a == charIdx)
+                rate += d;
         }
+        if (!useAreaAdjacency)
+            n = absent.size();
         
+//        r = n * rate / sum;
+//        r = rate / (sum / n);
         r = absent.size() * rate / sum;
 //        std::cout << "rateMod " << r << " = " << absent.size() << " * " << rate << " / " << sum << "\n";
     }
@@ -301,22 +366,25 @@ GeographyRateModifier* GeographyRateModifier::clone(void) const
 
 void GeographyRateModifier::update(void)
 {
-    for (size_t i = 0; i < numEpochs; i++)
+    if (useDistanceDependence)
     {
-        unsigned iOffset = (unsigned)(i*epochOffset);
-        for (size_t j = 0; j < numAreas; j++)
+        for (size_t i = 0; i < numEpochs; i++)
         {
-            unsigned jOffset = (unsigned)(j*areaOffset);
-            for (size_t k = 0; k < j; k++)
+            unsigned iOffset = (unsigned)(i*epochOffset);
+            for (size_t j = 0; j < numAreas; j++)
             {
-                //double d = exp(-distancePower * geographicDistances[ iOffset + jOffset + k ]); //, -distancePower);
-                
-                double d = 1.0;
-                if (distancePower != 0.0)
-                    d = pow(geographicDistances[ iOffset + jOffset + k ], -distancePower);
+                unsigned jOffset = (unsigned)(j*areaOffset);
+                for (size_t k = 0; k < j; k++)
+                {
+                    //double d = exp(-distancePower * geographicDistances[ iOffset + jOffset + k ]); //, -distancePower);
+                    
+                    double d = 1.0;
+                    if (distancePower != 0.0)
+                        d = pow(geographicDistances[ iOffset + jOffset + k ], -distancePower);
 
-                geographicDistancePowers[ iOffset + jOffset + k ] = d;
-                geographicDistancePowers[ iOffset + k*areaOffset + j ] = d;
+                    geographicDistancePowers[ iOffset + jOffset + k ] = d;
+                    geographicDistancePowers[ iOffset + k*areaOffset + j ] = d;
+                }
             }
         }
     }
@@ -348,47 +416,19 @@ void GeographyRateModifier::initializeDistances(void)
     }
 }
 
-//void GeographyRateModifier::initializeDispersalExtinctionValues(void)
-//{
-//    for (unsigned i = 0; i < numEpochs; i++)
-//    {
-//        for (unsigned j = 0; j < numAreas; j++)
-//        {
-//            const std::vector<double>& dvs = areas[numAreas*i + j]->getDispersalValues();
-//            const std::vector<double>& evs = areas[numAreas*i + j]->getExtinctionValues();
-//            
-//            extinctionValues[numEpochs*i + j] = evs[0];
-//            for (unsigned k = 0; k < numAreas; k++)
-//            {
-//                dispersalValues[epochOffset*i + areaOffset*j + k] = dvs[k];
-//            }
-//        }
-//    }
-//}
-
 void GeographyRateModifier::initializeAdjacentAreas(void)
 {
     adjacentAreaSet.resize(numEpochs*numAreas);
     availableAreaSet.resize(numEpochs);
     
     for (size_t i = 0; i < availableAreaSet.size(); i++)
-//    {
         availableAreaSet[i].clear();
-//        std::set<size_t>::iterator it = availableAreaSet[i].begin();
-//        std::cout << i << ": ";
-//        for (; it != availableAreaSet[i].end(); it++)
-//        {
-//            std::cout << *it << " ";
-//        }
-//        std::cout << "\n";
-//    }
     
     for (unsigned i = 0; i < numEpochs; i++)
     {
         for (unsigned j = 0; j < numAreas; j++)
         {
             const std::vector<double>& dvs = areas[numAreas*i + j]->getDispersalValues();
-//            const std::vector<double>& evs = areas[numAreas*i + j]->getExtinctionValues();
             for (unsigned k = 0; k < numAreas; k++)
             {
                 double d = 0.0;
@@ -415,19 +455,6 @@ void GeographyRateModifier::initializeAdjacentAreas(void)
             }
         }
     }
-    
-//    for (size_t i = 0; i < availableAreaSet.size(); i++)
-//    {
-//        std::set<size_t>::iterator it = availableAreaSet[i].begin();
-//        std::cout << i << ": ";
-//        for (; it != availableAreaSet[i].end(); it++)
-//        {
-//            std::cout << *it << " ";
-//        }
-//        std::cout << "\n";
-//    }
-//    
-//    std::cout << "\n";
 }
 
 

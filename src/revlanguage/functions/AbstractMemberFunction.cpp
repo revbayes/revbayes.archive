@@ -58,13 +58,6 @@ const TypeSpec& AbstractMemberFunction::getReturnType(void) const {
 }
 
 
-void AbstractMemberFunction::setMemberObject( const RevPtr<Variable> &obj) {
-    
-    // we do not own the object itself because one object can have multiple member functions
-    object = obj;
-}
-
-
 
 void AbstractMemberFunction::setMethodName(std::string const &name) {
  

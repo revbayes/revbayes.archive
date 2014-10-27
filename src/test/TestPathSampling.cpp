@@ -118,7 +118,7 @@ bool TestPathSampling::run_aa( void )
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
     
-    std::string filepath="/Users/mlandis/data/bayarea/output/";
+    std::string filepath="/Users/mlandis/data/ratemap/output/";
     std::string fn = "";
     fn = "16tip_10aa.nex";
     
@@ -186,6 +186,8 @@ bool TestPathSampling::run_aa( void )
 
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
     StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
+    pi->setValue(new std::vector<double>(20, 0.05));
+    er->setValue(new std::vector<double>(19*18, 1.0/19));
 
     // per-site Q matrix
     DeterministicNode<RateMatrix> *q_site = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
@@ -207,11 +209,11 @@ bool TestPathSampling::run_aa( void )
         charactermodel->clamp( data[0] );
     else
     {
-        ctmc->simulate();
-        
+//        ctmc->simulate();
+        charactermodel->redraw();
         charactermodel->clamp( &ctmc->getValue() );
     }
-    charactermodel->redraw();
+//    charactermodel->redraw();
     
 
 
@@ -227,23 +229,25 @@ bool TestPathSampling::run_aa( void )
     std::cout << "Adding moves\n";
     RbVector<Move> moves;
     
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 10, true ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 10, true ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 10, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 2, true ) );
+
+    //     *v, double a, size_t nc, double o, bool t, double w, double k
+    moves.push_back( new SimplexMove( er, 20.0, 1, 0, true, 2, 1 ) );
+    moves.push_back( new SimplexMove( pi, 20.0, 1, 0, true, 2, 1 ) );
+    moves.push_back( new SimplexMove( er, 100.0, 25, 0, true, 2, 1 ) );
+    moves.push_back( new SimplexMove( pi, 100.0, 10, 0, true, 2, 1 ) );
     
-    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 10.0 ) );
-    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 10.0 ) );
-    moves.push_back( new SimplexMove( er, 100.0, 25, 0, true, 10.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 10, 0, true, 10.0 ) );
-    
+
     // path
-    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
-    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes, false));
+    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes, false));
+    moves.push_back(new MetropolisHastingsMove(new PathUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes/2, false));
 
     // node
-    moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes*2, false));
-    moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes, false));
-     
+    moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.1), numNodes, false));
+    moves.push_back(new MetropolisHastingsMove(new NodeUniformizationSampleProposal<AminoAcidState,TimeTree>(charactermodel, tau, q_full, 0.5), numNodes/2, false));
+    
      
     ////////////
     // monitors
@@ -255,6 +259,7 @@ bool TestPathSampling::run_aa( void )
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( er );
     monitoredNodes.insert( pi );
+    monitoredNodes.insert( globalRate );
      
     monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".parameters.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
@@ -275,7 +280,9 @@ bool TestPathSampling::run_aa( void )
     //////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    myMcmc.setScheduleType("single");
+    myMcmc.setScheduleType("random");
+    myMcmc.burnin(mcmcGenerations/10, 10);
+    
     myMcmc.run(mcmcGenerations);
     myMcmc.printOperatorSummary();
     

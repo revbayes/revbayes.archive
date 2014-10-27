@@ -119,8 +119,28 @@ public:
         return makeUnique(objects);
     }
 
-    StringVector getVariableMembers(std::string name);
-    bool isVariable(std::string name);
+    StringVector getVariableMembers(std::string name){
+        StringVector sv;
+
+        if (!isVariable(name)) {
+            return sv;
+        }
+
+        RevLanguage::RevPtr<RevLanguage::Variable> variable = RevLanguage::Workspace::userWorkspace().getVariable(name);
+                
+        RevLanguage::MethodTable &methods = const_cast<RevLanguage::MethodTable&> (variable->getRevObject().getMethods());
+
+        std::multimap<std::string, RevLanguage::Function*> printTable = methods.getTableCopy(false);
+        for (std::multimap<std::string, RevLanguage::Function *>::const_iterator i = printTable.begin(); i != printTable.end(); i++) {
+            sv.push_back(i->first);
+        }
+
+        return sv;
+    }
+    
+    bool isVariable(std::string name){
+        return RevLanguage::Workspace::userWorkspace().existsVariable(name);
+    }
 
 
     //////////// types //////////////////////
@@ -202,8 +222,22 @@ public:
         t.insert(t.end(), v.begin(), v.end());
         return makeUnique(t);
     }
-    StringVector getObjectMembers(std::string name);
-    bool isObject(std::string name);
+    
+    StringVector getObjectMembers(std::string name){
+        StringVector sv;
+        
+        if(isType(name)){ 
+            return makeUnique(getTypeMembers(name));
+        }
+        if(isVariable(name)){ 
+            return makeUnique(getVariableMembers(name));
+        }
+        return sv;
+    }
+    
+    bool isObject(std::string name){        
+        return isType(name) || isVariable(name);
+    }
 
 
 private:
