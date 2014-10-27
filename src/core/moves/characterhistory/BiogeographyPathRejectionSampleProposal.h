@@ -9,7 +9,6 @@
 #ifndef __rb_mlandis__BiogeographyPathRejectionSampleProposal__
 #define __rb_mlandis__BiogeographyPathRejectionSampleProposal__
 
-#include "AbstractProposal.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"

@@ -9,7 +9,6 @@
 #ifndef __rb_mlandis__PathRejectionSampleProposal__
 #define __rb_mlandis__PathRejectionSampleProposal__
 
-#include "AbstractProposal.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
 #include "DiscreteCharacterData.h"
@@ -45,7 +44,7 @@ namespace RevBayesCore {
      */
     
     template<class charType, class treeType>
-    class PathRejectionSampleProposal : public AbstractProposal {
+    class PathRejectionSampleProposal : public Proposal {
         
     public:
         PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
@@ -110,7 +109,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : AbstractProposal(),
+RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
@@ -134,7 +133,7 @@ RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSamp
 }
 
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal(const PathRejectionSampleProposal& m) : AbstractProposal()
+RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal(const PathRejectionSampleProposal& m) : Proposal()
 {
     if (this != &m)
     {

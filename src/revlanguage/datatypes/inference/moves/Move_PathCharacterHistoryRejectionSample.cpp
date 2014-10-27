@@ -96,8 +96,7 @@ void Move_PathCharacterHistoryRejectionSample::constructInternalObject( void )
 //    
 //    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
     
-    RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::TimeTree>* prop = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d);
-    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, prop, d, false, w);
+    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d), d, false, w);
 
 }
 

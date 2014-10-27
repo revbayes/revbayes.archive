@@ -1,4 +1,3 @@
-#include "AbstractProposal.h"
 #include "DagNode.h"
 #include "MetropolisHastingsMove.h"
 #include "Proposal.h"
@@ -22,9 +21,8 @@ using namespace RevBayesCore;
  * \param[in]    w   The weight how often the proposal will be used (per iteration).
  * \param[in]    t   If auto tuning should be used.
  */
-MetropolisHastingsMove::MetropolisHastingsMove( AbstractProposal *p, double w, bool t ) : AbstractMove(w,t),
+MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) : AbstractMove(w,t),
     affectedNodes(),
-    auxillaryNodes(),
     nodes(),
     numAccepted( 0 ),
     proposal( p )
@@ -154,7 +152,6 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     {
         if ( (*it)->isClamped() )
         {
-            
             lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
         }
         else

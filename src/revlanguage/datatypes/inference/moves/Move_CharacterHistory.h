@@ -66,7 +66,7 @@ namespace RevLanguage {
 //
 
 
-#include "AbstractProposal.h"
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BiogeographicTreeHistoryCtmc.h"
@@ -169,7 +169,7 @@ void RevLanguage::Move_CharacterHistory<treeType>::constructInternalObject( void
     //    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
     //    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, new RevBayesCore::BiogeographyNodeRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d), d, false, w);
     
-    RevBayesCore::AbstractProposal *p = NULL;
+    RevBayesCore::Proposal *p = NULL;
     
     if (mt == "Biogeo")
     {

@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : AbstractProposal(),
+ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(), 
     variable( n ), 
     storedValue( 0.0 ), 
     lambda( l ),
@@ -68,18 +68,8 @@ const std::string& ScaleProposal::getProposalName( void ) const
  */
 const std::set<DagNode*>& ScaleProposal::getNodes( void ) const
 {
-    return nodes;
-}
-
-/**
- * Get the vector of nodes on which this proposal is working on.
- *
- * \return  Const reference to a vector of nodes pointer on which the proposal operates.
- */
-const std::set<DagNode*>& ScaleProposal::getAuxillaryNodes( void ) const
-{
     
-    return auxillaryNodes;
+    return nodes;
 }
 
 

@@ -9,7 +9,6 @@
 #ifndef __rb_mlandis__NodeRejectionSampleProposal__
 #define __rb_mlandis__NodeRejectionSampleProposal__
 
-#include "AbstractProposal.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
 #include "DiscreteCharacterData.h"
@@ -48,7 +47,7 @@ namespace RevBayesCore {
      */
     
     template<class charType, class treeType>
-    class NodeRejectionSampleProposal : public AbstractProposal {
+    class NodeRejectionSampleProposal : public Proposal {
         
     public:
         NodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
@@ -127,7 +126,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::NodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : AbstractProposal(),
+RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::NodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
