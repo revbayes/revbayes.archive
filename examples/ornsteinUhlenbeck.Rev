@@ -39,18 +39,10 @@ mean <- 2.0
 sigma <- 1.0
 phi <- 0.5
 
+
 # Set number of traits 
 nTraits <- 100
 
-Y ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
-
-type(Y)
-
-write(Y)
-
-Y.tipValues()
-
-writeNexus("data/simulatedOU10Sp.nex", Y.tipValues())
 
 for (i in 1:nTraits)	{
 	X[i] ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
@@ -60,8 +52,13 @@ type(X)
 
 write(X)
 
-# read the continous trait data 
-writeNexus("data/simulatedOU10Sp.nex")
+# write the continuous trait data 
+concatenate<-X[1].tipValues()
+for (i in 2:nTraits) {
+	concatenate <- concatenate + X[i].tipValues()
+}
+
+writeNexus("data/simulatedOU10Sp.nex", concatenate)
 
 
 # moves on kappa
@@ -153,3 +150,18 @@ mymcmc.run(100000)
 
 # some post analysis here
 
+
+
+
+###BACKUP:
+
+
+Y ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
+
+type(Y)
+
+write(Y)
+
+Y.tipValues()
+
+writeNexus("data/simulatedOU10Sp.nex", Y.tipValues())

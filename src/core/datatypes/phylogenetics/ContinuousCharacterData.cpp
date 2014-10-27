@@ -41,11 +41,11 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  */
 ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterData &obsd)
 {
-    
+    std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
     if ( rhs == NULL )
     {
-        throw RbException("Adding wrong character data type into CharacterData!!!");
+        throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
     }
     
     
@@ -78,6 +78,7 @@ ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterD
         {
             used[idx] = true;
             taxon.add( obsd.getTaxonData( n ) );
+
         }
         else
         {
@@ -496,7 +497,7 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
 /** 
  * Get the taxon data object with name tn.
  *
- * \return     A non-const reference to the taxon data object with name tn.
+ * \return     A const reference to the taxon data object with name tn.
  */
 const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &tn ) const 
 {
@@ -523,7 +524,7 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::str
 /** 
  * Get the taxon data object with name tn.
  *
- * \return     A const reference to the taxon data object with name tn.
+ * \return     A non-const reference to the taxon data object with name tn.
  */
 ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &tn ) 
 {
