@@ -42,6 +42,6 @@ mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.run(generations=10000)
 
-
+q()
 
 

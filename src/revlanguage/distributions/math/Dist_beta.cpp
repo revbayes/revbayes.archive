@@ -1,42 +1,37 @@
-//
-//  NormalDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BetaDistribution.h"
 #include "Dist_beta.h"
 #include "RealPos.h"
 #include "Probability.h"
-#include "ContinuousStochasticNode.h"
+#include "RlContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
-Dist_beta::Dist_beta() : TypedDistribution<Probability>() {
+Dist_beta::Dist_beta() : TypedDistribution<Probability>()
+{
     
     setGuiDistributionName("Beta");
     setGuiDistributionToolTip("Beta distribution for random variables on the interval [0,1]");
 }
 
 
-Dist_beta::~Dist_beta() {
+Dist_beta::~Dist_beta()
+{
     
 }
 
 
 
-Dist_beta* Dist_beta::clone( void ) const {
+Dist_beta* Dist_beta::clone( void ) const
+{
     
     return new Dist_beta(*this);
 }
 
 
-RevBayesCore::BetaDistribution* Dist_beta::createDistribution( void ) const {
+RevBayesCore::BetaDistribution* Dist_beta::createDistribution( void ) const
+{
     
     // get the parameters
     RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( alpha->getRevObject() ).getDagNode();
@@ -48,10 +43,11 @@ RevBayesCore::BetaDistribution* Dist_beta::createDistribution( void ) const {
 
 
 
-Probability* Dist_beta::createRandomVariable(void) const { 
+Probability* Dist_beta::createRandomVariable(void) const
+{
     
     RevBayesCore::ContinuousDistribution* d = createDistribution();
-    RevBayesCore::TypedDagNode<double>* rv  = new RevBayesCore::ContinuousStochasticNode("", d);
+    RevBayesCore::TypedDagNode<double>* rv  = new ContinuousStochasticNode("", d, this->clone() );
     
     return new Probability(rv);
 }

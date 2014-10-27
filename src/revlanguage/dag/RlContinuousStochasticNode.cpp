@@ -59,6 +59,34 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 }
 
 
+RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::string& n, RevBayesCore::ContinuousDistribution* dist, TypedDistribution<Probability>* rlDist ) :
+    RevBayesCore::ContinuousStochasticNode( n, dist ),
+    rlDistribution( rlDist )
+{
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back( new ArgumentRule("x", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
+    
+    ArgumentRules* redrawArgRules = new ArgumentRules();
+    this->methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
+    
+    ArgumentRules* probArgRules = new ArgumentRules();
+    this->methods.addFunction("probability", new MemberProcedure( RealPos::getClassTypeSpec(), probArgRules) );
+    
+    ArgumentRules* lnprobArgRules = new ArgumentRules();
+    this->methods.addFunction("lnProbability", new MemberProcedure( Real::getClassTypeSpec(), lnprobArgRules) );
+    
+    ArgumentRules* setValueArgRules = new ArgumentRules();
+    setValueArgRules->push_back( new ArgumentRule("x", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+    
+    ArgumentRules* unclampArgRules = new ArgumentRules();
+    this->methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
+    
+}
+
+
 RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const RevLanguage::ContinuousStochasticNode &n ) :
     RevBayesCore::ContinuousStochasticNode( n ),
     rlDistribution( n.rlDistribution->clone() ),

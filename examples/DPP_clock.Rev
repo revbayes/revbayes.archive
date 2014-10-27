@@ -50,36 +50,25 @@ tau.setValue(T)
 #### DPP Model on Branch Rates #####
 ####################################
 
-write("Create DPP on branch rates.")
-
 n_branches <- 2 * n_taxa - 2
 
 ## concentration parameter ##
 pr_mean_cats <- 3.0
-mean_CP <- fnDPPConcFromMean(pr_mean_cats, n_branches) 
+mean_CP <- dppConcFromMean(pr_mean_cats, n_branches) 
 cp_shape <- 2.0
 cp_rate <- cp_shape / mean_CP
 concentration ~ dnGamma(cp_shape, cp_rate)
-
-write("Create base distribution G0.")
 
 ## G_0 ##
 g0_a <- 4.0
 g0_b <- 8.0
 g0 <- dnGamma(g0_a, g0_b)
 
-
-write("Create DPP.")
-
-branch_rates ~ dnDPP(concentration=concentration, baseDistribution=g0, numElements=n_branches) 
+branch_rates ~ dpp(concentration=concentration, baseDistribution=g0, numElements=n_branches) 
 
 ## a deterministic node for the number of DPP categories
 ## this is needed for the Gibbs move on the concentration
 n_cats := numUniqueInVector(branch_rates) 
-
-
-
-write("Rescale branches.")
 
 ## create a deterministic node of scaled branch_rates
 ## this rescales the time units of the time tree so that the 
@@ -97,8 +86,6 @@ mean_brate := mean(branch_rates) ## Mean func
 ##### substition model priors ######
 ####################################
 
-write("Create substitution model.")
-
 bf <- v(1,1,1,1)
 e <- v(1,1,1,1,1,1)
 pi ~ dirichlet(bf)
@@ -108,8 +95,6 @@ Q := gtr(er,pi)
 
 pi1 := pi[1]
 
-
-write("Create PhyloCTMC.")
 
 # the sequence evolution model
 phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")

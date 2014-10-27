@@ -54,4 +54,4 @@ for (i in 2:10000) {
 mean(alpha)
 mean(beta)
 
-
+q()
