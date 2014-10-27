@@ -1,4 +1,3 @@
-#include "AbstractProposal.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
@@ -65,7 +64,7 @@ void Move_Scale::constructInternalObject( void )
     // finally create the internal move object
 //    value = new RevBayesCore::Move_Scale(n, d, t, w);
     
-    RevBayesCore::AbstractProposal *p = new RevBayesCore::ScaleProposal(n,d);
+    RevBayesCore::Proposal *p = new RevBayesCore::ScaleProposal(n,d);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
 }

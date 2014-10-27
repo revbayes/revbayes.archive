@@ -15,10 +15,10 @@
 #include <string>
 #include <vector>
 
-#include "AbstractProposal.h"
 #include "AbstractTreeHistoryCtmc.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
+#include "Proposal.h"
 #include "RateMap.h"
 #include "MoveOld.h"
 #include "StochasticNode.h"
@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class PathRejectionSampleMove : public MoveOld {
         
     public:
-        PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, AbstractProposal* p, double l, bool tuning, double w);                                    //!<  constructor
+        PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
         
         // Basic utility functions
         PathRejectionSampleMove* clone(void) const;                                                                  //!< Clone object
@@ -62,7 +62,7 @@ namespace RevBayesCore {
         size_t                          numStates;
         
         // proposal
-        AbstractProposal*                       proposal;
+        Proposal*                       proposal;
         
         bool changed;
     };
@@ -75,7 +75,7 @@ namespace RevBayesCore {
 #include "RandomNumberGenerator.h"
 
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, AbstractProposal* p, double l, bool tuning, double w) :
+RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
     MoveOld(t, w, tuning),
     ctmc(n),
     tau(t),
@@ -101,7 +101,7 @@ template<class charType, class treeType>
 RevBayesCore::PathRejectionSampleMove<charType, treeType>* RevBayesCore::PathRejectionSampleMove<charType, treeType>::clone(void) const
 {
     PathRejectionSampleMove<charType, treeType>* p = new PathRejectionSampleMove( *this );
-    AbstractProposal *prop = p->proposal;
+    Proposal *prop = p->proposal;
     
     return p;
 }
