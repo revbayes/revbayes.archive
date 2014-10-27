@@ -38,8 +38,8 @@ RevLanguage::Parser::Parser(void) {
 
 /**
  * This function breaks a buffer into Rev lines, taking into account the fact that ';' also
- * breaks lines in addition to newliines. The function also deals with different types of line
- * endings and translate all to Unix '\n' line endings.
+ * breaks lines in addition to newlines. The function also deals with different types of line
+ * endings and translates all to Unix '\n' line endings.
  */
 RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const {
     return breakIntoLines(cmd, lines, false);
