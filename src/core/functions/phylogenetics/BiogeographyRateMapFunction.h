@@ -34,12 +34,12 @@ namespace RevBayesCore {
         
         // set parameters
         void                                                setClockRate(const TypedDagNode< double > *r);
-        void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
+        void                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
         void                                                setGeographyRateModifier(const TypedDagNode<GeographyRateModifier>* drm);
 //        void                                                setCountRateModifier(const TypedDagNode<double>* rsrm);
-        void                                                setGainLossRates(const TypedDagNode<std::vector<double> >* glr);
+        void                                                setGainLossRates(const TypedDagNode< RbVector<double> >* glr);
         void                                                setRateMatrix(const TypedDagNode<RateMatrix>* rm);
-        void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
+        void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                update(void);
         
     protected:
@@ -49,14 +49,14 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
-        const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
+        const TypedDagNode< RbVector< double > >*           heterogeneousClockRates;
         const TypedDagNode<RateMatrix>*                     homogeneousRateMatrix;
         const TypedDagNode<RbVector<RateMatrix> >*          heterogeneousRateMatrices;
 
         const TypedDagNode<GeographyRateModifier>*              geographyRateModifier;
 //      const TypedDagNode<CountRateModifier>*                  countRateModifier;
         const TypedDagNode<TimeTree>*                           tau;
-        const TypedDagNode<std::vector<double> >*               rootFrequencies;
+        const TypedDagNode< RbVector<double> >*             rootFrequencies;
         
         // geography epochs
         // rate epochs
@@ -67,8 +67,6 @@ namespace RevBayesCore {
         bool                                                useGeographicDistance;
         
     };
-    
-    std::ostream& operator<<(std::ostream& o, const std::vector<std::vector<double> >& x);
     
 }
 

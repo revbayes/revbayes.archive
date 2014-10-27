@@ -78,7 +78,7 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
     {
         argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
         std::vector<TypeSpec> dataTypes;
-        dataTypes.push_back( AbstractCharacterData::getClassTypeSpec() );
+        dataTypes.push_back( AbstractDiscreteCharacterData::getClassTypeSpec() );
         dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
 
         argumentRules.push_back( new ArgumentRule( "data"    , dataTypes, ArgumentRule::BY_VALUE ) );

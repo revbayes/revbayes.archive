@@ -43,7 +43,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
 
     protected:
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);  //!< Set member variable
 
     private:
         RevPtr<const Variable>                          q;

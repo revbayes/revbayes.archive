@@ -14,6 +14,7 @@
 #include "RbConstants.h"
 #include "StochasticNode.h"
 
+#include <cmath>
 #include <iostream>
 
 
@@ -227,15 +228,15 @@ void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::swapParameter(const DagNo
     }
     
     if ( oldP == heterogeneousSigma ) {
-        heterogeneousSigma = static_cast< const TypedDagNode<std::vector< double > > * >( newP );
+        heterogeneousSigma = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
     if ( oldP == heterogeneousMean ) {
-        heterogeneousMean = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
+        heterogeneousMean = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
     if ( oldP == heterogeneousPhi ) {
-        heterogeneousPhi = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
+        heterogeneousPhi = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
     if ( oldP == rootMean ) {
@@ -264,17 +265,17 @@ void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setPhi( const TypedDagNod
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setSigma( const TypedDagNode< std::vector< double > >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setSigma( const TypedDagNode< RbVector< double > >* x){
     heterogeneousSigma = x;
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setMean( const TypedDagNode< std::vector< double > >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setMean( const TypedDagNode< RbVector< double > >* x){
     heterogeneousMean = x;
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setPhi( const TypedDagNode< std::vector< double > >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setPhi( const TypedDagNode< RbVector< double > >* x){
     heterogeneousPhi = x;
 }
 
