@@ -19,7 +19,7 @@ struct tabCompletionInfo{
         std::string compMatch;
     };
 
-class RbClient : public EditorMachineObserver, public IRepoObserver {
+class RbClient : public IRepoObserver {
 public:
     void setTabCompletionInfo(const char *buf);
     
@@ -27,7 +27,7 @@ public:
     tabCompletionInfo getTabCompleteInfo(const char *buf);
     
     // EditorMachineObserver
-    void eventStateChanged(EditorState *state, EditorStateChangeType type);
+//    void eventStateChanged(EditorState *state, EditorStateChangeType type);
     
     //IRepoObserver
     void notifyError(std::string error);

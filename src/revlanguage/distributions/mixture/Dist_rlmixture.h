@@ -186,7 +186,7 @@ RevLanguage::MethodTable Dist_rlmixture<valType>::makeMethods(void) const
     
     ArgumentRules* argRules = new ArgumentRules();
     
-    methods.addFunction("getAllocationIndex", new DistributionMemberFunction<Dist_rlmixture<valType> ,Natural>( this, argRules ) );
+//    methods.addFunction("getAllocationIndex", new DistributionMemberFunction<Dist_rlmixture<valType> ,Natural>( this, argRules ) );
     
     // Insert inherited methods
     methods.insertInheritedMethods( TypedDistribution<valType>::makeMethods() );
