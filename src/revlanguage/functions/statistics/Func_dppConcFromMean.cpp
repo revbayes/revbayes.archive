@@ -1,23 +1,6 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-#include "Clade.h"
-#include "ConstantNode.h"
-#include "DeterministicNode.h"
 #include "Func_dppConcFromMean.h"
-#include "ModelVector.h"
-#include "RlClade.h"
-#include "RlTimeTree.h"
 #include "RbStatisticsHelper.h"
 #include "RealPos.h"
-#include "Topology.h"
-#include "TypedDagNode.h"
-#include "ModelVector.h"
 
 using namespace RevLanguage;
 
@@ -40,9 +23,7 @@ RevPtr<Variable> Func_dppConcFromMean::execute() {
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
 	
 	double meanCP = RevBayesCore::RbStatistics::Helper::dppConcParamFromNumTables(nc, ne);
-    RevBayesCore::ConstantNode<double> *constNode = new RevBayesCore::ConstantNode<double>("", new double(meanCP));
-	
-	RealPos* value = new RealPos( constNode );
+	RealPos* value = new RealPos( meanCP );
 
 	return new Variable( value );
 }

@@ -5,6 +5,7 @@
 #include "RevMemberObject.h"
 #include "RlContinuousDistribution.h"
 #include "RlPositiveContinuousDistribution.h"
+#include "Probability.h"
 
 namespace RevLanguage {
     
@@ -13,6 +14,7 @@ namespace RevLanguage {
     public:
         ContinuousStochasticNode(const std::string& n, RevBayesCore::ContinuousDistribution* dist, ContinuousDistribution* rlDist);
         ContinuousStochasticNode(const std::string& n, RevBayesCore::ContinuousDistribution* dist, PositiveContinuousDistribution* rlDist);
+        ContinuousStochasticNode(const std::string& n, RevBayesCore::ContinuousDistribution* dist, TypedDistribution<Probability>* rlDist);
         ContinuousStochasticNode(const ContinuousStochasticNode &n);
         virtual                            ~ContinuousStochasticNode(void);
         

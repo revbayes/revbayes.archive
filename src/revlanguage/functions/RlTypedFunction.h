@@ -53,7 +53,7 @@ namespace RevLanguage {
     
 }
 
-#include "DeterministicNode.h"
+#include "RlDeterministicNode.h"
 
 template <typename valueType>
 RevLanguage::TypedFunction<valueType>::TypedFunction() : Function() {
@@ -77,11 +77,11 @@ RevLanguage::TypedFunction<valueType>::~TypedFunction() {
 
 
 template <typename valueType>
-RevPtr<Variable> RevLanguage::TypedFunction<valueType>::execute(void)
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TypedFunction<valueType>::execute(void)
 {
     
     RevBayesCore::TypedFunction<typename valueType::valueType>* d = createFunction();
-    DeterministicNode<typename valueType::valueType>* rv  = new DeterministicNode<typename valueType::valueType>("", d, this->clone());
+    RevBayesCore::DeterministicNode<typename valueType::valueType>* rv  = new DeterministicNode<typename valueType::valueType>("", d, this->clone());
     
     return new Variable( new valueType(rv) );
 }

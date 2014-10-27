@@ -87,3 +87,6 @@ lambda <- 1
 x ~ dnExponential(lambda)
 x
 x.probability()
+q()
+source("basics.rev")
+q()
