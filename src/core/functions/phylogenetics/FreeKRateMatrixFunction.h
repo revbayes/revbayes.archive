@@ -20,7 +20,7 @@ namespace RevBayesCore {
     class FreeKRateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
-        FreeKRateMatrixFunction(const TypedDagNode<std::vector<double> > *tr, const TypedDagNode<std::vector<double> > *sf);
+        FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, const TypedDagNode< RbVector<double> > *sf);
         FreeKRateMatrixFunction(const FreeKRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~FreeKRateMatrixFunction(void);                                                    //!< Virtual destructor
         
@@ -34,8 +34,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           transitionRates;
-        const TypedDagNode<std::vector<double> >*           stationaryFrequencies;
+        const TypedDagNode< RbVector<double> >*             transitionRates;
+        const TypedDagNode< RbVector<double> >*             stationaryFrequencies;
     };
     
 }

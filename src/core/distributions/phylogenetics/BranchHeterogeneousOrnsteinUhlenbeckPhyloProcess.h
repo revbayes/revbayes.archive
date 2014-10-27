@@ -35,9 +35,9 @@ namespace RevBayesCore {
         void setSigma( const TypedDagNode< double >* x);
         void setMean( const TypedDagNode< double >* x);
         void setPhi( const TypedDagNode< double >* x);
-        void setSigma( const TypedDagNode< std::vector< double > >* x);
-        void setMean( const TypedDagNode< std::vector< double > >* x);
-        void setPhi( const TypedDagNode< std::vector< double > >* x);
+        void setSigma( const TypedDagNode< RbVector< double > >* x);
+        void setMean( const TypedDagNode< RbVector< double > >* x);
+        void setPhi( const TypedDagNode< RbVector< double > >* x);
         void setRootMean( const TypedDagNode< double >* x);
         void setRootStdDev( const TypedDagNode< double >* x);
 
@@ -52,9 +52,9 @@ namespace RevBayesCore {
         const TypedDagNode< double >*                           homogeneousSigma;
         const TypedDagNode< double >*                           homogeneousMean;
         const TypedDagNode< double >*                           homogeneousPhi;
-        const TypedDagNode< std::vector< double > >*               heterogeneousSigma;
-        const TypedDagNode< std::vector< double > >*               heterogeneousMean;
-        const TypedDagNode< std::vector< double > >*               heterogeneousPhi;
+        const TypedDagNode< RbVector< double > >*               heterogeneousSigma;
+        const TypedDagNode< RbVector< double > >*               heterogeneousMean;
+        const TypedDagNode< RbVector< double > >*               heterogeneousPhi;
         const TypedDagNode< double >*                           rootMean;
         const TypedDagNode< double >*                           rootStdDev;
 

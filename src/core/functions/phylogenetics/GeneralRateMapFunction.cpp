@@ -20,7 +20,7 @@ GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunc
     heterogeneousRateMatrices           = NULL;
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
-    rootFrequencies                     = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(ns,1.0/ns));
+    rootFrequencies                     = new ConstantNode<RbVector<double> >("rootFrequencies", new RbVector<double>(ns,1.0/ns));
     
     branchHeterogeneousClockRates       = false;
     branchHeterogeneousRateMatrices    = false;
@@ -129,7 +129,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     this->addParameter( homogeneousClockRate );
 }
 
-void GeneralRateMapFunction::setClockRate(const TypedDagNode< std::vector< double > > *r) {
+void GeneralRateMapFunction::setClockRate(const TypedDagNode< RbVector< double > > *r) {
     
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
@@ -152,7 +152,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< std::vector< doubl
     
 }
 
-void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<std::vector<double> > *f)
+void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<RbVector<double> > *f)
 {
     if (rootFrequencies != NULL)
     {
@@ -180,11 +180,11 @@ void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const Da
     }
     else if (oldP == heterogeneousClockRates)
     {
-        heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        heterogeneousClockRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 

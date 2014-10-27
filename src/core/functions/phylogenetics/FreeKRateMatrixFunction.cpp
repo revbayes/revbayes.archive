@@ -12,7 +12,7 @@
 
 using namespace RevBayesCore;
 
-FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode<std::vector<double> > *tr, const TypedDagNode<std::vector<double> > *sf) : TypedFunction<RateMatrix>( new RateMatrix_FreeK(sf->getValue().size()) ), transitionRates( tr ), stationaryFrequencies( sf ) {
+FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, const TypedDagNode< RbVector<double> > *sf) : TypedFunction<RateMatrix>( new RateMatrix_FreeK(sf->getValue().size()) ), transitionRates( tr ), stationaryFrequencies( sf ) {
     // add the lambda parameter as a parent
     addParameter( transitionRates );
     addParameter( stationaryFrequencies );
@@ -53,10 +53,10 @@ void FreeKRateMatrixFunction::update( void ) {
 
 void FreeKRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     if (oldP == transitionRates) {
-        transitionRates = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        transitionRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == stationaryFrequencies) {
-        stationaryFrequencies = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        stationaryFrequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 
