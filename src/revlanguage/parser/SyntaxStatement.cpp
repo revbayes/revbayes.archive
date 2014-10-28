@@ -207,9 +207,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 // Execute statement
                 result = theSyntaxElement->evaluateContent( env );
 
-                // We do not print the result (as in R). Uncomment the code below to change this behavior
-
-#if 0
+                // We do not print the result (as in R).
                 // Print result if it is not an assign expression (== NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() &&
                      result != NULL && result->getRevObject() != RevNullObject::getInstance())
@@ -218,7 +216,6 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                     result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
-#endif
 
                 // Catch a return signal
                 // TODO: This appears to inappropriately discard the return value of a return statement
@@ -320,7 +317,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 result = (*it)->evaluateContent(env);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
@@ -347,7 +344,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
@@ -369,7 +366,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);

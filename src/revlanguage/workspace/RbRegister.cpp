@@ -857,7 +857,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_add",      new Func__scalarVectorAdd<Real        , ModelVector<Real>     , ModelVector<Real>          >(  )   );
         addFunction( "_add",      new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
         
-        addFunction( "_add",      new Func__rladd< AbstractCharacterData  , AbstractCharacterData , AbstractCharacterData >(  )   );
+        addFunction( "_add",      new Func__rladd< AbstractDiscreteCharacterData  , AbstractDiscreteCharacterData , AbstractDiscreteCharacterData >(  )   );
         
         // division
         addFunction( "_div",      new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );

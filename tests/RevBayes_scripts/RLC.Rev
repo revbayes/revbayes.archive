@@ -161,7 +161,7 @@ mymodel = model(rho)
 
 monitors[1] = mnModel(filename="test_RLC.log",printgen=10, separator = TAB)
 monitors[2] = mnFile(filename="test_RLC_ClockRates.log",printgen=10, separator = TAB, branchRateMultipliers, posterior=false, prior=false, likelihood=false)
-monitors[3] = mnExtendedNewick(filename="test_RLC.trees",printgen=10, separator = "	", psi, clockRates, branchRateMultipliers, posterior=false, prior=false, likelihood=false)
+monitors[3] = mnExtNewick(filename="test_RLC.trees",printgen=10, separator = "	", psi, clockRates, branchRateMultipliers, posterior=false, prior=false, likelihood=false)
 monitors[4] = mnScreen(printgen=100, rho, meanClockRate, tmrca)
 
  

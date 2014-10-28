@@ -1,0 +1,21 @@
+#NEXUS
+
+	Begin taxa;
+	Dimensions ntax=10;
+	Taxlabels
+		T1
+		T10
+		T2
+		T3
+		T4
+		T5
+		T6
+		T7
+		T8
+		T9
+		;
+End;
+
+Begin trees;
+tree TREE1 = [&R](((((T2:2.039657,T3:2.039657)[&posterior=1:ccp=1]:11.671811,T4:13.711468)[&posterior=1:ccp=1]:200.090500,T5:213.801968)[&posterior=1:ccp=1]:182.419124,T1:396.221092)[&posterior=1:ccp=1]:149.060190,(((T6:12.812099,T7:12.812099)[&posterior=1:ccp=1]:9.637446,T8:22.449545)[&posterior=1:ccp=1]:197.476708,(T10:52.534932,T9:52.534932)[&posterior=1:ccp=1]:167.391321)[&posterior=1:ccp=1]:325.355029)[&posterior=1:ccp=1]:0.000000;
+End;

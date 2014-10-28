@@ -19,4 +19,10 @@ rb RevBayes_scripts/DPP_clock.Rev
 # random local clock model
 rb RevBayes_scripts/RLC.Rev
 
+
+rm *.log
+rm *.out
+rm *.trees
+rm history.txt
+
 rb RevBayes_scripts/test_biogeography_DEC.Rev

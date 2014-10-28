@@ -161,7 +161,7 @@ RevPtr<Variable> DistributionFunctionCdf::execute( void )
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::CummulativeDistributionFunction* f = new RevBayesCore::CummulativeDistributionFunction( arg, d );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    RevBayesCore::DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone() );
     
     Probability* value = new Probability( detNode );
     
