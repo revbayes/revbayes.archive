@@ -26,7 +26,7 @@ namespace RevLanguage {
         
     public:
         ContinuousCharacterData(void);                                                                          //!< Default constructor
-        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d);                                //!< Constructor 
+        ContinuousCharacterData( RevBayesCore::ContinuousCharacterData *d);                                //!< Constructor 
         ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d);                                //!< Constructor requires character type
 
         typedef RevBayesCore::AbstractCharacterData valueType;

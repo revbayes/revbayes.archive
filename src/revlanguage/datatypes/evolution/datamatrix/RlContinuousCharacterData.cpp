@@ -25,7 +25,7 @@ ContinuousCharacterData::ContinuousCharacterData(void) : AbstractCharacterData()
 }
 
 /** Construct from bool */
-ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d) : AbstractCharacterData( new RevBayesCore::ContinuousCharacterData(*d) ) {
+ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::ContinuousCharacterData *d) : AbstractCharacterData( new RevBayesCore::ContinuousCharacterData(*d) ) {
     
 }
 
