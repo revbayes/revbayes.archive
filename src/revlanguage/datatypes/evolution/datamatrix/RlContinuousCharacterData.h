@@ -14,6 +14,7 @@
 
 #include "ContinuousCharacterData.h"
 #include "ModelObject.h"
+#include "RlAbstractCharacterData.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -21,13 +22,14 @@
 
 namespace RevLanguage {
     
-    class ContinuousCharacterData : public ModelObject<RevBayesCore::ContinuousCharacterData> {
+    class ContinuousCharacterData : public AbstractCharacterData  { //ModelObject<RevBayesCore::ContinuousCharacterData> {
         
     public:
         ContinuousCharacterData(void);                                                                          //!< Default constructor
-        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d);                                //!< Copy constructor
-        
-        // Operators
+        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d);                                //!< Constructor 
+        ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d);                                //!< Constructor requires character type
+
+        typedef RevBayesCore::AbstractCharacterData valueType;
         
         // Basic utility functions
         ContinuousCharacterData*              add(const RevObject& d) const;                                                          //!< Addition operator used for example in '+=' statements
@@ -39,6 +41,8 @@ namespace RevLanguage {
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
+        
+        const RevBayesCore::ContinuousCharacterData& getValue( void ) const;                                  //!< Get value as base class reference
         
         // Member method functions
         const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
