@@ -109,7 +109,7 @@ void setDefaultCompletions() {
  * @param lc
  */
 void completeOnTab(const char *buf, linenoiseCompletions *lc) {
-    bool debug = false;
+    //bool debug = true;
 
     std::string cmd = buf;
     StringVector completions;
@@ -130,19 +130,19 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
         commandPos = cmd.rfind("\"") + 1;
         completions = getFileList(cmd.substr(commandPos, cmd.size()));
     } else {        
-        // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
+        
         StringVector expressionSeparator;
-        expressionSeparator += " ", "%", "~", "=", "&", "|", "~", "+", "-", "*", "/", "^", "!", "=", ",", "<", ">", ")", "[", "]", "{", "}";
+        expressionSeparator += " ", "%", "~", "=", "&", "|", "+", "-", "*", "/", "^", "!", "=", ",", "<", ">", ")", "[", "]", "{", "}";
 
         // find position of right most expression separator in cmd
 
         BOOST_FOREACH(std::string s, expressionSeparator) {
             commandPos = std::max(commandPos, (int) cmd.rfind(s));
         }
-
-        // find position of right most dot
-        int dotPosition = (int) cmd.rfind(".");
         
+        // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
+        // find position of right most dot
+        int dotPosition = (int) cmd.rfind(".");        
         
         if ((pi.baseVariable != NULL) || (dotPosition > commandPos)) {
             // ---------- object defined ------------
@@ -171,10 +171,8 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                 // not sure exactly what should be here... setting completions to everything
                 completions = getDefaultCompletions();
 
-            } else { // break on either '(' or ','                
-                int tmp1 = cmd.rfind("(");
-                int tmp2 = cmd.rfind(",");
-                commandPos = std::max(tmp1, tmp2) + 1;
+            } else { // break on either '(' or ','              
+                commandPos = std::max((int)cmd.rfind("("), (int)cmd.rfind(",")) + 1;
 
                 BOOST_FOREACH(std::string param, workspaceUtils.getFunctionParameters(pi.functionName)) {
                     completions.push_back(param);
