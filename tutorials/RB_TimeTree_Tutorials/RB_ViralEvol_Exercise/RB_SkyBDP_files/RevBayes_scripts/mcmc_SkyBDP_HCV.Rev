@@ -8,7 +8,7 @@
 printSeed()
 
 ## Read in sequence data
-D <- readCharacterData(file="data/HCV_data.nex")
+D <- readDiscreteCharacterData(file="data/HCV_data.nex")
 
 ## Starting tree
 T <- readTrees("data/HCV_data_start.tre")[1]

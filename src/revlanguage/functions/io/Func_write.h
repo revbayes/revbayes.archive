@@ -10,7 +10,7 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_readCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
+ * $Id: Func_readDiscreteCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
  */
 
 #ifndef Func_write_H

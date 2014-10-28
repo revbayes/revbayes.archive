@@ -1,8 +1,8 @@
 # Test file for mcmc on gtr model with primates dataset
 
 # read the data
-# the readCharacter function returns a vector of matrices. We just take the first one
-D <- readCharacterData("data/primates_mtDNA.nex")[1]
+# the readDiscreteCharacterData function returns a vector of matrices. We just take the first one
+D <- readDiscreteCharacterData("data/primates_mtDNA.nex")
 
 # get some useful variables from the data
 taxaCount <- D.ntaxa()

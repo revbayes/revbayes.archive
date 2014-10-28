@@ -1,19 +1,19 @@
-#source("RevBayes_scripts/analysis/marLnL_calc_noclock_JC.Rev")
+source("RevBayes_scripts/analysis/marLnL_calc_noclock_JC.Rev")
 clear()
 
-#source("RevBayes_scripts/analysis/marLnL_calc_noclock_HKY.Rev")
+source("RevBayes_scripts/analysis/marLnL_calc_noclock_HKY.Rev")
 clear()
 
-#source("RevBayes_scripts/analysis/marLnL_calc_noclock_GTR.Rev")
+source("RevBayes_scripts/analysis/marLnL_calc_noclock_GTR.Rev")
 clear()
 
-#source("RevBayes_scripts/analysis/marLnL_calc_noclock_GTR_Gamma.Rev")
+source("RevBayes_scripts/analysis/marLnL_calc_noclock_GTR_Gamma.Rev")
 clear()
 
-#source("RevBayes_scripts/analysis/marLnL_calc_noclock_GTR_Gamma_pInv.Rev")
+source("RevBayes_scripts/analysis/marLnL_calc_noclock_GTR_Gamma_pInv.Rev")
 clear()
 
-#source("RevBayes_scripts/analysis/marLnL_calc_PS0.Rev")
+source("RevBayes_scripts/analysis/marLnL_calc_PS0.Rev")
 clear()
 
 source("RevBayes_scripts/analysis/marLnL_calc_PS1.Rev")

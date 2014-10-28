@@ -348,7 +348,8 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_mapTree.h"
 #include "Func_readAtlas.h"
-#include "Func_readCharacterData.h"
+#include "Func_readContinuousCharacterData.h"
+#include "Func_readDiscreteCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readTreeTrace.h"
@@ -922,7 +923,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
         addFunction( "print",                       new Func_write()                       );
         addFunction( "readAtlas",                   new Func_readAtlas()                   );
-        addFunction( "readCharacterData",           new Func_readCharacterData()           );
+        addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData() );
+        addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()   );
         addFunction( "readTaxonData",               new Func_TaxonReader()                 );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "readTrees",                   new Func_readTrees()                   );

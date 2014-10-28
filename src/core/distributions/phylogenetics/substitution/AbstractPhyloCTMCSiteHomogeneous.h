@@ -75,7 +75,7 @@ namespace RevBayesCore {
         
         // public member functions
         // pure virtual
-        virtual AbstractPhyloCTMCSiteHomogeneous*                 clone(void) const = 0;                                                                      //!< Create an independent clone
+        virtual AbstractPhyloCTMCSiteHomogeneous*                           clone(void) const = 0;                                                                      //!< Create an independent clone
     
         // non-virtual
         double                                                              computeLnProbability(void);
@@ -397,8 +397,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
             if ( (*it)->isTip() ) 
             {
                 // \todo modify this so that the distribution is actually defined on discrete character data
-                AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(siteIndices[site]) );
+                AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+                DiscreteCharacterState &c = taxon.getCharacter(siteIndices[site]);
                 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more

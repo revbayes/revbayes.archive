@@ -52,7 +52,6 @@ char *line;
 
 WorkspaceUtils workspaceUtils;
 
-void setDefaultCompletions();
 StringVector getDefaultCompletions();
 
 std::string getWd() {

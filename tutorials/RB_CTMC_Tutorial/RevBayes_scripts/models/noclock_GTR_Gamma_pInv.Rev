@@ -20,9 +20,9 @@
 
 ### Read in sequence data for both genes
 
-data_ITS <- readCharacterData("data/fagus_ITS.nex")
-data_rbcL <- readCharacterData("data/fagus_rbcL.nex")
-data_matK <- readCharacterData("data/fagus_matK.nex")
+data_ITS <- readDiscreteCharacterData("data/fagus_ITS.nex")
+data_rbcL <- readDiscreteCharacterData("data/fagus_rbcL.nex")
+data_matK <- readDiscreteCharacterData("data/fagus_matK.nex")
 
 ### Create concatenated data matrix
 data <- data_ITS + data_rbcL + data_matK

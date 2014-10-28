@@ -6,6 +6,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbFileManager.h"
 #include "RbOptions.h"
 #include "SequenctialMoveSchedule.h"
 
@@ -39,6 +40,10 @@ PowerPosteriorMcmc* PowerPosteriorMcmc::clone( void ) const
 
 void PowerPosteriorMcmc::run(size_t gen)
 {
+    
+    // create the directory if necessary
+    RbFileManager f = RbFileManager(filename);
+    f.createDirectoryForFile();
     
     std::fstream outStream;
     outStream.open( filename.c_str(), std::fstream::out);
