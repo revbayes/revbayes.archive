@@ -91,16 +91,6 @@ StringVector getDefaultCompletions() {
 }
 
 /**
- * Basically everything
- */
-void setDefaultCompletions() {
-
-    BOOST_FOREACH(std::string s, getDefaultCompletions()) {
-        //editorMachine.getCurrentState()->addCompletion(s);
-    }
-}
-
-/**
  * tab completion callback
  * 
  * Update list of available completions.
@@ -129,8 +119,8 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
         // search for files with portion after the opening quote                
         commandPos = cmd.rfind("\"") + 1;
         completions = getFileList(cmd.substr(commandPos, cmd.size()));
-    } else {        
-        
+    } else {
+
         StringVector expressionSeparator;
         expressionSeparator += " ", "%", "~", "=", "&", "|", "+", "-", "*", "/", "^", "!", "=", ",", "<", ">", ")", "[", "]", "{", "}";
 
@@ -139,11 +129,11 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
         BOOST_FOREACH(std::string s, expressionSeparator) {
             commandPos = std::max(commandPos, (int) cmd.rfind(s));
         }
-        
+
         // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
         // find position of right most dot
-        int dotPosition = (int) cmd.rfind(".");        
-        
+        int dotPosition = (int) cmd.rfind(".");
+
         if ((pi.baseVariable != NULL) || (dotPosition > commandPos)) {
             // ---------- object defined ------------
             std::string baseVariable;
@@ -151,19 +141,14 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                 commandPos++;
             }
             if (pi.baseVariable == NULL) {
-                baseVariable = cmd.substr(commandPos, dotPosition - commandPos );                
+                baseVariable = cmd.substr(commandPos, dotPosition - commandPos);
             } else {
                 baseVariable = pi.baseVariable->getName();
             }
 
-            commandPos = std::max(commandPos, dotPosition) + 1;            
-            if (workspaceUtils.isObject(baseVariable)) {
-                StringVector sv = workspaceUtils.getObjectMembers(baseVariable);
+            commandPos = std::max(commandPos, dotPosition) + 1;
+            completions = workspaceUtils.getObjectMembers(baseVariable);
 
-                BOOST_FOREACH(std::string member, sv) {
-                    completions.push_back(member);
-                }
-            }
         } else if (pi.functionName != "") {
             // ---------- function defined ------------
             if (pi.argumentLabel != "") { // assigning an argument label                
@@ -172,16 +157,13 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                 completions = getDefaultCompletions();
 
             } else { // break on either '(' or ','              
-                commandPos = std::max((int)cmd.rfind("("), (int)cmd.rfind(",")) + 1;
-
-                BOOST_FOREACH(std::string param, workspaceUtils.getFunctionParameters(pi.functionName)) {
-                    completions.push_back(param);
-                }
+                commandPos = std::max((int) cmd.rfind("("), (int) cmd.rfind(",")) + 1;
+                completions = workspaceUtils.getFunctionParameters(pi.functionName);                
             }
         } else {
             // ---------- default -----------            
             if (commandPos > 0) {
-                commandPos++;                
+                commandPos++;
             }
             completions = getDefaultCompletions();
 
