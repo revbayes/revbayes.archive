@@ -77,12 +77,15 @@ public:
      * @return 
      */
     static StringVector getFileList(std::string basePath, std::string relativePath) {
+        StringVector v;
         fs::path _relativePath(relativePath);
         fs::path _basePath(basePath);
         fs::path _combined = _basePath / _relativePath;
-
-        StringVector v;
-
+                
+        if (!_relativePath.is_relative()) {            
+            _combined = _relativePath;
+        } 
+        
         if (!fs::exists(_combined)) {
             _combined = _combined.parent_path();
             _relativePath = _relativePath.parent_path();
