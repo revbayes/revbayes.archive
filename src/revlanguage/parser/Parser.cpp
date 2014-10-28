@@ -44,7 +44,7 @@ RevLanguage::Parser::Parser(void) {
  * endings and translates all to Unix '\n' line endings.
  */
 RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const {
-    return breakIntoLines(cmd, lines, false);
+    return breakIntoLines(cmd, lines, true);
 }
 
 RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& cmd, std::list<std::string>& lines, bool validate) const {
@@ -625,7 +625,7 @@ ParserInfo Parser::checkCommand(std::string& command, Environment* env) {
             pi.baseVariable = baseVariable;
             pi.argumentLabel = argumentLabel;
 
-            // valid result, no more to do here?
+            // valid result, nothing more to do here?
             //break;
 
             // I think we should parse all lines
@@ -670,7 +670,7 @@ ParserInfo Parser::checkCommand(std::string& command, Environment* env) {
         }
     }
 
-    // make sure executing mode i set by default
+    // make sure executing mode is set by default
     setParserMode(EXECUTING);
     return pi;
 }
