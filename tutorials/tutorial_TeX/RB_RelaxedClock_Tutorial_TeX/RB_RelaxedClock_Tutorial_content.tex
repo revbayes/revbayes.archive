@@ -358,7 +358,7 @@ Then, the absolute rate applied to the tree is a deterministic node (Fig.~\ref{m
 Read in the sequences and initialize important variables.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-D <- readCharacterData(file="data/bears_irbp.nex")
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 n_sites <- D.nchar(1)
 mi <- 0
 \end{lstlisting}
@@ -491,7 +491,7 @@ clear()
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-D <- readCharacterData(file="data/bears_irbp.nex")
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 n_sites <- D.nchar(1)
 mi <- 0
 \end{lstlisting}
@@ -725,7 +725,7 @@ Below the code is provided to run the MCMC analysis under the UCLN model while e
 \begin{lstlisting}
 
 ### Load the sequence alignment
-D <- readCharacterData(file="data/bears_irbp.nex")
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 
 ### get helpful variables from the data
 n_taxa <- D.ntaxa()

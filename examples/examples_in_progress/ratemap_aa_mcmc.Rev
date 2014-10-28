@@ -10,9 +10,9 @@ if (char_str == "DNA" || char_str == "RNA") {
 
 
 # read the data
-# the readCharacter function returns a vector of matrices. We just take the first one
+# the readDiscreteCharacterData function returns a vector of matrices. We just take the first one
 in_fp <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
-D <- readCharacterData(in_fp + "ratemap_" + char_str + ".nex")
+D <- readDiscreteCharacterData(in_fp + "ratemap_" + char_str + ".nex")
 tau <- readTrees(in_fp + "ratemap_" + char_str + ".nex")[1]
 
 # get some useful variables from the data

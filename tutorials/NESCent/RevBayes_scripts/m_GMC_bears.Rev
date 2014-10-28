@@ -1,4 +1,4 @@
-D <- readCharacterData(file="data/bears_irbp.nex")
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 
 n_taxa <- D.ntaxa()
 n_sites <- D.nchar(1)

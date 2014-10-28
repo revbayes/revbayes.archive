@@ -4,7 +4,7 @@
 ############################################################################################
 
 ### Load the sequence alignment
-D <- readCharacterData(file="data/bears_irbp.nex")
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 
 ### get helpful variables from the data
 n_sites <- D.nchar(1)

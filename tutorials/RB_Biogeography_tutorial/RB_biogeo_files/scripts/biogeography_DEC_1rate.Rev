@@ -22,7 +22,7 @@ out_fp          <- "./"
 out_str         <- "bg_1rate"
 
 # input objects
-vdata           <- readCharacterData(in_fp + data_fn)
+vdata           <- readDiscreteCharacterData(in_fp + data_fn)
 atlas           <- readAtlas(in_fp + area_fn)
 vtree           <- readTrees(in_fp + data_fn)
 tree			<- vtree[1]

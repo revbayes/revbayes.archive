@@ -19,7 +19,7 @@ filenames <- v("data/fagus_ITS.nex", "data/fagus_rbcL.nex", "data/fagus_matK.nex
 
 n_parts <- filenames.size()
 for (i in 1:n_parts) {
-  data[i] <- readCharacterData(filenames[i])
+  data[i] <- readDiscreteCharacterData(filenames[i])
   n_sites[i] <- data[i].nchar(1)
 }
 

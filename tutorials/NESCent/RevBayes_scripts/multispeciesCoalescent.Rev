@@ -27,7 +27,7 @@ filenames <- v("data/Cettiidae_cytb.nex", "data/Cettiidae_G3P.nex", "data/Cettii
 
 n_genes <- filenames.size()
 for (i in 1:n_genes) {
-  data[i] <- readCharacterData(filenames[i])
+  data[i] <- readDiscreteCharacterData(filenames[i])
   n_sites[i] <- data[i].nchar(1)
 }
 
