@@ -151,7 +151,7 @@ RevPtr<Variable> DistributionFunctionQuantile::execute( void )
         
         RevBayesCore::ContinuousDistribution *d = copyObject->createDistribution();
         RevBayesCore::QuantileFunction* f = new RevBayesCore::QuantileFunction( arg, d );
-        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+        RevBayesCore::DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone() );
         value = new RealPos( detNode );
         
     }

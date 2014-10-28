@@ -137,7 +137,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionFunctionPdf<
     
     RevBayesCore::TypedDagNode<typename valueType::valueType>* arg = static_cast<const valueType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>* f = new RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>( arg, copyObject->createDistribution() );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    RevBayesCore::DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone() );
     
     Real* value = new Real( detNode );
     
