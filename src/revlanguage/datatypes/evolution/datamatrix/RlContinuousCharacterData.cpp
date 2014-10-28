@@ -20,12 +20,18 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-ContinuousCharacterData::ContinuousCharacterData(void) : ModelObject<RevBayesCore::ContinuousCharacterData>() {
+ContinuousCharacterData::ContinuousCharacterData(void) : AbstractCharacterData() {
     
 }
 
 /** Construct from bool */
-ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( new RevBayesCore::ContinuousCharacterData(*d) ) {
+ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d) : AbstractCharacterData( new RevBayesCore::ContinuousCharacterData(*d) ) {
+    
+}
+
+
+ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : AbstractCharacterData( d )
+{
     
 }
 
@@ -80,7 +86,7 @@ const std::string& ContinuousCharacterData::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
@@ -90,7 +96,6 @@ const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void) {
 const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
-    
     return typeSpec;
 }
 
@@ -101,4 +106,12 @@ bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type, bool once) c
     
     return RevObject::isConvertibleTo(type, once);
 }
+
+
+const RevBayesCore::ContinuousCharacterData& RevLanguage::ContinuousCharacterData::getValue( void ) const
+{
+    
+    return static_cast<const RevBayesCore::ContinuousCharacterData&>( this->dagNode->getValue() );
+}
+
 

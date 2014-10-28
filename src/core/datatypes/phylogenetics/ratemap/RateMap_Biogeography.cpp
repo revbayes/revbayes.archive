@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
+#include "BranchHistory.h"
 #include "RateMap_Biogeography.h"
 #include <cmath>
 
@@ -14,10 +15,7 @@ using namespace RevBayesCore;
 RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     geographyRateModifier()
 {
-    useGeographyRateModifier = false;
-    useUnnormalizedRates = false;
-//    branchHeterogeneousClockRates = false;
-//    branchHeterogeneousRateMatrices = false;
+
     forbidExtinction = fe;
     geographyRateModifier = NULL;
     distancePower = 0.0;
@@ -31,10 +29,12 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
 //    dispersalValues = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
     adjacentAreaVector = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
     availableAreaVector = std::vector<double>(numEpochs * this->numCharacters, 1.0);
-    
+
+    useGeographyRateModifier = false;
     useAreaAvailable = false;
     useAreaAdjacency = false;
     useDistanceDependence = false;
+    useUnnormalizedRates = false;
 //    useRootFrequencies = true;
     
     branchOffset=1;
@@ -61,6 +61,7 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     useAreaAdjacency = m.useAreaAdjacency;
     useDistanceDependence = m.useDistanceDependence;
     useRootFrequencies = m.useRootFrequencies;
+    useUnnormalizedRates = m.useUnnormalizedRates;
     
     geographyRateModifier = m.geographyRateModifier;
     useGeographyRateModifier = m.useGeographyRateModifier;
@@ -103,10 +104,10 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         useAreaAdjacency = r.useAreaAdjacency;
         useAreaAvailable = r.useAreaAvailable;
         useDistanceDependence = r.useDistanceDependence;
+        useUnnormalizedRates = r.useUnnormalizedRates;
 //        useRootFrequencies = r.useRootFrequencies;
         
-//        branchHeterogeneousClockRates = r.branchHeterogeneousClockRates;
-//        branchHeterogeneousRateMatrices = r.branchHeterogeneousClockRates;
+
         forbidExtinction = r.forbidExtinction;
         
         branchOffset = r.branchOffset;
@@ -342,6 +343,8 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     
     // get rate away away from currState
     unsigned n0 = counts[0];
+//    if (useGeographyRateModifier)
+//        n0 = geographyRateModifier->getNumAvailableAreas(node, from, age);
     unsigned n1 = counts[1];
 
     // forbid extinction events
@@ -352,10 +355,19 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
         return 0.0;
     }
     
-    // get characters in each state
+    // get (effective) num characters in each state
     double r0 = n1;
     double r1 = n0;
+    if (useAreaAdjacency)
+    {
+        r1 = n1;
+//        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
+        r0 = geographyRateModifier->getNumEmigratableAreas(node,from,age);
+    }
     
+//    if (useAreaAdjacency || useAreaAvailable)
+//        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
+//    
     // apply ctmc for branch
     if (branchHeterogeneousRateMatrices)
     {
@@ -395,6 +407,15 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     return sum;
 }
 
+double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
+{
+    unsigned n1 = (unsigned)numOn(from);
+    unsigned n0 = (unsigned)(numCharacters - n1);
+    unsigned counts[2] = {n0,n1};
+    
+    return RateMap_Biogeography::getSumOfRates(node, from, counts, age);
+}
+
 double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age) const
 {
     size_t nodeIndex = node.getIndex();
@@ -429,14 +450,7 @@ double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node,
     return sum;
 }
 
-double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
-{
-    unsigned n1 = (unsigned)numOn(from);
-    unsigned n0 = (unsigned)(numCharacters - n1);
-    unsigned counts[2] = {n0,n1};
-    
-    return getSumOfRates(node, from, counts, age);
-}
+
 
 void RateMap_Biogeography::updateMap(void)
 {
@@ -523,8 +537,10 @@ void RateMap_Biogeography::setGeographyRateModifier(const GeographyRateModifier&
     numEpochs = epochs.size();
     adjacentAreaVector = geographyRateModifier->getAdjacentAreaVector();
     availableAreaVector = geographyRateModifier->getAvailableAreaVector();
+    useAreaAdjacency = geographyRateModifier->getUseAreaAdjacency();
+    useAreaAvailable = geographyRateModifier->getUseAreaAvailable();
     
-    useUnnormalizedRates = true;
+//    useUnnormalizedRates = true;
     
 //    extinctionValues = geographyRateModifier->getAdjacentVector();
 //    dispersalValues = geographyRateModifier->getAvailableVector();
@@ -554,6 +570,35 @@ const bool RateMap_Biogeography::areAreasAdjacent(size_t fromCharIdx, size_t toC
     size_t epochIdx = getEpochIndex(age);
     return adjacentAreaVector[epochIdx*epochOffset + this->numCharacters*fromCharIdx + toCharIdx] > 0.0;
 
+}
+
+const std::set<size_t> RateMap_Biogeography::getRangeAndFrontierSet(const TopologyNode& node, BranchHistory* bh, double age) const
+{
+    std::set<size_t> ret;
+    const std::vector<CharacterEvent*>& from = bh->getParentCharacters();
+    const std::vector<CharacterEvent*>& to = bh->getParentCharacters();
+    size_t epochIdx = getEpochIndex(age);
+    const std::vector<std::set<size_t> >& adjacentAreaSet = geographyRateModifier->getAdjacentAreaSet();
+    
+//    std::set<size_t>
+    for (size_t i = 0; i < from.size(); i++)
+    {
+        if (from[i]->getState() == 1)
+        {
+            ret.insert(i);
+            const std::set<size_t> adj = adjacentAreaSet[epochIdx*from.size() + i];
+            std::set<size_t>::const_iterator it_adj;
+            for (it_adj = adj.begin(); it_adj != adj.end(); it_adj++)
+            {
+                if (from[*it_adj]->getState() == 0)
+                {
+                    ret.insert(*it_adj);
+                }
+            }
+        }
+    }
+    
+    return ret;
 }
 
 const std::vector<double>& RateMap_Biogeography::getEpochs(void) const
