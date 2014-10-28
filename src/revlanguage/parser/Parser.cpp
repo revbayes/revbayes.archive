@@ -42,7 +42,7 @@ RevLanguage::Parser::Parser(void) {
  * endings and translates all to Unix '\n' line endings.
  */
 RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const {
-    return breakIntoLines(cmd, lines, false);
+    return breakIntoLines(cmd, lines, true);
 }
 
 RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& cmd, std::list<std::string>& lines, bool validate) const {
