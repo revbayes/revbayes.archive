@@ -55,7 +55,7 @@ void SimplexFromVectorFunction::update( void )
     for ( size_t i = 0; i < value->size(); ++i )
         sum += (*value)[i];
     for ( size_t i = 0; i < value->size(); ++i )
-        (*value)[i] = (*value)[i] / sum;
+        (*value)[i] /= sum;
 }
 
 

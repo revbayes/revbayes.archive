@@ -17,7 +17,7 @@
 #ifndef Func_mapTree_H
 #define Func_mapTree_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 #include "RbFileManager.h"
 
 #include <string>
@@ -26,7 +26,7 @@
 namespace RevLanguage {
     
     template <typename treeType>
-    class Func_mapTree :  public Function {
+    class Func_mapTree : public Procedure {
         
     public:
         // Basic utility functions
@@ -41,7 +41,6 @@ namespace RevLanguage {
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
         
     private:
-//        void                            formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
         
     };
     

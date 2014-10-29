@@ -26,7 +26,7 @@
 namespace RevLanguage {
 
 template <typename firstValType, typename secondValType, typename retType>
-class Func__add :  public TypedFunction<retType> {
+class Func__add : public TypedFunction<retType> {
     
 public:
     Func__add( void );
@@ -38,10 +38,9 @@ public:
     const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
 
     // Implementations of pure virtual functions of the base class(es)
-    RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a random variable from this distribution
+    RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a new internal function object
     const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
-    const TypeSpec&                                                 getReturnType(void) const;                      //!< Get type of return value
-
+    
 private:
         
 };
@@ -117,17 +116,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType,
     static TypeSpec revTypeSpec = TypeSpec( Func__add<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getReturnType( void ) const
-{
-    
-    static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

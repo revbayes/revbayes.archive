@@ -21,29 +21,28 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_mrcaIndex::Func_mrcaIndex( void ) : Function( ) {
+Func_mrcaIndex::Func_mrcaIndex( void ) : TypedFunction<Natural>( )
+{
     
 }
 
 
 /** Clone object */
-Func_mrcaIndex* Func_mrcaIndex::clone( void ) const {
+Func_mrcaIndex* Func_mrcaIndex::clone( void ) const
+{
     
     return new Func_mrcaIndex( *this );
 }
 
 
-RevPtr<Variable> Func_mrcaIndex::execute() {
+RevBayesCore::TypedFunction<int>* Func_mrcaIndex::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
     RevBayesCore::MrcaIndexStatistic* f = new RevBayesCore::MrcaIndexStatistic( tau, c );
     
-    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
-    
-    Natural* value = new Natural( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -78,15 +77,6 @@ const TypeSpec& Func_mrcaIndex::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_mrcaIndex::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

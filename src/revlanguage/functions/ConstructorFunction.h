@@ -17,7 +17,7 @@
 #ifndef ConstructorFunction_H
 #define ConstructorFunction_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <set>
@@ -26,7 +26,7 @@
 
 namespace RevLanguage {
 
-class ConstructorFunction :  public Function {
+class ConstructorFunction : public Procedure {
     
 public:
     ConstructorFunction(RevObject *obj);                                                                             //!< Object constructor

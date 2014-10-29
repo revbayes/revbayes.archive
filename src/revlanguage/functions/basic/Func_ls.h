@@ -20,11 +20,11 @@
 #ifndef Func_ls_H
 #define Func_ls_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_ls : public Function {
+    class Func_ls : public Procedure {
         
     public:
         Func_ls( void );

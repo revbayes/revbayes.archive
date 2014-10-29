@@ -1,11 +1,9 @@
 #ifndef Func_TaxonReader_H
 #define Func_TaxonReader_H
 
-#include "RlFunction.h"
-#include "RbFileManager.h"
+#include "Procedure.h"
 
 #include <string>
-#include <vector>
 
 
 namespace RevLanguage {
@@ -23,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-08-01, version 1.0
      *
      */
-    class Func_TaxonReader :  public Function {
+    class Func_TaxonReader :  public Procedure {
         
     public:
         // Basic utility functions

@@ -23,17 +23,24 @@
 using namespace RevLanguage;
 
 /** Constructor */
-DistributionFunctionQuantile::DistributionFunctionQuantile( ContinuousDistribution *d ) : Function(), templateObject( d ), templateObjectPositive( NULL ) {
+DistributionFunctionQuantile::DistributionFunctionQuantile( ContinuousDistribution *d ) : TypedFunction<Real>(),
+    templateObject( d ),
+    templateObjectPositive( NULL )
+{
     
     argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
-    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
+    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
+    {
         argRules.push_back( (*it)->clone() );
     }
 }
 
 /** Constructor */
-DistributionFunctionQuantile::DistributionFunctionQuantile( PositiveContinuousDistribution *d ) : Function(), templateObject( NULL ), templateObjectPositive( d ) {
+DistributionFunctionQuantile::DistributionFunctionQuantile( PositiveContinuousDistribution *d ) : TypedFunction<Real>(),
+    templateObject( NULL ),
+    templateObjectPositive( d )
+{
     
     argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
@@ -44,19 +51,25 @@ DistributionFunctionQuantile::DistributionFunctionQuantile( PositiveContinuousDi
 
 
 /** Constructor */
-DistributionFunctionQuantile::DistributionFunctionQuantile(const DistributionFunctionQuantile& obj) : Function(obj), argRules( obj.argRules )  {
+DistributionFunctionQuantile::DistributionFunctionQuantile(const DistributionFunctionQuantile& obj) : TypedFunction<Real>(obj),
+    argRules( obj.argRules )
+{
     
-    if ( obj.templateObject != NULL ) {
+    if ( obj.templateObject != NULL )
+    {
         templateObject = obj.templateObject->clone();
     }
-    else {
+    else
+    {
         templateObject = NULL;
     }
     
-    if ( obj.templateObjectPositive != NULL ) {
+    if ( obj.templateObjectPositive != NULL )
+    {
         templateObjectPositive = obj.templateObjectPositive->clone();
     }
-    else {
+    else
+    {
         templateObjectPositive = NULL;
     }
     
@@ -103,11 +116,10 @@ DistributionFunctionQuantile* DistributionFunctionQuantile::clone(void) const {
 }
 
 
-/** Execute function: we reset our template object here and give out a copy */
-RevPtr<Variable> DistributionFunctionQuantile::execute( void )
+RevBayesCore::TypedFunction<double>* DistributionFunctionQuantile::createFunction( void ) const
 {
     
-    Real* value = NULL;
+    RevBayesCore::TypedFunction<double>* f = NULL;
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     if ( templateObject != NULL ) {
@@ -118,7 +130,7 @@ RevPtr<Variable> DistributionFunctionQuantile::execute( void )
         
             if ( args[i].isConstant() )
             {
-                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (const Variable*) args[i].getVariable() ) );
             }
             else
             {
@@ -127,9 +139,7 @@ RevPtr<Variable> DistributionFunctionQuantile::execute( void )
         }
         
         RevBayesCore::ContinuousDistribution *d = copyObject->createDistribution();
-        RevBayesCore::QuantileFunction* f = new RevBayesCore::QuantileFunction( arg, d );
-        RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
-        value = new Real( detNode );
+        f = new RevBayesCore::QuantileFunction( arg, d );
     }
     else 
     {
@@ -140,7 +150,7 @@ RevPtr<Variable> DistributionFunctionQuantile::execute( void )
             
             if ( args[i].isConstant() )
             {
-                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (const Variable*) args[i].getVariable() ) );
             }
             else
             {
@@ -150,14 +160,12 @@ RevPtr<Variable> DistributionFunctionQuantile::execute( void )
         }
         
         RevBayesCore::ContinuousDistribution *d = copyObject->createDistribution();
-        RevBayesCore::QuantileFunction* f = new RevBayesCore::QuantileFunction( arg, d );
-        RevBayesCore::DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone() );
-        value = new RealPos( detNode );
+        f = new RevBayesCore::QuantileFunction( arg, d );
         
     }
     
     // return the value
-    return new Variable( value );
+    return f;
 }
 
 
@@ -190,22 +198,4 @@ const TypeSpec& DistributionFunctionQuantile::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& DistributionFunctionQuantile::getReturnType(void) const {
-    
-    if ( templateObject != NULL ) 
-    {
-        return Real::getClassTypeSpec();
-    }
-    else if ( templateObjectPositive != NULL ) 
-    {
-        return RealPos::getClassTypeSpec();
-    }
-    else 
-    {
-        return Real::getClassTypeSpec();
-    }
 }

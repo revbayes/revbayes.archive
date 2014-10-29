@@ -34,7 +34,12 @@ namespace RevLanguage {
         virtual                                         ~TypedFunction(void);                                                               //!< Destructor
         TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                        //!< Copy constuctor
         
+        void bogusFoo() {}
+        
         virtual RevPtr<Variable>                        execute(void);                                                                      //!< Create a random variable from this distribution
+        virtual const TypeSpec&                         getReturnType(void) const;                                                          //!< Get type of return value
+        
+
         
         // Basic utility functions you have to override
         virtual TypedFunction<valueType>*               clone(void) const = 0;                                                              //!< Clone object
@@ -104,6 +109,16 @@ const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassType
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+
+/* Get return type of function */
+template <typename valueType>
+const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getReturnType( void ) const
+{
+    
+    return valueType::getClassTypeSpec();
 }
 
 #endif

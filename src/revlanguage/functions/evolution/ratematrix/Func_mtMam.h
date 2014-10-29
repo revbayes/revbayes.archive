@@ -18,14 +18,14 @@
 #ifndef Func_mtMam_H
 #define Func_mtMam_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_mtMam :  public Function {
+    class Func_mtMam : public Procedure {
         
     public:
         Func_mtMam( void );

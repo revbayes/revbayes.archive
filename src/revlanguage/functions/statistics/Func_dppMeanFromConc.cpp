@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Function( ) {
+Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Procedure( ) {
     
 }
 
@@ -39,9 +39,7 @@ RevPtr<Variable> Func_dppMeanFromConc::execute() {
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
 	
 	double meanCP = RevBayesCore::RbStatistics::Helper::dppExpectNumTableFromConcParam(cp, ne);
-    RevBayesCore::ConstantNode<double> *constNode = new RevBayesCore::ConstantNode<double>("", new double(meanCP));
-	
-	RealPos* value = new RealPos( constNode );
+	RealPos* value = new RealPos( meanCP );
 	return new Variable( value );
 }
 

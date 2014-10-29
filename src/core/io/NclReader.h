@@ -89,7 +89,6 @@ namespace RevBayesCore {
         DiscreteCharacterData<RnaState>*            createUnalignedRnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold RNA data
         bool                                        fileExists(const char *fn) const;                                               //!< Returns whether a file exists
         std::string                                 findFileNameFromPath(const std::string& fp) const;                              //!< Returns the file name from a file path
-        void                                        formatError(RbFileManager& fm, std::string& errorStr);                          //!< Format the error string when (mis)reading files
         std::string                                 intuitDataType(std::string& s);                                                 //!< Attempt to determine the type of data
         
         // methods for reading sequence alignments

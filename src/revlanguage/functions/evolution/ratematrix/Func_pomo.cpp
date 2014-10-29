@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomo::Func_pomo( void ) : Function( ) {
+Func_pomo::Func_pomo( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -33,8 +33,8 @@ Func_pomo* Func_pomo::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_pomo::execute() {
-    
+RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_pomo::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     //RevBayesCore::TypedDagNode< double >* root_pol = static_cast<const double &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -44,11 +44,7 @@ RevPtr<Variable> Func_pomo::execute() {
     
     RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
     
-    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
-    
-    RateMatrix* value = new RateMatrix( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -84,15 +80,6 @@ const TypeSpec& Func_pomo::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_pomo::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

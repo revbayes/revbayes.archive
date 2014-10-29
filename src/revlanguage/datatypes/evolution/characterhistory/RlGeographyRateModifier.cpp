@@ -16,36 +16,36 @@
 
 using namespace RevLanguage;
 
-RlGeographyRateModifier::RlGeographyRateModifier(void) : ModelObject<RevBayesCore::GeographyRateModifier>() {
+GeographyRateModifier::GeographyRateModifier(void) : ModelObject<RevBayesCore::GeographyRateModifier>() {
     
 }
 
 
-RlGeographyRateModifier::RlGeographyRateModifier( RevBayesCore::GeographyRateModifier *v) : ModelObject<RevBayesCore::GeographyRateModifier>( v ) {
+GeographyRateModifier::GeographyRateModifier( RevBayesCore::GeographyRateModifier *v) : ModelObject<RevBayesCore::GeographyRateModifier>( v ) {
     
 }
 
 
-RlGeographyRateModifier::RlGeographyRateModifier( RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier> *m) : ModelObject<RevBayesCore::GeographyRateModifier>( m ) {
+GeographyRateModifier::GeographyRateModifier( RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier> *m) : ModelObject<RevBayesCore::GeographyRateModifier>( m ) {
     
 }
 
 
-RlGeographyRateModifier* RlGeographyRateModifier::clone() const {
-    return new RlGeographyRateModifier( *this );
+GeographyRateModifier* GeographyRateModifier::clone() const {
+    return new GeographyRateModifier( *this );
 }
 
 
 /* Get Rev type of object */
-const std::string& RlGeographyRateModifier::getClassType(void) {
+const std::string& GeographyRateModifier::getClassType(void) {
     
-    static std::string revType = "RlGeographyRateModifier";
+    static std::string revType = "GeographyRateModifier";
     
 	return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& RlGeographyRateModifier::getClassTypeSpec(void) {
+const TypeSpec& GeographyRateModifier::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -54,7 +54,7 @@ const TypeSpec& RlGeographyRateModifier::getClassTypeSpec(void) {
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
-const TypeSpec& RlGeographyRateModifier::getTypeSpec(void) const {
+const TypeSpec& GeographyRateModifier::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;

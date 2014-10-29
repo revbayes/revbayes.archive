@@ -18,7 +18,7 @@
 #define Func_readTreeTrace_H
 
 #include "RlBranchLengthTree.h"
-#include "RlFunction.h"
+#include "Procedure.h"
 #include "RbFileManager.h"
 #include "RlTimeTree.h"
 #include "RlTreeTrace.h"
@@ -30,7 +30,7 @@
 
 namespace RevLanguage {
     
-    class Func_readTreeTrace :  public Function {
+    class Func_readTreeTrace : public Procedure {
         
     public:
         // Basic utility functions
@@ -46,7 +46,6 @@ namespace RevLanguage {
         
     private:
 
-        void                            formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr);                //!< Format the error string when (mis)reading files
         TreeTrace<BranchLengthTree>*    readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
         TreeTrace<TimeTree>*            readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
     };

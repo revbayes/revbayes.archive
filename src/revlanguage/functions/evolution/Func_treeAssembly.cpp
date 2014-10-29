@@ -20,7 +20,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_treeAssembly::Func_treeAssembly( void ) : Function( ) {
+Func_treeAssembly::Func_treeAssembly( void ) : TypedFunction<BranchLengthTree>( ) {
     
 }
 
@@ -32,17 +32,14 @@ Func_treeAssembly* Func_treeAssembly::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_treeAssembly::execute() {
+RevBayesCore::TypedFunction<RevBayesCore::BranchLengthTree>* Func_treeAssembly::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* brlens = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens );
-
-    DeterministicNode<RevBayesCore::BranchLengthTree> *detNode = new DeterministicNode<RevBayesCore::BranchLengthTree>("", f, this->clone());
     
-    BranchLengthTree* value = new BranchLengthTree( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -77,15 +74,6 @@ const TypeSpec& Func_treeAssembly::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_treeAssembly::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = BranchLengthTree::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

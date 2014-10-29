@@ -1,28 +1,27 @@
 #ifndef Func__vectorIndexOperator_H
 #define Func__vectorIndexOperator_H
 
-#include "Function.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
     template <typename valType>
-    class Func__vectorIndexOperator :  public Function {
+    class Func__vectorIndexOperator : public TypedFunction<valType> {
         
     public:
         Func__vectorIndexOperator( void );
         
         // Basic utility functions
-        Func__vectorIndexOperator*                      clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get class name
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func__vectorIndexOperator*                                      clone(void) const;                              //!< Clone the object
+        static const std::string&                                       getClassType(void);                             //!< Get class name
+        static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction<typename valType::valueType>*       createFunction(void) const ;                    //!< Create a new internal function object
+        const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
         
     private:
         
@@ -37,7 +36,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType>
-RevLanguage::Func__vectorIndexOperator<valType>::Func__vectorIndexOperator( void ) : Function( )
+RevLanguage::Func__vectorIndexOperator<valType>::Func__vectorIndexOperator( void ) : TypedFunction<valType>( )
 {
     
 }
@@ -53,18 +52,14 @@ RevLanguage::Func__vectorIndexOperator<valType>* RevLanguage::Func__vectorIndexO
 
 
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__vectorIndexOperator<valType>::execute()
+RevBayesCore::TypedFunction< typename valType::valueType >* RevLanguage::Func__vectorIndexOperator<valType>::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* v = static_cast<const ModelVector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int>* index = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::VectorIndexOperator<typename valType::valueType> *func = new RevBayesCore::VectorIndexOperator<typename valType::valueType>(v, index);
     
-    DeterministicNode<typename valType::valueType> *detNode = new DeterministicNode<typename valType::valueType>("", func, this->clone());
-    
-    valType* value = new valType( detNode );
-    
-    return new Variable( value );
+    return func;
 }
 
 
@@ -105,17 +100,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func__vectorIndexOperator<valType>::ge
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revClassTypeSpec;
-}
-
-
-/* Get return type */
-template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func__vectorIndexOperator<valType>::getReturnType( void ) const
-{
-    
-    static TypeSpec returnTypeSpec = valType::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

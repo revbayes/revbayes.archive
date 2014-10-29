@@ -1,7 +1,7 @@
 #ifndef Func_readAtlas_H
 #define Func_readAtlas_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 #include "RbFileManager.h"
 
 #include <map>
@@ -11,7 +11,7 @@
 
 namespace RevLanguage {
     
-    class Func_readAtlas :  public Function {
+    class Func_readAtlas :  public Procedure {
         
     public:
         // Basic utility functions
