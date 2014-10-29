@@ -35,7 +35,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<double>* distancePower;
+        const TypedDagNode<double>*                                             distancePower;
         
         
     };

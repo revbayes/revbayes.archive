@@ -32,7 +32,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_ls::Func_ls( void ) : Function() {
+Func_ls::Func_ls( void ) : Procedure() {
     
 }
 

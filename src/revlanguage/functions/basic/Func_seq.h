@@ -1,7 +1,7 @@
 #ifndef Func_seq_H
 #define Func_seq_H
 
-#include "Function.h"
+#include "Procedure.h"
 #include <string>
 
 namespace RevLanguage {
@@ -30,7 +30,7 @@ namespace RevLanguage {
      */
     
     template <typename valType>
-    class Func_seq :  public Function {
+    class Func_seq : public Procedure {
         
     public:
         Func_seq();
@@ -62,7 +62,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Func_seq<valType>::Func_seq() : Function() {
+RevLanguage::Func_seq<valType>::Func_seq() : Procedure() {
     
 }
 

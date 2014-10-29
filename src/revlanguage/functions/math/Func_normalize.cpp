@@ -20,7 +20,8 @@
 
 using namespace RevLanguage;
 
-Func_normalize::Func_normalize() : Function() {
+Func_normalize::Func_normalize() : TypedFunction< ModelVector<RealPos> >()
+{
     
 }
 
@@ -31,19 +32,15 @@ Func_normalize* Func_normalize::clone( void ) const {
 }
 
 
-/** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func_normalize::execute( void ) {
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_normalize::createFunction( void ) const
+{
     
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> > *params = static_cast< ModelVector<RealPos> & >( args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::TypedDagNode< double > *sum = static_cast< RealPos& >( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( params, sum );
     
-    DeterministicNode< RevBayesCore::RbVector<double> > *detNode = new DeterministicNode< RevBayesCore::RbVector<double> >("", func, this->clone());
-
-    ModelVector<RealPos> *theNormalizedVector = new ModelVector<RealPos>( detNode );
-    
-    return new Variable( theNormalizedVector );
+    return func;
 }
 
 
@@ -89,11 +86,4 @@ const TypeSpec& Func_normalize::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& Func_normalize::getReturnType( void ) const {
-    
-    return ModelVector<RealPos>::getClassTypeSpec();
 }

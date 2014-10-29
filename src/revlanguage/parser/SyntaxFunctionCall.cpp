@@ -1,4 +1,3 @@
-#include "AbstractMemberFunction.h"
 #include "Argument.h"
 #include "Environment.h"
 #include "MemberProcedure.h"

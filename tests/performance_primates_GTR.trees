@@ -1,0 +1,2 @@
+Iteration	Posterior	Likelihood	Prior	tau
+0	-5936.21	-5942.79	6.57925	((Tarsius_syrichta:0.173346,Lemur_catta:0.173346):0.072821,(Saimiri_sciureus:0.220209,(((Pongo:0.099368,((Pan:0.042791,Homo_sapiens:0.042791):0.014622,Gorilla:0.057413):0.041955):0.023294,Hylobates:0.122662):0.058657,(M_sylvanus:0.069537,((Macaca_fuscata:0.017727,M_mulatta:0.017727):0.027686,M_fascicularis:0.045413):0.024124):0.111783):0.038890):0.025959):0.000000

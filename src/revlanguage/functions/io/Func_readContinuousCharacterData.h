@@ -1,7 +1,7 @@
 #ifndef Func_readContinuousCharacterData_H
 #define Func_readContinuousCharacterData_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 #include "RbFileManager.h"
 
 #include <map>
@@ -35,7 +35,7 @@ namespace RevLanguage {
      * the table is unlikely to complete with Yes's (Y) in all of the cells.
      */
     
-    class Func_readContinuousCharacterData :  public Function {
+    class Func_readContinuousCharacterData : public Procedure {
         
     public:
         // Basic utility functions
@@ -48,10 +48,7 @@ namespace RevLanguage {
         RevPtr<Variable>                        execute(void);                                                          //!< Execute function
         const ArgumentRules&                    getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                              //!< Get type of return value
-        
-    private:
-        void                                    formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr);    //!< Format the error string when (mis)reading files
-        
+                
     };
     
 }

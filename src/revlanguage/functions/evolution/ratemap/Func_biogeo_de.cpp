@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "BiogeographyRateMapFunction.h"
 #include "Func_FreeBinary.h"
 #include "Func_biogeo_de.h"
@@ -27,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_biogeo_de::Func_biogeo_de( void ) : Function( ) {
+Func_biogeo_de::Func_biogeo_de( void ) : TypedFunction<RateMap>( ) {
     
 }
 
@@ -39,7 +31,8 @@ Func_biogeo_de* Func_biogeo_de::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_biogeo_de::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RateMap >* Func_biogeo_de::createFunction( void ) const
+{
     
 //    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     //    RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix&>( gainLossRates->getRevObject() ).getDagNode();
@@ -65,7 +58,7 @@ RevPtr<Variable> Func_biogeo_de::execute() {
 
     if (this->args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        grm = static_cast<const RlGeographyRateModifier&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+        grm = static_cast<const GeographyRateModifier&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     }
 
     unsigned nc = static_cast<const Natural&>( this->args[3].getVariable()->getRevObject() ).getValue();
@@ -77,11 +70,7 @@ RevPtr<Variable> Func_biogeo_de::execute() {
     if (grm != NULL)
         f->setGeographyRateModifier(grm);
     
-    DeterministicNode<RevBayesCore::RateMap> *detNode = new DeterministicNode<RevBayesCore::RateMap>("", f, this->clone());
-    
-    RateMap* value = new RateMap( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -98,7 +87,7 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
 //        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "gainLossRates"   , RateMatrix::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "rootFrequencies" , Simplex::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
-        argumentRules.push_back( new ArgumentRule( "geoRateMod"      , RlGeographyRateModifier::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
+        argumentRules.push_back( new ArgumentRule( "geoRateMod"      , GeographyRateModifier::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
         argumentRules.push_back( new ArgumentRule( "numAreas"        , Natural::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "forbidExtinction", RlBoolean::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
@@ -127,15 +116,6 @@ const TypeSpec& Func_biogeo_de::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_biogeo_de::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMap::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

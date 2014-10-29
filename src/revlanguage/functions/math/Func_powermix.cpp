@@ -20,7 +20,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_powermix::Func_powermix( void ) : Function( ) {
+Func_powermix::Func_powermix( void ) : TypedFunction<Simplex>( ) {
     
 }
 
@@ -32,7 +32,8 @@ Func_powermix* Func_powermix::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_powermix::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_powermix::createFunction( void ) const
+{
     
     std::vector<const RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* >  params;
     for ( size_t i = 0; i < args.size(); i++ ) {
@@ -41,12 +42,8 @@ RevPtr<Variable> Func_powermix::execute() {
     }
     
     RevBayesCore::PowermixFunction *func = new RevBayesCore::PowermixFunction( params );
-
-    DeterministicNode<RevBayesCore::RbVector<double> > *detNode = new DeterministicNode<RevBayesCore::RbVector<double> >("", func, this->clone());
-
-    Simplex *theSimplex = new Simplex( detNode );
     
-    return new Variable( theSimplex );
+    return func;
 }
 
 
@@ -84,16 +81,6 @@ const TypeSpec& Func_powermix::getClassTypeSpec(void) {
     
 	return revTypeSpec;
 }
-
-
-/* Get return type */
-const TypeSpec& Func_powermix::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = Simplex::getClassTypeSpec();
-    
-    return returnTypeSpec;
-}
-
 
 const TypeSpec& Func_powermix::getTypeSpec( void ) const {
     

@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_type::Func_type( void ) : Function() {
+Func_type::Func_type( void ) : Procedure() {
     
 }
 

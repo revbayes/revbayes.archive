@@ -17,7 +17,7 @@
 #define DistributionFunctionQuantile_H
 
 #include "RlContinuousDistribution.h"
-#include "RlFunction.h"
+#include "RlTypedFunction.h"
 #include "RlPositiveContinuousDistribution.h"
 
 #include <string>
@@ -25,7 +25,7 @@
 
 namespace RevLanguage {
     
-    class DistributionFunctionQuantile :  public Function {
+    class DistributionFunctionQuantile : public TypedFunction<Real> {
         
     public:
         DistributionFunctionQuantile(ContinuousDistribution *d);    
@@ -43,14 +43,13 @@ namespace RevLanguage {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevBayesCore::TypedFunction<double>*    createFunction(void) const;                                                     //!< Create a function object
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         
     protected:
         
         ArgumentRules                           argRules;                                                                       //!< Member rules converted to reference rules
-        ContinuousDistribution*                 templateObject;                                                                   //!< Member rules converted to reference rules
+        ContinuousDistribution*                 templateObject;                                                                 //!< Member rules converted to reference rules
         PositiveContinuousDistribution*         templateObjectPositive;                                                               //!< The template object
         
     };

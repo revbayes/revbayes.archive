@@ -18,14 +18,14 @@
 #ifndef Func_wag_H
 #define Func_wag_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_wag :  public Function {
+    class Func_wag :  public Procedure {
         
     public:
         Func_wag( void );

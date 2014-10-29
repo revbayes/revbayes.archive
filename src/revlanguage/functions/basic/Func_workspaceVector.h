@@ -1,8 +1,8 @@
 #ifndef Func_workspaceVector_H
 #define Func_workspaceVector_H
 
-#include "Function.h"
-#include <map>
+#include "Procedure.h"
+
 #include <string>
 
 namespace RevLanguage {
@@ -15,7 +15,7 @@ namespace RevLanguage {
      * the elements are workspace objects.
      */
     template <typename valType>
-    class Func_workspaceVector :  public Function {
+    class Func_workspaceVector :  public Procedure {
         
     public:
         Func_workspaceVector(void);                                                             //!< Default constructor
@@ -49,8 +49,7 @@ namespace RevLanguage {
 
 /** Default constructor */
 template <typename valType>
-RevLanguage::Func_workspaceVector<valType>::Func_workspaceVector() :
-Function()
+RevLanguage::Func_workspaceVector<valType>::Func_workspaceVector() : Procedure()
 {
 }
 

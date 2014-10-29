@@ -28,7 +28,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_range::Func_range( void ) : Function() {
+Func_range::Func_range( void ) : Procedure() {
     
 }
 

@@ -12,11 +12,11 @@
 #ifndef Func_license_H
 #define Func_license_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_license : public Function {
+    class Func_license : public Procedure {
         
     public:
         Func_license( void );

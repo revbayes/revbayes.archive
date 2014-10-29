@@ -18,7 +18,8 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_symmetricDifference::Func_symmetricDifference( void ) : Function( ) {
+Func_symmetricDifference::Func_symmetricDifference( void ) : TypedFunction<RealPos>( )
+{
     
 }
 
@@ -30,17 +31,14 @@ Func_symmetricDifference* Func_symmetricDifference::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_symmetricDifference::execute() {
+RevBayesCore::TypedFunction< double >* Func_symmetricDifference::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau2 = static_cast<const TimeTree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau2 = static_cast<const TimeTree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::SymmetricDifferenceStatistic* f = new RevBayesCore::SymmetricDifferenceStatistic( tau, tau2 );
     
-    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-    
-    RealPos* value = new RealPos( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -76,15 +74,6 @@ const TypeSpec& Func_symmetricDifference::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_symmetricDifference::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 
