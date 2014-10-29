@@ -288,6 +288,7 @@
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_f81.h"
+#include "Func_FreeBinary.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
 #include "Func_t92.h"
@@ -776,6 +777,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
         addFunction( "fnF81",      new Func_f81()     );
+        addFunction( "fnFreeBinary", new Func_FreeBinary() );
         addFunction( "fnGTR",      new Func_gtr()     );
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
