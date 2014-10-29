@@ -16,10 +16,12 @@
 
 # analysis input/output
 in_fp           = "./input/"
+in_fp           = "/Users/mlandis/Documents/code/revbayes-code/tutorials/RB_Biogeography_tutorial/RB_biogeo_files/input/"
 data_fn         = "psychotria_range.nex"
 area_fn         = "hawaii_dynamic.atlas.txt"
 out_fp 			= "./output/"
-out_str         = "bg_1rate"
+out_fp           = "/Users/mlandis/Documents/code/revbayes-code/tutorials/RB_Biogeography_tutorial/RB_biogeo_files/output/"
+out_str         = "bg_2rate"
 
 # input objects
 vdata           = readDiscreteCharacterData(in_fp + data_fn)
@@ -84,10 +86,10 @@ moves[mvIdx++] = mvScale(x=dp, lambda=0.5, tune=false, weight=5.0)
 moves[mvIdx++] = mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
 
 # data augmentation moves
-moves[mvIdx++] = mvNodeCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=0.2, type="Biogeo", weight=2.0*n_nodes)
-moves[mvIdx++] = mvPathCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=0.2, type="Biogeo", weight=2.0*n_nodes)
-moves[mvIdx++] = mvNodeCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=1.0, type="Biogeo", weight=n_nodes)
-moves[mvIdx++] = mvPathCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=1.0, type="Biogeo", weight=n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.1, type="Biogeo", graph="branch", weight=n_nodes/1.0)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.1, type="Biogeo", graph="node", weight=n_nodes/1.0)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.4, type="Biogeo", graph="branch", weight=n_nodes/2.0)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.4, type="Biogeo", graph="node", weight=n_nodes/2.0)
 
 
 
@@ -98,8 +100,8 @@ moves[mvIdx++] = mvPathCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=1.0, type="B
 mnIdx = 1
 
 # standard monitors
-monitors[mnIdx++] = mnScreen(printgen=10, glr, csf, dp)
-monitors[mnIdx++] = mnFile(filename=out_fp+out_str+".parameters.txt", printgen=10, glr, csf, dp)
+monitors[mnIdx++] = mnScreen(printgen=10, glr[1], glr[2], csf, dp)
+monitors[mnIdx++] = mnFile(filename=out_fp+out_str+".parameters.txt", printgen=10, glr[1], glr[2], csf, dp)
 
 # character history monitors
 monitors[mnIdx++] = mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=M, tree=tree, printgen=10, style="events")
