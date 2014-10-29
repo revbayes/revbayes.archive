@@ -1,6 +1,6 @@
 #include "Argument.h"
 #include "Environment.h"
-#include "MemberProcedure.h"
+#include "RlMemberMethod.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -175,9 +175,16 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         
         Function* theFunction = mt.getFunction( functionName, args, !dynamic ).clone();
         theFunction->processArguments(args, !dynamic);
-        MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( theFunction );
-        theMemberProcedure->setMemberObject( theVar );
-        func = theMemberProcedure;
+        
+        MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( theFunction );
+        if ( theMemberMethod != NULL )
+        {
+            theMemberMethod->setMemberObject( theVar );
+        }
+        else
+        {
+            throw RbException("Error while trying to access member function/procedure.");
+        }
         
     }
     

@@ -1,12 +1,14 @@
 #ifndef RlMemberFunction_H
 #define RlMemberFunction_H
 
+#include "RlMemberMethod.h"
 #include "RlTypedFunction.h"
+
 
 namespace RevLanguage {
     
     template <typename memberObjectType, typename retType>
-    class MemberFunction :  public TypedFunction<retType> {
+    class MemberFunction : public TypedFunction<retType>, public MemberMethod {
         
     public:
         MemberFunction(const memberObjectType* o, ArgumentRules* argRules);                                             //!< Constructor
