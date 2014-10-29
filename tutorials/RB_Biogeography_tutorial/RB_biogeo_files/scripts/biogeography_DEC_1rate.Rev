@@ -83,10 +83,10 @@ moves[mvIdx++] = mvScale(x=dp, lambda=0.5, tune=false, weight=5.0)
 moves[mvIdx++] = mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
 
 # data augmentation moves
-moves[mvIdx++] = mvNodeCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=0.2, type="Biogeo", weight=2.0*n_nodes)
-moves[mvIdx++] = mvPathCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=0.2, type="Biogeo", weight=2.0*n_nodes)
-moves[mvIdx++] = mvNodeCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=1.0, type="Biogeo", weight=n_nodes)
-moves[mvIdx++] = mvPathCHRS(ctmc=M, qmap=Q_range, tree=tree, lambda=1.0, type="Biogeo", weight=n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.1, type="Biogeo", graph="branch", weight=n_nodes/1.0)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.1, type="Biogeo", graph="node", weight=n_nodes/1.0)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.4, type="Biogeo", graph="branch", weight=n_nodes/2.0)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.4, type="Biogeo", graph="node", weight=n_nodes/2.0)
 
 
 
