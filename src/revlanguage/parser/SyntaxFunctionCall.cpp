@@ -180,6 +180,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         if ( theMemberMethod != NULL )
         {
             theMemberMethod->setMemberObject( theVar );
+            func = theFunction;
         }
         else
         {
