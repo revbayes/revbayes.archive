@@ -319,9 +319,6 @@ bool ConverterNode<rlType>::isConstant( void ) const
 template<typename rlType>
 void ConverterNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Pass the call on
     this->keepAffected();
@@ -376,10 +373,6 @@ template<typename rlType>
 void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
     
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of Converter node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -398,10 +391,6 @@ void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 template<typename rlType>
 void ConverterNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Touch myself
     this->touched = true;

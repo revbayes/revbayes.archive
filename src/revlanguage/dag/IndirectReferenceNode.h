@@ -221,9 +221,6 @@ bool IndirectReferenceNode<rlType>::isConstant( void ) const
 template<typename rlType>
 void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Pass the call on
     this->keepAffected();
@@ -277,10 +274,6 @@ template<typename rlType>
 void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
     
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
     // dispatch call to others
     this->restoreAffected();
 }
@@ -294,9 +287,6 @@ void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 template<typename rlType>
 void IndirectReferenceNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Dispatch the touch message to downstream nodes
     this->touchAffected();

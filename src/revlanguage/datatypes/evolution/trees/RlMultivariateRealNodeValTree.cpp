@@ -54,15 +54,11 @@ MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::Multivari
     ArgumentRules* argRules = new ArgumentRules();
     argRules->push_back(new ArgumentRule("index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ));
     
-    methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
-    
-    methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
-    
-    methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
-    
-    methods.addFunction("rootVal", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
-    
-    methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
+    methods.addFunction("mean",     new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    methods.addFunction("tipMean",  new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    methods.addFunction("stdev",    new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    methods.addFunction("rootVal",  new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    methods.addFunction("newick",   new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
     
     ArgumentRules* clampArgRules = new ArgumentRules();
     clampArgRules->push_back(new ArgumentRule("data"        , ContinuousCharacterData::getClassTypeSpec()));

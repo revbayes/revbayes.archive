@@ -62,7 +62,8 @@ namespace RevLanguage {
         
         // Getters and setters
         RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;                                                     //!< Get the internal DAG node
-        virtual const rbType&                   getValue(void) const;                                                       //!< Get the value
+        virtual const rbType&                   getValue(void) const;                                                       //!< Get the value (const)
+        virtual rbType&                         getValue(void);                                                             //!< Get the value (non-const)
         void                                    setValue(rbType *x);                                                        //!< Set new constant value
         
     protected:
@@ -262,6 +263,14 @@ const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(
 }
 
 
+
+template <typename rbType>
+RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
+    
+    return dagNode;
+}
+
+
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
@@ -272,11 +281,14 @@ const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
 }
 
 
-
 template <typename rbType>
-RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
+rbType& RevLanguage::ModelObject<rbType>::getValue( void )
+{
     
-    return dagNode;
+    if ( dagNode == NULL )
+        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
+    
+    return dagNode->getValue();
 }
 
 

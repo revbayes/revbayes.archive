@@ -11,12 +11,10 @@
 
 # read the data 
 contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
-"read continuous data"
 
 # work under fixed topology
 treeArray <- readTrees("data/chronoplac40.tree")
 psi <- treeArray[1]
-"read tree"
 
 # sigma: variance per unit of time of the Brownian motion
 sigma ~ dnLogUniform(min=0.001,max=1000)
@@ -25,8 +23,6 @@ sigma.setValue(0.1)
 # univariate Brownian process along the tree
 # parameterized by sigma
 logmass ~ dnBrownian(psi,sigma)
-
-"brownian motion initialized"
 
 # moves on sigma 
 index <- 1
@@ -39,16 +35,12 @@ moves[index++] = mvRealNodeValTreeTranslation(process=logmass,lambda=1,tune=true
 # condition Brownian model on quantitative trait data (second column of the dataset)
 logmass.clampAt(contData,2)
 
-"clamped"
 
 # get useful functions of the covariance matrix, to be monitored:
-str(logmass)
 
 # the mean and the standard deviation of log body mass across the tree
 meanlogmass := logmass.mean()
-"mean"
 stdevlogmass := logmass.stdev()
-"stdev"
 
 # the value of log body mass at the root
 rootlogmass := logmass.rootVal()

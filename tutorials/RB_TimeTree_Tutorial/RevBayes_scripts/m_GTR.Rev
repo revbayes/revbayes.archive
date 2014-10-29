@@ -20,5 +20,5 @@ er ~ dnDirichlet(er_hp)
 Q := fnGTR(er,sf)
 
 ### simplex moves for er and sf
-moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
-moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] = mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)

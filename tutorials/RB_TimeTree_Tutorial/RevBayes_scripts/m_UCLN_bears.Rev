@@ -13,7 +13,7 @@ br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
 base_rate ~ dnLnorm(br_mu, br_s)
-moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
+moves[mi++] = mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 
 ### get the number of branches in the tree
 n_branches <- 2 * n_taxa - 2
@@ -27,8 +27,8 @@ ucln_sigma ~ dnExponential(3.0)
 ucln_var := ucln_sigma * ucln_sigma
 ucln_mu := ln(ucln_mean) - (ucln_var * 0.5)
 ### both the ucln_mean and ucln_sigma will be operated on by scale moves
-moves[mi++] <- mvScale(ucln_mean, lambda=1.0, tune=true, weight=4.0)
-moves[mi++] <- mvScale(ucln_sigma, lambda=0.5, tune=true, weight=4.0)
+moves[mi++] = mvScale(ucln_mean, lambda=1.0, tune=true, weight=4.0)
+moves[mi++] = mvScale(ucln_sigma, lambda=0.5, tune=true, weight=4.0)
 
 ### now we will create a vector of stochastic nodes 
 ### each element in the vector represents a branch rate
@@ -36,11 +36,11 @@ moves[mi++] <- mvScale(ucln_sigma, lambda=0.5, tune=true, weight=4.0)
 ### using a for-lop initialize the branch rates and assign a move to each one
 for(i in 1:n_branches){
 	branch_rates[i] ~ dnLnorm(ucln_mu, ucln_sigma)
-	moves[mi++] <- mvScale(branch_rates[i],lambda=1.0,tune=true,weight=2.0)
+	moves[mi++] = mvScale(branch_rates[i],lambda=1.0,tune=true,weight=2.0)
 }
 ### add 2 more moves on the branch rate vector
-moves[mi++] <- mvVectorScale(branch_rates,lambda=1.0,tune=true,weight=2.0) 
-moves[mi++] <- mvVectorSingleElementScale(branch_rates,lambda=30.0,tune=true,weight=1.0) 
+moves[mi++] = mvVectorScale(branch_rates,lambda=1.0,tune=true,weight=2.0) 
+moves[mi++] = mvVectorSingleElementScale(branch_rates,lambda=30.0,tune=true,weight=1.0) 
 
 ### the branch-rates used in the phylogenetic CTMC are a function of the DPP branch rates and the base rate
 branch_subrates := branch_rates * base_rate

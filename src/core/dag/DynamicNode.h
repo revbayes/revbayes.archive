@@ -82,7 +82,8 @@ RevBayesCore::DynamicNode<valueType>::~DynamicNode( void ) {
 
 /** Clone the entire graph: clone children, swap parents */
 template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes ) const {
+RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes ) const
+{
     
     // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )
@@ -152,11 +153,7 @@ const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
  */
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
+        
     if ( touched )
     {
         touched = false;
@@ -168,12 +165,9 @@ void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
 
 /** Restore the old value of the node and tell affected */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
+void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer)
+{
+
     if ( touched )
     {
         touched = false;
@@ -183,11 +177,8 @@ void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer) {
 
 /** touch this node for recalculation */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
+void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher )
+{
     
     if (!touched)
     {

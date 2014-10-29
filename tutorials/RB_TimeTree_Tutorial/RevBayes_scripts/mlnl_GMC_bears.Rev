@@ -1,6 +1,6 @@
 ############################################################################################
 #   File: timetree tutorial model specification and sampler setup for estimating marginal
-#		  likelihoods under the ACLN model on a fixed tree
+#		  likelihoods under the global clock model on a fixed tree
 ############################################################################################
 
 ### Load the sequence alignment
@@ -10,29 +10,28 @@ D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 n_sites <- D.nchar(1)
 
 ### initialize an iterator for the moves vector
-mi <- 0
+mi <- 1
 
 ### set up the birth-death model from file
 source("RevBayes_scripts/m_BDP_bears.Rev")
 
 ### load the model from file 
-source("RevBayes_scripts/m_ACLN_bears.Rev")
+source("RevBayes_scripts/m_GMC_bears.Rev")
 
 ### workspace model wrapper ###
-mymodel <- model(er)
+mymodel = model(er)
 
 ### compute power posterior distributions
-pow_p <- powerPosterior(mymodel, moves, "output/ACLN_bears_powp.out", cats=50) 
-pow_p.burnin(generations=2000,tuningInterval=150)
+pow_p = powerPosterior(mymodel, moves, "output/GMC_bears_powp.out", cats=50) 
+pow_p.burnin(generations=5000,tuningInterval=200)
 pow_p.run(generations=1000)  
 
 ### use stepping-stone sampling to calculate marginal likelihoods
-ss <- steppingStoneSampler(file="output/ACLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss = steppingStoneSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ss.marginal() 
 
 ### use path sampling to calculate marginal likelihoods
-ps <- pathSampler(file="output/ACLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 
-### quit
 q()

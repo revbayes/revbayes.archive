@@ -1,7 +1,10 @@
 #include "RlContinuousCharacterData.h"
 
 #include "ConstantNode.h"
+#include "Natural.h"
+#include "ModelVector.h"
 #include "RlContinuousCharacterData.h"
+#include "RlString.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 
@@ -10,25 +13,51 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-ContinuousCharacterData::ContinuousCharacterData(void) : ModelObject<RevBayesCore::ContinuousCharacterData>() {
+ContinuousCharacterData::ContinuousCharacterData(void) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>(),
+    AbstractCharacterData( NULL )
+{
+
+}
+
+/** Construct from core data type */
+ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>( d.clone() ),
+    AbstractCharacterData( NULL )
+{
+    // set the internal value pointer
+    setCharacterDataObject( &this->getDagNode()->getValue() );
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
     
 }
 
 /** Construct from core data type */
-ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d.clone() )
+ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
+    AbstractCharacterData( NULL )
 {
+    // set the internal value pointer
+    setCharacterDataObject( &this->getDagNode()->getValue() );
     
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
 }
 
-/** Construct from core data type */
-ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d )
+
+ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
+    AbstractCharacterData( NULL )
 {
+    // set the internal value pointer
+    setCharacterDataObject( &this->getDagNode()->getValue() );
     
-}
-
-
-ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d )
-{
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
     
 }
 
@@ -69,6 +98,30 @@ ContinuousCharacterData* ContinuousCharacterData::clone(void) const {
 RevObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
     
     return RevObject::convertTo(type);
+}
+
+
+/* Map calls to member methods */
+RevPtr<Variable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
+    
+    if ( this->getDagNode() != NULL )
+    {
+        // set the internal value pointer
+        setCharacterDataObject( &this->getDagNode()->getValue() );
+    }
+    
+    RevPtr<Variable> retVal = executeCharacterDataMethod(name, args, found);
+    
+    if ( found == true )
+    {
+        return retVal;
+    }
+    else
+    {
+        return ModelObject<RevBayesCore::ContinuousCharacterData>::executeMethod(name, args, found);
+    }
+    
 }
 
 

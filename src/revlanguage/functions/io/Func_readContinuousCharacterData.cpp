@@ -58,8 +58,7 @@ RevPtr<Variable> Func_readContinuousCharacterData::execute( void )
     }
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
-    RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
-    reader.clearWarnings();
+    RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     // the vector of matrices;
     ModelVector<ContinuousCharacterData> *m = new ModelVector<ContinuousCharacterData>();

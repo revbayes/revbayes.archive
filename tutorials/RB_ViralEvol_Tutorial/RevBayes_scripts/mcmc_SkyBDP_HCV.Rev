@@ -165,19 +165,19 @@ monitors[3] <- mnScreen(printgen=10, origin, mean_l, th, mean_r, mean_d)
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 ### pre-burnin to tune the proposals ###
-#mymcmc.burnin(generations=2000,tuningInterval=150)
+mymcmc.burnin(generations=200,tuningInterval=50)
 
 ### run the MCMC ###
-#mymcmc.run(generations=40000)
+mymcmc.run(generations=400)
 
 ### display proposal acceptance rates and tuning ###
-#mymcmc.operatorSummary()
+mymcmc.operatorSummary()
 
 ### summarize the trees ###
-#tt <- readTreeTrace("output/hcv_skybdp_mcmc.trees", "clock")
-#tt.summarize()
+tt <- readTreeTrace("output/hcv_skybdp_mcmc.trees", "clock")
+tt.summarize()
 # write MAP tree to file
-#mapTree(tt, "output/hcv_skybdp_MAP.tre")
+mapTree(tt, "output/hcv_skybdp_MAP.tre")
 
 "kthxbye"
 #q()

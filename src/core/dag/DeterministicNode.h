@@ -298,10 +298,6 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
 {
     
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
     // allow specialized recovery in functions
     function->keep( affecter );
     
@@ -366,10 +362,6 @@ void RevBayesCore::DeterministicNode<valueType>::reInitializeMe( void )
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
 {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of Deterministic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // we need to recompute our value?!
     this->update();
@@ -438,11 +430,8 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
  *       it to be set correctly might well fail.
  */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
+void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher )
+{
     
     // To be on the safe side, we set the touched flag here, but the flag is not used by this class and may not
     // be in a consistent state. Beware!

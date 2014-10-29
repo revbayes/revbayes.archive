@@ -648,14 +648,16 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
+            RevBayesCore::DagNode *theNode = (*j);
+            
             // error checking
-            if ( (*j)->getName() == "" )
+            if ( theNode->getName() == "" )
                 throw RbException( "Unable to connect monitor to DAG copy because variable name was lost");
             
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
-                if ( (*k)->getName() == (*j)->getName() )
+                if ( (*k)->getName() == theNode->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -664,7 +666,7 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a monitor working on it.");
+                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a monitor working on it.");
             }
             
             // now swap the node

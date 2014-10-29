@@ -13,12 +13,12 @@ br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
 base_rate ~ dnLnorm(br_mu, br_s)
-moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
+moves[mi++] = mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 
 ### the clock rate applied to every branch in the tree
 ### with a gamma prior and a scale move
 clock_rate ~ dnGamma(2.0,4.0)
-moves[mi++] <- mvScale(clock_rate,lambda=0.5,tune=true,weight=5.0)
+moves[mi++] = mvScale(clock_rate,lambda=0.5,tune=true,weight=5.0)
 
 ### the absolute clock rate applied to the tree is a deterministic node
 abs_clock_rt := clock_rate * base_rate
