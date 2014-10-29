@@ -133,16 +133,16 @@ void FunctionTable::eraseFunction(const std::string& name) {
 }
 
 
-/** Execute function and get its variable value (evaluate once) */
-RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
-
-    Function&         theFunction = findFunction(name, args, true);
-    RevPtr<Variable>  theValue    = theFunction.execute();
-
-    theFunction.clear();
-
-    return theValue;
-}
+///** Execute function and get its variable value (evaluate once) */
+//RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+//
+//    const Function&   theFunction = findFunction(name, args, true);
+//    RevPtr<Variable>  theValue    = theFunction.execute();
+//
+//    theFunction.clear();
+//
+//    return theValue;
+//}
 
 
 /**
@@ -231,10 +231,11 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
 
 /** Find function (also processes arguments) */
-Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
+const Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
+{
     
-    std::pair<std::multimap<std::string, Function *>::iterator,
-              std::multimap<std::string, Function *>::iterator> retVal;
+    std::pair<std::multimap<std::string, Function *>::const_iterator,
+              std::multimap<std::string, Function *>::const_iterator> retVal;
     
     size_t hits = count(name);
     if (hits == 0)
@@ -285,7 +286,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         Function* bestMatch = NULL;
 
         bool ambiguous = false;
-        std::multimap<std::string, Function *>::iterator it;
+        std::multimap<std::string, Function *>::const_iterator it;
         for (it=retVal.first; it!=retVal.second; it++) 
         {
             matchScore->clear();
@@ -399,10 +400,11 @@ const Function& FunctionTable::getFunction( const std::string& name ) const
 
 
 /** Get function. This function will throw an error if the name and args do not match any named function. */
-Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
+const Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
+{
     
     // find the template function
-    Function& theFunction = findFunction(name, args, once);
+    const Function& theFunction = findFunction(name, args, once);
 
     return theFunction;
 }

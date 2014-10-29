@@ -143,7 +143,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
             
             if ( theObject.isType( Function::getClassTypeSpec() ) )
             {
-                func = &( static_cast<Function&>( theObject ) );
+                func = static_cast<Function*>( theObject.clone() );
                 found = func->checkArguments(args, NULL, !dynamic);
             }
         }
@@ -152,7 +152,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         // This call will throw with a relevant message if the function is not found
         if ( !found )
         {
-            func = &( env.getFunction(functionName, args, !dynamic) );
+            func = env.getFunction(functionName, args, !dynamic).clone();
         }
         
         // Allow the function to process the arguments
@@ -191,8 +191,8 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
     // Evaluate the function
     RevPtr<Variable> funcReturnValue = func->execute();
     
-    // Clear arguments from function
-    func->clear();
+    // free the memory of our copy
+    delete func;
     
     if ( dynamic == false )
     {

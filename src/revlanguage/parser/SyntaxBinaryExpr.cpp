@@ -117,13 +117,13 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dynam
     
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function& theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false );
-    theFunction.processArguments( args, false );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
+    theFunction->processArguments( args, false );
     
-    RevPtr<Variable> theReturnValue = theFunction.execute();
+    RevPtr<Variable> theReturnValue = theFunction->execute();
     
-    // Clear the arguments in the function
-    theFunction.clear();
+    // Free the memory of our copy
+    delete theFunction;
     
     if ( dynamic == false )
     {
