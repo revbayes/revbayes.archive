@@ -20,6 +20,7 @@
 #define MemberProcedure_H
 
 #include "Procedure.h"
+#include "RlMemberMethod.h"
 
 #include <map>
 #include <set>
@@ -31,7 +32,7 @@ namespace RevLanguage {
     class ArgumentRule;
     class RevObject;
     
-    class MemberProcedure :  public Procedure {
+    class MemberProcedure : public Procedure, public MemberMethod {
         
     public:
         MemberProcedure(const TypeSpec retType, ArgumentRules* argRules);                                                //!< Constructor
