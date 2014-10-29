@@ -426,10 +426,6 @@ bool DagNode::isStochastic( void ) const
 void DagNode::keep(void)
 {
     
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "Keeping DAG node " << getName() << " <" << this << ">" << std::endl;
-#endif
-    
     // keep myself first
     keepMe( this );
     
@@ -442,10 +438,6 @@ void DagNode::keep(void)
  */
 void DagNode::keepAffected()
 {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "Keeping affected of DAG node " << getName() << " <" << this << ">" << std::endl;
-#endif
     
     // keep all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
@@ -689,10 +681,6 @@ void DagNode::replace( DagNode *n )
 void DagNode::restore(void)
 {
     
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "Restoring DAG node " << getName() << " <" << this << ">" << std::endl;
-#endif
-    
     // first restore myself
     restoreMe( this );
     
@@ -707,10 +695,6 @@ void DagNode::restore(void)
  */
 void DagNode::restoreAffected(void)
 {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "Restoring affected of DAG node " << getName() << " <" << this << ">" << std::endl;
-#endif
     
     // next, restore all my children
     for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
@@ -787,10 +771,6 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
 void DagNode::touch()
 {
 
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "Touching DAG node " << getName() << " <" << this << ">" << std::endl;
-#endif
-
     // first touch myself
     touchMe( this );
     
@@ -805,11 +785,10 @@ void DagNode::touch()
 void DagNode::touchAffected()
 {
 
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "Touching affected of DAG node " << getName() << " <" << this << ">" << std::endl;
-#endif
-
     // touch all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    {
         (*i)->touchMe( this );
+    }
+    
 }

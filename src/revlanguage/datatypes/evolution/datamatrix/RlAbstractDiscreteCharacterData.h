@@ -3,6 +3,7 @@
 
 #include "AbstractDiscreteCharacterData.h"
 #include "ModelObject.h"
+#include "RlAbstractCharacterData.h"
 
 #include <set>
 #include <string>
@@ -12,7 +13,7 @@
 namespace RevLanguage {
     
     
-    class AbstractDiscreteCharacterData : public ModelObject<RevBayesCore::AbstractDiscreteCharacterData> {
+    class AbstractDiscreteCharacterData : public ModelObject<RevBayesCore::AbstractDiscreteCharacterData>, AbstractCharacterData {
         
     public:
         AbstractDiscreteCharacterData(void);                                                                                                //!< Constructor requires character type

@@ -36,8 +36,7 @@ RevPtr<Variable> Func_readTrees::execute( void ) {
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
-    RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
-    reader.clearWarnings();
+    RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
     std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( fn.getValue() );

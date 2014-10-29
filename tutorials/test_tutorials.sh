@@ -19,6 +19,7 @@ cd RB_CTMC_Tutorial
 
 cd ..
 
+
 # MCMC move and proposal distribution tutorial
 #cd RB_MCMC_Tutorial
 #rb RevBayes_Scripts/full_analysis.Rev
@@ -26,6 +27,7 @@ cd ..
 #rm -r output
 
 #cd ..
+
 
 # marginal likelihood estimation on substitution models
 cd RB_BayesFactor_Tutorial
@@ -36,11 +38,20 @@ cd RB_BayesFactor_Tutorial
 cd ..
 
 
-# continuous trait evolution tutorials
-cd RB_PhyloComparative_Tutorial
+# dating tutorial (time tree estimation using different clock models)
+cd RB_TimeTree_Tutorial
 rb RevBayes_Scripts/full_analysis.Rev
 
 rm -r output
+
+cd ..
+
+
+# continuous trait evolution tutorials
+cd RB_PhyloComparative_Tutorial
+#rb RevBayes_Scripts/full_analysis.Rev
+
+#rm -r output
 
 cd ..
 

@@ -14,6 +14,7 @@
 
 #include "ContinuousCharacterData.h"
 #include "ModelObject.h"
+#include "RlAbstractCharacterData.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -21,7 +22,7 @@
 
 namespace RevLanguage {
     
-    class ContinuousCharacterData : public ModelObject<RevBayesCore::ContinuousCharacterData> {
+    class ContinuousCharacterData : public ModelObject<RevBayesCore::ContinuousCharacterData>, AbstractCharacterData {
         
     public:
         ContinuousCharacterData(void);                                                                          //!< Default constructor
@@ -41,7 +42,9 @@ namespace RevLanguage {
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
-        
+
+        RevPtr<Variable>                executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found);     //!< Execute member method
+
     };
     
 }

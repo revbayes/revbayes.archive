@@ -14,32 +14,34 @@ using namespace RevLanguage;
 
 /** Constructor of empty variable with specified type. */
 Variable::Variable( const TypeSpec& ts, const std::string& n ) :
-name( n ),
-refCount( 0 ),
-revObject( NULL ),
-revObjectTypeSpec( ts ),
-isHiddenVar( false ),
-isReferenceVar( false ),
-isVectorVar( false ),
-isWorkspaceVar( false ),
-min( RbConstants::Integer::max ),
-max( 0 )
+    name( n ),
+    refCount( 0 ),
+    revObject( NULL ),
+    revObjectTypeSpec( ts ),
+    isElementVar( false ),
+    isHiddenVar( false ),
+    isReferenceVar( false ),
+    isVectorVar( false ),
+    isWorkspaceVar( false ),
+    min( RbConstants::Integer::max ),
+    max( 0 )
 {
     
 }
 
 /** Constructor of filled variable (no type restrictions). */
 Variable::Variable(RevObject *v, const std::string &n) :
-name( n ),
-refCount( 0 ),
-revObject( NULL ),
-revObjectTypeSpec( RevObject::getClassTypeSpec() ),
-isHiddenVar( false ),
-isReferenceVar( false ),
-isVectorVar( false ),
-isWorkspaceVar( false ),
-min( RbConstants::Integer::max ),
-max( 0 )
+    name( n ),
+    refCount( 0 ),
+    revObject( NULL ),
+    revObjectTypeSpec( RevObject::getClassTypeSpec() ),
+    isElementVar( false ),
+    isHiddenVar( false ),
+    isReferenceVar( false ),
+    isVectorVar( false ),
+    isWorkspaceVar( false ),
+    min( RbConstants::Integer::max ),
+    max( 0 )
 {
     setRevObject( v );
 }
@@ -47,16 +49,17 @@ max( 0 )
 
 /** Constructor of reference variable (no type restrictions). */
 Variable::Variable(const RevPtr<Variable>& refVar, const std::string &n) :
-name( n ),
-refCount( 0 ),
-revObject( NULL ),
-revObjectTypeSpec( RevObject::getClassTypeSpec() ),
-isHiddenVar( false ),
-isReferenceVar( true ),
-isVectorVar( false ),
-isWorkspaceVar( false ),
-min( RbConstants::Integer::max ),
-max( 0 )
+    name( n ),
+    refCount( 0 ),
+    revObject( NULL ),
+    revObjectTypeSpec( RevObject::getClassTypeSpec() ),
+    isElementVar( false ),
+    isHiddenVar( false ),
+    isReferenceVar( true ),
+    isVectorVar( false ),
+    isWorkspaceVar( false ),
+    min( RbConstants::Integer::max ),
+    max( 0 )
 {
     
     referencedVariable = refVar;
@@ -66,17 +69,18 @@ max( 0 )
 
 /** Copy constructor */
 Variable::Variable(const Variable &v) :
-name( v.name ),
-refCount( 0 ),
-revObject( NULL ),
-revObjectTypeSpec( v.revObjectTypeSpec ),
-isHiddenVar( v.isHiddenVar ),
-isReferenceVar( v.isHiddenVar ),
-isVectorVar( v.isVectorVar ),
-isWorkspaceVar( v.isWorkspaceVar ),
-referencedVariable( v.referencedVariable ),
-min( v.min ),
-max( v.max )
+    name( v.name ),
+    refCount( 0 ),
+    revObject( NULL ),
+    revObjectTypeSpec( v.revObjectTypeSpec ),
+    isElementVar( v.isElementVar ),
+    isHiddenVar( v.isHiddenVar ),
+    isReferenceVar( v.isHiddenVar ),
+    isVectorVar( v.isVectorVar ),
+    isWorkspaceVar( v.isWorkspaceVar ),
+    referencedVariable( v.referencedVariable ),
+    min( v.min ),
+    max( v.max )
 {
     
     if ( v.revObject != NULL )
@@ -112,6 +116,7 @@ Variable& Variable::operator=(const Variable &v)
         
         name                = v.name;
         revObjectTypeSpec   = v.revObjectTypeSpec;
+        isElementVar        = v.isElementVar;
         isHiddenVar         = v.isHiddenVar;
         isReferenceVar      = v.isReferenceVar;
         isVectorVar         = v.isVectorVar;
@@ -260,6 +265,15 @@ bool Variable::isAssignable( void ) const
 }
 
 
+/** 
+ * Return the internal flag signalling whether the variable is an element of a vector, e.g., x[1] would be.
+ */
+bool Variable::isElementVariable( void ) const
+{
+    return isElementVar;
+}
+
+
 /** Return the internal flag signalling whether the variable is currently a hidden variable. Hidden variables will not show in the ls() function. */
 bool Variable::isHiddenVariable( void ) const
 {
@@ -365,6 +379,27 @@ void Variable::replaceRevObject( RevObject *newObj )
     {
         // do nothing
     }
+    
+}
+
+
+/**
+ * Set whether this variable is an element of a vector variable.
+ * All element variable are also hidden.
+ * Throw an error if the variable is a reference variable. 
+ * If so, you need to set the Rev object first, and then set the hidden variable flag.
+ */
+void Variable::setElementVariableState(bool flag)
+{
+    if ( isReferenceVar )
+    {
+        throw "A reference variable cannot be made a hidden variable";
+    }
+    
+    isElementVar = flag;
+    
+    // delegate to setHidden
+    setHiddenVariableState( flag );
     
 }
 

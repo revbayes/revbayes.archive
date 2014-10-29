@@ -327,9 +327,6 @@ bool UserFunctionNode<rlType>::isConstant( void ) const
 template<typename rlType>
 void UserFunctionNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of user function node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Pass the call to downstream nodes
     this->keepAffected();
@@ -393,10 +390,6 @@ template<typename rlType>
 void UserFunctionNode<rlType>::restoreMe( RevBayesCore::DagNode* restorer )
 {
     
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of user function node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
     // We can no longer trust our value, so mark us as touched
     this->touched = true;
     
@@ -455,9 +448,6 @@ void UserFunctionNode<rlType>::swapParent(const RevBayesCore::DagNode* oldParent
 template<typename rlType>
 void UserFunctionNode<rlType>::touchMe( RevBayesCore::DagNode* toucher )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of user function node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Touch myself
     this->touched = true;

@@ -50,13 +50,11 @@ RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCor
     ArgumentRules* covArgRules = new ArgumentRules();
     covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    this->methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
     
-    this->methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    methods.addFunction("covariance",           new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    methods.addFunction("precision",            new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    methods.addFunction("correlation",          new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    methods.addFunction("partialCorrelation",   new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
 
 }
 
