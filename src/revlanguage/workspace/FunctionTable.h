@@ -51,7 +51,7 @@ namespace RevLanguage {
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<Function*>                  findFunctions(const std::string& name) const;                                           //!< Return functions matching name
         const Function&                         getFirstFunction(const std::string& name) const;                                        //!< Get first function with given name
-        const Function&                         getFunction(const std::string& name);                                                   //!< Get function, throw an error if overloaded
+        const Function&                         getFunction(const std::string& name) const;                                             //!< Get function, throw an error if overloaded
         Function&                               getFunction(const std::string& name, const std::vector<Argument>& args, bool once);     //!< Get function
         std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                           //!< Get a copy of function table
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?

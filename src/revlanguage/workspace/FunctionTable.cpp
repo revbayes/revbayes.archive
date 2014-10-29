@@ -381,7 +381,8 @@ const Function& FunctionTable::getFirstFunction( const std::string& name ) const
 
 
 /** Get function. This function will throw an error if the name is missing or if there are several matches (overloaded functions) */
-const Function& FunctionTable::getFunction( const std::string& name ) {
+const Function& FunctionTable::getFunction( const std::string& name ) const
+{
     
     // find the template function
     const std::vector<Function *>& theFunctions = findFunctions(name);
