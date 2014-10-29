@@ -150,7 +150,8 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw with a relevant message if the function is not found
-        if ( !found ){
+        if ( !found )
+        {
             func = &( env.getFunction(functionName, args, !dynamic) );
         }
         
@@ -170,8 +171,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         // Now we get a reference to the member object inside
         RevObject &theMemberObject = theVar->getRevObject();
         
-        // \todo: We shouldn't allow const casts!!!
-        MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
+        const MethodTable& mt = theMemberObject.getMethods();
         
         Function* theFunction = mt.getFunction( functionName, args, !dynamic ).clone();
         theFunction->processArguments(args, !dynamic);
