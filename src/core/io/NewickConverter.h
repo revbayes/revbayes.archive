@@ -38,7 +38,6 @@ namespace RevBayesCore {
 
     private:
         TopologyNode*           createNode(const std::string &n, std::vector<TopologyNode*> &nodes, std::vector<double> &brlens);
-
     };
 
 }
