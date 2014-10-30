@@ -38,10 +38,9 @@ RevPtr<Variable> Func_dppMeanFromConc::execute() {
     double cp = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
 	
-	double meanCP = RevBayesCore::RbStatistics::Helper::dppExpectNumTableFromConcParam(cp, ne);
-    RevBayesCore::ConstantNode<double> *constNode = new RevBayesCore::ConstantNode<double>("", new double(meanCP));
+	double numCat = RevBayesCore::RbStatistics::Helper::dppExpectNumTableFromConcParam(cp, ne);
 	
-	RealPos* value = new RealPos( constNode );
+	RealPos* value = new RealPos( numCat );
 	return new Variable( value );
 }
 
