@@ -18,28 +18,27 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_treeHeight::Func_treeHeight( void ) : Function( ) {
+Func_treeHeight::Func_treeHeight( void ) : TypedFunction<RealPos>( )
+{
     
 }
 
 
 /** Clone object */
-Func_treeHeight* Func_treeHeight::clone( void ) const {
+Func_treeHeight* Func_treeHeight::clone( void ) const
+{
     
     return new Func_treeHeight( *this );
 }
 
 
-RevPtr<Variable> Func_treeHeight::execute() {
+RevBayesCore::TypedFunction<double>* Func_treeHeight::createFunction() const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TreeHeightStatistic* f = new RevBayesCore::TreeHeightStatistic( tau );
     
-    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-    
-    RealPos* value = new RealPos( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -74,15 +73,6 @@ const TypeSpec& Func_treeHeight::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_treeHeight::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

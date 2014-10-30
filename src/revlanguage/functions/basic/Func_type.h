@@ -1,7 +1,7 @@
 #ifndef Func_type_H
 #define Func_type_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
@@ -17,7 +17,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2014-01-21
      *
      */
-    class Func_type : public Function {
+    class Func_type : public Procedure {
         
     public:
         Func_type( void );

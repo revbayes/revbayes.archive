@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_blosum62::Func_blosum62( void ) : Function( ) {
+Func_blosum62::Func_blosum62( void ) : Procedure( ) {
     
 }
 

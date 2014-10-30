@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_maximumTree::Func_maximumTree( void ) : Function( ) {
+Func_maximumTree::Func_maximumTree( void ) : TypedFunction<TimeTree>( ) {
     
 }
 
@@ -31,20 +31,14 @@ Func_maximumTree* Func_maximumTree::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_maximumTree::execute() {
-    
-   // RevBayesCore::TypedDagNode< RbVector<TimeTree> >* gTrees = static_cast<const ModelVector<TimeTree> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-
+RevBayesCore::TypedFunction< RevBayesCore::TimeTree >* Func_maximumTree::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::MaximumTreeFunction* f = new RevBayesCore::MaximumTreeFunction( gTrees );
     
-    DeterministicNode<RevBayesCore::TimeTree> *detNode = new DeterministicNode<RevBayesCore::TimeTree>("", f, this->clone());
-    
-    TimeTree* value = new TimeTree( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -78,15 +72,6 @@ const TypeSpec& Func_maximumTree::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_maximumTree::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = TimeTree::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

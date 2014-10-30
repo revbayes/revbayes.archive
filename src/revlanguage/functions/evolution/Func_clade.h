@@ -14,13 +14,13 @@
 #ifndef ConstructorClade_H
 #define ConstructorClade_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_clade :  public Function {
+    class Func_clade : public Procedure {
         
     public:
         Func_clade( void );

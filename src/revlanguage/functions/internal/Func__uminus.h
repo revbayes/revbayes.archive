@@ -25,7 +25,7 @@
 namespace RevLanguage {
 
 template <typename firstValType, typename retType>
-class Func__uminus :  public TypedFunction<retType> {
+class Func__uminus : public TypedFunction<retType> {
     
 public:
     Func__uminus( void );
@@ -39,9 +39,6 @@ public:
     // Function functions you have to override
     RevBayesCore::TypedFunction<typename retType::valueType>*     createFunction(void) const;                                       //!< Create a function object
     const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-    const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
-    
-private:
     
 };
     
@@ -109,16 +106,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::g
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-template <typename firstValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

@@ -25,7 +25,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_generalRateMap::Func_generalRateMap( void ) : Function( ) {
+Func_generalRateMap::Func_generalRateMap( void ) : TypedFunction<RateMap>( ) {
     
 }
 
@@ -37,7 +37,8 @@ Func_generalRateMap* Func_generalRateMap::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_generalRateMap::execute() {
+RevBayesCore::TypedFunction<RevBayesCore::RateMap>* Func_generalRateMap::createFunction() const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -68,12 +69,7 @@ RevPtr<Variable> Func_generalRateMap::execute() {
     f->setRootFrequencies(rf);
     
     
-    
-    DeterministicNode<RevBayesCore::RateMap> *detNode = new DeterministicNode<RevBayesCore::RateMap>("", f, this->clone());
-    
-    RateMap* value = new RateMap( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -116,15 +112,6 @@ const TypeSpec& Func_generalRateMap::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_generalRateMap::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMap::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomoStateConverter::Func_pomoStateConverter( void ) : Function( ) {
+Func_pomoStateConverter::Func_pomoStateConverter( void ) : Procedure( ) {
     
 }
 
@@ -48,8 +48,6 @@ RevPtr<Variable> Func_pomoStateConverter::execute() {
     {
         gene2species[it->getName()] = it->getSpeciesName();
     }
-
-
     
     AbstractDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
         

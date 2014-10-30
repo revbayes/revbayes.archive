@@ -39,11 +39,11 @@ For example, after opening the \RevBayes~program, you can load your data file:
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data_ITS <- readCharacterData("data/fagus_ITS.nex")
+RevBayes > data_ITS <- readDiscreteCharacterData("data/fagus_ITS.nex")
 \end{lstlisting}
 \end{snugshade*}}
 
-For this command, type in the command and its options:\\ \cl{data\_ITS <- readCharacterData("data/fagus\_ITS.nex")}. 
+For this command, type in the command and its options:\\ \cl{data\_ITS <- readDiscreteCharacterData("data/fagus\_ITS.nex")}. 
 \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
 
 Multi-line entries, particularly loops, will often be displayed in boxes without the \cl{RevBayes >} prompt so that they can be copied and pasted wholly. 
@@ -158,11 +158,11 @@ The next steps will walk you through the full specification of the model and MCM
 
 \textbf{\textit{Load Data}}
 
-First load in the sequences using the \cl{readCharacterData()} function. This function returns a \textit{vector} of data matrices and, even though there is only one element in the vector, we must index that element using the \cl{[1]} notation. (You will also note that list indexing in Rev starts with \cl{1} like in the R language.)
+First load in the sequences using the \cl{readDiscreteCharacterData()} function. This function returns a \textit{vector} of data matrices and, even though there is only one element in the vector, we must index that element using the \cl{[1]} notation. (You will also note that list indexing in Rev starts with \cl{1} like in the R language.)
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
-RevBayes > data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+RevBayes > data_atpB <- readDiscreteCharacterData("data/conifer_atpB.nex")[1]
+RevBayes > data_rbcL <- readDiscreteCharacterData("data/conifer_rbcL.nex")[1]
 \end{lstlisting}
 \end{snugshade*}}
 Executing these lines initializes each data matrix as their respective Rev variables. 

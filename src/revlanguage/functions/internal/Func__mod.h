@@ -1,7 +1,8 @@
 #ifndef Func__mod_H
 #define Func__mod_H
 
-#include "RlFunction.h"
+#include "Natural.h"
+#include "RlTypedFunction.h"
 #include <string>
 
 namespace RevLanguage {
@@ -19,23 +20,20 @@ namespace RevLanguage {
      * @since Version 1.0, 2014-07-04
      *
      */
-    class Func__mod: public Function {
+    class Func__mod: public TypedFunction<Natural> {
         
     public:
         Func__mod();
         
         // Basic utility functions
-        Func__mod*                  clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func__mod*                                  clone(void) const;                                          //!< Clone the object
+        static const std::string&                   getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-        
-        
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction<int>*           createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     

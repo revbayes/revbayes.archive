@@ -18,7 +18,7 @@
 #define DistributionFunctionRv_H
 
 #include "RlTypedDistribution.h"
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <string>
 #include <vector>
@@ -26,7 +26,7 @@
 namespace RevLanguage {
     
     template <class valueType>
-    class DistributionFunctionRv :  public Function {
+    class DistributionFunctionRv : public Procedure {
         
     public:
         DistributionFunctionRv(TypedDistribution<valueType> *d);                                                                             //!< Object constructor
@@ -67,7 +67,7 @@ namespace RevLanguage {
 
 /** Constructor */
 template <class valueType>
-RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv( TypedDistribution<valueType> *d ) : Function(), templateObject( d ) {
+RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv( TypedDistribution<valueType> *d ) : Procedure(), templateObject( d ) {
     
     argRules.push_back( new ArgumentRule("n", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)));
     const ArgumentRules &memberRules = templateObject->getParameterRules();
@@ -81,7 +81,7 @@ RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv( TypedDis
 
 /** Constructor */
 template <class valueType>
-RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv(const DistributionFunctionRv& obj) : Function(obj), argRules( obj.argRules )  {
+RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv(const DistributionFunctionRv& obj) : Procedure(obj), argRules( obj.argRules )  {
     
     templateObject = obj.templateObject->clone();
     
@@ -186,7 +186,7 @@ const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::get
 template <class valueType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getReturnType(void) const {
     
-    return Real::getClassTypeSpec();
+    return ModelVector< valueType >::getClassTypeSpec();
 }
 
 

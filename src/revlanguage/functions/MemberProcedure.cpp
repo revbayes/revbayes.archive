@@ -29,7 +29,7 @@
 using namespace RevLanguage;
 
 /** Constructor */
-MemberProcedure::MemberProcedure(const TypeSpec retType, ArgumentRules* argRules) : Function(),
+MemberProcedure::MemberProcedure(const TypeSpec retType, ArgumentRules* argRules) : Procedure(),
     argumentRules(argRules),
     object(NULL),
     returnType(retType)

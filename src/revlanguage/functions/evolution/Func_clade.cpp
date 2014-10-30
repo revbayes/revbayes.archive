@@ -1,12 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "Func_clade.h"
 #include "ModelVector.h"
 #include "RlClade.h"
@@ -15,7 +6,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_clade::Func_clade( void ) : Function( ) {
+Func_clade::Func_clade( void ) : Procedure( ) {
     
 }
 

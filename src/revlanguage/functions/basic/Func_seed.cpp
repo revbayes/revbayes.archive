@@ -21,7 +21,7 @@
 
 using namespace RevLanguage;
 
-Func_seed::Func_seed() : Function()
+Func_seed::Func_seed() : Procedure()
 {
     
 }

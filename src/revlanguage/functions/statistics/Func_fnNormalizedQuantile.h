@@ -14,30 +14,29 @@
 #ifndef Func_fnNormalizedQuantile_H
 #define Func_fnNormalizedQuantile_H
 
-#include "RlFunction.h"
-#include <map>
+#include "ModelVector.h"
+#include "RlTypedFunction.h"
+
 #include <string>
 #include "TypedDagNode.h"
 
 namespace RevLanguage {
     
     template <typename valType>
-    class Func_fnNormalizedQuantile :  public Function {
+    class Func_fnNormalizedQuantile : public TypedFunction< ModelVector<valType> > {
         
     public:
         Func_fnNormalizedQuantile();
         
         // Basic utility functions
-        Func_fnNormalizedQuantile*             clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func_fnNormalizedQuantile*                                                  clone(void) const;                                          //!< Clone the object
+        static const std::string&                                                   getClassType(void);                                         //!< Get class name
+        static const TypeSpec&                                                      getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                                             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-        
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >*            createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                                                        getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -65,7 +64,7 @@ namespace RevLanguage {
 using namespace RevLanguage;
 
 template <typename valType>
-Func_fnNormalizedQuantile<valType>::Func_fnNormalizedQuantile() : Function() {
+Func_fnNormalizedQuantile<valType>::Func_fnNormalizedQuantile() : TypedFunction< ModelVector<valType> >() {
     
 }
 
@@ -79,12 +78,13 @@ Func_fnNormalizedQuantile<valType>* Func_fnNormalizedQuantile<valType>::clone( v
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevPtr<Variable> Func_fnNormalizedQuantile<valType>::execute( void ) {
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_fnNormalizedQuantile<valType>::createFunction( void ) const
+{
     
-    const ContinuousDistribution& rlDistribution    = static_cast<const ContinuousDistribution &>( args[0].getVariable()->getRevObject() );
+    const ContinuousDistribution& rlDistribution    = static_cast<const ContinuousDistribution &>( this->args[0].getVariable()->getRevObject() );
     RevBayesCore::ContinuousDistribution* dist     = static_cast<RevBayesCore::ContinuousDistribution* >( rlDistribution.createDistribution() );    
     
-    int nc = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
+    int nc = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getValue();
     
     double binWidth = 1.0 / ((double)nc);
     double binMid = binWidth * 0.5;
@@ -97,11 +97,7 @@ RevPtr<Variable> Func_fnNormalizedQuantile<valType>::execute( void ) {
     RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *discRates = new RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >( "", new RevBayesCore::VectorFunction<double>(gRates) );
     RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( discRates, new RevBayesCore::ConstantNode<double>("", new double(1.0) ) );
     
-    DeterministicNode< RevBayesCore::RbVector<double> > *detNode = new DeterministicNode< RevBayesCore::RbVector<double> >("", func, this->clone());
-    
-    ModelVector<valType> *theNormalizedVector = new ModelVector<valType>( detNode );
-    
-    return new Variable( theNormalizedVector );
+    return func;
 }
 
 
@@ -150,14 +146,6 @@ const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getTypeSpec( vo
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-template <typename valType>
-const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getReturnType( void ) const {
-    
-    return ModelVector<valType>::getClassTypeSpec();
 }
 
 

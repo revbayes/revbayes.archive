@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Function( ) {
+Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Procedure( ) {
     
 }
 

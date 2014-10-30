@@ -18,29 +18,29 @@
 #ifndef Func_numUniqueInVector_H
 #define Func_numUniqueInVector_H
 
-#include "RlFunction.h"
+#include "Natural.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
     template <typename valType>
-    class Func_numUniqueInVector :  public Function {
+    class Func_numUniqueInVector : public TypedFunction<Natural> {
         
     public:
         Func_numUniqueInVector( void );
         
         // Basic utility functions
-        Func_numUniqueInVector*                     clone(void) const;                                                              //!< Clone the object
+        Func_numUniqueInVector*                         clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevBayesCore::TypedFunction<int>*               createFunction(void) const;                                                     //!< Create a function object
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
-        
+       
     };
     
 }
@@ -57,7 +57,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType>
-RevLanguage::Func_numUniqueInVector<valType>::Func_numUniqueInVector( void ) : Function( ) {
+RevLanguage::Func_numUniqueInVector<valType>::Func_numUniqueInVector( void ) : TypedFunction<Natural>( ) {
     
 }
 
@@ -70,17 +70,13 @@ RevLanguage::Func_numUniqueInVector<valType>* RevLanguage::Func_numUniqueInVecto
 }
 
 template <typename valType>
-RevLanguage::RevPtr<Variable> RevLanguage::Func_numUniqueInVector<valType>::execute()
+RevBayesCore::TypedFunction<int>* RevLanguage::Func_numUniqueInVector<valType>::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* vect = static_cast<const ModelVector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::NumUniqueInVector<typename valType::valueType>* f = new RevBayesCore::NumUniqueInVector<typename valType::valueType>( vect );
     
-    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
-    
-    Natural* value = new Natural( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -118,16 +114,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getCl
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = Natural::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

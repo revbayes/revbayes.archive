@@ -20,11 +20,11 @@
 #ifndef Func_getwd_H
 #define Func_getwd_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_getwd : public Function {
+    class Func_getwd : public Procedure {
         
     public:
         Func_getwd( void );

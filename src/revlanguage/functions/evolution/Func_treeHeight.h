@@ -18,13 +18,14 @@
 #ifndef Func_treeHeight_H
 #define Func_treeHeight_H
 
-#include "RlFunction.h"
+#include "RlTypedFunction.h"
+#include "RealPos.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_treeHeight :  public Function {
+    class Func_treeHeight :  public TypedFunction<RealPos> {
         
     public:
         Func_treeHeight( void );
@@ -36,9 +37,8 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
     };
     

@@ -216,6 +216,7 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 //        std::cout << nodeLnProb << "\n";
         this->lnProb += nodeLnProb;
     }
+    
     return this->lnProb;
 }
 

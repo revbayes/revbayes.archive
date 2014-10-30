@@ -11,7 +11,7 @@
 #include "RbUtil.h"
 #include "MemberProcedure.h"
 #include "ModelVector.h"
-#include "RlAbstractCharacterData.h"
+#include "RlContinuousCharacterData.h"
 #include "RlMemberFunction.h"
 #include "RlString.h"
 #include "RealPos.h"
@@ -40,7 +40,7 @@ MultivariateRealNodeValTree::MultivariateRealNodeValTree(void) : ModelObject<Rev
     methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("data"        , ContinuousCharacterData::getClassTypeSpec()));
     clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
@@ -65,7 +65,7 @@ MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::Multivari
     methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("data"        , ContinuousCharacterData::getClassTypeSpec()));
     clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
@@ -90,7 +90,7 @@ MultivariateRealNodeValTree::MultivariateRealNodeValTree(const RevBayesCore::Mul
     methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("data"        , ContinuousCharacterData::getClassTypeSpec()));
     clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
@@ -115,7 +115,7 @@ MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::TypedDagN
     methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back(new ArgumentRule("data"        , AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("data"        , ContinuousCharacterData::getClassTypeSpec()));
     clampArgRules->push_back(new ArgumentRule("processIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     clampArgRules->push_back(new ArgumentRule("dataIndex"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
@@ -146,11 +146,10 @@ RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::st
     {
         found = true;
         
-        RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::ContinuousCharacterData >* data = static_cast<const ContinuousCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* l = static_cast<const Integer &>( args[2].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::AbstractCharacterData* d = & data->getValue();
-        RevBayesCore::ContinuousCharacterData* c = static_cast<RevBayesCore::ContinuousCharacterData*>(d);
+        RevBayesCore::ContinuousCharacterData* c = & data->getValue();
         
         this->dagNode->getValue().clampAt(c, k->getValue(), l->getValue());   
         return new Variable( new Real( 0 ) );

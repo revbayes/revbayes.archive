@@ -1,8 +1,8 @@
 # Test file for mcmc on gtr model with primates dataset
 
 # read the data
-# the readCharacter function returns a vector of matrices. We just take the first one
-D <- readCharacterData(file="data/test_data_clock_gtr.nex")
+# the readDiscreteCharacterData function returns a vector of matrices. We just take the first one
+D <- readDiscreteCharacterData(file="data/test_data_clock_gtr.nex")
 T <- readTrees("data/true_calib_clk.tre")[1]
 
 

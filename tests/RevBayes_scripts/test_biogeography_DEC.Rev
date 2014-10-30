@@ -19,7 +19,7 @@ data_fn         <- "psychotria_range.nex"
 area_fn         <- "hawaii_dynamic.atlas.txt"
 
 # input objects
-vdata           <- readCharacterData(in_fp + data_fn)
+vdata           <- readDiscreteCharacterData(in_fp + data_fn)
 atlas           <- readAtlas(in_fp + area_fn)
 vtree           <- readTrees(in_fp + data_fn)
 tree			<- vtree[1]

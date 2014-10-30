@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_gtr::Func_gtr( void ) : Function( ) {
+Func_gtr::Func_gtr( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -31,7 +31,8 @@ Func_gtr* Func_gtr::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_gtr::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_gtr::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -42,12 +43,8 @@ RevPtr<Variable> Func_gtr::execute() {
     }
     
     RevBayesCore::GtrRateMatrixFunction* f = new RevBayesCore::GtrRateMatrixFunction( er, bf );
-
-    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     
-    RateMatrix* value = new RateMatrix( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -83,15 +80,6 @@ const TypeSpec& Func_gtr::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_gtr::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

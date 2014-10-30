@@ -146,11 +146,11 @@ The various RevBayes commands and syntax are specified using \cl{typewriter text
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
+RevBayes > data_atpB <- readDiscreteCharacterData("data/conifer_atpB.nex")[1]
 \end{lstlisting}
 \end{snugshade*}}
 
-For this command, type in the command and its options:\\ \cl{data\_atpB <- readCharacterData("data/conifer\_atpB.nex")[1]}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
+For this command, type in the command and its options:\\ \cl{data\_atpB <- readDiscreteCharacterData("data/conifer\_atpB.nex")[1]}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
 
 Multi-line entries, particularly loops, will often be displayed in boxes without the \cl{RevBayes >} prompt so that they can be copied and pasted wholly. 
 {\tt \begin{snugshade*}
@@ -308,11 +308,11 @@ The next steps will walk you through the full specification of the model and MCM
 
 \textbf{\textit{Load Data}}
 
-First load in the sequences using the \cl{readCharacterData()} function. This function returns a \textit{vector} of data matrices and, even though there is only one element in the vector, we must index that element using the \cl{[1]} notation. (You will also note that list indexing in Rev starts with \cl{1} like in the R language.)
+First load in the sequences using the \cl{readDiscreteCharacterData()} function. This function returns a \textit{vector} of data matrices and, even though there is only one element in the vector, we must index that element using the \cl{[1]} notation. (You will also note that list indexing in Rev starts with \cl{1} like in the R language.)
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
-RevBayes > data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+RevBayes > data_atpB <- readDiscreteCharacterData("data/conifer_atpB.nex")[1]
+RevBayes > data_rbcL <- readDiscreteCharacterData("data/conifer_rbcL.nex")[1]
 \end{lstlisting}
 \end{snugshade*}}
 Executing these lines initializes each data matrix as their respective Rev variables. 
@@ -866,7 +866,7 @@ And create a vector of data matrices called \cl{data}:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 for (i in 1:n_parts){
-   data[i] <- readCharacterData(filenames[i])[1]
+   data[i] <- readDiscreteCharacterData(filenames[i])[1]
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -1008,8 +1008,8 @@ For this exercise, we will partition sites within the rbcL gene by codon positio
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > clear()
-RevBayes > data[1] <- readCharacterData("data/conifer_atpB.nex")[1]
-RevBayes > data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+RevBayes > data[1] <- readDiscreteCharacterData("data/conifer_atpB.nex")[1]
+RevBayes > data_rbcL <- readDiscreteCharacterData("data/conifer_rbcL.nex")[1]
 \end{lstlisting}
 \end{snugshade*}}
 
