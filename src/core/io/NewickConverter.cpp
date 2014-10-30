@@ -5,13 +5,14 @@
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "Tree.h"
+#include <boost/lexical_cast.hpp>
 
 #include <sstream>
 
 using namespace RevBayesCore;
 
 NewickConverter::NewickConverter() {
-    
+
 }
 
 
@@ -31,7 +32,6 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     std::vector<TopologyNode*> nodes;
     std::vector<double> brlens;
     
-    
     // create a string-stream and throw the string into it
     std::stringstream ss (std::stringstream::in | std::stringstream::out);
     ss << n;
@@ -50,16 +50,16 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     TopologyNode *root = createNode( trimmed, nodes, brlens );
     
     // set up the tree
-    tau->setRoot( root );
-    
+	tau->setRoot( root );
+	
     // connect the topology to the tree
     t->setTopology( tau, true );
     
     // set the branch lengths
     for (size_t i = 0; i < nodes.size(); ++i) {
-        t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
+		t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
     }
-    
+	
     // return the tree, the caller is responsible for destruction
     return t;
 }
@@ -161,13 +161,20 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                     paramValue += char( ss.get() );
                 }
                 
-                // \todo: Needs implementation
-                if (paramName=="species") {
+				if (paramName=="index") {
+					
+                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+					
+                } else if (paramName=="species") {
+					
+					// \todo: Needs implementation
                     childNode->setSpeciesName(paramValue);
-                }
-                else {
+                
+				} else {
+					
                     childNode->addNodeParameter(paramName, paramValue);
                 }
+				
             } while ( (c = char( ss.peek() ) ) == ',' );
             
             // ignore the final ']'
@@ -254,12 +261,18 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             {
                 paramValue += char( ss.get() );
             }
-            
-            // \todo: Needs implementation
-            if (paramName=="species") {
+			
+			if (paramName=="index") {
+				
+				node->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+				
+			} else if (paramName=="species") {
+				
+				// \todo: Needs implementation
                 node->setSpeciesName(paramValue);
-            }
-            else {
+				
+            } else {
+				
                 node->addNodeParameter(paramName, paramValue);
             }
 
