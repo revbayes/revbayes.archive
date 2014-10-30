@@ -67,8 +67,7 @@ RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::AbstractCharacterData* d = & data->getValue();
         RevBayesCore::ContinuousCharacterData* c = static_cast<RevBayesCore::ContinuousCharacterData*>(d);
-        
-        this->dagNode->getValue().clampAt(c, k->getValue());   
+        this->dagNode->getValue().clampAt(c, k->getValue());
         return new Variable( new Real( 0 ) );
     }
 
