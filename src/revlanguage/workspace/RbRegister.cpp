@@ -232,6 +232,10 @@
 #include "Dist_mixture.h"
 #include "Dist_rlmixture.h"
 
+/* Distribution on rooted triplets (in folder "distributions/") */
+#include "Dist_MPEST.h"
+
+
 /// Functions ///
 
 /* Helper functions for creating functions (in folder "functions") */
@@ -871,6 +875,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		//addDistribution( "dpp",				new Dist_dpp<Topology>() );
 		//addDistribution( "dpp",				new Dist_dpp<Simplex>() );
 		//addDistribution( "dpp",				new Dist_dpp< ModelVector<RealPos> >() );
+
+        // distribution on rooted triplets
+        addDistribution( "mpest",           new Dist_MPEST() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
