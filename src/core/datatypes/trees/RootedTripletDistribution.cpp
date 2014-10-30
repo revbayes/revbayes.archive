@@ -430,6 +430,56 @@ size_t RootedTripletDistribution::getNumberOfTriplets() const{
 }
 
 
+std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t > RootedTripletDistribution::getTriplets() const {
+    std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t > copy = tripletDistribution;
+    return copy;
+}
+
+
+std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, size_t > RootedTripletDistribution::getTaxonTriplets() const {
+    std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, size_t > taxonTriplets;
+    for (std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >::const_iterator it = tripletDistribution.begin(); it != tripletDistribution.end(); ++it) {
+        std::pair < Taxon, Taxon > duo ( taxa[it->first.second.first], taxa[it->first.second.second] ) ;
+        std::pair < Taxon, std::pair < Taxon, Taxon > > element ( taxa[it->first.first], duo );
+        taxonTriplets[ element ] = it->second;
+    }
+    return taxonTriplets;
+}
+
+
+std::map < std::pair < std::string, std::pair < std::string, std::string > >, size_t > RootedTripletDistribution::getSpeciesTriplets() const {
+    std::map < std::pair < std::string, std::pair < std::string, std::string > >, size_t > spTriplets;
+    for (std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >::const_iterator it = tripletDistribution.begin(); it != tripletDistribution.end(); ++it) {
+        std::pair < std::string, std::string > duo ( species[it->first.second.first], species[it->first.second.second] ) ;
+        std::pair < std::string, std::pair < std::string, std::string > > element ( species[it->first.first], duo );
+        spTriplets[ element ] = it->second;
+    }
+    return spTriplets;
+}
+
+
+std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, std::vector<double> > RootedTripletDistribution::getTaxonTripletsWithBranchLengths() const {
+    std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, std::vector<double> > taxonTriplets;
+    for (std::map < std::pair < size_t, std::pair < size_t, size_t > >, std::vector<double> >::const_iterator it = tripletDistributionAndBranchLength.begin(); it != tripletDistributionAndBranchLength.end(); ++it) {
+        std::pair < Taxon, Taxon > duo ( taxa[it->first.second.first], taxa[it->first.second.second] ) ;
+        std::pair < Taxon, std::pair < Taxon, Taxon > > element ( taxa[it->first.first], duo );
+        taxonTriplets[ element ] = it->second;
+    }
+    return taxonTriplets;
+}
+
+
+std::map < std::pair < std::string, std::pair < std::string, std::string > >, std::vector<double> > RootedTripletDistribution::getSpeciesTripletsWithBranchLengths() const {
+    std::map < std::pair < std::string, std::pair < std::string, std::string > >, std::vector<double> > spTriplets;
+    for (std::map < std::pair < size_t, std::pair < size_t, size_t > >, std::vector<double> >::const_iterator it = tripletDistributionAndBranchLength.begin(); it != tripletDistributionAndBranchLength.end(); ++it) {
+        std::pair < std::string, std::string > duo ( species[it->first.second.first], species[it->first.second.second] ) ;
+        std::pair < std::string, std::pair < std::string, std::string > > element ( species[it->first.first], duo );
+        spTriplets[ element ] = it->second;
+    }
+    return spTriplets;
+}
+
+
 void RootedTripletDistribution::setSpecies ( std::vector< std::string > s)  {
     speciesOnly = true;
     species = s;
