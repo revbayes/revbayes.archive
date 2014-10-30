@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_rtRev::Func_rtRev( void ) : Function( ) {
+Func_rtRev::Func_rtRev( void ) : Procedure( ) {
     
 }
 

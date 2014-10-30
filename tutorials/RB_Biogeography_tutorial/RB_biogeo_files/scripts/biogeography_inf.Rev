@@ -5,12 +5,13 @@
 # authors: Michael Landis
 #
 ################################################################################
+seed(1,1)
 
-n_species <- 40
-n_nodes <- 2 * n_species - 1
+n_species <- 10
 #atlas_fn <- "earth23.atlas.txt"
 #atlas_fn <- "100area.atlas.txt"
-atlas_fn <- "area5.atlas.txt"
+#atlas_fn <- "area5.atlas.txt"
+atlas_fn <- "grid25.atlas.txt"
 in_fp <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
 out_fp <- "/Users/mlandis/data/bayarea/output/"
 out_str <- "range_sim"
@@ -35,11 +36,15 @@ tree_height ~ unif(0.0,500.0)
 tree_height.setValue(200.0)
 speciation.setValue(0.006)
 extinction.setValue(0.005)
+speciation.setValue(0.0005)
+extinction.setValue(0.0004)
 
 # Species tree from birth-death process
 tree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=names)
 #tree <- readTrees(in_fp + "16tip_100areas.nex")[1]
-
+#tree <- readTrees(in_fp + "100tip.timeseries.tre")[1]
+n_species <- tree.ntips()
+n_nodes <- 2 * n_species - 1
 
 #########################
 # range evolution model #
@@ -53,10 +58,13 @@ ud <- false # use distance
 
 # Per-area gain and loss rates 
 #   glr[1]: 1->0, glr[2]: 0->1
-glr[1] 		~ dnExponential(1.0/0.02)
-glr[2] 		~ dnExponential(1.0/0.002)
-glr[1].setValue(0.02)
-glr[2].setValue(0.002)
+r0 <- 0.05
+r1 <- 0.05
+
+glr[1] 		~ dnExponential(1.0/r0)
+glr[2] 		~ dnExponential(1.0/r1)
+glr[1].setValue(r0)
+glr[2].setValue(r1)
 Q_site 		:= fnFreeBinary(glr)
 
 # dp is the distance-dependence power parameter, beta
@@ -93,14 +101,14 @@ d.clamp(d)
 my_model <- model(glr)
 
 # monitors
-nGens <- 5000
+nGens <- 50
 #monitors[1] <- screenmonitor(printgen=10, glr, P_csf, dp)
 #monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt", printgen=10, glr, P_csf, dp)
-monitors[1] <- screenmonitor(printgen=10, glr)
-monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt", printgen=10, glr)
+monitors[1] <- screenmonitor(printgen=1, glr)
+monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt", printgen=1, glr)
 monitors[3] <- mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=d, tree=tree, printgen=10, style="events")
 monitors[4] <- mnCharHistoryNewick(filename=out_fp+out_str+".counts.txt", ctmc=d, tree=tree, printgen=10, style="counts")
-monitors[5] <- mnCharHistoryNhx(filename=out_fp+out_str+".nhx.txt", ctmc=d, tree=tree, atlas=atlas, samplegen=10, maxgen=nGens, burnin=0.25)
+monitors[5] <- mnCharHistoryNhx(filename=out_fp+out_str+".nhx.txt", ctmc=d, tree=tree, atlas=atlas, samplegen=1, maxgen=nGens, burnin=0.25)
 
 
 # moves
@@ -108,15 +116,15 @@ mi <- 0
 moves[mi++] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=5.0)
 moves[mi++] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=5.0)
 moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.1, type="Biogeo", graph="branch", weight=n_nodes/1.0)
-moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.1, type="Biogeo", graph="node", weight=n_nodes/2.0)
-moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.5, type="Biogeo", graph="branch", weight=n_nodes/2.0)
-moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.5, type="Biogeo", graph="node", weight=n_nodes/4.0)
+moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.1, type="Biogeo", graph="node", weight=n_nodes/1.0)
+moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.4, type="Biogeo", graph="branch", weight=n_nodes/2.0)
+moves[mi++] <- mvCharacterHistory(ctmc=d, qmap=Q_area, tree=tree, lambda=0.4, type="Biogeo", graph="node", weight=n_nodes/2.0)
 
 # MCMC
 my_mcmc <- mcmc(my_model, monitors, moves)
 #my_mcmc.burnin(generations=500, tuningInterval=50)
 my_mcmc.run(generations=nGens)
-
+my_mcmc.operatorSummary()
 
 
 

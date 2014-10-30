@@ -1,14 +1,4 @@
-//
-//  RlContinuousCharacterData.cpp
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-27.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
 #include "RlContinuousCharacterData.h"
-
-
 
 #include "ConstantNode.h"
 #include "RlContinuousCharacterData.h"
@@ -24,8 +14,21 @@ ContinuousCharacterData::ContinuousCharacterData(void) : ModelObject<RevBayesCor
     
 }
 
-/** Construct from bool */
-ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( new RevBayesCore::ContinuousCharacterData(*d) ) {
+/** Construct from core data type */
+ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d.clone() )
+{
+    
+}
+
+/** Construct from core data type */
+ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d )
+{
+    
+}
+
+
+ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( d )
+{
     
 }
 
@@ -80,7 +83,7 @@ const std::string& ContinuousCharacterData::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::ContinuousCharacterData>::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
@@ -90,7 +93,6 @@ const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void) {
 const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
-    
     return typeSpec;
 }
 
@@ -101,4 +103,5 @@ bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type, bool once) c
     
     return RevObject::isConvertibleTo(type, once);
 }
+
 

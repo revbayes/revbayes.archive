@@ -106,10 +106,13 @@ RevPtr<Variable> SyntaxUnaryExpr::evaluateContent( Environment& env, bool dynami
     
     // Find the function
     std::string funcName = "_" + opCode[ operation ];
-    Function& func = Workspace::globalWorkspace().getFunction( funcName, arg, false );
-    func.processArguments( arg, false );
+    Function* func = Workspace::globalWorkspace().getFunction( funcName, arg, !dynamic ).clone();
+    func->processArguments( arg, false );
     
-    RevPtr<Variable> funcReturnValue = func.execute();
+    RevPtr<Variable> funcReturnValue = func->execute();
+    
+    // free the memory of our copy
+    delete func;
     
     if ( dynamic == false )
     {

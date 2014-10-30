@@ -18,13 +18,13 @@
 #ifndef Func_pomoStateConverter_H
 #define Func_pomoStateConverter_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_pomoStateConverter :  public Function {
+    class Func_pomoStateConverter : public Procedure {
         
     public:
         Func_pomoStateConverter( void );

@@ -296,15 +296,15 @@ void Environment::eraseVariable(const RevPtr<Variable>& var) {
 }
 
 
-/**
- * Execute function to get its value. This will either return a constant value or a deterministic value
- * depending on the return type of the function.
- */
-RevPtr<Variable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
-{
-    
-    return functionTable.executeFunction(name, args);
-}
+///**
+// * Execute function to get its value. This will either return a constant value or a deterministic value
+// * depending on the return type of the function.
+// */
+//RevPtr<Variable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
+//{
+//    
+//    return functionTable.executeFunction(name, args);
+//}
 
 
 /** Find whether a function name exists (current and enclosing frames) */
@@ -381,7 +381,7 @@ const Function& Environment::getFunction(const std::string& name)
 
 
 /* Get function. This call will throw an error if the function is missing. */
-Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once)
+const Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
 {
     
     return functionTable.getFunction(name, args, once);

@@ -12,7 +12,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_system::Func_system( void ) : Function()
+Func_system::Func_system( void ) : Procedure()
 {
     
 }

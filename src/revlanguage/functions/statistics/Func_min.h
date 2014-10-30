@@ -18,13 +18,14 @@
 #ifndef Func_min_H
 #define Func_min_H
 
-#include "RlFunction.h"
+#include "RlTypedFunction.h"
+#include "Real.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_min :  public Function {
+    class Func_min :  public TypedFunction<Real> {
         
     public:
         Func_min( void );
@@ -36,9 +37,8 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
     };
     

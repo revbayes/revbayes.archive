@@ -16,5 +16,5 @@
 End;
 
 Begin trees;
-tree TREE1 = [&R]((((((Cedrus_deodara:0.304633,Pinus_densiflora:0.529527)[&posterior=1]:0.152110,Ginkgo_biloba:0.822783)[&posterior=1]:0.048442,Araucaria_araucana:0.488901)[&posterior=0.967742]:0.031356,Podocarpus_chinensis:0.302188)[&posterior=1]:0.041393,Sciadopitys_verticillata:0.320710)[&posterior=1]:0.069874,(Cupressus_arizonica:0.177452,Juniperus_communis:0.171200)[&posterior=1]:0.160628,Taxus_baccata:0.144621)[&posterior=1]:0.000000;
+tree TREE1 = [&R](((((((Cupressus_arizonica:0.277285,Juniperus_communis:0.140907)[&posterior=1]:0.118488,Taxus_baccata:0.362443)[&posterior=1]:0.061743,Sciadopitys_verticillata:0.453226)[&posterior=1]:0.026065,Podocarpus_chinensis:0.463448)[&posterior=0.967742]:0.035505,Araucaria_araucana:0.464363)[&posterior=1]:0.066526,Ginkgo_biloba:0.226963)[&posterior=1]:0.134948,Cedrus_deodara:0.211712,Pinus_densiflora:0.224997)[&posterior=1]:0.000000;
 End;

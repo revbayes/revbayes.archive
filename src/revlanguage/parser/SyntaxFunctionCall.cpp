@@ -1,7 +1,6 @@
-#include "AbstractMemberFunction.h"
 #include "Argument.h"
 #include "Environment.h"
-#include "MemberProcedure.h"
+#include "RlMemberMethod.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -144,15 +143,16 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
             
             if ( theObject.isType( Function::getClassTypeSpec() ) )
             {
-                func = &( static_cast<Function&>( theObject ) );
+                func = static_cast<Function*>( theObject.clone() );
                 found = func->checkArguments(args, NULL, !dynamic);
             }
         }
         
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw with a relevant message if the function is not found
-        if ( !found ){
-            func = &( env.getFunction(functionName, args, !dynamic) );
+        if ( !found )
+        {
+            func = env.getFunction(functionName, args, !dynamic).clone();
         }
         
         // Allow the function to process the arguments
@@ -171,22 +171,29 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         // Now we get a reference to the member object inside
         RevObject &theMemberObject = theVar->getRevObject();
         
-        // \todo: We shouldn't allow const casts!!!
-        MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
+        const MethodTable& mt = theMemberObject.getMethods();
         
         Function* theFunction = mt.getFunction( functionName, args, !dynamic ).clone();
         theFunction->processArguments(args, !dynamic);
-        MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( theFunction );
-        theMemberProcedure->setMemberObject( theVar );
-        func = theMemberProcedure;
+        
+        MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( theFunction );
+        if ( theMemberMethod != NULL )
+        {
+            theMemberMethod->setMemberObject( theVar );
+            func = theFunction;
+        }
+        else
+        {
+            throw RbException("Error while trying to access member function/procedure.");
+        }
         
     }
     
     // Evaluate the function
     RevPtr<Variable> funcReturnValue = func->execute();
     
-    // Clear arguments from function
-    func->clear();
+    // free the memory of our copy
+    delete func;
     
     if ( dynamic == false )
     {

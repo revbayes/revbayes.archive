@@ -10,7 +10,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_exists::Func_exists( void ) : Function() {
+Func_exists::Func_exists( void ) : Procedure() {
     
 }
 

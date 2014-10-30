@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_jones::Func_jones( void ) : Function( ) {
+Func_jones::Func_jones( void ) : Procedure( ) {
     
 }
 

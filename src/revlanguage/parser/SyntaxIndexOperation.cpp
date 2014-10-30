@@ -234,10 +234,12 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateContent( Environment& env, bool d
 
         try
         {
-            Function& f = Workspace::userWorkspace().getFunction("[]", args, false);
-            f.processArguments( args, false );
-            theVar = f.execute();
+            Function* f = Workspace::userWorkspace().getFunction("[]", args, false).clone();
+            f->processArguments( args, false );
+            theVar = f->execute();
             theVar->setName( identifier );
+            
+            delete f;
         }
         catch (RbException e)
         {

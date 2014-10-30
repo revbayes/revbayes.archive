@@ -22,7 +22,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_constructRootedTripletDistribution::Func_constructRootedTripletDistribution( void ) : Function( ) {
+Func_constructRootedTripletDistribution::Func_constructRootedTripletDistribution( void ) : TypedFunction<RootedTripletDistribution>( ) {
     
 }
 
@@ -34,7 +34,8 @@ Func_constructRootedTripletDistribution* Func_constructRootedTripletDistribution
 }
 
 
-RevPtr<Variable> Func_constructRootedTripletDistribution::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >* Func_constructRootedTripletDistribution::createFunction( void ) const
+{
     
     RevBayesCore::RootedTripletDistributionFunction* f ;
     
@@ -68,11 +69,7 @@ RevPtr<Variable> Func_constructRootedTripletDistribution::execute() {
     }
 
     
-    DeterministicNode<RevBayesCore::RootedTripletDistribution> *detNode = new DeterministicNode<RevBayesCore::RootedTripletDistribution>("", f, this->clone());
-    
-    RootedTripletDistribution* value = new RootedTripletDistribution( detNode->getValue() );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -114,15 +111,6 @@ const TypeSpec& Func_constructRootedTripletDistribution::getClassTypeSpec(void) 
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_constructRootedTripletDistribution::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RootedTripletDistribution::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

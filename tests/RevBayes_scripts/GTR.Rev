@@ -1,4 +1,4 @@
-D <- readCharacterData("data/Primates.nex")
+D <- readDiscreteCharacterData("data/Primates.nex")
 
 tau <- readTrees("data/primates.tree")[1]
 

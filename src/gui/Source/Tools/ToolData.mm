@@ -190,7 +190,7 @@
     // formatted string to the parser
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
+    std::string line = variableName + " <- readDiscreteCharacterData(\"" + cmdAsStlStr + "\")";
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {

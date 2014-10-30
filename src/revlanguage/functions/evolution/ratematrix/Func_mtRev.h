@@ -14,14 +14,14 @@
 #ifndef Func_mtRev_H
 #define Func_mtRev_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_mtRev :  public Function {
+    class Func_mtRev :  public Procedure {
         
     public:
         Func_mtRev( void );

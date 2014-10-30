@@ -16,19 +16,20 @@
 
 using namespace RevLanguage;
 
-Func_discretizeGamma::Func_discretizeGamma() : Function() {
+Func_discretizeGamma::Func_discretizeGamma() : TypedFunction< ModelVector< RealPos > >() {
     
 }
 
 /* Clone object */
-Func_discretizeGamma* Func_discretizeGamma::clone( void ) const {
+Func_discretizeGamma* Func_discretizeGamma::clone( void ) const
+{
     
     return new Func_discretizeGamma( *this );
 }
 
 
-/** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func_discretizeGamma::execute( void ) {
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_discretizeGamma::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<double>* shape = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* rate = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -37,11 +38,7 @@ RevPtr<Variable> Func_discretizeGamma::execute( void ) {
 
     RevBayesCore::DiscretizeGammaFunction *func = new RevBayesCore::DiscretizeGammaFunction( shape, rate, numCats, median );
     
-    DeterministicNode<RevBayesCore::RbVector<double> > *detNode = new DeterministicNode<RevBayesCore::RbVector<double> >("", func, this->clone());
-    
-    ModelVector<RealPos> *discGammaVector = new ModelVector<RealPos>( detNode );
-    
-    return new Variable( discGammaVector );
+    return func;
 }
 
 
@@ -90,11 +87,4 @@ const TypeSpec& Func_discretizeGamma::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& Func_discretizeGamma::getReturnType( void ) const {
-    
-    return ModelVector<RealPos>::getClassTypeSpec();
 }

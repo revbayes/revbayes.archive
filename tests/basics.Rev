@@ -83,7 +83,7 @@ print(filename = "Test_basic.txt", append = TRUE, "Type of [ 1:5, 6:10, 11:15, 1
 print(filename = "Test_basic.txt", append = TRUE, a )
 
 # character data
-data <- readCharacterData("data/primates.nex")
+data <- readDiscreteCharacterData("data/primates.nex")
 print(filename = "Test_basic.txt", append = TRUE, "Type of primatex.nex:		", type(data), "		Value:	" )
 print(filename = "Test_basic.txt", append = TRUE, data )
 print(filename = "Test_basic.txt", append = TRUE, "Size:		", data.size() )

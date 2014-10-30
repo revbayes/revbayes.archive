@@ -1,31 +1,38 @@
 #ifndef RlDistributionMemberFunction_H
 #define RlDistributionMemberFunction_H
 
-#include "AbstractMemberFunction.h"
+#include "RlTypedFunction.h"
 
 namespace RevLanguage {
     
-    
-    
     template <typename memberObjectType, typename retType>
-    class DistributionMemberFunction :  public AbstractMemberFunction {
+    class DistributionMemberFunction :  public TypedFunction<retType> {
         
     public:
         DistributionMemberFunction(const memberObjectType* o, ArgumentRules* argRules);                                 //!< Constructor
         
         // Basic utility functions
-        DistributionMemberFunction*         clone(void) const;                                              //!< Clone the object
-        static const std::string&           getClassType(void);                                                         //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        DistributionMemberFunction*                                     clone(void) const;                              //!< Clone the object
+        static const std::string&                                       getClassType(void);                             //!< Get class name
+        static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get language type of the object
         
-        // pure virtual functions
-        RevPtr<Variable>                    execute(void);                                                              //!< Execute function
+        // Regular functions
+        RevBayesCore::TypedFunction< typename retType::valueType>*      createFunction(void) const;                     //!< Execute function
+        void                                                            setMemberObject(const RevPtr<Variable> &obj);   //!< Set the member object to which this function belongs
+        const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
+        void                                                            setMethodName(const std::string& name);         //!< Set name of member method
+        
         
     private:
         
-        const memberObjectType*             theMemberObject;
+        const ArgumentRules*                                            argumentRules;                                  //!< Argument rules (different for different member functions)
+        std::string                                                     funcName;                                       //!< Name of member method
+        RevPtr<Variable>                                                object;
+        const memberObjectType*                                         theMemberObject;
     };
+    
+    
     
 }
 
@@ -35,7 +42,9 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename memberObjectType, typename retType>
-RevLanguage::DistributionMemberFunction<memberObjectType, retType>::DistributionMemberFunction( const memberObjectType* o, ArgumentRules* ar ) : AbstractMemberFunction( retType::getClassTypeSpec(), ar ),
+RevLanguage::DistributionMemberFunction<memberObjectType, retType>::DistributionMemberFunction( const memberObjectType* o, ArgumentRules* ar ) : TypedFunction<retType>(  ),
+    argumentRules( ar ),
+    object( NULL ),
     theMemberObject( o )
 {
     
@@ -52,22 +61,26 @@ RevLanguage::DistributionMemberFunction<memberObjectType, retType>* RevLanguage:
 
 
 template <typename memberObjectType, typename retType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionMemberFunction<memberObjectType, retType>::execute( void )
+RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::DistributionMemberFunction<memberObjectType, retType>::createFunction( void ) const
 {
     
     std::vector<const RevBayesCore::DagNode*> argNodes;
-    for ( size_t i=0; i<args.size(); ++i)
+    for ( size_t i=0; i<this->args.size(); ++i)
     {
         argNodes.push_back( this->args[i].getVariable()->getRevObject().getDagNode() );
     }
     
-//    RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType> *func = new RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType>(name, o, argNodes);
-//    RevBayesCore::TypedDagNode<typename retType::valueType>* d  = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
+    const RevBayesCore::TypedDagNode<typename memberObjectType::valueType>* o = theMemberObject->getDagNode();
+    if ( o == NULL )
+    {
+        throw RbException("Could not cast the member object.");
+    }
     
-//    return new Variable( new retType(d) );
+    RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType> *func = new RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType>(this->name, o, argNodes);
     
-    return NULL;
+    return func;
 }
+
 
 
 template <typename memberObjectType, typename retType>

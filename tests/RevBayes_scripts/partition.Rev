@@ -11,8 +11,8 @@
 ################################################################################
 
 # Read in sequence data for both genes #
-data[1] <- readCharacterData("data/conifer_atpB.nex")
-data_rbcL <- readCharacterData("data/conifer_rbcL.nex")
+data[1] <- readDiscreteCharacterData("data/conifer_atpB.nex")
+data_rbcL <- readDiscreteCharacterData("data/conifer_rbcL.nex")
 
 # Specify the partition for 1st codon position
 data[2] <- data_rbcL

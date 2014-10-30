@@ -52,7 +52,6 @@ char *line;
 
 WorkspaceUtils workspaceUtils;
 
-void setDefaultCompletions();
 StringVector getDefaultCompletions();
 
 std::string getWd() {
@@ -90,16 +89,6 @@ StringVector getDefaultCompletions() {
 }
 
 /**
- * Basically everything
- */
-void setDefaultCompletions() {
-
-    BOOST_FOREACH(std::string s, getDefaultCompletions()) {
-        //editorMachine.getCurrentState()->addCompletion(s);
-    }
-}
-
-/**
  * tab completion callback
  * 
  * Update list of available completions.
@@ -108,7 +97,7 @@ void setDefaultCompletions() {
  * @param lc
  */
 void completeOnTab(const char *buf, linenoiseCompletions *lc) {
-    bool debug = false;
+    //bool debug = true;
 
     std::string cmd = buf;
     StringVector completions;
@@ -128,10 +117,10 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
         // search for files with portion after the opening quote                
         commandPos = cmd.rfind("\"") + 1;
         completions = getFileList(cmd.substr(commandPos, cmd.size()));
-    } else {        
-        // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
+    } else {
+
         StringVector expressionSeparator;
-        expressionSeparator += " ", "%", "~", "=", "&", "|", "~", "+", "-", "*", "/", "^", "!", "=", ",", "<", ">", ")", "[", "]", "{", "}";
+        expressionSeparator += " ", "%", "~", "=", "&", "|", "+", "-", "*", "/", "^", "!", "=", ",", "<", ">", ")", "[", "]", "{", "}";
 
         // find position of right most expression separator in cmd
 
@@ -139,10 +128,10 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
             commandPos = std::max(commandPos, (int) cmd.rfind(s));
         }
 
+        // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
         // find position of right most dot
         int dotPosition = (int) cmd.rfind(".");
-        
-        
+
         if ((pi.baseVariable != NULL) || (dotPosition > commandPos)) {
             // ---------- object defined ------------
             std::string baseVariable;
@@ -150,19 +139,14 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                 commandPos++;
             }
             if (pi.baseVariable == NULL) {
-                baseVariable = cmd.substr(commandPos, dotPosition - commandPos );                
+                baseVariable = cmd.substr(commandPos, dotPosition - commandPos);
             } else {
                 baseVariable = pi.baseVariable->getName();
             }
 
-            commandPos = std::max(commandPos, dotPosition) + 1;            
-            if (workspaceUtils.isObject(baseVariable)) {
-                StringVector sv = workspaceUtils.getObjectMembers(baseVariable);
+            commandPos = std::max(commandPos, dotPosition) + 1;
+            completions = workspaceUtils.getObjectMembers(baseVariable);
 
-                BOOST_FOREACH(std::string member, sv) {
-                    completions.push_back(member);
-                }
-            }
         } else if (pi.functionName != "") {
             // ---------- function defined ------------
             if (pi.argumentLabel != "") { // assigning an argument label                
@@ -170,19 +154,14 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                 // not sure exactly what should be here... setting completions to everything
                 completions = getDefaultCompletions();
 
-            } else { // break on either '(' or ','                
-                int tmp1 = cmd.rfind("(");
-                int tmp2 = cmd.rfind(",");
-                commandPos = std::max(tmp1, tmp2) + 1;
-
-                BOOST_FOREACH(std::string param, workspaceUtils.getFunctionParameters(pi.functionName)) {
-                    completions.push_back(param);
-                }
+            } else { // break on either '(' or ','              
+                commandPos = std::max((int) cmd.rfind("("), (int) cmd.rfind(",")) + 1;
+                completions = workspaceUtils.getFunctionParameters(pi.functionName);                
             }
         } else {
             // ---------- default -----------            
             if (commandPos > 0) {
-                commandPos++;                
+                commandPos++;
             }
             completions = getDefaultCompletions();
 

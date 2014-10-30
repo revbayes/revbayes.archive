@@ -26,7 +26,9 @@
 using namespace RevLanguage;
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction( RevObject *obj ) : Function(), templateObject(obj) {
+ConstructorFunction::ConstructorFunction( RevObject *obj ) : Procedure(),
+    templateObject(obj)
+{
     
     // Hack: we know that we will not own the argRules.
     argRules = &templateObject->getParameterRules();
@@ -34,7 +36,8 @@ ConstructorFunction::ConstructorFunction( RevObject *obj ) : Function(), templat
 
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Function(obj) {
+ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Procedure(obj)
+{
     
     templateObject = obj.templateObject->clone();
     

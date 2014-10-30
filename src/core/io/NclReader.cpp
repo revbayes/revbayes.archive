@@ -821,29 +821,6 @@ std::string NclReader::intuitDataType(std::string& s) {
 }
 
 
-
-/** Format the error exception string for problems specifying the file/path name */
-void NclReader::formatError(RbFileManager& fm, std::string& errorStr) {
-    
-    bool fileNameProvided    = fm.isFileNamePresent();
-    bool isFileNameGood      = fm.testFile();
-    bool isDirectoryNameGood = fm.testDirectory();
-    
-    if ( fileNameProvided == false && isDirectoryNameGood == false )
-        errorStr += "Could not read contents of directory \"" + fm.getFilePath() + "\" because the directory does not exist";
-    else if (fileNameProvided == true && (isFileNameGood == false || isDirectoryNameGood == false))
-    {
-        errorStr += "Could not read file named \"" + fm.getFileName() + "\" in directory named \"" + fm.getFilePath() + "\" ";
-        if (isFileNameGood == false && isDirectoryNameGood == true)
-            errorStr += "because the file does not exist";
-        else if (isFileNameGood == true && isDirectoryNameGood == false)
-            errorStr += "because the directory does not exist";
-        else
-            errorStr += "because neither the directory nor the file exist";
-    }
-}
-
-
 /** Try to determine if the file is likely to be in Fasta format */
 bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
     
@@ -998,7 +975,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
     if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
     {
         std::string errorStr = "";
-        formatError(myFileManager, errorStr);
+        myFileManager.formatError(errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
     }
     
@@ -1335,7 +1312,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     if ( (myFileManager.getFileName() == "" && myFileManager.getFilePath() == "") || myFileManager.testFile() == false )
     {
         std::string errorStr = "";
-        formatError(myFileManager, errorStr);
+        myFileManager.formatError(errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
     }
     

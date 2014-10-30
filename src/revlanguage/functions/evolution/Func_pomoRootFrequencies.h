@@ -18,27 +18,27 @@
 #ifndef Func_pomoRootFrequencies_H
 #define Func_pomoRootFrequencies_H
 
-#include "RlFunction.h"
+#include "RlSimplex.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_pomoRootFrequencies :  public Function {
+    class Func_pomoRootFrequencies : public TypedFunction<Simplex> {
         
     public:
         Func_pomoRootFrequencies( void );
         
         // Basic utility functions
-        Func_pomoRootFrequencies*                                clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_pomoRootFrequencies*                                               clone(void) const;                                                              //!< Clone the object
+        static const std::string&                                               getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                                                  getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                                         getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >*        createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                                                    getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };
     

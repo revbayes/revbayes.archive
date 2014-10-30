@@ -141,6 +141,7 @@
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
 #include "Move_PathCharacterHistoryRejectionSample.h"
+#include "Move_CharacterHistory.h"
 
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
@@ -231,7 +232,8 @@
 /* Helper functions for creating functions (in folder "functions") */
 #include "DistributionFunctionCdf.h"
 #include "DistributionFunctionPdf.h"
-#include "DistributionFunctionQuantile.h"
+#include "DistributionFunctionQuantileContinuous.h"
+#include "DistributionFunctionQuantilePositiveContinuous.h"
 #include "DistributionFunctionRv.h"
 
 
@@ -287,6 +289,7 @@
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_f81.h"
+#include "Func_FreeBinary.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
 #include "Func_t92.h"
@@ -348,7 +351,8 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_mapTree.h"
 #include "Func_readAtlas.h"
-#include "Func_readCharacterData.h"
+#include "Func_readContinuousCharacterData.h"
+#include "Func_readDiscreteCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readTreeTrace.h"
@@ -538,6 +542,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
         
         /* Moves on character histories / data augmentation */
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<TimeTree>() );
         addTypeWithConstructor("mvNodeCharacterHistoryRejectionSample", new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
@@ -774,6 +780,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
         addFunction( "fnF81",      new Func_f81()     );
+        addFunction( "fnFreeBinary", new Func_FreeBinary() );
         addFunction( "fnGTR",      new Func_gtr()     );
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
@@ -922,7 +929,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
         addFunction( "print",                       new Func_write()                       );
         addFunction( "readAtlas",                   new Func_readAtlas()                   );
-        addFunction( "readCharacterData",           new Func_readCharacterData()           );
+        addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData() );
+        addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()   );
         addFunction( "readTaxonData",               new Func_TaxonReader()                 );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "readTrees",                   new Func_readTrees()                   );
@@ -1041,29 +1049,29 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // exponential distribution
         addFunction("dexp", new DistributionFunctionPdf<RealPos>( new Dist_exponential() ) );
         addFunction("pexp", new DistributionFunctionCdf( new Dist_exponential() ) );
-        addFunction("qexp", new DistributionFunctionQuantile( new Dist_exponential() ) );
+        addFunction("qexp", new DistributionFunctionQuantilePositiveContinuous( new Dist_exponential() ) );
         addFunction("rexp", new DistributionFunctionRv<RealPos>( new Dist_exponential() ) );
         
         // gamma distribution
         addFunction("dgamma", new DistributionFunctionPdf<RealPos>( new Dist_gamma() ) );
         addFunction("pgamma", new DistributionFunctionCdf( new Dist_gamma() ) );
-        addFunction("qgamma", new DistributionFunctionQuantile( new Dist_gamma() ) );
+        addFunction("qgamma", new DistributionFunctionQuantilePositiveContinuous( new Dist_gamma() ) );
         addFunction("rgamma", new DistributionFunctionRv<RealPos>( new Dist_gamma() ) );
         
         // lognormal distribution
         addFunction("dlnorm", new DistributionFunctionPdf<RealPos>( new Dist_lnorm() ) );
         addFunction("plnorm", new DistributionFunctionCdf( new Dist_lnorm() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantile( new Dist_lnorm() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantilePositiveContinuous( new Dist_lnorm() ) );
         addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new Dist_lnorm() ) );
         addFunction("dlnorm", new DistributionFunctionPdf<Real>( new Dist_offsetLnorm() ) );
         addFunction("plnorm", new DistributionFunctionCdf( new Dist_offsetLnorm() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantile( new Dist_offsetLnorm() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantileContinuous( new Dist_offsetLnorm() ) );
         addFunction("rlnorm", new DistributionFunctionRv<Real>( new Dist_offsetLnorm() ) );
         
         // normal distribution
         addFunction("dnorm", new DistributionFunctionPdf<Real>( new Dist_norm() ) );
         addFunction("pnorm", new DistributionFunctionCdf( new Dist_norm() ) );
-        addFunction("qnorm", new DistributionFunctionQuantile( new Dist_norm() ) );
+        addFunction("qnorm", new DistributionFunctionQuantileContinuous( new Dist_norm() ) );
         addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_norm() ) );
         
         //
@@ -1073,11 +1081,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // uniform distribution
         addFunction("dunif", new DistributionFunctionPdf<Real>( new Dist_unif() ) );
         addFunction("punif", new DistributionFunctionCdf( new Dist_unif() ) );
-        addFunction("qunif", new DistributionFunctionQuantile( new Dist_unif() ) );
+        addFunction("qunif", new DistributionFunctionQuantileContinuous( new Dist_unif() ) );
         addFunction("runif", new DistributionFunctionRv<Real>( new Dist_unif() ) );
         addFunction("dunif", new DistributionFunctionPdf<RealPos>( new Dist_positiveUnif() ) );
         addFunction("punif", new DistributionFunctionCdf( new Dist_positiveUnif() ) );
-        addFunction("qunif", new DistributionFunctionQuantile( new Dist_positiveUnif() ) );
+        addFunction("qunif", new DistributionFunctionQuantilePositiveContinuous( new Dist_positiveUnif() ) );
         addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_positiveUnif() ) );
         
         

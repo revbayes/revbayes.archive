@@ -37,9 +37,9 @@ speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n
 ##########################
 
 # Parameters of a homogeneous Ornstein-Uhlenbeck process
-mean <- 2.0
+mean <- 20.0
 sigma <- 1.0
-phi <- 0.5
+phi <- 5
 
 
 # Set number of traits 
@@ -59,6 +59,12 @@ for (i in 2:nTraits) {
 writeNexus(dataFolder+"simulatedOU10Sp.nex", concatenate)
 # Writing the tree
 write(speciesTree, filename=dataFolder+"species.tree")
+
+
+
+#############
+# Inference #
+#############
 
 # Now we have simulated the data and the tree, we can start doing inference
 
@@ -82,9 +88,9 @@ mean ~ dnLogUniform(min=0.001,max=1000)
 sigma ~ dnLogUniform(min=0.001,max=1000)
 phi ~ dnLogUniform(min=0.001,max=1000)
 
-mean.setValue( 2.0 )
-sigma.setValue( 1.0 )
-phi.setValue( 0.5 )
+#mean.setValue( 2.0 )
+#sigma.setValue( 1.0 )
+#phi.setValue( 0.5 )
 
 # Let’s simulate a species tree with 10 taxa (feel free to change
 # these values).

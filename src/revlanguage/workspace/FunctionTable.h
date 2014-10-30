@@ -30,43 +30,44 @@ namespace RevLanguage {
         
     public:
 
-        FunctionTable(FunctionTable* parent = NULL);                                                                                    //!< Empty table
-        FunctionTable(const FunctionTable& x);                                                                                          //!< Copy constructor
-        virtual                                 ~FunctionTable();                                                                       //!< Delete functions
+        FunctionTable(FunctionTable* parent = NULL);                                                                                        //!< Empty table
+        FunctionTable(const FunctionTable& x);                                                                                              //!< Copy constructor
+        virtual                                 ~FunctionTable();                                                                           //!< Delete functions
 
         // Assignment operator
-        FunctionTable&                          operator=(const FunctionTable& x);                                                      //!< Assignment operator 
+        FunctionTable&                          operator=(const FunctionTable& x);                                                          //!< Assignment operator
 
         // Basic utility functions
-        virtual FunctionTable*                  clone(void) const;                                                                      //!< Clone object
-        void                                    printValue(std::ostream& o, bool env) const;                                            //!< Print table for user
+        virtual FunctionTable*                  clone(void) const;                                                                          //!< Clone object
+        void                                    printValue(std::ostream& o, bool env) const;                                                //!< Print table for user
 
         // FunctionTable functions
-        virtual void                            addFunction(const std::string& name, Function *func);                                   //!< Add function
-        void                                    clear(void);                                                                            //!< Clear table
-        RevPtr<Variable>                        executeFunction(const std::string&           name,
-                                                                const std::vector<Argument>& args);                                     //!< Evaluate function (once)
-        bool                                    existsFunction(const std::string &name) const;                                          //!< Does this table contain a function with given name?
-        bool                                    existsFunctionInFrame(const std::string &name, const ArgumentRules& r) const;           //!< Does this table contain a function with given name?
-        void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
-        std::vector<Function*>                  findFunctions(const std::string& name) const;                                           //!< Return functions matching name
-        const Function&                         getFirstFunction(const std::string& name) const;                                        //!< Get first function with given name
-        const Function&                         getFunction(const std::string& name);                                                   //!< Get function, throw an error if overloaded
-        Function&                               getFunction(const std::string& name, const std::vector<Argument>& args, bool once);     //!< Get function
-        std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                           //!< Get a copy of function table
-        bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
-        bool                                    isProcedure(const std::string& fxnName) const;                                          //!< Is 'fxnName' a procedure?
-        void                                    replaceFunction(const std::string &name, Function* func);                               //!< Replace existing function
-        void                                    setParentTable(const FunctionTable* ft) { parentTable = ft; }                           //!< Set parent table
+        virtual void                            addFunction(const std::string& name, Function *func);                                       //!< Add function
+        void                                    clear(void);                                                                                //!< Clear table
+//        RevPtr<Variable>                        executeFunction(const std::string&           name,
+//                                                                const std::vector<Argument>& args);                                         //!< Evaluate function (once)
+        bool                                    existsFunction(const std::string &name) const;                                              //!< Does this table contain a function with given name?
+        bool                                    existsFunctionInFrame(const std::string &name, const ArgumentRules& r) const;               //!< Does this table contain a function with given name?
+        void                                    eraseFunction(const std::string& name);                                                     //!< Erase a function (all versions)
+        std::vector<Function*>                  findFunctions(const std::string& name) const;                                               //!< Return functions matching name
+        const Function&                         getFirstFunction(const std::string& name) const;                                            //!< Get first function with given name
+        const Function&                         getFunction(const std::string& name) const;                                                 //!< Get function, throw an error if overloaded
+        const Function&                         getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const;   //!< Get function
+        std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                               //!< Get a copy of function table
+        bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                     //!< Are formals unique?
+        bool                                    isProcedure(const std::string& fxnName) const;                                              //!< Is 'fxnName' a procedure?
+        void                                    replaceFunction(const std::string &name, Function* func);                                   //!< Replace existing function
+        void                                    setParentTable(const FunctionTable* ft) { parentTable = ft; }                               //!< Set parent table
 
     protected:
-        Function&                               findFunction(const std::string&           name,
+        
+        const Function&                         findFunction(const std::string&           name,
                                                              const std::vector<Argument>& args,
-                                                             bool                         once);                                        //!< Find function, process args
-        void                                    testFunctionValidity(const std::string& name, Function* func) const;                    //!< Test whether function can be added
+                                                             bool                         once) const;                                            //!< Find function, process args
+        void                                    testFunctionValidity(const std::string& name, Function* func) const;                        //!< Test whether function can be added
         
         // Member variables
-        const FunctionTable*                    parentTable;                                                                            //!< Enclosing table
+        const FunctionTable*                    parentTable;                                                                                //!< Enclosing table
 
 };
     

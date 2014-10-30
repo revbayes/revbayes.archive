@@ -109,14 +109,14 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
             }
             args.push_back( Argument( elementVar ) );
         }
-        Function& func = Workspace::userWorkspace().getFunction("v",args,false);
-        func.processArguments(args,false);
+        Function* func = Workspace::userWorkspace().getFunction("v",args,!dynamic).clone();
+        func->processArguments(args,false);
         
         // Evaluate the function (call the static evaluation function)
-        RevPtr<Variable> funcReturnValue = func.execute();
+        RevPtr<Variable> funcReturnValue = func->execute();
         
-        // Clear arguments from function
-        func.clear();
+        // free the memory of our copy
+        delete func;
         
         theVar->setRevObject( funcReturnValue->getRevObject().clone() );
         

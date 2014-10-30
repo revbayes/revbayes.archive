@@ -1,7 +1,7 @@
 #ifndef Func_exists_H
 #define Func_exists_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
@@ -16,7 +16,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2014-10-09
      *
      */
-    class Func_exists : public Function {
+    class Func_exists : public Procedure {
         
     public:
         Func_exists( void );

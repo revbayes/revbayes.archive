@@ -17,27 +17,27 @@
 #ifndef RlMrcaStatistic_H
 #define RlMrcaStatistic_H
 
-#include "RlFunction.h"
+#include "Natural.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_mrcaIndex :  public Function {
+    class Func_mrcaIndex :  public TypedFunction<Natural> {
         
     public:
         Func_mrcaIndex( void );
         
         // Basic utility functions
-        Func_mrcaIndex*                                      clone(void) const;                                                              //!< Clone the object
+        Func_mrcaIndex*                                 clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevBayesCore::TypedFunction<int>*               createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
     };
     

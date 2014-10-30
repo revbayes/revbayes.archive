@@ -25,13 +25,15 @@ namespace RevLanguage {
         
     public:
         ContinuousCharacterData(void);                                                                          //!< Default constructor
-        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d);                                //!< Copy constructor
-        
+        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d);                                //!< Constructor from core data type (need to create my own copy)
+        ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d);                                      //!< Constructor from new core data type pointer
+        ContinuousCharacterData(RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData>*d);           //!< Constructor with DAG node
+
         // Operators
         
         // Basic utility functions
-        ContinuousCharacterData*              add(const RevObject& d) const;                                                          //!< Addition operator used for example in '+=' statements
-        ContinuousCharacterData*              add(const ContinuousCharacterData& d) const;                                              //!< Addition operator used for example in '+=' statements
+        ContinuousCharacterData*        add(const RevObject& d) const;                                          //!< Addition operator used for example in '+=' statements
+        ContinuousCharacterData*        add(const ContinuousCharacterData& d) const;                            //!< Addition operator used for example in '+=' statements
 
         ContinuousCharacterData*        clone(void) const;                                                      //!< Clone object
         RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
