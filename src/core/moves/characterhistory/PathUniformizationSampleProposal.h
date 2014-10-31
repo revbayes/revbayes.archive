@@ -51,7 +51,7 @@ namespace RevBayesCore {
     class PathUniformizationSampleProposal : public Proposal {
         
     public:
-        PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
+        PathUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
 //        PathUniformizationSampleProposal( const PathUniformizationSampleProposal& p );
         
         // Basic utility functions
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         void                            fillStateCounts(std::vector<CharacterEvent*> s, unsigned* counts);
         
         // parameters
-        StochasticNode<AbstractCharacterData>*  ctmc;
+        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
         TypedDagNode<treeType>*                 tau;
         TypedDagNode<RateMap>*                  qmap;
                 
@@ -116,7 +116,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
+RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -623,7 +623,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::swapNod
 {
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {

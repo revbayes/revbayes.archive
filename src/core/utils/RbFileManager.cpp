@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
+#include <cstdlib>
 
 //#include <boost/filesystem.hpp>
 
@@ -434,7 +435,7 @@ bool RbFileManager::makeDirectory(const std::string &dn)
 #	else
 
     std::string cmd = "mkdir " + dn;
-    system( cmd.c_str() );
+    return (system( cmd.c_str() ) == 0);
 
 #   endif
     

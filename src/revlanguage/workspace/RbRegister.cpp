@@ -141,6 +141,7 @@
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
 #include "Move_PathCharacterHistoryRejectionSample.h"
+#include "Move_CharacterHistory.h"
 
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
@@ -180,6 +181,7 @@
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCEpoch.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 #include "Dist_autocorrelatedLnBranchRates.h"
@@ -288,6 +290,7 @@
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_f81.h"
+#include "Func_FreeBinary.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
 #include "Func_t92.h"
@@ -411,6 +414,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<RlBoolean,5>::addTypeToWorkspace( *this, new RlBoolean() );
         AddWorkspaceVectorType<RlString,5>::addTypeToWorkspace( *this, new RlString() );
         AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
+        AddWorkspaceVectorType<Taxon,5>::addTypeToWorkspace( *this, new Taxon() );
         
         AddWorkspaceVectorType<RealNodeValTree,1>::addTypeToWorkspace( *this, new RealNodeValTree() );
         
@@ -541,6 +545,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
         
         /* Moves on character histories / data augmentation */
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<TimeTree>() );
         addTypeWithConstructor("mvNodeCharacterHistoryRejectionSample", new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
@@ -596,6 +602,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
+        addDistribution( "dnPhyloCTMCEpoch", new Dist_phyloCTMCEpoch() );
                 
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -777,6 +784,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
         addFunction( "fnF81",      new Func_f81()     );
+        addFunction( "fnFreeBinary", new Func_FreeBinary() );
         addFunction( "fnGTR",      new Func_gtr()     );
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );

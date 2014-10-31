@@ -233,7 +233,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     
     if (node->isRoot())
     {
-        std::cout << "root accept\n";
+        ; // std::cout << "root accept\n";
     }
 
 //    std::cout << "ACCEPT\n";
