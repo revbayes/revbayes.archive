@@ -5,14 +5,14 @@
 ### It then calculates the Bayes factor 
 
 ### Using the stepping-stone sampler, calculate the marginal likelihoods for each model from the power posteriors
-ss_Yule <- steppingStoneSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
-ss_BD <- steppingStoneSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss_Yule = steppingStoneSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss_BD = steppingStoneSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 
-mLnL_m0 <- ss_Yule.marginal()
-mLnL_m1 <- ss_BD.marginal()
+mLnL_m0 = ss_Yule.marginal()
+mLnL_m1 = ss_BD.marginal()
 
 ### pairwise comparisons of each model using Bayes factors
-BF_01 <- mLnL_m0 - mLnL_m1
+BF_01 = mLnL_m0 - mLnL_m1
 
 "BF_01"
 BF_01
