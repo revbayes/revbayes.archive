@@ -14,6 +14,7 @@ DagNode::DagNode( const std::string &n ) :
         hidden( false ),
         name( n ), 
         touchedElements(),
+        priorOnly(false),
         refCount( 0 )
 {
 
@@ -33,6 +34,7 @@ DagNode::DagNode( const DagNode &n ) :
         hidden( n.hidden ),
         name( n.name ),  
         touchedElements( n.touchedElements ),
+        priorOnly(n.priorOnly),
         refCount( 0 )
 {
 }
