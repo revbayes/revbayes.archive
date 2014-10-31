@@ -70,6 +70,8 @@ Model::Model(const Model &m) :
 Model::~Model( void ) 
 {
     
+    try
+    {
     // delete each DAG node from the copied model graph.
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
     {
@@ -89,6 +91,10 @@ Model::~Model( void )
         {
             delete *theNode;
         }
+    }
+    } catch (RbException e)
+    {
+        std::cerr << e.getMessage() << std::endl;
     }
     
 }

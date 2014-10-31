@@ -124,6 +124,8 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         const DagNode *theParam = (*i);
         
         theParam->removeChild( copy );
+        
+        theParam->decrementReferenceCount();
     }
     
     // Now replace the parents of the copy (which are now the same as our parents) with the parent clones
@@ -137,6 +139,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         
         // Add the copy back as a child of this parent so that the swapping works
         theParam->addChild( copy );
+        theParam->incrementReferenceCount();
         
         // Swap the parent of the copy with its clone. This will remove the copy again as the child of our parent.
         copy->swapParent( theParam, theParamClone);
