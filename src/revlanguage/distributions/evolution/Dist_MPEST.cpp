@@ -68,11 +68,11 @@ RevBayesCore::MPEST* Dist_MPEST::createDistribution( void ) const
     
     // Get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::RootedTripletDistribution>* st = static_cast<const RootedTripletDistribution &>( speciesTree->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RootedTripletDistribution>* gt = static_cast<const RootedTripletDistribution &>( geneTrees->getRevObject() ).getDagNode();
+    //RevBayesCore::TypedDagNode<RevBayesCore::RootedTripletDistribution>* gt = static_cast<const RootedTripletDistribution &>( geneTrees->getRevObject() ).getDagNode();
 
     const bool useSp = static_cast<const RlBoolean& >( useSpecies->getRevObject() ).getValue();
     
-    RevBayesCore::MPEST*   d = new RevBayesCore::MPEST( st, gt, useSp );
+    RevBayesCore::MPEST*   d = new RevBayesCore::MPEST( st, useSp );
     
     //We can't do that because we can't simulate using MPEST    d->redrawValue();
     
@@ -114,10 +114,8 @@ const TypeSpec& Dist_MPEST::getClassTypeSpec(void)
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the Multispecies Coalescent process are:
- * (1) Species tree.
- * (2) Population size.
- * (3) Gene name to species name map.
- * (4) the number of taxa.
+ * (1) Species tree rooted triplet distribution.
+ * (2) Whether we use species names or taxons.
  *
  * \return The member rules.
  */
@@ -130,7 +128,7 @@ const MemberRules& Dist_MPEST::getMemberRules(void) const
     if ( !rulesSet )
     {
         MPESTMemberRules.push_back( new ArgumentRule( "speciesTree", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        MPESTMemberRules.push_back( new ArgumentRule( "geneTrees", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        //MPESTMemberRules.push_back( new ArgumentRule( "geneTrees", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         MPESTMemberRules.push_back( new ArgumentRule( "useSpecies", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
@@ -156,10 +154,10 @@ void Dist_MPEST::setConstMemberVariable(const std::string& name, const RevPtr<co
     {
         speciesTree = var;
     }
-    else if ( name == "geneTrees" )
+  /*  else if ( name == "geneTrees" )
     {
         geneTrees = var;
-    }
+    }*/
     else if ( name == "useSpecies" )
     {
         useSpecies = var;

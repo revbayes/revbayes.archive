@@ -31,7 +31,7 @@ namespace RevBayesCore {
     class MPEST : public TypedDistribution<RootedTripletDistribution> {
         
     public:
-        MPEST(const TypedDagNode<RootedTripletDistribution> *st, const TypedDagNode<RootedTripletDistribution> *gt, bool useSp);
+        MPEST(const TypedDagNode<RootedTripletDistribution> *st, /*const TypedDagNode<RootedTripletDistribution> *gt, */bool useSp);
         MPEST(const MPEST &n);                                                                                                //!< Copy constructor
         virtual                                            ~MPEST(void);                                                      //!< Virtual destructor
         
@@ -53,13 +53,13 @@ namespace RevBayesCore {
         double                                              computeMultinomialLogLk(double num1, double num2, double num3, double bl); //!< Compute the multinomial loglk of a triplet
         
         // members
-        const TypedDagNode<RootedTripletDistribution>*  speciesTree;
-        const TypedDagNode<RootedTripletDistribution>*    geneTrees;
-        double                                              logProb;
-        bool                                             useSpecies;
-        double                                                  lnW;
+        const TypedDagNode<RootedTripletDistribution>*                                                 speciesTree;
+        double                                                                                             logProb;
+        bool                                                                                            useSpecies;
+        double                                                                                                 lnW;
         std::map < std::pair < std::string, std::pair < std::string, std::string > >, size_t > geneSpeciesTriplets;
-        std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, size_t > geneTaxonTriplets ;
+        std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, size_t >                    geneTaxonTriplets ;
+        //const TypedDagNode<RootedTripletDistribution>*    geneTrees;
 
     };
     
