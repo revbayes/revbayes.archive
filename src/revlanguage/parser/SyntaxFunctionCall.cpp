@@ -103,7 +103,7 @@ SyntaxFunctionCall* SyntaxFunctionCall::clone( void ) const
  * with dynamic == false to evaluate its arguments. Second, it makes the return
  * value a constant value.
  *
- * If dynnamic == true, then we know that we want
+ * If dynamic == true, then we know that we want
  * to evaluate the function repeatedly, as part of a deterministic variable.
  * Therefore, we need to make a deterministic variable with the function inside
  * it. Currently, this is the default implementation for the execute function
@@ -114,6 +114,7 @@ SyntaxFunctionCall* SyntaxFunctionCall::clone( void ) const
  */
 RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dynamic )
 {
+    
     // Package arguments
     std::vector<Argument> args;
     for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it != arguments->end(); ++it )

@@ -25,4 +25,6 @@ seq.clamp(D)
 write("BEAST LnL:       -6281.4026")
 write("RevBayes LnL:   ",seq.lnProbability())
 
+write(file="result.txt", append=TRUE, "Finished GTR_Gamma_Likelihood.Rev")
+
 q()

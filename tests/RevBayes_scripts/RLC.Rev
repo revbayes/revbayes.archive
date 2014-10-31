@@ -171,5 +171,7 @@ mymcmc.run(generations=400)
 
 mymcmc.operatorSummary()
 
+write(file="result.txt", append=TRUE, "Finished RLC.Rev")
+
 q()
 

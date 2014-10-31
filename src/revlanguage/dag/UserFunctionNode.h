@@ -33,7 +33,7 @@ namespace RevLanguage {
         
         // Public methods
         UserFunctionNode<rlType>*               clone(void) const;                                                  //!< Type-safe clone
-        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
+        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap, std::map<std::string, const RevBayesCore::DagNode* > &names) const;   //!< Clone the entire DAG connected to this node
         double                                  getLnProbability(void) { return 0.0; }                              //!< Get ln prob
         double                                  getLnProbabilityRatio(void) { return 0.0; }                         //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                     //!< Get the value
@@ -197,7 +197,7 @@ UserFunctionNode<rlType>* UserFunctionNode<rlType>::clone( void ) const
  *       not expose its model variables to the parser.
  */
 template<typename rlType>
-RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode* >& newNodes ) const
+RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode* >& newNodes, std::map<std::string, const RevBayesCore::DagNode* > &names ) const
 {
     // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )
@@ -231,18 +231,19 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBay
     for ( size_t i = 0; i < args.size(); ++i )
     {
         // Replace the i-th copy argument with an appropriate object
-        RevPtr<Variable> theArgumentVariableClone = new Variable( args[i].getVariable()->getRevObject().cloneDAG( newNodes ), args[i].getVariable()->getName() );
-        copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
-        
-        // Manage the DAG node connections
-        RevBayesCore::DagNode* theArgumentNodeClone = theArgumentVariableClone->getRevObject().getDagNode();
-        theArgumentNodeClone->addChild( copy );
-        theArgumentNodeClone->incrementReferenceCount();
+        throw RbException("Missing implementation");
+//        RevPtr<Variable> theArgumentVariableClone = new Variable( args[i].getVariable()->getRevObject().cloneDAG( newNodes ), args[i].getVariable()->getName() );
+//        copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
+//        
+//        // Manage the DAG node connections
+//        RevBayesCore::DagNode* theArgumentNodeClone = theArgumentVariableClone->getRevObject().getDagNode();
+//        theArgumentNodeClone->addChild( copy );
+//        theArgumentNodeClone->incrementReferenceCount();
     }
     
     /* Make sure the children clone themselves */
     for( std::set<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
-        (*it)->cloneDAG( newNodes );
+        (*it)->cloneDAG( newNodes, names );
     
     return copy;
 }

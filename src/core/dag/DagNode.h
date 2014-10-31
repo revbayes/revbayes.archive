@@ -27,6 +27,9 @@
 #include <vector>
 
 namespace RevBayesCore {
+    
+    class Monitor;
+    class Move;
 
     class DagNode {
     
@@ -34,11 +37,11 @@ namespace RevBayesCore {
         
         enum DagNodeTypes { CONSTANT, DETERMINISTIC, STOCHASTIC };
     
-        virtual                                            ~DagNode(void);                                                                                      //!< Virtual destructor
+        virtual                                                    ~DagNode(void);                                                                                      //!< Virtual destructor
 
         // pure virtual methods
         virtual DagNode*                                            clone(void) const = 0;
-        virtual DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const = 0;                           //!< Clone the entire DAG which is connected to this node
+        virtual DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const = 0; //!< Clone the entire DAG which is connected to this node
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
         virtual size_t                                              getNumberOfElements(void) const = 0;                                                        //!< Get the number of elements for this value
@@ -49,16 +52,18 @@ namespace RevBayesCore {
         
         // public member functions
         void                                                        addChild(DagNode *child) const;                                                             //!< Add a new child node
+        void                                                        addMonitor(Monitor *m);                                                                     //!< Add a new monitor on this node
+        void                                                        addMove(Move *m);                                                                           //!< Add a new move on this node
         void                                                        addTouchedElementIndex(size_t i);                                                           //!< Add the index of an element that has been touch (usually for vector-like values)
         void                                                        clearTouchedElementIndices(void);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
-        void                                                        collectDownstreamGraph(std::set<DagNode*> &nodes);                                          //!< Collect all nodes downstream from this node (incl the node)
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
         void                                                        getAffectedNodes(std::set<DagNode *>& affected);                                            //!< get affected nodes
-        //    DagNode*                                            getChild(size_t index);                                                                       //!< Get the child at the index
-        const std::set<DagNode*>&                                   getChildren(void) const;                                                                    //!< Get the set of parents
+        const std::set<DagNode*>&                                   getChildren(void) const;                                                                    //!< Get the set of children
         std::string                                                 getDagNodeType(void) const;
         DagNode*                                                    getFirstChild(void) const;                                                                  //!< Get the first child from a our set
+        const std::set<Monitor*>&                                   getMonitors(void) const;                                                                    //!< Get the set of monitors
+        const std::set<Move*>&                                      getMoves(void) const;                                                                       //!< Get the set of moves
         const std::string&                                          getName(void) const;                                                                        //!< Get the of the node
         size_t                                                      getNumberOfChildren(void) const;                                                            //!< Get the number of children for this node
         virtual std::set<const DagNode*>                            getParents(void) const;                                                                     //!< Get the set of parents (empty set here)
@@ -77,7 +82,9 @@ namespace RevBayesCore {
         virtual void                                                reInitialized(void);                                                                        //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeAffected(void);                                                                 //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeMe(void);                                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff
-        void                                                        removeChild(DagNode *child) const;
+        void                                                        removeChild(DagNode *child) const;                                                          //!< Remove this child node from our set of children.
+        void                                                        removeMonitor(Monitor *m);                                                                  //!< Remove this monitor from our set.
+        void                                                        removeMove(Move *m);                                                                        //!< Remove this move from our set.
         void                                                        replace(DagNode *n);                                                                        //!< Replace this node with node p.
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                                      //!< Restore value of affected nodes recursively
@@ -110,9 +117,11 @@ namespace RevBayesCore {
         // members
         mutable std::set<DagNode*>                                  children;                                                                                   //!< The children in the model graph of this node
         bool                                                        hidden;
+        std::set<Monitor*>                                          monitors;
+        std::set<Move*>                                             moves;
         std::string                                                 name;
-        std::set<size_t>                                            touchedElements;
         bool                                                        priorOnly;
+        std::set<size_t>                                            touchedElements;
         DagNodeTypes                                                type;
 
     

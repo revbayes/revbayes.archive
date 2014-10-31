@@ -68,7 +68,6 @@ namespace RevLanguage {
         virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
         // Basic utility functions you may want to override
-        virtual RevObject*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;      //!< Clone the model DAG connected to this node
         virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
         virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
         virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
@@ -80,10 +79,8 @@ namespace RevLanguage {
         virtual bool                        isConvertibleTo(const TypeSpec& type, bool once) const;                                         //!< Is convertible to type?
         virtual bool                        isModelObject(void) const;                                                                      //!< Is this a model object (compared with a workspace object)
         virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-        virtual void                        makeConversionValue(RevPtr<Variable> var);                                                      //!< Convert the object to a conversion object
         virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
         virtual void                        makeUserFunctionValue(UserFunction* fxn);                                                       //!< Convert to deterministic object with a userdefined Rev function
-        virtual void                        replaceVariable(RevObject *newObj);                                                             //!< Replace the internal DAG node and prepare to replace me
         virtual void                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);                  //!< Set member variable
         virtual void                        setParameter(const std::string& name, const RevPtr<Variable> &var);                             //!< Set member variable
         virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)

@@ -919,6 +919,24 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_exp",      new Func_power() );
         addFunction( "_exp",      new Func_powerVector() );
         
+        // type conversion
+        addFunction( "_Natural2Integer",            new Func__conversion<Natural, Integer>()        );
+        addFunction( "_Natural2Real",               new Func__conversion<Natural, Real>()           );
+        addFunction( "_Natural2RealPos",            new Func__conversion<Natural, RealPos>()        );
+        addFunction( "_Integer2Real",               new Func__conversion<Integer, Real>()           );
+        addFunction( "_Integer2RealPos",            new Func__conversion<Integer, RealPos>()        );
+        addFunction( "_Probability2RealPos",        new Func__conversion<Probability, RealPos>()    );
+        addFunction( "_Probability2Real",           new Func__conversion<Probability, Real>()       );
+        addFunction( "_RealPos2Real",               new Func__conversion<RealPos, Real>()           );
+        
+        
+        addFunction( "_Natural[]2Integer[]",        new Func__conversion<ModelVector<Natural>, ModelVector<Integer> >()         );
+        addFunction( "_Natural[]2Real[]",           new Func__conversion<ModelVector<Natural>, ModelVector<Real> >()            );
+        addFunction( "_Natural[]2RealPos[]",        new Func__conversion<ModelVector<Natural>, ModelVector<RealPos> >()         );
+        addFunction( "_Integer[]2Real[]",           new Func__conversion<ModelVector<Integer>, ModelVector<Real> >()            );
+        addFunction( "_RealPos[]2Real[]",           new Func__conversion<ModelVector<RealPos>, ModelVector<Real> >()            );
+        
+        
 
         /* Input/output functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
