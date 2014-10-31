@@ -417,17 +417,16 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
     double t_curr = nd.getParent().getAge();
     double t_end = nd.getAge();
     
-    // get epoch interval
+    // find epoch
     size_t epochIdx = getEpochIndex(t_curr);
-                                 
-    // get I
+    
+    // P = I
     TransitionProbabilityMatrix tp(this->numChars);
     for (size_t i = 0; i < this->numChars; i++)
-        for (size_t j = 0; j < this->numChars; j++)
-            tp[i][j] = 1.0;
+        tp[i][i] = 1.0;
     
     // multiply transition probs across epochs
-    while (t_curr < t_end)
+    while (t_curr > t_end)
     {
         double t_next = epochTimes->getValue()[epochIdx];
         if (t_next < t_end)
@@ -436,7 +435,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
 
         // first, get the rate matrix for this branch
         const RateMatrix *rm;
-        rm = &this->epochRateMatrices->getValue()[epochIdx];
+        rm = &epochRateMatrices->getValue()[epochIdx];
         
         // second, get the clock rate for the branch
         if ( this->branchHeterogeneousClockRates == true )
@@ -454,7 +453,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         }
         
         // and finally compute the per site rate transition probability matrix
-        if ( this->rateVariationAcrossSites == true || false )
+        if ( this->rateVariationAcrossSites == true && false )
         {
             const std::vector<double> &r = this->siteRates->getValue();
             for (size_t i = 0; i < this->numSiteRates; ++i)
@@ -469,6 +468,8 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         
         // epochs construct DTMC
         tp *= this->transitionProbMatrices[0];
+        std::cout << t_curr << " " << epochIdx << "\n";
+        std::cout << tp << "\n\n";
         
         // advance increment
         t_curr = t_next;
@@ -482,13 +483,16 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
 template<class charType>
 void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochRateMatrices(const TypedDagNode< RbVector< RateMatrix > > *rm) {
     
+    if (epochRateMatrices != NULL)
+        epochRateMatrices = NULL;
+    
     // set the value
     epochRateMatrices = rm;
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
-        this->redrawValue();
+        ; //this->redrawValue();
     }
     
 }
@@ -498,6 +502,9 @@ template<class charType>
 void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochClockRates(const TypedDagNode< RbVector< double > > *r)
 {
     
+    if (epochClockRates != NULL)
+        epochClockRates = NULL;
+    
     // set the value
     useEpochClockRates = true;
     epochClockRates = r;
@@ -505,7 +512,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochClockRates(const TypedDagNo
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
-        this->redrawValue();
+        ; //this->redrawValue();
     }
     
 }
@@ -514,13 +521,16 @@ template<class charType>
 void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochTimes(const TypedDagNode< RbVector< double > > *t)
 {
     
+    if (epochTimes != NULL)
+        epochTimes = NULL;
+    
     // set the value
     epochTimes = t;
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
-        this->redrawValue();
+        ; //this->redrawValue();
     }
     
 }

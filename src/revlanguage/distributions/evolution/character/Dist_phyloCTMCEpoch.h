@@ -159,10 +159,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         {
             dist->setSiteRates( siteRatesNode );
         }
-        
+
+        dist->setEpochTimes( et );
         dist->setEpochClockRates( ecr );
         dist->setEpochRateMatrices( erm );
-        dist->setEpochTimes( et );
+
         
         d = dist;
     }
