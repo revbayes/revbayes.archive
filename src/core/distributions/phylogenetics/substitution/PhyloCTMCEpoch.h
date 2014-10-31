@@ -62,16 +62,20 @@ namespace RevBayesCore {
 #include "DiscreteCharacterState.h"
 #include "RateMatrix_JC.h"
 #include "RandomNumberFactory.h"
+#include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
 #include <cstring>
+#include <vector>
 
 template<class charType>
 RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBayesCore::TimeTree> *t, size_t nChars, bool c, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>(  t, nChars, 1, c, nSites )
 {
-    
+    epochTimes = new ConstantNode< RbVector< double > >("epochTimes", new RbVector<double>(1, 0.0) );
+    epochClockRates = new ConstantNode< RbVector< double > >("epochClockRates", new RbVector<double>(1, 1.0) );
+    epochRateMatrices = new ConstantNode< RbVector< RateMatrix> >("epochRateMatrices", new RbVector<RateMatrix>( 1, RateMatrix_JC( nChars )));
 }
 
 
@@ -371,7 +375,7 @@ size_t RevBayesCore::PhyloCTMCEpoch<charType>::getEpochIndex(double t)
 template<class charType>
 std::set<const RevBayesCore::DagNode*> RevBayesCore::PhyloCTMCEpoch<charType>::getParameters( void ) const
 {
-    std::set<const DagNode*> parameters = this->getParameters();
+    std::set<const DagNode*> parameters = RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>::getParameters();
     
     parameters.insert( epochTimes );
     parameters.insert( epochRateMatrices );
@@ -392,7 +396,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::swapParameter(const DagNode *oldP, 
     }
     else if (oldP == epochRateMatrices)
     {
-        epochRateMatrices = static_cast<const TypedDagNode< RateMatrix >* >( newP );
+        epochRateMatrices = static_cast<const TypedDagNode< RbVector< RateMatrix > >* >( newP );
     }
     else if (oldP == epochClockRates)
     {
@@ -409,7 +413,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
 {
     
     // get branch start/end ages
-    TopologyNode& nd = this->tau->getValue().getNodes();
+    const TopologyNode& nd = *(this->tau->getValue().getNodes()[nodeIdx]);
     double t_curr = nd.getParent().getAge();
     double t_end = nd.getAge();
     
