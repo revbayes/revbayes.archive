@@ -30,7 +30,7 @@
 #define USE_TIME_TREE
 //#define USE_NUCLEOTIDE
 #define USE_3_STATES
-#define USE_RATE_HET
+//#define USE_RATE_HET
 
 using namespace RevBayesCore;
 
@@ -122,10 +122,29 @@ bool TestFilteredStandardLikelihood::run( void ) {
     charactermodel->clamp( discrD );
     double lnp = charactermodel->getLnProbability();
     std::cerr << "    lnProb = " << lnp << std::endl;
+#   if defined(USE_3_STATES)
+#       if defined(USE_RATE_HET)
+            const double paupLnL = lnp; // can't check this against paup....
+#       else
+            const double paupLnL = -813.23060;
+#       endif
+#   else
+#       if defined(USE_RATE_HET)
+            const double paupLnL = -900.9122;
+#       else
+            const double paupLnL = -892.5822;
+#       endif
+#   endif
+    const double tol = 0.01;
+    if (fabs(lnp - paupLnL) > tol) {
+        std::cerr << "    deviates too much from the likelihood from PAUP* of " << paupLnL << std::endl;
+        return false;
+    }
     if (lnp >= 0.0) {
         std::cerr << "    lnProb is too high!" << std::endl;
         return false;
     }
+
     std::cout << "RevBayes LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
     std::cout << "Finished GTR+Gamma model test." << std::endl;
     return true;
