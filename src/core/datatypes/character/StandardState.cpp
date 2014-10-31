@@ -14,32 +14,34 @@
  */
 
 #include "StandardState.h"
+#include "RbException.h"
 #include <sstream>
 #include <cstdlib>
+#include <cassert>
 
 using namespace RevBayesCore;
 
 /** Default constructor */
-StandardState::StandardState(void) : DiscreteCharacterState(), labels( "01" ), state(0x1), stateIndex(0xFFFFF) {
+StandardState::StandardState(void) : DiscreteCharacterState(), labels( "01" ), state(0x1) {
     
 }
 
 
 /** Default constructor */
-StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), labels( s ), state(), stateIndex() {
+StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), labels( s ), state() {
     
 }
 
-StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state(), stateIndex() {
+StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state() {
     setState(s);
 }
 
-StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state(), stateIndex() {
+StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state() {
     setState(s);
 }
 
 /** Copy constructor */
-StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), labels( s.labels ), state( s.state ), stateIndex( s.stateIndex ) {
+StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), labels( s.labels ), state( s.state ) {
     
 }
 
@@ -86,28 +88,24 @@ bool StandardState::operator<(const CharacterState &x) const {
 void StandardState::operator++( void )
 {
     state <<= 1;
-    ++stateIndex;
 }
 
 
 void StandardState::operator++( int i )
 {
     state <<= 1;
-    ++stateIndex;
 }
 
 
 void StandardState::operator--( void )
 {
     state >>= 1;
-    --stateIndex;
 }
 
 
 void StandardState::operator--( int i )
 {
     state >>= 1;
-    --stateIndex;
 }
 
 
@@ -156,8 +154,38 @@ unsigned long StandardState::getState( void ) const {
     return state;
 }
 
+size_t indexOfOnBit(size_t bitrep) {
+    assert(bitrep > 0);
+    assert((bitrep & (bitrep - 1)) == 0); // only one bit can be set...
+    const size_t indices[] = {5, 0, 1, 5, 2, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5}; // 5 is the out-of-range signal
+    size_t u = bitrep & 0xF;
+    size_t i = indices[u];
+    if (i == 5) {
+        size_t offset = 0;
+        while (i == 5) {
+            offset += 4;
+            bitrep >>= 4;
+            u = bitrep & 0xF;
+            i = indices[u];
+        }
+        i += offset;
+    }
+    return i;
+}
+size_t setFirstNBitsOn(size_t n) {
+    assert(n <= 8*sizeof(size_t));
+    size_t r = 0;
+    size_t b = 1;
+    for (size_t i = 0; i < n; ++i) {
+        r |= b;
+        b <<= 1;
+    }
+    return r;
+}
+
+
 size_t StandardState::getStateIndex( void ) const {
-    return stateIndex;
+    return indexOfOnBit(this->state);
 }
 
 const std::string& StandardState::getStateLabels( void ) const {
@@ -191,6 +219,9 @@ bool StandardState::isGapState( void ) const {
     return state == 0x0;
 }
 
+void StandardState::setMissing() {
+    state = setFirstNBitsOn(labels.size());
+}
 
 void StandardState::setGapState(bool tf) {
     if ( tf ) {
@@ -207,17 +238,17 @@ void StandardState::setGapState(bool tf) {
 
 
 void StandardState::setState(size_t pos, bool val) {
-    
     state &= ((unsigned long)val) << pos;
-    stateIndex = pos;
 }
 
 
 void StandardState::setState(char symbol) {
     
     size_t pos = labels.find(symbol);
+    if (pos == std::string::npos) {
+        throw RbException("Symbol \"" + std::string(1, symbol) + "\" not found in state labels \"" + this->labels + "\"");
+    }
     state = (unsigned int)( 1 ) << pos;
-    stateIndex = (unsigned)pos;
 }
 
 void StandardState::setState(std::string s) {
@@ -228,14 +259,12 @@ void StandardState::setState(std::string s) {
     {
         size_t pos = labels.find(tmp[i]);
         state = (unsigned int)( 1 ) << pos;
-        stateIndex = (unsigned)pos;
     }
 }
 
 void StandardState::setToFirstState( void )
 {
     state = 0x01;
-    stateIndex = 0;
     
 }
 
