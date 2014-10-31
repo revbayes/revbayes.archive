@@ -30,7 +30,7 @@
 //#define DEBUG_MCMC_DETAILS   // Define this to see more detailed mcmc debug info
 //#define DEBUG_HELP_SYSTEM
 //#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
-//#define DEBUG_MEMORY    // Defins this to debug memory leaks in the language layer
+#define DEBUG_MEMORY    // Defins this to debug memory leaks in the language layer
 
 //#define TESTING
 

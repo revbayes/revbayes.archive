@@ -66,7 +66,6 @@ DagNode::~DagNode( void )
         std::cerr << "Deleting DAG node '" << name << "' <" << this << ">" << std::endl;
     else
         std::cerr << "Deleting DAG node <" << this << ">" << std::endl;
-#endif
 
     // Sanity checks
     if ( refCount != 0 )
@@ -84,6 +83,7 @@ DagNode::~DagNode( void )
         o << std::endl;
         throw RbException( o );
     }
+#endif
 }
 
 
@@ -112,10 +112,16 @@ DagNode& DagNode::operator=(const DagNode &d)
 /**
  * Add a new child node to this node.
  * Since we store the children in a set we don't need to worry about duplicates.
+ *
+ * Note, the caller also needs to increment the reference count to this node.
  */
 void DagNode::addChild(DagNode *child) const
 {
+    
+    // add the child to our set of children
+    // the set will take care automaticall of duplicates.
     children.insert( child );
+    
 }
 
 
@@ -123,6 +129,8 @@ void DagNode::addChild(DagNode *child) const
  * Add a new monitor which monitors this node.
  * We only keep these pointers to notify the monitor if we are replaced.
  *
+ *
+ * Note, the caller also needs to increment the reference count to this node.
  */
 void DagNode::addMonitor(Monitor *m)
 {
@@ -135,6 +143,8 @@ void DagNode::addMonitor(Monitor *m)
  * Add a new move which update this node.
  * We only keep these pointers to notify the monitor if we are replaced.
  *
+ *
+ * Note, the caller also needs to increment the reference count to this node.
  */
 void DagNode::addMove(Move *m)
 {
@@ -190,29 +200,10 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
  */
 size_t DagNode::decrementReferenceCount( void ) const 
 {
-    // Sanity checks
-    if ( refCount == 0) {
-        std::ostringstream o;
-        if ( getName() != "" )
-            o << "Decrementing reference count of node " << getName() << " <" << this << "> below 0" << std::endl;
-        else
-            o << "Decrementing reference count of node <" << this << "> below 0" << std::endl;
-        throw RbException( o );
-    }
-    else if ( refCount <= children.size() )
-    {
-        std::ostringstream o;
-        if ( getName() != "" )
-            o << "Decrementing reference count of node " << getName() << " below number of children" << std::endl;
-        else
-            o << "Decrementing reference count of node <" << this << "> below number of children" << std::endl;
-        throw RbException( o );
-    }
 
     refCount--;
     
     return refCount;
-//    return 10;
 }
 
 
@@ -407,22 +398,6 @@ void DagNode::incrementReferenceCount( void ) const
 {
     
     refCount++;
-    
-#if defined ( DEBUG_MEMORY )
-    // For debugging memory leaks
-    if ( refCount - children.size() > 1 )
-    {
-        if ( getName() != "" )
-        {
-            std::cerr << "More than 1 non-DAG references to node " << getName() << std::endl;
-        }
-        else
-        {
-            std::cerr << "More than 1 non-DAG references to node <" << this << std::endl;
-        }
-        
-    }
-#endif
 
 }
 
@@ -713,6 +688,8 @@ void DagNode::reInitializeMe( void )
 
 /**
  * Remove the DAG node from our set of children.
+ *
+ * Note, the caller also needs to decrement the reference count to this node.
  */
 void DagNode::removeChild(DagNode *child) const
 {
@@ -734,6 +711,8 @@ void DagNode::removeChild(DagNode *child) const
 
 /**
  * Remove the monitor from our set of monitors.
+ *
+ * Note, the caller also needs to decrement the reference count to this node.
  */
 void DagNode::removeMonitor(Monitor *m)
 {
@@ -752,6 +731,8 @@ void DagNode::removeMonitor(Monitor *m)
 
 /**
  * Remove the move from our set of moves.
+ *
+ * Note, the caller also needs to decrement the reference count to this node.
  */
 void DagNode::removeMove(Move *m)
 {
