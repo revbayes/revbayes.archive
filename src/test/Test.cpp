@@ -17,6 +17,7 @@
 //#include "TestConstantPopCoalescent.h"
 //#include "TestCharacterHistory.h"
 #include "TestDPPRelClock.h"
+#include "TestFilteredStandardLikelihood.h"
 #include "TestGtrGammaLikelihood.h"
 //#include "TestBranchHeterogeneousGtrModel.h"
 //#include "TestBranchHeterogeneousHkyModel.h"
@@ -59,21 +60,43 @@ Test::~Test() {
 bool Test::performTests(int argc, const char * argv[]) {
     time_t start,end;
     time (&start);
-    
+    int numPassed = 0;
+    int numAttempted = 0;
     ////////////////
     // Newer tests
     ////////////////
-    
+    try {
+        numAttempted += 1;
+        TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood(
+#                                                                               if defined(READ_MORPHO_AS_DNA)
+                                                                                    "data/morpho-as-dna.nex",
+#                                                                               else
+                                                                                    "data/morpho.nex",
+#                                                                               endif
+                                                                                "data/morpho.tre");
+        if (testFSL.run()) {
+            numPassed += 1;
+        } else {
+            std::cerr << "TestFilteredStandardLikelihood failed!" << std::endl;
+        }
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
     
 	// #######
     // TAH: working on relaxed-clock models, setting up consistent test files
 	
     /* A DPP relaxed model test */
     try {
-		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
+        //        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
         TestDPPRelClock testDPPRC = TestDPPRelClock("data/test_data_clock_gtr.nex", "data/true_calib_clk.tre", 100000);
-		
-//		testDPPRC.run();
+
+//      numAttempted += 1;
+        //if (testDPPRC.run()) {
+        //    numPassed += 1;
+        //} else {
+        //    std::cerr << "TestDPPRelClock failed!" << std::endl;
+        //}
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -153,15 +176,16 @@ bool Test::performTests(int argc, const char * argv[]) {
 //    } catch (RbException &e) {
 //        std::cout << e.getMessage() << std::endl;
 //    }
-//    
-    /* A GTR+Gamma model test */
+// 
+/*
+    // A GTR+Gamma model test 
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
         testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-    
+*/
 //
 //    /* A branch-heterogeneous Tamura 1992 model test */
 //    try {
@@ -245,7 +269,10 @@ bool Test::performTests(int argc, const char * argv[]) {
     time (&end);
     double dif = difftime(end,start);
     std::cout << "The tests ran in " << dif << " seconds." << std::endl;
-    std::cout << "Finished Tests!!!" << std::endl;
-    
-    return 0;
+    if (numPassed == numAttempted) {
+        std::cout << "Finished Tests!!!" << std::endl;
+        return true;
+    }
+    std::cout << "Unfortunately, only " << numPassed << " out of " << numAttempted << " tests passed." << std::endl;
+    return false;
 }
