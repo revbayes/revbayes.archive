@@ -181,6 +181,7 @@
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCEpoch.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 #include "Dist_autocorrelatedLnBranchRates.h"
@@ -600,6 +601,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
+        addDistribution( "dnPhyloCTMCEpoch", new Dist_phyloCTMCEpoch() );
                 
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
