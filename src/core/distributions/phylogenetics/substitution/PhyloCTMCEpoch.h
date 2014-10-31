@@ -428,9 +428,13 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
     // multiply transition probs across epochs
     while (t_curr > t_end)
     {
-        double t_next = epochTimes->getValue()[epochIdx];
+        double t_next = 0.0;
+        if (epochIdx < epochTimes->getValue().size())
+            t_next = epochTimes->getValue()[epochIdx];
+        
         if (t_next < t_end)
             t_next = t_end;
+        
         double dt = t_curr - t_next;
 
         // first, get the rate matrix for this branch
@@ -468,8 +472,6 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         
         // epochs construct DTMC
         tp *= this->transitionProbMatrices[0];
-        std::cout << t_curr << " " << epochIdx << "\n";
-        std::cout << tp << "\n\n";
         
         // advance increment
         t_curr = t_next;
