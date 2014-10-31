@@ -68,7 +68,7 @@ namespace RevLanguage {
         void                    setVectorVariableState(bool flag = true);               //!< Set (or unset) vector variable status
         void                    setWorkspaceVariableState(bool flag = true);            //!< Set (or unset) control variable status
         void                    setName(const std::string &n);                          //!< Set the name of this variable
-        void                    setRevObject(RevObject *newObj);                        //!< Set a variable with a Rev object
+        void                    replaceRevObject(RevObject *newObj);                    //!< Replace the Rev object of this variable
         void                    setRevObjectTypeSpec(const TypeSpec& ts);               //!< set the required Rev object type spec
         
         // Smart pointer functions
@@ -77,8 +77,6 @@ namespace RevLanguage {
         void                    incrementReferenceCount(void) const;                    //!< Increment the reference count for reference counting in smart pointers
         
     private:
-        // Help functions
-        void                    replaceRevObject(RevObject *newObj);                    //!< Replace object, update DAG
         
         // Member variables
         std::string             name;                                                   //!< Name of variable

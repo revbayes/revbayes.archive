@@ -47,7 +47,6 @@ namespace RevLanguage {
         virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Execute member functions
         
         // Basic utility functions you should not have to override
-        RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
         bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue(void);                                                    //!< Convert to constant object
@@ -85,7 +84,7 @@ namespace RevLanguage {
 #include "Cloner.h"
 #include "ConstantNode.h"
 #include "ContinuousCharacterData.h"
-#include "ConverterNode.h"
+#include "Func__conversion.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
 #include "RlConstantNode.h"
@@ -197,31 +196,6 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
     }
     
     return *this;
-}
-
-
-/**
- * Clone the model DAG connected to this object. This function is used
- * by the DAG node cloneDAG function, for DAG node types belonging to the
- * RevLanguage layer and handling Rev objects.
- *
- * @todo This is a temporary hack that makes different Rev objects sharing
- *       the same internal DAG node keeping their value. Replace with code
- *       that actually clones the model DAG with the included Rev objects
- *       (and possibly also the included variables).
- */
-template<typename rbType>
-RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
-{
-    ModelObject<rbType>* theClone = clone();
-
-    theClone->setDagNode( NULL );
-    
-    RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
-    
-    theClone->setDagNode( theNodeClone );
-    
-    return theClone;
 }
 
 
@@ -343,33 +317,6 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 
 
 /**
- * Convert a model object to a conversion object, the value of which is determined by a type
- * conversion from a specified variable.
- */
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeConversionValue( RevPtr<Variable> var )
-{
-    // Create the converter node
-    ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var, getTypeSpec() );
-    newNode->setHidden( true );
-
-    // Signal replacement and delete the value if there are no other references to it.
-    if ( dagNode != NULL )
-    {
-        dagNode->replace( newNode );
-        if ( dagNode->decrementReferenceCount() == 0 )
-            delete dagNode;
-    }
-    
-    // Shift the actual node
-    dagNode = newNode;
-    
-    // Increment the reference counter
-    dagNode->incrementReferenceCount();
-}
-
-
-/**
  * Make an indirect reference to the variable. This is appropriate for the contexts
  * where the object occurs on the righ-hand side of expressions like a := b
  */
@@ -452,27 +399,15 @@ void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
 }
 
 
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
-    
-    RevBayesCore::DagNode* newParent = newVar->getDagNode();
-    
-    if ( dagNode != NULL )
-    {
-        while ( dagNode->getNumberOfChildren() > 0 )
-        {
-            dagNode->getFirstChild()->swapParent(dagNode, newParent);
-        }
-    }
-}
-
-
 /** Copy name of variable onto DAG node, if it is not NULL */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
 {
     if ( dagNode != NULL )
+    {
         dagNode->setName( n );
+    }
+    
 }
 
 
@@ -487,7 +422,10 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
     if ( dagNode != NULL )
     {
         if ( newNode != NULL )
+        {
             newNode->setName( dagNode->getName() );
+        }
+        
         dagNode->replace(newNode);
         
         if ( dagNode->decrementReferenceCount() == 0 )
@@ -502,7 +440,9 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
     
     // Increment the reference count to the new value node
     if ( dagNode != NULL )
+    {
         dagNode->incrementReferenceCount();
+    }
     
 }
 

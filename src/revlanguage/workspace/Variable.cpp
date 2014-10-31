@@ -43,7 +43,7 @@ Variable::Variable(RevObject *v, const std::string &n) :
     min( RbConstants::Integer::max ),
     max( 0 )
 {
-    setRevObject( v );
+    replaceRevObject( v );
 }
 
 
@@ -85,7 +85,7 @@ Variable::Variable(const Variable &v) :
     
     if ( v.revObject != NULL )
     {
-        setRevObject( v.revObject->clone() );
+        replaceRevObject( v.revObject->clone() );
     }
     else
     {
@@ -139,7 +139,7 @@ Variable& Variable::operator=(const Variable &v)
             
             if ( v.revObject != NULL )
             {
-                setRevObject( v.revObject->clone() );
+                replaceRevObject( v.revObject->clone() );
             }
             
         }
@@ -344,24 +344,30 @@ void Variable::printValue(std::ostream& o) const
 }
 
 
-/**
- * Replace Rev object and update the DAG in the process.
- * This is a private function so we can assume that the
- * caller knows not to call this function if the variable
- * is in the reference variable state.
- */
-void Variable::replaceRevObject( RevObject *newObj )
+/** Replace the variable and update the DAG structure. */
+void Variable::replaceRevObject( RevObject *newValue )
 {
-    
-    if (revObject != NULL)
+    if ( isReferenceVar )
     {
-        // I need to tell my children that I'm being exchanged
-        revObject->replaceVariable( newObj );
-        
-        delete revObject;
+        isReferenceVar = false;
+        referencedVariable = NULL;
     }
     
-    revObject = newObj;
+    // Make sure default assignment is not a workspace (control) variable assignment
+    isWorkspaceVar = false;
+    
+    if ( revObject != NULL )
+    {
+        
+        if ( revObject->isModelObject() && revObject->getDagNode() != NULL )
+        {
+            revObject->getDagNode()->replace( newValue->getDagNode() );
+        }
+        
+    }
+    
+    delete revObject;
+    revObject = newValue;
     
     if ( revObject != NULL )
     {
@@ -381,6 +387,8 @@ void Variable::replaceRevObject( RevObject *newObj )
     }
     
 }
+
+
 
 
 /**
@@ -478,23 +486,6 @@ void Variable::setName(std::string const &n)
     
 }
 
-
-/** Set the variable and update the DAG structure. */
-void Variable::setRevObject( RevObject *newValue )
-{
-    if ( isReferenceVar )
-    {
-        isReferenceVar = false;
-        referencedVariable = NULL;
-    }
-    
-    // Make sure default assignment is not a workspace (control) variable assignment
-    isWorkspaceVar = false;
-    
-    // Replace the Rev object and make sure we update the DAG as necessary
-    replaceRevObject( newValue );
-    
-}
 
 
 /**

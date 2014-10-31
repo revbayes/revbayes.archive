@@ -249,7 +249,11 @@ void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, 
         for (size_t i=0; i<c->size(); ++i)
         {
             c->printElement(o, i, sep, l, left);
-            o << sep;
+            if ( i < (c->size()-1) )
+            {
+                o << sep;
+            }
+            
         }
     }
 }

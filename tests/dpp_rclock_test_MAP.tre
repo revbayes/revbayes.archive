@@ -17,5 +17,5 @@
 End;
 
 Begin trees;
-tree TREE1 = [&R](((((T2:1.351395,T3:1.351395)[&posterior=1:ccp=1]:8.300417,T4:9.651812)[&posterior=1:ccp=1]:123.543254,T5:133.195066)[&posterior=1:ccp=1]:113.898390,T1:247.093457)[&posterior=1:ccp=1]:125.955033,(((T6:8.630462,T7:8.630462)[&posterior=1:ccp=1]:7.058082,T8:15.688544)[&posterior=1:ccp=1]:140.060706,(T10:33.261806,T9:33.261806)[&posterior=1:ccp=1]:122.487444)[&posterior=1:ccp=1]:217.299240)[&posterior=1:ccp=1]:0.000000;
+tree TREE1 = [&R](((((T2:1.282643,T3:1.282643)[&posterior=1:ccp=1]:5.758028,T4:7.040672)[&posterior=1:ccp=1]:100.301902,T5:107.342574)[&posterior=1:ccp=1]:97.347823,T1:204.690397)[&posterior=1:ccp=1]:95.620953,(((T6:6.964190,T7:6.964190)[&posterior=1:ccp=1]:5.156944,T8:12.121135)[&posterior=1:ccp=1]:106.231161,(T10:25.260399,T9:25.260399)[&posterior=1:ccp=1]:93.091897)[&posterior=1:ccp=1]:181.959056)[&posterior=1:ccp=1]:0.000000;
 End;

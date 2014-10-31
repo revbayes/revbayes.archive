@@ -49,4 +49,4 @@ tt.summarize()
 mapTree(tt, "output/UCLN_bears_mcmc_MAP.tre")
 
 ## quit ##
-q()
+#q()

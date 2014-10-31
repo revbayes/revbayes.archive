@@ -118,7 +118,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
         // free the memory of our copy
         delete func;
         
-        theVar->setRevObject( funcReturnValue->getRevObject().clone() );
+        theVar->replaceRevObject( funcReturnValue->getRevObject().clone() );
         
     }
     

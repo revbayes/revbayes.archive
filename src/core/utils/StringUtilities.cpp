@@ -31,10 +31,10 @@
  * Either fill the spaces on the right if left aligned (true)
  * or on the left if right aligned.
  */
-void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
+void StringUtilities::fillWithSpaces(std::string &s, int l, bool left)
 {
     
-    for (size_t i=s.length(); i<l ; ++i)
+    for (int i=int(s.length()); i<l ; ++i)
     {
         // either left algined
         if (left == true)

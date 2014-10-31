@@ -58,13 +58,6 @@ RevObject* RevObject::add(const RevObject &rhs) const
 }
 
 
-/** Clone the model DAG connected to this object. */
-RevObject* RevObject::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
-{
-    throw RbException( "Rev object with no DAG node should not be included in model DAG" );
-}
-
-
 /** The default implementation does nothing because we don't have an internal object */
 void RevObject::constructInternalObject( void ) {
     // nothing to do
@@ -280,17 +273,6 @@ void RevObject::makeConstantValue( void )
 
 
 /**
- * Convert a model object to a conversion object, the value of which is determined by a type
- * conversion from a specified variable. By default we throw an error, since we do not have
- * a DAG node and cannot perform the requested action.
- */
-void RevObject::makeConversionValue( RevPtr<Variable> var )
-{
-    throw RbException( "Object without DAG node cannot be made a conversion value" );
-}
-
-
-/**
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
@@ -329,20 +311,11 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 }
 
 
-/**
- * Replace the variable. This default implementation does nothing.
- */
-void RevObject::replaceVariable(RevObject *newVar)
-{
-    
-}
-
-
 /** Set a member variable */
 void RevObject::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
     
-    throw RbException("No constant member with name \"" + name + "\" found to set.");
+    throw RbException("No constant parameter with name \"" + name + "\" found to set.");
 }
 
 
