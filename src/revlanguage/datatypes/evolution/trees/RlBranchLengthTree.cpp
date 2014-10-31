@@ -78,7 +78,18 @@ RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::
     else if (name == "names") {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
         return new Variable( new ModelVector<RlString>( n ) );
-    } 
+    }
+    else if (name == "reroot") {
+        
+        const RevObject& st = args[0].getVariable()->getRevObject();
+        if ( st.isTypeSpec( RlString::getClassTypeSpec() ) )
+        {
+            std::string n = std::string( static_cast<const RlString&>( st ).getValue() );
+            this->dagNode->getValue().reroot(n);
+        }
+        return NULL;
+        
+    }
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args );
 }
@@ -142,6 +153,12 @@ RevLanguage::MethodTable BranchLengthTree::makeMethods( void ) const
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+    
+    ArgumentRules* rerootArgRules = new ArgumentRules();
+    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+
+    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+
     
     // Insert inherited methods
     methods.insertInheritedMethods( ModelObject<RevBayesCore::BranchLengthTree>::makeMethods() );

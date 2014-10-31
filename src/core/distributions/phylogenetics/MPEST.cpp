@@ -22,9 +22,9 @@
 
 using namespace RevBayesCore;
 
-MPEST::MPEST(const TypedDagNode<RootedTripletDistribution> *st, const TypedDagNode<RootedTripletDistribution> *gt, bool useSp) : TypedDistribution<RootedTripletDistribution>( NULL ),
+MPEST::MPEST(const TypedDagNode<RootedTripletDistribution> *st, /*const TypedDagNode<RootedTripletDistribution> *gt, */bool useSp) : TypedDistribution<RootedTripletDistribution>( NULL ),
 speciesTree( st ),
-geneTrees( gt ),
+//geneTrees( gt ),
 logProb (0.0),
 useSpecies(useSp),
 lnW (0.0),
@@ -39,7 +39,7 @@ geneTaxonTriplets()
 
 MPEST::MPEST(const MPEST &v) : TypedDistribution<RootedTripletDistribution>( v ),
 speciesTree( v.speciesTree ),
-geneTrees( v.geneTrees ),
+//geneTrees( v.geneTrees ),
 logProb( v.logProb ),
 useSpecies(v.useSpecies),
 lnW (v.lnW),
@@ -160,10 +160,10 @@ void MPEST::computeLnW() {
 
 void MPEST::extractGeneTriplets() {
     if (useSpecies) {
-        geneSpeciesTriplets = geneTrees->getValue().getSpeciesTriplets();
+        geneSpeciesTriplets = value->getSpeciesTriplets();
     }
     else {
-        geneTaxonTriplets = geneTrees->getValue().getTaxonTriplets();
+        geneTaxonTriplets = value->getTaxonTriplets();
     }
     return;
 }
@@ -189,7 +189,7 @@ std::set<const DagNode*> MPEST::getParameters( void ) const
     std::set<const DagNode*> parameters;
     
     parameters.insert( speciesTree );
-    parameters.insert( geneTrees );
+    //parameters.insert( geneTrees );
     
     parameters.erase( NULL );
     return parameters;
@@ -204,11 +204,11 @@ void MPEST::swapParameter(const DagNode *oldP, const DagNode *newP)
     {
         speciesTree = static_cast<const TypedDagNode< RootedTripletDistribution > * >( newP );
     }
-    else if ( oldP == geneTrees)
+   /* else if ( oldP == geneTrees)
     {
         geneTrees = static_cast<const TypedDagNode< RootedTripletDistribution > *  >( newP );
         extractGeneTriplets();
         computeLnW();
-    }
+    }*/
     
 }

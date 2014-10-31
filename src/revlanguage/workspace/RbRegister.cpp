@@ -934,7 +934,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "v",         new Func_modelVector<Clade>()                      );
         addFunction( "v",         new Func_modelVector<RlString>()                   );
         addFunction( "v",         new Func_modelVector<TimeTree>()                   );
-        
+        addFunction( "v",         new Func_modelVector<BranchLengthTree>()           );
+     
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
         addFunction( "clade",                       new Func_clade()                    );
@@ -1134,7 +1135,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "[]",         new Func__vectorIndexOperator<Clade>()                      );
         addFunction( "[]",         new Func__vectorIndexOperator<RlString>()                   );
         addFunction( "[]",         new Func__vectorIndexOperator<TimeTree>()                   );
-        
+        addFunction( "[]",         new Func__vectorIndexOperator<BranchLengthTree>()           );
+
 
         /* Input/output functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
