@@ -261,7 +261,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numSiteRates( n.numSiteRates ),
     tau( n.tau ), 
     transitionProbMatrices( n.transitionProbMatrices ),
-    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
+    partialLikelihoods( new double[2*numNodes*numSiteRates*n.numPatterns*numChars] ),
     activeLikelihood( n.activeLikelihood ),
     scalingFactors( n.scalingFactors ),
     charMatrix( n.charMatrix ), 
