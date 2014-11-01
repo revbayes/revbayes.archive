@@ -41,7 +41,7 @@ namespace RevBayesCore {
         TreeSummary(const TreeTrace<treeType> &t);
     
         treeType*                                                               map(int burnin=-1);
-		treeType*                                                               mapAncestralState(std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin=-1);
+		treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin=-1);
         void                                                                    summarize(int burnin=-1);
         void                                                                    printTreeSummary(std::ostream& o);
         void                                                                    printCladeSummary(void);
@@ -63,7 +63,6 @@ namespace RevBayesCore {
     template <>
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
     {
-        
         summarize( b );
         
         std::string bestNewick = treeSamples.rbegin()->getValue();
@@ -78,6 +77,7 @@ namespace RevBayesCore {
         for (size_t i = burnin; i < trace.size(); ++i)
         {
             BranchLengthTree& tree = trace.objectAt( i );
+			
             const TopologyNode& root = tree.getRoot();
             for (size_t j = 0; j < nodes.size(); ++j)
             {
@@ -194,6 +194,165 @@ namespace RevBayesCore {
         return bestTimeTree;
     }
 
+	template <>
+	inline BranchLengthTree* RevBayesCore::TreeSummary<BranchLengthTree>::ancestralStateTree(const BranchLengthTree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b )
+	{	
+		BranchLengthTree &finalInputTree = const_cast<BranchLengthTree&>(inputTree);
+		std::vector<TopologyNode*> input_nodes = finalInputTree.getNodes();
+		
+		// 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
+		std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
+		std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
+		
+		double weight = 1.0 / (trace.size()-burnin);
+		
+		// loop through all trees in tree trace
+		for (size_t i = burnin; i < trace.size(); i++)
+		{
+			BranchLengthTree& sample_tree = trace.objectAt( i );
+			const TopologyNode& sample_root = sample_tree.getRoot();
+			
+			// only for branchLengthTrees:
+			// root the inputTree to the same node as the sample_tree
+			// so we can compare the two trees
+			for (size_t j = 0; j < input_nodes.size(); j++) {
+					
+				// reroot a copy of the inputTree until we find the sample_root node
+				BranchLengthTree* finalInputTreeCopy = new BranchLengthTree(finalInputTree);
+				std::vector<TopologyNode*> input_nodes_copy = finalInputTreeCopy->getNodes();
+				finalInputTreeCopy->reroot( *(input_nodes_copy[j]) );
+				
+				// check to see if the two roots have the same children
+				std::vector<TopologyNode*> inputChildren = finalInputTreeCopy->getRoot().getChildren();
+				std::vector<TopologyNode*> sampleChildren = sample_root.getChildren();
+				// loop thru all the children of the inputTreeCopy root
+				bool children_found = true;
+				for (size_t k = 0; k < inputChildren.size(); k++) {
+					bool child_found = false;
+					// loop thru all the children of the sampleTree root
+					for (size_t l = 0; l < sampleChildren.size(); l++) {
+						if ( inputChildren[k]->containsClade(sampleChildren[l], true) ) {
+							child_found = true;
+							break;
+						}
+					}
+					if (!child_found) {
+						children_found = false;
+						break;
+					}
+				}
+				if (children_found) {
+					// finally reroot the original inputTree
+					finalInputTree.reroot( *(input_nodes[j]) );
+					input_nodes = finalInputTree.getNodes();
+					break;
+				}
+			}
+			
+			// loop through all nodes in inputTree
+			for (size_t j = 0; j < input_nodes.size(); j++)
+			{
+				if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
+				{
+					// if the node is in the inputTree is also in the tree from the tree trace
+					// we get the ancestral character state from the ancestral state trace
+					size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+					size_t inputCladeIndex = finalInputTree.getRoot().getCladeIndex( input_nodes[j] ); 
+					
+					// get AncestralStateTrace for this node
+					AncestralStateTrace ancestralstate_trace;
+					for (size_t k = 0; k < ancestralstate_traces.size(); k++) {
+						if (ancestralstate_traces[k].getParameterName() == boost::lexical_cast<std::string>(sampleCladeIndex)) {
+							ancestralstate_trace = ancestralstate_traces[k];
+							break;
+						}
+					}
+					
+					// get ancestral state vector for this iteration
+					std::vector<std::string> ancestralstate_vector = ancestralstate_trace.getValues();
+					std::string ancestralstate = ancestralstate_vector[i];
+					
+					bool state_found = false;
+					int k = 0;
+					for (; k < pp[inputCladeIndex].size(); k++) {
+						if (states[inputCladeIndex][k] == ancestralstate) {
+							state_found = true;
+							break;
+						}
+					}
+					// update the pp and states vectors
+					if (!state_found) {
+						pp[inputCladeIndex].push_back(weight);
+						states[inputCladeIndex].push_back(ancestralstate);
+					} else {
+						pp[inputCladeIndex][k] += weight;
+					}
+				}
+			}
+		}
+		// find the 3 most probable ancestral states for each node and add them to the tree as parameters
+		std::vector<std::string*> best_states;
+		for (int i = 0; i < input_nodes.size(); i++) {
+			
+			size_t inputCladeIndex = input_nodes[i]->getIndex();
+			
+			if ( input_nodes[inputCladeIndex]->isTip() ) {
+				
+				std::string *s = new std::string("{}");
+				best_states.push_back(s);
+				
+			} else {
+				
+				double state1_pp = 0.0; 
+				double state2_pp = 0.0; 
+				double state3_pp = 0.0;
+				
+				std::string state1 = ""; 
+				std::string state2 = ""; 
+				std::string state3 = "";
+				
+				// loop through all states for this node
+				for (int j = 0; j < pp[inputCladeIndex].size(); j++) {
+					if (pp[inputCladeIndex][j] > state1_pp) {
+						state3_pp = state2_pp;
+						state2_pp = state1_pp;
+						state1_pp = pp[inputCladeIndex][j];
+						state3 = state2;
+						state2 = state1;
+						state1 = states[inputCladeIndex][j];
+					} else if (pp[inputCladeIndex][j] > state2_pp) {
+						state3_pp = state2_pp;
+						state2_pp = pp[inputCladeIndex][j];
+						state3 = state2;
+						state2 = states[inputCladeIndex][j];
+					} else if (pp[inputCladeIndex][j] > state3_pp) {
+						state3_pp = pp[inputCladeIndex][j];
+						state3 = states[inputCladeIndex][j];
+					}
+				}
+				std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp);
+				if (state2_pp > 0) {
+					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp);
+				}
+				if (state3_pp > 0) {
+					final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp);
+				}
+				if ((1 - (state1_pp+state2_pp+state3_pp)) > 0) {
+					double other_states = 1.0 - (state1_pp+state2_pp+state3_pp);
+					final_state = final_state + "," + "other=" + boost::lexical_cast<std::string>(other_states);
+				} 
+				final_state += "}";
+				
+				// make parameter string for this node
+				std::string *s = new std::string(final_state);
+				best_states.push_back(s);
+			}
+		}
+		finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+		return &finalInputTree;
+	}
+	
+	
 }
 
 #include "StringUtilities.h"
@@ -207,118 +366,129 @@ RevBayesCore::TreeSummary<treeType>::TreeSummary( const TreeTrace<treeType> &t) 
     burnin( 0 ), 
     trace( t ) 
 {
-    
+
 }
 
 
 template <class treeType>
-treeType* RevBayesCore::TreeSummary<treeType>::mapAncestralState(std::vector<AncestralStateTrace> &ancestralstate_traces, int b )
+treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b )
 {	
-	treeType* mapTree = map( b );
+	treeType &finalInputTree = const_cast<treeType&>(inputTree);
+	const std::vector<TopologyNode*> &input_nodes = finalInputTree.getNodes();
 	
-	const std::vector<TopologyNode*> &nodes = mapTree->getNodes();
-	
-	// 2-d vectors [node][ancestral_state]
-	std::vector<std::vector<double> > pp(nodes.size(),std::vector<double>());
-	std::vector<std::vector<std::string> > states(nodes.size(),std::vector<std::string>());
+	// 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
+	std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
+	std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
 	
 	double weight = 1.0 / (trace.size()-burnin);
 	
 	// loop through all trees in tree trace
 	for (size_t i = burnin; i < trace.size(); i++)
 	{
-		treeType& tree = trace.objectAt( i );
-		const TopologyNode& root = tree.getRoot();
-		// loop through all nodes in MAP tree
-		for (size_t j = 0; j < nodes.size(); j++)
+		treeType& sample_tree = trace.objectAt( i );
+		const TopologyNode& sample_root = sample_tree.getRoot();
+		
+		// loop through all nodes in inputTree
+		for (size_t j = 0; j < input_nodes.size(); j++)
 		{
-			
-			if ( root.containsClade(nodes[j], true) )
+			if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
 			{
-				
-				// if the node in the MAP tree is also in the tree from the tree trace
+				// if the node is in the inputTree is also in the tree from the tree trace
 				// we get the ancestral character state from the ancestral state trace
-				size_t cladeIndex = root.getCladeIndex( nodes[j] );
+				size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+				size_t inputCladeIndex = finalInputTree.getRoot().getCladeIndex( input_nodes[j] ); 
 				
 				// get AncestralStateTrace for this node
-				AncestralStateTrace ancestralstate_trace = ancestralstate_traces[cladeIndex];
+				AncestralStateTrace ancestralstate_trace;
+				for (size_t k = 0; k < ancestralstate_traces.size(); k++) {
+					if (ancestralstate_traces[k].getParameterName() == boost::lexical_cast<std::string>(sampleCladeIndex)) {
+						ancestralstate_trace = ancestralstate_traces[k];
+						break;
+					}
+				}
 				
 				// get ancestral state vector for this iteration
 				std::vector<std::string> ancestralstate_vector = ancestralstate_trace.getValues();
-				
 				std::string ancestralstate = ancestralstate_vector[i];
 				
 				bool state_found = false;
 				int k = 0;
-				for (; k < pp[j].size(); k++) {
-					if (states[j][k] == ancestralstate) {
+				for (; k < pp[inputCladeIndex].size(); k++) {
+					if (states[inputCladeIndex][k] == ancestralstate) {
 						state_found = true;
 						break;
 					}
 				}
 				// update the pp and states vectors
 				if (!state_found) {
-					pp[j].push_back(weight);
-					states[j].push_back(ancestralstate);
+					pp[inputCladeIndex].push_back(weight);
+					states[inputCladeIndex].push_back(ancestralstate);
 				} else {
-					pp[j][k] += weight;
+					pp[inputCladeIndex][k] += weight;
 				}
-				
 			}
 		}
 	}
 	// find the 3 most probable ancestral states for each node and add them to the tree as parameters
-	//std::vector<std::string*> best_states(nodes.size(), "");
 	std::vector<std::string*> best_states;
-	for (int i = 0; i < nodes.size(); i++) {
+	for (int i = 0; i < input_nodes.size(); i++) {
 		
-		double state1_pp = 0.0; 
-		double state2_pp = 0.0; 
-		double state3_pp = 0.0;
+		size_t inputCladeIndex = input_nodes[i]->getIndex();
 		
-		std::string state1 = ""; 
-		std::string state2 = ""; 
-		std::string state3 = "";
-		
-		// loop through all states for this node
-		for (int j = 0; j < pp[i].size(); j++) {
-			if (pp[i][j] > state1_pp) {
-				state3_pp = state2_pp;
-				state2_pp = state1_pp;
-				state1_pp = pp[i][j];
-				state3 = state2;
-				state2 = state1;
-				state1 = states[i][j];
-			} else if (pp[i][j] > state2_pp) {
-				state3_pp = state2_pp;
-				state2_pp = pp[i][j];
-				state3 = state2;
-				state2 = states[i][j];
-			} else if (pp[i][j] > state3_pp) {
-				state3_pp = pp[i][j];
-				state3 = states[i][j];
+		if ( input_nodes[inputCladeIndex]->isTip() ) {
+			
+			std::string *s = new std::string("{}");
+			best_states.push_back(s);
+			
+		} else {
+			
+			double state1_pp = 0.0; 
+			double state2_pp = 0.0; 
+			double state3_pp = 0.0;
+			
+			std::string state1 = ""; 
+			std::string state2 = ""; 
+			std::string state3 = "";
+			
+			// loop through all states for this node
+			for (int j = 0; j < pp[inputCladeIndex].size(); j++) {
+				if (pp[inputCladeIndex][j] > state1_pp) {
+					state3_pp = state2_pp;
+					state2_pp = state1_pp;
+					state1_pp = pp[inputCladeIndex][j];
+					state3 = state2;
+					state2 = state1;
+					state1 = states[inputCladeIndex][j];
+				} else if (pp[inputCladeIndex][j] > state2_pp) {
+					state3_pp = state2_pp;
+					state2_pp = pp[inputCladeIndex][j];
+					state3 = state2;
+					state2 = states[inputCladeIndex][j];
+				} else if (pp[inputCladeIndex][j] > state3_pp) {
+					state3_pp = pp[inputCladeIndex][j];
+					state3 = states[inputCladeIndex][j];
+				}
 			}
+			std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp);
+			if (state2_pp > 0) {
+				final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp);
+			}
+			if (state3_pp > 0) {
+				final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp);
+			}
+			if ((1 - (state1_pp+state2_pp+state3_pp)) > 0) {
+				double other_states = 1.0 - (state1_pp+state2_pp+state3_pp);
+				final_state = final_state + "," + "other=" + boost::lexical_cast<std::string>(other_states);
+			} 
+			final_state += "}";
+			
+			// make parameter string for this node
+			std::string *s = new std::string(final_state);
+			best_states.push_back(s);
 		}
-		std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp);
-		if (state2_pp > 0) {
-			final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp);
-		}
-		if (state3_pp > 0) {
-			final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp);
-		}
-		if ((1 - (state1_pp+state2_pp+state3_pp)) > 0) {
-			double other_states = 1.0 - (state1_pp+state2_pp+state3_pp);
-			final_state = final_state + "," + "other=" + boost::lexical_cast<std::string>(other_states);
-		} 
-		final_state += "}";
-		
-		// make parameter string for this node
-		std::string *s = new std::string(final_state);
-		best_states.push_back(s);
 	}
-	mapTree->addNodeParameter("ancestralstates",best_states,true);
-	
-	return mapTree;
+	finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+	return &finalInputTree;
 }
 
 

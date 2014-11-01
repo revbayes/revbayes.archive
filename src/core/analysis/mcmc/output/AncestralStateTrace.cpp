@@ -42,6 +42,7 @@ AncestralStateTrace::AncestralStateTrace(const AncestralStateTrace& t) {
     passedGelmanRubinTest           = t.passedGelmanRubinTest;
     
     values                          = t.values;
+	parmName                        = t.parmName;
 }
 
 
