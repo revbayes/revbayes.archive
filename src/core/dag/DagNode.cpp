@@ -81,7 +81,8 @@ DagNode::~DagNode( void )
         o << "Remaining children are: " << std::endl;
         printChildren( o, 0, 70 );
         o << std::endl;
-        throw RbException( o );
+        std::cerr << o.str();
+//        throw RbException( o );
     }
 #endif
 }

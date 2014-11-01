@@ -125,7 +125,6 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
     
     // Remove us as the child of the function parameters
     std::set<const DagNode*> funcParents = function->getParameters();
-    delete function;
     for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
     {
         (*it)->removeChild( this );
@@ -135,6 +134,9 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
         if ( (*it)->decrementReferenceCount() == 0)
             delete (*it);
     }
+    
+    // free the memory of the function
+    delete function;
     
 }
 

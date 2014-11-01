@@ -43,7 +43,7 @@ namespace RevBayesCore {
         
     public:
         // constructors and destructor
-        virtual                            ~Function(void) {}
+        virtual                            ~Function(void);
                
         // public methods
         virtual void                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
@@ -59,8 +59,10 @@ namespace RevBayesCore {
         virtual void                        update(void) = 0;                                                       //!< Clone the function
         
     protected:
-        Function(void);
-          
+        Function(void);                                                                                             //!< Default constructor
+        Function(const Function &f);                                                                                //!< Copy constructor
+        Function&                           operator=(const Function &f);                                           //!< Assignment operator
+        
         void                                addParameter(const DagNode* p);                                         //!< add a parameter to the function
         void                                removeParameter(const DagNode* p);                                      //!< remove a parameter from the function
         virtual void                        swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;    //!< Exchange the parameter
@@ -68,6 +70,7 @@ namespace RevBayesCore {
         mutable bool                        dirty;
         
     private:
+        
         std::set<const DagNode*>            parameters;
     };
     
