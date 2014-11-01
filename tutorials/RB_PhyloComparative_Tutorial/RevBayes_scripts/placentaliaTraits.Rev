@@ -39,7 +39,7 @@ moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa
 
 # moves on the Brownian process
 moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
-moves[index++] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
+moves[index++] = mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
 
 # condition Brownian model on quantitative trait data
 # i.e. clamp the process at the tips of the tree, ot the values observed in extant taxa

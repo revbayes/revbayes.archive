@@ -125,5 +125,7 @@ treetrace.summarize()
 # Write the maximum a posteriori tree to file #
 mapTree(treetrace,"output/conifer_genecodon_map.tre")
 
+write(file="result.txt", append=TRUE, "Finished partition.Rev")
+
 q()
 

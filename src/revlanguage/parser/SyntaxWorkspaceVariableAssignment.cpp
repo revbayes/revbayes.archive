@@ -75,7 +75,7 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Var
     // Fill the slot with newValue. The variable itself will be
     // passed on as the semantic value of the statement and can
     // be used in further assignments.
-    lhs->setRevObject( newValue );
+    lhs->replaceRevObject( newValue );
     lhs->setWorkspaceVariableState( true );
     
 #ifdef DEBUG_PARSER

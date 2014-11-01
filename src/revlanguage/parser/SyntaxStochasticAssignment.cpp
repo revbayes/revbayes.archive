@@ -56,7 +56,7 @@ void SyntaxStochasticAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> 
     RevObject* rv = dist.createRandomVariable();
     
     // Fill the slot with the new stochastic variable
-    lhs->setRevObject( rv );
+    lhs->replaceRevObject( rv );
     
     // make sure all the implicitly created variables got a correct name
     RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();

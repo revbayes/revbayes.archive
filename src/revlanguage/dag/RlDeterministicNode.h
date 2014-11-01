@@ -58,10 +58,14 @@ RevLanguage::DeterministicNode<valueType>::DeterministicNode( const std::string&
 
 template<class valueType>
 RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n ) : RevBayesCore::DeterministicNode<valueType>( n ),
-    rlFunction( n.rlFunction->clone() ),
+    rlFunction( NULL ),
     methods( n.methods )
 {
 
+    if (n.rlFunction != NULL )
+    {
+        rlFunction = n.rlFunction->clone();
+    }
 }
 
 

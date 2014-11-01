@@ -145,4 +145,6 @@ treetrace.summarize()
 
 mapTree(treetrace,"dpp_rclock_test_MAP.tre")
 
+write(file="result.txt", append=TRUE, "Finished DPP_clock.Rev")
+
 q()

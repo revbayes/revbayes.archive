@@ -24,7 +24,7 @@ We also recommend that---if you are working on a Unix machine---you put the {\tt
 For the exercises outlined in this tutorial, we will use \RevBayes~interactively by typing commands in the command-line console.
 The format of this exercise uses \colorbox{shadecolor}{\tt lavender blush shaded boxes} to delineate important steps. 
 The various \RevBayes~commands and syntax are specified using \cl{typewriter text}. 
-And the specific commands that you should type (or copy/paste) into \RevBayes~are indicated by shaded box and prompt. For example, after opening the \RevBayes~program, you can load your data file:
+And the specific commands that you should type (or copy/paste) into \RevBayes~are indicated by shaded box and prompt. For example, after opening the \RevBayes~program, you can create a constant node \cl{x}:
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
@@ -32,9 +32,9 @@ x <- 12.0
 \end{lstlisting}
 \end{snugshade*}}
 
-For this command, type in the command and its options:\\ \cl{x <- 12.0}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
+For this step, type (or paste) in the line contents: \cl{x <- 12.0}. The prompt, \cl{>}, that you see in the RevBayes console is not replicated here so that you do not inadvertently copy and paste it with the \Rev~syntax
 
-Multi-line entries, particularly loops, will often be displayed in boxes without the \cl{RevBayes >} prompt so that they can be copied and pasted wholly. 
+Multi-line entries, particularly loops, will also be displayed in boxes without the \cl{>} prompt so that they can be copied and pasted wholly. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 for( i in 1:12 ){
@@ -59,7 +59,7 @@ This tutorial also includes hyperlinks: bibliographic citations are {\textcolor{
 The various exercises in this tutorial take you through the steps required to perform phylogenetic analyses of the example datasets. 
 %In addition, we have provided the output files for every exercise so you can verify your results. (Note that since the MCMC runs you perform will start from different random seeds, the output files resulting from your analyses \textit{will not} be identical to the ones we provide you.)
 
-\exs{Download data and output files from: 
+\exs{Download data and \Rev~files from: 
 \href{http://bit.ly/1tEDwTg}{http://bit.ly/1tEDwTg}}
 
 \subsection{The ``Observed'' Data}
@@ -85,55 +85,37 @@ In this exercise, this time tree is treated as an ``observation'', and we are es
 Execute the \RevBayes~binary. If this program is in your path, then you can simply type in your Unix terminal:
 \colorbox{shadecolor}{\cl{rb}}
 
-When you execute the program, you will see the program information, including the current version number and functions that will provide information about the program --- \cl{contributors()} and \cl{license()}. % --- and a command reference \cl{help}. 
-%Execute the \cl{help()} function by typing:
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
+When you execute the program, you will see the program information, including the current version number the URL for the RevBayes Project: \href{http://www.RevBayes.com}{RevBayes.com}.
+Additionally, RevBayes has a number of resources documenting the syntax, walkthroughs of methods, and general help tools.
+Some of these resources are given below, but please consult the \href{http://www.RevBayes.com}{website} for more information.
 
-%help()
-%\end{lstlisting}
-%\end{snugshade*}}
+\bigskip
+\subsubsection{Getting Help}
 
-%\taha{will there be help information by this time?}
-%
-%This displays a list of the different elements and commands available in RevBayes. The \cl{help} command also provides more detailed information about each of these items.
-%
-%For example, we can view the \cl{help()} information about the \cl{log()} function:
-%
+In the RevBayes console, you can query the help system for any function by typing \cl{?} followed by the function name. 
+For example, if you would like detailed information about the \cl{mean()} function type:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+?mean
+\end{lstlisting}
+\end{snugshade*}}
 
-%Currently, the help-system of \RevBayes~is virtually nonexistent. This will not always be the case, but is par for the course when using new/experimental software. 
-%The most complete help file available is for the \cl{mcmc()} function. Display the help for this function using the \cl{?} symbol:
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%?mcmc
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%Additionally, \RevBayes~will print the correct usage of a function if it is executed without any arguments:
-%{\tt \small \begin{snugshade*}
-%\begin{lstlisting}
-%mcmc()
-%   Error:   Argument mismatch for call to function 'mcmc'( ). Correct usage is:
-%   MCMC function (Model model, VectorRbPointer<Monitor> monitors,
-%   VectorRbPointer<Move> moves, String moveschedule = sequential|random|single)
-%\end{lstlisting}
-%\end{snugshade*}}
-%
+This will provide a description of the function as well as information about the argument and return types. 
+The function help also gives a working example of the use of the function:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+# compute the mean of some random draws from a normal distribution
+x <- rnorm(n=10, 5,1)
+mean(x)
+\end{lstlisting}
+\end{snugshade*}}
 
-%allows you to save all of the screen output from your analysis to a log file. 
-%The \cl{help} information for this command displays all of the available options for specifying screen logging.
-%We are going to log our screen output to a file called \cl{conifer-partn-log.txt}.
-%\mbcl{log start filename=conifer-partn-log.txt}
-%
-%Next, load the sequences into the program using the \cl{execute} command.
-%\mbcl{execute conifer\_dna.nex}
+\bigskip
+\subsubsection{RevBayes Users' Forum}
 
-%\bigskip
-%\subsubsection*{Load the Sequences}% \& Specify the Outgroup}
+An email list has been created for users of RevBayes to discuss RevBayes-related topics, including: RevBayes installation and use, scripting and programming, phylogenetics, population genetics, models of evolution, graphical models, etc. The forum is hosted by Google Groups:
 
-
-
+\exs{\href{http://bit.ly/107aW2R}{revbayes-users}}
 
 \bigskip
 \subsection{Specifying Constant-Rate Birth-Death Models}\label{secModelSpec} 
@@ -299,7 +281,7 @@ mymodel.graph("output/m_Yule_bears_GM.dot", verbose=false, bg="honeydew2")
 \end{lstlisting}
 \end{snugshade*}}
 
-Open the \cl{output/m\_Yule\_bears\_GM.dot} file in the Graphviz program or paste the contents in an online viewer:
+Open the \cl{output/m\_Yule\_bears\_GM.dot} file in the \href{http://www.graphviz.org/}{Graphviz} program or paste the contents in an online viewer:
 \begin{itemize}[noitemsep,nolistsep]  \item \href{http://graphviz-dev.appspot.com/}{http://graphviz-dev.appspot.com/}  \item \href{http://stamm-wilbrandt.de/GraphvizFiddle/}{http://stamm-wilbrandt.de/GraphvizFiddle/}\end{itemize}
 
 Your graph should look like the one depicted in Figure \ref{yuleGMGVfig}.
@@ -312,7 +294,7 @@ Viewing the model graph is helpful for identifying any problems prior to running
 \begin{figure}[h!]
 \centering
 \fbox{\includegraphics[width=3in]{figures/m_Yule_bears_GM.eps}}
-\caption{\small The graphical model representation of the pure-birth (Yule) process generated using the DOT language and the Graphviz program.}
+\caption{\small The graphical model representation of the pure-birth (Yule) process generated using the DOT language and the \href{http://www.graphviz.org/}{Graphviz} program.}
 \label{yuleGMGVfig}
 \end{figure}
 
@@ -639,7 +621,7 @@ With this model, we can now estimate posterior probability of the the global rat
 \end{align}
 
 
-\exs{The \Rev~file for performing this analysis: \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_Diversification_Exercise/RB_diversification_files/RevBayes_scripts/mcmc_BD_bears.Rev}{\cl{mcmc\_BD\_bears.Rev}}.}
+\exs{The \Rev~file for performing this analysis: \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_Diversification_Exercise/RB_diversification_files/RevBayes_scripts/mcmc_BD_bears.Rev}{\cl{mcmc\_BD\_bears.Rev}} or  \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_Diversification_Exercise/RB_diversification_files/RevBayes_scripts/mcmc_Yule_bears.Rev}{\cl{mcmc\_Yule\_bears.Rev}}.}
 
 
 \textbf{\textit{Clear the workspace and load the preferred model}}
@@ -690,9 +672,11 @@ mymodel = model(birth_rate)
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 monitors[1] = mnFile(filename="output/BDR_mcmc_bears.log",printgen=10, diversification, birth_rate, turnover, death_rate)
-monitors[2] = mnScreen(printgen=1000, turnover)
+monitors[2] = mnScreen(printgen=1000, birth_rate)
 \end{lstlisting}
 \end{snugshade*}}
+
+Note that if your preferred model was the Yule process, then you would only have the \cl{birth\_rate} parameter listed in the \cl{mnFile} monitor.
 
 \textbf{\textit{Run MCMC}}
 
@@ -728,14 +712,15 @@ mymcmc.operatorSummary()
 \section*{Useful Links}
 
 \begin{itemize}
-\item RevBayes: \href{https://github.com/revbayes/revbayes}{https://github.com/revbayes/revbayes} \\ \vspace{-7mm}
+\item RevBayes documentation and project information: \href{http://www.RevBayes.com}{RevBayes.com} \\ \vspace{-7mm}
+\item RevBayes source: \href{https://github.com/revbayes/revbayes}{https://github.com/revbayes/revbayes} \\ \vspace{-7mm}
 \item TreePar: \href{http://cran.r-project.org/web/packages/TreePar/index.html}{http://cran.r-project.org/web/packages/TreePar/index.html} \\ \vspace{-7mm}
 \item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org} \\ \vspace{-7mm}
 \end{itemize}
 
 Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \begin{itemize}
-\item Tracy Heath (email: \href{mailto:tracyh@berkeley.edu}{tracyh@berkeley.edu}) \\\vspace{-8mm}
+\item Tracy Heath (email: \href{mailto:trayc7@gmail.com}{trayc7@gmail.com}) \\\vspace{-8mm}
 \item Tanja Stadler (email: \href{mailto:tanja.stadler@bsse.ethz.ch}{tanja.stadler@bsse.ethz.ch}) \\\vspace{-8mm} 
 \item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
 \end{itemize}

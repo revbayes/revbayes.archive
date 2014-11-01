@@ -1,0 +1,184 @@
+############################################################################################
+#   File: virus evolution model and analysis file
+#   Estimating temporal evolution in Hepatitis C under the birth-death skyline model
+#   This analysis was replicated from Stadler et al. PNAS (2013)
+############################################################################################
+
+### print the starting seed just to check
+printSeed()
+
+## Read in sequence data
+D <- readDiscreteCharacterData(file="data/HCV_data.nex")
+
+## Starting tree
+T <- readTrees("data/HCV_data_start.tre")[1]
+
+## Get useful variables from the dataset
+n_taxa <- D.ntaxa()
+n_sites <- D.nchar(1)
+names <- D.names()
+
+### origin time ###
+## Uniform prior on origin time
+origin ~ dnUnif(300.0, 400.0)
+origin.setValue(350.0)
+
+### Specify a vector of parameter shift times relative to the origin time ###
+## There are n_intervals # of different parameter intervals
+n_intervals <- 10 
+## Thus, there are n_intervals-1 parameter change events
+n_change_times <- n_intervals - 1
+
+## This produces a vector of relative times 
+## The absolute times are a function of the origin time
+for(i in 1:n_change_times){
+	relative_event_times[i] <- (i * (1.0 / n_intervals))
+}
+## multiplication on a vector ##
+absolute_times := origin * relative_event_times
+
+## The sampling-through-time parameter (psi in Stadler et al. 2013) is 0 since all seqs were sampled in 1999
+## (this is still in a vector, with a single element as required by the model fxn)
+s[1] <- 0.0 
+
+## The probability of sampling at the present (rho)
+## (this is still in a vector, with a single element as required by the model fxn)
+## We use a strongly informative prior with an expected value of rho that is very small
+###rho[1] ~ dnBeta(1.0, 9999.0)
+rho[1] <- 1e-6
+
+## Creating vectors of n_intervals deterministic nodes for the changing parameters
+## Re and delta (delta = becomeUninfectiousRate in BEAST2)
+## for contemporaneous seqs, delta=mu
+for(i in 1:n_intervals){
+	delta[i] ~ dnLnorm(1.0, 1.25) 
+	delta[i].setValue(1.0)
+	Re[i] ~ dnLnorm(1.0, 1.25)
+	Re[i].setValue(2.0)
+}
+
+## The vector of birth-rates (lambda) is a deterministic variable of Re and delta
+lambda := Re * delta
+
+## print some information to the screen...
+"absolute_times"
+absolute_times
+
+"delta"
+delta
+
+"Re"
+Re
+
+"lambda"
+lambda
+
+## Some deterministic nodes to monitor to screen ##
+mean_d := mean(delta)
+mean_r := mean(Re)
+mean_l := mean(lambda)
+
+## the Birth-death-skyline distribution ##
+timetree ~ dnBDPSkySerial(origin=origin, lambda=lambda, lambdaTimes=absolute_times,
+					 mu=delta, muTimes=absolute_times,
+					 psi=s,
+					 rho=rho,
+					 timeSinceLastSample=0.0,
+					 condition="nTaxa", names=names)
+
+## Specify a stable starting tree 
+timetree.setValue(T)
+
+## A deterministic node for the treeHeight
+th := treeHeight(timetree)
+
+## print some information to the screen...
+"timetree.lnProb"
+timetree.lnProb
+
+## Set the clock rate used in Stadler et al. 2013
+#### from Pybus, et al. (Science:2001) 
+clock_rate <- 0.79e-3
+
+## The parameters of the GTR model
+## Stationary base frequencies
+sf ~ dnDirichlet(v(1,1,1,1))
+
+## Exchangability rates
+er ~ dnDirichlet(v(1,1,1,1,1,1))
+
+## Rate Matrix
+Q := fnGTR(er,sf)
+
+## Gamma-distributed rates
+shape ~ dnExponential( 0.1 )
+gamma_rates := fnDiscretizeGamma( shape, shape, 4 )
+
+## Putting it all together
+phySeq ~ dnPhyloCTMC(tree=timetree, Q=Q, siteRates=gamma_rates, branchRates=clock_rate, nSites=n_sites, type="DNA")
+phySeq.clamp(D)
+
+## Specifying moves
+mi <- 0
+### moves on dnBDPSkySerial() parameters ###
+for(i in 1:n_intervals){
+	moves[mi++] <- mvScale(delta[i], lambda=1.0, tune=true, weight=1.0)
+	moves[mi++] <- mvScale(Re[i], lambda=0.1, tune=true, weight=1.0)
+	moves[mi++] <- mvScale(delta[i], lambda=2.0, tune=false, weight=1.0)
+	moves[mi++] <- mvScale(Re[i], lambda=0.2, tune=false, weight=1.0)
+}
+moves[mi++] <- mvVectorScale(delta,lambda=1.0,tune=true,weight=2.0*n_intervals) 
+moves[mi++] <- mvVectorScale(Re,lambda=1.0,tune=true,weight=2.0*n_intervals) 
+moves[mi++] <- mvVectorSingleElementScale(Re,lambda=30.0,tune=true,weight=2.0) 
+moves[mi++] <- mvVectorSingleElementScale(delta,lambda=30.0,tune=true,weight=2.0) 
+moves[mi++] <- mvOriginTimeSlide(origin, timetree, delta=3.75, tune=true, weight=3.0)
+moves[mi++] <- mvOriginTimeSlide(origin, timetree, delta=10.0, tune=false, weight=1.0)
+moves[mi++] <- mvOriginTimeSlide(origin, timetree, delta=0.5, tune=false, weight=1.0)
+
+### moves on node ages ###
+moves[mi++] <- mvNodeTimeSlideUniform(timetree, weight=30.0)
+moves[mi++] <- mvRootTimeSlide(timetree, delta=3.75, tune=true, weight=5.0)
+
+### moves on tree topology ###
+moves[mi++] <- mvNNI(timetree, weight=8.0)
+moves[mi++] <- mvNarrow(timetree, weight=8.0)
+moves[mi++] <- mvFNPR(timetree, weight=8.0)
+moves[mi++] <- mvSubtreeScale(timetree, weight=5.0)
+
+### moves on GTR+G parameters ###
+moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] <- mvScale(shape, lambda=0.75, tune=true, weight=3.0)
+
+### workspace model wrapper ###
+mymodel <- model(er)
+
+### monitors on the parameters ###
+monitors[1] <- mnFile(filename="output/hcv_skybdp_mcmc.log", posterior=true, prior=true, 
+							likelihood=true, printgen=10, sep="	",
+							origin, th, rho, lambda, er, sf, shape, absolute_times,
+							Re, delta, mean_l, mean_r, mean_d)
+monitors[2] <- mnFile(filename="output/hcv_skybdp_mcmc.trees",printgen=10, separator="	", timetree)
+monitors[3] <- mnScreen(printgen=10, origin, mean_l, th, mean_r, mean_d)
+
+### workspace mcmc ###
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+### pre-burnin to tune the proposals ###
+mymcmc.burnin(generations=200,tuningInterval=50)
+
+### run the MCMC ###
+mymcmc.run(generations=400)
+
+### display proposal acceptance rates and tuning ###
+mymcmc.operatorSummary()
+
+### summarize the trees ###
+tt <- readTreeTrace("output/hcv_skybdp_mcmc.trees", "clock")
+tt.summarize()
+# write MAP tree to file
+mapTree(tt, "output/hcv_skybdp_MAP.tre")
+
+"kthxbye"
+#q()
+

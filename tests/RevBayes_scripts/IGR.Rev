@@ -81,4 +81,6 @@ mymcmc.run(generations=400)
 
 #mymcmc.operatorSummary()
 
+write(file="result.txt", append=TRUE,"Finished IGR.Rev")
+
 q()

@@ -117,8 +117,7 @@ SET(Boost_USE_STATIC_RUNTIME true)
 #find_package(Boost 1.55.0 COMPONENTS filesystem regex signals context system thread date_time program_options iostreams serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.55.0
-COMPONENTS filesystem
-regex
+COMPONENTS regex
 program_options
 system
 thread
