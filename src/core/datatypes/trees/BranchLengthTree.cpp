@@ -120,6 +120,15 @@ void BranchLengthTree::reroot(const std::string &outgroup)
     
 }
 
+void BranchLengthTree::reroot(RevBayesCore::TopologyNode &n)
+{
+
+    reverseParentChild( n.getParent() );
+    n.getParent().setParent( NULL );
+    topology->setRoot( &n.getParent() );
+    
+}
+
 
 void BranchLengthTree::resizeElementVectors(size_t n) {
     // remove all elements
