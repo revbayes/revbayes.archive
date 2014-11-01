@@ -14,10 +14,70 @@ Function::Function(void)  :
 }
 
 
+Function::Function(const Function &f)  :
+    dirty( f.dirty ),
+    parameters( f.parameters )
+{
+    
+    for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+    {
+        (*it)->incrementReferenceCount();
+    }
+    
+}
+
+
+Function::~Function( void )
+{
+    
+    for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+    {
+        const DagNode *theNode = *it;
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete theNode;
+        }
+    }
+    
+}
+
+
+
+Function& Function::operator=(const Function &f)
+{
+
+    if ( this != &f )
+    {
+        
+        for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+        {
+            const DagNode *theNode = *it;
+            if ( theNode->decrementReferenceCount() == 0 )
+            {
+                delete theNode;
+            }
+        }
+        parameters.clear();
+        
+        parameters = f.parameters;
+        dirty = true;
+        
+        for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+        {
+            (*it)->incrementReferenceCount();
+        }
+    }
+    
+    return *this;
+}
+
+
 
 void Function::addParameter(const DagNode *p) {
     
     parameters.insert( p );
+    // increment reference count
+    p->incrementReferenceCount();
 
 }
 
@@ -54,6 +114,11 @@ void Function::removeParameter(const RevBayesCore::DagNode *p)
     {
         parameters.erase( it );
     }
+    
+    if ( p->decrementReferenceCount() == 0 )
+    {
+        delete p;
+    }
 }
 
 
@@ -78,6 +143,13 @@ void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
         parameters.erase( position );
         parameters.insert( newP );
         swapParameterInternal( oldP, newP );
+        
+        // increment and decrement the reference counts
+        newP->incrementReferenceCount();
+        if ( oldP->decrementReferenceCount() == 0 )
+        {
+            throw RbException("Memory leak in Function. Please report this bug to Sebastian.");
+        }
     } 
     else 
     {

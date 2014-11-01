@@ -65,6 +65,7 @@ namespace RevBayesCore {
         // overloaded operators
         TypedFunction&                      operator=(const TypedFunction &d); 
         
+        virtual void                        swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;        //!< Exchange the parameter
 
         // members 
         DeterministicNode<valueType>*       dagNode;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...

@@ -689,14 +689,6 @@ std::string NclReader::findFileNameFromPath(const std::string& fp) const {
 }
 
 
-/** Get a reference to this singleton object */
-NclReader& NclReader::getInstance(void) {
-    
-	static NclReader rb;
-	return rb;
-}
-
-
 /** Attempt to determine the type of data this is being read */
 std::string NclReader::intuitDataType(std::string& s) {
     

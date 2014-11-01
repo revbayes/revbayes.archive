@@ -43,11 +43,11 @@ void SyntaxDeterministicAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variabl
     // of the variable returned by the rhs expression.
     if ( rhs->getName() != "" )
     {
-        lhs->setRevObject( rhs->getRevObject().makeIndirectReference() );
+        lhs->replaceRevObject( rhs->getRevObject().makeIndirectReference() );
     }
     else
     {    
-        lhs->setRevObject( rhs->getRevObject().clone() );
+        lhs->replaceRevObject( rhs->getRevObject().clone() );
         
         // make sure all the implicitly created variables got a correct name
         RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();

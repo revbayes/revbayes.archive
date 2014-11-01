@@ -74,11 +74,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "x"      , RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-#if defined (DEBUG_STRUCTURE)
-        argumentRules.push_back( new ArgumentRule( "verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-#else
         argumentRules.push_back( new ArgumentRule( "verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-#endif
         rulesSet = true;
     }
     

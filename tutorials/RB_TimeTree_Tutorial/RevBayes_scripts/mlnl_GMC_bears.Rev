@@ -1,0 +1,37 @@
+############################################################################################
+#   File: timetree tutorial model specification and sampler setup for estimating marginal
+#		  likelihoods under the global clock model on a fixed tree
+############################################################################################
+
+### Load the sequence alignment
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
+
+### get helpful variables from the data
+n_sites <- D.nchar(1)
+
+### initialize an iterator for the moves vector
+mi <- 1
+
+### set up the birth-death model from file
+source("RevBayes_scripts/m_BDP_bears.Rev")
+
+### load the model from file 
+source("RevBayes_scripts/m_GMC_bears.Rev")
+
+### workspace model wrapper ###
+mymodel = model(er)
+
+### compute power posterior distributions
+pow_p = powerPosterior(mymodel, moves, "output/GMC_bears_powp.out", cats=50) 
+pow_p.burnin(generations=5000,tuningInterval=200)
+pow_p.run(generations=1000)  
+
+### use stepping-stone sampling to calculate marginal likelihoods
+ss = steppingStoneSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss.marginal() 
+
+### use path sampling to calculate marginal likelihoods
+ps = pathSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps.marginal() 
+
+q()

@@ -33,7 +33,7 @@ namespace RevBayesCore {
         virtual                                            ~ConstantNode(void);                                                         //!< Virtual destructor
         
         ConstantNode<valueType>*                            clone(void) const;                                                          //!< Create a clone of this node.
-        DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;               //!< Clone the entire DAG which is connected to this node
+        DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
@@ -97,10 +97,28 @@ RevBayesCore::ConstantNode<valueType>* RevBayesCore::ConstantNode<valueType>::cl
 
 /** Cloning the entire graph only involves children for a constant node */
 template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes ) const {
+RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes, std::map<std::string, const DagNode* > &names ) const {
     
     if ( newNodes.find( this ) != newNodes.end() )
+    {
         return ( newNodes[ this ] );
+    }
+    
+    // just for self checking purposes we keep track of the names for the variables we already cloned
+    if ( this->name != "" )
+    {
+        // check if we already added a variable with this name
+        std::map<std::string, const DagNode* >::const_iterator n = names.find( this->name );
+        if ( n == names.end() )
+        {
+            // no, we haven't cloned a variable with this name before
+            names[ this->name ] = this;
+        }
+        else
+        {
+            std::cerr << "Cloning a DAG node with name '" << this->name << "' again, doh!" << std::endl;
+        }
+    }
     
     /* Make pristine copy */
     ConstantNode* copy = clone();
@@ -109,7 +127,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
     /* Make sure the children clone themselves */
     for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
     {
-        (*i)->cloneDAG( newNodes );
+        (*i)->cloneDAG( newNodes, names );
     }
     
     return copy;

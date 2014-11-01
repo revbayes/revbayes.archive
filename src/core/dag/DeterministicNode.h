@@ -125,7 +125,6 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
     
     // Remove us as the child of the function parameters
     std::set<const DagNode*> funcParents = function->getParameters();
-    delete function;
     for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
     {
         (*it)->removeChild( this );
@@ -135,6 +134,9 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
         if ( (*it)->decrementReferenceCount() == 0)
             delete (*it);
     }
+    
+    // free the memory of the function
+    delete function;
     
 }
 
@@ -298,10 +300,6 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
 {
     
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
     // allow specialized recovery in functions
     function->keep( affecter );
     
@@ -366,10 +364,6 @@ void RevBayesCore::DeterministicNode<valueType>::reInitializeMe( void )
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
 {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of Deterministic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // we need to recompute our value?!
     this->update();
@@ -438,11 +432,8 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
  *       it to be set correctly might well fail.
  */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
+void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher )
+{
     
     // To be on the safe side, we set the touched flag here, but the flag is not used by this class and may not
     // be in a consistent state. Beware!

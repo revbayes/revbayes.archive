@@ -50,12 +50,15 @@ namespace RevBayesCore {
         friend class ::NxsUnalignedBlock;
         
     public:
+        NclReader(void) { }                                                                                                         //!< Default constructor
+        NclReader(const NclReader& r) { }                                                                                           //!< Copy constructor
+        virtual                                    ~NclReader(void) { }                                                             //!< Destructor
+
         
         void                                        addWarning(std::string s) { warningsSummary.insert(s); }                        //!< Add a warning to the warnings vector
         void                                        clearWarnings(void) { warningsSummary.clear(); }                                //!< Clear all of the warnings from the warnings vector
         size_t                                      getNumWarnings(void) { return warningsSummary.size(); }                         //!< Return the number of warnings
         std::set<std::string>&                      getWarnings(void) { return warningsSummary; }                                   //!< Get a reference to the warnings vector
-        static NclReader&                           getInstance(void);                                                              //!< Get a reference to this singleton class
         void                                        clearContent(void) { nexusReader.ClearContent(); }                              //!< Clear the content of the NCL object
         
         // file type methods
@@ -75,9 +78,6 @@ namespace RevBayesCore {
         std::vector<AdmixtureTree* >                readAdmixtureTrees(const std::string &treeFileName);
         
     private:
-        NclReader(void) { }                                                             //!< Default constructor
-        NclReader(const NclReader& r) { }                                               //!< Copy constructor
-        virtual                                    ~NclReader(void) { }                                                             //!< Destructor
         
         DiscreteCharacterData<AminoAcidState>*      createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         ContinuousCharacterData*                    createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data

@@ -36,4 +36,5 @@ mymcmc = mcmc(mymodel, monitors, moves,moveschedule="single")
 mymcmc.burnin(generations=300,50)
 mymcmc.run(generations=400)
 
+write(file="result.txt", append=TRUE,"Finished GTR.Rev")
 q()

@@ -82,7 +82,7 @@ void SyntaxConstantAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     }
     
     // Fill the slot with newValue
-    lhs->setRevObject( newValue );
+    lhs->replaceRevObject( newValue );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);

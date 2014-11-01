@@ -351,11 +351,8 @@ bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const {
  * At this point, we also need to make sure we update the stored ln probability.
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
+void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter )
+{
     
     if ( this->touched )
     {
@@ -448,11 +445,8 @@ void RevBayesCore::StochasticNode<valueType>::reInitializeMe( void )
 
 /** Restore the old value of the node and tell affected */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
+void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
+{
     
     if ( this->touched )
     {
@@ -542,10 +536,6 @@ void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::Da
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
 {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     if (!this->touched)
     {
