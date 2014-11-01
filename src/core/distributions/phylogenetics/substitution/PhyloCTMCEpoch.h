@@ -263,6 +263,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeTipLikelihood(const Topology
     const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
     const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
     
+
     // compute the transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
     
@@ -432,9 +433,9 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         if (epochIdx < epochTimes->getValue().size())
             t_next = epochTimes->getValue()[epochIdx];
         
+        // get next time, which is the next epoch or branc end
         if (t_next < t_end)
             t_next = t_end;
-        
         double dt = t_curr - t_next;
 
         // first, get the rate matrix for this branch
@@ -478,7 +479,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         epochIdx++;
     }
     
-    this->transitionProbMatrices[0] = tp;
+    this->transitionProbMatrices[0] = TransitionProbabilityMatrix(tp);
     
 }
 
