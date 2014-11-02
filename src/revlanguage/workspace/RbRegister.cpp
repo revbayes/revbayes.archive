@@ -307,6 +307,9 @@
 #include "Func_biogeo_de.h"
 #include "Func_biogeo_grm.h"
 
+/* Epoch priors */
+#include "Func_atlasSf.h"
+#include "Func_atlasEr.h"
 
 /* Inference functions (in folder "functions/inference") */
 
@@ -800,6 +803,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
         addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
 
+        
+        /* epoch priors */
+        addFunction( "fnAtlasSf", new Func_atlasSf() );
+        addFunction( "fnAtlasEr", new Func_atlasEr() );
+        
         /* Inference functions (in folder "functions/inference") */
 
         
