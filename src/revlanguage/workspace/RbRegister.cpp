@@ -310,6 +310,7 @@
 /* Epoch priors */
 #include "Func_atlasSf.h"
 #include "Func_atlasEr.h"
+#include "Func_atlasEpochs.h"
 
 /* Inference functions (in folder "functions/inference") */
 
@@ -807,6 +808,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* epoch priors */
         addFunction( "fnAtlasSf", new Func_atlasSf() );
         addFunction( "fnAtlasEr", new Func_atlasEr() );
+        addFunction( "fnAtlasEpochs", new Func_atlasEpochs() );
         
         /* Inference functions (in folder "functions/inference") */
 
