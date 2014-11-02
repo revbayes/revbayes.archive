@@ -114,6 +114,8 @@ moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2)
 moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
 moves[moveIndex++] <- mvScale(root_polymorphism_proportion, lambda=10, tune=true, weight=2) 
 moves[moveIndex++] <- mvSlide(root_polymorphism_proportion, delta=10, tune=true, weight=2) 
+moves[moveIndex++] <- mvSlice(root_polymorphism_proportion, window=1.0, tune=true, weight=3.0)
+moves[moveIndex++] <- mvSlice(root_polymorphism_proportion, window=0.1, tune=true, weight=3.0)
 
 # We define a few monitors to keep track of how things go.
 
@@ -149,6 +151,6 @@ mymcmc <- mcmc(mymodel, monitors, moves, moveschedule="single")
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
 mymcmc.burnin(generations=200,tuningInterval=100)
-mymcmc.run(generations=4000)
+mymcmc.run(generations=400000)
 
 
