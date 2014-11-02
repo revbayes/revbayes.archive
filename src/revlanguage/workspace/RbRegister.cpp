@@ -383,6 +383,7 @@
 #include "Func_floor.h"
 #include "Func_ln.h"
 #include "Func_log.h"
+#include "Func_max.h"
 #include "Func_mean.h"
 #include "Func_min.h"
 #include "Func_normalize.h"
@@ -1183,6 +1184,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // min function
 		addFunction( "min",        new Func_min()  );
+
+        // max function
+        addFunction( "max",        new Func_max()  );
 
         // normalize vector function
 		addFunction( "normalize", new Func_normalize()  );
