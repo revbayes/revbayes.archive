@@ -22,11 +22,13 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
     ArgumentRules* nEpochsArgRules              = new ArgumentRules();
     ArgumentRules* namesArgRules                = new ArgumentRules();
+    ArgumentRules* epochsArgRules                = new ArgumentRules();
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-
+    methods.addFunction("epochs",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
+    
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsElements;
     optionsElements.push_back( "off-diagonal" );
@@ -50,10 +52,12 @@ atlas(v)
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
     ArgumentRules* nEpochsArgRules              = new ArgumentRules();
     ArgumentRules* namesArgRules                = new ArgumentRules();
+    ArgumentRules* epochsArgRules               = new ArgumentRules();
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
+    methods.addFunction("epochs",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
     
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsElements;
@@ -79,10 +83,12 @@ atlas(&m->getValue())
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
     ArgumentRules* nEpochsArgRules              = new ArgumentRules();
     ArgumentRules* namesArgRules                = new ArgumentRules();
+    ArgumentRules* epochsArgRules                = new ArgumentRules();
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
+    methods.addFunction("epochs",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
 
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsElements;
