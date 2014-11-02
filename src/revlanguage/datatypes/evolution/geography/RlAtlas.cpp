@@ -1,4 +1,5 @@
 #include "ArgumentRule.h"
+#include "RbVector.h"
 #include "TimeAtlas.h"
 #include "GeographicArea.h"
 #include "ModelVector.h"
@@ -10,6 +11,7 @@
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxonData.h"
+#include "RlSimplex.h"
 #include "TimeAtlas.h"
 #include "Variable.h"
 #include <vector>
@@ -156,10 +158,11 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
 
         std::vector<std::vector<RevBayesCore::GeographicArea*> > areas = this->dagNode->getValue().getAreas();
         
-        ModelVector<ModelVector<RealPos> > *f = new ModelVector<ModelVector<RealPos> >();
+//        ModelVector<ModelVector<RealPos> > *f = new ModelVector<ModelVector<RealPos> >();
+        ModelVector< Simplex > *f = new ModelVector<Simplex>();
         for (size_t i = 0; i < areas.size(); i++)
         {
-            ModelVector<RealPos> v;
+            RevBayesCore::RbVector<double> v;
             for (size_t j = 0; j < areas[i].size(); j++)
             {
                 std::vector<double> a = areas[i][j]->getDispersalValues();
@@ -179,7 +182,7 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
                     }
                 }
             }
-            f->push_back(v);
+            f->push_back( Simplex(v) );
         }
         
         return new Variable(f);
