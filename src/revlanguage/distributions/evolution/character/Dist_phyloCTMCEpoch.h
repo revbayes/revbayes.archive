@@ -40,6 +40,7 @@ namespace RevLanguage {
         RevPtr<const Variable>                          rootFrequencies;
         RevPtr<const Variable>                          pInv;
         RevPtr<const Variable>                          nSites;
+        RevPtr<const Variable>                          nStates;
         RevPtr<const Variable>                          type;
         RevPtr<const Variable>                          epochTimes;
         RevPtr<const Variable>                          epochRates;
@@ -489,6 +490,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         
         distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
+        
         std::vector<std::string> options;
         options.push_back( "DNA" );
         options.push_back( "RNA" );
@@ -587,6 +589,10 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCEpoch::getTypeSpec( void
     else if ( name == "nSites" )
     {
         nSites = var;
+    }
+    else if ( name == "nStates" )
+    {
+        nStates = var;
     }
     else if ( name == "type" )
     {
