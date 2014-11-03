@@ -346,8 +346,6 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compress( void ) 
 {
     
-//    compressed = false;
-    
     charMatrix.clear();
     gapMatrix.clear();
     patternCounts.clear();
@@ -543,19 +541,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
     {
         bool inv = true;
         unsigned long c = charMatrix[0][i];
-        
-//        unsigned long val = c;
-//        size_t d = 0;
-//        while ( val > 0 ) // there are still observed states left
-//        {
-//            // remove this state from the observed states
-//            val >>= 1;
-//            
-//            // increment the pointer to the next transition probability
-//            ++d;
-//        } // end-while over all observed states for this character
-//        
-//        invariantSiteIndex[i] = d;
 
         invariantSiteIndex[i] = c;
         
@@ -580,10 +565,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
 template<class charType, class treeType>
 double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::computeLnProbability( void ) 
 {
-	
-	// TAH Run under prior
-//	this->lnProb = 0.0;
-//    return this->lnProb;
 	
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = tau->getValue().getRoot();

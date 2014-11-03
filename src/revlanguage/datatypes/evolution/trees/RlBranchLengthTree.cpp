@@ -22,6 +22,12 @@ BranchLengthTree::BranchLengthTree(void) : ModelObject<RevBayesCore::BranchLengt
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+    
+    ArgumentRules* rerootArgRules = new ArgumentRules();
+    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    
+    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+
 
 }
 
@@ -37,6 +43,12 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : ModelObj
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+    
+    ArgumentRules* rerootArgRules = new ArgumentRules();
+    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    
+    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+
 
 }
 
@@ -57,6 +69,12 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::Bran
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+    
+    ArgumentRules* rerootArgRules = new ArgumentRules();
+    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    
+    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+
 
 }
 
@@ -92,7 +110,19 @@ RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::
         
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
         return new Variable( new ModelVector<RlString>( n ) );
-    } 
+    }
+    else if (name == "reroot")
+    {
+        
+        const RevObject& st = args[0].getVariable()->getRevObject();
+        if ( st.isType( RlString::getClassTypeSpec() ) )
+        {
+            std::string n = std::string( static_cast<const RlString&>( st ).getValue() );
+            this->dagNode->getValue().reroot(n);
+        }
+        return NULL;
+        
+    }
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args, found );
 }

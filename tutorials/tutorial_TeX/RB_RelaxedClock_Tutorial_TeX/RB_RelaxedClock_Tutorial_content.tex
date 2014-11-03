@@ -43,7 +43,7 @@ Additionally, we will use occurrence times from three caniform fossils to calibr
 \end{table}
 
 
-The alignment in file \cl{data/bears\_irbp.nex} contains interphotoreceptor retinoid-binding protein (irbp) sequences for each species.
+The alignment in file \cl{data/bears\_irbp.nex} contains interphotoreceptor retinoid-binding protein (irbp) sequences for each extant species.
 
 
 
@@ -66,7 +66,7 @@ Additionally, we will use the canid fossil, \textit{Hesperocyon gregarius}, to o
 
 In \RevBayes, calibrated internal nodes are treated differently than in many other programs for estimating species divergence times (e.g., BEAST).
 This is because the graphical model structure used in \RevBayes~does not allow a stochastic node to be assigned more than one prior distribution. 
-By contrast, the common approach to applying calibration densities as used in other dating softwares leads to incoherence in the calibration prior \citep{warnock12,heled12,heath2013fossilized}. 
+By contrast, the common approach to applying calibration densities as used in other dating softwares leads to incoherence in the calibration prior \citep[for detailed explainations of this see][]{warnock12,heled12,heath2013fossilized}. 
 More explicitly, common calibration approaches assume that the age of a calibrated node is modeled by the tree-wide diversification process (e.g., birth-death model) \textit{and} a parametric density parameterized by the occurrence time of a fossil (or other external prior information).
 This can induce a calibration prior density that is not consistent with the birth-death process or the parametric prior distribution. 
 Thus, approaches that condition the birth-death process on the calibrated nodes are more statistically coherent \citep{yang06}.
@@ -119,7 +119,7 @@ names <- T.names()
 %And our move-index iterator.
 %{\tt \begin{snugshade*}
 %\begin{lstlisting}
-%mi <- 0
+%mi = 1
 %\end{lstlisting}
 %\end{snugshade*}}
 
@@ -134,7 +134,7 @@ Since this code is intended to be in a sourced \Rev~file, we are assuming that y
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 diversification ~ dnExponential(10.0) 
-moves[mi++] <- mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
+moves[mi++] = mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -142,7 +142,7 @@ moves[mi++] <- mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 turnover ~ dnBeta(2.0, 2.0) 
-moves[mi++] <- mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
+moves[mi++] = mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -314,19 +314,19 @@ stem_Ursid_fossil.clamp(tParictis)
 Next, create the vector of moves. These tree moves act on node ages:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-moves[mi++] <- mvNodeTimeSlideUniform(timetree, weight=30.0)
-moves[mi++] <- mvSlide(root_time, delta=2.0, tune=true, weight=10.0)
-moves[mi++] <- mvScale(root_time, lambda=2.0, tune=true, weight=10.0)
-moves[mi++] <- mvTreeScale(tree=timetree, rootAge=root_time, delta=1.0, tune=true, weight=3.0)
+moves[mi++] = mvNodeTimeSlideUniform(timetree, weight=30.0)
+moves[mi++] = mvSlide(root_time, delta=2.0, tune=true, weight=10.0)
+moves[mi++] = mvScale(root_time, lambda=2.0, tune=true, weight=10.0)
+moves[mi++] = mvTreeScale(tree=timetree, rootAge=root_time, delta=1.0, tune=true, weight=3.0)
 \end{lstlisting}
 \end{snugshade*}}
 
 And these change the tree topology. If we wish to keep the topology constant, then we can leave these moves out. Note that for some relaxed clock models (autocorrelated rates, DPP, random-local clock) tree topology moves often induce very long mixing times.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-moves[mi++] <- mvNNI(timetree, weight=8.0)
-moves[mi++] <- mvNarrow(timetree, weight=8.0)
-moves[mi++] <- mvFNPR(timetree, weight=8.0)
+moves[mi++] = mvNNI(timetree, weight=8.0)
+moves[mi++] = mvNarrow(timetree, weight=8.0)
+moves[mi++] = mvFNPR(timetree, weight=8.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -360,7 +360,7 @@ Read in the sequences and initialize important variables.
 \begin{lstlisting}
 D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 n_sites <- D.nchar(1)
-mi <- 0
+mi = 1
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -383,7 +383,7 @@ br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
 base_rate ~ dnLnorm(br_mu, br_s)
-moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
+moves[mi++] = mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -391,7 +391,7 @@ The clock-rate parameter is a stochastic node from a gamma distribution.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 clock_rate ~ dnGamma(2.0,4.0)
-moves[mi++] <- mvScale(clock_rate,lambda=0.5,tune=true,weight=5.0)
+moves[mi++] = mvScale(clock_rate,lambda=0.5,tune=true,weight=5.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -410,8 +410,8 @@ Specify the parameters of the GTR model and the moves to operate on them.
 sf ~ dnDirichlet(v(1,1,1,1))
 er ~ dnDirichlet(v(1,1,1,1,1,1))
 Q := fnGTR(er,sf)
-moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
-moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] = mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -426,7 +426,7 @@ phySeq.clamp(D)
 Specify the work-space model object.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mymodel <- model(er)
+mymodel = model(er)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -443,15 +443,15 @@ Enter the value for this model in Table \ref{ssTable}.
 \begin{lstlisting}
 source("RevBayes_scripts/m_GMC_bears.Rev")
 
-pow_p <- powerPosterior(mymodel, moves, "output/GMC_bears_powp.out", cats=50) 
+pow_p = powerPosterior(mymodel, moves, "output/GMC_bears_powp.out", cats=50) 
 pow_p.burnin(generations=5000,tuningInterval=200)
 pow_p.run(generations=1000)  
 
-ss <- steppingStoneSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss = steppingStoneSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ss.marginal() 
 
 ### use path sampling to calculate marginal likelihoods
-ps <- pathSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
@@ -493,7 +493,7 @@ clear()
 \begin{lstlisting}
 D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 n_sites <- D.nchar(1)
-mi <- 0
+mi = 1
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -512,7 +512,7 @@ br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
 base_rate ~ dnLnorm(br_mu, br_s)
-moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
+moves[mi++] = mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -551,8 +551,8 @@ ucln_mu := ln(ucln_mean) - (ucln_var * 0.5)
 The only stochastic nodes we need to operate on for this part of the model are the lognormal mean ($M$ or \cl{ucln\_mean}) and the standard deviation ($\sigma$ or \cl{ucln\_sigma}).
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-moves[mi++] <- mvScale(ucln_mean, lambda=1.0, tune=true, weight=4.0)
-moves[mi++] <- mvScale(ucln_sigma, lambda=0.5, tune=true, weight=4.0)
+moves[mi++] = mvScale(ucln_mean, lambda=1.0, tune=true, weight=4.0)
+moves[mi++] = mvScale(ucln_sigma, lambda=0.5, tune=true, weight=4.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -562,7 +562,7 @@ Within this loop, we also add the move for each branch-rate stochastic node to o
 \begin{lstlisting}
 for(i in 1:n_branches){
    branch_rates[i] ~ dnLnorm(ucln_mu, ucln_sigma)
-   moves[mi++] <- mvScale(branch_rates[i], lambda=1, tune=true, weight=2.)
+   moves[mi++] = mvScale(branch_rates[i], lambda=1, tune=true, weight=2.)
 }
 \end{lstlisting}
 \end{snugshade*}}
@@ -571,8 +571,8 @@ Because we are dealing with semi-identifiable parameters, it often helps to appl
 Here we will add 2 additional types of moves that act on vectors.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-moves[mi++] <- mvVectorScale(branch_rates,lambda=1.0,tune=true,weight=2.0) 
-moves[mi++] <- mvVectorSingleElementScale(branch_rates,lambda=30.0,tune=true,weight=1.0) 
+moves[mi++] = mvVectorScale(branch_rates,lambda=1.0,tune=true,weight=2.0) 
+moves[mi++] = mvVectorSingleElementScale(branch_rates,lambda=30.0,tune=true,weight=1.0) 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -598,8 +598,8 @@ Now, specify the stationary frequencies and exchangeability rates of the GTR mat
 sf ~ dnDirichlet(v(1,1,1,1))
 er ~ dnDirichlet(v(1,1,1,1,1,1))
 Q := fnGTR(er,sf)
-moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
-moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] = mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -614,7 +614,7 @@ phySeq.clamp(D)
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-mymodel <- model(er)
+mymodel = model(er)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -631,15 +631,15 @@ Enter the value for this model in Table \ref{ssTable}.
 \begin{lstlisting}
 source("RevBayes_scripts/m_GMC_bears.Rev")
 
-pow_p <- powerPosterior(mymodel, moves, "output/UCLN_bears_powp.out", cats=50) 
+pow_p = powerPosterior(mymodel, moves, "output/UCLN_bears_powp.out", cats=50) 
 pow_p.burnin(generations=5000,tuningInterval=200)
 pow_p.run(generations=1000)  
 
-ss <- steppingStoneSampler(file="output/UCLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss = steppingStoneSampler(file="output/UCLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ss.marginal() 
 
 ### use path sampling to calculate marginal likelihoods
-ps <- pathSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
@@ -733,7 +733,7 @@ n_sites <- D.nchar(1)
 names <- D.names()
 
 ### initialize an iterator for the moves vector
-mi <- 0
+mi = 1
 
 ### set up the birth-death model from file
 ### this file includes tree topology moves
@@ -753,14 +753,14 @@ Set up the MCMC
 \begin{lstlisting}
 
 ### workspace model wrapper ###
-mymodel <- model(er)
+mymodel = model(er)
 
-monitors[1] <- mnFile(filename="output/TimeTree_bears_mcmc.log", printgen=10,diversification, turnover, birth_rate, death_rate, root_time, tmrca_Ursidae, tmrca_UrsidaePinn,er, sf,mean_rt, ucln_mean, ucln_sigma, branch_rates, base_rate)
-monitors[2] <- mnFile(filename="output/TimeTree_bears_mcmc.trees", printgen=10, timetree)
-monitors[3] <- mnScreen(printgen=10, mean_rt, ucln_mean, root_time, base_rate)
+monitors[1] = mnFile(filename="output/TimeTree_bears_mcmc.log", printgen=10,diversification, turnover, birth_rate, death_rate, root_time, tmrca_Ursidae, tmrca_UrsidaePinn,er, sf,mean_rt, ucln_mean, ucln_sigma, branch_rates, base_rate)
+monitors[2] = mnFile(filename="output/TimeTree_bears_mcmc.trees", printgen=10, timetree)
+monitors[3] = mnScreen(printgen=10, mean_rt, ucln_mean, root_time, base_rate)
 
 ### workspace mcmc ###
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 
 ### pre-burnin to tune the proposals ###
 mymcmc.burnin(generations=3000,tuningInterval=100)
@@ -779,7 +779,7 @@ Summarize the tree
 \begin{lstlisting}
 
 ### summarize the trees ###
-tt <- readTreeTrace("output/TimeTree_bears_mcmc.trees", "clock")
+tt = readTreeTrace("output/TimeTree_bears_mcmc.trees", "clock")
 tt.summarize()
 
 ### write MAP tree to file
