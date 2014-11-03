@@ -22,7 +22,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_constructRootedTripletDistribution::Func_constructRootedTripletDistribution( void ) : Function( ) {
+Func_constructRootedTripletDistribution::Func_constructRootedTripletDistribution( void ) : TypedFunction<RootedTripletDistribution>( ) {
     
 }
 
@@ -34,37 +34,42 @@ Func_constructRootedTripletDistribution* Func_constructRootedTripletDistribution
 }
 
 
-RevPtr<Variable> Func_constructRootedTripletDistribution::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >* Func_constructRootedTripletDistribution::createFunction( void ) const
+{
     
     RevBayesCore::RootedTripletDistributionFunction* f ;
+    
+    
     if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< RlString >::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector< std::string > >* sn = static_cast<const ModelVector< RlString > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector< std::string > >* sn = static_cast<const ModelVector< RlString > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
         f = new RevBayesCore::RootedTripletDistributionFunction( sn );
     }
     else if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< Taxon >::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::Taxon > >* t = static_cast<const ModelVector< Taxon > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::Taxon > >* t = static_cast<const ModelVector< Taxon > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
         f = new RevBayesCore::RootedTripletDistributionFunction( t );
     }
-    
+
     if ( this->args[0].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< TimeTree >::getClassTypeSpec() ) )
     {
-       RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
         f->setTrees(gTrees);
     }
     else if ( this->args[0].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< BranchLengthTree >::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::BranchLengthTree > >* gTrees = static_cast<const ModelVector< BranchLengthTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::BranchLengthTree > >* gTrees = static_cast<const ModelVector< BranchLengthTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
         f->setTrees(gTrees);
     }
 
+    if ( this->args[2].getVariable()->getRevObjectTypeSpec().isDerivedOf( RlBoolean::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< bool >* t = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+        f ->setRecordBranchLengths( t );
+    }
+
     
-    DeterministicNode<RevBayesCore::RootedTripletDistribution> *detNode = new DeterministicNode<RevBayesCore::RootedTripletDistribution>("", f, this->clone());
-    
-    RootedTripletDistribution* value = new RootedTripletDistribution( detNode->getValue() );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -84,6 +89,7 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
 
         argumentRules.push_back( new ArgumentRule( "geneTrees", treeTypes , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "speciesNames", ModelVector< RlString >::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "keepBranchLengths", RlBoolean::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
         rulesSet = true;
     }
@@ -105,15 +111,6 @@ const TypeSpec& Func_constructRootedTripletDistribution::getClassTypeSpec(void) 
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_constructRootedTripletDistribution::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RootedTripletDistribution::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

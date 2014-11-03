@@ -13,7 +13,7 @@
 #include "RbUtil.h"
 #include "MemberProcedure.h"
 #include "ModelVector.h"
-#include "RlAbstractCharacterData.h"
+#include "RlContinuousCharacterData.h"
 #include "RlMemberFunction.h"
 #include "RlString.h"
 #include "TypeSpec.h"
@@ -23,30 +23,95 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-RealNodeValTree::RealNodeValTree(void) : ModelObject<RevBayesCore::RealNodeContainer>() {
+RealNodeValTree::RealNodeValTree(void) : ModelObject<RevBayesCore::RealNodeContainer>()
+{
+
+    ArgumentRules* meanArgRules = new ArgumentRules();
+    methods.addFunction("mean", new MemberFunction<RealNodeValTree,Real>( this, meanArgRules ) );
     
+    ArgumentRules* tipmeanArgRules = new ArgumentRules();
+    methods.addFunction("tipMean", new MemberFunction<RealNodeValTree,Real>( this, tipmeanArgRules ) );
+    
+    ArgumentRules* stdevArgRules = new ArgumentRules();
+    methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
+    
+    ArgumentRules* rootArgRules = new ArgumentRules();
+    methods.addFunction("rootVal", new MemberFunction<RealNodeValTree,RealPos>(  this, rootArgRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"     , ContinuousCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 /** Construct from bool */
-RealNodeValTree::RealNodeValTree(RevBayesCore::RealNodeContainer *t) : ModelObject<RevBayesCore::RealNodeContainer>( t ) {
+RealNodeValTree::RealNodeValTree(RevBayesCore::RealNodeContainer *t) : ModelObject<RevBayesCore::RealNodeContainer>( t )
+{
+
+    ArgumentRules* meanArgRules = new ArgumentRules();
+    methods.addFunction("mean", new MemberFunction<RealNodeValTree,Real>( this, meanArgRules ) );
     
+    ArgumentRules* tipmeanArgRules = new ArgumentRules();
+    methods.addFunction("tipMean", new MemberFunction<RealNodeValTree,Real>( this, tipmeanArgRules ) );
+    
+    ArgumentRules* stdevArgRules = new ArgumentRules();
+    methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
+    
+    ArgumentRules* rootArgRules = new ArgumentRules();
+    methods.addFunction("rootVal", new MemberFunction<RealNodeValTree,RealPos>(  this, rootArgRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"     , ContinuousCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 /** Construct from bool */
-RealNodeValTree::RealNodeValTree(const RevBayesCore::RealNodeContainer &t) : ModelObject<RevBayesCore::RealNodeContainer>( new RevBayesCore::RealNodeContainer( t ) ) {
+RealNodeValTree::RealNodeValTree(const RevBayesCore::RealNodeContainer &t) : ModelObject<RevBayesCore::RealNodeContainer>( new RevBayesCore::RealNodeContainer( t ) )
+{
+ 
+    ArgumentRules* meanArgRules = new ArgumentRules();
+    methods.addFunction("mean", new MemberFunction<RealNodeValTree,Real>( this, meanArgRules ) );
     
+    ArgumentRules* tipmeanArgRules = new ArgumentRules();
+    methods.addFunction("tipMean", new MemberFunction<RealNodeValTree,Real>( this, tipmeanArgRules ) );
+    
+    ArgumentRules* stdevArgRules = new ArgumentRules();
+    methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
+    
+    ArgumentRules* rootArgRules = new ArgumentRules();
+    methods.addFunction("rootVal", new MemberFunction<RealNodeValTree,RealPos>(  this, rootArgRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"     , ContinuousCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 /** Construct from bool */
-RealNodeValTree::RealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::RealNodeContainer> *n) : ModelObject<RevBayesCore::RealNodeContainer>( n ) {
+RealNodeValTree::RealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::RealNodeContainer> *n) : ModelObject<RevBayesCore::RealNodeContainer>( n )
+{
+
+    ArgumentRules* meanArgRules = new ArgumentRules();
+    methods.addFunction("mean", new MemberFunction<RealNodeValTree,Real>( this, meanArgRules ) );
     
-}
-
-
-
-/** Construct from bool */
-RealNodeValTree::RealNodeValTree(const RealNodeValTree &t) : ModelObject<RevBayesCore::RealNodeContainer>( t ) {
+    ArgumentRules* tipmeanArgRules = new ArgumentRules();
+    methods.addFunction("tipMean", new MemberFunction<RealNodeValTree,Real>( this, tipmeanArgRules ) );
     
+    ArgumentRules* stdevArgRules = new ArgumentRules();
+    methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
+    
+    ArgumentRules* rootArgRules = new ArgumentRules();
+    methods.addFunction("rootVal", new MemberFunction<RealNodeValTree,RealPos>(  this, rootArgRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data"     , ContinuousCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampArgRules->push_back(new ArgumentRule("dataIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+
 }
 
 
@@ -58,14 +123,17 @@ RealNodeValTree* RealNodeValTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
     if ( name == "clampAt" )
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        
+        found = true;
+        
+        RevBayesCore::TypedDagNode< RevBayesCore::ContinuousCharacterData >* data = static_cast<const ContinuousCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::AbstractCharacterData* d = & data->getValue();
-        RevBayesCore::ContinuousCharacterData* c = static_cast<RevBayesCore::ContinuousCharacterData*>(d);
+        RevBayesCore::ContinuousCharacterData* c = & data->getValue();
         
         this->dagNode->getValue().clampAt(c, k->getValue());   
         return new Variable( new Real( 0 ) );
@@ -73,7 +141,7 @@ RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &
 
     std::cerr << "sending to core execute method\n";
     
-    return ModelObject<RevBayesCore::RealNodeContainer>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::RealNodeContainer>::executeMethod( name, args, found );
 }
 
 
@@ -91,33 +159,6 @@ const TypeSpec& RealNodeValTree::getClassTypeSpec(void) {
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revClassTypeSpec; 
-}
-
-
-/** Make member methods for this class */
-void RealNodeValTree::initializeMethods( void ) const
-{
-    
-    // Insert inherited methods
-    ModelObject<RevBayesCore::RealNodeContainer>::initializeMethods();
-    
-    ArgumentRules* meanArgRules = new ArgumentRules();
-    methods.addFunction("mean", new MemberFunction<RealNodeValTree,Real>( this, meanArgRules ) );
-    
-    ArgumentRules* tipmeanArgRules = new ArgumentRules();
-    methods.addFunction("tipMean", new MemberFunction<RealNodeValTree,Real>( this, tipmeanArgRules ) );
-    
-    ArgumentRules* stdevArgRules = new ArgumentRules();
-    methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
-    
-    ArgumentRules* rootArgRules = new ArgumentRules();
-    methods.addFunction("rootVal", new MemberFunction<RealNodeValTree,RealPos>(  this, rootArgRules ) );
-    
-    ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back(new ArgumentRule("data"     , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    clampArgRules->push_back(new ArgumentRule("dataIndex", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("clampAt", new MemberProcedure(RealNodeValTree::getClassTypeSpec(), clampArgRules ) );
-    
 }
 
 

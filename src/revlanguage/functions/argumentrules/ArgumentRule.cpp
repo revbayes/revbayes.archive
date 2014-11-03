@@ -2,7 +2,9 @@
 #include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RlFunction.h"
 #include "TypeSpec.h"
+#include "Workspace.h"
 
 #include <sstream>
 
@@ -105,7 +107,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( theVar->getRevObject().isTypeSpec( *it ) )
+        if ( theVar->getRevObject().isType( *it ) )
         {
             // For now, change the required type of the incoming variable wrapper
             theVar->setRevObjectTypeSpec( *it );
@@ -123,7 +125,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         {
             // Fit by type promotion. For now, we also modify the type of the incoming variable wrapper.
             RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-            theVar->setRevObject( convertedObject );
+            theVar->replaceRevObject( convertedObject );
             theVar->setRevObjectTypeSpec( *it );
             if ( !isEllipsis() )
             {
@@ -156,20 +158,36 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             }
             else
             {
-                RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
-                conversionObject->makeConversionValue( theVar );
-                Variable*  conversionVar    = new Variable( conversionObject );
+//                RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
+//                conversionObject->makeConversionValue( theVar );
+                
+                const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
+                const TypeSpec& typeTo   = *it;
+                
+                // create the function name
+                std::string functionName = "_" + typeFrom.getType() + "2" + typeTo.getType();
+                
+                // Package arguments
+                std::vector<Argument> args;
+                Argument theArg = Argument( theVar, "arg" );
+                args.push_back( theVar );
+                
+                Environment& env = Workspace::globalWorkspace();
+                Function* func = env.getFunction(functionName, args, once).clone();
+
+                // Allow the function to process the arguments
+                func->processArguments( args, once );
+                
+                // Set the execution environment of the function
+                func->setExecutionEnviroment( &env );
+                
+                // Evaluate the function
+                RevPtr<Variable> conversionVar = func->execute();
+                
                 conversionVar->setHiddenVariableState( true );
                 conversionVar->setRevObjectTypeSpec( *it );
                 
-                if ( !isEllipsis() )
-                {
-                    return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
-                }
-                else
-                {
-                    return Argument( conversionVar, arg.getLabel(), true );
-                }
+                return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
                 
             }
         }
@@ -247,7 +265,7 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( var->getRevObject().isTypeSpec( *it ) )
+        if ( var->getRevObject().isType( *it ) )
         {
             return true;
         }

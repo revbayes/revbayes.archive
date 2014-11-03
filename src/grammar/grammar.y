@@ -524,19 +524,6 @@ variable    :   identifier optElements
                     }
                     delete $7;
                 }
-            |   variable '.' identifier optElements
-                {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting member variable (NAMED_VAR) in syntax tree\n");
-#endif
-                    $$ = new SyntaxVariable($1,*$3);
-                    for (std::list<SyntaxElement*>::iterator it=$4->begin(); it!=$4->end(); ++it)
-                    {
-                        $$ = new SyntaxIndexOperation($$,*it);
-                    }
-                    delete $3;
-                    delete $4;
-                }
             |   variable '.' fxnCall '[' expression ']' optElements
                 {
 #ifdef DEBUG_BISON_FLEX

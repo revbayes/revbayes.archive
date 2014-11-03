@@ -20,11 +20,11 @@
 #ifndef Func_quit_H
 #define Func_quit_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_quit : public Function {
+    class Func_quit : public Procedure {
         
     public:
         Func_quit( void );

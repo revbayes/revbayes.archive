@@ -335,7 +335,7 @@
     // formatted string to the parser
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
+    std::string line = variableName + " <- readDiscreteCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {

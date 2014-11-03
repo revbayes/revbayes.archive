@@ -139,7 +139,7 @@ const TypeSpec& Dist_skyFossilBDP::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& Dist_skyFossilBDP::getMemberRules(void) const
+const MemberRules& Dist_skyFossilBDP::getParameterRules(void) const
 {
     static MemberRules distcBirthDeathMemberRules;
     static bool rulesSet = false;
@@ -165,7 +165,7 @@ const MemberRules& Dist_skyFossilBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
-        const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();
+        const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
@@ -198,7 +198,7 @@ const TypeSpec& Dist_skyFossilBDP::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_skyFossilBDP::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_skyFossilBDP::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 
@@ -255,7 +255,7 @@ void Dist_skyFossilBDP::setConstMemberVariable(const std::string& name, const Re
     }
     else 
     {
-        TypedDistribution<TimeTree>::setConstMemberVariable(name, var);
+        TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
 }

@@ -104,7 +104,7 @@ void SyntaxForLoop::getNextLoopState( void )
     RevObject* elm = stateSpace->getElement( nextIndex-1 )->clone();
 
     // Set the loop variable to the next value using a control variable assignment
-    loopVariable->setRevObject( elm );
+    loopVariable->replaceRevObject( elm );
     loopVariable->setWorkspaceVariableState( true );
 
     // Increment the element index

@@ -86,7 +86,7 @@ void SyntaxAdditionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     RevObject *newValue = lhs_value.add( rhs_value );
     
     // Fill the slot with the new variable
-    lhs->setRevObject( newValue );
+    lhs->replaceRevObject( newValue );
 
     // Reset it as workspace (control) variable, if it was a workspace (control) variable before the assignment.
     // When we fill the slot, the workspace (control) variable property is reset to false by default.

@@ -186,8 +186,8 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, con
     RevPtr<Variable> theVar  = env.getVariable( identifier );
     
     
-    // set this variable as a hidden variable so that it doesn't show in ls()
-    theVar->setHiddenVariableState( true );
+    // set this variable as an element variable; which is ala by default a hidden variable so that it doesn't show in ls()
+    theVar->setElementVariableState( true );
 
     return theVar;
 }
@@ -234,10 +234,12 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateContent( Environment& env, bool d
 
         try
         {
-            Function& f = Workspace::userWorkspace().getFunction("[]", args, false);
-            f.processArguments( args, false );
-            theVar = f.execute();
+            Function* f = Workspace::userWorkspace().getFunction("[]", args, false).clone();
+            f->processArguments( args, false );
+            theVar = f->execute();
             theVar->setName( identifier );
+            
+            delete f;
         }
         catch (RbException e)
         {
@@ -248,6 +250,16 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateContent( Environment& env, bool d
 
     return theVar;
 
+}
+
+
+/**
+ * Get the pointer to the internal base variable for this syntax element.
+ */
+SyntaxElement* SyntaxIndexOperation::getBaseVariable( void )
+{
+    // return the internal pointer
+    return baseVariable;
 }
 
 

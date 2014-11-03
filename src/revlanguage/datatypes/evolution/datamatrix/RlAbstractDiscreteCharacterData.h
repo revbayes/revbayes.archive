@@ -3,6 +3,7 @@
 
 #include "AbstractDiscreteCharacterData.h"
 #include "ModelObject.h"
+#include "RlAbstractCharacterData.h"
 
 #include <set>
 #include <string>
@@ -12,7 +13,7 @@
 namespace RevLanguage {
     
     
-    class AbstractDiscreteCharacterData : public ModelObject<RevBayesCore::AbstractDiscreteCharacterData> {
+    class AbstractDiscreteCharacterData : public ModelObject<RevBayesCore::AbstractDiscreteCharacterData>, AbstractCharacterData {
         
     public:
         AbstractDiscreteCharacterData(void);                                                                                                //!< Constructor requires character type
@@ -31,8 +32,7 @@ namespace RevLanguage {
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method functions
-        virtual void                                initializeMethods(void) const;                                                          //!< Initialize methods
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     };
     

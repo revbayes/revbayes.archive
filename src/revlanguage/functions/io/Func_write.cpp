@@ -12,7 +12,7 @@
  * @package functions
  * @since Version 1.0, 2009-09-03
  *
- * $Id: Func_readCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
+ * $Id: Func_readDiscreteCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
  */
 
 

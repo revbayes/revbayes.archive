@@ -114,7 +114,7 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dyn
             const RevObject& value   = temp->getRevObject();
             
             size_t theLength;
-            if ( value.isTypeSpec( Natural::getClassTypeSpec() ) )
+            if ( value.isType( Natural::getClassTypeSpec() ) )
                 theLength = size_t( static_cast<const Natural&>( value ).getValue() );
             else if ( value.isConvertibleTo( Natural::getClassTypeSpec(), true ) )
             {

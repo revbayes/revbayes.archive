@@ -25,7 +25,9 @@ namespace RevLanguage {
         UserFunction(UserFunctionDef* def);                                                                     //!< Standard concstructor
         
         virtual                                    ~UserFunction() {}                                           //!< Virtual destructor
-        
+
+        void bogusFoo() {}
+
         // Basic utility functions
         UserFunction*                               clone(void) const;                                          //!< Clone the object
         static const std::string&                   getClassType(void);                                         //!< Get Rev type

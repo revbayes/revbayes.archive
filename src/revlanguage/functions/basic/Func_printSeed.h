@@ -17,19 +17,18 @@
 #ifndef Func_printSeed_H
 #define Func_printSeed_H
 
-#include "RlFunction.h"
-#include <map>
+#include "Procedure.h"
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_printSeed :  public Function {
+    class Func_printSeed : public Procedure {
         
     public:
         Func_printSeed();
         
         // Basic utility functions
-        Func_printSeed*                  clone(void) const;                                          //!< Clone the object
+        Func_printSeed*             clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object

@@ -20,11 +20,11 @@
 #ifndef Func_clear_H
 #define Func_clear_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_clear : public Function {
+    class Func_clear : public Procedure {
         
     public:
         Func_clear( void );

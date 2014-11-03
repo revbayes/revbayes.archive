@@ -47,8 +47,7 @@ namespace RevLanguage {
         virtual bool                                isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
         // Member object functions
-        virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args);      //!< Map member methods to internal methods
-        virtual void                                initializeMethods(void) const;                                                  //!< Initialize member methods
+        virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
         
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
@@ -93,6 +92,16 @@ template <typename rlType>
 ModelVector<rlType>::ModelVector( void ) :
 ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( new RevBayesCore::RbVector<typename rlType::valueType>() )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
 }
 
 
@@ -104,6 +113,16 @@ template <typename rlType>
 ModelVector<rlType>::ModelVector( const valueType &v ) :
     ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( v.clone() )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
 }
 
 
@@ -115,6 +134,16 @@ template <typename rlType>
 ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
     ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( n )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
 }
 
 
@@ -163,6 +192,7 @@ ModelVector<rlType>* ModelVector<rlType>::clone() const
 template <typename rlType>
 RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
 {
+    
     // First check that we are not asked to convert to our own type
     if ( type == getClassTypeSpec() )
         return this->clone();
@@ -186,7 +216,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         {
             
             rlType orgElement = rlType( *i );
-            if ( orgElement.isTypeSpec( *type.getElementTypeSpec() ) )
+            if ( orgElement.isType( *type.getElementTypeSpec() ) )
             {
                 theConvertedContainer->push_back( orgElement );
             }
@@ -212,15 +242,20 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
  * Map calls to member methods.
  */
 template <typename rlType>
-RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args )
+RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
+    
     if ( name == "size" )
     {
+        found = true;
+        
         // return a new variable with the size of this container
         return RevPtr<Variable>( new Variable( new Natural( size() ), "" ) );
     }
     else if ( name == "sort" )
     {
+        found = true;
+        
         // Check whether the DAG node is actually a constant node
         if ( !this->dagNode->isConstant() )
         {
@@ -232,6 +267,8 @@ RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, co
     }
     else if ( name == "unique" )
     {
+        found = true;
+        
         // Check whether the DAG node is actually a constant node
         if ( !this->dagNode->isConstant() )
         {
@@ -242,7 +279,7 @@ RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, co
         return NULL;
     }
     
-    return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::executeMethod( name, args );
+    return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::executeMethod( name, args, found );
 }
 
 
@@ -311,7 +348,7 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
             rlType orgElement = rlType(*i);
 
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
+            if ( !orgElement.isType( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
             {
                 return false;
             }
@@ -321,25 +358,6 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
     }
 
     return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::isConvertibleTo( type, once );
-}
-
-
-/** Make methods for this class */
-template <typename rlType>
-void ModelVector<rlType>::initializeMethods(void) const
-{
-    // Insert inherited methods
-    ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::initializeMethods();
-    
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-    
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
-    
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
-    
 }
 
 

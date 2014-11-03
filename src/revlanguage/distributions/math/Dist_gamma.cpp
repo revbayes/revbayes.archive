@@ -64,7 +64,7 @@ const TypeSpec& Dist_gamma::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_gamma::getMemberRules(void) const {
+const MemberRules& Dist_gamma::getParameterRules(void) const {
     
     static MemberRules distGammaMemberRules;
     static bool rulesSet = false;
@@ -115,7 +115,7 @@ void Dist_gamma::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_gamma::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_gamma::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "shape" ) 
     {
@@ -127,6 +127,6 @@ void Dist_gamma::setConstMemberVariable(const std::string& name, const RevPtr<co
     }
     else  
     {
-        PositiveContinuousDistribution::setConstMemberVariable(name, var);
+        PositiveContinuousDistribution::setConstParameter(name, var);
     }
 }

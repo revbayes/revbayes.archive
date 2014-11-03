@@ -10,14 +10,11 @@
 
         <name>dnDPP</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The Dirichlet process prior distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This function returns a Dirichlet process prior (DPP) distribution. 
             </p>
         </description>
     
@@ -26,7 +23,7 @@
 
             <usage>
                 <![CDATA[
-                 dnDPP( RealPos concentration, Distribution__Simplex baseDistribution, Natural numElements )
+                 dnDPP( RealPos concentration, Distribution__<type> baseDistribution, Natural numElements )
                  ]]> 
             </usage>
         
@@ -34,55 +31,120 @@
                 <label>concentration</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The concentration parameter of the DPP (can be computed using fnDPPConcFromMean function).</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>baseDistribution</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
-                <valueType>Distribution__Simplex</valueType>
+                <description>The DPP base distribution. This also gives the Rev type of the stochastic node created with this distribution.</description>
+                <valueType>{Distribution__Real, Distribution__RealPos, Distribution__Natural, Distribution__Integer, Distribution__Probability, or Distribution__Simplex}</valueType>
             </argument>
             <argument>
                 <label>numElements</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The number of elements distributed by the DPP.</description>
                 <valueType>Natural</valueType>
             </argument>
 
-            <returnValue>Dist_dpp, Distribution__Simplex[], Distribution, RevObject</returnValue>
+            <returnValue>Dist_dpp, Distribution__-see types above-[], Distribution, RevObject</returnValue>
 
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This function constructs a Dirichlet process prior distribution. The DPP is used to model
+                mixtures of data. For example, this distribution is used as a prior on lineage-specific
+                substitution rates as a model for relaxing the assumption of a strict molecular clock (Heath et al. 2012).
+                </p>
+                <p>
+                In RevBayes this distribution is templated, meaning that it can be used for different types of
+                parameters. Thus, depending on the type of the base distribution, the DPP can be a prior on elements 
+                with Real, RealPos, Integer, Natural, Probability, or Simplex parameters. 
+                The distribution constructor creates a stochastic node that is a vector of N elements of the type listed above,
+                were N is the number of elements distributed under the DPP. 
+                </p>
+                <p>
+                The DPP is an infinite mixture model and take 2 parameters: the concentration parameter (a) and 
+                the base distribution (G_0). The concentration parameter influences the number of parameter categories
+                and the base distribution is the prior distribution from which parameter values for each
+                category are drawn. For more information see: Ferguson (1973); Antoniak (1974); Lartillot and Philippe (2004);
+                Huelsenbeck et al. (2006); Ané et al. (2007); Huelsenbeck and Suchard (2007); Heath et al. (2012); 
+                Heath (2012)
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+             ## number of DPP elements
+             N <- 10
+             
+             ## prior mean number of categories
+             k <- 8
+             
+             ## concentration parameter of the DPP
+             a <- fnDPPConcFromMean(k, N)
+             
+             ## G_0 distribution
+             G_0 = dnExponential(1.0)
+             
+             ## DPP distribution constructior
+             rates ~ dnDPP(a, G_0, N)
                  ]]>
 
             </example>
 
             <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
+				<citation>
+					Ané C, Larget B, Baum DA, Smith SD, Rokas A. 2007. Bayesian estimation of concordance among gene trees. Mol Biol Evol. 24: 412–426.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Antoniak CE. 1974. Mixtures of Dirichlet processes with applications to non-parametric problems. Ann Stat. 2:1152–1174.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Ferguson TS. 1973. A Bayesian analysis of some nonparametric problems. Ann Stat. 1:209–230.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Heath TA. 2012. A hierarchical Bayesian model for calibrating estimates of species divergence times. Syst. Biol. 61:793-809.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Huelsenbeck JP, Jain S, Frost SWD, Pond SLK. 2006. A Dirichlet process model for detecting positive selection in protein-coding DNA sequences. Proc Natl Acad Sci U S A. 103:6263–6268.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Huelsenbeck JP, Suchard M. 2007. A nonparametric method for accommodating and testing across-site rate variation. Syst Biol. 56:975–987.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Lartillot N, Philippe H. 2004. A Bayesian mixture model for across-site heterogeneities in the amino-acid replacement process. Mol Biol Evol.21:1095–1109.
+				</citation>
             </reference>
 
-            <author>Your name here</author>
+            <author>Tracy A. Heath</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>fnDPPConcFromMean</entry>
+                <entry>mvDPPAllocateAuxGibbs</entry>
+                <entry>mvDPPGibbsConcentration</entry>
+                <entry>mvDPPScaleCatAllocateAux</entry>
+                <entry>mvDPPScaleCatVals</entry>
             </seeAlso>
 
 

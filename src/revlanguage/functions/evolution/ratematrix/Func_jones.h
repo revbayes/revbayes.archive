@@ -18,14 +18,14 @@
 #ifndef Func_jones_H
 #define Func_jones_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_jones :  public Function {
+    class Func_jones : public Procedure {
         
     public:
         Func_jones( void );

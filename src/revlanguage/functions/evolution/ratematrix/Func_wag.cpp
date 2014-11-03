@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_wag::Func_wag( void ) : Function( ) {
+Func_wag::Func_wag( void ) : Procedure( ) {
     
 }
 

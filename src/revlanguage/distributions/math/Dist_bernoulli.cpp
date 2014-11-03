@@ -67,7 +67,7 @@ const TypeSpec& Dist_bernoulli::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_bernoulli::getMemberRules(void) const {
+const MemberRules& Dist_bernoulli::getParameterRules(void) const {
     
     static MemberRules distBernMemberRules;
     static bool rulesSet = false;
@@ -105,7 +105,7 @@ void Dist_bernoulli::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_bernoulli::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_bernoulli::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
         
     if ( name == "p" ) 
     {
@@ -113,6 +113,6 @@ void Dist_bernoulli::setConstMemberVariable(const std::string& name, const RevPt
     }
     else
     {
-        TypedDistribution<Natural>::setConstMemberVariable(name, var);
+        TypedDistribution<Natural>::setConstParameter(name, var);
     }
 }

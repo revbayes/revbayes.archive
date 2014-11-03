@@ -19,28 +19,27 @@
 #ifndef Func_floor_H
 #define Func_floor_H
 
-#include "RlFunction.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
     template <typename valType, typename retType>
-    class Func_floor :  public Function {
+    class Func_floor : public TypedFunction<retType> {
         
     public:
         Func_floor( void );
         
         // Basic utility functions
-        Func_floor*                                     clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_floor*                                                             clone(void) const;                                          //!< Clone the object
+        static const std::string&                                               getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                                         getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction< typename retType::valueType>*              createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                                                    getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -55,7 +54,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType, typename retType>
-RevLanguage::Func_floor<valType, retType>::Func_floor( void ) : Function( ) {
+RevLanguage::Func_floor<valType, retType>::Func_floor( void ) : TypedFunction<retType>( ) {
     
 }
 
@@ -69,16 +68,13 @@ RevLanguage::Func_floor<valType, retType>* RevLanguage::Func_floor<valType, retT
 
 
 template <typename valType, typename retType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_floor<valType, retType>::execute() {
+RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Func_floor<valType, retType>::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FloorFunction* f = new RevBayesCore::FloorFunction( arg );
     
-    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
-    
-    retType* value = new retType( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -116,16 +112,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func_floor<valType, retType>::getClass
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_floor<valType, retType>::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

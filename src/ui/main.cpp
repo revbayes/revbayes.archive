@@ -22,7 +22,6 @@
 #include "help/IHelpRenderer.h"
 #include "help/HelpConsoleRenderer.h"
 
-
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
@@ -62,9 +61,14 @@ int main(int argc, const char* argv[]) {
     }
     
     if (!options->isDisableReadline()) {
+        // remove on production
+//        TabTest t;
+//        t.run();
+        
+        // enable on production
         RbClient c;
         c.startInterpretor(help, options, configuration);
-        return 0;
+        
     }
 
 

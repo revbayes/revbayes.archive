@@ -20,7 +20,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_jc::Func_jc( void ) : Function( ) {
+Func_jc::Func_jc( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -32,16 +32,13 @@ Func_jc* Func_jc::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_jc::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_jc::createFunction( void ) const
+{
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( size_t(ns) );
     
-    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
-    
-    RateMatrix* value = new RateMatrix( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -76,15 +73,6 @@ const TypeSpec& Func_jc::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_jc::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

@@ -23,25 +23,23 @@ namespace RevLanguage {
     class RealNodeValTree : public ModelObject<RevBayesCore::RealNodeContainer> {
         
     public:
-        RealNodeValTree(void);                                                                                              //!< Constructor requires character type
-        RealNodeValTree(RevBayesCore::RealNodeContainer *v);                                                                //!< Constructor requires character type
-        RealNodeValTree(const RevBayesCore::RealNodeContainer &v);                                                          //!< Constructor requires character type
-        RealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::RealNodeContainer> *n);                                    //!< Constructor requires character type
-        RealNodeValTree(const RealNodeValTree& d);                                                                          //!< Constructor requires character type
+        RealNodeValTree(void);                                                                                                      //!< Constructor requires character type
+        RealNodeValTree(RevBayesCore::RealNodeContainer *v);                                                                        //!< Constructor requires character type
+        RealNodeValTree(const RevBayesCore::RealNodeContainer &v);                                                                  //!< Constructor requires character type
+        RealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::RealNodeContainer> *n);                                            //!< Constructor requires character type
         
         typedef RevBayesCore::RealNodeContainer valueType;
         
         // Basic utility functions
-        RealNodeValTree*           clone(void) const;                                                                       //!< Clone object
-        static const std::string&           getClassType(void);                                                             //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
+        RealNodeValTree*           clone(void) const;                                                                               //!< Clone object
+        static const std::string&           getClassType(void);                                                                     //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method functions
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
-        virtual void                        initializeMethods(void) const;                                                  //!< Make member methods
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
         
-        void                                printValue(std::ostream& o) const;                                              //!< Print value (for user)
+        void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
     };
     
 }

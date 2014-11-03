@@ -10,16 +10,16 @@
 
 namespace RevLanguage {
     
-    class RlGeographyRateModifier : public ModelObject<RevBayesCore::GeographyRateModifier> {
+    class GeographyRateModifier : public ModelObject<RevBayesCore::GeographyRateModifier> {
         
     public:
         
-        RlGeographyRateModifier(void);                                                                                  //!< Default constructor
-        RlGeographyRateModifier(RevBayesCore::GeographyRateModifier *m);                                       //!< Default constructor
-        RlGeographyRateModifier(RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier> *d);           //!< Default constructor
+        GeographyRateModifier(void);                                                                                  //!< Default constructor
+        GeographyRateModifier(RevBayesCore::GeographyRateModifier *m);                                       //!< Default constructor
+        GeographyRateModifier(RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier> *d);           //!< Default constructor
         
         // Basic utility functions
-        RlGeographyRateModifier*            clone(void) const;                                                          //!< Clone object
+        GeographyRateModifier*              clone(void) const;                                                          //!< Clone object
         static const std::string&           getClassType(void);                                                         //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object

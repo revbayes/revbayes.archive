@@ -26,7 +26,9 @@ Taxon::Taxon(const std::string &n, const std::string &sn) :
     name( n ),
     speciesName( sn )
 {
-    
+    if (sn == "" ) {
+        speciesName = n; //we put as default species name the tip name
+    }
 }
 
 
@@ -47,6 +49,11 @@ bool Taxon::operator==(const RevBayesCore::Taxon &t) const
         return false;
     }
     
+    if ( date != t.date)
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -89,6 +96,7 @@ bool Taxon::operator<(const RevBayesCore::Taxon &t) const
     // by default return true.
     return true;
 }
+
 
 
 /**

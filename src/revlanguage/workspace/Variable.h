@@ -57,16 +57,18 @@ namespace RevLanguage {
         const TypeSpec&         getRevObjectTypeSpec(void) const;                       //!< Get the required Rev object type spec
         bool                    isAssignable(void) const;                               //!< Is variable or upstream members assignable?
         bool                    isHiddenVariable(void) const;                           //!< Is this a hidden variable?
+        bool                    isElementVariable(void) const;                          //!< Is this a variable an element of a vector?
         bool                    isReferenceVariable(void) const;                        //!< Is this a reference variable?
         bool                    isVectorVariable(void) const;                           //!< Is this a vector variable?
         bool                    isWorkspaceVariable(void) const;                        //!< Is this a workspace variable?
         void                    makeReference(const RevPtr<Variable>& refVar);          //!< Make this a reference variable
         void                    printValue(std::ostream& o) const;                      //!< Print value of variable
+        void                    setElementVariableState(bool flag = true);              //!< Set (or unset) element variable status
         void                    setHiddenVariableState(bool flag = true);               //!< Set (or unset) hidden variable status
         void                    setVectorVariableState(bool flag = true);               //!< Set (or unset) vector variable status
         void                    setWorkspaceVariableState(bool flag = true);            //!< Set (or unset) control variable status
         void                    setName(const std::string &n);                          //!< Set the name of this variable
-        void                    setRevObject(RevObject *newObj);                        //!< Set a variable with a Rev object
+        void                    replaceRevObject(RevObject *newObj);                    //!< Replace the Rev object of this variable
         void                    setRevObjectTypeSpec(const TypeSpec& ts);               //!< set the required Rev object type spec
         
         // Smart pointer functions
@@ -75,14 +77,13 @@ namespace RevLanguage {
         void                    incrementReferenceCount(void) const;                    //!< Increment the reference count for reference counting in smart pointers
         
     private:
-        // Help functions
-        void                    replaceRevObject(RevObject *newObj);                    //!< Replace object, update DAG
         
         // Member variables
         std::string             name;                                                   //!< Name of variable
         mutable size_t          refCount;                                               //!< Reference count used by RevPtr
         RevObject*              revObject;                                              //!< Pointer to the Rev object inside the variable
         TypeSpec                revObjectTypeSpec;                                      //!< Required type of the object
+        bool                    isElementVar;                                           //!< Is this variable an element of a vector?
         bool                    isHiddenVar;                                            //!< Is this a hidden variable?
         bool                    isReferenceVar;                                         //!< Is this a reference variable?
         bool                    isVectorVar;                                            //!< Is this a vector variable?

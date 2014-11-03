@@ -67,7 +67,7 @@ const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_mvtnorm::getMemberRules(void) const {
+const MemberRules& Dist_mvtnorm::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -113,7 +113,7 @@ void Dist_mvtnorm::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_mvtnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_mvtnorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {
@@ -125,6 +125,6 @@ void Dist_mvtnorm::setConstMemberVariable(const std::string& name, const RevPtr<
     }
     else 
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

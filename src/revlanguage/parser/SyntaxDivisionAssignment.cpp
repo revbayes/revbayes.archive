@@ -86,7 +86,7 @@ void SyntaxDivisionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     RevObject *newValue = lhs_value.divide( rhs_value );
     
     // Fill the slot with the new variable
-    lhs->setRevObject( newValue );
+    lhs->replaceRevObject( newValue );
     
     // Reset it as control variable, if it was a control variable before the assignment.
     // When we fill the slot, the control variable property is reset to false by default.

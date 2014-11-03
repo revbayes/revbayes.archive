@@ -22,7 +22,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
 //        RevPtr<RevLanguage::Variable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
 //        MethodTable                                     makeMethods(void) const;
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
@@ -33,7 +33,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
@@ -49,12 +49,15 @@ namespace RevLanguage {
     
 }
 
-
-#include "OptionRule.h"
+#include "AminoAcidState.h"
 #include "BiogeographicTreeHistoryCtmc.h"
+#include "DnaState.h"
+#include "GeneralTreeHistoryCtmc.h"
+#include "OptionRule.h"
+#include "RateMap.h"
 #include "RevNullObject.h"
 #include "RlString.h"
-#include "RateMap.h"
+#include "RnaState.h"
 #include "StandardState.h"
 
 
@@ -88,7 +91,43 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData > *d = NULL;
     
-    if ( dt == "biogeo" )
+    if ( dt == "DNA" )
+    {
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState, typename treeType::valueType>(tau, nStates, nChars);
+        
+        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
+        dist->setRateMap( rm );
+
+        d = dist;
+    }
+    else if ( dt == "RNA" )
+    {
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState, typename treeType::valueType>(tau, nStates, nChars);
+        
+        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
+        dist->setRateMap( rm );
+        
+        d = dist;
+    }
+    else if ( dt == "AA" || dt == "Protein" )
+    {
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, nStates, nChars);
+        
+        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
+        dist->setRateMap( rm );
+        
+        d = dist;
+    }
+    else if (dt == "Standard" )
+    {
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType>(tau, nStates, nChars);
+        
+        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
+        dist->setRateMap( rm );
+        
+        d = dist;
+    }
+    else if ( dt == "Biogeo" )
     {
         bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
         bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
@@ -108,31 +147,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         
         d = dist;
     }
+    
     return d;
 }
-
-///* Map calls to member methods */
-//template <class treeType>
-//RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Dist_phyloDACTMC<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
-//    
-//    if (name == "printBranchHistory")
-//    {
-//        // get the member with give index
-//        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
-//        
-////        if (this->dagNode->getValue().getHistories().size() < (size_t)(index.getValue()) )
-////        {
-////            throw RbException("Index out of bounds in []");
-////        }
-////
-////        const RevBayesCore::DiscreteTaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename charType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
-////        
-////        return new Variable( new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) ) );
-////        return new Variable( new Dist_phyloDACTMC<treeType>( new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType>() ) );
-//    }
-//    
-//    return TypedDistribution< AbstractDiscreteCharacterData >::executeMethod( name, args );
-//}
 
 
 /* Get Rev type of object */
@@ -156,7 +173,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getClassTy
 
 /** Return member rules (no members) */
 template <class treeType>
-const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -171,8 +188,13 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
         distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         
         std::vector<std::string> options;
-        options.push_back( "biogeo" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );
+        options.push_back( "Biogeo" );
+        options.push_back( "DNA" );
+        options.push_back( "RNA" );
+        options.push_back( "AA" );
+        options.push_back( "Protein" );
+        options.push_back( "Standard" );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         rulesSet = true;
     }
     
@@ -228,7 +250,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::printValue(std::ostream& o) const 
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_phyloDACTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" )
     {
@@ -255,7 +277,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::
         cladoStateFreqs = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

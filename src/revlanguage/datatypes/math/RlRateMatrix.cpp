@@ -18,23 +18,67 @@
 
 using namespace RevLanguage;
 
-RateMatrix::RateMatrix(void) : ModelObject<RevBayesCore::RateMatrix>() {
+RateMatrix::RateMatrix(void) : ModelObject<RevBayesCore::RateMatrix>()
+{
+
+    // add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
+    
+    // add method for call "x[]" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+
 }
 
 
-RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : ModelObject<RevBayesCore::RateMatrix>( v.clone() ) {
+RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : ModelObject<RevBayesCore::RateMatrix>( v.clone() )
+{
+
+    // add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
+    
+    // add method for call "x[]" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : ModelObject<RevBayesCore::RateMatrix>( v ) {
+RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : ModelObject<RevBayesCore::RateMatrix>( v )
+{
+
+    // add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
+    
+    // add method for call "x[]" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *m) : ModelObject<RevBayesCore::RateMatrix>( m ) {
+RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *m) : ModelObject<RevBayesCore::RateMatrix>( m )
+{
+
+    // add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
+    
+    // add method for call "x[]" as a function
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+
 }
 
 
@@ -44,9 +88,13 @@ RateMatrix* RateMatrix::clone() const {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "[]") {
+    if (name == "[]")
+    {
+        found = true;
+        
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         
@@ -59,14 +107,18 @@ RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::v
         for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
         }
+        
         return new Variable( new ModelVector<Real>( elementVector ) );
     }
-    else if (name == "size") {
+    else if (name == "size")
+    {
+        found = true;
+        
         int n = (int)this->dagNode->getValue().getNumberOfStates();
         return new Variable( new Natural(n) );
     }
     
-    return ModelObject<RevBayesCore::RateMatrix>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::RateMatrix>::executeMethod( name, args, found );
 }
 
 
@@ -92,25 +144,5 @@ const TypeSpec& RateMatrix::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
-}
-
-
-/** Make member methods for this class */
-void RateMatrix::initializeMethods( void ) const
-{
-    
-    // Insert inherited methods
-    ModelObject<RevBayesCore::RateMatrix>::initializeMethods();
-    
-    // add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
-    
-    
-    // add method for call "x[]" as a function
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-    
 }
 

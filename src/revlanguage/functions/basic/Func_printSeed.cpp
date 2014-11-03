@@ -1,11 +1,3 @@
-//
-//  Func_printSeed.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 9/8/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "Func_printSeed.h"
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
@@ -22,7 +14,7 @@
 
 using namespace RevLanguage;
 
-Func_printSeed::Func_printSeed() : Function() {
+Func_printSeed::Func_printSeed() : Procedure() {
     
 }
 

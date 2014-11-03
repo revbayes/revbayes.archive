@@ -40,7 +40,6 @@ namespace RevLanguage {
         // Implementations of pure virtual functions of the base class(es)
         RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a random variable from this distribution
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
-        const TypeSpec&                                                 getReturnType(void) const;                      //!< Get type of return value
         
     private:
         
@@ -117,17 +116,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func__scalarVectorAdd<firstValType, se
     static TypeSpec revTypeSpec = TypeSpec( Func__scalarVectorAdd<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__scalarVectorAdd<firstValType, secondValType, retType>::getReturnType( void ) const
-{
-    
-    static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

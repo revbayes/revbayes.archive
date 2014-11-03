@@ -51,7 +51,7 @@ namespace RevBayesCore {
     class PathUniformizationSampleProposal : public Proposal {
         
     public:
-        PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
+        PathUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
 //        PathUniformizationSampleProposal( const PathUniformizationSampleProposal& p );
         
         // Basic utility functions
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         void                            fillStateCounts(std::vector<CharacterEvent*> s, unsigned* counts);
         
         // parameters
-        StochasticNode<AbstractCharacterData>*  ctmc;
+        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
         TypedDagNode<treeType>*                 tau;
         TypedDagNode<RateMap>*                  qmap;
                 
@@ -116,7 +116,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
+RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -200,6 +200,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
      // get sampling RateMatrix
 //    const RateMap& rm = qmap->getValue();
     const RateMatrix& rm = *(qmap->getValue().getHomogeneousRateMatrix());
+    double clockRate = qmap->getValue().getHomogeneousClockRate();
     
     // stepwise events
     double t = 0.0;
@@ -210,7 +211,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
     for (size_t i = 0; i < currState.size(); i++)
     {
         unsigned fromState = currState[i]->getState();
-        sr += -rm[fromState][fromState];
+        sr += -rm[fromState][fromState] * clockRate;
     }
     
     // get transition probs for proposal
@@ -223,7 +224,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
         // rates for next event
         unsigned fromState = currState[ idx ]->getState();  // k
         unsigned toState = (*it_h)->getState();             // j
-        double tr = rm[fromState][toState];                 // Q[k][j]
+        double tr = rm[fromState][toState] * clockRate;                 // Q[k][j]
         
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
@@ -233,7 +234,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
         t += dt;
         
         // update sum of rates
-        sr += (-rm[toState][toState]) - (-rm[fromState][fromState]);
+        sr += (rm[fromState][fromState] - rm[toState][toState]) * clockRate;
     }
     
     // lnL for final non-event
@@ -472,13 +473,14 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
             if ( (*it)->getState() != prevState )
             {
                 proposedHistory.insert(*it);
+                prevState = (*it)->getState();
             }
             
             // otherwise, free memory
             else
                 delete *it;
             
-            prevState = (*it)->getState();
+            
         }
         
 //        std::cout << numJumps << " " << proposedHistory.size() << "\n";
@@ -621,7 +623,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::swapNod
 {
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {

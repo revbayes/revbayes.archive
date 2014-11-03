@@ -9,7 +9,7 @@
 
 using namespace RevLanguage;
 
-Func__mod::Func__mod() : Function()
+Func__mod::Func__mod() : TypedFunction<Natural>()
 {
     
 }
@@ -22,19 +22,15 @@ Func__mod* Func__mod::clone( void ) const
 }
 
 
-/** Execute function: We rely on getValue or overloaded push_back to provide functionality */
-RevPtr<Variable> Func__mod::execute( void ) {
+RevBayesCore::TypedFunction<int>* Func__mod::createFunction( void ) const
+{
     
     const RevBayesCore::TypedDagNode<int>* leftVal = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::TypedDagNode<int>* rightVal = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::ModuloFunction *func = new RevBayesCore::ModuloFunction( leftVal, rightVal );
     
-    DeterministicNode<int> *detNode = new DeterministicNode<int>("", func, this->clone());
-
-    Natural *theBool = new Natural( detNode );
-    
-    return new Variable( theBool );
+    return func;
     
 }
 
@@ -85,13 +81,5 @@ const TypeSpec& Func__mod::getTypeSpec( void ) const
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& Func__mod::getReturnType( void ) const
-{
-    
-    return Natural::getClassTypeSpec();
 }
 

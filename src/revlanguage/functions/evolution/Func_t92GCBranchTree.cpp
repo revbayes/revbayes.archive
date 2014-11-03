@@ -16,8 +16,6 @@
 
 using namespace RevLanguage;
 
-Func_t92GCBranchTree::Func_t92GCBranchTree( const Func_t92GCBranchTree &x ) : Function(x) {}
-
 
 Func_t92GCBranchTree* Func_t92GCBranchTree::clone( void ) const {
 
@@ -62,15 +60,6 @@ const TypeSpec& Func_t92GCBranchTree::getClassTypeSpec(void) {
 }
 
 
-/* Get return type */
-const TypeSpec& Func_t92GCBranchTree::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = ModelVector<RateMatrix>::getClassTypeSpec();
-    
-    return returnTypeSpec;
-}
-
-
 
 const TypeSpec& Func_t92GCBranchTree::getTypeSpec( void ) const {
     
@@ -80,7 +69,8 @@ const TypeSpec& Func_t92GCBranchTree::getTypeSpec( void ) const {
 }
 
 
-RevPtr<Variable> Func_t92GCBranchTree::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RbVector< RevBayesCore::RateMatrix > >* Func_t92GCBranchTree::createFunction( void ) const
+{
         
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
@@ -90,11 +80,7 @@ RevPtr<Variable> Func_t92GCBranchTree::execute() {
 
     RevBayesCore::T92GCBranchTree* result = new RevBayesCore::T92GCBranchTree( tau, gcprocess, kappa );
 
-    DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* dag = new DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >("", result, this->clone());
-    
-    ModelVector<RateMatrix>* wrappedresult = new ModelVector<RateMatrix>( dag );
-
-    return new Variable( wrappedresult );
+    return result;
 }
 
 

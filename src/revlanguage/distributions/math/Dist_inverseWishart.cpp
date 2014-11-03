@@ -80,7 +80,7 @@ const TypeSpec& Dist_inverseWishart::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_inverseWishart::getMemberRules(void) const {
+const MemberRules& Dist_inverseWishart::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -132,7 +132,7 @@ void Dist_inverseWishart::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_inverseWishart::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_inverseWishart::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "sigma" ) {
         sigma = var;
@@ -150,6 +150,6 @@ void Dist_inverseWishart::setConstMemberVariable(const std::string& name, const 
         dim = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

@@ -10,30 +10,30 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_readCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
+ * $Id: Func_readDiscreteCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
  */
 
 #ifndef Func_write_H
 #define Func_write_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 
 namespace RevLanguage {
     
-    class Func_write :  public Function {
+    class Func_write : public Procedure {
         
     public:
         // Basic utility functions
-        Func_write*                 clone(void) const;                                                      //!< Clone the object
-        static const std::string&   getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
+        Func_write*                         clone(void) const;                                                      //!< Clone the object
+        static const std::string&           getClassType(void);                                                     //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>            execute(void);                                                          //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
+        RevPtr<Variable>                    execute(void);                                                          //!< Execute function
+        const ArgumentRules&                getArgumentRules(void) const;                                           //!< Get argument rules
+        const TypeSpec&                     getReturnType(void) const;                                              //!< Get type of return value
         
         
     };

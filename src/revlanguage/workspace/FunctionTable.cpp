@@ -22,16 +22,17 @@ FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string,
 /** Copy constructor */
 FunctionTable::FunctionTable(const FunctionTable& x) {
     
-    for (std::multimap<std::string, Function *>::const_iterator i=x.begin(); i!=x.end(); i++)
+    for (std::multimap<std::string, Function *>::const_iterator it=x.begin(); it!=x.end(); ++it)
     {
-        insert(std::pair<std::string, Function *>( (*i).first, ( (*i).second->clone() )));
+        insert(std::pair<std::string, Function *>( it->first, ( it->second->clone() )));
     }
     parentTable = x.parentTable;
 }
 
 
 /** Destructor. We own the functions so we need to delete them. */
-FunctionTable::~FunctionTable(void) {
+FunctionTable::~FunctionTable(void)
+{
 
     clear();
     
@@ -132,16 +133,16 @@ void FunctionTable::eraseFunction(const std::string& name) {
 }
 
 
-/** Execute function and get its variable value (evaluate once) */
-RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
-
-    Function&         theFunction = findFunction(name, args, true);
-    RevPtr<Variable>  theValue    = theFunction.execute();
-
-    theFunction.clear();
-
-    return theValue;
-}
+///** Execute function and get its variable value (evaluate once) */
+//RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+//
+//    const Function&   theFunction = findFunction(name, args, true);
+//    RevPtr<Variable>  theValue    = theFunction.execute();
+//
+//    theFunction.clear();
+//
+//    return theValue;
+//}
 
 
 /**
@@ -230,10 +231,11 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
 
 /** Find function (also processes arguments) */
-Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
+const Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
+{
     
-    std::pair<std::multimap<std::string, Function *>::iterator,
-              std::multimap<std::string, Function *>::iterator> retVal;
+    std::pair<std::multimap<std::string, Function *>::const_iterator,
+              std::multimap<std::string, Function *>::const_iterator> retVal;
     
     size_t hits = count(name);
     if (hits == 0)
@@ -284,7 +286,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         Function* bestMatch = NULL;
 
         bool ambiguous = false;
-        std::multimap<std::string, Function *>::iterator it;
+        std::multimap<std::string, Function *>::const_iterator it;
         for (it=retVal.first; it!=retVal.second; it++) 
         {
             matchScore->clear();
@@ -380,7 +382,8 @@ const Function& FunctionTable::getFirstFunction( const std::string& name ) const
 
 
 /** Get function. This function will throw an error if the name is missing or if there are several matches (overloaded functions) */
-const Function& FunctionTable::getFunction( const std::string& name ) {
+const Function& FunctionTable::getFunction( const std::string& name ) const
+{
     
     // find the template function
     const std::vector<Function *>& theFunctions = findFunctions(name);
@@ -397,10 +400,11 @@ const Function& FunctionTable::getFunction( const std::string& name ) {
 
 
 /** Get function. This function will throw an error if the name and args do not match any named function. */
-Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
+const Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
+{
     
     // find the template function
-    Function& theFunction = findFunction(name, args, once);
+    const Function& theFunction = findFunction(name, args, once);
 
     return theFunction;
 }

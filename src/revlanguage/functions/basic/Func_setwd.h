@@ -20,11 +20,11 @@
 #ifndef Func_setwd_H
 #define Func_setwd_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_setwd : public Function {
+    class Func_setwd : public Procedure {
         
     public:
         Func_setwd( void );

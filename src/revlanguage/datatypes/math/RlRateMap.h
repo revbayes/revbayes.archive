@@ -31,19 +31,18 @@ namespace RevLanguage {
         
     public:
         
-        RateMap(void);                                                                                                  //!< Default constructor
-        RateMap(RevBayesCore::RateMap *m);                                                                              //!< Construct from RC::RateMap
-        RateMap(RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *d);                                                  //!< Construct from DAG node
+        RateMap(void);                                                                                                              //!< Default constructor
+        RateMap(RevBayesCore::RateMap *m);                                                                                          //!< Construct from RC::RateMap
+        RateMap(RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *d);                                                              //!< Construct from DAG node
         
         // Basic utility functions
-        RateMap*                            clone(void) const;                                                          //!< Clone object
-        static const std::string&           getClassType(void);                                                         //!< Get Rev type
-        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        RateMap*                            clone(void) const;                                                                      //!< Clone object
+        static const std::string&           getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method functions
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Map member methods to internal functions
-        virtual void                        initializeMethods(void) const;                                              //!< Initialize member methods
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
         
     };
     

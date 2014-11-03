@@ -36,6 +36,7 @@ namespace RevLanguage {
         // The value type definition
         typedef typename rlType::valueType valueType;
         
+        virtual const TypeSpec&                         getVariableTypeSpec(void) const;                                                    //!< Get the variable type spec of this distribution
         virtual rlType*                                 createRandomVariable(void) const;                                                   //!< Create a random variable from this distribution
         
         // Basic utility functions you have to override
@@ -56,7 +57,7 @@ namespace RevLanguage {
     
 }
 
-#include "StochasticNode.h"
+#include "RlStochasticNode.h"
 #include "TypedDistribution.h"
 
 template <typename rlType>
@@ -80,10 +81,11 @@ RevLanguage::TypedDistribution<rlType>::~TypedDistribution() {
 
 
 template <typename rlType>
-rlType* RevLanguage::TypedDistribution<rlType>::createRandomVariable(void) const {
+rlType* RevLanguage::TypedDistribution<rlType>::createRandomVariable( void ) const
+{
     
     RevBayesCore::TypedDistribution<typename rlType::valueType>* d = createDistribution();
-    RevBayesCore::TypedDagNode<typename rlType::valueType>* rv  = new RevBayesCore::StochasticNode<typename rlType::valueType>("", d);
+    RevBayesCore::TypedDagNode<typename rlType::valueType>* rv  = new StochasticNode<typename rlType::valueType>("", d, this->clone() );
     
     return new rlType(rv);
 }
@@ -102,11 +104,21 @@ const std::string& RevLanguage::TypedDistribution<rlType>::getClassType(void) {
 
 /* Get class type spec describing type of object */
 template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/* Get Rev type of distribution variable */
+template <typename rlType>
+const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getVariableTypeSpec( void ) const
+{
+    
+    return rlType::getClassTypeSpec();
 }
 
 
