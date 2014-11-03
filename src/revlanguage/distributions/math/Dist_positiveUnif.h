@@ -32,7 +32,7 @@ namespace RevLanguage {
         virtual ~Dist_positiveUnif();
         
         // Basic utility functions
-        Dist_positiveUnif*                    clone(void) const;                                                              //!< Clone the object
+        Dist_positiveUnif*                              clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -49,6 +49,7 @@ namespace RevLanguage {
         
         
     private:
+        
         RevPtr<const Variable>                          lower;
         RevPtr<const Variable>                          upper;
         

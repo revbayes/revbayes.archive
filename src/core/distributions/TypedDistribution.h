@@ -50,20 +50,19 @@ namespace RevBayesCore {
         virtual                        ~TypedDistribution(void);
         
         // public methods
-        valueType&                      getValue(void);                                                     //!< Get the current value (non-const)
-        const valueType&                getValue(void) const;                                               //!< Get the current value
-        StochasticNode<valueType>*      getStochasticNode(void);                                            //!< Get the stochastic node holding this distribution
-        void                            setStochasticNode(StochasticNode<valueType> *n);                    //!< Set the stochastic node holding this distribution
+        valueType&                      getValue(void);                                                             //!< Get the current value (non-const)
+        const valueType&                getValue(void) const;                                                       //!< Get the current value
+        StochasticNode<valueType>*      getStochasticNode(void);                                                    //!< Get the stochastic node holding this distribution
+        void                            setStochasticNode(StochasticNode<valueType> *n);                            //!< Set the stochastic node holding this distribution
         
         // virtual methods
-        virtual void                    setValue(valueType *v);                                             //!< Set the current value, e.g. attach an observation (clamp)
-        virtual void                    setValue(const valueType &v);                                       //!< Set the current value, e.g. attach an observation (clamp)
+        virtual void                    setValue(valueType *v);                                                     //!< Set the current value, e.g. attach an observation (clamp)
+        virtual void                    setValue(const valueType &v);                                               //!< Set the current value, e.g. attach an observation (clamp)
         
         // pure virtual public methods
-        virtual TypedDistribution*      clone(void) const = 0;                                              //!< Clone the distribution
-        virtual double                  computeLnProbability(void) = 0;                                     //!< Clone the ln probability density
-        virtual void                    redrawValue(void) = 0;                                              //!< Draw a new random value from the distribution
-        virtual void                    swapParameter(const DagNode *oldP, const DagNode *newP) = 0;        //!< Exchange the parameter
+        virtual TypedDistribution*      clone(void) const = 0;                                                      //!< Clone the distribution
+        virtual double                  computeLnProbability(void) = 0;                                             //!< Clone the ln probability density
+        virtual void                    redrawValue(void) = 0;                                                      //!< Draw a new random value from the distribution
         
     protected:
         TypedDistribution(valueType *v);
@@ -71,9 +70,12 @@ namespace RevBayesCore {
         
         // overloaded operators
         TypedDistribution&              operator=(const TypedDistribution &d); 
+
+        virtual void                    swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;        //!< Exchange the parameter
+
         
         // inheritable attributes
-        StochasticNode<valueType>*      dagNode;                                                            //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
+        StochasticNode<valueType>*      dagNode;                                                                    //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
         valueType*                      value;
         
     };

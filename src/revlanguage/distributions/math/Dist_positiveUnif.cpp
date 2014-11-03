@@ -1,12 +1,3 @@
-//
-//  NormalDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
@@ -17,7 +8,8 @@
 
 using namespace RevLanguage;
 
-Dist_positiveUnif::Dist_positiveUnif() : PositiveContinuousDistribution() {
+Dist_positiveUnif::Dist_positiveUnif() : PositiveContinuousDistribution()
+{
     
 }
 
