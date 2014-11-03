@@ -4,6 +4,8 @@
 #include "ModelVector.h"
 #include "MemberProcedure.h"
 #include "Natural.h"
+#include "OptionRule.h"
+#include "RealPos.h"
 #include "RlAtlas.h"
 #include "RlBoolean.h"
 #include "RlString.h"
@@ -24,7 +26,16 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    
+
+    ArgumentRules* adjacentArgRules             = new ArgumentRules();
+    std::vector<std::string> optionsElements;
+    optionsElements.push_back( "off-diagonal" );
+    optionsElements.push_back( "diagonal" );
+    optionsElements.push_back( "upper" );
+    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
+    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction("getEpochValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
+
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
@@ -32,7 +43,8 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
 }
 
 
-RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAtlas>( v )
+RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAtlas>( v ),
+atlas(v)
 {
 
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
@@ -43,6 +55,16 @@ RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAt
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
     
+    ArgumentRules* adjacentArgRules             = new ArgumentRules();
+    std::vector<std::string> optionsElements;
+    optionsElements.push_back( "off-diagonal" );
+    optionsElements.push_back( "diagonal" );
+    optionsElements.push_back( "upper" );
+    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
+    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction("getEpochValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
+
+    
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
@@ -50,7 +72,8 @@ RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAt
 }
 
 
-RlAtlas::RlAtlas( RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *m) : ModelObject<RevBayesCore::TimeAtlas>( m )
+RlAtlas::RlAtlas( RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *m) : ModelObject<RevBayesCore::TimeAtlas>( m ),
+atlas(&m->getValue())
 {
 
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
@@ -60,6 +83,15 @@ RlAtlas::RlAtlas( RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *m) : Mode
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
+
+    ArgumentRules* adjacentArgRules             = new ArgumentRules();
+    std::vector<std::string> optionsElements;
+    optionsElements.push_back( "off-diagonal" );
+    optionsElements.push_back( "diagonal" );
+    optionsElements.push_back( "upper" );
+    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
+    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction("getEpochValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
@@ -101,6 +133,50 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
             n->push_back( name );
         }
         return new Variable( n );
+    }
+    else if (name == "epochs")
+    {
+        found = true;
+        ModelVector<RealPos> *n = new ModelVector<RealPos>( this->dagNode->getValue().getEpochs() );
+        return new Variable( n );
+    }
+    else if (name == "getEpochValues")
+    {
+        found = true;
+        
+        // get the member with give index
+        std::string elements = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        bool symmetric = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
+
+        std::vector<std::vector<RevBayesCore::GeographicArea*> > areas = this->dagNode->getValue().getAreas();
+        
+        ModelVector<ModelVector<RealPos> > *f = new ModelVector<ModelVector<RealPos> >();
+        for (size_t i = 0; i < areas.size(); i++)
+        {
+            ModelVector<RealPos> v;
+            for (size_t j = 0; j < areas[i].size(); j++)
+            {
+                std::vector<double> a = areas[i][j]->getDispersalValues();
+                if (elements == "diagonal")
+                {
+                    v.push_back(a[j]);
+                    continue;
+                }
+                for (size_t k = 0; k < areas[i].size(); k++)
+                {
+                    if (j == k && elements == "upper")
+                        v.push_back(a[k]);
+                    
+                    if (j < k || symmetric)
+                    {
+                        v.push_back(a[k]);
+                    }
+                }
+            }
+            f->push_back(v);
+        }
+        
+        return new Variable(f);
     }
     
     return ModelObject<RevBayesCore::TimeAtlas>::executeMethod( name, args, found );
