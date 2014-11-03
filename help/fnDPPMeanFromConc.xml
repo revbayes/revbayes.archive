@@ -78,12 +78,18 @@
             <citation>
                 Liu JS. 1996. Nonparametric hierarchical Bayes via sequential imputa- tions. Ann Stat. 3:911–930.
             </citation>
+        </reference>
+        <reference>
             <citation>
                 McAuliffe JD, Blei DM, Jordan MI. 2006. Nonparametric empirical Bayes for the Dirichlet process mixture model. Stat Comput. 16: 5–14.
             </citation>
+        </reference>
+        <reference>
             <citation>
             	Jara A, Garcia-Zattera MJ, Lesaffre E. 2007. A Dirichlet process mixture model for the analysis of correlated binary responses. Comput Stat Data Anal. 51:5402–5415.
             </citation>
+        </reference>
+        <reference>
             <citation>
             	Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
             </citation>
