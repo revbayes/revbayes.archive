@@ -88,6 +88,9 @@ void Function::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
 }
 
 
+/**
+ * Get a const reference to the set of parameters for this function.
+ */
 const std::set<const DagNode*>& Function::getParameters( void ) const {
     
     return parameters;
@@ -107,6 +110,16 @@ void Function::keep( DagNode* affecter ) {
 }
 
 
+/* Method stub: override for specialized treatment. */
+void Function::reInitialized( void )
+{
+    // do nothing
+}
+
+
+/**
+ * Remove this parameter from our list of parameters.
+ */
 void Function::removeParameter(const RevBayesCore::DagNode *p)
 {
     std::set<const DagNode *>::iterator it = parameters.find( p );
@@ -122,12 +135,6 @@ void Function::removeParameter(const RevBayesCore::DagNode *p)
 }
 
 
-void Function::reInitialized( void )
-{
-    // do nothing
-}
-
-
 /* Method stub that can be overwritten for specialized treatment. */
 void Function::restore( DagNode *restorer ) {
     
@@ -135,6 +142,12 @@ void Function::restore( DagNode *restorer ) {
 //    dirty = false;
 }
 
+/**
+ * Swap the old parameter with a new one.
+ * This will be called for example when the entire model graph is cloned or
+ * when we replace a variable with the same name (re-assignment).
+ * Here we update our set and delegate to the derived class.
+ */
 void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     std::set<const DagNode *>::iterator position = parameters.find(oldP);
