@@ -274,10 +274,12 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     numSiteRates( n.numSiteRates ),
     tau( n.tau ), 
     transitionProbMatrices( n.transitionProbMatrices ),
-    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
+//  partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
+	partialLikelihoods( n.partialLikelihoods ),
     activeLikelihood( n.activeLikelihood ),
     scalingFactors( n.scalingFactors ),
-    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
+//  marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
+	marginalLikelihoods( n.marginalLikelihoods ),
     charMatrix( n.charMatrix ),
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
@@ -312,12 +314,12 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     tau->incrementReferenceCount();
     
-    // copy the partial likelihoods
-    memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
-
-    // copy the marginal likelihoods
-    memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
-
+//  // copy the partial likelihoods  
+//	memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
+//
+//  // copy the marginal likelihoods
+//  memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
+	
     activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
     mixtureOffset               =  numPatterns*numChars;
@@ -347,8 +349,8 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~A
     }
     
     // free the partial likelihoods
-    delete [] partialLikelihoods;
-    delete [] marginalLikelihoods;
+//    delete [] partialLikelihoods;
+//    delete [] marginalLikelihoods;
 }
 
 
@@ -640,7 +642,7 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::computeMarginalNodeLikelihood( size_t nodeIndex, size_t parentNodeIndex )
-{
+{	
     
     // get the pointers to the partial likelihoods and the marginal likelihoods
     const double*   p_node                  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
@@ -671,7 +673,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
             {
                 // add the probability of starting from this state
                 *p_site_marginal_j += *p_site_j * *p_parent_site_marginal_j;
-                
+				
                 // increment pointers
                 ++p_site_j; ++p_site_marginal_j; ++p_parent_site_marginal_j;
             }
@@ -899,21 +901,31 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
     
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector< charType > ancestralSeq = std::vector<charType>();
-    
+	
     // TODO: note that this only works currently for each pattern, instead we should simulate per site
     for ( size_t i = 0; i < numPatterns; ++i )
     {
         // create the character
         charType c;
         c.setToFirstState();
+		
         // draw the state
         double u = rng->uniform01();
         const std::vector<double> p_site = (*marginals)[i];
+		
+		// sum the likelihoods for each character for this site
+		double sumMarginals = 0.0;
+		for (int j = 0; j < p_site.size(); j++) {
+			sumMarginals += p_site[j];
+		}
+		
 		size_t index = 0;
-        while ( true ) 
+		bool set_state = false;
+        while ( index < c.getNumberOfStates() ) 
         {
-            u -= p_site[index];
-            
+			// find the most probable character
+            u -= p_site[index]/sumMarginals;
+			
             if ( u > 0.0 )
             {
                 ++c;
@@ -921,14 +933,20 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
             }
             else 
             {
+				set_state = true;
                 break;
             }
             
         }
-        
+		// if for some reason we haven't set the state, set it randomly
+		if (!set_state) {
+			c.setState((size_t)(u*c.getNumberOfStates()));
+		}
         // add the character to the sequence
         ancestralSeq.push_back( c );
     }
+	
+	
     // we need to free the vector
     delete marginals;
     
@@ -1766,8 +1784,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     
     for ( size_t i=0; i<node.getNumberOfChildren(); ++i )
     {
-        const TopologyNode &child = node.getChild(0);
-        
+        const TopologyNode &child = node.getChild(i);
+		
         if ( !child.isTip() )
         {
             size_t childIndex = child.getIndex();
@@ -1783,7 +1801,16 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::updateMarginalNodeLikelihoods( void )
 {
-    
+ 
+	// The values in the likelihood vector are getting lost when using memcpy to copy the partial and marginal 
+	// likelihood vectors in the copy constructor, so I have changed the copy constructor to be initialize
+	// them as normal members. Another option is refilling the partial likelihoods vector here, but that is 
+	// probably slower.
+//    const TopologyNode &root = tau->getValue().getRoot();
+//    size_t rootIndex = root.getIndex();
+//	  fillLikelihoodVector( root, rootIndex );
+	
+	
     // we need to compute first the root marginal likelihood and then start the recursive call down the tree
     this->computeMarginalRootLikelihood();
     
