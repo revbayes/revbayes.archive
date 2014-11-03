@@ -49,9 +49,9 @@ cd ..
 
 # continuous trait evolution tutorials
 cd RB_PhyloComparative_Tutorial
-#rb RevBayes_Scripts/full_analysis.Rev
+rb RevBayes_Scripts/full_analysis.Rev
 
-#rm -r output
+rm -r output
 
 cd ..
 
