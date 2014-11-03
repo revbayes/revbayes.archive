@@ -43,7 +43,7 @@ Additionally, we will use occurrence times from three caniform fossils to calibr
 \end{table}
 
 
-The alignment in file \cl{data/bears\_irbp.nex} contains interphotoreceptor retinoid-binding protein (irbp) sequences for each species.
+The alignment in file \cl{data/bears\_irbp.nex} contains interphotoreceptor retinoid-binding protein (irbp) sequences for each extant species.
 
 
 
@@ -66,7 +66,7 @@ Additionally, we will use the canid fossil, \textit{Hesperocyon gregarius}, to o
 
 In \RevBayes, calibrated internal nodes are treated differently than in many other programs for estimating species divergence times (e.g., BEAST).
 This is because the graphical model structure used in \RevBayes~does not allow a stochastic node to be assigned more than one prior distribution. 
-By contrast, the common approach to applying calibration densities as used in other dating softwares leads to incoherence in the calibration prior \citep{warnock12,heled12,heath2013fossilized}. 
+By contrast, the common approach to applying calibration densities as used in other dating softwares leads to incoherence in the calibration prior \citep[for detailed explainations of this see][]{warnock12,heled12,heath2013fossilized}. 
 More explicitly, common calibration approaches assume that the age of a calibrated node is modeled by the tree-wide diversification process (e.g., birth-death model) \textit{and} a parametric density parameterized by the occurrence time of a fossil (or other external prior information).
 This can induce a calibration prior density that is not consistent with the birth-death process or the parametric prior distribution. 
 Thus, approaches that condition the birth-death process on the calibrated nodes are more statistically coherent \citep{yang06}.

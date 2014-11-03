@@ -97,30 +97,42 @@
 
             <reference>
 				<citation>
-<!-- 					<p> -->
 					Ané C, Larget B, Baum DA, Smith SD, Rokas A. 2007. Bayesian estimation of concordance among gene trees. Mol Biol Evol. 24: 412–426.
-<!-- 					</p> -->
-					<p>
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
 					Antoniak CE. 1974. Mixtures of Dirichlet processes with applications to non-parametric problems. Ann Stat. 2:1152–1174.
-					</p>
-					<p>
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
 					Ferguson TS. 1973. A Bayesian analysis of some nonparametric problems. Ann Stat. 1:209–230.
-					</p>
-					<p>
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
 					Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
-					</p>
-					<p>
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
 					Heath TA. 2012. A hierarchical Bayesian model for calibrating estimates of species divergence times. Syst. Biol. 61:793-809.
-					</p>
-					<p>
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
 					Huelsenbeck JP, Jain S, Frost SWD, Pond SLK. 2006. A Dirichlet process model for detecting positive selection in protein-coding DNA sequences. Proc Natl Acad Sci U S A. 103:6263–6268.
-					</p>
-					<p>
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
 					Huelsenbeck JP, Suchard M. 2007. A nonparametric method for accommodating and testing across-site rate variation. Syst Biol. 56:975–987.
-					</p>
-					<p>
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
 					Lartillot N, Philippe H. 2004. A Bayesian mixture model for across-site heterogeneities in the amino-acid replacement process. Mol Biol Evol.21:1095–1109.
-					</p>
 				</citation>
             </reference>
 

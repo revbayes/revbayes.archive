@@ -101,7 +101,7 @@
                 <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Tracy Heath</author>
+            <author>Tracy A. Heath</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
