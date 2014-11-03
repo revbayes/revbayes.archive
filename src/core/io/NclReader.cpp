@@ -625,23 +625,23 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
-        
+        //std::cerr << "Reading data for taxon " << tName << " which has index " << origTaxIndex <<"\n";
         // allocate a vector of Standard states
         DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tName);
-        
+        int site_counter = 0;
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
         {
+            //std::cerr << "Reading data for site " << ++site_counter << "\n";
             // add the character state to the matrix
             StandardState stdState = StandardState(sym);
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
             {
                 stdState.setGapState(true);
-                stdState.setState('-');
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                stdState.setState('?');
+                stdState.setMissing();
             }
             else
                 for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
