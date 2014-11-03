@@ -495,7 +495,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochRateMatrices(const TypedDag
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
-        ; //this->redrawValue();
+        this->redrawValue();
     }
     
 }
@@ -515,7 +515,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochClockRates(const TypedDagNo
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
-        ; //this->redrawValue();
+        this->redrawValue();
     }
     
 }
@@ -533,7 +533,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochTimes(const TypedDagNode< R
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
-        ; //this->redrawValue();
+        this->redrawValue();
     }
     
 }
