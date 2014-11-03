@@ -100,13 +100,22 @@ void AncestralStateMonitor::monitor(unsigned long gen)
 		
 		// convert 'character' which is DagNode to a StochasticNode
 		// so that we can call character->getDistribution()
-		StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> > *char_stoch 
-			= (StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> >*) character;		
-				
+		//StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> > *char_stoch 
+		//	= (StochasticNode<AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> >*) character;		
+		StochasticNode<GeneralBranchHeterogeneousCharEvoModel<ChromosomesState, BranchLengthTree> > *char_stoch 
+		= (StochasticNode<GeneralBranchHeterogeneousCharEvoModel<ChromosomesState, BranchLengthTree> >*) character;			
+		
+		
+		
 		// now we get the TypedDistribution and need to cast it  
 		// into an AbstractSiteHomogeneousMixtureCharEvoModel distribution
-		AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> *dist
-			= (AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree>*) &char_stoch->getDistribution();
+		//AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree> *dist
+		//	= (AbstractSiteHomogeneousMixtureCharEvoModel<ChromosomesState, BranchLengthTree>*) &char_stoch->getDistribution();
+		GeneralBranchHeterogeneousCharEvoModel<ChromosomesState, BranchLengthTree> *dist
+		= (GeneralBranchHeterogeneousCharEvoModel<ChromosomesState, BranchLengthTree>*) &char_stoch->getDistribution();
+		
+		// need to transpose rate matrix in case it isn't reversible
+		//dist->transposeRateMatrix();
 		
 		// call update for the marginal node likelihoods
 		dist->updateMarginalNodeLikelihoods();
@@ -116,29 +125,32 @@ void AncestralStateMonitor::monitor(unsigned long gen)
         // loop through all tree nodes
 		for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
 		{		
-			// add a separator before every new element
-			outStream << separator;
 			
-			// for each node print
-			// site1,site2,site3
-			
+			// we need to print values for all internal nodes.
+			// We assume that tip nodes always precede
+			// internal nodes.
 			TopologyNode* the_node = nodes[i];
 			
-			// get the node index
-//			int nodeIndex = the_node->getIndex();
+			if ( !the_node->isTip() ) {
 			
-			// TODO: make this function a template so as to accept other CharacterState objects
-//			std::vector<ChromosomesState> ancestralStates = dist->drawAncestralStatesForNode( nodeIndex );
-			std::vector<ChromosomesState> ancestralStates = dist->drawAncestralStatesForNode( *the_node );
+				// add a separator before every new element
+				outStream << separator;
 				
-			// print out ancestral states....
-			for (int j = 0; j < ancestralStates.size(); j++)
-			{
-				outStream << ancestralStates[j].getStringValue();
-				if (j != ancestralStates.size()-1) {
-					outStream << ",";
+				// for each node print
+				// site1,site2,site3
+				
+				// TODO: make this function a template so as to accept other CharacterState objects
+				std::vector<ChromosomesState> ancestralStates = dist->drawAncestralStatesForNode( *the_node );
+					
+				// print out ancestral states....
+				for (int j = 0; j < ancestralStates.size(); j++)
+				{
+					outStream << ancestralStates[j].getStringValue();
+					if (j != ancestralStates.size()-1) {
+						outStream << ",";
+					}
 				}
-			}
+			} 
         }
         outStream << std::endl;
         
@@ -181,13 +193,14 @@ void AncestralStateMonitor::printHeader()
 	for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
     {
 		TopologyNode* the_node = nodes[i];
-        // add a separator before every new element
-        outStream << separator;
-        
-		// print the node index
-		outStream << the_node->getIndex();
+		if ( !the_node->isTip() ) {
+			// add a separator before every new element
+			outStream << separator;
+			
+			// print the node index
+			outStream << the_node->getIndex();
+		}
     }
-    
     outStream << std::endl;
 }
 

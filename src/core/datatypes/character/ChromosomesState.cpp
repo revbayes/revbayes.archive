@@ -19,7 +19,7 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 ChromosomesState::ChromosomesState(void) : DiscreteCharacterState(), state( 1 ) {
-    // default state be 1
+    // default state = 1
 }
 
 
@@ -134,26 +134,14 @@ std::string ChromosomesState::getDatatype( void ) const {
 
 unsigned int ChromosomesState::getNumberObservedStates(void) const  {
     
-	// since chromosomes always have 1 state (at least currently) s
-	// should this always return 1???
-	
-    //char v = state;     // count the number of bits set in v
-    //char c;             // c accumulates the total bits set in v
-    
-    //for (c = 0; v; v >>= 1)
-    //{
-    //    c += v & 1;
-    //}
-    
-    //return (unsigned int)c;
+	// currently this always return 1 because we only allow one observation per tip
 	return 1;
 }
 
 
 size_t ChromosomesState::getNumberOfStates( void ) const {
     
-    // TODO: need to get this value from user
-	return (size_t)35;
+	return RevBayesCore::g_MAX_NUM_CHROMOSOMES;
 }
 
 
@@ -221,9 +209,7 @@ void ChromosomesState::setState(char symbol) {
 }
 
 void ChromosomesState::setState(size_t stateIndex) {
-	// when is stateIndex used?
-	std::cout << boost::lexical_cast<std::string>(state) << ": setState - index????" << std::endl;
-    //state = (int)stateIndex;
+    state = (int)stateIndex+1;
 }
 
 
@@ -232,6 +218,9 @@ void ChromosomesState::setToFirstState( void ) {
     state = 1;
     
 }
+
+// set to 1 by default, this should be reset by phyloCTMC
+size_t RevBayesCore::g_MAX_NUM_CHROMOSOMES = 1;
 
 
 

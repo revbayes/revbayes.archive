@@ -6,6 +6,7 @@
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
+#include "ChromosomesState.h"
 
 namespace RevLanguage {
     
@@ -423,11 +424,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue()[0].getNumberOfStates();
+			RevBayesCore::g_MAX_NUM_CHROMOSOMES = nChars;
         } 
         else 
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue().getNumberOfStates();
+			RevBayesCore::g_MAX_NUM_CHROMOSOMES = nChars;
         }
 
 		RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType>(tau, nChars, true, n);

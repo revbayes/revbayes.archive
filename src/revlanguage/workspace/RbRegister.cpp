@@ -357,7 +357,7 @@
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_mapTree.h"
-#include "Func_mapAncestralState.h"
+#include "Func_ancestralStateTree.h"
 #include "Func_readAtlas.h"
 #include "Func_readChromosomes.h"
 #include "Func_readCharacterData.h"
@@ -1123,8 +1123,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
-        addFunction( "mapAncestralState",           new Func_mapAncestralState<BranchLengthTree>() );
-		addFunction( "mapAncestralState",           new Func_mapAncestralState<TimeTree>() );
+        addFunction( "ancestralStateTree",          new Func_ancestralStateTree<BranchLengthTree>() );
+		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
         addFunction( "print",                       new Func_write()                       );
         addFunction( "readAtlas",                   new Func_readAtlas()                   );
 		addFunction( "readChromosomes",             new Func_readChromosomes()             );

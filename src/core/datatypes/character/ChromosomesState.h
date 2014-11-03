@@ -61,7 +61,7 @@ namespace RevBayesCore {
         //size_t                          stateIndex;
         
     };
-    
+	extern size_t						g_MAX_NUM_CHROMOSOMES;
 }
 
 #endif
