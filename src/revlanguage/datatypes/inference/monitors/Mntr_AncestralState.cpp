@@ -16,7 +16,7 @@
 #include "Tree.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-
+#include "ChromosomesState.h"
 
 using namespace RevLanguage;
 
@@ -36,25 +36,30 @@ Mntr_AncestralState* Mntr_AncestralState::clone(void) const
 
 void Mntr_AncestralState::constructInternalObject( void ) 
 {
-    // we free the memory first
-    delete value;
-    
-    // now allocate a new sliding move
     const std::string&                  fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string&                  sep     = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
 	RevBayesCore::TypedDagNode<RevBayesCore::Tree> *t = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::DagNode*				ch		= character->getRevObject().getDagNode();
 	bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+	std::string							character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
+    
+	delete value;
+	if (character == "Chromosomes") {
+		
+		RevBayesCore::AncestralStateMonitor<RevBayesCore::ChromosomesState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::ChromosomesState>(t, ch, (unsigned long)g, fn, sep);
+		// now set the flags
+		m->setAppend( ap );
+		// store the new model into our value variable
+		value = m;
+
+	} else {
+		throw RbException( "Incorrect monitor type specified. Valid options are: Chromosomes" );
+	}
+
     
 	
-	RevBayesCore::AncestralStateMonitor *m = new RevBayesCore::AncestralStateMonitor(t, ch, (unsigned long)g, fn, sep);
-    
-    // now set the flags
-    m->setAppend( ap );
 
-    // store the new model into our value variable
-    value = m;
 }
 
 
@@ -92,6 +97,7 @@ const MemberRules& Mntr_AncestralState::getMemberRules(void) const {
 		modelMonitorMemberRules.push_back( new ArgumentRule("branchlengthtree"    , BranchLengthTree::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 		modelMonitorMemberRules.push_back( new ArgumentRule("character"    , RevObject::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+		modelMonitorMemberRules.push_back( new ArgumentRule("type"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
@@ -138,6 +144,10 @@ void Mntr_AncestralState::setConstMemberVariable(const std::string& name, const 
     }
 	else if ( name == "tree" || name == "timetree" || name == "branchlengthtree" ) {
         tree = var;
+    }
+	else if ( name == "type" ) 
+    {
+        monitorType = var;
     }
 	else if ( name == "character" ) 
     {
