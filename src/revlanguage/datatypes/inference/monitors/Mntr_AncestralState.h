@@ -35,6 +35,7 @@ namespace RevLanguage {
 		RevPtr<const Variable>                      character;
         RevPtr<const Variable>                      separator;
         RevPtr<const Variable>                      append;
+		RevPtr<const Variable>						monitorType;
         
     };
     
