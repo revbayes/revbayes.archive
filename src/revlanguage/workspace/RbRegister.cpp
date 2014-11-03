@@ -625,8 +625,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         // diversity-dependent pure-birth process
         addDistribution( "dnYuleDivDep"                 , new Dist_divDepYuleProcess() );
-        addDistribution( "dnPBPDivDep"                  , new Dist_divDepYuleProcess() );
-        addDistribution( "dnPureBirthDiversityDependent", new Dist_divDepYuleProcess() );
         addDistribution( "dnYuleDiversityDependent"     , new Dist_divDepYuleProcess() );
         
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
