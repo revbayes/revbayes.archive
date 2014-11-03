@@ -8,14 +8,14 @@
 ######################
 
 # this is toy data in which there are clearly 2 polyploidization events and no other events
-chromoData <- readChromosomes("data/matK_chromosomes_toy.tsv")
+chromoData <- readChromosomes("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv")
 
 # get DNA sequences
-matK_seq <- readCharacterData("data/matK_treebase_aligned.fas")
+matK_seq <- readCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_treebase_aligned.fas")
 
 # read in the starting tree that is consistent with our outgroup constraints
 # this is a ML tree, so should be a pretty good start for the MCMC
-starting_tree <- readBranchLengthTrees("data/matK_tree_lengths.nwk")[1]
+starting_tree <- readBranchLengthTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")[1]
 
 # Get some useful variables from the data. We need these later on.
 n_species <- matK_seq.ntaxa()
@@ -135,7 +135,7 @@ rho ~ exponential(pr_rho)
 rho.setValue(1.0)
 
 # max number of chromosomes
-max_chromo <- 35
+max_chromo <- 26
 
 # create rate matrix
 R := chromosomes(max_chromo, lambda, delta, rho)
@@ -144,7 +144,7 @@ R := chromosomes(max_chromo, lambda, delta, rho)
 # need to create a chromosomeRF (see pomoRF) function that takes the root state (uniform 1 to max_chromo) parameter
 # and returns a simplex:
 # here we set the root state to 4
-root_frequencies := simplex(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+root_frequencies := simplex(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
 
 # set up moves
 moves[mi++] <- mvScale(lambda, tune=true) 
@@ -177,25 +177,23 @@ mymodel <- model(chromo)
 
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
-monitors[2] <- filemonitor(filename="output/chromosome_test_toy_joint2.trees", printgen=10, separator = "	", phylogeny)
-#monitors[3] <- mnAncestralState(filename="output/chromosome_test_toy_joint2_anc_state.log",printgen=10, separator = "	", timetree=phylogeny, character=chromo)
+monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.trees", printgen=10, separator = "	", phylogeny)
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.log",printgen=10, separator = "	", branchlengthtree=phylogeny, character=chromo)
+monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint_model.log",printgen=10, separator = "	")
 
 
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
 #mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(100)
+mymcmc.run(50000)
 
 
-# Now, we will analyze the tree output.
-# Let us start by reading in the tree trace
-treetrace <- readTreeTrace("output/chromosome_test_toy_joint2.trees", treetype="non-clock", separator="	")
-# and get the summary of the tree trace
-#treetrace.summarize()
 
-mapTree(treetrace, "output/chromosome_test_toy_joint2_map.tree")
+# summarize results, first get the MAP tree
+treetrace <- readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.trees", treetype="non-clock", separator="	"); 
+map <- mapTree(treetrace,"/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_joint_map.tree")
 
-#ancestraltrace <- readAncestralTrace("output/chromosome_test_toy_joint2_anc_state.log", separator="	")
-#mapAncestralState(ancestraltrace, "output/chromosome_test_toy_joint2_map.tree", "output/chromosome_test_toy_joint2_map_anc_state.tree")
-
-
+# now summarize ancestral states over the MAP tree
+ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.log", separator="	"); 
+ancestral_state_tree_trace <- readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.trees", treetype="non-clock", separator="	"); 
+ancestralStateTree(map, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint_map_states.tree")

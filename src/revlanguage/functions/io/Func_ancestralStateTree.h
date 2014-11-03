@@ -1,15 +1,15 @@
 
 /**
  * @file
- * This file contains the declaration of Func_mapAncestralState, finds the maximum-a-posteriori (MAP) ancestral states
- * on the nodes of from the maximum-a-posteriori (MAP) tree adds the node posterior probabilities.
+ * This file contains the declaration of Func_ancestralStateTree, which finds the maximum-a-posteriori (MAP) ancestral states
+ * on the nodes of the input tree.
  *
- * @brief Declaration of Func_mapAncestralState
+ * @brief Declaration of Func_ancestralStateTree
  *
  */
 
-#ifndef Func_mapAncestralState_H
-#define Func_mapAncestralState_H
+#ifndef Func_ancestralStateTree_H
+#define Func_ancestralStateTree_H
 
 #include "RlFunction.h"
 #include "RbFileManager.h"
@@ -20,11 +20,11 @@
 namespace RevLanguage {
     
     template <typename treeType>
-    class Func_mapAncestralState :  public Function {
+    class Func_ancestralStateTree :  public Function {
         
     public:
         // Basic utility functions
-        Func_mapAncestralState*         clone(void) const;                                                      //!< Clone the object
+        Func_ancestralStateTree*         clone(void) const;                                                      //!< Clone the object
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
@@ -67,31 +67,37 @@ namespace RevLanguage {
 
 /** Clone object */
 template <typename treeType>
-RevLanguage::Func_mapAncestralState<treeType>* RevLanguage::Func_mapAncestralState<treeType>::clone( void ) const {
+RevLanguage::Func_ancestralStateTree<treeType>* RevLanguage::Func_ancestralStateTree<treeType>::clone( void ) const {
     
-    return new Func_mapAncestralState( *this );
+    return new Func_ancestralStateTree( *this );
 }
 
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_mapAncestralState<treeType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_ancestralStateTree<treeType>::execute( void ) {
     
+	// get the input tree
+	const treeType& it = static_cast<const treeType&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 	
     // get vector of ancestral state traces
-	const WorkspaceVector<AncestralStateTrace>& ast_vector = static_cast<const WorkspaceVector<AncestralStateTrace> &>( args[0].getVariable()->getRevObject() );
+	const WorkspaceVector<AncestralStateTrace>& ast_vector = static_cast<const WorkspaceVector<AncestralStateTrace> &>( args[1].getVariable()->getRevObject() );
 	std::vector<RevBayesCore::AncestralStateTrace> ancestralstate_traces;
 	for (int i = 0; i < ast_vector.size(); ++i) {
 		ancestralstate_traces.push_back( ast_vector[i].getValue() );
 	}
 	
-	// get tree trace and make tree summary
-    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[1].getVariable()->getRevObject() );
-    const std::string& filename = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
-    RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
+	// get the ancestral state tree trace
+    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[2].getVariable()->getRevObject() );
 	
-	// get the MAP tree with ancestral states
-	typename treeType::valueType* tree = summary.mapAncestralState(ancestralstate_traces, -1);
+	// get the filename
+    const std::string& filename = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
+
+    // make a new tree summary object
+	RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
+	
+	// get the tree with ancestral states 
+	typename treeType::valueType* tree = summary.ancestralStateTree(it.getValue(), ancestralstate_traces, -1);
 	
 	// return the tree
     if ( filename != "" ) {        
@@ -117,13 +123,14 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_mapAncestralState<t
 
 /** Get argument rules */
 template <typename treeType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_mapAncestralState<treeType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_ancestralStateTree<treeType>::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
     if (!rulesSet)
     {
+		argumentRules.push_back( new ArgumentRule( "inputtree", treeType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 		argumentRules.push_back( new ArgumentRule( "ancestralstatetrace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace<treeType>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
@@ -136,16 +143,16 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapAncestralState<treeType>:
 
 /** Get Rev type of object */
 template <typename treeType>
-const std::string& RevLanguage::Func_mapAncestralState<treeType>::getClassType(void) { 
+const std::string& RevLanguage::Func_ancestralStateTree<treeType>::getClassType(void) { 
     
-    static std::string revType = "Func_mapAncestralState<" + treeType::getClassType() + ">";
+    static std::string revType = "Func_ancestralStateTree<" + treeType::getClassType() + ">";
     
 	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mapAncestralState<treeType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_ancestralStateTree<treeType>::getClassTypeSpec(void) { 
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -154,7 +161,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_mapAncestralState<treeType>::getC
 
 /** Get type spec */
 template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mapAncestralState<treeType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func_ancestralStateTree<treeType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -164,7 +171,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_mapAncestralState<treeType>::getT
 
 /** Get return type */
 template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mapAncestralState<treeType>::getReturnType( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func_ancestralStateTree<treeType>::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = treeType::getClassTypeSpec();
     return returnTypeSpec;

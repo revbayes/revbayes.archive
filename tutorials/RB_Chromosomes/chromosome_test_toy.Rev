@@ -9,7 +9,8 @@ chromoData <- readChromosomes("/Users/mucho/Documents/projects/revbayes/revbayes
 
 # work under fixed topology with total tree length = 0.2907
 # so we expect lambda and delta to be about 0, and rho to be 6.88 (=2/0.2907)
-treeArray <- readTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
+#treeArray <- readTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
+treeArray <- readBranchLengthTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
 psi <- treeArray[1]
 
 
@@ -34,7 +35,7 @@ rho ~ exponential(pr_rho)
 rho.setValue(1.0)
 
 # max number of chromosomes
-max_chromo <- 35
+max_chromo <- 26
 
 # create rate matrix
 Q := chromosomes(max_chromo, lambda, delta, rho)
@@ -45,7 +46,9 @@ Q := chromosomes(max_chromo, lambda, delta, rho)
 
 
 ## here we set the root state to 4 just to keep things simple
-root_frequencies := simplex(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+#root_frequencies := simplex(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+root_frequencies := simplex(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+#root_frequencies := simplex(rep(max_chromo, 1))
 
 # typically we would use simplex(1,1,1,1,1,...,1) made by function simplex(rep(max_chromo, 1))
 
@@ -75,15 +78,21 @@ mymodel <- model(Q)
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
 monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.trees", printgen=10, separator = "	", psi)
-monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log",printgen=10, separator = "	", timetree=psi, character=seq)
- 
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log",printgen=10, separator = "	", branchlengthtree=psi, character=seq)
+monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_model.log",printgen=10, separator = "	")
+
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
 #mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(100)
+mymcmc.run(50000)
 
+
+# summarize results, first get the MAP tree
 treetrace <- readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.trees", treetype="non-clock", separator="	"); 
-ancestraltrace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log", separator="	"); 
-mapAncestralState(ancestraltrace, treetrace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.tree")
+map <- mapTree(treetrace,"/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_map.tree")
 
+# now summarize ancestral states over the MAP tree
+ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.log", separator="	"); 
+ancestral_state_tree_trace <- readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy.trees", treetype="non-clock", separator="	"); 
+ancestralStateTree(map, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_map_states.tree")
 

@@ -1,6 +1,6 @@
 # by Will Freyman
 #
-# source("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/chromosome_test_real.Rev")
+# source("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/chromosome_test_real.Rev")
 #
 
 # read the data 
@@ -8,12 +8,12 @@
 # this is hack data because Aristolochia_taliscana and Aristolochia_tentaculata are sisters on 0 length branches,
 # yet are supposed to have chromosome numbers of 6 and 7 respectively. This causes a bug in MonteCarloSampler.cpp "Could not compute lnProb for node seq"
 # therefore both species are set to chromosome number 7. This bug could probably be fixed by setting all 0 branch lengths to 0.000001 or something...
-chromoData <- readChromosomes("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_hack.tsv")
+chromoData <- readChromosomes("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_hack.tsv")
 
 # work under fixed topology with total tree length = 0.2907
 # Mayrose et al 2010 found about 1 polyploidization event and ~1.5 chromosome increases and ~8 decreases
 # so we expect roughly lambda = 5.2, delta = 27, and rho = 3.48 (though Mayrose et al had different branch lengths) 
-treeArray <- readTrees("/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
+treeArray <- readBranchLengthTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
 psi <- treeArray[1]
 
 
@@ -38,7 +38,7 @@ rho ~ exponential(pr_rho)
 rho.setValue(1.0)
 
 # max number of chromosomes
-max_chromo <- 35
+max_chromo <- 26
 
 # create rate matrix
 Q := chromosomes(max_chromo, lambda, delta, rho)
@@ -47,10 +47,13 @@ Q := chromosomes(max_chromo, lambda, delta, rho)
 ## TODO: properly estimate root state!!!
 #########
 
-## need to create a chromosomeRF (see pomoRF) function that takes the root state (uniform 1 to max_chromo) parameter
-## and returns a simplex:
-## here we set the root state to 8 found to be most likely in Mayrose et al 2010
-root_frequencies := simplex(0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+## here we set the root state to 4 just to keep things simple
+#root_frequencies := simplex(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+root_frequencies := simplex(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+#root_frequencies := simplex(rep(max_chromo, 1))
+
+# typically we would use simplex(1,1,1,1,1,...,1) made by function simplex(rep(max_chromo, 1))
 
 ##############
 # set up moves
@@ -77,10 +80,20 @@ mymodel <- model(Q)
 
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
-monitors[2] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/tutorials/RB_Chromosomes/output/chromosome_test_real.log",printgen=10, separator = "	")
- 
+monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real.trees", printgen=10, separator = "	", psi)
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real.log",printgen=10, separator = "	", branchlengthtree=psi, character=seq)
+monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real_model.log",printgen=10, separator = "	")
+
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
-mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(1000000)
+#mymcmc.burnin(generations=1000,tuningInterval=100)
+mymcmc.run(50000)
 
+# summarize results, first get the MAP tree
+treetrace <- readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real.trees", treetype="non-clock", separator="	"); 
+map <- mapTree(treetrace,"/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real_map.tree")
+
+# now summarize ancestral states over the MAP tree
+ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real.log", separator="	"); 
+ancestral_state_tree_trace <- readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real.trees", treetype="non-clock", separator="	"); 
+ancestralStateTree(map, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_real_map_states.tree")

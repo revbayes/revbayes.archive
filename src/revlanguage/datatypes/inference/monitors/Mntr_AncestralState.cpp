@@ -88,8 +88,8 @@ const MemberRules& Mntr_AncestralState::getMemberRules(void) const {
     {
 // TODO: use templates to use timetree or a branchlengthtree!!	
 //       modelMonitorMemberRules.push_back( new ArgumentRule("tree"    , Tree::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-		modelMonitorMemberRules.push_back( new ArgumentRule("timetree"    , TimeTree::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-//		modelMonitorMemberRules.push_back( new ArgumentRule("branchlengthtree"    , BranchLengthTree::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//		modelMonitorMemberRules.push_back( new ArgumentRule("timetree"    , TimeTree::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+		modelMonitorMemberRules.push_back( new ArgumentRule("branchlengthtree"    , BranchLengthTree::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 		modelMonitorMemberRules.push_back( new ArgumentRule("character"    , RevObject::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
