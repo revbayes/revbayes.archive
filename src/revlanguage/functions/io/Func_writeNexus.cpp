@@ -52,6 +52,9 @@ RevPtr<Variable> Func_writeNexus::execute( void )
         const RevBayesCore::ContinuousCharacterData &data = static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
         fw.writeNexusBlock( data );
     }
+    else {
+        std::cout << "PROBLEM" <<std::endl;
+    }
 
     fw.closeStream();
     

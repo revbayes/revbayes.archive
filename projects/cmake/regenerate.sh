@@ -83,6 +83,11 @@ project(RevBayes)
 
 ' > "$HERE/CMakeLists.txt"
 
+if ! test -z $DEBUG_REVBAYES
+then
+	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
+	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
+else
 if [ "$mavericks" = "true" ]
 then
 echo '
@@ -101,6 +106,7 @@ echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
 '  >> "$HERE/CMakeLists.txt"
+fi
 fi
 
 echo '
@@ -136,7 +142,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
-find libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find libs core test revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -146,12 +152,15 @@ echo ' ${Boost_INCLUDE_DIR} )
 add_subdirectory(libs)
 add_subdirectory(core)
 add_subdirectory(revlanguage)
+add_subdirectory(test)
 
 ############# executables #################
 # basic rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 
+add_executable(testrb ${PROJECT_SOURCE_DIR}/test/RevBayesCoreTestMain.cpp)
+target_link_libraries(testrb rb-test rb-core libs ${Boost_LIBRARIES})
 
 # extended rev-bayes binary
 ' >> "$HERE/CMakeLists.txt"
@@ -188,3 +197,16 @@ find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
 
+if [ ! -d "$HERE/test" ]; then
+mkdir "$HERE/test"
+fi
+#@TEMP @TODO this should be made generic when the tests are working again...
+echo 'set(TEST_FILES' > "$HERE/test/CMakeLists.txt"
+echo test/TestFilteredStandardLikelihood.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/TestGtrGammaLikelihood.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/TestGtrGammaLikelihood.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/TestDPPRelClock.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/Test.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/RevBayesCoreTestMain.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo ')
+add_library(rb-test ${TEST_FILES})'  >> "$HERE/test/CMakeLists.txt"

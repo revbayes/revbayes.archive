@@ -53,6 +53,7 @@ namespace RevBayesCore {
         bool                            isAmbiguous(void) const;                                    //!< Is the character missing or ambiguous
         bool                            isGapState(void) const;                                     //!< Get whether this is a gapped character state
         void                            setGapState(bool tf);                                       //!< Set whether this is a gapped character
+        void                            setMissing();                                               //!< Set the state to a missing character
         void                            setState(char symbol);                                      //!< Set the discrete observation from symbol
         void                            setState(std::string s);                                    //!< Set the discrete observation from string of state symbols
         void                            setState(size_t pos, bool val);                             //!< Set the discrete observation from position and boolean flag
@@ -63,7 +64,6 @@ namespace RevBayesCore {
 
         std::string                     labels;
         unsigned long                   state;
-        size_t                          stateIndex;
     };
 
 }

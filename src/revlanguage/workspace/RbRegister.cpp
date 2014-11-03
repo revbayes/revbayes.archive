@@ -619,14 +619,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnBDPSkySerial"               , new Dist_skySerialBDP() );
         addDistribution( "dnBirthDeathSkySerial"        , new Dist_skySerialBDP() );
 
-        // piecewise constant rate fossilized birth-death process with serially sampled fossils
-        addDistribution( "dnBDPSkyFossil"               , new Dist_skyFossilBDP() );
-        addDistribution( "dnBirthDeathSkyFossilized"    , new Dist_skyFossilBDP() );
-
         // diversity-dependent pure-birth process
         addDistribution( "dnYuleDivDep"                 , new Dist_divDepYuleProcess() );
-        addDistribution( "dnPBPDivDep"                  , new Dist_divDepYuleProcess() );
-        addDistribution( "dnPureBirthDiversityDependent", new Dist_divDepYuleProcess() );
         addDistribution( "dnYuleDiversityDependent"     , new Dist_divDepYuleProcess() );
         
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
