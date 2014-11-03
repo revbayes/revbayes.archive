@@ -48,7 +48,7 @@ for (i in 1:n_genes) {
 
 # Getting the gene sequences
 for (i in 1:n_genes) {
-	trueAlns[i] <- readCharacterData(dataFolder+"alignment_"+i+".fasta")
+	trueAlns[i] <- readDiscreteCharacterData(dataFolder+"alignment_"+i+".fasta")
 }
 
 # Getting the true species tree

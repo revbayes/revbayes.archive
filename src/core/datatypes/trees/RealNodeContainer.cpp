@@ -199,6 +199,67 @@ void RealNodeContainer::recursiveGetStatsOverTips(const TopologyNode& from, doub
 }
 
 
+ContinuousCharacterData* RealNodeContainer::getTipValues() const {
+    
+    ContinuousCharacterData* data = new ContinuousCharacterData();
+    data->setHomologyEstablished(true);
+    recursiveGetTipValues(getTimeTree()->getRoot(), *data);
+    return data;
+}
+
+/*
+// instantiate the character matrix
+ContinuousCharacterData* cMat = new ContinuousCharacterData();
+cMat->setHomologyEstablished(true);
+
+// read in the data, including taxon names
+for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
+{
+    // add the taxon name
+    NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
+    std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+    
+    // allocate a vector of Standard states
+    ContinuousTaxonData dataVec = ContinuousTaxonData(tName);
+    
+    // add the real-valued observation
+    for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
+    {
+        ContinuousCharacterState contObs ;
+        const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
+        contObs.setMean(x[0]);
+        dataVec.addCharacter( contObs );
+    }
+    
+    // add sequence to character matrix
+    cMat->addTaxonData( dataVec );
+}
+*/
+
+
+
+void RealNodeContainer::recursiveGetTipValues(const TopologyNode& from, ContinuousCharacterData& nameToVal) const {
+    
+    if(from.isTip())   {
+        double tmp = (*this)[from.getIndex()];
+        std::string name =  tree->getTipNames()[from.getIndex()];
+        
+        ContinuousTaxonData dataVec = ContinuousTaxonData(name);
+        ContinuousCharacterState contObs ;
+        contObs.setMean(tmp);
+        dataVec.addCharacter( contObs );
+        nameToVal.addTaxonData( dataVec );
+        return;
+    }
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveGetTipValues(from.getChild(i), nameToVal );
+    }
+    
+}
+
+
 std::string RealNodeContainer::getNewick() const {
 
     std::ostringstream s;

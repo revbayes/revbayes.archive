@@ -36,8 +36,7 @@ RevPtr<Variable> Func_readTrees::execute( void ) {
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
-    RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
-    reader.clearWarnings();
+    RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
     std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( fn.getValue() );
@@ -47,27 +46,6 @@ RevPtr<Variable> Func_readTrees::execute( void ) {
     }
     
     return new Variable( trees );
-}
-
-
-/** Format the error exception string for problems specifying the file/path name */
-void Func_readTrees::formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr) {
-    
-    bool fileNameProvided    = fm.isFileNamePresent();
-    bool isFileNameGood      = fm.testFile();
-    bool isDirectoryNameGood = fm.testDirectory();
-    
-    if ( fileNameProvided == false && isDirectoryNameGood == false )
-        errorStr += "Could not read contents of directory \"" + fm.getFilePath() + "\" because the directory does not exist";
-    else if (fileNameProvided == true && (isFileNameGood == false || isDirectoryNameGood == false)) {
-        errorStr += "Could not read file named \"" + fm.getFileName() + "\" in directory named \"" + fm.getFilePath() + "\" ";
-        if (isFileNameGood == false && isDirectoryNameGood == true)
-            errorStr += "because the file does not exist";
-        else if (isFileNameGood == true && isDirectoryNameGood == false)
-            errorStr += "because the directory does not exist";
-        else
-            errorStr += "because neither the directory nor the file exist";
-    }
 }
 
 

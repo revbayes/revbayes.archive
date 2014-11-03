@@ -15,14 +15,14 @@
 #ifndef Func_blosum62_H
 #define Func_blosum62_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_blosum62 :  public Function {
+    class Func_blosum62 : public Procedure {
         
     public:
         Func_blosum62( void );

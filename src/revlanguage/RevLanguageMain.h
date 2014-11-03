@@ -28,7 +28,6 @@ class RevLanguageMain {
         RevLanguageMain(void);
     
         void startRevLanguageEnvironment(std::vector<std::string> sourceFiles);
-        void startRevLanguageEnvironment(std::vector<std::string> sourceFiles, std::string helpDir);
 
     private:
     

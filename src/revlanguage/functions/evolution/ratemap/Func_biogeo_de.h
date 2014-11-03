@@ -19,31 +19,30 @@
 #ifndef Func_biogeo_de_H
 #define Func_biogeo_de_H
 
-#include "RlFunction.h"
+#include "RlRateMap.h"
+#include "RlTypedFunction.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_biogeo_de :  public Function {
+    class Func_biogeo_de : public TypedFunction<RateMap> {
         
     public:
         Func_biogeo_de( void );
         
         // Basic utility functions
-        Func_biogeo_de*                                clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_biogeo_de*                                                 clone(void) const;                                                              //!< Clone the object
+        static const std::string&                                       getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
-        
+        RevBayesCore::TypedFunction< RevBayesCore::RateMap >*           createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                                            getArgumentRules(void) const;                                                   //!< Get argument rules
+
     };
-    
 }
 
 #endif

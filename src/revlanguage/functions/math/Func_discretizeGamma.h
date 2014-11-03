@@ -14,29 +14,29 @@
 #ifndef Func_discretizeGamma_H
 #define Func_discretizeGamma_H
 
-#include "RlFunction.h"
+#include "ModelVector.h"
+#include "RealPos.h"
+#include "RlTypedFunction.h"
+
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_discretizeGamma :  public Function {
+    class Func_discretizeGamma :  public TypedFunction< ModelVector< RealPos > > {
         
     public:
         Func_discretizeGamma();
         
         // Basic utility functions
-        Func_discretizeGamma*             clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassName(void);                                         //!< Get class name
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func_discretizeGamma*                                               clone(void) const;                                          //!< Clone the object
+        static const std::string&                                           getClassName(void);                                         //!< Get class name
+        static const TypeSpec&                                              getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                                     getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-        
-        
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >*      createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                                                getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     

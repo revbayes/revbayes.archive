@@ -29,7 +29,7 @@
 using namespace RevLanguage;
 
 /** Constructor */
-MemberProcedure::MemberProcedure(const TypeSpec retType, ArgumentRules* argRules) : Function(),
+MemberProcedure::MemberProcedure(const TypeSpec retType, ArgumentRules* argRules) : Procedure(),
     argumentRules(argRules),
     object(NULL),
     returnType(retType)
@@ -50,7 +50,13 @@ MemberProcedure* MemberProcedure::clone(void) const
 RevPtr<Variable> MemberProcedure::execute( void )
 {
     
-    RevPtr<Variable> retValue = object->getRevObject().executeMethod( getName(), args );
+    bool found = false;
+    RevPtr<Variable> retValue = object->getRevObject().executeMethod( getName(), args, found );
+    
+    if ( found == false )
+    {
+        throw RbException("Couldn't find member procedure called '" + getName() + "'");
+    }
     
     try
     {

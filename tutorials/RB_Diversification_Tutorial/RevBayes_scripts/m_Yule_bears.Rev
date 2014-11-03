@@ -1,0 +1,28 @@
+############################################################################################
+#   File: diversification tutorial Pure-birth (Yule) model specification file
+############################################################################################
+
+#######################################
+######### pure-birth  model  ##########
+#######################################
+
+### the birth rate is a stochastic random variable drawn from an Exponential prior
+### MCMC samples this variable using a scale proposal
+birth_rate ~ dnExponential(0.5) 
+moves[mi++] = mvScale(birth_rate,lambda=1.0,tune=true,weight=3.0)
+
+### rho is the probability of sampling species at the present
+### fix this to 0.068, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
+### and we have sampled 10
+rho <- 0.068
+
+### the BDP is conditioned on the root time, we can get this value from our tree and set a constant node
+root_time <- treeHeight(T)
+
+### the time tree is a stochastic node modeled by the constant rate birth-death process (dnBDP)
+### by setting mu to the constant value 0.0, we are specifying a pure-birth process
+timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=rho, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
+
+### clamp the model with the "observed" tree
+timetree.clamp(T)
+

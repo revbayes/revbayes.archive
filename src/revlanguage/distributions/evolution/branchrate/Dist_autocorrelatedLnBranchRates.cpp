@@ -57,7 +57,7 @@ const TypeSpec& Dist_autocorrelatedLnBranchRates::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_autocorrelatedLnBranchRates::getMemberRules(void) const {
+const MemberRules& Dist_autocorrelatedLnBranchRates::getParameterRules(void) const {
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -133,7 +133,7 @@ const TypeSpec& Dist_autocorrelatedLnBranchRates::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_autocorrelatedLnBranchRates::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_autocorrelatedLnBranchRates::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {
@@ -152,7 +152,7 @@ void Dist_autocorrelatedLnBranchRates::setConstMemberVariable(const std::string&
         scaleVal = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

@@ -19,24 +19,28 @@ namespace RevLanguage {
      */
 
     template<class valueType>
-    class DeterministicNode : public RevBayesCore::DeterministicNode<valueType> {
+    class DeterministicNode : public RevBayesCore::DeterministicNode<valueType>, public RevMemberObject {
     
     public:
                                             DeterministicNode(const std::string& n, RevBayesCore::TypedFunction<valueType>* fxn, Function* rlFxn);
                                             DeterministicNode(const DeterministicNode<valueType> &n);
         virtual                            ~DeterministicNode(void);
         
+        DeterministicNode<valueType>&       operator=(const DeterministicNode<valueType> &dn);                                              //!< Assignment operator
+        
         // public methods
-        DeterministicNode<valueType>*       clone(void) const;                                                  //!< Clone the node
-        Function&                           getRlFunction(void);                                                //!< Get the Rev function
-        const Function&                     getRlFunction(void) const;                                          //!< Get the Rev function (const)
-        void                                printStructureInfo(std::ostream &o, bool verbose=false) const;      //!< Print information on structure
-        void                                touchMe(RevBayesCore::DagNode *toucher);                            //!< Use lazy evaluation (required by user-defined functions)
-            
-    protected:
+        DeterministicNode<valueType>*       clone(void) const;                                                                              //!< Clone the node
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        const MethodTable&                  getMethods( void ) const;                                                                       //!< Get the member methods
+        Function&                           getRlFunction(void);                                                                            //!< Get the Rev function
+        const Function&                     getRlFunction(void) const;                                                                      //!< Get the Rev function (const)
+        void                                printStructureInfo(std::ostream &o, bool verbose=false) const;                                  //!< Print information on structure
 
     private:
-        Function*                           rlFunction;                                                         //!< Rev function
+
+        Function*                           rlFunction;                                                                                     //!< Rev function
+        MethodTable                         methods;
+
     };
     
 }
@@ -44,43 +48,94 @@ namespace RevLanguage {
 
 template<class valueType>
 RevLanguage::DeterministicNode<valueType>::DeterministicNode( const std::string& n, RevBayesCore::TypedFunction<valueType>* fxn, RevLanguage::Function* rlFxn ) :
-    RevBayesCore::DeterministicNode<valueType>( n, fxn ), rlFunction( rlFxn ) {
+    RevBayesCore::DeterministicNode<valueType>( n, fxn ),
+    rlFunction( rlFxn ),
+    methods()
+{
 
-    touchMe( this );
 }
 
 
 template<class valueType>
-RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n )
-    : RevBayesCore::DeterministicNode<valueType>( n ), rlFunction( n.rlFunction->clone() ) {
+RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n ) : RevBayesCore::DeterministicNode<valueType>( n ),
+    rlFunction( NULL ),
+    methods( n.methods )
+{
 
-    RevBayesCore::DagNode::touch();    // NB: This for safety; not needed if we trust all involved copy constructors
+    if (n.rlFunction != NULL )
+    {
+        rlFunction = n.rlFunction->clone();
+    }
 }
 
 
 template<class valueType>
-RevLanguage::DeterministicNode<valueType>::~DeterministicNode( void ) {
+RevLanguage::DeterministicNode<valueType>::~DeterministicNode( void )
+{
 
     delete rlFunction;
 }
 
 
 template<class valueType>
-RevLanguage::DeterministicNode<valueType>* RevLanguage::DeterministicNode<valueType>::clone( void ) const {
+RevLanguage::DeterministicNode<valueType>& RevLanguage::DeterministicNode<valueType>::operator=(const DeterministicNode<valueType> &dn)
+{
+    
+    if ( this != &dn )
+    {
+        delete rlFunction;
+        
+        methods     = dn.methods;
+        rlFunction  = dn.rlFunction->clone();
+    }
+    
+    return *this;
+}
+
+
+
+template<class valueType>
+RevLanguage::DeterministicNode<valueType>* RevLanguage::DeterministicNode<valueType>::clone( void ) const
+{
     
     return new DeterministicNode<valueType>( *this );
 }
 
 
+/* Execute calls to member methods */
+template <typename valueType>
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DeterministicNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
+    
+    found = false;
+    
+    return NULL;
+}
+
+
+/**
+ * Get common member methods.
+ */
 template<class valueType>
-RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFunction( void ) {
+const RevLanguage::MethodTable& RevLanguage::DeterministicNode<valueType>::getMethods( void ) const
+{
+    
+    // return the internal value
+    return methods;
+}
+
+
+template<class valueType>
+RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFunction( void )
+{
     
     return *rlFunction;
 }
 
 
 template<class valueType>
-const RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFunction( void ) const {
+const RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFunction( void ) const
+{
     
     return *rlFunction;
 }
@@ -123,33 +178,6 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
     this->printChildren( o, 16, 70, verbose );
 
     o << std::endl;
-}
-
-
-/**
- * Touch this node for recalculation. We use lazy evaluation but pass the touched call on
- * to our function and to downstream nodes, regardless of whether our function is dirty.
- * This is essential when functions have multiple variable arguments associated with them
- * and uses specialized code to keep track of which arguments have been touched.
- *
- * @todo We should not have to pass the message on when we have already been touched because
- *       in the next cycle of the algorithm the toucher is us, so the call is identical
- *       regardless of the toucher in the current call to touchMe.
- */
-template<class valueType>
-void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of Rev function node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
-    this->touched = true;     //!< To be on the safe side; the flag is not used by this class
-    
-    // Essential for lazy evaluation and for keeping track of the source(s) of the touch.
-    this->touchFunction( toucher );
-    
-    // Dispatch the touch message to downstream nodes. TODO: Not needed when we are already touched.
-    this->touchAffected();
 }
 
 

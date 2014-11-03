@@ -18,14 +18,14 @@
 #ifndef Func_vt_H
 #define Func_vt_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_vt :  public Function {
+    class Func_vt : public Procedure {
         
     public:
         Func_vt( void );

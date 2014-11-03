@@ -1,21 +1,4 @@
-/**
- * @file
- * This file contains the implementation of some of the functions
- * in the abstract base class for language objects, RevObject.
- *
- * @brief Partial implementation of RevObject
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-09-02, version 1.0
- * @extends RevObject
- *
- * $Id$
- */
-
+#include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "ModelVector.h"
@@ -30,6 +13,23 @@
 #include <stdio.h>
 
 using namespace RevLanguage;
+
+
+/**
+ * Default constructor.
+ */
+RevObject::RevObject( bool includeMemberMethods ) : RevMemberObject()
+{
+    
+    if ( includeMemberMethods == true )
+    {
+        ArgumentRules* getMethodsArgRules = new ArgumentRules();
+    
+        // Add the 'methods()' method
+        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+    }
+    
+}
 
 
 /** 
@@ -55,13 +55,6 @@ RevObject* RevObject::add(const RevObject &rhs) const
     throw RbException("Cannot add a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
     
     return NULL;
-}
-
-
-/** Clone the model DAG connected to this object. */
-RevObject* RevObject::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
-{
-    throw RbException( "Rev object with no DAG node should not be included in model DAG" );
 }
 
 
@@ -111,40 +104,23 @@ RevObject* RevObject::divide(const RevObject &rhs) const
 /** 
  * Execute simple method. 
  */
-RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "get") 
+    if ( name == "methods" )
     {
-        // get the member with give name
-        const std::string &varName = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        found = true;
         
-        // check if a member with that name exists
-        if ( hasMember( varName ) ) 
-        {
-            return getMember(varName);
-        }
-        
-        // there was no variable with the given name
-        return NULL;
-        
-    }
-    else if ( name == "members" ) 
-    {
-        
-        return NULL;
-    }
-    else if ( name == "methods" ) 
-    {
         // just print the method names (including inherited methods)
         const MethodTable &m = getMethods();
         m.printValue(std::cout, true);
         
         return NULL;
     }
-    else 
-    {
-        throw RbException( "No mapping from member method '" + name + "' to internal function call provided" );
-    }
+    
+    found = false;
+    
+    return NULL;
 }
 
 
@@ -172,7 +148,7 @@ const TypeSpec& RevObject::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& RevObject::getMemberRules(void) const
+const MemberRules& RevObject::getParameterRules(void) const
 {
     
     static const MemberRules rules = MemberRules();
@@ -181,26 +157,11 @@ const MemberRules& RevObject::getMemberRules(void) const
 }
 
 
-/** Get a member variable */
-RevPtr<Variable> RevObject::getMember(const std::string& name) const
-{
-    throw RbException("No Member named '" + name + "' available.");
-}
-
-
 /**
- * Get common member methods. Here we
+ * Get common member methods.
  */
 const MethodTable& RevObject::getMethods( void ) const
 {
-    
-    // initialize the methods if it hasn't happened yet
-    if ( methodsInitialized == false )
-    {
-        initializeMethods();
-        
-        methodsInitialized = true;
-    }
     
     return methods;
 }
@@ -222,17 +183,9 @@ const std::string& RevObject::getType( void ) const
 RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 {
     
-    throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of a '" + getClassType() + "'.");
+    throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of type '" + getClassType() + "'.");
     
     return NULL;
-}
-
-
-/** Does this object have a member called "name" */
-bool RevObject::hasMember(std::string const &name) const
-{
-    
-    return false;
 }
 
 
@@ -290,7 +243,7 @@ bool RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
 
 
 /* Are we of specified language type? */
-bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const
+bool RevObject::isType(const TypeSpec& typeSpec) const
 {
     
     return getTypeSpec().isDerivedOf( typeSpec );
@@ -320,17 +273,6 @@ void RevObject::makeConstantValue( void )
 
 
 /**
- * Convert a model object to a conversion object, the value of which is determined by a type
- * conversion from a specified variable. By default we throw an error, since we do not have
- * a DAG node and cannot perform the requested action.
- */
-void RevObject::makeConversionValue( RevPtr<Variable> var )
-{
-    throw RbException( "Object without DAG node cannot be made a conversion value" );
-}
-
-
-/**
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
@@ -339,32 +281,6 @@ RevObject* RevObject::makeIndirectReference(void)
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
     throw RbException( msg );
-}
-
-
-/**
- * Make methods common to all member objects.
- * We support two methods:
- * 1) memberNames()
- * 2) get("name")
- */
-void RevObject::initializeMethods(void) const
-{
-    
-    ArgumentRules* getMembersArgRules = new ArgumentRules();
-    ArgumentRules* getMethodsArgRules = new ArgumentRules();
-    ArgumentRules* getArgRules = new ArgumentRules();
-    
-    // Add the 'members()' method
-    methods.addFunction("members", new MemberProcedure(RlUtils::Void, getMembersArgRules) );
-    
-    // Add the 'methods()' method
-    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
-    
-    // Add the 'get("name")' method
-    getArgRules->push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
-    
 }
 
 
@@ -395,106 +311,23 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 }
 
 
-/**
- * Print the member object information, if any. We
- * use member rules and the method table to access
- * the information.
- */
-void RevObject::printMemberInfo( std::ostream &o, bool verbose ) const
-{
-    const ArgumentRules& memberRules = getMemberRules();
-    for ( size_t i = 0; i < memberRules.size(); ++i )
-    {
-        o << ".";
-        memberRules[i].printValue( o );
-        o << std::endl;
-    }
-    
-    const MethodTable& methods = getMethods();
-    for ( MethodTable::const_iterator it = methods.begin(); it != methods.end(); ++it )
-    {
-        o << "." << (*it).first << " = ";
-        (*it).second->printValue( o );
-        o << std::endl;
-    }
-}
-
-
-/**
- * Print the structural information for this object. Here we print the
- * type and type spec, as well as the value. Objects that have more
- * complex structure need to override this function, best by calling
- * it first and then provide the additional information.
- */
-void RevObject::printStructure( std::ostream &o, bool verbose ) const
-{
-    o << "_RevType      = " << getType() << std::endl;
-    o << "_RevTypeSpec  = [ " << getTypeSpec() << " ]" << std::endl;
-    o << "_value        = ";
-    
-    std::ostringstream o1;
-    printValue( o1 );
-    o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
-
-}
-
-
-/**
- * Replace the variable. This default implementation does nothing.
- */
-void RevObject::replaceVariable(RevObject *newVar)
-{
-    
-}
-
-
 /** Set a member variable */
-void RevObject::setConstMember(const std::string& name, const RevPtr<const Variable> &var)
+void RevObject::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
     
-    // here, we might want to do some general stuff like catching all members so that we can provide general functions as
-    // 1) getNames()
-    // 2) getMember(name)
-    
-    setConstMemberVariable(name, var );
-    
-}
-
-
-/** Set a member variable */
-void RevObject::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
-{
-    
-    throw RbException("No constant member with name \"" + name + "\" found to set.");
+    throw RbException("No constant parameter with name \"" + name + "\" found to set.");
 }
 
 
 /* Set a member variable.
- * In this default implementation, we delegate to setConstMemberVariable.
+ * In this default implementation, we delegate to setConstParameter.
  * Derived classes of MemberObject who need non-const variable should overwrite this function.
- * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
+ * If you don't care if the variable is const, then you should only overwrite the setConstParameter.
  */
-void RevObject::setMember(const std::string& name, const RevPtr<Variable> &var)
+void RevObject::setParameter(const std::string& name, const RevPtr<Variable> &var)
 {
     
-    // here, we might want to do some general stuff like catching all members so that we can provide general functions as
-    // 1) getNames()
-    // 2) getMember(name)
-    
-    setMemberVariable(name, var );
-    
-}
-
-
-/* Set a member variable.
- * In this default implementation, we delegate to setConstMemberVariable.
- * Derived classes of MemberObject who need non-const variable should overwrite this function.
- * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
- */
-void RevObject::setMemberVariable(const std::string& name, const RevPtr<Variable> &var)
-{
-    
-    setConstMemberVariable(name, RevPtr<const Variable>( var ) );
+    setConstParameter(name, RevPtr<const Variable>( var ) );
     
 }
 

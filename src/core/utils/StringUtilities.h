@@ -21,7 +21,7 @@
 
 namespace StringUtilities {
     
-    void                        fillWithSpaces(std::string &s, size_t l, bool left);                                //!< Fill up the string with spaces either left aligned or right aligned
+    void                        fillWithSpaces(std::string &s, int l, bool left);                                   //!< Fill up the string with spaces either left aligned or right aligned
     std::string                 formatStringForScreen(  const std::string  &s,
                                                         const std::string  &firstLinePad,
                                                         const std::string  &hangingPad,

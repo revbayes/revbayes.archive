@@ -12,7 +12,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_license::Func_license( void ) : Function() {
+Func_license::Func_license( void ) : Procedure() {
     
 }
 

@@ -117,8 +117,7 @@ SET(Boost_USE_STATIC_RUNTIME true)
 #find_package(Boost 1.55.0 COMPONENTS filesystem regex signals context system thread date_time program_options iostreams serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.55.0
-COMPONENTS filesystem
-regex
+COMPONENTS regex
 program_options
 system
 thread
@@ -137,7 +136,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
-find ui libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -152,6 +151,7 @@ add_subdirectory(revlanguage)
 # basic rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+
 
 # extended rev-bayes binary
 ' >> "$HERE/CMakeLists.txt"

@@ -11,7 +11,9 @@
 using namespace RevLanguage;
 
 /** Basic constructor. */
-Function::Function(void) : RevObject(), args( ) {
+Function::Function(void) : RevObject( false ),
+    args( )
+{
 
     argsProcessed = false;
 }

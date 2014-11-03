@@ -26,19 +26,38 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(1) ) {
+RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(1) )
+{
+    
+    ArgumentRules* covArgRules = new ArgumentRules();
+    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    this->methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    
+    this->methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    
+    this->methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    
+    this->methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+
 }
 
 
 /* Construct from double */
-RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> * mat ) : ModelObject<RevBayesCore::MatrixRealSymmetric>( mat ) {
-}
-
-
-/* Copy Construct */
-RealSymmetricMatrix::RealSymmetricMatrix(const RealSymmetricMatrix& from) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(from.getValue().getDim()) ) {
+RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> * mat ) : ModelObject<RevBayesCore::MatrixRealSymmetric>( mat )
+{
     
+    ArgumentRules* covArgRules = new ArgumentRules();
+    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    
+    methods.addFunction("covariance",           new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    methods.addFunction("precision",            new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    methods.addFunction("correlation",          new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    methods.addFunction("partialCorrelation",   new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+
 }
+
 
 /** Clone object */
 RealSymmetricMatrix* RealSymmetricMatrix::clone(void) const {
@@ -75,26 +94,6 @@ const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Make member methods for this class */
-void RealSymmetricMatrix::initializeMethods( void ) const
-{
-    // Insert inherited methods
-    ModelObject<RevBayesCore::MatrixRealSymmetric>::initializeMethods();
-    
-    ArgumentRules* covArgRules = new ArgumentRules();
-    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    this->methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
 }
 
 

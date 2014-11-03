@@ -92,7 +92,7 @@ const TypeSpec& Dist_exponential::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_exponential::getMemberRules(void) const 
+const MemberRules& Dist_exponential::getParameterRules(void) const 
 {
     
     static MemberRules distMemberRules;
@@ -135,7 +135,7 @@ const TypeSpec& Dist_exponential::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_exponential::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_exponential::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 
@@ -148,7 +148,7 @@ void Dist_exponential::setConstMemberVariable(const std::string& name, const Rev
     }
     else 
     {
-        PositiveContinuousDistribution::setConstMemberVariable(name, var);
+        PositiveContinuousDistribution::setConstParameter(name, var);
     }
     
 }

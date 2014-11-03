@@ -1,7 +1,7 @@
 #ifndef Func_writeFasta_H
 #define Func_writeFasta_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 
 namespace RevLanguage {
@@ -19,7 +19,7 @@ namespace RevLanguage {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2013-04-15, version 1.0
      */
-    class Func_writeFasta :  public Function {
+    class Func_writeFasta : public Procedure {
         
     public:
         // Basic utility functions

@@ -12,27 +12,21 @@
 namespace RevLanguage {
     
     
-    class AbstractCharacterData : public ModelObject<RevBayesCore::AbstractCharacterData> {
+    class AbstractCharacterData {
         
     public:
-        AbstractCharacterData(void);                                                                                                //!< Constructor requires character type
-        AbstractCharacterData(RevBayesCore::AbstractCharacterData *v);                                                              //!< Constructor requires character type
-        AbstractCharacterData(RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData>*d);                                   //!< Constructor requires character type
+    
+        AbstractCharacterData( RevBayesCore::AbstractCharacterData *o);                                                                                                 //!< Constructor requires character type
         
-        typedef RevBayesCore::AbstractCharacterData valueType;
+        MethodTable                                     getCharacterDataMethods(void) const;                                                                            //!< Get the common character data methods
+        RevPtr<Variable>                                executeCharacterDataMethod(const std::string& name, const std::vector<Argument>& args, bool &found);            //!< Override to map member methods to internal functions
+        void                                            setCharacterDataObject( RevBayesCore::AbstractCharacterData *o );                                               //!< Set the pointer to the internal object
         
-        // Basic utility functions
-        AbstractCharacterData*              add(const RevObject& d) const;                                                          //!< Addition operator used for example in '+=' statements
-        AbstractCharacterData*              add(const AbstractCharacterData& d) const;                                              //!< Addition operator used for example in '+=' statements
-        virtual AbstractCharacterData*      clone(void) const;                                                                      //!< Clone object
-        static const std::string&           getClassType(void);                                                                     //!< Get Rev type
-        static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
-        virtual const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object
         
-        // Member method functions
-        virtual void                        initializeMethods(void) const;                                                          //!< Initialize methods
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Override to map member methods to internal functions
-
+    private:
+        
+        RevBayesCore::AbstractCharacterData*            charDataObject;
+        
     };
     
 }

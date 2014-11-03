@@ -64,7 +64,7 @@ const TypeSpec& Dist_offsetExponential::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_offsetExponential::getMemberRules(void) const {
+const MemberRules& Dist_offsetExponential::getParameterRules(void) const {
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -108,7 +108,7 @@ void Dist_offsetExponential::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_offsetExponential::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_offsetExponential::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "lambda" ) 
     {
@@ -120,6 +120,6 @@ void Dist_offsetExponential::setConstMemberVariable(const std::string& name, con
     }
     else 
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

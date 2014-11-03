@@ -64,7 +64,7 @@ const TypeSpec& Dist_oneOverX::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_oneOverX::getMemberRules(void) const {
+const MemberRules& Dist_oneOverX::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -117,7 +117,7 @@ void Dist_oneOverX::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_oneOverX::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_oneOverX::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "max" )
     {
@@ -129,6 +129,6 @@ void Dist_oneOverX::setConstMemberVariable(const std::string& name, const RevPtr
     }
     else 
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

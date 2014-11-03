@@ -52,7 +52,7 @@ const TypeSpec& Dist_offsetLnorm::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_offsetLnorm::getMemberRules(void) const {
+const MemberRules& Dist_offsetLnorm::getParameterRules(void) const {
     
     static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
@@ -104,7 +104,7 @@ void Dist_offsetLnorm::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_offsetLnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_offsetLnorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {
@@ -120,6 +120,6 @@ void Dist_offsetLnorm::setConstMemberVariable(const std::string& name, const Rev
     }
     else 
     {
-        ContinuousDistribution::setConstMemberVariable(name, var);
+        ContinuousDistribution::setConstParameter(name, var);
     }
 }

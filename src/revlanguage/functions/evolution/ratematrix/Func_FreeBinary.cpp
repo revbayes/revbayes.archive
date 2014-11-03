@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_FreeBinary::Func_FreeBinary( void ) : Function( ) {
+Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -33,15 +33,13 @@ Func_FreeBinary* Func_FreeBinary::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_FreeBinary::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_FreeBinary::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FreeBinaryRateMatrixFunction* f = new RevBayesCore::FreeBinaryRateMatrixFunction( glr );
-    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     
-    RateMatrix* value = new RateMatrix( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -74,15 +72,6 @@ const TypeSpec& Func_FreeBinary::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_FreeBinary::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

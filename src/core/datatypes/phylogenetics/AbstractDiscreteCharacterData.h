@@ -55,7 +55,6 @@ namespace RevBayesCore {
         virtual std::string                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual const std::string&                  getFileName(void) const = 0;                                                //!< Returns the name of the file the data came from
         virtual const std::string&                  getFilePath(void) const = 0;                                                //!< Returns the name of the file path the data came from
-        virtual const bool                          getHomologyEstablished(void) const = 0;                                     //!< Returns whether the homology of the characters has been established
         virtual size_t                              getIndexOfTaxon(const std::string &n) const = 0;                            //!< Get the index of the taxon with name 'n'.
         virtual size_t                              getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
         virtual size_t                              getNumberOfCharacters(size_t idx) const = 0;                                //!< Number of characters for a specific taxon

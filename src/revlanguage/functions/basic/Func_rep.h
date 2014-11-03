@@ -1,7 +1,7 @@
 #ifndef Func_rep_H
 #define Func_rep_H
 
-#include "Function.h"
+#include "Procedure.h"
 #include <string>
 
 namespace RevLanguage {
@@ -26,7 +26,7 @@ namespace RevLanguage {
      */
     
     template <typename valType>
-    class Func_rep :  public Function {
+    class Func_rep : public Procedure {
         
     public:
         Func_rep();
@@ -58,7 +58,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Func_rep<valType>::Func_rep() : Function()
+RevLanguage::Func_rep<valType>::Func_rep() : Procedure()
 {
     
 }

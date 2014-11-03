@@ -34,7 +34,6 @@ namespace RevLanguage {
         RootedTripletDistribution(RevBayesCore::RootedTripletDistribution *v);                                                                                //!< Constructor requires character type
         RootedTripletDistribution(const RevBayesCore::RootedTripletDistribution &v);                                                                          //!< Constructor requires character type
         RootedTripletDistribution(RevBayesCore::TypedDagNode<RevBayesCore::RootedTripletDistribution> *n);                                                    //!< Constructor requires character type
-        RootedTripletDistribution(const RootedTripletDistribution& d);                                                                                        //!< Constructor requires character type
         
         typedef RevBayesCore::RootedTripletDistribution valueType;
         
@@ -45,8 +44,7 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Member method functions
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
-        virtual void                        initializeMethods(void) const;                                                  //!< Make member methods
+        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found); //!< Map member methods to internal functions
         
         
     };

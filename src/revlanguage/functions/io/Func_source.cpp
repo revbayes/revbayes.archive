@@ -35,7 +35,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_source::Func_source( void ) : Function() {
+Func_source::Func_source( void ) : Procedure() {
     
 }
 

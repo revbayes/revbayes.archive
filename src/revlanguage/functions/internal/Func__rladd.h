@@ -1,7 +1,7 @@
 #ifndef Func__rladd_H
 #define Func__rladd_H
 
-#include "Function.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
@@ -9,7 +9,7 @@
 namespace RevLanguage {
     
     template <typename firstValType, typename secondValType, typename retType>
-    class Func__rladd :  public Function {
+    class Func__rladd : public Procedure {
         
     public:
         Func__rladd( void );
@@ -35,7 +35,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__rladd<firstValType, secondValType, retType>::Func__rladd( void ) : Function( ) {
+RevLanguage::Func__rladd<firstValType, secondValType, retType>::Func__rladd( void ) : Procedure( ) {
     
 }
 
@@ -53,7 +53,6 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__rladd<firstValType
     
     const firstValType& firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() );
     const secondValType& secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() );
-    
     retType* value = firstArg.add( secondArg );
     
     return new Variable( value );

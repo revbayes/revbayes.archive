@@ -3,6 +3,7 @@
 #include "RbException.h"
 #include "RevNullObject.h"
 #include "RlAbstractDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
 #include "NexusWriter.h"
@@ -38,11 +39,20 @@ RevPtr<Variable> Func_writeNexus::execute( void )
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
-    
     RevBayesCore::NexusWriter fw( fn.getValue() );
     fw.openStream();
-    fw.writeNexusBlock( data );
+
+    if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( AbstractDiscreteCharacterData::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
+    else if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ContinuousCharacterData::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::ContinuousCharacterData &data = static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
+
     fw.closeStream();
     
     return NULL;
@@ -66,8 +76,12 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()                     , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "data"    , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
+        std::vector<TypeSpec> dataTypes;
+        dataTypes.push_back( AbstractDiscreteCharacterData::getClassTypeSpec() );
+        dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
+
+        argumentRules.push_back( new ArgumentRule( "data"    , dataTypes, ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

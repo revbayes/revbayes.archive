@@ -2,6 +2,7 @@
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "SyntaxAssignment.h"
+#include "SyntaxIndexOperation.h"
 #include "Workspace.h"
 
 #include <iostream>
@@ -83,6 +84,11 @@ RevPtr<Variable> SyntaxAssignment::evaluateContent( Environment& env, bool dynam
     {
         // now we delegate to the derived class
         assign(theSlot, theVariable);
+        
+        if ( theSlot->isElementVariable() )
+        {
+            static_cast< SyntaxIndexOperation *>( lhsExpression )->getBaseVariable()->evaluateContent( env, false );
+        }
     }
     catch (RbException e)
     {

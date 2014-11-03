@@ -103,8 +103,6 @@ RevBayesCore::PathRejectionSampleMove<charType, treeType>* RevBayesCore::PathRej
     PathRejectionSampleMove<charType, treeType>* p = new PathRejectionSampleMove( *this );
     Proposal *prop = p->proposal;
     
-    std::cout << prop->getProposalName() << "\n";
-    
     return p;
 }
 
