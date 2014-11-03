@@ -15,7 +15,7 @@ cd ../..
 cd RB_CTMC_Tutorial
 rb RevBayes_Scripts/full_analysis.Rev
 
-#rm -r output
+rm -r output
 
 cd ..
 
@@ -33,7 +33,7 @@ cd ..
 cd RB_BayesFactor_Tutorial
 rb RevBayes_Scripts/full_analysis.Rev
 
-#rm -r output
+rm -r output
 
 cd ..
 
