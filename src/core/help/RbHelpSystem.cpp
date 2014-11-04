@@ -236,7 +236,7 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
             const std::vector<std::string>& aliases = h->getAliases();
             for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
             {
-                helpForTypes.insert( std::pair<std::string,RbHelpType*>( *alias , h) );
+                helpForTypes.insert( std::pair<std::string,RbHelpType*>( *alias , h->clone() ) );
                 helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(*alias,methodsHelp) );
             }
         }
