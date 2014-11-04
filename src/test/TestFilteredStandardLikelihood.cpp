@@ -45,14 +45,14 @@ bool TestFilteredStandardLikelihood::run( void ) {
     std::cerr << "  starting TestFilteredStandardLikelihood...\n" ;
     /* First, we read in the data */
     // the matrix
-    NclReader& reader = NclReader::getInstance();
+    NclReader reader = NclReader();
     std::vector<AbstractCharacterData*> data = reader.readMatrices(alignmentFilename);
     AbstractDiscreteCharacterData * discrD = dynamic_cast<AbstractDiscreteCharacterData *>(data[0]);
 #   if defined(USE_TIME_TREE)
-        std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+        std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
         ConstantNode<TimeTree> *tau = new ConstantNode<TimeTree>( "tau", new TimeTree( *trees[0] ) );
 #   else
-        std::vector<BranchLengthTree*> *trees = NclReader::getInstance().readBranchLengthTrees( treeFilename );
+        std::vector<BranchLengthTree*> *trees = NclReader().readBranchLengthTrees( treeFilename );
         ConstantNode<BranchLengthTree> *tau = new ConstantNode<BranchLengthTree>( "tau", new BranchLengthTree( *(*trees)[0] ) );
 #   endif
     std::cout << "tau:\t" << tau->getValue() << std::endl;

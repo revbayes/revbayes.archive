@@ -118,7 +118,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 
     
     /* First, we read in the species tree */
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     TimeTree *t = trees[0];
     std::cout << "True species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;

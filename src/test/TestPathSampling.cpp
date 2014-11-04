@@ -123,14 +123,14 @@ bool TestPathSampling::run_aa( void )
     fn = "16tip_10aa.nex";
     
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
+    std::vector<AbstractCharacterData*> data = NclReader().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numChars = data[0]->getNumberOfCharacters();
     size_t numStates = 20;
     size_t numRateMatrixElems = numStates * (numStates-1) / 2;
     
     // tree
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( in_fp + fn );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     size_t numNodes = trees[0]->getNumberOfNodes();
@@ -330,12 +330,12 @@ bool TestPathSampling::run_binary( void )
     fn = "16tip_100areas.nex";
     
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
+    std::vector<AbstractCharacterData*> data = NclReader().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
     
     // tree
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( in_fp + fn );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     size_t numNodes = trees[0]->getNumberOfNodes();

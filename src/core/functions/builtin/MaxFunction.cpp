@@ -1,25 +1,12 @@
-//
-//  MaxFunction.cpp
-//  RevBayes
-//
-//  Created by Bastien on 02/11/14.
-//  Copyright (c) 2014 Bastien Boussau. All rights reserved.
-//
-
 #include "MaxFunction.h"
 
 using namespace RevBayesCore;
 
-MaxFunction::MaxFunction(const TypedDagNode<std::vector<double> > *v) : TypedFunction<double>( new double(0.0) ), vals( v ) {
+MaxFunction::MaxFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
+    vals( v )
+{
     // add the parameters as parents
     this->addParameter( vals );
-    
-    update();
-}
-
-
-MaxFunction::MaxFunction(const MaxFunction &n) : TypedFunction<double>( n ), vals( n.vals ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -57,7 +44,7 @@ void MaxFunction::update( void ) {
 void MaxFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == vals ) {
-        vals = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        vals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

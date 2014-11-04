@@ -405,10 +405,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double B = ( (1.0 - 2.0*(1.0-r)*p(i-1,ti) )*b + d + f ) / A;
     
     double e = exp(A*dt);
-    double tmp = ((1.0+B)+e*(1.0-B));
+//    double tmp = ((1.0+B)+e*(1.0-B));
     
 //    double tmp2 = 4.0*e / (tmp*tmp);
-    double tmp2 = (e/tmp)*(4.0/tmp);
+//    double tmp2 = (e/tmp)*(4.0/tmp);
     
     // (4 * Math.exp(Ai[index] * (t - ti))) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index])) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index]));
     

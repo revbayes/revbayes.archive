@@ -370,6 +370,7 @@
 #include "Func_floor.h"
 #include "Func_ln.h"
 #include "Func_log.h"
+#include "Func_max.h"
 #include "Func_mean.h"
 #include "Func_min.h"
 #include "Func_normalize.h"
@@ -979,7 +980,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "ln",          new Func_ln()  );
         
         // log function
-		addFunction( "log",         new Func_log()  );
+        addFunction( "log",         new Func_log()  );
+        
+        // min function
+        addFunction( "max",         new Func_max()  );
         
         // mean function
 		addFunction( "mean",        new Func_mean()  );

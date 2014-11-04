@@ -9,7 +9,7 @@
 #include "TerminalFormatter.h"
 #include "RbSettings.h"
 
-
+#include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -43,8 +43,8 @@ typedef std::vector<std::string> StringVector;
 bool debug = false;
 
 const char* nl = (char*) "\n\r";
-const char* default_prompt = (char*) "RevBayes > ";
-const char* incomplete_prompt = (char*) "RevBayes + ";
+const char* default_prompt = (char*) "> ";
+const char* incomplete_prompt = (char*) "+ ";
 const char* esc_prompt = (char*) "? > ";
 const char* prompt = default_prompt;
 char *line;
@@ -111,7 +111,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
     }
 
     // set completions and position on command line where to start matching completions
-    int commandPos = 0;
+    size_t commandPos = 0;
     if (pi.inQuote) {
         // ---------- in quote ------------
         // search for files with portion after the opening quote                
@@ -125,12 +125,12 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
         // find position of right most expression separator in cmd
 
         BOOST_FOREACH(std::string s, expressionSeparator) {
-            commandPos = std::max(commandPos, (int) cmd.rfind(s));
+            commandPos = std::max(commandPos, cmd.rfind(s));
         }
 
         // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
         // find position of right most dot
-        int dotPosition = (int) cmd.rfind(".");
+        size_t dotPosition = cmd.rfind(".");
 
         if ((pi.baseVariable != NULL) || (dotPosition > commandPos)) {
             // ---------- object defined ------------
@@ -155,7 +155,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                 completions = getDefaultCompletions();
 
             } else { // break on either '(' or ','              
-                commandPos = std::max((int) cmd.rfind("("), (int) cmd.rfind(",")) + 1;
+                commandPos = std::max(cmd.rfind("("), cmd.rfind(",")) + 1;
                 completions = workspaceUtils.getFunctionParameters(pi.functionName);                
             }
         } else {

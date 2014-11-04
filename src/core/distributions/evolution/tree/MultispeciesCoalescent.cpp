@@ -226,7 +226,7 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
         const TopologyNode *spParentNode = NULL;
         double speciesAge = spNode->getAge();
         double parentSpeciesAge = RbConstants::Double::inf;
-        double branchLength = RbConstants::Double::inf;
+//        double branchLength = RbConstants::Double::inf;
         if ( !spNode->isRoot() )
         {
             spParentNode = &spNode->getParent();

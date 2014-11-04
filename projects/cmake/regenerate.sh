@@ -46,7 +46,7 @@ echo 'you can turn this of with argument "-boost false"'
 
 cd ../../boost_1_55_0
 rm ./project-config.jam*  # clean up from previous runs
-./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
+./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
 
 if [ "$mavericks" = "true" ]
 then
