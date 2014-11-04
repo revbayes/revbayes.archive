@@ -20,6 +20,7 @@
 #ifndef MaxFunction_H
 #define MaxFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -30,7 +31,7 @@ namespace RevBayesCore {
     class MaxFunction : public TypedFunction<double> {
         
     public:
-        MaxFunction(const TypedDagNode<std::vector<double> > * v);
+        MaxFunction(const TypedDagNode<RbVector<double> > * v);
         MaxFunction(const MaxFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~MaxFunction(void);                                                       //!< Virtual destructor
         
@@ -44,7 +45,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode<RbVector<double> >*           vals;
         
     };
     
