@@ -164,7 +164,7 @@ void Dist_MPEST::setConstMemberVariable(const std::string& name, const RevPtr<co
     }
     else
     {
-        TypedDistribution<RootedTripletDistribution>::setConstMemberVariable(name, var);
+        TypedDistribution<RootedTripletDistribution>::setConstParameter(name, var);
     }
     
 }
