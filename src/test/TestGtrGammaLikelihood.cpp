@@ -34,14 +34,14 @@ bool TestGtrGammaLikelihood::run( void ) {
     
     /* First, we read in the data */
     // the matrix
-    NclReader& reader = NclReader::getInstance();
+    NclReader reader = NclReader::NclReader();
     std::vector<AbstractCharacterData*> data = reader.readMatrices(alignmentFilename);
 	
 	AbstractDiscreteCharacterData *discrD = dynamic_cast<AbstractDiscreteCharacterData* >(data[0]);
     
 	std::cout << "Read " << data.size() << " matrices." << std::endl;
     
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader::NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
