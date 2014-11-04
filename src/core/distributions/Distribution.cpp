@@ -75,10 +75,14 @@ Distribution& Distribution::operator=(const Distribution &f)
 void Distribution::addParameter(const DagNode *p)
 {
     
-    parameters.insert( p );
+    // only if the parameter is not NULL
+    if ( p != NULL )
+    {
+        parameters.insert( p );
     
-    // increment reference count
-    p->incrementReferenceCount();
+        // increment reference count
+        p->incrementReferenceCount();
+    }
     
 }
 
@@ -128,16 +132,23 @@ void Distribution::reInitialized( void )
  */
 void Distribution::removeParameter(const RevBayesCore::DagNode *p)
 {
-    std::set<const DagNode *>::iterator it = parameters.find( p );
-    if ( it != parameters.end() )
+    
+    // only if the parameter is not NULL
+    if ( p != NULL )
     {
-        parameters.erase( it );
+     
+        std::set<const DagNode *>::iterator it = parameters.find( p );
+        if ( it != parameters.end() )
+        {
+            parameters.erase( it );
+        }
+    
+        if ( p->decrementReferenceCount() == 0 )
+        {
+            delete p;
+        }
     }
     
-    if ( p->decrementReferenceCount() == 0 )
-    {
-        delete p;
-    }
 }
 
 
