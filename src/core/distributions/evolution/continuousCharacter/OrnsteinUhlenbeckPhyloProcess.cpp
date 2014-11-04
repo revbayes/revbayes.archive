@@ -24,18 +24,20 @@ using namespace RevBayesCore;
 
 // constructor(s)
 OrnsteinUhlenbeckPhyloProcess::OrnsteinUhlenbeckPhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* m, const TypedDagNode< double >* p): TypedDistribution< RealNodeContainer >(new RealNodeContainer(&t->getValue())),
-        tau( t ), 
-        sigma( s ), 
-        mean( m ),
-        phi( p ) {
+    tau( t ),
+    sigma( s ),
+    mean( m ),
+    phi( p )
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( sigma );
+    addParameter( mean );
+    addParameter( phi );
     
     simulate();
-}
-
-
-OrnsteinUhlenbeckPhyloProcess::OrnsteinUhlenbeckPhyloProcess(const OrnsteinUhlenbeckPhyloProcess &n): TypedDistribution< RealNodeContainer >( n ), tau( n.tau ), sigma( n.sigma ), mean(n.mean), phi( n.phi ) {
-    // nothing to do here since the parameters are copied automatically
-    
 }
 
 
@@ -141,23 +143,8 @@ void OrnsteinUhlenbeckPhyloProcess::recursiveSimulate(const TopologyNode& from) 
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> OrnsteinUhlenbeckPhyloProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( sigma );
-    parameters.insert( mean );
-    parameters.insert( phi );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void OrnsteinUhlenbeckPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void OrnsteinUhlenbeckPhyloProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );

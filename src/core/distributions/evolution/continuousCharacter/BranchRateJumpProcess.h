@@ -40,9 +40,9 @@ namespace RevBayesCore {
         TypedDistribution<double>*                              getValueDistribution(void) const;                                                       //!< Get the distribution of the values when a jump occurred.
         void                                                    redrawValue(void);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Swap a parameter
 
     private:
         

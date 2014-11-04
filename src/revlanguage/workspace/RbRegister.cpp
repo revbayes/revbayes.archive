@@ -215,10 +215,10 @@
 #include "Dist_geom.h"
 #include "Dist_poisson.h"
 #include "Dist_lnorm.h"
+#include "Dist_logUniform.h"
 #include "Dist_norm.h"
 #include "Dist_offsetExponential.h"
 #include "Dist_offsetLnorm.h"
-#include "Dist_oneOverX.h"
 #include "Dist_positiveUnif.h"
 #include "Dist_unif.h"
 #include "Dist_wishart.h"
@@ -680,7 +680,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnNormal",        new Dist_norm() );
         
         // LogUniform distribution   
-        addDistribution( "dnLogUniform",    new Dist_oneOverX() );
+        addDistribution( "dnLogUniform",    new Dist_logUniform() );
         
         // uniform distribution
         addDistribution( "dnUnif",          new Dist_unif() );

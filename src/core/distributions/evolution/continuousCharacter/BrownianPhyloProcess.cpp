@@ -18,9 +18,16 @@ using namespace RevBayesCore;
 
 // constructor(s)
 BrownianPhyloProcess::BrownianPhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* d): TypedDistribution< RealNodeContainer >(new RealNodeContainer(&t->getValue())),
-        tau( t ), 
-        sigma( s ), 
-        drift( d ) {
+    tau( t ),
+    sigma( s ),
+    drift( d )
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( sigma );
+    addParameter( drift );
     
     simulate();
 }
@@ -109,23 +116,8 @@ void BrownianPhyloProcess::recursiveSimulate(const TopologyNode& from)  {
     
 }
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> BrownianPhyloProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( sigma );
-    parameters.insert( drift );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void BrownianPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void BrownianPhyloProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );

@@ -29,21 +29,15 @@ MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDa
     dirtyNodes(intau->getValue().getNumberOfNodes(),true),
     nodeLogProbs(intau->getValue().getNumberOfNodes(),0)
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( sigma );
     
     simulate();
 }
 
-
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariateRealNodeContainer>( n ), 
-    tau( n.tau ),
-    sigma( n.sigma ),
-    /*, rootVal( n.rootVal )*/ 
-    dirtyNodes(n.tau->getValue().getNumberOfNodes(),true),
-    nodeLogProbs(n.tau->getValue().getNumberOfNodes(),0)
-{
-    // nothing to do here since the parameters are copied automatically
-    
-}
 
 MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::clone(void) const {
     return new MultivariateBrownianPhyloProcess( *this );
@@ -162,20 +156,8 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> MultivariateBrownianPhyloProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( sigma );
-    
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
+void MultivariateBrownianPhyloProcess::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if ( oldP == tau )
     {

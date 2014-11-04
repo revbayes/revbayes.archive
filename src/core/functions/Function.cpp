@@ -73,9 +73,14 @@ Function& Function::operator=(const Function &f)
 
 
 
-void Function::addParameter(const DagNode *p) {
+/**
+ * Add this parameter to our set of parameters.
+ */
+void Function::addParameter(const DagNode *p)
+{
     
     parameters.insert( p );
+
     // increment reference count
     p->incrementReferenceCount();
 

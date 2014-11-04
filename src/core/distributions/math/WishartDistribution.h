@@ -25,7 +25,6 @@ namespace RevBayesCore {
         
         // inverse Wishart distribution of parameter sigma0 et df degrees of freedom
         WishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf);
-        WishartDistribution(const WishartDistribution& from);
         // specialized version: inverse Wishart of parameter sigma0=kappa*I and df degrees of freedom
         WishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
         
@@ -40,16 +39,15 @@ namespace RevBayesCore {
         int                                                 getDF() const {return df->getValue();}
         
         
-        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
 
         // members
         
-        const TypedDagNode<MatrixRealSymmetric>*                omega0;
+        const TypedDagNode<MatrixRealSymmetric>*            omega0;
         const TypedDagNode<double>*                         kappa;
         const TypedDagNode<int>*                            df;
         const TypedDagNode<int>*                            dim;

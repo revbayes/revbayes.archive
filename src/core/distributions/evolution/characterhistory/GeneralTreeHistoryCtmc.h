@@ -59,12 +59,11 @@ namespace RevBayesCore {
         void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
-        // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        
     protected:
         
+        // Parameter management functions
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+
         virtual double                                      computeRootLikelihood(const TopologyNode &n);
         virtual double                                      computeInternalNodeLikelihood(const TopologyNode &n);
         virtual double                                      computeTipLikelihood(const TopologyNode &node);
@@ -76,8 +75,8 @@ namespace RevBayesCore {
         
     private:
         // members
-        const TypedDagNode< RbVector< double > >*        rootFrequencies;
-        const TypedDagNode< RbVector< double > >*        siteRates;
+        const TypedDagNode< RbVector< double > >*           rootFrequencies;
+        const TypedDagNode< RbVector< double > >*           siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         
@@ -111,6 +110,14 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( homogeneousRateMap );
+    this->addParameter( heterogeneousRateMaps );
+    this->addParameter( rootFrequencies );
+    this->addParameter( siteRates );
 }
 
 
@@ -481,13 +488,22 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMap(const 
     
     // remove the old parameter first
     if ( homogeneousRateMap != NULL )
+    {
+        this->removeParameter( homogeneousRateMap );
         homogeneousRateMap = NULL;
+    }
     else
+    {
+        this->removeParameter( heterogeneousRateMaps );
         heterogeneousRateMaps = NULL;
+    }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = false;
     homogeneousRateMap = rm;
+    
+    // add the new parameter
+    this->addParameter( homogeneousRateMap );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -564,8 +580,10 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
     
     // remove the old parameter first
     if ( siteRates != NULL )
+    {
+        this->removeParameter( siteRates );
         siteRates = NULL;
-    
+    }
     if ( r != NULL )
     {
         // set the value
@@ -583,6 +601,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
         this->resizeLikelihoodVectors();
         
     }
+    
+    // add the new parameter
+    this->addParameter( siteRates );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -759,25 +780,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
 }
 
 
-/** Get the parameters of the distribution */
-template<class charType, class treeType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractTreeHistoryCtmc<charType, treeType>::getParameters();
-    
-    parameters.insert( homogeneousRateMap );
-    parameters.insert( heterogeneousRateMaps );
-    parameters.insert( rootFrequencies );
-    parameters.insert( siteRates );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == homogeneousRateMap)
     {

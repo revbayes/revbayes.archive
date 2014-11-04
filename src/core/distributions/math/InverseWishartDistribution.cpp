@@ -22,7 +22,13 @@ sigma0(insigma0),
 kappaVector(NULL),
 kappa(NULL),
 df(indf),
-dim(0)  {
+dim( NULL )  {
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( insigma0 );
+    addParameter( df );
     
     redrawValue();
 }
@@ -33,9 +39,16 @@ TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( in
     kappaVector(inkappaVector),
     kappa(NULL),
     df(indf),
-    dim(0)    {
+    dim( NULL )
+{
     
-        redrawValue();
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( kappaVector );
+    addParameter( df );
+    
+    redrawValue();
 }
 
 InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
@@ -44,20 +57,17 @@ TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( si
     kappaVector(NULL),
     kappa(inkappa),
     df(indf),
-    dim(indim)    {
+    dim(indim)
+{
+        
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( inkappa );
+    addParameter( indf );
+    addParameter( indim );
     
-        redrawValue();
-}
-
-InverseWishartDistribution::InverseWishartDistribution(const InverseWishartDistribution& from) :
-    TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(from.getValue().getDim())),
-    sigma0(from.sigma0),
-    kappaVector(from.kappaVector),
-    kappa(from.kappa),
-    df(from.df),
-    dim(from.dim)   {
-
-        redrawValue();
+    redrawValue();
 }
 
 InverseWishartDistribution* InverseWishartDistribution::clone(void) const   {
@@ -66,23 +76,7 @@ InverseWishartDistribution* InverseWishartDistribution::clone(void) const   {
 }
 
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> InverseWishartDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( sigma0 );
-    parameters.insert( kappaVector );
-    parameters.insert( kappa );
-    parameters.insert( dim );
-    parameters.insert( df );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-void InverseWishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void InverseWishartDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     if (oldP == sigma0) {
         sigma0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
     }

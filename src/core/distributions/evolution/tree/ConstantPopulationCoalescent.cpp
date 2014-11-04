@@ -24,6 +24,11 @@ ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<do
     numTaxa( nTaxa ),
     taxonNames( tn )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( Ne );
+    
     double lnFact = RbMath::lnFactorial( int(nTaxa) );
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
@@ -267,20 +272,8 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> ConstantPopulationCoalescent::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( Ne );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void ConstantPopulationCoalescent::swapParameter(const DagNode *oldP, const DagNode *newP)
+void ConstantPopulationCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == Ne)
     {

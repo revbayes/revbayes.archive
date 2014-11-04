@@ -27,19 +27,37 @@ BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::BranchHeterogeneousOrnsteinUhl
     tau( t ),
     homogeneousSigma( s ),
     homogeneousMean( m ),
-    homogeneousPhi( p ) {
-        heterogeneousSigma = NULL;
-        heterogeneousMean = NULL;
-        heterogeneousPhi = NULL;
-        rootMean = NULL;
-        rootStdDev = NULL;
+    homogeneousPhi( p )
+{
+        
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( homogeneousMean );
+    addParameter( homogeneousPhi );
+    addParameter( homogeneousSigma );
+    
+    heterogeneousSigma = NULL;
+    heterogeneousMean = NULL;
+    heterogeneousPhi = NULL;
+    rootMean = NULL;
+    rootStdDev = NULL;
+    
 //        simulate();
 }
 
 
 // constructor(s)
 BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess(const TypedDagNode< TimeTree > *t): TypedDistribution< RealNodeContainer >(new RealNodeContainer(&t->getValue())),
-tau( t ) {
+    tau( t )
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    
     homogeneousSigma = NULL;
     homogeneousMean = NULL;
     homogeneousPhi = NULL;
@@ -50,12 +68,6 @@ tau( t ) {
     rootStdDev = NULL;
     
  //   simulate();
-}
-
-
-BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess(const BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess &n): TypedDistribution< RealNodeContainer >( n ), tau( n.tau ), homogeneousSigma( n.homogeneousSigma ), homogeneousMean(n.homogeneousMean), homogeneousPhi( n.homogeneousPhi ), heterogeneousSigma( n.heterogeneousSigma ), heterogeneousMean(n.heterogeneousMean), heterogeneousPhi( n.heterogeneousPhi ), rootMean(n.rootMean), rootStdDev(n.rootStdDev) {
-    // nothing to do here since the parameters are copied automatically
-    
 }
 
 
@@ -188,34 +200,16 @@ void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::recursiveSimulate(const T
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( homogeneousSigma );
-    parameters.insert( homogeneousMean );
-    parameters.insert( homogeneousPhi );
-    parameters.insert( homogeneousSigma );
-    parameters.insert( homogeneousMean );
-    parameters.insert( homogeneousPhi );
-    parameters.insert( rootMean );
-    parameters.insert( rootStdDev );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    if ( oldP == tau ) {
+    if ( oldP == tau )
+    {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     
-    if ( oldP == homogeneousSigma ) {
+    if ( oldP == homogeneousSigma )
+    {
         homogeneousSigma = static_cast< const TypedDagNode<double> * >( newP );
     }
     
@@ -250,43 +244,115 @@ void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::swapParameter(const DagNo
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setSigma( const TypedDagNode< double >* x) {
-    homogeneousSigma = x;
-}
-
-
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setMean( const TypedDagNode< double >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setMean( const TypedDagNode< double >* x)
+{
+    // remove the old parameter
+    removeParameter( heterogeneousMean );
+    removeParameter( homogeneousMean );
+    
+    // set our local pointer copy
     homogeneousMean = x;
+    
+    // add the new parameter
+    addParameter( homogeneousMean );
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setPhi( const TypedDagNode< double >* x){
-    homogeneousPhi = x;
-}
-
-
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setSigma( const TypedDagNode< RbVector< double > >* x){
-    heterogeneousSigma = x;
-}
-
-
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setMean( const TypedDagNode< RbVector< double > >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setMean( const TypedDagNode< RbVector< double > >* x)
+{
+    // remove the old parameter
+    removeParameter( heterogeneousMean );
+    removeParameter( homogeneousMean );
+    
+    // set our local pointer copy
     heterogeneousMean = x;
+    
+    // add the new parameter
+    addParameter( heterogeneousMean );
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setPhi( const TypedDagNode< RbVector< double > >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setPhi( const TypedDagNode< double >* x)
+{
+    // remove the old parameter
+    removeParameter( heterogeneousPhi );
+    removeParameter( homogeneousPhi );
+    
+    // set our local pointer copy
+    homogeneousPhi = x;
+    
+    // add the new parameter
+    addParameter( homogeneousPhi );
+}
+
+
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setPhi( const TypedDagNode< RbVector< double > >* x)
+{
+    // remove the old parameter
+    removeParameter( heterogeneousPhi );
+    removeParameter( homogeneousPhi );
+    
+    // set our local pointer copy
     heterogeneousPhi = x;
+    
+    // add the new parameter
+    addParameter( heterogeneousPhi );
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setRootMean( const TypedDagNode< double >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setSigma( const TypedDagNode< double >* x)
+{
+    // remove the old parameter
+    removeParameter( heterogeneousSigma );
+    removeParameter( homogeneousSigma );
+    
+    // set our local pointer copy
+    homogeneousSigma = x;
+    
+    // add the new parameter
+    addParameter( homogeneousSigma );
+}
+    
+    
+    
+    
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setSigma( const TypedDagNode< RbVector< double > >* x)
+{
+    // remove the old parameter
+    removeParameter( heterogeneousSigma );
+    removeParameter( homogeneousSigma );
+        
+    // set our local pointer copy
+    heterogeneousSigma = x;
+        
+    // add the new parameter
+    addParameter( heterogeneousSigma );
+}
+
+
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setRootMean( const TypedDagNode< double >* x)
+{
+    // remove the old parameter
+    removeParameter( rootMean );
+    
+    // set our local pointer copy
     rootMean = x;
+    
+    // add the new parameter
+    addParameter( rootMean );
 }
 
 
-void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setRootStdDev( const TypedDagNode< double >* x){
+void BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess::setRootStdDev( const TypedDagNode< double >* x)
+{
+    // remove the old parameter
+    removeParameter( rootStdDev );
+    
+    // set our local pointer copy
     rootStdDev = x;
+    
+    // add the new parameter
+    addParameter( rootStdDev );
 }
 
 

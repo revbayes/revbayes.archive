@@ -25,19 +25,15 @@ UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const T
     maxBranchLength( maxBrLen ),
     taxonNames( taxaNames )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( maxBrLen );
     
     numTaxa = taxonNames.size();
     
     simulateTree();
     
-}
-
-
-UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const UniformBranchLengthTreeDistribution &x) : TypedDistribution<BranchLengthTree>( x ),
-    maxBranchLength( x.maxBranchLength ),
-    numTaxa( x.numTaxa ),
-    taxonNames( x.taxonNames )
-{
 }
 
 
@@ -168,20 +164,8 @@ void UniformBranchLengthTreeDistribution::simulateTree( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> UniformBranchLengthTreeDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( maxBranchLength );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void UniformBranchLengthTreeDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+void UniformBranchLengthTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == maxBranchLength)
     {

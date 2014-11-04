@@ -19,7 +19,18 @@
 
 using namespace RevBayesCore;
 
-AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), taxonNames( tn ), outgroup(std::vector<bool>(nTaxa,false)) {
+AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ),
+    diversification( d ),
+    turnover( t ),
+    numTaxa( nTaxa ),
+    taxonNames( tn ),
+    outgroup(std::vector<bool>(nTaxa,false))
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( diversification );
+    addParameter( turnover );
   
     double lnFact = 0.0;
     for (size_t i = 2; i < numTaxa; i++) {
@@ -49,11 +60,6 @@ AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const Typ
     
     simulateTree();
     
-}
-
-
-
-AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &v) : TypedDistribution<AdmixtureTree>( v ), diversification( v.diversification ), turnover( v.turnover ), numTaxa( v.numTaxa ), numOutgroup(v.numOutgroup), taxonNames( v.taxonNames ), outgroup(v.outgroup), logTreeTopologyProb( v.logTreeTopologyProb ) {
 }
 
 
@@ -426,21 +432,8 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> AdmixtureConstantBirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( diversification );
-    parameters.insert( turnover );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void AdmixtureConstantBirthDeathProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
+void AdmixtureConstantBirthDeathProcess::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == diversification)
     {

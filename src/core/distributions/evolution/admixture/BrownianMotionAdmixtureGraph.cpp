@@ -66,6 +66,14 @@ lnDetX(0.0),
 cloned(false)
 
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( diffusionRate );
+    addParameter( admixtureRate );
+    addParameter( branchRates );
+    
     numBlocks = numSites / blockSize;
     
     std::cout << "numTaxa\t" << numTaxa << "\n";
@@ -168,24 +176,8 @@ BrownianMotionAdmixtureGraph* BrownianMotionAdmixtureGraph::clone(void) const
     return new BrownianMotionAdmixtureGraph( *this );
 }
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> BrownianMotionAdmixtureGraph::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( diffusionRate );
-    parameters.insert( admixtureRate );
-    parameters.insert( branchRates );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void BrownianMotionAdmixtureGraph::swapParameter( const DagNode *oldP, const DagNode *newP )
+void BrownianMotionAdmixtureGraph::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == tau)
     {

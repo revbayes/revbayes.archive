@@ -1,11 +1,3 @@
-//
-//  InverseGammaDistribution.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 3/19/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include "InverseGammaDistribution.h"
 #include "DistributionInverseGamma.h"
 #include "RandomNumberFactory.h"
@@ -13,7 +5,16 @@
 
 using namespace RevBayesCore;
 
-InverseGammaDistribution::InverseGammaDistribution(const TypedDagNode<double> *sh, const TypedDagNode<double> *r) : ContinuousDistribution( new double( 1.0 ) ), shape( sh ), scale( r ) {
+InverseGammaDistribution::InverseGammaDistribution(const TypedDagNode<double> *sh, const TypedDagNode<double> *r) : ContinuousDistribution( new double( 1.0 ) ),
+    shape( sh ),
+    scale( r )
+{
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( shape );
+    addParameter( scale );
     
     *value = RbStatistics::InverseGamma::rv(shape->getValue(), scale->getValue(), *GLOBAL_RNG);
 }
@@ -59,21 +60,8 @@ void InverseGammaDistribution::redrawValue( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> InverseGammaDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( shape );
-    parameters.insert( scale );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void InverseGammaDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+void InverseGammaDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == shape)
     {

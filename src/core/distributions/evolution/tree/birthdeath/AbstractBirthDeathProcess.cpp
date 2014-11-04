@@ -39,6 +39,11 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     startsAtRoot(  origin == NULL )
 
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( origin );
+    addParameter( rootAge );
     
     if ( (origin == NULL && rootAge == NULL) || (origin != NULL && rootAge != NULL) )
     {
@@ -529,26 +534,6 @@ void AbstractBirthDeathProcess::simulateTree( void )
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> AbstractBirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    if ( origin != NULL )
-    {
-        parameters.insert( origin );
-    }
-    
-    if ( rootAge != NULL )
-    {
-        parameters.insert( rootAge );
-    }
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 
 /**
  * Restore the current value and reset some internal flags.
@@ -573,7 +558,7 @@ void AbstractBirthDeathProcess::restoreSpecialization(DagNode *affecter)
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void AbstractBirthDeathProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
+void AbstractBirthDeathProcess::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
     if ( oldP == origin ) 

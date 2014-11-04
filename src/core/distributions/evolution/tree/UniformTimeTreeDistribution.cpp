@@ -20,20 +20,15 @@ UniformTimeTreeDistribution::UniformTimeTreeDistribution(
         originTime( originT ),
         taxonNames( taxaNames )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( originTime );
     
     numTaxa = taxonNames.size();
     
     simulateTree();
     
-}
-
-
-UniformTimeTreeDistribution::UniformTimeTreeDistribution(const UniformTimeTreeDistribution &x)
-    :   TypedDistribution<TimeTree>( x ),
-        originTime( x.originTime ),
-        numTaxa( x.numTaxa ),
-        taxonNames( x.taxonNames )
-{
 }
 
 
@@ -235,20 +230,8 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> UniformTimeTreeDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( originTime );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void UniformTimeTreeDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+void UniformTimeTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == originTime)
     {

@@ -26,7 +26,6 @@ namespace RevBayesCore {
                                         const TypedDagNode<double>*                 originT,
                                         const std::vector<std::string>&             taxaNames
                                     );                                                                                  //!< Constructor
-        UniformTimeTreeDistribution(const UniformTimeTreeDistribution &x);                                              //!< Copy constructor
 
         virtual                                            ~UniformTimeTreeDistribution(void);                          //!< Virtual destructor
         
@@ -35,9 +34,9 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
 
