@@ -76,7 +76,7 @@ bool TestDPPRelClock::run( void ) {
     alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
     treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
-	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
+	std::vector<AbstractCharacterData*> data = NclReader().readMatrices(alignmentFilename);
 	
 	AbstractDiscreteCharacterData *discrD = dynamic_cast<AbstractDiscreteCharacterData* >(data[0]);
     
@@ -84,7 +84,7 @@ bool TestDPPRelClock::run( void ) {
     std::cout << data[0] << std::endl;
 	
 	// First, we read in the data 
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     

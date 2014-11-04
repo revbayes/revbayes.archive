@@ -17,7 +17,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_max::Func_max( void ) : Function( ) {
+Func_max::Func_max( void ) : TypedFunction<Real>( ) {
     
 }
 
@@ -29,16 +29,13 @@ Func_max* Func_max::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_max::execute() {
+RevBayesCore::TypedFunction<double>* Func_max::createFunction( void ) const
+{
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::MaxFunction* f = new RevBayesCore::MaxFunction( arg );
     
-    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-    
-    Real* value = new Real( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -73,15 +70,6 @@ const TypeSpec& Func_max::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_max::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

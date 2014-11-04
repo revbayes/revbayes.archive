@@ -185,13 +185,13 @@ bool TestCharacterHistory::run_exp(void) {
 //    fn = "turtles.nex";
     fn = "earth23.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
+    std::vector<AbstractCharacterData*> data = NclReader().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
 //    size_t numAreas = data[0]->getNumberOfCharacters();
     
     // tree
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
-//    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( "/Users/mlandis/Desktop/test_tree.txt" );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( in_fp + fn );
+//    std::vector<TimeTree*> trees = NclReader().readTimeTrees( "/Users/mlandis/Desktop/test_tree.txt" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     size_t numNodes = trees[0]->getNumberOfNodes();
@@ -550,18 +550,18 @@ bool TestCharacterHistory::run_mol(void) {
     fn = "psychotria_range.nex";
     //    fn = "16tip_20areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
+    std::vector<AbstractCharacterData*> data = NclReader().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
     
     std::string fn1 = "psychotria_its.nex";
-    std::vector<AbstractCharacterData*> data_its = NclReader::getInstance().readMatrices(in_fp + fn1);
+    std::vector<AbstractCharacterData*> data_its = NclReader().readMatrices(in_fp + fn1);
     
     std::string fn2 = "psychotria_ets.nex";
-    std::vector<AbstractCharacterData*> data_ets = NclReader::getInstance().readMatrices(in_fp + fn2);
+    std::vector<AbstractCharacterData*> data_ets = NclReader().readMatrices(in_fp + fn2);
     
     // tree
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( in_fp + fn );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     size_t numNodes = trees[0]->getNumberOfNodes();
@@ -997,13 +997,13 @@ bool TestCharacterHistory::run_dollo(void) {
     std::string fn = "dolloplus.nex";
     std::string in_fp = "/Users/mlandis/data/ngene/";
    
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
+    std::vector<AbstractCharacterData*> data = NclReader().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
     
     // tree
-    // std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
-    std::vector<BranchLengthTree*>* trees_ptr = NclReader::getInstance().readBranchLengthTrees(in_fp + fn); //TEMPORARY FIX, OTHERWISE DOES NOT COMPILE,"nexus");
+    // std::vector<TimeTree*> trees = NclReader().readTimeTrees( in_fp + fn );
+    std::vector<BranchLengthTree*>* trees_ptr = NclReader().readBranchLengthTrees(in_fp + fn); //TEMPORARY FIX, OTHERWISE DOES NOT COMPILE,"nexus");
     std::vector<BranchLengthTree*> trees = *trees_ptr;
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;

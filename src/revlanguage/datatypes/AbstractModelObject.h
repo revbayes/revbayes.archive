@@ -35,6 +35,7 @@ namespace RevLanguage {
         void                                    setGuiLatexSymbol(std::string s) { guiLatexSymbol = s; }
 
         // pure virtual methods
+        virtual AbstractModelObject*            clone(void) const = 0;                                                          //!< Clone object
         virtual RevBayesCore::DagNode*          getDagNode(void) const = 0;                                                     //!< Get the internal DAG node
         virtual void                            setDagNode(RevBayesCore::DagNode *newNode) = 0;                                 //!< Set or replace the internal dag node (and keep me)
         virtual void                            setName(const std::string &n) = 0;                                              //!< Set the name of the variable (if applicable)

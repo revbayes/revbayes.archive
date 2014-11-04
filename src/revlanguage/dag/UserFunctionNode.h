@@ -231,14 +231,28 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBay
     for ( size_t i = 0; i < args.size(); ++i )
     {
         // Replace the i-th copy argument with an appropriate object
-        throw RbException("Missing implementation");
-//        RevPtr<Variable> theArgumentVariableClone = new Variable( args[i].getVariable()->getRevObject().cloneDAG( newNodes ), args[i].getVariable()->getName() );
-//        copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
-//        
-//        // Manage the DAG node connections
-//        RevBayesCore::DagNode* theArgumentNodeClone = theArgumentVariableClone->getRevObject().getDagNode();
-//        theArgumentNodeClone->addChild( copy );
-//        theArgumentNodeClone->incrementReferenceCount();
+        
+        const RevObject &rObject = args[i].getVariable()->getRevObject();
+        if ( rObject.isModelObject() )
+        {
+            const AbstractModelObject &modelObj = static_cast< const AbstractModelObject &>( rObject );
+            RevBayesCore::DagNode* theNode = modelObj.getDagNode();
+            std::map<std::string, const RevBayesCore::DagNode*> names;
+            AbstractModelObject *rObjClone = modelObj.clone();
+            rObjClone->setDagNode( theNode->cloneDAG( newNodes, names ) );
+            RevPtr<Variable> theArgumentVariableClone = new Variable( rObjClone, args[i].getVariable()->getName() );
+            copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
+        
+            // Manage the DAG node connections
+            RevBayesCore::DagNode* theArgumentNodeClone = theArgumentVariableClone->getRevObject().getDagNode();
+            theArgumentNodeClone->addChild( copy );
+            theArgumentNodeClone->incrementReferenceCount();
+        }
+        else
+        {
+            throw RbException("Missing implementation");
+        }
+
     }
     
     /* Make sure the children clone themselves */

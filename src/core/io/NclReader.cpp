@@ -628,7 +628,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
         //std::cerr << "Reading data for taxon " << tName << " which has index " << origTaxIndex <<"\n";
         // allocate a vector of Standard states
         DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tName);
-        int site_counter = 0;
+
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
         {

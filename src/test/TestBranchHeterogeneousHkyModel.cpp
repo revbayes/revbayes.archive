@@ -60,7 +60,7 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     
     /* First, we read in the data */
     // the matrix
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
+    std::vector<AbstractCharacterData*> data = NclReader().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     std::cout << data[0] << std::endl;
         

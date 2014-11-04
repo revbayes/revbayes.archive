@@ -43,11 +43,11 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::MPEST*               createDistribution(void) const;
+        RevBayesCore::MPEST*                                createDistribution(void) const;
         
     protected:
         
-        void                                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:

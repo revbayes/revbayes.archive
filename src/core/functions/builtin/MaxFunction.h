@@ -30,12 +30,11 @@ namespace RevBayesCore {
     class MaxFunction : public TypedFunction<double> {
         
     public:
-        MaxFunction(const TypedDagNode<std::vector<double> > * v);
-        MaxFunction(const MaxFunction &n);                                                                                        //!< Copy constructor
+        MaxFunction(const TypedDagNode< RbVector<double> > * v);
         virtual                                            ~MaxFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
-        MaxFunction*                                       clone(void) const;                                                          //!< Create an independent clone
+        MaxFunction*                                        clone(void) const;                                                          //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -44,7 +43,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode< RbVector<double> >*             vals;
         
     };
     

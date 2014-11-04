@@ -227,7 +227,7 @@ void ScreenMonitor::printHeader( void )
     int numWidth = int( log10( numCycles ) ) + 1;
     width = width > numWidth ? width : numWidth;
     
-    size_t columnWidth = 12;
+    int columnWidth = 12;
 
     StringUtilities::fillWithSpaces( header, width, true );
     ss << header << suffixSeparator;
