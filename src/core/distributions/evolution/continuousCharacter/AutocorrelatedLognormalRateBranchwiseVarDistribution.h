@@ -32,10 +32,9 @@ namespace RevBayesCore {
         // constructor(s)
 		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< RbVector< double > > *s, const TypedDagNode< double >* rr);
 		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, TypedDagNode< RbVector< double > > *s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv);
-		AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n);
-        
+		
         // public member functions
-        AutocorrelatedLognormalRateBranchwiseVarDistribution*                clone(void) const;                                                                      //!< Create an independent clone
+        AutocorrelatedLognormalRateBranchwiseVarDistribution*   clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
         
@@ -45,9 +44,9 @@ namespace RevBayesCore {
         void                                                    restoreSpecialization(DagNode *restorer);
         void                                                    touchSpecialization(DagNode *toucher);
 
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
         
     private:
@@ -58,7 +57,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< RbVector< double > >*			sigma;
+        const TypedDagNode< RbVector< double > >*               sigma;
         const TypedDagNode< double >*                           rootRate;
         const TypedDagNode< double >*                           scaleValue;
         

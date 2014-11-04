@@ -69,6 +69,21 @@ Distribution& Distribution::operator=(const Distribution &f)
 }
 
 
+/**
+ * Add this parameter to our set of parameters.
+ */
+void Distribution::addParameter(const DagNode *p)
+{
+    
+    parameters.insert( p );
+    
+    // increment reference count
+    p->incrementReferenceCount();
+    
+}
+
+
+
 /* Method stub: override for specialized treatment. */
 void Distribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
 {

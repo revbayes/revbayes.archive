@@ -1,43 +1,34 @@
-//
-//  Dist_oneOverX.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_oneOverX.h"
-#include "OneOverXDistribution.h"
+#include "Dist_logUniform.h"
+#include "LogUniformDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 
 using namespace RevLanguage;
 
-Dist_oneOverX::Dist_oneOverX() : PositiveContinuousDistribution() {
+Dist_logUniform::Dist_logUniform() : PositiveContinuousDistribution() {
     
 }
 
 
-Dist_oneOverX::~Dist_oneOverX() {
+Dist_logUniform::~Dist_logUniform() {
     
 }
 
 
 
-Dist_oneOverX* Dist_oneOverX::clone( void ) const {
-    return new Dist_oneOverX(*this);
+Dist_logUniform* Dist_logUniform::clone( void ) const {
+    return new Dist_logUniform(*this);
 }
 
 
-RevBayesCore::OneOverXDistribution* Dist_oneOverX::createDistribution( void ) const {
+RevBayesCore::LogUniformDistribution* Dist_logUniform::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* mi   = static_cast<const Real &>( min->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* ma   = static_cast<const Real &>( max->getRevObject() ).getDagNode();
-    RevBayesCore::OneOverXDistribution* d    = new RevBayesCore::OneOverXDistribution( mi, ma );
+    RevBayesCore::LogUniformDistribution* d  = new RevBayesCore::LogUniformDistribution( mi, ma );
     
     return d;
 }
@@ -45,15 +36,15 @@ RevBayesCore::OneOverXDistribution* Dist_oneOverX::createDistribution( void ) co
 
 
 /* Get Rev type of object */
-const std::string& Dist_oneOverX::getClassType(void) { 
+const std::string& Dist_logUniform::getClassType(void) { 
     
-    static std::string revType = "Dist_oneOverX";
+    static std::string revType = "Dist_logUniform";
     
 	return revType; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_oneOverX::getClassTypeSpec(void) { 
+const TypeSpec& Dist_logUniform::getClassTypeSpec(void) { 
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
@@ -64,7 +55,7 @@ const TypeSpec& Dist_oneOverX::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_oneOverX::getParameterRules(void) const {
+const MemberRules& Dist_logUniform::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -82,7 +73,7 @@ const MemberRules& Dist_oneOverX::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_oneOverX::getTypeSpec( void ) const {
+const TypeSpec& Dist_logUniform::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -91,9 +82,9 @@ const TypeSpec& Dist_oneOverX::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_oneOverX::printValue(std::ostream& o) const {
+void Dist_logUniform::printValue(std::ostream& o) const {
     
-    o << " OneOverX(min=";
+    o << " logUniform(min=";
     if ( min != NULL ) 
     {
         o << min->getName();
@@ -117,7 +108,7 @@ void Dist_oneOverX::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_oneOverX::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_logUniform::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "max" )
     {

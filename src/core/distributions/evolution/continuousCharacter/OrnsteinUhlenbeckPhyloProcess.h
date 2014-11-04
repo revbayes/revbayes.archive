@@ -20,16 +20,15 @@ namespace RevBayesCore {
     public:
         // constructor(s)
         OrnsteinUhlenbeckPhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* m, const TypedDagNode< double >* p);
-        OrnsteinUhlenbeckPhyloProcess(const OrnsteinUhlenbeckPhyloProcess &n);
         
         // public member functions
-        OrnsteinUhlenbeckPhyloProcess*                clone(void) const;                                                                      //!< Create an independent clone
+        OrnsteinUhlenbeckPhyloProcess*                          clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
-              
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Swap a parameter
         
     private:
         // helper methods

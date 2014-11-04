@@ -93,11 +93,6 @@ namespace RevBayesCore {
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
         
-        
-        // Parameter management functions. You need to override both if you have additional parameters
-        virtual std::set<const DagNode*>                                    getParameters(void) const;                                          //!< Return parameters
-        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        
     protected:
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
@@ -106,7 +101,12 @@ namespace RevBayesCore {
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         virtual const std::vector<double>&                                  getRootFrequencies(void) const;
-                
+        
+        
+        // Parameter management functions.
+        virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
+
+        
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
@@ -248,6 +248,20 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
     mixtureOffset               =  numPatterns*numChars;
     siteOffset                  =  numChars;
+    
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( tau );
+    this->addParameter( homogeneousClockRate );
+    this->addParameter( heterogeneousClockRates );
+    this->addParameter( homogeneousRateMatrix );
+    this->addParameter( heterogeneousRateMatrices );
+    this->addParameter( rootFrequencies );
+    this->addParameter( siteRates );
+    this->addParameter( siteRatesProbs );
+    this->addParameter( pInv );
     
 }
 
@@ -1068,18 +1082,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setCloc
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
     {
-//        delete homogeneousClockRate;
+        this->removeParameter( homogeneousClockRate );
         homogeneousClockRate = NULL;
     }
     else // heterogeneousClockRate != NULL
     {
-//        delete heterogeneousClockRates;
+        this->removeParameter( heterogeneousClockRates );
         heterogeneousClockRates = NULL;
     }
     
     // set the value
     branchHeterogeneousClockRates = false;
     homogeneousClockRate = r;
+    
+    // add the new parameter
+    this->addParameter( homogeneousClockRate );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
@@ -1098,18 +1115,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setCloc
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
     {
-//        delete homogeneousClockRate;
+        this->removeParameter( homogeneousClockRate );
         homogeneousClockRate = NULL;
     }
     else // heterogeneousClockRate != NULL
     {
-//        delete heterogeneousClockRates;
+        this->removeParameter( heterogeneousClockRates );
         heterogeneousClockRates = NULL;
     }
     
     // set the value
     branchHeterogeneousClockRates = true;
     heterogeneousClockRates = r;
+    
+    // add the new parameter
+    this->addParameter( heterogeneousClockRates );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
@@ -1128,12 +1148,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setPInv
     // remove the old parameter first
     if ( pInv != NULL )
     {
-//        delete pInv;
+        this->removeParameter( pInv );
         pInv = NULL;
     }
     
     // set the value
     pInv = r;
+    
+    // add the new parameter
+    this->addParameter( pInv );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
@@ -1150,18 +1173,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRate
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
     {
-//        delete homogeneousRateMatrix;
+        this->removeParameter( homogeneousRateMatrix );
         homogeneousRateMatrix = NULL;
     }
     else // heterogeneousRateMatrix != NULL
     {
-//        delete heterogeneousRateMatrices;
+        this->removeParameter( heterogeneousRateMatrices );
         heterogeneousRateMatrices = NULL;
     }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = false;
     homogeneousRateMatrix = rm;
+    
+    // add the new parameter
+    this->addParameter( homogeneousRateMatrix );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
@@ -1178,18 +1204,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRate
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
     {
-//        delete homogeneousRateMatrix;
+        this->removeParameter( homogeneousRateMatrix );
         homogeneousRateMatrix = NULL;
     }
     else // heterogeneousRateMatrix != NULL
     {
-//        delete heterogeneousRateMatrices;
+        this->removeParameter( heterogeneousRateMatrices );
         heterogeneousRateMatrices = NULL;
     }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = true;
     heterogeneousRateMatrices = rm;
+    
+    // add the new parameter
+    this->addParameter( heterogeneousRateMatrices );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
@@ -1207,7 +1236,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRoot
     // remove the old parameter first
     if ( rootFrequencies != NULL )
     {
-//        delete rootFrequencies;
+        this->removeParameter( rootFrequencies );
         rootFrequencies = NULL;
     }
     
@@ -1221,6 +1250,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRoot
     {
         branchHeterogeneousSubstitutionMatrices = false;
     }
+    
+    // add the new parameter
+    this->addParameter( rootFrequencies );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
@@ -1237,7 +1269,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setSite
     // remove the old parameter first
     if ( siteRates != NULL )
     {
-//        delete siteRates;
+        this->removeParameter( siteRates );
         siteRates = NULL;
     }
     
@@ -1259,6 +1291,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setSite
         
     }
     
+    // add the new parameter
+    this->addParameter( siteRates );
+    
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
@@ -1267,30 +1302,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setSite
 }
 
 
-/** Get the parameters of the distribution */
-template<class charType, class treeType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = std::set<const DagNode*>();
-    
-    parameters.insert( tau );
-    parameters.insert( homogeneousClockRate );
-    parameters.insert( heterogeneousClockRates );
-    parameters.insert( homogeneousRateMatrix );
-    parameters.insert( heterogeneousRateMatrices );
-    parameters.insert( rootFrequencies );
-    parameters.insert( siteRates );
-    parameters.insert( siteRatesProbs );
-    parameters.insert( pInv );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == homogeneousClockRate)

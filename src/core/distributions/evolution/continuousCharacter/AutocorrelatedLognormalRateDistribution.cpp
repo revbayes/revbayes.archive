@@ -23,6 +23,13 @@ AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution
     rootRate( rr ),
     scaleValue( new ConstantNode<double>(" ", new double(1.0) ))
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( sigma );
+    addParameter( rootRate );
+    addParameter( scaleValue );
     
     simulate();
 }
@@ -34,6 +41,13 @@ AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution
     rootRate( rr ),
     scaleValue( sv )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( sigma );
+    addParameter( rootRate );
+    addParameter( scaleValue );
     
     simulate();
 }
@@ -155,23 +169,8 @@ void AutocorrelatedLognormalRateDistribution::restoreSpecialization( DagNode *re
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> AutocorrelatedLognormalRateDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( sigma );
-    parameters.insert( rootRate );
-    parameters.insert( scaleValue );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void AutocorrelatedLognormalRateDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void AutocorrelatedLognormalRateDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );

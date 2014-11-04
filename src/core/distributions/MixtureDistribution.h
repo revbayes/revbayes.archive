@@ -49,9 +49,9 @@ namespace RevBayesCore {
         void                                                restoreSpecialization(DagNode *restorer);
         void                                                touchSpecialization(DagNode *toucher);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
         
     private:
@@ -78,6 +78,11 @@ RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedD
     probabilities( p ),
     index( 0 )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( parameterValues );
+    this->addParameter( probabilities );
     
     *this->value = simulate();
 }
@@ -201,24 +206,9 @@ void RevBayesCore::MixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
 }
 
 
-
-/** Get the parameters of the distribution */
-template <class mixtureType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::MixtureDistribution<mixtureType>::getParameters( void ) const
-{
-    std::set<const RevBayesCore::DagNode*> parameters;
-    
-    parameters.insert( parameterValues );
-    parameters.insert( probabilities );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+void RevBayesCore::MixtureDistribution<mixtureType>::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == parameterValues)
     {

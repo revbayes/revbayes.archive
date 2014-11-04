@@ -45,9 +45,10 @@ namespace RevBayesCore {
 		double												getConcentrationParam(void);
 		TypedDistribution<valueType>*						getBaseDistribution(void);
 
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         // helper methods
@@ -86,6 +87,18 @@ RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPrio
     denominator( 0.0 ),
     concentrationHasChanged( true )
 {
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( concentration );
+    
+    // add the parameters of the distribution
+    const std::set<const DagNode*>& pars = baseDistribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
     
 	delete this->value;
 
@@ -234,31 +247,9 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::redrawValue( vo
 }
 
 
-
-/** Get the parameters of the distribution */
-template<class valueType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getParameters( void ) const
-{
-    std::set<const RevBayesCore::DagNode*> parameters;
-    
-//    parameters.insert( baseDistribution );
-    parameters.insert( concentration );
-    
-    // add the parameters of the distribution
-    const std::set<const DagNode*>& pars = baseDistribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
-    {
-        parameters.insert( *it );
-    }
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
 template <class valueType>
-void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
 //    if (oldP == baseDistribution){
 //        baseDistribution = static_cast<const TypedDagNode< TypedDistribution<valueType> >* >( newP );

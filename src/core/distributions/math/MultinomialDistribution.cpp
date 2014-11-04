@@ -1,11 +1,3 @@
-//
-//  MultinomialDistribution.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/6/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "MultinomialDistribution.h"
 #include "DistributionMultinomial.h"
 #include "RandomNumberFactory.h"
@@ -16,6 +8,11 @@ MultinomialDistribution::MultinomialDistribution(const TypedDagNode< RbVector<do
     p( p ),
     n( n )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( p );
+    addParameter( n );
         
     *value = RbStatistics::Multinomial::rv(p->getValue(), size_t( n->getValue() ), *GLOBAL_RNG);
 }
@@ -46,21 +43,8 @@ void MultinomialDistribution::redrawValue( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> MultinomialDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( p );
-    parameters.insert( n );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void MultinomialDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void MultinomialDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == p)
     {

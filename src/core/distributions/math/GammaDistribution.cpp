@@ -5,7 +5,15 @@
 
 using namespace RevBayesCore;
 
-GammaDistribution::GammaDistribution(const TypedDagNode<double> *sh, const TypedDagNode<double> *r) : ContinuousDistribution( new double( 1.0 ) ), shape( sh ), rate( r ) {
+GammaDistribution::GammaDistribution(const TypedDagNode<double> *sh, const TypedDagNode<double> *r) : ContinuousDistribution( new double( 1.0 ) ),
+    shape( sh ),
+    rate( r )
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( shape );
+    addParameter( rate );
     
     *value = RbStatistics::Gamma::rv(shape->getValue(), rate->getValue(), *GLOBAL_RNG);
 }
@@ -51,21 +59,8 @@ void GammaDistribution::redrawValue( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> GammaDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( shape );
-    parameters.insert( rate );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void GammaDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+void GammaDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == shape)
     {

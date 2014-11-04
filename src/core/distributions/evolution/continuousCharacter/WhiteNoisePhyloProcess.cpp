@@ -20,6 +20,12 @@ WhiteNoisePhyloProcess::WhiteNoisePhyloProcess(const TypedDagNode< TimeTree > *t
         tau( t ), 
         sigma( s )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( sigma );
+    
     simulate();
 }
 
@@ -63,21 +69,8 @@ void WhiteNoisePhyloProcess::redrawValue(void) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> WhiteNoisePhyloProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( sigma );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void WhiteNoisePhyloProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
+void WhiteNoisePhyloProcess::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
     if ( oldP == tau )

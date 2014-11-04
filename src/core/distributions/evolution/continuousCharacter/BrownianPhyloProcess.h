@@ -34,13 +34,13 @@ namespace RevBayesCore {
         BrownianPhyloProcess(const BrownianPhyloProcess &n);
         
         // public member functions
-        BrownianPhyloProcess*                clone(void) const;                                                                      //!< Create an independent clone
+        BrownianPhyloProcess*                                   clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
-              
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         // helper methods

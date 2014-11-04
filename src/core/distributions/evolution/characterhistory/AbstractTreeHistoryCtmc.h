@@ -64,12 +64,12 @@ namespace RevBayesCore {
         
         virtual void                                                        simulate(void);
 
-        // Parameter management functions. You need to override both if you have additional parameters
-        virtual std::set<const DagNode*>                                    getParameters(void) const;                                          //!< Return parameters
-        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        
         
     protected:
+        
+        // Parameter management functions.
+        virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        
         // helper method for this and derived classes
         void                                                                flagNodeDirty(const TopologyNode& n);
         
@@ -137,6 +137,10 @@ treatUnknownAsGap( true ),
 treatAmbiguousAsGaps( true ),
 tipsInitialized( false )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( tau );
     
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -487,19 +491,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 }
 
 
-/** Get the parameters of the distribution */
-template<class charType, class treeType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /**
  * Swap a parameter of the distribution. We receive this call just before being replaced by a variable,
  * in which case the variable deletes the old parameter. We also receive this call during the cloning of
@@ -507,7 +498,7 @@ std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractTreeHistoryCtmc<cha
  * namely to the destructor of the original distribution owning the old parameter.
  */
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     // we only have the topology here as the parameter
     if (oldP == tau)

@@ -42,9 +42,9 @@ namespace RevBayesCore {
         void                                                setNes(TypedDagNode<RbVector<double> >* inputNes);
         void                                                setNe(TypedDagNode<double>* inputNe);
 
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

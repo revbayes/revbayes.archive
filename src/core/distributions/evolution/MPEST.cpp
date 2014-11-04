@@ -31,21 +31,14 @@ lnW (0.0),
 geneSpeciesTriplets(),
 geneTaxonTriplets()
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( speciesTree );
     
     
 }
 
-
-
-MPEST::MPEST(const MPEST &v) : TypedDistribution<RootedTripletDistribution>( v ),
-speciesTree( v.speciesTree ),
-//geneTrees( v.geneTrees ),
-logProb( v.logProb ),
-useSpecies(v.useSpecies),
-lnW (v.lnW),
-geneSpeciesTriplets(v.geneSpeciesTriplets),
-geneTaxonTriplets(v.geneTaxonTriplets){
-}
 
 
 MPEST::~MPEST() {
@@ -182,22 +175,8 @@ void MPEST::redrawValue( void ) {
     
 }
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> MPEST::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( speciesTree );
-    //parameters.insert( geneTrees );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void MPEST::swapParameter(const DagNode *oldP, const DagNode *newP)
+void MPEST::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == speciesTree)

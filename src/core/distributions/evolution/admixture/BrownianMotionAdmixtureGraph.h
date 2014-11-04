@@ -46,9 +46,9 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >           getResiduals(void) const;
         double                                      getResiduals(int i, int j) const;
  		
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                    getParameters(void) const;                                          //!< Return parameters
-        void                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

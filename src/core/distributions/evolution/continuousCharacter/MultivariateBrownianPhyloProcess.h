@@ -24,20 +24,18 @@ namespace RevBayesCore {
     public:
         // constructor(s)
         MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<MatrixRealSymmetric>* insigma);
-        MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &from);
         
         // public member functions
         MultivariateBrownianPhyloProcess*                       clone(void) const;
         
         double                                                  computeLnProbability(void);
         size_t                                                  getDim() const {return sigma->getValue().getDim();}
-        void                                                    redrawValue(void);
+        void                                                    redrawValue(void);        
+        const TimeTree*                                         getTimeTree() const {return &tau->getValue();}
         
-        const TimeTree*                         getTimeTree() const {return &tau->getValue();}
-        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
 
         // special handling of state changes
         void                                                    keepSpecialization(DagNode* affecter);

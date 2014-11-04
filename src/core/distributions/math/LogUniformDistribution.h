@@ -20,33 +20,32 @@
 
 
 
-#ifndef OneOverXDistribution_H
-#define OneOverXDistribution_H
+#ifndef LogUniformDistribution_H
+#define LogUniformDistribution_H
 
 #include "ContinuousDistribution.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
-    class OneOverXDistribution : public ContinuousDistribution {
+    class LogUniformDistribution : public ContinuousDistribution {
         
     public:
-        OneOverXDistribution(const TypedDagNode<double> *min, const TypedDagNode<double> *max);
-        OneOverXDistribution(const OneOverXDistribution &n);                                                                            //!< Copy constructor
-        virtual                                            ~OneOverXDistribution(void);                                                 //!< Virtual destructor
+        LogUniformDistribution(const TypedDagNode<double> *min, const TypedDagNode<double> *max);
+        virtual                                            ~LogUniformDistribution(void);                                                 //!< Virtual destructor
         
         // public member functions
         double                                              cdf(void) const;                                                                  //!< Cummulative density function
-        OneOverXDistribution*                               clone(void) const;                                                          //!< Create an independent clone
+        LogUniformDistribution*                             clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         double                                              getMax(void) const;
         double                                              getMin(void) const;
         double                                              quantile(double p) const;                                                       //!< Qu
         void                                                redrawValue(void);
-        
+
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

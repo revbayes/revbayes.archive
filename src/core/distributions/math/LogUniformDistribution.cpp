@@ -1,4 +1,4 @@
-#include "OneOverXDistribution.h"
+#include "LogUniformDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -7,7 +7,15 @@
 
 using namespace RevBayesCore;
 
-OneOverXDistribution::OneOverXDistribution(const TypedDagNode<double> *mi, const TypedDagNode<double> *ma) : ContinuousDistribution( new double( 1.0 ) ), min( mi ), max( ma ) {
+LogUniformDistribution::LogUniformDistribution(const TypedDagNode<double> *mi, const TypedDagNode<double> *ma) : ContinuousDistribution( new double( 1.0 ) ),
+    min( mi ),
+    max( ma )
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( min );
+    addParameter( max );
     
     double u = GLOBAL_RNG->uniform01();
     double ln_a = log( min->getValue() );
@@ -15,26 +23,22 @@ OneOverXDistribution::OneOverXDistribution(const TypedDagNode<double> *mi, const
 }
 
 
-OneOverXDistribution::OneOverXDistribution(const OneOverXDistribution &n) : ContinuousDistribution( n ), min( n.min ), max( n.max ) {
-}
-
-
-OneOverXDistribution::~OneOverXDistribution( void ) {
+LogUniformDistribution::~LogUniformDistribution( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-double OneOverXDistribution::cdf( void ) const {
+double LogUniformDistribution::cdf( void ) const {
     return 0.0;
 }
 
 
-OneOverXDistribution* OneOverXDistribution::clone( void ) const {
-    return new OneOverXDistribution( *this );
+LogUniformDistribution* LogUniformDistribution::clone( void ) const {
+    return new LogUniformDistribution( *this );
 }
 
 
-double OneOverXDistribution::computeLnProbability( void ) 
+double LogUniformDistribution::computeLnProbability( void ) 
 {
     
     double v = *value; 
@@ -53,28 +57,28 @@ double OneOverXDistribution::computeLnProbability( void )
 }
 
 
-double OneOverXDistribution::getMax( void ) const 
+double LogUniformDistribution::getMax( void ) const 
 {
 
     return max->getValue();
 }
 
 
-double OneOverXDistribution::getMin( void ) const 
+double LogUniformDistribution::getMin( void ) const 
 {
 
     return min->getValue();
 }
 
 
-double OneOverXDistribution::quantile(double p) const 
+double LogUniformDistribution::quantile(double p) const 
 {
 
     return 0.0;
 }
 
 
-void OneOverXDistribution::redrawValue( void ) 
+void LogUniformDistribution::redrawValue( void ) 
 {
 
     double u = GLOBAL_RNG->uniform01();
@@ -84,21 +88,8 @@ void OneOverXDistribution::redrawValue( void )
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> OneOverXDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( min );
-    parameters.insert( max );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void OneOverXDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+void LogUniformDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
 
     if (oldP == min) 

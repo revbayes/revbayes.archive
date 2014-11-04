@@ -36,13 +36,10 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
 
-        // Parameter management functions. You need to override both if you have additional parameters
-        virtual std::set<const DagNode*>                    getParameters(void) const;                                                                          //!< Return parameters
-        virtual void                                        swapParameter(const DagNode *oldP, const DagNode *newP);                                            //!< Swap a parameter
         
     protected:  
         // pure virtual helper functions
-        virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                                         //!< Compute the log-transformed probability of the current value.
+        virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
         virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const = 0;                                                  //!< Simulate n speciation events.
         virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         virtual void                                        prepareProbComputation(void);
@@ -53,6 +50,10 @@ namespace RevBayesCore {
         virtual void                                        restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher);
 
+        // Parameter management functions. You need to override both if you have additional parameters
+        virtual void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
+
+        
         // helper functions
         void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, 
                                                                         const std::vector<double> *times, double T);

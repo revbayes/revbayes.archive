@@ -32,7 +32,6 @@ namespace RevBayesCore {
     public:
         // constructor(s)
         AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< RbVector< double > >* rf, const TypedDagNode< RbVector< double > >* er, const TypedDagNode< double >* a);
-        AutocorrelatedBranchMatrixDistribution(const AutocorrelatedBranchMatrixDistribution &n);
         
         // public member functions
         AutocorrelatedBranchMatrixDistribution*                 clone(void) const;                                                                      //!< Create an independent clone
@@ -45,9 +44,9 @@ namespace RevBayesCore {
 //        void                                                    restoreSpecialization(DagNode *restorer);
         void                                                    touchSpecialization(DagNode *toucher);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
 
     private:
         // helper methods
@@ -58,8 +57,8 @@ namespace RevBayesCore {
         // private members
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< double >*                           changeProbability;
-        const TypedDagNode< RbVector< double > >*            rootFrequencies;
-        const TypedDagNode< RbVector< double > >*            exchangeabilityRates;
+        const TypedDagNode< RbVector< double > >*               rootFrequencies;
+        const TypedDagNode< RbVector< double > >*               exchangeabilityRates;
         const TypedDagNode< double >*                           alpha;                                                                                  //!< Concentration parameter
         
         RbVector<RateMatrix>                                    uniqueMatrices;

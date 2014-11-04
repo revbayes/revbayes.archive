@@ -14,18 +14,26 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-AutocorrelatedBranchMatrixDistribution::AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< RbVector< double > >* rf, const TypedDagNode< RbVector< double > >* er, const TypedDagNode< double >* a): TypedDistribution< RbVector< RateMatrix > >( new RbVector<RateMatrix>(t->getValue().getNumberOfNodes()-1, RateMatrix_GTR(rf->getValue().size()) ) ), tau( t ), changeProbability( p ), rootFrequencies( rf ), exchangeabilityRates( er ), alpha( a ) {
+AutocorrelatedBranchMatrixDistribution::AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< RbVector< double > >* rf, const TypedDagNode< RbVector< double > >* er, const TypedDagNode< double >* a): TypedDistribution< RbVector< RateMatrix > >( new RbVector<RateMatrix>(t->getValue().getNumberOfNodes()-1, RateMatrix_GTR(rf->getValue().size()) ) ),
+    tau( t ),
+    changeProbability( p ),
+    rootFrequencies( rf ),
+    exchangeabilityRates( er ),
+    alpha( a )
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( tau );
+    addParameter( changeProbability );
+    addParameter( rootFrequencies );
+    addParameter( exchangeabilityRates );
+    addParameter( alpha );
     
     delete value;
     value = simulate();
 }
 
-
-AutocorrelatedBranchMatrixDistribution::AutocorrelatedBranchMatrixDistribution(const AutocorrelatedBranchMatrixDistribution &n): TypedDistribution< RbVector< RateMatrix > >( n ), tau( n.tau ), changeProbability( n.changeProbability ), rootFrequencies( n.rootFrequencies ), exchangeabilityRates( n.exchangeabilityRates ), alpha( n.alpha ), uniqueMatrices( n.uniqueMatrices ), uniqueBaseFrequencies( n.uniqueBaseFrequencies ), matrixIndex( n.matrixIndex ) {
-    
-    
-    
-}
 
 
 
@@ -137,24 +145,8 @@ void AutocorrelatedBranchMatrixDistribution::redrawValue(void) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> AutocorrelatedBranchMatrixDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    parameters.insert( changeProbability );
-    parameters.insert( rootFrequencies );
-    parameters.insert( exchangeabilityRates );
-    parameters.insert( alpha );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void AutocorrelatedBranchMatrixDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+void AutocorrelatedBranchMatrixDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
     if ( oldP == tau )

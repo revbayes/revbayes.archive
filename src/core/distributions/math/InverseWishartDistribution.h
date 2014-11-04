@@ -31,9 +31,6 @@ namespace RevBayesCore {
         // inverse InverseWishart distribution of parameter sigma0 kappa * Identitymatrix and df degrees of freedom
         InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
 
-        // copy constructor
-        InverseWishartDistribution(const InverseWishartDistribution& from);
-
         virtual                                            ~InverseWishartDistribution(void) {}
         
         // public member functions
@@ -44,9 +41,10 @@ namespace RevBayesCore {
         
         int                                                 getDF() const {return df->getValue();}
         
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
 
     private:
 
