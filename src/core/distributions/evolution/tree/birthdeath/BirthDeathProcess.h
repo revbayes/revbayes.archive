@@ -33,9 +33,9 @@ namespace RevBayesCore {
         virtual BirthDeathProcess*                          clone(void) const = 0;                                                                              //!< Create an independent clone
         
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     protected:
         // pure virtual helper functions

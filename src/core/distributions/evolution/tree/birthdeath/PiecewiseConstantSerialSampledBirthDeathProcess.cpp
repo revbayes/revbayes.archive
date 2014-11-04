@@ -45,6 +45,15 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     rhoTimes( rt ),
     timeSinceLastSample( tLastSample )
 {
+    addParameter( lambda );
+    addParameter( lambdaTimes );
+    addParameter( mu );
+    addParameter( muTimes );
+    addParameter( psi );
+    addParameter( psiTimes );
+    addParameter( rho );
+    addParameter( rhoTimes );
+    
     simulateTree();
 }
 
@@ -493,26 +502,6 @@ int PiecewiseConstantSerialSampledBirthDeathProcess::survivors(double t) const
 }
 
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> PiecewiseConstantSerialSampledBirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
-    
-    parameters.insert( lambdaTimes );
-    parameters.insert( muTimes );
-    parameters.insert( psiTimes );
-    parameters.insert( rhoTimes );
-    parameters.insert( lambda );
-    parameters.insert( mu );
-    parameters.insert( psi );
-    parameters.insert( rho );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /**
  * Swap the parameters held by this distribution.
  *
@@ -520,7 +509,7 @@ std::set<const DagNode*> PiecewiseConstantSerialSampledBirthDeathProcess::getPar
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     bool found = false;
@@ -565,7 +554,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameter(const DagNod
     else if (!found)
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }

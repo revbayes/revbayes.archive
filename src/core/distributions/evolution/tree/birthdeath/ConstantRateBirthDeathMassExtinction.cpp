@@ -22,6 +22,10 @@ ConstantRateBirthDeathMassExtinction::ConstantRateBirthDeathMassExtinction(const
     massExtinctionTimes( met ),
     massExtinctionSurvivalProbabilities( mep )
 {
+    addParameter( speciation );
+    addParameter( extinction );
+    addParameter( massExtinctionTimes );
+    addParameter( massExtinctionSurvivalProbabilities );
 
     simulateTree();
     
@@ -136,23 +140,8 @@ std::vector<double>* ConstantRateBirthDeathMassExtinction::simSpeciations(size_t
 
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> ConstantRateBirthDeathMassExtinction::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = BirthDeathProcess::getParameters();
-    
-    parameters.insert( speciation );
-    parameters.insert( extinction );
-    parameters.insert( massExtinctionTimes );
-    parameters.insert( massExtinctionSurvivalProbabilities );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void ConstantRateBirthDeathMassExtinction::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void ConstantRateBirthDeathMassExtinction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == speciation) 
     {
@@ -172,7 +161,7 @@ void ConstantRateBirthDeathMassExtinction::swapParameter(const DagNode *oldP, co
     }
     else
     {
-        BirthDeathProcess::swapParameter(oldP, newP);
+        BirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }

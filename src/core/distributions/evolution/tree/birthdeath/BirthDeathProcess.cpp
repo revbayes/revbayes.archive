@@ -33,6 +33,8 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedD
         rho( rh ),
         samplingStrategy( ss )
 {
+    
+    addParameter( rho );
         
 }
 
@@ -179,18 +181,6 @@ std::vector<double>* BirthDeathProcess::simSpeciations(size_t n, double origin) 
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> BirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
-    
-    parameters.insert( rho );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /**
  * Swap the parameters held by this distribution.
  *
@@ -198,7 +188,7 @@ std::set<const DagNode*> BirthDeathProcess::getParameters( void ) const
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void BirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void BirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if ( oldP == rho ) 
@@ -208,7 +198,7 @@ void BirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP)
     else
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
 
 }
