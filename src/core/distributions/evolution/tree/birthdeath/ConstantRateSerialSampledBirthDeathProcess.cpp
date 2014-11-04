@@ -33,6 +33,10 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
     rho( r ),
     timeSinceLastSample( tLastSample )
 {
+    addParameter( lambda );
+    addParameter( mu );
+    addParameter( psi );
+    addParameter( rho );
     
     simulateTree();
     
@@ -209,22 +213,6 @@ std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(
 }
 
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> ConstantRateSerialSampledBirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
-    
-    parameters.insert( lambda );
-    parameters.insert( mu );
-    parameters.insert( psi );
-    parameters.insert( rho );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /**
  * Swap the parameters held by this distribution.
  *
@@ -232,7 +220,7 @@ std::set<const DagNode*> ConstantRateSerialSampledBirthDeathProcess::getParamete
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void ConstantRateSerialSampledBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void ConstantRateSerialSampledBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == lambda) 
@@ -254,7 +242,7 @@ void ConstantRateSerialSampledBirthDeathProcess::swapParameter(const DagNode *ol
     else 
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }
