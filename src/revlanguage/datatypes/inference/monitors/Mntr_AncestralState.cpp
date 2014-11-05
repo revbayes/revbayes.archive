@@ -17,6 +17,7 @@
 #include "RlString.h"
 #include "TypeSpec.h"
 #include "ChromosomesState.h"
+#include "NaturalNumbersState.h"
 
 using namespace RevLanguage;
 
@@ -53,8 +54,16 @@ void Mntr_AncestralState::constructInternalObject( void )
 		// store the new model into our value variable
 		value = m;
 
+	} else if (character == "Mk1") {
+			
+			RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState>(t, ch, (unsigned long)g, fn, sep);
+			// now set the flags
+			m->setAppend( ap );
+			// store the new model into our value variable
+			value = m;
+			
 	} else {
-		throw RbException( "Incorrect monitor type specified. Valid options are: Chromosomes" );
+		throw RbException( "Incorrect type of character evolution model specified. Valid options are: Mk1, Chromosomes" );
 	}
 
     

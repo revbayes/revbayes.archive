@@ -309,6 +309,7 @@
 #include "Func_vt.h"
 #include "Func_wag.h"
 #include "Func_chromosomes.h"
+#include "Func_mk1.h"
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
@@ -359,7 +360,7 @@
 #include "Func_mapTree.h"
 #include "Func_ancestralStateTree.h"
 #include "Func_readAtlas.h"
-#include "Func_readChromosomes.h"
+#include "Func_readTSVCharacterData.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
@@ -961,6 +962,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "vt",       new Func_vt()      );
         addFunction( "wag",      new Func_wag()     );
         addFunction( "chromosomes",      new Func_chromosomes()     );
+		addFunction( "mk1",      new Func_mk1()     );
         
         // nonstandard names (for backwards compatibility)
         addFunction( "Blosum62", new Func_blosum62());
@@ -1127,7 +1129,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
         addFunction( "print",                       new Func_write()                       );
         addFunction( "readAtlas",                   new Func_readAtlas()                   );
-		addFunction( "readChromosomes",             new Func_readChromosomes()             );
+		addFunction( "readTSVCharacterData",        new Func_readTSVCharacterData()        );
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
         addFunction( "readTaxonData",               new Func_TaxonReader()                 );
         addFunction( "readTrace",                   new Func_readTrace()                   );

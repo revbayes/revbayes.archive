@@ -1,13 +1,15 @@
 /*
- *  ChromosomesDataReader.h
+ *  NaturalNumberTSVDataReader.h
  *  revbayes-proj
+ *
+ *  For reading in positive integer character data in tab separated files.
  *
  *  Created by Will Freyman on 9/8/14.
  */
 
 
-#ifndef ChromosomesDataReader_H
-#define ChromosomesDataReader_H
+#ifndef NaturalNumberTSVDataReader_H
+#define NaturalNumberTSVDataReader_H
 
 #include "DelimitedDataReader.h"
 #include <string>
@@ -22,22 +24,22 @@ namespace RevBayesCore {
      *
      *
      */
-    class ChromosomesDataReader : public DelimitedDataReader {
+    class NaturalNumberTSVDataReader : public DelimitedDataReader {
         
     public:
 		
-		ChromosomesDataReader(std::string fn, char d='\t');
+		NaturalNumberTSVDataReader(std::string fn, char d='\t');
 		
 		std::string getFilename(void);
 		std::vector<std::string> getNames(void);
-		std::vector<int> getCounts(void);
+		std::vector<int> getData(void);
 		
         
 		
 	protected:	
 		
         std::vector<std::string> names;
-		std::vector<int> counts;
+		std::vector<int> data;
 		std::string filename;
 		
     };
