@@ -6,8 +6,6 @@
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
-#include "ChromosomesState.h"
-#include "NaturalNumbersState.h"
 
 namespace RevLanguage {
     
@@ -61,6 +59,7 @@ namespace RevLanguage {
 #include "StandardState.h"
 #include "PomoState.h"
 #include "ChromosomesState.h"
+#include "NaturalNumbersState.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -489,7 +488,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 	else if ( dt == "Mk1" )
     {
         // we get the number of states from the rates matrix
-        // set the rate matrix
         size_t nChars = 1;
         if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
         {
@@ -623,6 +621,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMember
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "Chromosomes" );
+		options.push_back( "Mk1" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         
         rulesSet = true;
