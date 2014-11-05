@@ -67,9 +67,9 @@ void RateMatrix_Mk1::buildRateMatrix(void)
 			}
         }
     }
-    
     // set the diagonal values
     setDiagonal();
+
 }
 
 

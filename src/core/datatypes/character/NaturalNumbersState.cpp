@@ -177,7 +177,7 @@ bool NaturalNumbersState::isAmbiguous( void ) const {
 
 bool NaturalNumbersState::isGapState( void ) const {
     
-    return state == 0x0;
+	return false;
 }
 
 

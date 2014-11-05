@@ -177,7 +177,7 @@ bool ChromosomesState::isAmbiguous( void ) const {
 
 bool ChromosomesState::isGapState( void ) const {
     
-    return state == 0x0;
+    return false;
 }
 
 

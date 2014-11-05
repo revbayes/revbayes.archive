@@ -42,8 +42,8 @@ root_frequencies := simplex(1,1,1)
 #############
 
 mi <- 0
-moves[mi++] <- mvScale(lambda, tune=true) 
-moves[mi++] <- mvScale(pr_lambda, tune=true)
+moves[mi++] <- mvScale(lambda) 
+moves[mi++] <- mvScale(pr_lambda)
 
 
 ###############

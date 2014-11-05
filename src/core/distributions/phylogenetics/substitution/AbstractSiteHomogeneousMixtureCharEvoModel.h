@@ -908,44 +908,49 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
         // create the character
         charType c;
         c.setToFirstState();
-		
-        // draw the state
-        double u = rng->uniform01();
-        const std::vector<double> p_site = (*marginals)[i];
-		
-		// sum the likelihoods for each character for this site
+
+		// sum the likelihoods for each character state
+		const std::vector<double> siteMarginals = (*marginals)[i];
 		double sumMarginals = 0.0;
-		for (int j = 0; j < p_site.size(); j++) {
-			sumMarginals += p_site[j];
+		for (int j = 0; j < siteMarginals.size(); j++) {
+			sumMarginals += siteMarginals[j];
 		}
-		
-		size_t index = 0;
-		bool set_state = false;
-        while ( index < c.getNumberOfStates() ) 
-        {
-			// find the most probable character
-            u -= p_site[index]/sumMarginals;
+
+		double u = rng->uniform01();
+		if (sumMarginals == 0.0) {
 			
-            if ( u > 0.0 )
-            {
-                ++c;
-                ++index;
-            }
-            else 
-            {
-				set_state = true;
-                break;
-            }
-            
-        }
-		// if for some reason we haven't set the state, set it randomly
-		if (!set_state) {
+			// randomly draw state if all states have 0 probability
 			c.setState((size_t)(u*c.getNumberOfStates()));
+			
+		} else {
+			
+			// the marginals don't add up to 1, so rescale u
+			u *= sumMarginals;
+			
+			// draw the character state
+			size_t stateIndex = 0;
+			while ( true ) {
+				
+				u -= siteMarginals[stateIndex];
+				
+				if ( u > 0.0 ) {
+					
+					c++;
+					stateIndex++;
+					
+					if ( stateIndex == c.getNumberOfStates() ) {
+						stateIndex = 0;
+						c.setToFirstState();
+					}
+					
+				} else {
+					break;
+				}
+			}		
 		}
         // add the character to the sequence
         ancestralSeq.push_back( c );
     }
-	
 	
     // we need to free the vector
     delete marginals;
@@ -1309,7 +1314,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
             // get the ancestral character for this site
             unsigned long parentState = parent.getCharacter( i ).getState();
             size_t p = 0;
-            while ( parentState != 1 ) 
+            while ( parentState != 1 && p < transitionProbMatrices.size() ) 
             {
                 // shift to the next state
                 parentState >>= 1;
