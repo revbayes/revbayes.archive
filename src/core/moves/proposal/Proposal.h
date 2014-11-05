@@ -3,7 +3,7 @@
 
 #include "Cloneable.h"
 
-#include <vector>
+#include <set>
 
 namespace RevBayesCore {
     

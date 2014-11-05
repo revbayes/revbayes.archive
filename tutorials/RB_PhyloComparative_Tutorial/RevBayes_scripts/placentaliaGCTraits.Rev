@@ -132,7 +132,7 @@ seq.clamp(seqData)
 
 
 # finally, create model
-mymodel <- model(kappa)
+mymodel = model(kappa)
 
 
 ######### 
@@ -140,45 +140,33 @@ mymodel <- model(kappa)
 #########
 
 # initialize index
-index <- 1
+index <- 0
 
 # rescaling moves on speciation and extinction rates
-moves[index] <- mvScale(speciation, lambda=1, tune=true, weight=3.0)
-index <- index + 1
-moves[index] <- mvScale(extinction, lambda=1, tune=true, weight=3.0)
-index <- index + 1
+moves[++index] = mvScale(speciation, lambda=1, tune=true, weight=3.0)
+moves[++index] = mvScale(extinction, lambda=1, tune=true, weight=3.0)
 
 # moves on the tree: only relative dates
-moves[index] <- mvSubtreeScale(psi, weight=5.0)
-index <- index + 1
-moves[index] <- mvNodeTimeSlideUniform(psi, weight=10.0)
-index <- index + 1
+moves[++index] = mvSubtreeScale(psi, weight=5.0)
+moves[++index] = mvNodeTimeSlideUniform(psi, weight=10.0)
 
 # if we wanted to, we could also move the tree topology
 # and integrate over the posterior induced by the sequence data
 # but mixing is currently a bit challenging 
-# moves[index] <- mvNNI(psi, weight=5.0)
-# index <- index + 1
-# moves[index] <- mvFNPR(psi, weight=5.0)
-# index <- index + 1
+# moves[++index] = mvNNI(psi, weight=5.0)
+# moves[++index] <- mvFNPR(psi, weight=5.0)
 
 # moves on kappa
-moves[index] <- mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
-index <- index + 1
+moves[++index] = mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
 
 # conjugate Gibbs move on covariance matrix
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
-index <- index + 1
+moves[++index] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
 
 # moves on the Brownian process
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=10,tune=true,weight=100) 
-index <- index + 1
+moves[++index] = mvMultivariatePhyloProcessSliding(process=X,lambda=10,tune=true,weight=100) 
 moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
-index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=1,tune=true,weight=1) 
-index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
-index <- index + 1
 
 # moves on pi
 moves[index] <- mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)

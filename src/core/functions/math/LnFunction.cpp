@@ -11,8 +11,10 @@
 
 using namespace RevBayesCore;
 
-LnFunction::LnFunction(const TypedDagNode<double> *x) : ContinuousFunction( new double(0.0) ), a( x ) {
-    addParameter( x );
+LnFunction::LnFunction(const TypedDagNode<double> *x) : ContinuousFunction( new double(0.0) ),
+    a( x )
+{
+    addParameter( a );
 
 }
 
@@ -22,8 +24,10 @@ LnFunction* LnFunction::clone( void ) const {
 }
 
 
-void LnFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == a) {
+void LnFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == a)
+    {
         a = static_cast<const TypedDagNode<double>* >( newP );
     }
 }
