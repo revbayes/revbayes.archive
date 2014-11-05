@@ -59,19 +59,17 @@ mymodel <- model(Q)
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda)
 monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", printgen=10, separator = "	", psi)
-monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log",printgen=10, separator = "	", branchlengthtree=psi, character=seq, type="Mk1")
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log",printgen=10, separator = "	", branchlengthtree=psi, character=seq, type="NaturalNumbers")
 monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_model.log",printgen=10, separator = "	")
 
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
-#mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(1000)
 
-# summarize results, first get the MAP tree
-treetrace <- readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", treetype="non-clock", separator="	"); 
-map <- mapTree(treetrace,"/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_map.tree")
-
-# now summarize ancestral states over the MAP tree
+# now summarize ancestral states over the tree
 ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log", separator="	"); 
 ancestral_state_tree_trace <- readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", treetype="non-clock", separator="	"); 
-ancestralStateTree(map, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_map_states.tree")
+ancestralStateTree(psi, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_final.tree")
+
+# The tree trace steps were necessary because the ancestralStateTree function does not
+# assume the topology is fixed.

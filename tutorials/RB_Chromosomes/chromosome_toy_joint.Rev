@@ -66,11 +66,11 @@ moves[mi++] <- mvNNI(topology)
 #### Specify a prior and moves on the branch lengths ####
 # create a random variable for each branch length using a for loop
 for (i in 1:n_branches) {
-    # We use here the exponential distribution with rate 1.0 as the branch length prior
-    br_lens[i] ~ dnExponential(10.0)
+    # We use here the exponential distribution with rate 0.1 as the branch length prior
+    br_lens[i] ~ dnExponential(1.0)
 
     # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
-    moves[mi++] <- mvScale(br_lens[i])
+	moves[mi++] <- mvScale(br_lens[i])
 }
 
 TL := sum(br_lens)
@@ -175,9 +175,9 @@ mymodel <- model(chromo)
 
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
-monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.trees", printgen=10, separator = "	", phylogeny)
-monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.log",printgen=10, separator = "	", branchlengthtree=phylogeny, character=chromo, type="Chromosomes")
-monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint_model.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", printgen=10, separator = "	", phylogeny)
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log",printgen=10, separator = "	", branchlengthtree=phylogeny, character=chromo, type="Chromosomes")
+monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_model.log",printgen=10, separator = "	")
 
 
 # set up mcmc
@@ -186,12 +186,12 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 mymcmc.run(50000)
 
 
-
-# summarize results, first get the MAP tree
-treetrace <- readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.trees", treetype="non-clock", separator="	"); 
-map <- mapTree(treetrace,"/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_joint_map.tree")
+# Summarize the results, first get the MAP tree.
+# These steps are necessary because the topology was not fixed.
+treetrace <- readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", treetype="non-clock", separator="	"); 
+map <- mapTree(treetrace,"/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_map.tree")
 
 # now summarize ancestral states over the MAP tree
-ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.log", separator="	"); 
-ancestral_state_tree_trace <- readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint.trees", treetype="non-clock", separator="	"); 
-ancestralStateTree(map, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/anc_states_chromosome_test_toy_joint_map_states.tree")
+ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log", separator="	"); 
+ancestral_state_tree_trace <- readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", treetype="non-clock", separator="	"); 
+ancestralStateTree(map, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_final.tree")

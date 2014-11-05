@@ -54,7 +54,7 @@ void Mntr_AncestralState::constructInternalObject( void )
 		// store the new model into our value variable
 		value = m;
 
-	} else if (character == "Mk1") {
+	} else if (character == "NaturalNumbers") {
 			
 			RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState>(t, ch, (unsigned long)g, fn, sep);
 			// now set the flags
@@ -63,7 +63,7 @@ void Mntr_AncestralState::constructInternalObject( void )
 			value = m;
 			
 	} else {
-		throw RbException( "Incorrect type of character evolution model specified. Valid options are: Mk1, Chromosomes" );
+		throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, Chromosomes" );
 	}
 
     
