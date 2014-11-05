@@ -123,7 +123,7 @@ seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockrate, nSites=nSites, type="DNA
 seq.clamp(seqData)
 
 # create model
-mymodel <- model(kappa)
+mymodel = model(kappa)
 
 ######### 
 # moves

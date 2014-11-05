@@ -43,27 +43,26 @@ namespace RevBayesCore {
         void                                                touch(DagNode *toucher );
         void                                                update(void);
         
-        // a test
-        const std::vector<const TypedDagNode<valueType>* >& getParams() const { return parameters; }
-        
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
         
     private:
         
         // members
-        std::vector<const TypedDagNode<valueType>* >        parameters;
+        std::vector<const TypedDagNode<valueType>* >        vectorParams;
         
     };
     
 }
 
 template <class valueType>
-RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args) : TypedFunction< RbVector<valueType> >( new RbVector<valueType>() ), parameters( args ) {
+RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args) : TypedFunction< RbVector<valueType> >( new RbVector<valueType>() ),
+    vectorParams( args )
+{
 
     // add the lambda parameter as a parent
     typename std::vector<const TypedDagNode<valueType>* >::iterator it;
-    for (it = parameters.begin(); it != parameters.end(); ++it)
+    for (it = vectorParams.begin(); it != vectorParams.end(); ++it)
     {
         this->addParameter( *it );
     }
@@ -73,19 +72,22 @@ RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const 
 
 
 template <class valueType>
-RevBayesCore::VectorFunction<valueType>::~VectorFunction( void ) {
+RevBayesCore::VectorFunction<valueType>::~VectorFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
 template <class valueType>
-RevBayesCore::VectorFunction<valueType>* RevBayesCore::VectorFunction<valueType>::clone( void ) const {
+RevBayesCore::VectorFunction<valueType>* RevBayesCore::VectorFunction<valueType>::clone( void ) const
+{
     return new VectorFunction<valueType>( *this );
 }
 
 template <class valueType>
-void RevBayesCore::VectorFunction<valueType>::keep( DagNode *toucher ) {
+void RevBayesCore::VectorFunction<valueType>::keep( DagNode *toucher )
+{
     TypedFunction< RbVector<valueType> >::keep( toucher );
     this->dagNode->clearTouchedElementIndices();
 }
@@ -116,7 +118,7 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
             updateAll = false;
             for (std::set<size_t>::const_iterator it = indices.begin(); it != indices.end(); ++it)
             {
-                (*this->value)[*it] = parameters[*it]->getValue();
+                (*this->value)[*it] = vectorParams[*it]->getValue();
             }
             
         }
@@ -128,7 +130,7 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
         this->value->clear();
         
         typename std::vector<const TypedDagNode<valueType>* >::iterator it;
-        for (it = parameters.begin(); it != parameters.end(); ++it) {
+        for (it = vectorParams.begin(); it != vectorParams.end(); ++it) {
             this->value->push_back( (*it)->getValue() );
         }
     }
@@ -138,11 +140,12 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
 
 
 template <class valueType>
-void RevBayesCore::VectorFunction<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::VectorFunction<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    for (size_t i = 0; i < parameters.size(); ++i) {
-        if (oldP == parameters[i]) {
-            parameters[i] = static_cast<const TypedDagNode<valueType>* >( newP );
+    for (size_t i = 0; i < vectorParams.size(); ++i) {
+        if (oldP == vectorParams[i]) {
+            vectorParams[i] = static_cast<const TypedDagNode<valueType>* >( newP );
             // we can jump out of the loop now
             break;
         }
@@ -157,9 +160,9 @@ void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher ) {
     //delegate to base class
     TypedFunction< RbVector<valueType> >::touch( toucher );
     
-    for (size_t i = 0; i < parameters.size(); ++i) 
+    for (size_t i = 0; i < vectorParams.size(); ++i)
     {
-        if (toucher == parameters[i]) 
+        if (toucher == vectorParams[i]) 
         {
             this->dagNode->addTouchedElementIndex( i );
             // we can jump out of the loop now

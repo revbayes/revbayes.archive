@@ -40,11 +40,11 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmpRates = static_cast<const ModelVector<RealPos> &>( rates->getRevObject() ).getDagNode();
     std::vector< RevBayesCore::StochasticNode<double> *> rates;
     RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *>( tmpRates );
-    const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = static_cast< const RevBayesCore::VectorFunction<double> &>( dnode->getFunction() ).getParams();
+    const std::set<const RevBayesCore::DagNode* >& pars = dnode->getFunction().getParameters();
 
-    for (size_t i = 0; i < pars.size(); ++i)
+    for (std::set<const RevBayesCore::DagNode* >::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
-        rates.push_back( const_cast<RevBayesCore::StochasticNode<double>* >(static_cast<const RevBayesCore::StochasticNode<double>* >( pars[i] ) ) );
+        rates.push_back( const_cast<RevBayesCore::StochasticNode<double>* >(static_cast<const RevBayesCore::StochasticNode<double>* >( *it ) ) );
     }
     
     value = new RevBayesCore::RateAgeBetaShift(t, rates, d, at, w);

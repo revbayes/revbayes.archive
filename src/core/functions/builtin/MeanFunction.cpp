@@ -2,7 +2,9 @@
 
 using namespace RevBayesCore;
 
-MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ), vals( v ) {
+MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
+    vals( v )
+{
     // add the parameters as parents
     this->addParameter( vals );
     
