@@ -1,5 +1,5 @@
 /*
- *  ChromosomesDataReader.cpp
+ *  NaturalNumberTSVDataReader.cpp
  *  revbayes-proj
  *
  *  Created by Will Freyman on 9/8/14.
@@ -7,7 +7,7 @@
  */
 
 
-#include "ChromosomesDataReader.h"
+#include "NaturalNumberTSVDataReader.h"
 #include "RbFileManager.h"
 
 #include <boost/foreach.hpp>
@@ -26,7 +26,7 @@
 using namespace RevBayesCore;
 
 
-ChromosomesDataReader::ChromosomesDataReader(std::string fn, char d) : DelimitedDataReader(fn, d) {
+NaturalNumberTSVDataReader::NaturalNumberTSVDataReader(std::string fn, char d) : DelimitedDataReader(fn, d) {
 	
    filename = fn;
 	int i = 0;
@@ -35,25 +35,25 @@ ChromosomesDataReader::ChromosomesDataReader(std::string fn, char d) : Delimited
 		std::string name = DelimitedDataReader::getChars()[i][0];
 		
 		names.push_back( name );
-		int count = boost::lexical_cast<int>(DelimitedDataReader::getChars()[i][1]);
+		int d = boost::lexical_cast<int>(DelimitedDataReader::getChars()[i][1]);
 		
-		counts.push_back( count );
+		data.push_back( d );
 		i++;
 	}
 }
 
 
-std::vector<std::string> ChromosomesDataReader::getNames(void)
+std::vector<std::string> NaturalNumberTSVDataReader::getNames(void)
 {
     return names;
 }
 
-std::vector<int> ChromosomesDataReader::getCounts(void)
+std::vector<int> NaturalNumberTSVDataReader::getData(void)
 {
-    return counts;
+    return data;
 }
 
-std::string ChromosomesDataReader::getFilename(void)
+std::string NaturalNumberTSVDataReader::getFilename(void)
 {
     return filename;
 }

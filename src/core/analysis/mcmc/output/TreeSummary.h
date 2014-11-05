@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <map>
 #include <boost/lexical_cast.hpp>
+#include <string>
 
 namespace RevBayesCore {
 
@@ -330,12 +331,13 @@ namespace RevBayesCore {
 						state3 = states[inputCladeIndex][j];
 					}
 				}
-				std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp);
+
+				std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp).substr(0,6);
 				if (state2_pp > 0) {
-					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp);
+					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp).substr(0,6);
 				}
 				if (state3_pp > 0) {
-					final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp);
+					final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp).substr(0,6);
 				}
 				if ((1 - (state1_pp+state2_pp+state3_pp)) > 0) {
 					double other_states = 1.0 - (state1_pp+state2_pp+state3_pp);
