@@ -158,8 +158,6 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             }
             else
             {
-//                RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
-//                conversionObject->makeConversionValue( theVar );
                 
                 const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
                 const TypeSpec& typeTo   = *it;
@@ -183,6 +181,9 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 
                 // Evaluate the function
                 RevPtr<Variable> conversionVar = func->execute();
+                
+                // free the memory
+                delete func;
                 
                 conversionVar->setHiddenVariableState( true );
                 conversionVar->setRevObjectTypeSpec( *it );
