@@ -222,7 +222,7 @@ void ScreenMonitor::printHeader( void )
     // print one column for the iteration number
     std::string header = "Iter";
 
-    int width = 4;
+    int width = 5;
     
     int numWidth = int( log10( numCycles ) ) + 1;
     width = width > numWidth ? width : numWidth;
