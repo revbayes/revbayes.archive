@@ -14,11 +14,11 @@ source("RevBayes_scripts/models/noclock_GTR.Rev")
 
 monitors[1] = mnModel(filename="output/fagus_GTR_posterior.log",printgen=10, separator = TAB)
 monitors[2] = mnFile(filename="output/fagus_GTR_posterior.trees",printgen=10, separator = TAB, phylogeny)
-monitors[3] = mnScreen(printgen=10, TL)
+monitors[3] = mnScreen(printgen=1000, TL)
 
 mymcmc = mcmc(mymodel, monitors, moves)
 
-mymcmc.run(generations=500)
+mymcmc.run(generations=5000)
 
 
 # Now, we will analyze the tree output.

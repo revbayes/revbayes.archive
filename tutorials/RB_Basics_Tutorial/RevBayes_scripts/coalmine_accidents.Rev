@@ -36,7 +36,7 @@ for (i in 1:year.size() ) {
 mymodel = model( theta )
 
 monitors[1] = mnModel(filename="output/coal_accidents.log",printgen=10, separator = TAB)
-monitors[2] = mnScreen(printgen=10, eta, lambda, gamma, theta)
+monitors[2] = mnScreen(printgen=1000, eta, lambda, gamma, theta)
 
 mymcmc = mcmc(mymodel, monitors, moves)
 
