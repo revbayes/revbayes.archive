@@ -18,6 +18,7 @@
 #include "TypeSpec.h"
 #include "ChromosomesState.h"
 #include "NaturalNumbersState.h"
+#include "DnaState.h"
 
 using namespace RevLanguage;
 
@@ -62,8 +63,16 @@ void Mntr_AncestralState::constructInternalObject( void )
 			// store the new model into our value variable
 			value = m;
 			
+	} else if (character == "DNA") {
+		
+		RevBayesCore::AncestralStateMonitor<RevBayesCore::DnaState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::DnaState>(t, ch, (unsigned long)g, fn, sep);
+		// now set the flags
+		m->setAppend( ap );
+		// store the new model into our value variable
+		value = m;
+		
 	} else {
-		throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, Chromosomes" );
+		throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, DNA, Chromosomes" );
 	}
 
     
