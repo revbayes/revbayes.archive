@@ -27,16 +27,16 @@ monitors[1] = mnFile(filename="output/UCLN_bears_mcmc.log", printgen=10,
 							er, sf,
 							mean_rt, ucln_mean, ucln_sigma, branch_rates, base_rate)
 monitors[2] = mnFile(filename="output/UCLN_bears_mcmc.trees", printgen=10, timetree)
-monitors[3] = mnScreen(printgen=10, mean_rt, ucln_mean, root_time, base_rate)
+monitors[3] = mnScreen(printgen=1000, mean_rt, ucln_mean, root_time, base_rate)
 
 ### workspace mcmc ###
 mymcmc = mcmc(mymodel, monitors, moves)
 
 ### pre-burnin to tune the proposals ###
-mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.burnin(generations=1000,tuningInterval=250)
 
 ### run the MCMC ###
-mymcmc.run(generations=400)
+mymcmc.run(generations=5000)
 
 ### display proposal acceptance rates and tuning ###
 mymcmc.operatorSummary()
