@@ -14,15 +14,15 @@ source("RevBayes_Scripts/mcmc_DPP.Rev")
 clear()
 
 
-source("RevBayes_Scripts/mlnl_GMC.Rev")
+source("RevBayes_Scripts/mlnl_GMC_bears.Rev")
 clear()
 
 
-source("RevBayes_Scripts/mlnl_UCLN.Rev")
+source("RevBayes_Scripts/mlnl_UCLN_bears.Rev")
 clear()
 
 
-source("RevBayes_Scripts/mlnl_ACLN.Rev")
+source("RevBayes_Scripts/mlnl_ACLN_bears.Rev")
 clear()
 
 
