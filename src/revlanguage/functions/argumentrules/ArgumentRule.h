@@ -48,7 +48,7 @@ namespace RevLanguage {
     protected:
         
         std::vector<TypeSpec>               argTypeSpecs;                                                                   //!< Type specs
-        Variable*                           defaultVar;                                                                     //!< Default value
+        RevPtr<Variable>                    defaultVar;                                                                     //!< Default value
         EvaluationType                      evalType;                                                                        //!< Is rule const?
         DagNodeType                         nodeType;
         std::string                         label;                                                                          //!< Label of argument
