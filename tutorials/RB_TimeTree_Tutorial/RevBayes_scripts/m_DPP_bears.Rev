@@ -13,7 +13,7 @@ br_M <- 5.4E-3
 br_s <- 0.05
 br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
 base_rate ~ dnLnorm(br_mu, br_s)
-moves[mi++] <- mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
+moves[mi++] = mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 
 ### get the number of branches in the tree
 n_branches <- 2 * n_taxa - 2
@@ -34,7 +34,7 @@ concentration <- mean_CP
 ### here it is a gamma distribution
 g0_a <- 4.0
 g0_b <- 8.0
-g0 <- dnGamma(g0_a, g0_b)
+g0 = dnGamma(g0_a, g0_b)
 
 ### the vector of branch rates are given a Dirichlet process prior
 ### this is conditioned on the concentration parameter, the base distribution, and the number of branches
@@ -52,11 +52,11 @@ mean_rt := mean(branch_rates)
 
 ### the Gibbs moves for the DPP-distributed variable
 ### these moves are always accepted and are never re-tuned
-moves[mi++] <- mvDPPScaleCatVals(branch_rates, ln(2.0), 1.0)
-moves[mi++] <- mvDPPAllocateAuxGibbs(branch_rates, 4, 1.0)
-moves[mi++] <- mvDPPScaleCatAllocateAux(branch_rates, ln(2.0), 4, 6.0)
+moves[mi++] = mvDPPScaleCatVals(branch_rates, ln(2.0), 1.0)
+moves[mi++] = mvDPPAllocateAuxGibbs(branch_rates, 4, 1.0)
+moves[mi++] = mvDPPScaleCatAllocateAux(branch_rates, ln(2.0), 4, 6.0)
 ### un-comment the mvDPPGibbsConcentration move if you wish to estimate the concentration parameter
-#########moves[mi++] <- mvDPPGibbsConcentration(concentration, n_cats, cp_shape, cp_rate, n_branches, 2.0)
+#########moves[mi++] = mvDPPGibbsConcentration(concentration, n_cats, cp_shape, cp_rate, n_branches, 2.0)
 
 source("RevBayes_scripts/m_GTR.Rev")
 
