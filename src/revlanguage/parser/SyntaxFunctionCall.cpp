@@ -185,6 +185,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         }
         else
         {
+            delete theFunction;
             throw RbException("Error while trying to access member function/procedure.");
         }
         
