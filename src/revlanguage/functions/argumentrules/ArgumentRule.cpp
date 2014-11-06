@@ -302,12 +302,9 @@ bool RevLanguage::ArgumentRule::isEllipsis( void ) const
  * not use the isConst flag to denote whether an argument is supposed to be passed as
  * a constant currently, so the printing of this modifier is suspended for now.
  *
- * @todo Revise the usage and printing of the isConst flag
  */
-void RevLanguage::ArgumentRule::printValue(std::ostream &o) const {
-
-//    if ( isConstant() )
-//        o << "const ";
+void RevLanguage::ArgumentRule::printValue(std::ostream &o) const
+{
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
