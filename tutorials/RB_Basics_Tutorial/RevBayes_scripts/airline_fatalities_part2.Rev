@@ -34,7 +34,7 @@ for (i in 1:x.size() ) {
 mymodel = model( alpha )
 
 monitors[1] = mnModel(filename="output/airline_fatalities.log",printgen=1, separator = TAB)
-monitors[2] = mnScreen(printgen=1, alpha, beta)
+monitors[2] = mnScreen(printgen=1000, alpha, beta)
 
 mymcmc = mcmc(mymodel, monitors, moves)
 

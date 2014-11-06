@@ -16,7 +16,7 @@ source("RevBayes_scripts/models/noclock_GTR.Rev")
 
 ### Compute power posterior distributions
 pow_p = powerPosterior(mymodel, moves, "output/pow_p_noclock_GTR.out", cats=50) 
-pow_p.burnin(generations=10000,tuningInterval=1000)
+pow_p.burnin(generations=10000,tuningInterval=250)
 pow_p.run(generations=1000)  
 
 ### Use stepping-stone sampling to calculate marginal likelihoods
