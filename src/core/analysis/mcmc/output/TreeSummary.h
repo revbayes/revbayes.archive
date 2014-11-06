@@ -341,7 +341,7 @@ namespace RevBayesCore {
 				}
 				if ((1 - (state1_pp+state2_pp+state3_pp)) > 0) {
 					double other_states = 1.0 - (state1_pp+state2_pp+state3_pp);
-					final_state = final_state + "," + "other=" + boost::lexical_cast<std::string>(other_states);
+					final_state = final_state + "," + "other=" + boost::lexical_cast<std::string>(other_states).substr(0,6);
 				} 
 				final_state += "}";
 				

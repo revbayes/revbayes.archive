@@ -5,10 +5,12 @@
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "StochasticNode.h"
+#include "DnaState.h"
 
 #include <fstream>
 #include <string>
 #include <vector>
+#include <typeinfo>
 
 #define FAILED 0
 #define PASSED 1
@@ -218,7 +220,7 @@ void AncestralStateMonitor<characterType>::monitor(unsigned long gen)
 				for (int j = 0; j < ancestralStates.size(); j++)
 				{
 					outStream << ancestralStates[j].getStringValue();
-					if (j != ancestralStates.size()-1) {
+					if (j != ancestralStates.size()-1 && typeid(ancestralStates[j]) != typeid(DnaState) ) {
 						outStream << ",";
 					}
 				}
