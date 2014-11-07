@@ -1065,7 +1065,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFreq
     }
     
     // add the new parameter
-    addParameter( rootFrequencies );
+    this->addParameter( rootFrequencies );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -1080,7 +1080,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
 {
     
     // remove the old parameter first
-    removeParameter( siteRates );
+    this->removeParameter( siteRates );
     
     if ( r != NULL )
     {
@@ -1101,7 +1101,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
     }
     
     // add the new parameter
-    addParameter( siteRates );
+    this->addParameter( siteRates );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
