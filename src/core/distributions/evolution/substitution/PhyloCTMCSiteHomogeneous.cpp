@@ -15,38 +15,10 @@ double RevBayesCore::computeRootLikelihood2Nodes(const double *p_left,
                                                       const double p_inv,
                                                       const std::vector<bool> & siteInvariant,
                                                       const std::vector<size_t> & invariantSiteIndex) {
-    double lnProb = 0.0;
-    std::vector<double> per_mixture_Likelihoods = std::vector<double>(numPatterns,0.0);
-    // get pointers the likelihood for both subtrees
-    const double*   p_mixture_left     = p_left;
-    const double*   p_mixture_right    = p_right;
-    std::cerr << "computeRootLikelihood2Nodes numStates = " << numStates << " numPatterns = " << numPatterns << " p_inv = " << p_inv << "\n";
-    //debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
-    //debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
-    //debug_vec("rootFreq", rootFreq, numStates);
-    //debug_vec("patternCounts", patternCounts, numPatterns);
-    // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < numSiteRates; ++mixture) {
-        // get pointers to the likelihood for this mixture category
-        const double*   p_site_mixture_left     = p_mixture_left;
-        const double*   p_site_mixture_right    = p_mixture_right;
-        // iterate over all sites
-        for (size_t site = 0; site < numPatterns; ++site) {
-            // temporary variable storing the likelihood
-            double tmp = 0.0;
-            const double* p_site_left_j   = p_site_mixture_left;
-            const double* p_site_right_j  = p_site_mixture_right;
-            for (size_t i = 0; i < numStates; ++i) {
-                tmp += p_site_left_j[i] * p_site_right_j[i] * rootFreq[i];
-            }
-            per_mixture_Likelihoods[site] += tmp;
-            // increment the pointers to the next site
-            p_site_mixture_left+=siteOffset;
-            p_site_mixture_right+=siteOffset;
-        }
-        p_mixture_left+=mixtureOffset; p_mixture_right+=mixtureOffset;
-    }
+    std::vector<double> per_mixture_Likelihoods;
+    fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
     // sum the log-likelihoods for all sites together
+    double lnProb = 0.0;
     double oneMinusPInv = 1.0 - p_inv;
     if ( p_inv > 0.0 ) {
         for (size_t site = 0; site < numPatterns; ++site) {
@@ -77,43 +49,12 @@ double RevBayesCore::computeRootLikelihood3Nodes(const double *p_left,
                                                  const double p_inv,
                                                  const std::vector<bool> & siteInvariant,
                                                  const std::vector<size_t> & invariantSiteIndex) {
-    double lnProb = 0.0;
     // create a vector for the per mixture likelihoods
     // we need this vector to sum over the different mixture likelihoods
     std::vector<double> per_mixture_Likelihoods = std::vector<double>(numPatterns,0.0);
-    const double*   p_mixture_left     = p_left;
-    const double*   p_mixture_right    = p_right;
-    const double*   p_mixture_middle   = p_middle;
-    std::cerr << "computeRootLikelihood3Nodes numStates = " << numStates << " numPatterns = " << numPatterns << " p_inv = " << p_inv << "\n";
-    //debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
-    //debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
-    //debug_vec("p_middle", p_middle, numStates * numSiteRates * numPatterns);
-    //debug_vec("rootFreq", rootFreq, numStates);
-    //debug_vec("patternCounts", patternCounts, numPatterns);
-    for (size_t mixture = 0; mixture < numSiteRates; ++mixture) {
-        const double*   p_site_mixture_left     = p_mixture_left;
-        const double*   p_site_mixture_right    = p_mixture_right;
-        const double*   p_site_mixture_middle   = p_mixture_middle;
-        for (size_t site = 0; site < numPatterns; ++site) {
-            double tmp = 0.0;
-            const double* p_site_left_j   = p_site_mixture_left;
-            const double* p_site_right_j  = p_site_mixture_right;
-            const double* p_site_middle_j = p_site_mixture_middle;
-            // iterate over all starting states
-            for (size_t i = 0; i < numStates; ++i) {
-                tmp += p_site_left_j[i] * p_site_right_j[i] * p_site_middle_j[i] * rootFreq[i];
-            }
-            per_mixture_Likelihoods[site] += tmp;
-            // increment the pointers to the next site
-            p_site_mixture_left+=siteOffset;
-            p_site_mixture_right+=siteOffset;
-            p_site_mixture_middle+=siteOffset;
-        } // end-for over all sites (=patterns)
-        p_mixture_left+=mixtureOffset;
-        p_mixture_right+=mixtureOffset;
-        p_mixture_middle+=mixtureOffset;
-    } // end-for over all mixtures (=rate categories)
+    fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, p_middle, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
     // sum the log-likelihoods for all sites together
+    double lnProb = 0.0;
     double oneMinusPInv = 1.0 - p_inv;
     if ( p_inv > 0.0 ) {
         for (size_t site = 0; site < numPatterns; ++site) {
@@ -123,7 +64,7 @@ double RevBayesCore::computeRootLikelihood3Nodes(const double *p_left,
             } else {
                 prob = oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates;
             }
-            lnProb += log(prob) * patternCounts[site];
+            lnProb += log(prob) * patternCounts[site];    
         }
     } else {
         for (size_t site = 0; site < numPatterns; ++site) {

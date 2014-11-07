@@ -97,5 +97,46 @@ class VariableOnlyNoMissingAscertainmentBiasCorrectionStruct : public VariableOn
                                                       const std::vector<bool> & siteInvariant,
                                                       const std::vector<size_t> & invariantSiteIndex) const ;
 };
+
+class MissingAwareVariableOnlyAscertainmentBiasCorrection : public VariableOnlyAscBiasCorrection {
+    public:
+        MissingAwareVariableOnlyAscertainmentBiasCorrection(const size_t numStates,const size_t numMixtures=0);
+        virtual ~MissingAwareVariableOnlyAscertainmentBiasCorrection();
+        virtual size_t GetNumProxyPatterns(const size_t numPatterns) const {
+            return this->numStates;
+        }
+        virtual void fillProxyTip(std::vector<bool> & proxyGapNode, std::vector<unsigned long> & proxyData, 
+                                        const size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node) const;
+        virtual void fillProxyInvariants(std::vector<bool> & proxyInv, std::vector<unsigned long> & proxyInvSiteInd, std::vector<size_t> & proxyPatCount, 
+                                         const size_t * patternCounts, const size_t nPatterns, const std::vector<bool> &inv, const std::vector<unsigned long> &invSiteInd) const;
+        virtual double calcMatrixAscBias(double lnProbConstantFromLnSum, const size_t * patternCounts, const size_t nPatterns) const;
+
+    protected:
+        virtual double calcAscBiasTempFromProxies2Node(const double *p_left,
+                                                      const double *p_right,
+                                                      const size_t numSiteRates,
+                                                      const double * rootFreq,
+                                                      const size_t numStates,
+                                                      const size_t * patternCounts,
+                                                      const size_t numPatterns,
+                                                      const size_t siteOffset,
+                                                      const size_t mixtureOffset,
+                                                      const double p_inv,
+                                                      const std::vector<bool> & siteInvariant,
+                                                      const std::vector<size_t> & invariantSiteIndex) const ;
+        virtual double calcAscBiasTempFromProxies3Node(const double *p_left,
+                                                      const double *p_right,
+                                                      const double *p_middle,
+                                                        const size_t numSiteRates,
+                                                      const double * rootFreq,
+                                                      const size_t numStates,
+                                                      const size_t * patternCounts,
+                                                      const size_t numPatterns,
+                                                      const size_t siteOffset,
+                                                      const size_t mixtureOffset,
+                                                      const double p_inv,
+                                                      const std::vector<bool> & siteInvariant,
+                                                      const std::vector<size_t> & invariantSiteIndex) const ;
+};
 }
 #endif

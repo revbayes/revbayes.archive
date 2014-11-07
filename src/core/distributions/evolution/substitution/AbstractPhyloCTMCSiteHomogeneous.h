@@ -17,6 +17,25 @@
 
 namespace RevBayesCore {
 const size_t numActiveLikelihoods = 2; // compile-time constant, but should be runtime...
+void fillRootSiteLikelihoodVector(std::vector<double> & per_mixture_Likelihoods,
+                                  const double *p_mixture_left,
+                                  const double *p_mixture_right,
+                                  const size_t numSiteRates,
+                                  const double * rootFreq,
+                                  const size_t numStates,
+                                  const size_t numPatterns,
+                                  const size_t siteOffset,
+                                  const size_t mixtureOffset);
+void fillRootSiteLikelihoodVector(std::vector<double> & per_mixture_Likelihoods,
+                                  const double *p_mixture_left,
+                                  const double *p_mixture_right,
+                                  const double *p_mixture_middle,
+                                  const size_t numSiteRates,
+                                  const double * rootFreq,
+                                  const size_t numStates,
+                                  const size_t numPatterns,
+                                  const size_t siteOffset,
+                                  const size_t mixtureOffset);
 double lnSumRootPatternProbabilities2Nodes(const double *p_left,
                                    const double *p_right,
                                    const size_t numSiteRates,
