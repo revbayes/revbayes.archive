@@ -92,11 +92,11 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSite
                               false);
 }
 void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillProxyTip(std::vector<bool> & proxyGapNode,
-                                                                                        std::vector<unsigned long> proxyData,
-                                                                                        size_t nPatterns,
+                                                                                        std::vector<unsigned long> & proxyData,
+                                                                                        const size_t nPatterns,
                                                                                         const std::vector<bool> &gap_node,
-                                                                                        const std::vector<unsigned long> &char_node)  {
-    const size_t numProxyPatterns = this->GetNumProxyPatterns();
+                                                                                        const std::vector<unsigned long> &char_node) const {
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
     proxyGapNode.resize(numProxyPatterns, false);
     proxyData.resize(numProxyPatterns);
     for (unsigned long i = 0; i < numProxyPatterns; ++i) {
@@ -104,17 +104,20 @@ void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillP
     }
 }
 
-void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillProxyInvariants(std::vector<bool> & proxyInvariantSiteIndex,
-                                                                                        std::vector<unsigned long> proxyInvariantSiteIndex,
-                                                                                        size_t nPatterns,
+void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillProxyInvariants(std::vector<bool> & proxyInvariants,
+                                                                                        std::vector<unsigned long> & proxyInvariantSiteIndex,
+                                                                                        std::vector<size_t> & proxyPatternCounts,
+                                                                                        const size_t * patternCounts,
+                                                                                        const size_t nPatterns,
                                                                                         const std::vector<bool> &siteInvariant,
-                                                                                        const std::vector<unsigned long> &invariantSiteIndex)  {
-    const std::vector<bool> allConstSiteInvariant(numProxyPatterns, true);
-    std::vector<size_t> proxyInvariantSiteIndex(numProxyPatterns, 0);
+                                                                                        const std::vector<unsigned long> &invariantSiteIndex) const {
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
+    proxyInvariants.assign(numProxyPatterns, true);
+    proxyInvariantSiteIndex.resize(numProxyPatterns);
     for (unsigned long i = 0; i < numProxyPatterns; ++i) {
         proxyInvariantSiteIndex[i] = i;
     }
-    const std::vector<size_t> proxyPatternCounts(numProxyPatterns, 1);
+    proxyPatternCounts.assign(numProxyPatterns, 1);
 }
 double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight,
                                                                                         const size_t nSiteRates,
@@ -142,9 +145,10 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     }
     const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
-    std::vector<bool> & proxyInvariantSiteIndex;
+    std::vector<bool> proxyInvariants;
     std::vector<unsigned long> proxyInvariantSiteIndex;
-    this->fillProxyInvariants(proxyInvariantSiteIndex, proxyInvariantSiteIndex, nPatterns, siteInvariant, invariantSiteIndex);
+    std::vector<size_t> proxyPatternCounts;
+    this->fillProxyInvariants(proxyInvariants, proxyInvariantSiteIndex, proxyPatternCounts, patternCounts, nPatterns, siteInvariant, invariantSiteIndex);
 
     const double lnProbConstant = lnSumRootPatternProbabilities2Nodes(&(this->partialLikelihoods[0]),
                                                                       &(aR->partialLikelihoods[0]),
@@ -156,7 +160,7 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
                                                                       siteOffset,
                                                                       mixtureOffset,
                                                                       p_inv,
-                                                                      allConstSiteInvariant,
+                                                                      proxyInvariants,
                                                                       proxyInvariantSiteIndex);
     /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
     if (lnProbConstant < -40) {

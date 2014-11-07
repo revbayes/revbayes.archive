@@ -21,8 +21,10 @@ class VariableOnlyAscBiasCorrection : public AscertainmentBiasCorrectionStruct {
         virtual double computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const size_t numPatterns, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const;
         virtual double computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight, const AscertainmentBiasCorrectionStruct * ascMiddle, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const size_t numPatterns, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const;
         virtual size_t GetNumProxyPatterns(const size_t numPatterns) const = 0;
-        virtual void fillProxyTip(std::vector<bool> & proxyGapNode, std::vector<unsigned long> proxyData, size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node) = 0;
-        virtual void fillProxyInvariants(std::vector<bool> & proxyInvariantSiteIndex, std::vector<unsigned long> proxyInvariantSiteIndex, size_t nPatterns, const std::vector<bool> &siteInvariant, const std::vector<unsigned long> &invariantSiteIndex) = 0;
+        virtual void fillProxyTip(std::vector<bool> & proxyGapNode, std::vector<unsigned long> & proxyData, 
+                                        const size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node) const = 0;
+        virtual void fillProxyInvariants(std::vector<bool> & proxyInv, std::vector<unsigned long> & proxyInvSiteInd, std::vector<size_t> & proxyPatCount, 
+                                         const size_t * patternCounts, const size_t nPatterns, const std::vector<bool> &inv, const std::vector<unsigned long> &invSiteInd) const = 0;
     protected:
         const size_t numStates;
         mutable size_t numMixtures; /* must be mutable in case we have to realloc in computeAscBias... */
@@ -36,8 +38,10 @@ class VariableOnlyNoMissingAscertainmentBiasCorrectionStruct : public VariableOn
         virtual size_t GetNumProxyPatterns(const size_t numPatterns) const {
             return this->numStates;
         }
-        virtual void fillProxyTip(std::vector<bool> & proxyGapNode, std::vector<unsigned long> proxyData, size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node);
-        virtual void fillProxyInvariants(std::vector<bool> & proxyInvariantSiteIndex, std::vector<unsigned long> proxyInvariantSiteIndex, size_t nPatterns, const std::vector<bool> &siteInvariant, const std::vector<unsigned long> &invariantSiteIndex);
+        virtual void fillProxyTip(std::vector<bool> & proxyGapNode, std::vector<unsigned long> & proxyData, 
+                                        const size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node) const;
+        virtual void fillProxyInvariants(std::vector<bool> & proxyInv, std::vector<unsigned long> & proxyInvSiteInd, std::vector<size_t> & proxyPatCount, 
+                                         const size_t * patternCounts, const size_t nPatterns, const std::vector<bool> &inv, const std::vector<unsigned long> &invSiteInd) const;
 };
 }
 #endif
