@@ -36,23 +36,6 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe) : T
 }
 
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n) : TypedFunction<RateMap>( n )
-{
-//    homogeneousGainLossRates = n.homogeneousGainLossRates;
-//    heterogeneousGainLossRates = n.heterogeneousGainLossRates;
-    homogeneousRateMatrix = n.homogeneousRateMatrix;
-    heterogeneousRateMatrices = n.heterogeneousRateMatrices;
-    homogeneousClockRate = n.homogeneousClockRate;
-    heterogeneousClockRates = n.heterogeneousClockRates;
-    geographyRateModifier = n.geographyRateModifier;
-    rootFrequencies = n.rootFrequencies;
-    
-    branchHeterogeneousClockRates = n.branchHeterogeneousClockRates;
-    branchHeterogeneousRateMatrices = n.branchHeterogeneousRateMatrices;
-    useGeographicDistance = n.useGeographicDistance;
-}
-
-
 BiogeographyRateMapFunction::~BiogeographyRateMapFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }

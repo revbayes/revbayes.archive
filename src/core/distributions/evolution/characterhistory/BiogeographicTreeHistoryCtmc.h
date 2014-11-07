@@ -39,7 +39,6 @@ namespace RevBayesCore {
         
     public:
         BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true, bool ut=false);
-        BiogeographicTreeHistoryCtmc(const BiogeographicTreeHistoryCtmc &n);                                                                         //!< Copy constructor
         virtual                                            ~BiogeographicTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
         // public member functions
@@ -183,30 +182,6 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     this->addParameter( heterogeneousRateMaps );
     this->addParameter( cladogenicStateFreqs );
     
-}
-
-
-template<class charType, class treeType>
-RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const BiogeographicTreeHistoryCtmc &d) : AbstractTreeHistoryCtmc<charType, treeType>( d ) {
-    // initialize with default parameters
-    rootFrequencies             = d.rootFrequencies;
-    siteRates                   = d.siteRates;
-    homogeneousRateMap          = d.homogeneousRateMap;
-    heterogeneousRateMaps       = d.heterogeneousRateMaps;
-    cladogenicStateFreqs        = d.cladogenicStateFreqs;
-    redrawCount                 = d.redrawCount;
-    useTail                     = d.useTail;
-    
-    // flags specifying which model variants we use
-    cladogenicState                             = d.cladogenicState;
-    buddingState                                = d.buddingState;
-    epochs                                      = d.epochs;
-    branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
-    branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
-    rateVariationAcrossSites                    = d.rateVariationAcrossSites;
-    cladogenicEvents                            = d.cladogenicEvents;
-    imperfectTipData                            = d.imperfectTipData;
-    forbidExtinction                            = d.forbidExtinction;
 }
 
 
@@ -1547,7 +1522,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParamet
     }
     else
     {
-        AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(oldP,newP);
+        AbstractTreeHistoryCtmc<charType, treeType>::swapParameterInternal(oldP,newP);
     }
     
 }

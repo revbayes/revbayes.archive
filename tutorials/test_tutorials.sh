@@ -51,9 +51,9 @@ cd ..
 
 # diversification rate estimation tutorial (pure birth (Yule), birth-death process, etc.)
 cd RB_Diversification_Tutorial
-rb RevBayes_Scripts/full_analysis.Rev
+#rb RevBayes_Scripts/full_analysis.Rev
 
-rm -r output
+#rm -r output
 
 cd ..
 
@@ -63,6 +63,17 @@ cd RB_PhyloComparative_Tutorial
 #rb RevBayes_Scripts/full_analysis.Rev
 
 #rm -r output
+#rm *.dot
+
+cd ..
+
+
+# biogeography tutorials
+cd RB_Biogeography_Tutorial
+rb RevBayes_Scripts/full_analysis.Rev
+
+rm -r output
+rm *.dot
 
 cd ..
 
