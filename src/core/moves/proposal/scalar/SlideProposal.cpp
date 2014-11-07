@@ -1,4 +1,4 @@
-#include "ScaleProposal.h"
+#include "SlideProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -9,14 +9,14 @@
 
 using namespace RevBayesCore;
 
-/** 
+/**
  * Constructor
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(), 
-    variable( n ), 
-    storedValue( 0.0 ), 
+SlideProposal::SlideProposal( ContinuousStochasticNode *n, double l) : Proposal(),
+    variable( n ),
+    storedValue( 0.0 ),
     lambda( l )
 {
     // tell the base class to add the node
@@ -30,7 +30,7 @@ ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(),
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void ScaleProposal::cleanProposal( void )
+void SlideProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -39,42 +39,42 @@ void ScaleProposal::cleanProposal( void )
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the proposal. 
+ * \return A new copy of the proposal.
  */
-ScaleProposal* ScaleProposal::clone( void ) const 
+SlideProposal* SlideProposal::clone( void ) const
 {
     
-    return new ScaleProposal( *this );
+    return new SlideProposal( *this );
 }
 
 
 /**
- * Get Proposals' name of object 
+ * Get Proposals' name of object
  *
  * \return The Proposals' name.
  */
-const std::string& ScaleProposal::getProposalName( void ) const 
+const std::string& SlideProposal::getProposalName( void ) const
 {
-    static std::string name = "Scaling";
+    static std::string name = "Sliding";
     
     return name;
 }
 
 
-/** 
+/**
  * Perform the proposal.
  *
- * A scaling Proposal draws a random uniform number u ~ unif(-0.5,0.5)
- * and scales the current vale by a scaling factor
- * sf = exp( lambda * u )
- * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.
+ * A sliding proposal draws a random uniform number u ~ unif(-0.5,0.5)
+ * and slides the current vale by
+ * delta = lambda * u
+ * where lambda is the tuning parameter of the proposal to influence the size of the proposals.
  *
  * \return The hastings ratio.
  */
-double ScaleProposal::doProposal( void ) 
+double SlideProposal::doProposal( void )
 {
     
-    // Get random number generator    
+    // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     double &val = variable->getValue();
@@ -82,22 +82,43 @@ double ScaleProposal::doProposal( void )
     // copy value
     storedValue = val;
     
-    // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
-    double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    val *= scalingFactor;
+    double min = variable->getMin();
+    double max = variable->getMax();
+    double size = max - min;
     
-    // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double u      = rng->uniform01();
+    double delta  = ( lambda * ( u - 0.5 ) );
     
-    return lnHastingsratio;
+    double orgDelta = delta;
+    
+    if ( fabs(delta) > 2.0*size )
+    {
+        delta -= floor(delta / (2.0*size)) * (2.0*size);
+    }
+    double adaptedDelta = delta;
+    double newVal = val + delta;
+    
+    /* reflect the new value */
+    do {
+        if ( newVal < min )
+            newVal = 2.0 * min - newVal;
+        else if ( newVal > max )
+            newVal = 2.0 * max - newVal;
+    } while ( newVal < min || newVal > max );
+    
+    // FIXME: not the most efficient way of handling multiple reflections :-P
+    
+    val = newVal;
+    
+    // this is a symmetric proposal so the hasting ratio is 0.0
+    return 0.0;
 }
 
 
 /**
  *
  */
-void ScaleProposal::prepareProposal( void )
+void SlideProposal::prepareProposal( void )
 {
     
 }
@@ -111,10 +132,10 @@ void ScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ScaleProposal::printParameterSummary(std::ostream &o) const 
+void SlideProposal::printParameterSummary(std::ostream &o) const
 {
     
-    o << "lambda = " << lambda;
+    o << "delta = " << lambda;
     
 }
 
@@ -126,7 +147,7 @@ void ScaleProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void ScaleProposal::undoProposal( void ) 
+void SlideProposal::undoProposal( void )
 {
     // swap current value and stored value
     variable->setValue( new double(storedValue) );
@@ -140,10 +161,10 @@ void ScaleProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new variable.
  */
-void ScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void SlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<double>* >(newN) ;
+    variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
 }
 
@@ -155,17 +176,19 @@ void ScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void ScaleProposal::tune( double rate ) 
+void SlideProposal::tune( double rate )
 {
     
-    if ( rate > 0.44 ) 
+    if ( rate > 0.44 )
     {
         lambda *= (1.0 + ((rate-0.44)/0.56) );
     }
-    else 
+    else
     {
         lambda /= (2.0 - rate/0.44 );
     }
+    
+    lambda = fmin(10000, lambda);
     
 }
 

@@ -18,7 +18,6 @@
 #ifndef Move_Slide_H
 #define Move_Slide_H
 
-#include "SlidingMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
