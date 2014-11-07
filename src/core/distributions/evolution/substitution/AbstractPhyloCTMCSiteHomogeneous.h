@@ -17,6 +17,15 @@
 
 namespace RevBayesCore {
 const size_t numActiveLikelihoods = 2; // compile-time constant, but should be runtime...
+double sumLnLWithRateHet(const double * siteLikeArrayCondNonInvariant, // array of len numPatterns of Pr(x_i | not invariant)
+                         const size_t * patternCounts,
+                         const size_t numPatterns,
+                         const size_t numSiteRates,
+                         const double * rootFreq,
+                         const double p_inv,
+                         const std::vector<bool> & siteInvariant,
+                         const std::vector<size_t> & invariantSiteIndex);
+
 void fillRootSiteLikelihoodVector(std::vector<double> & per_mixture_Likelihoods,
                                   const double *p_mixture_left,
                                   const double *p_mixture_right,

@@ -17,23 +17,7 @@ double RevBayesCore::computeRootLikelihood2Nodes(const double *p_left,
                                                       const std::vector<size_t> & invariantSiteIndex) {
     std::vector<double> per_mixture_Likelihoods;
     fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
-    // sum the log-likelihoods for all sites together
-    double lnProb = 0.0;
-    double oneMinusPInv = 1.0 - p_inv;
-    if ( p_inv > 0.0 ) {
-        for (size_t site = 0; site < numPatterns; ++site) {
-            if ( siteInvariant[site] ) {
-                lnProb += log( p_inv * rootFreq[ invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates ) * patternCounts[site];
-            } else {
-                lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates ) * patternCounts[site];
-            }
-        }
-    } else {
-        for (size_t site = 0; site < numPatterns; ++site) {
-            lnProb += log( per_mixture_Likelihoods[site] / numSiteRates ) * patternCounts[site];
-        }
-    }
-    return lnProb;
+    return sumLnLWithRateHet(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, p_inv, siteInvariant, invariantSiteIndex);
 }
 
 double RevBayesCore::computeRootLikelihood3Nodes(const double *p_left,
@@ -53,6 +37,16 @@ double RevBayesCore::computeRootLikelihood3Nodes(const double *p_left,
     // we need this vector to sum over the different mixture likelihoods
     std::vector<double> per_mixture_Likelihoods = std::vector<double>(numPatterns,0.0);
     fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, p_middle, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
+    return sumLnLWithRateHet(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, p_inv, siteInvariant, invariantSiteIndex);
+}
+
+double RevBayesCore::sumLnLWithRateHet(const double * per_mixture_Likelihoods, const size_t * patternCounts,
+                                                 const size_t numPatterns, const size_t numSiteRates,
+                                                 const double * rootFreq,
+                                                 const double p_inv,
+                                                 const std::vector<bool> & siteInvariant,
+                                                 const std::vector<size_t> & invariantSiteIndex){
+
     // sum the log-likelihoods for all sites together
     double lnProb = 0.0;
     double oneMinusPInv = 1.0 - p_inv;

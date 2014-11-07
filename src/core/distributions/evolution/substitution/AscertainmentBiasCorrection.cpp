@@ -7,7 +7,13 @@
 #include "RbException.h"
 using namespace RevBayesCore;
 double lnSumOfNumbersInLnForm(double lnX, double lnY);
-
+double sumAscCorrectionsForPatterns(const double *per_mixture_Likelihoods, const size_t * patternCounts,
+                                                 const size_t numPatterns, const size_t numSiteRates,
+                                                 const double * rootFreq,
+                                                 const size_t numStates,
+                                                 const double p_inv,
+                                                 const std::vector<bool> & siteInvariant,
+                                                 const std::vector<size_t> & invariantSiteIndex );
 double lnSumAscCorrectionsForPatterns2Nodes(const double *p_left,
                                                  const double *p_right,
                                                  const size_t numSiteRates,
@@ -526,6 +532,16 @@ double lnSumAscCorrectionsForPatterns2Nodes(const double *p_left,
     assert(numPatterns % numStates == 0); 
     std::vector<double> per_mixture_Likelihoods;
     fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
+    return sumAscCorrectionsForPatterns(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, numStates, p_inv, siteInvariant, invariantSiteIndex);
+}
+
+double sumAscCorrectionsForPatterns(const double *per_mixture_Likelihoods, const size_t * patternCounts,
+                                                 const size_t numPatterns, const size_t numSiteRates,
+                                                 const double * rootFreq,
+                                                 const size_t numStates,
+                                                 const double p_inv,
+                                                 const std::vector<bool> & siteInvariant,
+                                                 const std::vector<size_t> & invariantSiteIndex ) {
     // sum the log-likelihoods for all sites together
     double oneMinusPInv = 1.0 - p_inv;
     const size_t numBins = numPatterns / numStates;
@@ -542,7 +558,7 @@ double lnSumAscCorrectionsForPatterns2Nodes(const double *p_left,
         binProb *= (oneMinusPInv/numSiteRates);
         binProb += p_inv;
         if (b ==0 ) {
-            lnCorrectionSum = patternCounts[b * numStates]*log(binProb);
+            lnCorrectionSum = patternCounts[b * numStates]*log(1- binProb);
         } else {
           lnCorrectionSum = lnSumOfNumbersInLnForm(lnCorrectionSum,  patternCounts[b * numStates]*log(1 - binProb));
         }
@@ -567,39 +583,7 @@ double lnSumAscCorrectionsForPatterns3Nodes(const double *p_left,
     // we need this vector to sum over the different mixture likelihoods
     std::vector<double> per_mixture_Likelihoods;
     fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, p_middle, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
-    
-    double lnProbSum = 0.0;
-    double siteLnProb = 0.0;
-
-    // sum the log-likelihoods for all sites together
-    double oneMinusPInv = 1.0 - p_inv;
-    if ( p_inv > 0.0 ) {
-        for (size_t site = 0; site < numPatterns; ++site) {
-            double prob;
-            if ( siteInvariant[site] ) {
-                prob = p_inv * rootFreq[ invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates;
-            } else {
-                prob = oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates;
-            }
-            siteLnProb = log(prob) * patternCounts[site];
-            if (site == 0) {
-                lnProbSum = siteLnProb;
-            } else {
-                lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
-            }
-        }
-    } else {
-        for (size_t site = 0; site < numPatterns; ++site) {
-            siteLnProb = log( per_mixture_Likelihoods[site] / numSiteRates ) * patternCounts[site];
-            if (site == 0) {
-                lnProbSum = siteLnProb;
-            } else {
-                lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
-            }
-
-        }
-    }
-    return lnProbSum;
+    return sumAscCorrectionsForPatterns(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, numStates, p_inv, siteInvariant, invariantSiteIndex);
 }
 
 /* returns ln(X + Y) when given ln(X) and ln(Y) 
