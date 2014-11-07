@@ -22,7 +22,8 @@ class VariableOnlyAscertainmentBiasCorrectionStruct : public AscertainmentBiasCo
         virtual double computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight, const AscertainmentBiasCorrectionStruct * ascMiddle, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const;
     private:
         const size_t numStates;
-        mutable size_t numMixtures;
+        mutable size_t numMixtures; /* must be mutable in case we have to realloc in computeAscBias... */
+        std::vector<double> partialLikelihoods;
 };
 }
 #endif

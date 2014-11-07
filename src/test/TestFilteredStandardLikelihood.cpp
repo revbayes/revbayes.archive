@@ -112,7 +112,9 @@ bool TestFilteredStandardLikelihood::run( void ) {
 #       if defined(USE_RATE_HET)
             const double paupLnL = lnp; // can't check this against paup....
 #       else
-            const double paupLnL = -813.23060;
+            /* no filtering based on variability...
+            const double paupLnL = -813.23060; */
+            const double paupLnL = -758.90694;
 #       endif
 #   else
 #       if defined(USE_RATE_HET)

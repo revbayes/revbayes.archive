@@ -4,7 +4,10 @@
 #include "FilteredPhyloCTMCSiteHomogeneous.h"
 #include "AscertainmentBiasCorrection.h"
 using namespace RevBayesCore;
-std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes, const size_t numStates, const size_t numMixtures) {
+std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::allocAscBiasCorrStructs(const size_t numCopies,
+                                                                                                     const size_t numNodes,
+                                                                                                     const size_t numStates,
+                                                                                                     const size_t numMixtures) {
     std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> x(numCopies*numNodes, 0L);
     try{ 
         for (size_t i = 0 ; i < numCopies*numNodes; ++i) {
