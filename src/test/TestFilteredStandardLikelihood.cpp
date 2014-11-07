@@ -49,12 +49,15 @@ bool TestFilteredStandardLikelihood::run( void ) {
     std::vector<AbstractCharacterData*> data = reader.readMatrices(alignmentFilename);
     AbstractDiscreteCharacterData * discrD = dynamic_cast<AbstractDiscreteCharacterData *>(data[0]);
 #   if defined(USE_TIME_TREE)
-        std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
-        ConstantNode<TimeTree> *tau = new ConstantNode<TimeTree>( "tau", new TimeTree( *trees[0] ) );
+        typedef TimeTree TestTreeType;
+        std::vector<TestTreeType*> trees = NclReader().readTimeTrees( treeFilename );
+        ConstantNode<TestTreeType> *tau = new ConstantNode<TestTreeType>( "tau", new TestTreeType( *(trees)[0] ) );
 #   else
-        std::vector<BranchLengthTree*> *trees = NclReader().readBranchLengthTrees( treeFilename );
-        ConstantNode<BranchLengthTree> *tau = new ConstantNode<BranchLengthTree>( "tau", new BranchLengthTree( *(*trees)[0] ) );
+        typedef BranchLengthTree TestTreeType;
+        std::vector<TestTreeType*> *trees = NclReader().readBranchLengthTrees( treeFilename );
+        ConstantNode<TestTreeType> *tau = new ConstantNode<TestTreeType>( "tau", new TestTreeType( *(*trees)[0] ) );
 #   endif
+    
     std::cout << "tau:\t" << tau->getValue() << std::endl;
 #   if defined(USE_3_STATES)
         const size_t numStates = 3;
@@ -79,39 +82,22 @@ bool TestFilteredStandardLikelihood::run( void ) {
 #if defined(USE_3_STATES) && defined(USE_GTR_RATE_MAT)
 #error "cannot use 3 state and USE_GTR_RATE_MAT"
 #endif
-
 #   if defined(USE_GTR_RATE_MAT)
         ConstantNode<RbVector<double> > *pi = new ConstantNode<RbVector<double> >( "pi", new RbVector<double>(4, 1.0/4.0) );
         ConstantNode<RbVector<double> > *er = new ConstantNode<RbVector<double> >( "er", new RbVector<double>(6, 1.0/6.0) );
         DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
         std::cout << "Q:\t" << q->getValue() << std::endl;
 #       if defined (USE_NUCLEOTIDE)
-#           if defined(USE_TIME_TREE)
-                PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree>(tau, false, numChar);
-#           else
-                PhyloCTMCSiteHomogeneousNucleotide<DnaState, BranchLengthTree> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<DnaState, BranchLengthTree>(tau, false, numChar );
-#           endif
+            PhyloCTMCSiteHomogeneousNucleotide<DnaState, TestTreeType> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<DnaState, TestTreeType>(tau, false, numChar);
 #       else
-#           if defined(USE_TIME_TREE)
-                PhyloCTMCSiteHomogeneous<DnaState, TimeTree> *charModel = new PhyloCTMCSiteHomogeneous<DnaState, TimeTree>(tau, 4, false, numChar);
-#           else
-                PhyloCTMCSiteHomogeneous<DnaState, BranchLengthTree> *charModel = new PhyloCTMCSiteHomogeneous<DnaState, BranchLengthTree>(tau, 4, false, numChar );
-#           endif
+            PhyloCTMCSiteHomogeneous<DnaState, TestTreeType> *charModel = new PhyloCTMCSiteHomogeneous<DnaState, TestTreeType>(tau, 4, false, numChar);
 #       endif
 #   else
         DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new JcRateMatrixFunction(numStates));
 #       if defined (USE_NUCLEOTIDE)
-#          if defined(USE_TIME_TREE)
-                PhyloCTMCSiteHomogeneousNucleotide<StandardState, TimeTree> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<StandardState, TimeTree>(tau, false, numChar);
-#           else
-                PhyloCTMCSiteHomogeneousNucleotide<StandardState, BranchLengthTree> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<StandardState, BranchLengthTree>(tau, false, numChar );
-#           endif
+            PhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType>(tau, false, numChar);
 #       else
-#          if defined(USE_TIME_TREE)
-                PhyloCTMCSiteHomogeneous<StandardState, TimeTree> *charModel = new PhyloCTMCSiteHomogeneous<StandardState, TimeTree>(tau, numStates, false, numChar);
-#           else
-                PhyloCTMCSiteHomogeneous<StandardState, BranchLengthTree> *charModel = new PhyloCTMCSiteHomogeneous<StandardState, BranchLengthTree>(tau, numStates, false, numChar );
-#           endif
+            PhyloCTMCSiteHomogeneous<StandardState, TestTreeType> *charModel = new PhyloCTMCSiteHomogeneous<StandardState, TestTreeType>(tau, numStates, false, numChar);
 #       endif
 #   endif
 #   if defined(USE_RATE_HET)
