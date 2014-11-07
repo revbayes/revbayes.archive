@@ -162,11 +162,17 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
                                                                       p_inv,
                                                                       proxyInvariants,
                                                                       proxyInvariantSiteIndex);
+    return this->calcMatrixAscBias(lnProbConstant, patternCounts, nPatterns);
+}
+
+double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcMatrixAscBias(double lnProbConstantFromLnSum,
+                                                                                               const size_t * patternCounts,
+                                                                                               const size_t nPatterns) const {
     /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
-    if (lnProbConstant < -40) {
+    if (lnProbConstantFromLnSum < -40) {
         return 0.0;
     }
-    const double probConstant = exp(lnProbConstant);
+    const double probConstant = exp(lnProbConstantFromLnSum);
     const double lnProbVar = log(1.0 - probConstant);
     size_t sumPatWts = 0;
     for (size_t j = 0; j < nPatterns; ++j) {
@@ -208,12 +214,10 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     }
     const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
-    const std::vector<bool> allConstSiteInvariant(numStates, true);
-    std::vector<size_t> proxyInvariantSiteIndex(numProxyPatterns, 0);
-    for (unsigned long i = 0; i < numProxyPatterns; ++i) {
-        proxyInvariantSiteIndex[i] = i;
-    }
-    const std::vector<size_t> proxyPatternCounts(numProxyPatterns, 1);
+    std::vector<bool> proxyInvariants;
+    std::vector<unsigned long> proxyInvariantSiteIndex;
+    std::vector<size_t> proxyPatternCounts;
+    this->fillProxyInvariants(proxyInvariants, proxyInvariantSiteIndex, proxyPatternCounts, patternCounts, nPatterns, siteInvariant, invariantSiteIndex);
     
     const double lnProbConstant = lnSumRootPatternProbabilities3Nodes(&(this->partialLikelihoods[0]),
                                                                       &(aR->partialLikelihoods[0]),
@@ -226,20 +230,10 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
                                                                       siteOffset,
                                                                       mixtureOffset,
                                                                       p_inv,
-                                                                      allConstSiteInvariant,
+                                                                      proxyInvariants,
                                                                       proxyInvariantSiteIndex);
     /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
-    if (lnProbConstant < -40) {
-        return 0.0;
-    }
-    const double probConstant = exp(lnProbConstant);
-    const double lnProbVar = log(1.0 - probConstant);
-    size_t sumPatWts = 0;
-    for (size_t j = 0; j < nPatterns; ++j) {
-        sumPatWts += patternCounts[j];
-    }
-    const double lnAscProb = sumPatWts*lnProbVar;
-    return lnAscProb;
+    return this->calcMatrixAscBias(lnProbConstant, patternCounts, nPatterns);
 }
 
 

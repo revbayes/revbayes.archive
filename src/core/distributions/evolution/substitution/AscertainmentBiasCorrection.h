@@ -25,6 +25,7 @@ class VariableOnlyAscBiasCorrection : public AscertainmentBiasCorrectionStruct {
                                         const size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node) const = 0;
         virtual void fillProxyInvariants(std::vector<bool> & proxyInv, std::vector<unsigned long> & proxyInvSiteInd, std::vector<size_t> & proxyPatCount, 
                                          const size_t * patternCounts, const size_t nPatterns, const std::vector<bool> &inv, const std::vector<unsigned long> &invSiteInd) const = 0;
+        virtual double calcMatrixAscBias(double lnProbConstantFromLnSum, const size_t * patternCounts, const size_t nPatterns) const = 0;
     protected:
         const size_t numStates;
         mutable size_t numMixtures; /* must be mutable in case we have to realloc in computeAscBias... */
@@ -42,6 +43,7 @@ class VariableOnlyNoMissingAscertainmentBiasCorrectionStruct : public VariableOn
                                         const size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node) const;
         virtual void fillProxyInvariants(std::vector<bool> & proxyInv, std::vector<unsigned long> & proxyInvSiteInd, std::vector<size_t> & proxyPatCount, 
                                          const size_t * patternCounts, const size_t nPatterns, const std::vector<bool> &inv, const std::vector<unsigned long> &invSiteInd) const;
+        virtual double calcMatrixAscBias(double lnProbConstantFromLnSum, const size_t * patternCounts, const size_t nPatterns) const;
 };
 }
 #endif
