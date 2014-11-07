@@ -21,7 +21,7 @@ mymodel = model(diversification)
 ### set up the monitors that will output parameter values to file and screen 
 monitors[1] = mnFile(filename="output/BD_mcmc_bears.log",printgen=10,
 						   diversification, birth_rate, turnover, death_rate)
-monitors[2] = mnScreen(printgen=1000, birth_rate)
+monitors[2] = mnScreen(printgen=10000, birth_rate)
 
 ### workspace mcmc ###
 mymcmc = mcmc(mymodel, monitors, moves)
@@ -36,4 +36,4 @@ mymcmc.run(generations=50000)
 mymcmc.operatorSummary()
 
 ## quit ##
-q()
+#q()

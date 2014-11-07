@@ -8,7 +8,7 @@
 
 ### the birth rate is a stochastic random variable drawn from an Exponential prior
 ### MCMC samples this variable using a scale proposal
-birth_rate ~ dnExponential(0.5) 
+birth_rate ~ dnExponential(10.0) 
 moves[mi++] = mvScale(birth_rate,lambda=1.0,tune=true,weight=3.0)
 
 ### rho is the probability of sampling species at the present
