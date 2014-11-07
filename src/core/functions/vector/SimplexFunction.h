@@ -46,7 +46,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        std::vector<const TypedDagNode<double>* >           parameters;
+        std::vector<const TypedDagNode<double>* >           simplexParams;
         
     };
     

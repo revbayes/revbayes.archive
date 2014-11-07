@@ -59,24 +59,24 @@ namespace RevBayesCore {
         NodeUniformizationSampleProposal*    clone(void) const;                                                                  //!< Clone object
         void                            cleanProposal(void);
         double                          doProposal(void);                                                                   //!< Perform proposal
-        const std::set<DagNode*>&       getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
         const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                            prepareProposal(void);                                                              //!< Prepare the proposal
         void                            sampleNodeCharacters(const std::set<size_t>& indexSet);   //!< Sample the characters at the node
         //        void                            sampleNodeCharacters2(const TopologyNode& node, const std::set<size_t>& indexSet);   //!< Sample the characters at the node
         double                          sampleRootCharacters(const std::set<size_t>& indexSet);
-        void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the DAG nodes on which the Proposal is working on
         void                            tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                            undoProposal(void);                                                                 //!< Reject the proposal
         
     protected:
         
+        void                            swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
+        
+        
         // parameters
         StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
-        std::set<DagNode*>                      nodes;
         
         // dimensions
         size_t                                  numNodes;
@@ -136,9 +136,9 @@ sampleSiteIndexSet(true)
 {
     
     //    std::cout << numStates << "\n";
-    nodes.insert(ctmc);
-    nodes.insert(tau);
-    nodes.insert(qmap);
+    addNode(ctmc);
+    addNode(tau);
+    addNode(qmap);
     
     nodeProposal = new PathUniformizationSampleProposal<charType,treeType>(n,t,q,l,nd);
     leftProposal = new PathUniformizationSampleProposal<charType,treeType>(n,t,q,l,nd);
@@ -167,9 +167,9 @@ sampleSiteIndexSet(true)
 {
     
     //    std::cout << numStates << "\n";
-    nodes.insert(ctmc);
-    nodes.insert(tau);
-    nodes.insert(qmap);
+    addNode( ctmc );
+    addNode( tau );
+    addNode( qmap );
     
     nodeProposal = new PathUniformizationSampleProposal<charType,treeType>(*p);
     leftProposal = new PathUniformizationSampleProposal<charType,treeType>(*p);
@@ -227,19 +227,6 @@ const std::string& RevBayesCore::NodeUniformizationSampleProposal<charType, tree
     static std::string name = "NodeUniformizationSampleProposal";
     
     return name;
-}
-
-
-/**
- * Get the vector of nodes on which this proposal is working on.
- *
- * \return  Const reference to a vector of nodes pointer on which the proposal operates.
- */
-template<class charType, class treeType>
-const std::set<RevBayesCore::DagNode*>& RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::getNodes( void ) const
-{
-    
-    return nodes;
 }
 
 
@@ -533,7 +520,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::undoPro
  * \param[in]     newN     The new ctmc.
  */
 template<class charType, class treeType>
-void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::swapNode(DagNode *oldN, DagNode *newN)
+void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if (oldN == ctmc)

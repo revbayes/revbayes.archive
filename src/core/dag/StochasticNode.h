@@ -123,11 +123,11 @@ distribution( d )
 
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) :
-DynamicNode<valueType>( n ),
-clamped( n.clamped ),
-ignoreRedraw(n.ignoreRedraw),
-needsProbabilityRecalculation( true ),
-distribution( n.distribution->clone() )
+    DynamicNode<valueType>( n ),
+    clamped( n.clamped ),
+    ignoreRedraw(n.ignoreRedraw),
+    needsProbabilityRecalculation( true ),
+    distribution( n.distribution->clone() )
 {
     this->type = DagNode::STOCHASTIC;
     
@@ -152,16 +152,19 @@ RevBayesCore::StochasticNode<valueType>::~StochasticNode( void ) {
     
     // Remove us as the child of the distribution parameters
     std::set<const DagNode*> distParents = distribution->getParameters();
-    delete distribution;
     for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->removeChild( this );
         
         // Decrement the reference count and check whether we need to delete the DAG node
-        // The distribution does not do this for us
         if ( (*it)->decrementReferenceCount() == 0)
+        {
             delete (*it);
+        }
+        
     }
+    
+    delete distribution;
     
 }
 
@@ -185,7 +188,6 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
             (*it)->removeChild( this );
             
             // Decrement the reference count and check whether we need to delete the DAG node
-            // The distribution does not do this for us
             if ( (*it)->decrementReferenceCount() == 0)
                 delete (*it);
         }
@@ -200,16 +202,15 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
         distParents = distribution->getParameters();
         for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
         {
-            (*it)->removeChild( this );
+            (*it)->addChild( this );
             
-            // Decrement the reference count and check whether we need to delete the DAG node
-            // The distribution does not do this for us
-            if ( (*it)->decrementReferenceCount() == 0)
-                delete (*it);
+            // Increment the reference count
+            // We don't want this parent to get deleted while we are still alive
+            (*it)->incrementReferenceCount();
         }
         
         // Set us as the DAG node of the new distribution
-        distribution->setDeterministicNode( this );
+        distribution->setStochasticNode( this );
     }
     
     return *this;

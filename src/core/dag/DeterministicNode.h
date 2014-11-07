@@ -130,7 +130,6 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
         (*it)->removeChild( this );
         
         // Decrement the reference count and check whether we need to delete the DAG node
-        // The function does not do this for us
         if ( (*it)->decrementReferenceCount() == 0)
             delete (*it);
     }
