@@ -27,7 +27,7 @@
 #include <vector>
 
 //#define USE_GTR_RATE_MAT
-#define USE_TIME_TREE
+//#define USE_TIME_TREE
 //#define USE_NUCLEOTIDE
 #define USE_3_STATES
 //#define USE_RATE_HET
