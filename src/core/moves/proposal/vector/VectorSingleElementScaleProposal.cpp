@@ -17,10 +17,10 @@ using namespace RevBayesCore;
 VectorSingleElementScaleProposal::VectorSingleElementScaleProposal( StochasticNode< RbVector<double> > *n, double l) : Proposal(),
     variable( n ),
     storedValue( 0.0 ),
-    lambda( l ),
-    nodes()
+    lambda( l )
 {
-    nodes.insert( variable );
+    // tell the base class to add the node
+    addNode( variable );
     
 }
 
@@ -58,18 +58,6 @@ const std::string& VectorSingleElementScaleProposal::getProposalName( void ) con
     static std::string name = "VectorSingleElementScaling";
     
     return name;
-}
-
-
-/**
- * Get the vector of nodes on which this proposal is working on.
- *
- * \return  Const reference to a vector of nodes pointer on which the proposal operates.
- */
-const std::set<DagNode*>& VectorSingleElementScaleProposal::getNodes( void ) const
-{
-    
-    return nodes;
 }
 
 
@@ -158,7 +146,7 @@ void VectorSingleElementScaleProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new variable.
  */
-void VectorSingleElementScaleProposal::swapNode(DagNode *oldN, DagNode *newN)
+void VectorSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;

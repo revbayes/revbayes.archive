@@ -24,23 +24,42 @@ namespace RevBayesCore {
     class Proposal : public Cloneable {
         
     public:
-        virtual                                                ~Proposal(void) {}                                                                       //!< Destructor
+        virtual                                                ~Proposal(void);                                                                         //!< Destructor
+        
+        // public methods
+        void                                                    swapNode(DagNode *oldN, DagNode *newN);                                                 //!< Swap the pointers to the variable on which the move works on.
+        const std::set<DagNode*>&                               getNodes(void) const;                                                                   //!< Get the vector of nodes for which the proposal is drawing new values.
+        
         
         // pure virtual public methods
         virtual void                                            cleanProposal(void) = 0;                                                                //!< Cleanup proposal
         virtual Proposal*                                       clone(void) const = 0;                                                                  //!< Make a deep copy
         virtual double                                          doProposal(void) = 0;                                                                   //!< Actually do the proposal.
-        virtual const std::set<DagNode*>&                       getNodes(void) const = 0;                                                               //!< Get the vector of nodes for which the proposal is drawing new values.
         virtual const std::string&                              getProposalName(void) const = 0;                                                        //!< Get the name of this proposal used for printing out info.
         virtual void                                            prepareProposal(void) = 0;                                                              //!< Propose a new state
         virtual void                                            printParameterSummary(std::ostream &o) const = 0;                                       //!< Print the parameter summary
-        virtual void                                            swapNode(DagNode *oldN, DagNode *newN) = 0;                                             //!< Swap the pointers to the variable on which the move works on.
         virtual void                                            tune(double r) = 0;                                                                     //!< Tune the parameters of the proposal.
         virtual void                                            undoProposal(void) = 0;                                                                 //!< Undo the proposal.
         
-    protected:
-        Proposal() {}                                                                                                                                   //!< Constructor
         
+    protected:
+        Proposal(void);                                                                                                                                 //!< Default constructor
+        Proposal(const Proposal &p);                                                                                                                    //!< Copy constructor
+        Proposal&                                               operator=(const Proposal &p);                                                           //!< Assignment operator
+        
+        
+        // helper methods for this and derived classes
+        void                                                    addNode(DagNode* p);                                                                    //!< add a node to the proposal
+        void                                                    removeNode(DagNode* p);                                                                 //!< remove a node from the proposal
+
+        
+        // pure virtual protected method that need to be implemented in derived classes
+        virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN) = 0;                                     //!< Swap the pointers to the variable on which the move works on.
+        
+    private:
+        
+        std::set<DagNode*>                                      nodes;
+
         
     };
     

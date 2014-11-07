@@ -36,13 +36,16 @@ namespace RevBayesCore {
         void                                        cleanProposal(void);                                                                //!< Clean up proposal
         VectorSingleElementScaleProposal*           clone(void) const;                                                                  //!< Clone object
         double                                      doProposal(void);                                                                   //!< Perform proposal
-        const std::set<DagNode*>&                   getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
         const std::string&                          getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                        printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                                        prepareProposal(void);                                                              //!< Prepare the proposal
-        void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the DAG nodes on which the Proposal is working on
         void                                        tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                        undoProposal(void);                                                                 //!< Reject the proposal
+        
+    protected:
+        
+        void                                        swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
+        
         
     private:
         // parameters
@@ -52,7 +55,6 @@ namespace RevBayesCore {
         double                                      lambda;                                                                             //!< The scale parameter of the move (larger lambda -> larger proposals).
         size_t                                      index;                                                                              //!< The index of the last modified element.
         double                                      storedValue;                                                                        //!< The stored value of the last modified element.
-        std::set<DagNode*>                          nodes;
         double                                      proposedValue;                                                                      //!< The value we propose.
 
         
