@@ -38,21 +38,22 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeInternalAscBias(const A
     assert(nSiteRates == aL->numMixtures);
     assert(nStates == aR->numStates);
     assert(nSiteRates == aR->numMixtures);
-    const unsigned plLen = this->numStates * this->numStates * nSiteRates;
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
+    const unsigned plLen = this->numStates * numProxyPatterns * nSiteRates;
     assert(plLen == aL->partialLikelihoods.size());
     assert(plLen == aR->partialLikelihoods.size());
     if (this->partialLikelihoods.size() < plLen) {
         this->numMixtures = nSiteRates;
         this->partialLikelihoods.resize(plLen);
     }
-    const size_t mixtureOffset =  nPatterns*nStates;
+    const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
     computeInternalNodeLikelihood(&(this->partialLikelihoods[0]),
                                   &(aL->partialLikelihoods[0]),
                                   &(aR->partialLikelihoods[0]),
                                   nSiteRates,
                                   nStates,
-                                  nStates,
+                                  numProxyPatterns,
                                   siteOffset,
                                   mixtureOffset,
                                   tpMats);
@@ -66,12 +67,13 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSite
                                                                     bool usingAmbiguousCharacters) {
     assert(nStates == this->numStates);
     assert(this->numMixtures == 0 || nSiteRates == this->numMixtures);
-    const unsigned plLen = this->numStates * this->numStates * nSiteRates;
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
+    const unsigned plLen = this->numStates * numProxyPatterns * nSiteRates;
     if (this->partialLikelihoods.size() < plLen) {
         this->numMixtures = nSiteRates;
         this->partialLikelihoods.resize(plLen);
     }
-    const size_t mixtureOffset =  nPatterns*nStates;
+    const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
     const std::vector<bool> noMissingGapNode(numStates*numStates, false);
     std::vector<unsigned long> proxyData;
@@ -82,7 +84,7 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSite
     computeTipNodeLikelihood(&(this->partialLikelihoods[0]),
                               nSiteRates,
                               nStates,
-                              nStates,
+                              numProxyPatterns,
                               siteOffset,
                               mixtureOffset,
                               tpMats,
@@ -108,20 +110,20 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     assert(this->numMixtures == 0 || nSiteRates == this->numMixtures);
     assert(nStates == aR->numStates);
     assert(nSiteRates == aR->numMixtures);
-    const unsigned plLen = this->numStates * this->numStates * nSiteRates;
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
+    const unsigned plLen = this->numStates * numProxyPatterns * nSiteRates;
     assert(plLen == aR->partialLikelihoods.size());
     if (this->partialLikelihoods.size() < plLen) {
          throw RbException("root partialLikelihood is of the wrong size...");
     }
-    const size_t mixtureOffset =  nPatterns*nStates;
+    const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
-    const std::vector<bool> allConstSiteInvariant(numStates, true);
-    std::vector<size_t> proxyInvariantSiteIndex;
-    proxyInvariantSiteIndex.reserve(nStates);
-    for (unsigned long i = 0; i < nStates; ++i) {
+    const std::vector<bool> allConstSiteInvariant(numProxyPatterns, true);
+    std::vector<size_t> proxyInvariantSiteIndex(numProxyPatterns, 0);
+    for (unsigned long i = 0; i < numProxyPatterns; ++i) {
         proxyInvariantSiteIndex[i] = i;
     }
-    const std::vector<size_t> proxyPatternCounts(nStates, 1);
+    const std::vector<size_t> proxyPatternCounts(numProxyPatterns, 1);
     
     const double lnProbConstant = lnSumRootPatternProbabilities2Nodes(&(this->partialLikelihoods[0]),
                                                                       &(aR->partialLikelihoods[0]),
@@ -129,7 +131,7 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
                                                                       rootFreq,
                                                                       nStates,
                                                                       &(proxyPatternCounts[0]),
-                                                                      nStates,
+                                                                      numProxyPatterns,
                                                                       siteOffset,
                                                                       mixtureOffset,
                                                                       p_inv,
@@ -168,25 +170,25 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     }
     assert(nStates == this->numStates);
     assert(this->numMixtures == 0 || nSiteRates == this->numMixtures);
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
     assert(nStates == aR->numStates);
     assert(nSiteRates == aR->numMixtures);
     assert(nStates == aM->numStates);
     assert(nSiteRates == aM->numMixtures);
-    const unsigned plLen = this->numStates * this->numStates * nSiteRates;
+    const unsigned plLen = this->numStates * numProxyPatterns * nSiteRates;
     assert(plLen == aR->partialLikelihoods.size());
     assert(plLen == aM->partialLikelihoods.size());
     if (this->partialLikelihoods.size() < plLen) {
          throw RbException("root partialLikelihood is of the wrong size...");
     }
-    const size_t mixtureOffset =  nPatterns*nStates;
+    const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
     const std::vector<bool> allConstSiteInvariant(numStates, true);
-    std::vector<size_t> proxyInvariantSiteIndex;
-    proxyInvariantSiteIndex.reserve(nStates);
-    for (unsigned long i = 0; i < nStates; ++i) {
+    std::vector<size_t> proxyInvariantSiteIndex(numProxyPatterns, 0);
+    for (unsigned long i = 0; i < numProxyPatterns; ++i) {
         proxyInvariantSiteIndex[i] = i;
     }
-    const std::vector<size_t> proxyPatternCounts(nStates, 1);
+    const std::vector<size_t> proxyPatternCounts(numProxyPatterns, 1);
     
     const double lnProbConstant = lnSumRootPatternProbabilities3Nodes(&(this->partialLikelihoods[0]),
                                                                       &(aR->partialLikelihoods[0]),
@@ -195,7 +197,7 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
                                                                       rootFreq,
                                                                       nStates,
                                                                       &(proxyPatternCounts[0]),
-                                                                      nStates,
+                                                                      numProxyPatterns,
                                                                       siteOffset,
                                                                       mixtureOffset,
                                                                       p_inv,
@@ -280,7 +282,7 @@ double RevBayesCore::lnSumRootPatternProbabilities2Nodes(const double *p_left,
             } else {
                 lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
             }
-//            std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum  << "    patternCounts = " << patternCounts[site] << std::endl;
+            std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum  << "    patternCounts = " << patternCounts[site] << std::endl;
         }
     }
     return lnProbSum;
