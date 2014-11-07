@@ -4,9 +4,9 @@
 ### It then calculates the Bayes factor for each pair-wise comparison 
 
 ### Using the stepping-stone sampler, calculate the marginal likelihoods for each model from the power posteriors
-ss_GMC <- steppingStoneSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
-ss_UCLN <- steppingStoneSampler(file="output/UCLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
-ss_ACLN <- steppingStoneSampler(file="output/ACLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss_GMC = steppingStoneSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss_UCLN = steppingStoneSampler(file="output/UCLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss_ACLN = steppingStoneSampler(file="output/ACLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 
 mLnL_m0 <- ss_GMC.marginal()
 mLnL_m1 <- ss_UCLN.marginal()

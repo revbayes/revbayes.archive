@@ -34,4 +34,4 @@ ss.marginal()
 ps = pathSampler(file="output/UCLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 
-q()
+#q()

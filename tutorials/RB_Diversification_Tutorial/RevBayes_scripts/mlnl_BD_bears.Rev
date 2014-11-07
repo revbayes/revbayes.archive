@@ -25,7 +25,7 @@ mymodel.graph("output/m_BD_bears_GM.dot", verbose=false, bg="LightSteelBlue2")
 ### compute power posterior distributions
 pow_p = powerPosterior(mymodel, moves, "output/BD_bears_powp.out", cats=100) 
 pow_p.burnin(generations=10000,tuningInterval=1000)
-pow_p.run(generations=1000)  
+pow_p.run(generations=10000)  
 
 ### use stepping-stone sampling to calculate marginal likelihoods
 ss = steppingStoneSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")

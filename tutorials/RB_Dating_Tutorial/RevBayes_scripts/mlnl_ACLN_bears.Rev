@@ -31,8 +31,8 @@ ss = steppingStoneSampler(file="output/ACLN_bears_powp.out", powerColumnName="po
 ss.marginal() 
 
 ### use path sampling to calculate marginal likelihoods
-ps <- pathSampler(file="output/ACLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/ACLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 
 ### quit
-q()
+#q()
