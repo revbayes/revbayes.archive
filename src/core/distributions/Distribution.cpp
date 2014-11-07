@@ -13,8 +13,8 @@ Distribution::Distribution(void)  :
 }
 
 
-Distribution::Distribution(const Distribution &f)  :
-    parameters( f.parameters )
+Distribution::Distribution(const Distribution &d)  :
+    parameters( d.parameters )
 {
     
     for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
@@ -41,10 +41,10 @@ Distribution::~Distribution( void )
 
 
 
-Distribution& Distribution::operator=(const Distribution &f)
+Distribution& Distribution::operator=(const Distribution &d)
 {
     
-    if ( this != &f )
+    if ( this != &d )
     {
         
         for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
@@ -57,7 +57,7 @@ Distribution& Distribution::operator=(const Distribution &f)
         }
         parameters.clear();
         
-        parameters = f.parameters;
+        parameters = d.parameters;
         
         for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {

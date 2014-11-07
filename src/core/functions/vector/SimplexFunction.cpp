@@ -12,11 +12,11 @@
 using namespace RevBayesCore;
 
 SimplexFunction::SimplexFunction(const std::vector<const TypedDagNode<double> *> &args) : TypedFunction< RbVector<double> >( new RbVector<double>() ),
-    parameters( args )
+    simplexParams( args )
 {
     // add the lambda parameter as a parent
     std::vector<const TypedDagNode<double>* >::iterator it;
-    for (it = parameters.begin(); it != parameters.end(); ++it) {
+    for (it = simplexParams.begin(); it != simplexParams.end(); ++it) {
         this->addParameter( *it );
     }
     
@@ -42,10 +42,10 @@ void SimplexFunction::update( void ) {
     
     double sum = 0.0;
     std::vector<const TypedDagNode<double>* >::iterator it;
-    for (it = parameters.begin(); it != parameters.end(); ++it) {
+    for (it = simplexParams.begin(); it != simplexParams.end(); ++it) {
         sum += (*it)->getValue();
     }
-    for (it = parameters.begin(); it != parameters.end(); ++it) {
+    for (it = simplexParams.begin(); it != simplexParams.end(); ++it) {
         value->push_back( (*it)->getValue() / sum );
     }
 }
@@ -54,11 +54,11 @@ void SimplexFunction::update( void ) {
 
 void SimplexFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    for (size_t i = 0; i < parameters.size(); ++i) {
-        if (oldP == parameters[i]) {
-            parameters[i] = static_cast<const TypedDagNode<double>* >( newP );
-            // we can jump out of the loop now
-            break;
+    for (size_t i = 0; i < simplexParams.size(); ++i) {
+        if (oldP == simplexParams[i])
+        {
+            simplexParams[i] = static_cast<const TypedDagNode<double>* >( newP );
+            // don't jump out of the loop because we could have the same parameter multiple times for this vector, e.g., v(a,a,b,a)
         }
     }
     

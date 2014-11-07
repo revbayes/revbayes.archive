@@ -33,7 +33,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*      realPosVector;                                                          //!< Real positive vector parameter
+        const TypedDagNode< RbVector<double> >*         realPosVector;                                                          //!< Real positive vector parameter
         
     };
     
