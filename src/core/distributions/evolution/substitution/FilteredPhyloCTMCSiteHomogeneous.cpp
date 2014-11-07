@@ -11,7 +11,9 @@ std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::all
     std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> x(numCopies*numNodes, 0L);
     try{ 
         for (size_t i = 0 ; i < numCopies*numNodes; ++i) {
-            x[i] = new RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(numStates, numMixtures);
+            //x[i] = new RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(numStates, numMixtures);
+            x[i] = new RevBayesCore::MissingAwareVariableOnlyAscertainmentBiasCorrection(numStates, numMixtures);
+
         }
     } catch (...) {
         freeAscBiasCorrStructs(x);

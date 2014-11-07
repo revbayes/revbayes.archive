@@ -77,7 +77,7 @@ void RevBayesCore::computeInternalNodeLikelihood(double * p_node,
                                                              const size_t siteOffset,
                                                              const size_t mixtureOffset,
                                                              const double ** tpMats) {
-    std::cerr << "computeInternalNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
+    //std::cerr << "computeInternalNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
     //debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
     //debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
     //debug_mat("tpMats", tpMats, numSiteRates, numStates*numStates);
@@ -113,7 +113,7 @@ void RevBayesCore::computeTipNodeLikelihood(double * p_node,
                                              const std::vector<bool> &gap_node,
                                              const std::vector<unsigned long> &char_node,
                                              const bool usingAmbiguousCharacters) {
-    std::cerr << "computeTipNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
+    //std::cerr << "computeTipNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
     //debug_vec("char_node", &(char_node[0]), numPatterns);
     //debug_mat("tpMats", tpMats, numSiteRates, numStates*numStates);
     double*   p_mixture      = p_node;
@@ -145,6 +145,7 @@ void RevBayesCore::computeTipNodeLikelihood(double * p_node,
                         p_site_mixture[c1] = tmp;
                     } else {
                         p_site_mixture[c1] = tp_begin[c1*numStates+org_val];
+                        //std::cerr << "   p_mixture[" << site*numStates + c1 << "] = " << p_site_mixture[c1] << "   org_val = " << org_val << "\n";
                     }
                 }
             }

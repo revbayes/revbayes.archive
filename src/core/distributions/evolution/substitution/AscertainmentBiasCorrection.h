@@ -103,7 +103,7 @@ class MissingAwareVariableOnlyAscertainmentBiasCorrection : public VariableOnlyA
         MissingAwareVariableOnlyAscertainmentBiasCorrection(const size_t numStates,const size_t numMixtures=0);
         virtual ~MissingAwareVariableOnlyAscertainmentBiasCorrection();
         virtual size_t GetNumProxyPatterns(const size_t numPatterns) const {
-            return this->numStates;
+            return this->numStates * numPatterns;
         }
         virtual void fillProxyTip(std::vector<bool> & proxyGapNode, std::vector<unsigned long> & proxyData, 
                                         const size_t nPatterns, const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node) const;

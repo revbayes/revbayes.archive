@@ -131,100 +131,6 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSite
                               proxyData,
                               false);
 }
-void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillProxyTip(std::vector<bool> & proxyGapNode,
-                                                                                        std::vector<unsigned long> & proxyData,
-                                                                                        const size_t nPatterns,
-                                                                                        const std::vector<bool> &gap_node,
-                                                                                        const std::vector<unsigned long> &char_node) const {
-    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
-    proxyGapNode.assign(numProxyPatterns, false);
-    proxyData.resize(numProxyPatterns);
-    for (unsigned long i = 0; i < numProxyPatterns; ++i) {
-        proxyData[i] = i;
-    }
-}
-
-void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillProxyInvariants(std::vector<bool> & proxyInvariants,
-                                                                                        std::vector<unsigned long> & proxyInvariantSiteIndex,
-                                                                                        std::vector<size_t> & proxyPatternCounts,
-                                                                                        const size_t * patternCounts,
-                                                                                        const size_t nPatterns,
-                                                                                        const std::vector<bool> &siteInvariant,
-                                                                                        const std::vector<unsigned long> &invariantSiteIndex) const {
-    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
-    proxyInvariants.assign(numProxyPatterns, true);
-    proxyInvariantSiteIndex.resize(numProxyPatterns);
-    for (unsigned long i = 0; i < numProxyPatterns; ++i) {
-        proxyInvariantSiteIndex[i] = i;
-    }
-    proxyPatternCounts.assign(numProxyPatterns, 1);
-}
-double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcMatrixAscBias(double lnProbConstantFromLnSum,
-                                                                                               const size_t * patternCounts,
-                                                                                               const size_t nPatterns) const {
-    /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
-    if (lnProbConstantFromLnSum < -40) {
-        return 0.0;
-    }
-    const double probConstant = exp(lnProbConstantFromLnSum);
-    const double lnProbVar = log(1.0 - probConstant);
-    size_t sumPatWts = 0;
-    for (size_t j = 0; j < nPatterns; ++j) {
-        sumPatWts += patternCounts[j];
-    }
-    const double lnAscProb = sumPatWts*lnProbVar;
-    return lnAscProb;
-}
-
-double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcAscBiasTempFromProxies2Node(const double *p_left,
-                                                      const double *p_right,
-                                                      const size_t numSiteRates,
-                                                      const double * rootFreq,
-                                                      const size_t numStates,
-                                                      const size_t * patternCounts,
-                                                      const size_t numProxyPatterns,
-                                                      const size_t siteOffset,
-                                                      const size_t mixtureOffset,
-                                                      const double p_inv,
-                                                      const std::vector<bool> & proxyInvariants,
-                                                      const std::vector<size_t> & proxyInvariantSiteIndex) const {
-    return lnSumRootPatternProbabilities2Nodes(p_left, p_right,
-                                                                      numSiteRates,
-                                                                      rootFreq,
-                                                                      numStates,
-                                                                      patternCounts,
-                                                                      numProxyPatterns,
-                                                                      siteOffset,
-                                                                      mixtureOffset,
-                                                                      p_inv,
-                                                                      proxyInvariants,
-                                                                      proxyInvariantSiteIndex);
-}
-double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcAscBiasTempFromProxies3Node(const double *p_left,
-                                                      const double *p_right,
-                                                      const double *p_middle,
-                                                      const size_t numSiteRates,
-                                                      const double * rootFreq,
-                                                      const size_t numStates,
-                                                      const size_t * patternCounts,
-                                                      const size_t numProxyPatterns,
-                                                      const size_t siteOffset,
-                                                      const size_t mixtureOffset,
-                                                      const double p_inv,
-                                                      const std::vector<bool> & proxyInvariants,
-                                                      const std::vector<size_t> & proxyInvariantSiteIndex) const {
-    return lnSumRootPatternProbabilities3Nodes(p_left, p_right, p_middle,
-                                                                      numSiteRates,
-                                                                      rootFreq,
-                                                                      numStates,
-                                                                      patternCounts,
-                                                                      numProxyPatterns,
-                                                                      siteOffset,
-                                                                      mixtureOffset,
-                                                                      p_inv,
-                                                                      proxyInvariants,
-                                                                      proxyInvariantSiteIndex);
-}
 
 double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight,
                                                                                         const size_t nSiteRates,
@@ -327,6 +233,100 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
     return this->calcMatrixAscBias(lnProbConstant, patternCounts, nPatterns);
 }
+void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillProxyTip(std::vector<bool> & proxyGapNode,
+                                                                                        std::vector<unsigned long> & proxyData,
+                                                                                        const size_t nPatterns,
+                                                                                        const std::vector<bool> &gap_node,
+                                                                                        const std::vector<unsigned long> &char_node) const {
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
+    proxyGapNode.assign(numProxyPatterns, false);
+    proxyData.resize(numProxyPatterns);
+    for (unsigned long i = 0; i < numProxyPatterns; ++i) {
+        proxyData[i] = i;
+    }
+}
+
+void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillProxyInvariants(std::vector<bool> & proxyInvariants,
+                                                                                        std::vector<unsigned long> & proxyInvariantSiteIndex,
+                                                                                        std::vector<size_t> & proxyPatternCounts,
+                                                                                        const size_t * patternCounts,
+                                                                                        const size_t nPatterns,
+                                                                                        const std::vector<bool> &siteInvariant,
+                                                                                        const std::vector<unsigned long> &invariantSiteIndex) const {
+    const size_t numProxyPatterns = this->GetNumProxyPatterns(nPatterns);
+    proxyInvariants.assign(numProxyPatterns, true);
+    proxyInvariantSiteIndex.resize(numProxyPatterns);
+    for (unsigned long i = 0; i < numProxyPatterns; ++i) {
+        proxyInvariantSiteIndex[i] = i;
+    }
+    proxyPatternCounts.assign(numProxyPatterns, 1);
+}
+double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcMatrixAscBias(double lnProbConstantFromLnSum,
+                                                                                               const size_t * patternCounts,
+                                                                                               const size_t nPatterns) const {
+    /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
+    if (lnProbConstantFromLnSum < -40) {
+        return 0.0;
+    }
+    const double probConstant = exp(lnProbConstantFromLnSum);
+    const double lnProbVar = log(1.0 - probConstant);
+    size_t sumPatWts = 0;
+    for (size_t j = 0; j < nPatterns; ++j) {
+        sumPatWts += patternCounts[j];
+    }
+    const double lnAscProb = sumPatWts*lnProbVar;
+    return lnAscProb;
+}
+
+double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcAscBiasTempFromProxies2Node(const double *p_left,
+                                                      const double *p_right,
+                                                      const size_t numSiteRates,
+                                                      const double * rootFreq,
+                                                      const size_t numStates,
+                                                      const size_t * patternCounts,
+                                                      const size_t numProxyPatterns,
+                                                      const size_t siteOffset,
+                                                      const size_t mixtureOffset,
+                                                      const double p_inv,
+                                                      const std::vector<bool> & proxyInvariants,
+                                                      const std::vector<size_t> & proxyInvariantSiteIndex) const {
+    return lnSumRootPatternProbabilities2Nodes(p_left, p_right,
+                                                                      numSiteRates,
+                                                                      rootFreq,
+                                                                      numStates,
+                                                                      patternCounts,
+                                                                      numProxyPatterns,
+                                                                      siteOffset,
+                                                                      mixtureOffset,
+                                                                      p_inv,
+                                                                      proxyInvariants,
+                                                                      proxyInvariantSiteIndex);
+}
+double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcAscBiasTempFromProxies3Node(const double *p_left,
+                                                      const double *p_right,
+                                                      const double *p_middle,
+                                                      const size_t numSiteRates,
+                                                      const double * rootFreq,
+                                                      const size_t numStates,
+                                                      const size_t * patternCounts,
+                                                      const size_t numProxyPatterns,
+                                                      const size_t siteOffset,
+                                                      const size_t mixtureOffset,
+                                                      const double p_inv,
+                                                      const std::vector<bool> & proxyInvariants,
+                                                      const std::vector<size_t> & proxyInvariantSiteIndex) const {
+    return lnSumRootPatternProbabilities3Nodes(p_left, p_right, p_middle,
+                                                                      numSiteRates,
+                                                                      rootFreq,
+                                                                      numStates,
+                                                                      patternCounts,
+                                                                      numProxyPatterns,
+                                                                      siteOffset,
+                                                                      mixtureOffset,
+                                                                      p_inv,
+                                                                      proxyInvariants,
+                                                                      proxyInvariantSiteIndex);
+}
 
 double lnSumRootSiteProb(const double *per_mixture_Likelihoods, const size_t * patternCounts,
                                                  const size_t numPatterns, const size_t numSiteRates,
@@ -361,7 +361,7 @@ double lnSumRootSiteProb(const double *per_mixture_Likelihoods, const size_t * p
             } else {
                 lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
             }
-            std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum  << "    patternCounts = " << patternCounts[site] << std::endl;
+            //std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum  << "    patternCounts = " << patternCounts[site] << std::endl;
         }
     }
     return lnProbSum;
@@ -424,7 +424,7 @@ void RevBayesCore::fillRootSiteLikelihoodVector(std::vector<double> & per_mixtur
             for (size_t i = 0; i < numStates; ++i) {
                 const double stContrib = p_site_left_j[i] * p_site_right_j[i] * rootFreq[i];
                 tmp += stContrib;
-                //std::cerr << "mixture = " << mixture << " site = " << site << " state = " << i << " rootFreq = " << rootFreq[i] << "    stContrib = " << stContrib << "    tmp = " << tmp << std::endl;
+                //std::cerr << "    mixture = " << mixture << " site = " << site << " state = " << i << " rootFreq = " << rootFreq[i] << "    stContrib = " << stContrib << "    tmp = " << tmp << std::endl;
             }
             per_mixture_Likelihoods[site] += tmp;
             // increment the pointers to the next site
@@ -511,6 +511,7 @@ double lnSumAscCorrectionsForPatterns(const double *per_mixture_Likelihoods, con
             }
             size_t site = b * numStates + stateIndex;
             binProb += per_mixture_Likelihoods[site];
+            //std::cerr << " bin = " << b << " stateIndex = " << stateIndex <<  "  per_mixture_Likelihoods[site] = "<< per_mixture_Likelihoods[site] << "   binProb = " << binProb << "    lnCorrectionSum = " << lnCorrectionSum << std::endl;
         }
         binProb *= (oneMinusPInv/numSiteRates);
         binProb += p_inv;
@@ -519,6 +520,7 @@ double lnSumAscCorrectionsForPatterns(const double *per_mixture_Likelihoods, con
         } else {
           lnCorrectionSum = lnSumOfNumbersInLnForm(lnCorrectionSum,  patternCounts[b * numStates]*log(1 - binProb));
         }
+        //std::cerr << " bin = " << b << "   binProb = " << binProb << "    lnCorrectionSum = " << lnCorrectionSum << std::endl;
     }
     return lnCorrectionSum;
 }
@@ -589,7 +591,7 @@ void RevBayesCore::MissingAwareVariableOnlyAscertainmentBiasCorrection::fillProx
     for (unsigned long i = 0; i < nPatterns; ++i) {
         for (unsigned long j = 0; j < this->numStates; ++j) {
             proxyGapNode[this->numStates*i + j] = gap_node[i];
-            proxyData[this->numStates*i + j] = i;
+            proxyData[this->numStates*i + j] = j;
         }
     }
 }
