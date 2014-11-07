@@ -54,7 +54,7 @@ mymodel = model(sigma)
 
 "monitors"
 # on screen, we will monitor only the correlation coefficient and the mean value of each trait
-monitors[1] = mnScreen(printgen=10, sigma, rootlogmass, meanlogmass, stdevlogmass)
+monitors[1] = mnScreen(printgen=10000, sigma, rootlogmass, meanlogmass, stdevlogmass)
 
 # a trace monitor: like the screen monitor, but directly into file
 monitors[2] = mnFile(filename="output/placmass.trace", printgen=10, separator = TAB, sigma, rootlogmass, meanlogmass, stdevlogmass)
@@ -67,9 +67,9 @@ monitors[4] = mnModel(filename="output/placmass.log",printgen=10, separator = TA
  
 mymcmc = mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.burnin(generations=5000,tuningInterval=250)
 
-mymcmc.run(1000)
+mymcmc.run(50000)
 
 # some post analysis here
 
