@@ -13,7 +13,7 @@ struct IsAbstract
     template<class U>
     static short check_sig(...);
     //
-    enum { Is = sizeof(IsAbstract<T>::template check_sig<T>(0)) - 1 };
+    enum { Is = sizeof(IsAbstract<T>::check_sig<T>(0)) - 1 };
 };
 
 #endif
