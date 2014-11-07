@@ -26,7 +26,6 @@ namespace RevBayesCore {
         
     public:
         BiogeographyRateMapFunction(size_t nc, bool fe=true);                                                                                             // pass in geography object??
-        BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n);                                                                  //!< Copy constructor
         virtual                                            ~BiogeographyRateMapFunction(void);                                              //!< Virtual destructor
         
         // public member functions

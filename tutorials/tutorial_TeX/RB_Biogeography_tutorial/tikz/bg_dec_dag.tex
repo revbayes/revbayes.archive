@@ -1,0 +1,49 @@
+% more or less the final model
+\begin{tikzpicture}
+% tree_DEC
+\node[black,draw=black,line width=2pt, dashed,dash pattern=on 7pt off 2pt,shape=rectangle,inner sep=30mm,rounded corners=1cm, rectangle split, rectangle split horizontal, rectangle split parts=3, rectangle split empty part height=5ex] (tp_dec) at (-15,0) { \nodepart {two}  \nodepart {three} };
+\node [font=\Large]                  at (tp_dec.text)[above=2.0]     {root};
+\node [font=\Large]                  at (tp_dec.two)[above=2.0]      {internal};
+\node [font=\Large]                  at (tp_dec.three)[above=1.9]    {tip};
+\node [obnode]     (tn_dec)          at ($(tp_dec.three)-(0,1.2)$)       {$X_{i}^{\text{an}}$};
+\node [snode]      (in_dec)          at ($(tp_dec.two)-(0,1.2)$)         {$X_{i}^{\text{an}}$};
+\node [snode]      (rn_dec)          at ($(tp_dec.text)-(0,1.2)$)        {$X_{i}^{\text{an}}$};
+\node [snode]      (tn_clado)        at ($(tn_dec)-(-1,-2)$)              {$X_{i}^{\text{cl}}$};
+\node [snode]      (in_clado)        at ($(in_dec)-(-1,-2)$)             {$X_{i}^{\text{cl}}$};
+\node [font=\scriptsize,snode] (ptn_dec) at ($(tn_clado)-(2,0)$)        {$X_{\tilde{p}(i)j}^{\text{an}}$};
+\node [font=\scriptsize,snode] (pin_dec) at ($(in_clado)-(2,0)$)       {$X_{\tilde{p}(i)j}^{\text{an}}$};
+\draw [taro] (ptn_dec) -- (tn_clado) ;
+\draw [taro] (pin_dec) -- (in_clado) ;
+\draw [taro] (in_clado) -- (in_dec) ;
+\draw [taro] (tn_clado) -- (tn_dec) ;
+\node at ($(tp_dec.two)-(-2.0,2.6)$) {$i \in$ internals};
+\node at ($(tp_dec.three)-(-2.25,2.6)$) {$i \in$ tips};
+\node at ($(tp_dec.text)-(-2.25,2.6)$) {$i =$ root};
+% Q_DEC
+\node [detnode]    (qn_dec)          at ($(in_dec)-(2.5,5)$)        {$Q_{DE}$};
+\node [snode]      (glr_dec)         at ($(qn_dec)-(1.5,2)$)       {$\lambda$};
+\node [constnode]  (glrpr_dec)       at ($(glr_dec)-(0,2)$)        {$r$};
+\draw [taro]       (glrpr_dec)       -- (glr_dec);
+\draw [dtaro]       (glr_dec)         -- (qn_dec);
+\node [detnode]    (ddd_dec)         at ($(qn_dec)-(-1.5,2)$)      { $\eta$ };
+\node [snode]      (beta_dec)        at ($(ddd_dec)-(-1,2)$)        { $\beta$ };
+\node [constnode]  (betapr_dec)      at ($(beta_dec)-(0,2)$)       { $a$ };
+\node [constnode]  (geo_dec)         at ($(ddd_dec)-(1,2)$)       { $G$ };
+\draw [taro]       (betapr_dec)      -- (beta_dec);
+\draw [dtaro]       (beta_dec)        -- (ddd_dec);
+\draw [dtaro]       (ddd_dec)         -- (qn_dec);
+\draw [dtaro]       (geo_dec)         -- (ddd_dec);
+\draw [taro] (qn_dec) -- (in_dec) ;
+\draw [taro] (qn_dec) edge[bend left] (rn_dec) ;
+\draw [taro] (qn_dec) edge[bend right] (tn_dec) ;
+% P_C
+\node [snode]      (pn_c)            at ($(qn_dec)-(-5,0)$)      {$P_{C}$};
+\node [constnode]  (pn_c_pr)          at ($(pn_c)-(0,2)$)       {$c$};
+\draw [taro] (pn_c) -- (in_clado) ;
+\draw [taro] (pn_c) edge[bend left](rn_dec);
+\draw [taro] (pn_c) edge[bend right](tn_clado);
+\draw [taro] (pn_c_pr) -- (pn_c);
+% attach psi
+\node[constnode] (topo) at (-4,0) {\Large T};
+\draw[-,line width=2pt] (topo) -- (tp_dec) ;
+\end{tikzpicture}

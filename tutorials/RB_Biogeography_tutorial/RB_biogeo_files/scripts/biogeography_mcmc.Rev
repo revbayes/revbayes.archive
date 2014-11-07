@@ -1,6 +1,0 @@
-############
-#   MCMC   #
-############
-my_mcmc = mcmc(my_model, monitors, moves)
-my_mcmc.burnin(generations=2000, tuningInterval=100)
-my_mcmc.run(generations=nGens)

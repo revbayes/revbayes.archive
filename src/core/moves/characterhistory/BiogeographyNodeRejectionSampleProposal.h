@@ -662,7 +662,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             {
                 proposedCladogenicState = 2;
                 std::set<size_t>::iterator it = present.begin();
-                for (size_t i = 0; i < GLOBAL_RNG->uniform01() * present.size() + 1; i++)
+                for (size_t i = 0; i < GLOBAL_RNG->uniform01() * present.size(); i++)
                     it++;
                 size_t budAreaIdx = *it;
                 
