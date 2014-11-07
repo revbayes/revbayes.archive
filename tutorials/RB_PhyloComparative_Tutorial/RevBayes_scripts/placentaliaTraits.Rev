@@ -90,7 +90,7 @@ mymodel = model(kappa)
 # some of them are a bit redundant, but just to show what can be done
 
 # on screen, we will monitor only the correlation coefficient and the mean value of each trait
-monitors[1] = mnScreen(printgen=10, var2, correl, meanX)
+monitors[1] = mnScreen(printgen=10000, var2, correl, meanX)
 
 # a trace monitor: like the screen monitor, but directly into file
 monitors[2] = mnFile(filename="output/plactraits.trace", printgen=10, separator = "	", var2, correl, meanX)
@@ -109,9 +109,9 @@ monitors[6] = mnModel(filename="output/plactraits.log",printgen=10, separator = 
  
 mymcmc = mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.burnin(generations=5000,tuningInterval=250)
 
-mymcmc.run(1000)
+mymcmc.run(50000)
 
 # some post analysis here
 

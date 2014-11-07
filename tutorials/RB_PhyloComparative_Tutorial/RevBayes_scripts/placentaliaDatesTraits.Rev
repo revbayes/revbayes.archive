@@ -188,7 +188,7 @@ moves[index++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
 #########
 
 # screen monitor
-monitors[1] = mnScreen(printgen=10, speciation, extinction, kappa, nu, correl, meanlograte, meanX)
+monitors[1] = mnScreen(printgen=1000, speciation, extinction, kappa, nu, correl, meanlograte, meanX)
 
 # similar monitor, but directly into file
 monitors[2] = mnFile(filename="output/placdatestraits.trace", printgen=10, separator = TAB, speciation, extinction, kappa, nu, correl, var, meanlograte, meanX)
@@ -210,8 +210,8 @@ monitors[7] = mnModel(filename="output/placdatestraits.log",printgen=10, separat
  
 mymcmc = mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.burnin(generations=2000,tuningInterval=250)
 
-mymcmc.run(1000)
+mymcmc.run(5000)
 
 

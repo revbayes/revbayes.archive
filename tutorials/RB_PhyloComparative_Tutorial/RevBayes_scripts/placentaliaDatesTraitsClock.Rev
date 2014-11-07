@@ -74,7 +74,7 @@ X ~ dnBrownianMultiVariate(psi,sigma=Sigma)
 # you need to do this trait by trait
 for (i in 1:nTraits)	{
 
-	# here we say that the ith entry of the Brownian process should map to the ith. quantitative trait
+	# here we say that the i-th entry of the Brownian process should map to the i-th quantitative trait
 	X.clampAt(contData,i,i)
 }
 
@@ -169,7 +169,7 @@ moves[index++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
 #########
 
 # screen monitor
-monitors[1] = mnScreen(printgen=10, speciation, extinction, kappa, correl, clockrate, meanX)
+monitors[1] = mnScreen(printgen=1000, speciation, extinction, kappa, correl, clockrate, meanX)
 
 # similar monitor, but directly into file
 monitors[2] = mnFile(filename="output/placdatestraits.trace", printgen=10, separator = TAB, speciation, extinction, kappa, correl, var, clockrate, meanX)
@@ -191,8 +191,8 @@ monitors[7] = mnModel(filename="output/placdatestraits.log",printgen=10, separat
  
 mymcmc = mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.burnin(generations=2000,tuningInterval=250)
 
-mymcmc.run(1000)
+mymcmc.run(5000)
 
 
