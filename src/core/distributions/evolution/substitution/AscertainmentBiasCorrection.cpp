@@ -119,6 +119,73 @@ void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::fillP
     }
     proxyPatternCounts.assign(numProxyPatterns, 1);
 }
+double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcMatrixAscBias(double lnProbConstantFromLnSum,
+                                                                                               const size_t * patternCounts,
+                                                                                               const size_t nPatterns) const {
+    /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
+    if (lnProbConstantFromLnSum < -40) {
+        return 0.0;
+    }
+    const double probConstant = exp(lnProbConstantFromLnSum);
+    const double lnProbVar = log(1.0 - probConstant);
+    size_t sumPatWts = 0;
+    for (size_t j = 0; j < nPatterns; ++j) {
+        sumPatWts += patternCounts[j];
+    }
+    const double lnAscProb = sumPatWts*lnProbVar;
+    return lnAscProb;
+}
+
+double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcAscBiasTempFromProxies2Node(const double *p_left,
+                                                      const double *p_right,
+                                                      const size_t numSiteRates,
+                                                      const double * rootFreq,
+                                                      const size_t numStates,
+                                                      const size_t * patternCounts,
+                                                      const size_t numProxyPatterns,
+                                                      const size_t siteOffset,
+                                                      const size_t mixtureOffset,
+                                                      const double p_inv,
+                                                      const std::vector<bool> & proxyInvariants,
+                                                      const std::vector<size_t> & proxyInvariantSiteIndex) const {
+    return lnSumRootPatternProbabilities2Nodes(p_left, p_right,
+                                                                      numSiteRates,
+                                                                      rootFreq,
+                                                                      numStates,
+                                                                      patternCounts,
+                                                                      numProxyPatterns,
+                                                                      siteOffset,
+                                                                      mixtureOffset,
+                                                                      p_inv,
+                                                                      proxyInvariants,
+                                                                      proxyInvariantSiteIndex);
+}
+double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcAscBiasTempFromProxies3Node(const double *p_left,
+                                                      const double *p_right,
+                                                      const double *p_middle,
+                                                      const size_t numSiteRates,
+                                                      const double * rootFreq,
+                                                      const size_t numStates,
+                                                      const size_t * patternCounts,
+                                                      const size_t numProxyPatterns,
+                                                      const size_t siteOffset,
+                                                      const size_t mixtureOffset,
+                                                      const double p_inv,
+                                                      const std::vector<bool> & proxyInvariants,
+                                                      const std::vector<size_t> & proxyInvariantSiteIndex) const {
+    return lnSumRootPatternProbabilities3Nodes(p_left, p_right, p_middle,
+                                                                      numSiteRates,
+                                                                      rootFreq,
+                                                                      numStates,
+                                                                      patternCounts,
+                                                                      numProxyPatterns,
+                                                                      siteOffset,
+                                                                      mixtureOffset,
+                                                                      p_inv,
+                                                                      proxyInvariants,
+                                                                      proxyInvariantSiteIndex);
+}
+
 double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight,
                                                                                         const size_t nSiteRates,
                                                                                         const double *rootFreq,
@@ -150,7 +217,7 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     std::vector<size_t> proxyPatternCounts;
     this->fillProxyInvariants(proxyInvariants, proxyInvariantSiteIndex, proxyPatternCounts, patternCounts, nPatterns, siteInvariant, invariantSiteIndex);
 
-    const double lnProbConstant = lnSumRootPatternProbabilities2Nodes(&(this->partialLikelihoods[0]),
+    const double lnProbConstant = this->calcAscBiasTempFromProxies2Node(&(this->partialLikelihoods[0]),
                                                                       &(aR->partialLikelihoods[0]),
                                                                       nSiteRates,
                                                                       rootFreq,
@@ -165,22 +232,7 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     return this->calcMatrixAscBias(lnProbConstant, patternCounts, nPatterns);
 }
 
-double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcMatrixAscBias(double lnProbConstantFromLnSum,
-                                                                                               const size_t * patternCounts,
-                                                                                               const size_t nPatterns) const {
-    /* If the ln probability of a constant pattern is less than -40, then the correction is lost in rounding error...*/
-    if (lnProbConstantFromLnSum < -40) {
-        return 0.0;
-    }
-    const double probConstant = exp(lnProbConstantFromLnSum);
-    const double lnProbVar = log(1.0 - probConstant);
-    size_t sumPatWts = 0;
-    for (size_t j = 0; j < nPatterns; ++j) {
-        sumPatWts += patternCounts[j];
-    }
-    const double lnAscProb = sumPatWts*lnProbVar;
-    return lnAscProb;
-}
+
 double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight,
                                                                                         const AscertainmentBiasCorrectionStruct * ascMiddle,
                                                                                         const size_t nSiteRates,
@@ -219,7 +271,7 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
     std::vector<size_t> proxyPatternCounts;
     this->fillProxyInvariants(proxyInvariants, proxyInvariantSiteIndex, proxyPatternCounts, patternCounts, nPatterns, siteInvariant, invariantSiteIndex);
     
-    const double lnProbConstant = lnSumRootPatternProbabilities3Nodes(&(this->partialLikelihoods[0]),
+    const double lnProbConstant = this->calcAscBiasTempFromProxies3Node(&(this->partialLikelihoods[0]),
                                                                       &(aR->partialLikelihoods[0]),
                                                                       &(aM->partialLikelihoods[0]),
                                                                       nSiteRates,
