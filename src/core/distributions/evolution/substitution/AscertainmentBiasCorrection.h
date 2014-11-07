@@ -12,18 +12,24 @@ class AscertainmentBiasCorrectionStruct {
         virtual double computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight, const AscertainmentBiasCorrectionStruct * ascMiddle, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const size_t numPatterns, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const = 0;
 };
 
-class VariableOnlyNoMissingAscertainmentBiasCorrectionStruct : public AscertainmentBiasCorrectionStruct {
+class VariableOnlyAscBiasCorrection : public AscertainmentBiasCorrectionStruct {
     public:
-        VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(const size_t numStates,const size_t numMixtures=0);
-        virtual ~VariableOnlyNoMissingAscertainmentBiasCorrectionStruct();
+        VariableOnlyAscBiasCorrection(const size_t numStates,const size_t numMixtures=0);
+        virtual ~VariableOnlyAscBiasCorrection();
         virtual void computeInternalAscBias(const AscertainmentBiasCorrectionStruct * ascLeft, const AscertainmentBiasCorrectionStruct * ascRight, size_t numSiteRates, size_t numStates, size_t numPatterns, const double ** tpMats);
         virtual void computeTipAscBias(size_t numSiteRates, size_t numStates, size_t numPatterns, const double ** tpMats,  const std::vector<bool> &gap_node, const std::vector<unsigned long> &char_node, bool usingAmbiguousCharacters);
         virtual double computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const size_t numPatterns, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const;
         virtual double computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight, const AscertainmentBiasCorrectionStruct * ascMiddle, const size_t numSiteRates, const double *rootFreq, const size_t numStates, const size_t * patternCounts, const size_t numPatterns, const double p_inv,const std::vector<bool> &  siteInvariant, const std::vector<size_t> & invariantSiteIndex) const;
-    private:
+    protected:
         const size_t numStates;
         mutable size_t numMixtures; /* must be mutable in case we have to realloc in computeAscBias... */
         std::vector<double> partialLikelihoods;
+};
+
+class VariableOnlyNoMissingAscertainmentBiasCorrectionStruct : public VariableOnlyAscBiasCorrection {
+    public:
+        VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(const size_t numStates,const size_t numMixtures=0);
+        virtual ~VariableOnlyNoMissingAscertainmentBiasCorrectionStruct();
 };
 }
 #endif

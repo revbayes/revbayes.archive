@@ -7,23 +7,30 @@
 #include "RbException.h"
 using namespace RevBayesCore;
 double lnSumOfNumbersInLnForm(double lnX, double lnY);
-RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(const size_t ns, const size_t nm)
+RevBayesCore::VariableOnlyAscBiasCorrection::VariableOnlyAscBiasCorrection(const size_t ns, const size_t nm)
     :numStates(ns),
-    numMixtures(nm){
+    numMixtures(nm) {
     partialLikelihoods.reserve(this->numStates * this->numStates * this->numMixtures);
 }
-RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::~VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(){}
-void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::computeInternalAscBias(const AscertainmentBiasCorrectionStruct * ascLeft,
-                                                                                         const AscertainmentBiasCorrectionStruct * ascRight,
-                                                                                         size_t nSiteRates,
-                                                                                         size_t nStates,
-                                                                                         size_t nPatterns,
-                                                                                         const double ** tpMats) {
-    const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct * aL = dynamic_cast<const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct*>(ascLeft);
-    const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct * aR = dynamic_cast<const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct*>(ascRight);
+RevBayesCore::VariableOnlyAscBiasCorrection::~VariableOnlyAscBiasCorrection() {
+
+}
+RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(const size_t ns, const size_t nm)
+    :VariableOnlyAscBiasCorrection(ns, nm) {
+}
+RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::~VariableOnlyNoMissingAscertainmentBiasCorrectionStruct() {
+}
+void RevBayesCore::VariableOnlyAscBiasCorrection::computeInternalAscBias(const AscertainmentBiasCorrectionStruct * ascLeft,
+                                                                         const AscertainmentBiasCorrectionStruct * ascRight,
+                                                                         size_t nSiteRates,
+                                                                         size_t nStates,
+                                                                         size_t nPatterns,
+                                                                         const double ** tpMats) {
+    const VariableOnlyAscBiasCorrection * aL = dynamic_cast<const VariableOnlyAscBiasCorrection*>(ascLeft);
+    const VariableOnlyAscBiasCorrection * aR = dynamic_cast<const VariableOnlyAscBiasCorrection*>(ascRight);
     if (aL == 0 || aR == 0) {
         assert(aL && aR);
-        throw RbException("Expected left and right ascertainment bias correction structs to be VariableOnlyNoMissingAscertainmentBiasCorrectionStruct *");
+        throw RbException("Expected left and right ascertainment bias correction structs to be VariableOnlyAscBiasCorrection *");
     }
     assert(nStates == this->numStates);
     assert(this->numMixtures == 0 || nSiteRates == this->numMixtures);
@@ -50,13 +57,13 @@ void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::compu
                                   mixtureOffset,
                                   tpMats);
 }
-void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::computeTipAscBias(size_t nSiteRates,
-                                                                                    size_t nStates,
-                                                                                    size_t nPatterns,
-                                                                                    const double ** tpMats,
-                                                                                    const std::vector<bool> &gap_node,
-                                                                                    const std::vector<unsigned long> &char_node,
-                                                                                    bool usingAmbiguousCharacters) {
+void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSiteRates,
+                                                                    size_t nStates,
+                                                                    size_t nPatterns,
+                                                                    const double ** tpMats,
+                                                                    const std::vector<bool> &gap_node,
+                                                                    const std::vector<unsigned long> &char_node,
+                                                                    bool usingAmbiguousCharacters) {
     assert(nStates == this->numStates);
     assert(this->numMixtures == 0 || nSiteRates == this->numMixtures);
     const unsigned plLen = this->numStates * this->numStates * nSiteRates;
@@ -83,19 +90,19 @@ void RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::compu
                               proxyData,
                               false);
 }
-double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight,
-                                                                                                        const size_t nSiteRates,
-                                                                                                        const double *rootFreq,
-                                                                                                        const size_t nStates,
-                                                                                                        const size_t * patternCounts,
-                                                                                                        const size_t nPatterns,
-                                                                                                        const double p_inv,
-                                                                                                        const std::vector<bool> & siteInvariant,
-                                                                                                        const std::vector<size_t> & invariantSiteIndex) const {
-    const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct * aR = dynamic_cast<const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct*>(ascRight);
+double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection2Node(const AscertainmentBiasCorrectionStruct * ascRight,
+                                                                                        const size_t nSiteRates,
+                                                                                        const double *rootFreq,
+                                                                                        const size_t nStates,
+                                                                                        const size_t * patternCounts,
+                                                                                        const size_t nPatterns,
+                                                                                        const double p_inv,
+                                                                                        const std::vector<bool> & siteInvariant,
+                                                                                        const std::vector<size_t> & invariantSiteIndex) const {
+    const VariableOnlyAscBiasCorrection * aR = dynamic_cast<const VariableOnlyAscBiasCorrection*>(ascRight);
     if (aR == 0) {
         assert(aR);
-        throw RbException("Expected left and right ascertainment bias correction structs to be VariableOnlyNoMissingAscertainmentBiasCorrectionStruct *");
+        throw RbException("Expected left and right ascertainment bias correction structs to be VariableOnlyAscBiasCorrection *");
     }
     assert(nStates == this->numStates);
     assert(this->numMixtures == 0 || nSiteRates == this->numMixtures);
@@ -141,23 +148,23 @@ double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::com
     const double lnAscProb = sumPatWts*lnProbVar;
     return lnAscProb;
 }
-double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight,
-                                                                                                        const AscertainmentBiasCorrectionStruct * ascMiddle,
-                                                                                                        const size_t nSiteRates,
-                                                                                                        const double *rootFreq,
-                                                                                                        const size_t nStates,
-                                                                                                        const size_t * patternCounts,
-                                                                                                        const size_t nPatterns,
-                                                                                                        const double p_inv,
-                                                                                                        const std::vector<bool> & siteInvariant,
-                                                                                                        const std::vector<size_t> & invariantSiteIndex) const {
+double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection3Node(const AscertainmentBiasCorrectionStruct * ascRight,
+                                                                                        const AscertainmentBiasCorrectionStruct * ascMiddle,
+                                                                                        const size_t nSiteRates,
+                                                                                        const double *rootFreq,
+                                                                                        const size_t nStates,
+                                                                                        const size_t * patternCounts,
+                                                                                        const size_t nPatterns,
+                                                                                        const double p_inv,
+                                                                                        const std::vector<bool> & siteInvariant,
+                                                                                        const std::vector<size_t> & invariantSiteIndex) const {
     assert(false);
-    throw RbException("RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::computeAscBiasLnProbCorrection3Node Not implemented yet");
-    const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct * aR = dynamic_cast<const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct*>(ascRight);
-    const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct * aM = dynamic_cast<const VariableOnlyNoMissingAscertainmentBiasCorrectionStruct*>(ascMiddle);
+    throw RbException("RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection3Node Not implemented yet");
+    const VariableOnlyAscBiasCorrection * aR = dynamic_cast<const VariableOnlyAscBiasCorrection*>(ascRight);
+    const VariableOnlyAscBiasCorrection * aM = dynamic_cast<const VariableOnlyAscBiasCorrection*>(ascMiddle);
     if (aR == 0 || aM == 0) {
         assert(aR && aM);
-        throw RbException("Expected right and middle ascertainment bias correction structs to be VariableOnlyNoMissingAscertainmentBiasCorrectionStruct *");
+        throw RbException("Expected right and middle ascertainment bias correction structs to be VariableOnlyAscBiasCorrection *");
     }
     assert(nStates == this->numStates);
     assert(this->numMixtures == 0 || nSiteRates == this->numMixtures);
