@@ -44,7 +44,7 @@ double RevBayesCore::computeRootFilteredLikelihood2Nodes(const double *p_left,
                                    double & uncorrectedLnProb,
                                    double & ascBiasLnProb
                                    ) {
-    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection2Node(ascRight, numSiteRates, rootFreq, numStates, patternCounts, p_inv, siteInvariant, invariantSiteIndex);
+    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection2Node(ascRight, numSiteRates, rootFreq, numStates, patternCounts, numPatterns,  p_inv, siteInvariant, invariantSiteIndex);
     uncorrectedLnProb = computeRootLikelihood2Nodes(p_left,
                                                       p_right,
                                                       numSiteRates,
@@ -57,7 +57,7 @@ double RevBayesCore::computeRootFilteredLikelihood2Nodes(const double *p_left,
                                                       p_inv,
                                                       siteInvariant,
                                                       invariantSiteIndex);
-    return ascBiasLnProb + uncorrectedLnProb;
+    return uncorrectedLnProb - ascBiasLnProb;
 }
 double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
                                    const double *p_right,
@@ -77,7 +77,7 @@ double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
                                    const AscertainmentBiasCorrectionStruct *ascMiddle,
                                    double & uncorrectedLnProb,
                                    double & ascBiasLnProb) {
-    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection3Node(ascRight, ascMiddle, numSiteRates, rootFreq, numStates, patternCounts, p_inv, siteInvariant, invariantSiteIndex);
+    ascBiasLnProb = ascLeft->computeAscBiasLnProbCorrection3Node(ascRight, ascMiddle, numSiteRates, rootFreq, numStates, patternCounts, numPatterns, p_inv, siteInvariant, invariantSiteIndex);
     uncorrectedLnProb = RevBayesCore::computeRootLikelihood3Nodes(p_left,
                                                  p_right,
                                                  p_middle,
@@ -91,7 +91,7 @@ double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
                                                  p_inv,
                                                  siteInvariant,
                                                  invariantSiteIndex);
-    return ascBiasLnProb + uncorrectedLnProb;
+    return uncorrectedLnProb - ascBiasLnProb;
 }
 void RevBayesCore::computeInternalNodeFilteredLikelihood(double * p_node,
                                             AscertainmentBiasCorrectionStruct *ascNode,

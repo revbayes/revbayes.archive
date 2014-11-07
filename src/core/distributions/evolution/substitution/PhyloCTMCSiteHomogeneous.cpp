@@ -63,6 +63,7 @@ double RevBayesCore::computeRootLikelihood2Nodes(const double *p_left,
     }
     return lnProb;
 }
+
 double RevBayesCore::computeRootLikelihood3Nodes(const double *p_left,
                                                  const double *p_right,
                                                  const double *p_middle,
