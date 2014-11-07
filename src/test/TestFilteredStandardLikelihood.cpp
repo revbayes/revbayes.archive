@@ -1,6 +1,6 @@
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-//#include "FilteredPhyloCTMCSiteHomogeneous.h"
+#include "FilteredPhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "JcRateMatrixFunction.h"
 #include "NclReader.h"
@@ -95,9 +95,9 @@ bool TestFilteredStandardLikelihood::run( void ) {
 #   else
         DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new JcRateMatrixFunction(numStates));
 #       if defined (USE_NUCLEOTIDE)
-            PhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType> *charModel = new PhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType>(tau, false, numChar);
+            FilteredPhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType> *charModel = new FilteredPhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType>(tau, false, numChar);
 #       else
-            PhyloCTMCSiteHomogeneous<StandardState, TestTreeType> *charModel = new PhyloCTMCSiteHomogeneous<StandardState, TestTreeType>(tau, numStates, false, numChar);
+            FilteredPhyloCTMCSiteHomogeneous<StandardState, TestTreeType> *charModel = new FilteredPhyloCTMCSiteHomogeneous<StandardState, TestTreeType>(tau, numStates, false, numChar);
 #       endif
 #   endif
 #   if defined(USE_RATE_HET)
