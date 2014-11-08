@@ -576,7 +576,7 @@ const std::set<size_t> RateMap_Biogeography::getRangeAndFrontierSet(const Topolo
 {
     std::set<size_t> ret;
     const std::vector<CharacterEvent*>& from = bh->getParentCharacters();
-    const std::vector<CharacterEvent*>& to = bh->getParentCharacters();
+//    const std::vector<CharacterEvent*>& to = bh->getParentCharacters();
     size_t epochIdx = getEpochIndex(age);
     const std::vector<std::set<size_t> >& adjacentAreaSet = geographyRateModifier->getAdjacentAreaSet();
     
