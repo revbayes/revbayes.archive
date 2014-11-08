@@ -141,7 +141,7 @@ tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().
 template<class charType, class treeType>
 void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::cleanProposal( void )
 {
-    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
+//    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
 //    BranchHistory* bh = &p.getHistory(*node);
     
     // delete old events
@@ -408,7 +408,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
                 for (it = tmpHistory.begin(); it != tmpHistory.end(); it++)
                 {
                     CharacterEvent* evt = *it;
-                    unsigned int nextState;
+                    unsigned int nextState = 0;
 
                     // the last event must transition to endState
                     if (jumpIdx == numJumps)
@@ -431,7 +431,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
                         
                         // sample next state for jumpIdx-th event
                         double uIdx = GLOBAL_RNG->uniform01() * sampleProbSum;
-                        for (size_t i = 0; i < sampleProbs.size(); i++)
+                        for (unsigned int i = 0; i < sampleProbs.size(); i++)
                         {
                             uIdx -= sampleProbs[i];
                             if (uIdx <= 0)
