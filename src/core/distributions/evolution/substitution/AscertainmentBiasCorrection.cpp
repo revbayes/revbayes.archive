@@ -515,11 +515,8 @@ double lnSumAscCorrectionsForPatterns(const double *per_mixture_Likelihoods, con
         }
         binProb *= (oneMinusPInv/numSiteRates);
         binProb += p_inv;
-        if (b ==0 ) {
-            lnCorrectionSum = patternCounts[b * numStates]*log(1- binProb);
-        } else {
-          lnCorrectionSum = lnSumOfNumbersInLnForm(lnCorrectionSum,  patternCounts[b * numStates]*log(1 - binProb));
-        }
+        const double lnCorrectionPattern = patternCounts[b * numStates]*log(1- binProb);
+        lnCorrectionSum += lnCorrectionPattern;
         //std::cerr << " bin = " << b << "   binProb = " << binProb << "    lnCorrectionSum = " << lnCorrectionSum << std::endl;
     }
     return lnCorrectionSum;
