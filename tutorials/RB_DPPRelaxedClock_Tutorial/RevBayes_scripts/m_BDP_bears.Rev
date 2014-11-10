@@ -1,5 +1,5 @@
 ############################################################################################
-#   File: timetree tutorial birth-death, rho=10/147 model specification file -- estimate topology
+#   File: timetree tutorial birth-death, rho=10/147 model specification file -- FIXED topology
 ############################################################################################
 
 ## read in the tree 
@@ -109,8 +109,4 @@ moves[mi++] = mvSlide(root_time, delta=2.0, tune=true, weight=10.0)
 moves[mi++] = mvScale(root_time, lambda=2.0, tune=true, weight=10.0)
 moves[mi++] = mvTreeScale(tree=timetree, rootAge=root_time, delta=1.0, tune=true, weight=3.0)
 
-### and moves for the tree topology
-moves[mi++] = mvNNI(timetree, weight=8.0)
-moves[mi++] = mvNarrow(timetree, weight=8.0)
-moves[mi++] = mvFNPR(timetree, weight=8.0)
-
+### this analysis will not update the tree topology, treating that parameter as fixed
