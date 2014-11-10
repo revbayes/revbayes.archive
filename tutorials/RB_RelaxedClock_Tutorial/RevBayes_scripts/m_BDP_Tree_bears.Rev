@@ -36,9 +36,9 @@ birth_rate := diversification / (denom)
 death_rate := (turnover * diversification) / (denom)
 
 ### rho is the probability of sampling species at the present
-### fix this to 0.68, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
+### fix this to 0.068, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
 ### and we have sampled 10
-rho <- 0.68
+rho <- 0.068
 
 ### the root age is an independent stochastic node with a lognormal prior
 ### the lognormal distribution is off-set by the age of the canid fossil in the genus Hesperocyon
