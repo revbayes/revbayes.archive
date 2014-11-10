@@ -9,7 +9,7 @@ D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 n_sites <- D.nchar(1)
 
 ### initialize an iterator for the moves vector
-mi <- 1
+mi = 1
 
 ### set up the birth-death model from file
 source("RevBayes_scripts/m_BDP_bears.Rev")
@@ -20,7 +20,7 @@ source("RevBayes_scripts/m_DPP_bears.Rev")
 ### workspace model wrapper ###
 mymodel = model(er)
 
-mymodel.graph("m_DPP_modelgraph.dot")
+mymodel.graph("m_DPP_modelgraph.dot", verbose=false)
 
 ### set up the monitors that will output parameter values to file and screen 
 monitors[1] = mnFile(filename="output/DPP_bears_mcmc.log", printgen=10,
@@ -29,13 +29,13 @@ monitors[1] = mnFile(filename="output/DPP_bears_mcmc.log", printgen=10,
 							er, sf,
 							mean_rt, n_cats, branch_rates, concentration, base_rate)
 monitors[2] = mnFile(filename="output/DPP_bears_mcmc.trees", printgen=10, timetree)
-monitors[3] = mnScreen(printgen=1000, mean_rt, n_cats, concentration, root_time)
+monitors[3] = mnScreen(printgen=10, mean_rt, n_cats, concentration, root_time)
 
 ### workspace mcmc ###
 mymcmc = mcmc(mymodel, monitors, moves)
 
 ### pre-burnin to tune the proposals ###
-mymcmc.burnin(generations=1000,tuningInterval=250)
+mymcmc.burnin(generations=1000,tuningInterval=100)
 
 ### run the MCMC ###
 mymcmc.run(generations=5000)
