@@ -1,0 +1,37 @@
+
+D <- readDiscreteCharacterData(file="morpho.nex")
+
+n_taxa <- D.ntaxa()
+n_sites <- D.nchar(1)
+names <- D.names()
+
+n_branches <- 2 * n_taxa - 3
+
+mi = 1
+
+Q := fnJC(3)
+
+
+topology ~ dnUniformTopology(n_taxa, names)
+
+moves[mi++] = mvNNI(topology)
+
+
+for (i in 1:n_branches) {
+  br_lens[i] ~ dnExponential(10.0)
+  moves[mi++] = mvScale(br_lens[i]) 
+}
+
+TL := sum(br_lens)
+
+phylogeny := treeAssembly(topology, br_lens)
+
+scaleRate <- 1.0
+
+seq ~ dnPhyloCTMCFiltered(tree=phylogeny, Q=Q, branchRates=scaleRate, nSites=n_sites, type="Standard")
+
+#seq.clamp(D)
+
+#mymodel = model(Q)
+
+

@@ -182,6 +182,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCEpoch.h"
+#include "Dist_phyloCTMCFiltered.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 #include "Dist_autocorrelatedLnBranchRates.h"
@@ -603,7 +604,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloCTMCEpoch", new Dist_phyloCTMCEpoch() );
-                
+        addDistribution( "dnPhyloCTMCFiltered", new Dist_phyloCTMCFiltered<TimeTree>() );
+        addDistribution( "dnPhyloCTMCFiltered", new Dist_phyloCTMCFiltered<BranchLengthTree>() );
+        
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
