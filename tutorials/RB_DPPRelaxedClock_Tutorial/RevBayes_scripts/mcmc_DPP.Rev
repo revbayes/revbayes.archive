@@ -20,7 +20,7 @@ source("RevBayes_scripts/m_DPP_bears.Rev")
 ### workspace model wrapper ###
 mymodel = model(er)
 
-mymodel.graph("output/m_DPP_modelgraph.dot", verbose=false)
+mymodel.graph("m_DPP_modelgraph.dot", verbose=false)
 
 ### set up the monitors that will output parameter values to file and screen 
 monitors[1] = mnFile(filename="output/DPP_bears_mcmc.log", printgen=10,

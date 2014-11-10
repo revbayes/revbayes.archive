@@ -47,12 +47,13 @@ cd RB_RelaxedClock_Tutorial
 
 cd ..
 
-# dating tutorial (time tree estimation using different DPP branch-rate model)
+# dating tutorial (time tree estimation using the DPP branch-rate model)
 cd RB_DPPRelaxedClock_Tutorial
 #rb RevBayes_Scripts/mcmc_DPP.Rev
 
 #rm -r output
 #rm history.txt
+#rm m_DPP_modelgraph.dot
 
 cd ..
 
