@@ -39,18 +39,25 @@ cd ..
 
 
 # dating tutorial (time tree estimation using different clock models)
-cd RB_Dating_Tutorial
+cd RB_RelaxedClock_Tutorial
 #rb RevBayes_Scripts/full_analysis.Rev
 
 #rm -r output
-#rm m_DPP_modelgraph.dot
 #rm history.txt
 
 cd ..
 
+# dating tutorial (time tree estimation using different DPP branch-rate model)
+cd RB_DPPRelaxedClock_Tutorial
+#rb RevBayes_Scripts/mcmc_DPP.Rev
+
+#rm -r output
+#rm history.txt
+
+cd ..
 
 # diversification rate estimation tutorial (pure birth (Yule), birth-death process, etc.)
-cd RB_Diversification_Tutorial
+cd RB_SimpleDiversification_Tutorial
 #rb RevBayes_Scripts/full_analysis.Rev
 
 #rm -r output
