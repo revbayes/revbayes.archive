@@ -1,4 +1,4 @@
-\section{Exercise: Estimating Time-Calibrated Phylogenies}
+\section{Exercise: Comparing Relaxed-Clock Models \& Estimating Time-Calibrated Phylogenies}
 
 \subsection{Introduction}
 
@@ -92,7 +92,7 @@ The root age can thus be given any parametric distribution over positive real nu
 \textbf{\textit{Create the Rev File}}
 
 {\begin{framed}
-Open your text editor and create the birth-death model file called {\textcolor{red}{\cl{m\_BDP\_Tree\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
+Open your text editor and create the birth-death model file called {\textcolor{red}{\cl{m\_BDP\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
 
 Enter the \Rev~code provided in this section in the new model file.
 \end{framed}}
@@ -309,7 +309,7 @@ stem_Ursid_fossil.clamp(tParictis)
 \end{lstlisting}
 \end{snugshade*}}
 
-\subsubsection{Proposals on the Time Tree}
+\subsubsection{Proposals on the Time Tree (Node Ages Only)}
 
 Next, create the vector of moves. These tree moves act on node ages:
 {\tt \begin{snugshade*}
@@ -321,22 +321,23 @@ moves[mi++] = mvTreeScale(tree=timetree, rootAge=root_time, delta=1.0, tune=true
 \end{lstlisting}
 \end{snugshade*}}
 
-And these change the tree topology. If we wish to keep the topology constant, then we can leave these moves out. Note that for some relaxed clock models (autocorrelated rates, DPP, random-local clock) tree topology moves often induce very long mixing times.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-moves[mi++] = mvNNI(timetree, weight=8.0)
-moves[mi++] = mvNarrow(timetree, weight=8.0)
-moves[mi++] = mvFNPR(timetree, weight=8.0)
-\end{lstlisting}
-\end{snugshade*}}
+%And these change the tree topology. If we wish to keep the topology constant, then we can leave these moves out. Note that for some relaxed clock models (autocorrelated rates, DPP, random-local clock) tree topology moves often induce very long mixing times.
+%{\tt \begin{snugshade*}
+%\begin{lstlisting}
+%moves[mi++] = mvNNI(timetree, weight=8.0)
+%moves[mi++] = mvNarrow(timetree, weight=8.0)
+%moves[mi++] = mvFNPR(timetree, weight=8.0)
+%\end{lstlisting}
+%\end{snugshade*}}
+%
 
-
+Now save and close the file called {\textcolor{red}{\cl{m\_BDP\_bears.Rev}}}. This file, with all the model specifications will be loaded by other \Rev~files. 
 
 \bigskip
 \subsection{Specifying Branch-Rate Models}\label{brMods} 
 
 The next sections will walk you through setting up the files specifying different relaxed clock models. 
-You may type this syntax directly into the \RevBayes~console or write them in a text file.
+Each section will require you to create a separate \Rev~file for each relaxed clock model, as well as for each marginal-likelihood analysis.
 
 \bigskip
 \subsubsection{The Global Molecular Clock Model}
@@ -352,26 +353,16 @@ Then, the absolute rate applied to the tree is a deterministic node (Fig.~\ref{m
 \label{m_GMC:fig}
 \end{figure}
 
+\textbf{\textit{Create the Rev File}}
 
-\textbf{\textit{Load Sequence Alignment}}
+{\begin{framed}
+Open your text editor and create the global molecular clock model file called {\textcolor{red}{\cl{m\_GMC\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
 
-Read in the sequences and initialize important variables.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
-n_sites <- D.nchar(1)
-mi = 1
-\end{lstlisting}
-\end{snugshade*}}
+Enter the \Rev~code provided in this section in the new model file. Keep in mind that we are creating modular model files that can be sourced by different analysis files. Thus, the \Rev~code below will still depend on variable initialized in different files.
+\end{framed}}
 
-\textbf{\textit{The Calibrated Time-Tree Model}}
 
-Load the calibrated tree model from file. Note that this file does not have moves that operate on the tree topology, which is helpful when you plan to estimate the marginal likelihoods and compare different relaxed clock models.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-source("RevBayes_scripts/m_BDP_bears.Rev")
-\end{lstlisting}
-\end{snugshade*}}
+
 
 \textbf{\textit{The Clock-Rate}}
 
@@ -423,30 +414,82 @@ phySeq.clamp(D)
 \end{lstlisting}
 \end{snugshade*}}
 
-Specify the work-space model object.
+This is all we will include in the global molecular clock model file. 
+
+{\begin{framed}
+Save and close the file called {\textcolor{red}{\cl{m\_GMC\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
+\end{framed}}
+
+
+
+%Specify the work-space model object.
+%{\tt \begin{snugshade*}
+%\begin{lstlisting}
+%mymodel = model(er)
+%\end{lstlisting}
+%\end{snugshade*}}
+%
+%\exs{The global-molecular clock model is specified in the file called \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_TimeTree_Exercise/RB_timetree_files/RevBayes_scripts/m_GMC_bears.Rev}{\cl{m\_GMC\_bears.Rev }}.}
+
+\textbf{\textit{Estimate the Marginal Likelihood}}
+
+Now we can use the model files we created and estimate the marginal likelihood under the global molecular clock model (and all other model settings). 
+You can enter the following commands directly in the \RevBayes~console, or you can create another \Rev~script. 
+
+{\begin{framed}
+Open your text editor and create the marginal-likelihood analysis file under the global molecular clock model. Call the file: {\textcolor{red}{\cl{mlnl\_GMC\_bears.Rev}}} and save it in the \cl{RevBayes\_scripts} directory.
+\end{framed}}
+
+
+\textit{Load Sequence Alignment} --- Read in the sequences and initialize important variables.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
+n_sites <- D.nchar(1)
+mi = 1
+\end{lstlisting}
+\end{snugshade*}}
+
+\textit{The Calibrated Time-Tree Model} --- Load the calibrated tree model from file using the \cl{source()} function. Note that this file does not have moves that operate on the tree topology, which is helpful when you plan to estimate the marginal likelihoods and compare different relaxed clock models.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+source("RevBayes_scripts/m_BDP_bears.Rev")
+\end{lstlisting}
+\end{snugshade*}}
+
+\textit{Load the GMC Model File} --- Source the file containing all of the parameters of the global molecular clock model. This file is called {\textcolor{red}{\cl{m\_GMC\_bears.Rev}}}.
+
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+source("RevBayes_scripts/m_GMC_bears.Rev")
+\end{lstlisting}
+\end{snugshade*}}
+
+We can now create our workspace model variable with our fully specified model DAG. 
+We will do this with the \cl{model()} function and provide a single node in the graph (\cl{er}).
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 mymodel = model(er)
 \end{lstlisting}
 \end{snugshade*}}
 
-\exs{The global-molecular clock model is specified in the file called \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_TimeTree_Exercise/RB_timetree_files/RevBayes_scripts/m_GMC_bears.Rev}{\cl{m\_GMC\_bears.Rev }}.}
+\textit{Run the Power-Posterior Sampler and Compute the Marginal Likelihoods} --- With a fully specified model, we can set up the \cl{powerPosterior()} analysis to create a file of `powers' and likelihoods from which we can estimate the marginal likelihood using stepping-stone or path sampling. 
+This method computes a vector of powers from a beta distribution, then executes an MCMC run for each power step while raising the likelihood to that power. In this implementation, the vector of powers starts with 1, sampling the likelihood close to the posterior and incrementally sampling closer and closer to the prior as the power decreases. 
 
-\textbf{\textit{Estimate the Marginal Likelihood}}
-
-Below is the code to estimate the marginal likelihood. 
-Enter the value for this model in Table \ref{ssTable}.
-
-\exs{The strict clock marginal likelihood analysis is specified in the file called \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_TimeTree_Exercise/RB_timetree_files/RevBayes_scripts/mlnl_GMC_bears.Rev}{\cl{mlnl\_GMC\_bears.Rev }}.}
+First, we create the variable containing the power posterior. This requires us to provide a model and vector of moves, as well as an output file name. The \cl{cats} argument sets the number of power steps.
+Once we have specified the options for our sampler, we can then start the run after a burn-in/tuning period.
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-source("RevBayes_scripts/m_GMC_bears.Rev")
-
 pow_p = powerPosterior(mymodel, moves, "output/GMC_bears_powp.out", cats=50) 
 pow_p.burnin(generations=5000,tuningInterval=200)
 pow_p.run(generations=1000)  
+\end{lstlisting}
+\end{snugshade*}}
 
+Compute the marginal likelihood using two different methods, stepping-stone sampling and path sampling. 
+{\tt \begin{snugshade*}
+\begin{lstlisting}
 ss = steppingStoneSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ss.marginal() 
 
@@ -456,6 +499,19 @@ ps.marginal()
 \end{lstlisting}
 \end{snugshade*}}
 
+If you have entered all of this directly in the \RevBayes~console, you will see the marginal likelihoods under each method printed to screen. 
+Otherwise, if you have created the separate \Rev~file 
+{\textcolor{red}{\cl{m\_GMC\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory, you now have to directly source this file in \RevBayes (after saving the up-to-date content). 
+
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+source("RevBayes_scripts/mlnl_GMC_bears.Rev")
+\end{lstlisting}
+\end{snugshade*}}
+
+{\begin{framed}
+Once you have completed this analysis, record the marginal likelihoods under the global molecular clock model in Table \ref{ssTable}.
+\end{framed}}
 
 \bigskip
 \subsubsection{The Uncorrelated Lognormal Rates Model}
@@ -479,33 +535,36 @@ In Figure \ref{m_UCLN:fig}, we can represent the vector of $N$ branch rates usin
 \label{m_UCLN:fig}
 \end{figure}
 
-First, clear the workspace.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-clear()
-\end{lstlisting}
-\end{snugshade*}}
 
+%
+%\textbf{\textit{Load the Sequence Data and Birth-Death Model}}
+%
+%{\tt \begin{snugshade*}
+%\begin{lstlisting}
+%D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
+%n_sites <- D.nchar(1)
+%mi = 1
+%\end{lstlisting}
+%\end{snugshade*}}
+%
+%{\tt \begin{snugshade*}
+%\begin{lstlisting}
+%source("RevBayes_scripts/m_BDP_bears.Rev")
+%\end{lstlisting}
+%\end{snugshade*}}
 
-\textbf{\textit{Load the Sequence Data and Birth-Death Model}}
+\textbf{\textit{Create the Rev File}}
 
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
-n_sites <- D.nchar(1)
-mi = 1
-\end{lstlisting}
-\end{snugshade*}}
+{\begin{framed}
+Open your text editor and create the uncorrelated-lognormal relaxed-clock model file called {\textcolor{red}{\cl{m\_UCLN\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
 
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-source("RevBayes_scripts/m_BDP_bears.Rev")
-\end{lstlisting}
-\end{snugshade*}}
+Enter the \Rev~code provided in this section in the new model file. Keep in mind that we are creating modular model files that can be sourced by different analysis files. Thus, the \Rev~code below will still depend on variable initialized in different files.
+\end{framed}}
+
 
 \textbf{\textit{The Base Clock Rate}}
 
-As in the clock model above, we create a lognormally distributed stochastic node, representing the base rate.
+As in the strict clock model above, we create a lognormally distributed stochastic node, representing the base rate.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 br_M <- 5.4E-3
@@ -612,37 +671,23 @@ phySeq.clamp(D)
 \end{lstlisting}
 \end{snugshade*}}
 
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-mymodel = model(er)
-\end{lstlisting}
-\end{snugshade*}}
-
-\exs{The UCLN model is specified in the file called \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_TimeTree_Exercise/RB_timetree_files/RevBayes_scripts/m_UCLN_bears.Rev}{\cl{m\_UCLN\_bears.Rev }}.}
 
 \textbf{\textit{Estimate the Marginal Likelihood}}
 
-Below is the code to estimate the marginal likelihood. 
-Enter the value for this model in Table \ref{ssTable}.
+Just as we did for the strict clock model, we can execute a power-posterior analysis to compute the marginal likelihood under the UCLN model. 
 
-\exs{The UCLN marginal likelihood analysis is specified in the file called \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_TimeTree_Exercise/RB_timetree_files/RevBayes_scripts/mlnl_UCLN_bears.Rev}{\cl{mlnl\_UCLN\_bears.Rev }}.}
+{\begin{framed}
+Open your text editor and create the marginal-likelihood analysis file under the global molecular clock model. Call the file: {\textcolor{red}{\cl{mlnl\_UCLN\_bears.Rev}}} and save it in the \cl{RevBayes\_scripts} directory.
+\end{framed}}
 
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-source("RevBayes_scripts/m_GMC_bears.Rev")
+Refer to the section describing this process for the GMC model.
+Write your own \Rev~language script to estimate the marginal likelihood under the UCLN model. 
+Be sure to change the file names in all of the relevant places (e.g., your output file for the \cl{powerPosterior()} function should be \colorbox{shadecolor}{\cl{UCLN\_bears\_powp.out}} and be sure to \cl{source()} the correct model file \colorbox{shadecolor}{\cl{source("RevBayes\_scripts/m\_UCLN\_bears.out")}}).
 
-pow_p = powerPosterior(mymodel, moves, "output/UCLN_bears_powp.out", cats=50) 
-pow_p.burnin(generations=5000,tuningInterval=200)
-pow_p.run(generations=1000)  
+{\begin{framed}
+Once you have completed this analysis, record the marginal likelihoods under the UCLN model in Table \ref{ssTable}.
+\end{framed}}
 
-ss = steppingStoneSampler(file="output/UCLN_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
-ss.marginal() 
-
-### use path sampling to calculate marginal likelihoods
-ps = pathSampler(file="output/GMC_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
-ps.marginal() 
-\end{lstlisting}
-\end{snugshade*}}
 
 
 \FloatBarrier
