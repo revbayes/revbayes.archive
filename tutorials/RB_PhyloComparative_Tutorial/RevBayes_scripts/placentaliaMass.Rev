@@ -10,11 +10,11 @@
 
 
 # read the data 
-contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+contData = readContinuousCharacterData("data/plac40lhtlog.nex")
 
 # work under fixed topology
-treeArray <- readTrees("data/chronoplac40.tree")
-psi <- treeArray[1]
+treeArray = readTrees("data/chronoplac40.tree")
+psi = treeArray[1]
 
 # sigma: variance per unit of time of the Brownian motion
 sigma ~ dnLogUniform(min=0.001,max=1000)
@@ -25,7 +25,7 @@ sigma.setValue(0.1)
 logmass ~ dnBrownian(psi,sigma)
 
 # moves on sigma 
-index <- 1
+index = 1
 moves[index++] = mvScale(sigma, lambda=2.0, tune=true, weight=3.0)
 
 # moves on the Brownian process
@@ -69,7 +69,7 @@ mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.burnin(generations=200,tuningInterval=50)
 
-mymcmc.run(1000)
+mymcmc.run(10000)
 
 # some post analysis here
 
