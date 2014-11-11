@@ -66,10 +66,7 @@ In the \cmd{data} folder, you will find the following files
 \item
 \cmd{plac40\_4fold.nex}: an alignment made of a concatenation of 17 nuclear genes in 40 placental mammals \citep[from][]{Lartillot:2012be}, with only the four-fold degenerate third coding positions.
 \item
-\cmd{chronoplac40.tree}: a time-calibrated phylogeny, which has been obtained by running another software program \citep[PhyloBayes,][]{Lartillot:2009p884}.
-On the cluster, and if you are logged under an X-terminal, you can visualize this tree using the \cmd{njplot} command:
-\\
-\cmd{njplot chronoplac40.tree}
+\cmd{chronoplac40.tree}: a time-calibrated phylogeny.
 \item
 \cmd{archaeaRNA.nex}: an alignment of rRNA sequences of 33 archaeal species.
 \item
@@ -85,11 +82,9 @@ For this, we will assume that the logarithm of body mass follows a simple univar
 In a first step, we will ignore phylogenetic uncertainty:
 thus, we will assume that the Brownian process describing body mass evolution runs along a fixed time-calibrated phylogeny (with fixed divergence times), such as specified in the file \cmd{chronoplac40.tree}.
 
-You may want to take the time to visualize the tree given in \cmd{chronoplac40.tree} as well as the matrix of quantitative traits specified by the \cmd{plac40lhtlog.nex} file, before going into the modeling work described below.
-
 \subsection*{The model and the priors}
 
-A univariate Brownian motion $x(t)$ is parameterized by its starting value at the root of the phylogeny $x(0)$ and a rate parameter $\sigma$. This rate parameter tunes the amplitude of the variation per unit of time. Specifically, along a given time interval $(0,T)$, the value of $X$ at time $T$ is normally distributed, with mean $x(0)$ and variance $\sigma^2 T$:
+A univariate Brownian motion $x(t)$ is parameterized by its initial value at the root of the phylogeny $x(0)$ and a rate parameter $\sigma$. This rate parameter tunes the amplitude of the variation per unit of time. Specifically, along a given time interval $(0,T)$, the value of $X$ at time $T$ is normally distributed, with mean $x(0)$ and variance $\sigma^2 T$:
 \begin{eqnarray*}
 x(T) &\sim& \text{Normal} \left( x(0), \sigma^2 T \right).
 \end{eqnarray*}
@@ -104,7 +99,7 @@ the current version of RevBayes only implements a uniform prior.
 This is done by default (no need to explicitly define it).
 
 Finally, the tree topology $\psi$ is, as mentioned above, fixed to some externally given phylogeny.
-The entire model is now specified: tree $\psi$, variance $\sigma$ and Brownian process $x(t)$:
+The entire model is now specified: 
 \begin{eqnarray*}
 \sigma &\sim& \frac{1}{\sigma},
 \\
@@ -131,7 +126,7 @@ load trait data:
 \item
 load the time-tree from file:
 \\
-\cmd{treeArray <- readTrees("data/chronoplac40.tree"
+\cmd{treeArray <- readTrees("data/chronoplac40.tree")
 \\
 psi <- treeArray[1]
 }
@@ -679,21 +674,21 @@ Putting everything together, we will therefore propose a multivariate Brownian m
 \begin{eqnarray*}
 X_1(t) &=& \ln r(t)
 \\
-X_2(t) &=& \ln \frac{\dnGamma(t)}{1 - \dnGamma(t)}
+X_2(t) &=& \ln \frac{\gamma(t)}{1 - \gamma(t)}
 \\
 k=1..K, \quad X_{k+2}(t) &=& \ln C_k(t)
 \end{eqnarray*}
-where $r(t)$ is the instant substitution rate and $\dnGamma(t)$ the instant equilibrium GC composition
+where $r(t)$ is the instant substitution rate and $\gamma(t)$ the instant equilibrium GC composition
 and $C_k(t)$ is the $k$th. quantitative trait.
 Equivalently, we may re-write this as follows:
 \begin{eqnarray*}
 r(t) &=& e^{X_1(t)}
 \\
-\dnGamma(t) &=& \frac{e^{X_2(t)}}{1 + e^{X_2(t)}}
+\gamma(t) &=& \frac{e^{X_2(t)}}{1 + e^{X_2(t)}}
 \\
 \ldots
 \end{eqnarray*}
-In other words, the instant rate of substitution $r(t)$ is the exponential of the first component $X_1(t)$ of the Brownian process (as above), while the instant equilbirium GC $\dnGamma(t)$ is the \emph{hyperbolic tangent} of the second component $X_2(t)$ of the Brownian process.
+In other words, the instant rate of substitution $r(t)$ is the exponential of the first component $X_1(t)$ of the Brownian process (as above), while the instant equilbirium GC $\gamma(t)$ is the \emph{hyperbolic tangent} of the second component $X_2(t)$ of the Brownian process.
 
 There is a slight complication here: in a non-homogeneous model, independently of the rate matrices across branches, we also need to specify the nucleotide frequencies from which the sequence at the root of the tree is sampled. We will call this frequency vector $\pi$, and we will put a Dirichlet prior on $\pi$.
 
