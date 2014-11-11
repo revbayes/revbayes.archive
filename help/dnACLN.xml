@@ -10,10 +10,9 @@
 
         <name>dnACLN</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>dnAutocorrrelatedLNBranchRates</alias>
 
-        <title>Some title you want to give this function</title>
+        <title>The autocorrelated, lognormally distributed relaxed-clock model</title>
 
         <description>
             <p>
@@ -34,28 +33,28 @@
                 <label>tree</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The time-tree on which the node rates are mapped.</description>
                 <valueType>TimeTree</valueType>
             </argument>
             <argument>
                 <label>sigma</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The variance parameter controlling the degree of autocorrelation among node rates.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>rootRate</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The rate value at the root.</description>
                 <valueType>Real</valueType>
             </argument>
             <argument>
                 <label>scaleValue</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The base-rate of the process.</description>
                 <valueType>RealPos</valueType>
             </argument>
 

@@ -15,9 +15,6 @@ br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
 base_rate ~ dnLnorm(br_mu, br_s)
 moves[mi++] = mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
 
-### get the number of branches in the tree
-n_branches <- 2 * n_taxa - 2
-
 ### set up the variance parameter of the ACLN model 
 ### and assign it a scale proposal
 nu ~ dnExponential(1.0)
@@ -32,6 +29,9 @@ moves[mi++] = mvScale(root_rate, lambda=0.5, tune=true, weight=4.0)
 ### from the ACLN model, which is conditioned on the tree, nu, the root rate, and base rate
 node_rates ~ dnACLN(timetree, nu, root_rate, base_rate)
 
+### get the number of branches in the tree
+n_branches <- 2 * n_taxa - 2
+
 ### the rate at each branch is the average of the rate at each node separated by that branch
 ### a special core function is used to calculate the rate for branch i
 for(i in 1:n_branches){
@@ -39,9 +39,10 @@ for(i in 1:n_branches){
 }
 
 ### a set of moves for node rates
-moves[mi++] = mvScaleSingleACLNRates(node_rates, 4.0, false, 1.0 * n_branches)
-moves[mi++] = mvScaleSingleACLNRates(node_rates, 2.0, false, 1.0 * n_branches)
+moves[mi++] = mvScaleSingleACLNRates(node_rates, 4.0, false, n_branches)
+moves[mi++] = mvScaleSingleACLNRates(node_rates, 2.0, false, n_branches)
 moves[mi++] = mvScaleSingleACLNRates(node_rates, 3.0, true, 3.0 * n_branches)
+moves[mi++] = mvACLNMixingStep(timetree, node_rates, root_rate, 0.5, false, n_branches)
 
 ### a deterministic node to monitor, the average node rate
 mean_rt := mean(node_rates)
