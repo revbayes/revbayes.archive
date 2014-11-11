@@ -44,7 +44,7 @@
 #include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
-#include "SlidingMove.h"
+#include "SlideProposal.h"
 #include "SubtreeScale.h"
 #include "TestDPPRelClock.h"
 #include "TimeTree.h"
