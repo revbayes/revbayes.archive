@@ -112,12 +112,8 @@ Conditioning the model on empirical data by clamping $x(t)$ at the tips of the p
 
 \subsection*{Programming the model in RevBayes}
 
-In \cmd{tutorials/NESCent/RevBayes\_scripts/}, you will find a script called \cmd{placentaliaMass.Rev}.
-This script implements the univariate Brownian model described above. Instead of re-typing the content of script entirely in the context of an interactive \cmd{RevBayes} session, you can instead run the script directly, by first going to the \cmd{tutorials/NESCent/} folder and then giving the script as an argument to the \cmd{RevBayes} program:
-\\
-\cmd{RevBayes RevBayes\_scripts/placentaliaMass.Rev}.
-
-This script essentially reformulates what has been explained in the last subsection, now in the Rev language:
+In \cmd{tutorials/RB\_PhyloComparative\_Tutorial/}, you will find a script called \cmd{placentaliaMass.Rev}.
+This script implements the univariate Brownian model described above, essentially reformulating what has been explained in the last subsection, now in the Rev language:
 \begin{itemize}
 \item
 load trait data:
