@@ -129,7 +129,6 @@ mymodel = model(kappa)
 # moves
 #########
 
-"moves"
 # initializing index
 index = 1
 
@@ -169,7 +168,6 @@ moves[index++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
 # monitors
 #########
 
-"monitors"
 # screen monitor
 monitors[1] = mnScreen(printgen=10, speciation, extinction, kappa, correl, clockrate, meanX)
 
@@ -191,8 +189,6 @@ monitors[6] = mnFile(filename="output/placdatestraits.trees",printgen=10, separa
 # a model monitor
 monitors[7] = mnModel(filename="output/placdatestraits.log",printgen=10, separator = TAB)
 
-"mcmc"
- 
 mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.burnin(generations=200,tuningInterval=50)
