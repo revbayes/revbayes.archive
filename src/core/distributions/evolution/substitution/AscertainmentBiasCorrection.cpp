@@ -50,6 +50,7 @@ double lnSumAscCorrectionsForPatterns3Nodes(const double *p_left,
 RevBayesCore::VariableOnlyAscBiasCorrection::VariableOnlyAscBiasCorrection(const size_t ns, const size_t nm)
     :numStates(ns),
     numMixtures(nm) {
+    //std::cerr << "RevBayesCore::VariableOnlyAscBiasCorrection::VariableOnlyAscBiasCorrection" << std::endl;
     partialLikelihoods.reserve(this->numStates * this->numStates * this->numMixtures);
 }
 RevBayesCore::VariableOnlyAscBiasCorrection::~VariableOnlyAscBiasCorrection() {
@@ -57,6 +58,7 @@ RevBayesCore::VariableOnlyAscBiasCorrection::~VariableOnlyAscBiasCorrection() {
 }
 RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct(const size_t ns, const size_t nm)
     :VariableOnlyAscBiasCorrection(ns, nm) {
+    //std::cerr << "RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct" << std::endl;
 }
 RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::~VariableOnlyNoMissingAscertainmentBiasCorrectionStruct() {
 }
@@ -189,8 +191,6 @@ double RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrecti
                                                                                         const double p_inv,
                                                                                         const std::vector<bool> & siteInvariant,
                                                                                         const std::vector<size_t> & invariantSiteIndex) const {
-    assert(false);
-    throw RbException("RevBayesCore::VariableOnlyAscBiasCorrection::computeAscBiasLnProbCorrection3Node Not implemented yet");
     const VariableOnlyAscBiasCorrection * aR = dynamic_cast<const VariableOnlyAscBiasCorrection*>(ascRight);
     const VariableOnlyAscBiasCorrection * aM = dynamic_cast<const VariableOnlyAscBiasCorrection*>(ascMiddle);
     if (aR == 0 || aM == 0) {
@@ -351,7 +351,7 @@ double lnSumRootSiteProb(const double *per_mixture_Likelihoods, const size_t * p
             } else {
                 lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
             }
-//            std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum << std::endl;
+//            //std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum << std::endl;
         }
     } else {
         for (size_t site = 0; site < numPatterns; ++site) {
@@ -572,6 +572,8 @@ double lnSumOfNumbersInLnForm(double lnX, double lnY) {
 
 RevBayesCore::MissingAwareVariableOnlyAscertainmentBiasCorrection::MissingAwareVariableOnlyAscertainmentBiasCorrection(const size_t ns, const size_t nm)
     :VariableOnlyAscBiasCorrection(ns, nm) {
+    //std::cerr << "RevBayesCore::MissingAwareVariableOnlyAscertainmentBiasCorrection::MissingAwareVariableOnlyAscertainmentBiasCorrection" << std::endl;
+
 }
 
 RevBayesCore::MissingAwareVariableOnlyAscertainmentBiasCorrection::~MissingAwareVariableOnlyAscertainmentBiasCorrection() {

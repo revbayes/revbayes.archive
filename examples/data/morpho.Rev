@@ -30,7 +30,10 @@ scaleRate <- 1.0
 
 seq ~ dnPhyloCTMCFiltered(tree=phylogeny, Q=Q, branchRates=scaleRate, nSites=n_sites, type="Standard")
 
-#seq.clamp(D)
+seq.clamp(D)
+structure(seq)
+
+q()
 
 #mymodel = model(Q)
 
