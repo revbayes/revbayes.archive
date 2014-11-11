@@ -7,41 +7,81 @@ mi = 1
 Q := fnJC(3)
 T <- readTrees("morpho.tre")[1]
 
-topology ~ dnUniformTopology(n_taxa, names)
-moves[mi++] = mvNNI(topology)
-for (i in 1:n_branches) {
-  br_lens[i] ~ dnExponential(10.0)
-  moves[mi++] = mvScale(br_lens[i]) 
-}
-TL := sum(br_lens)
+#######################################
+###### birth-death process priors #####
+#######################################
+
+## diversification = birth_rate - death_rate
+div_lambda <- 1.0 / 5.0	
+diversification ~ dnExponential(div_lambda) 
+diversification.setValue(0.05)
+
+## turnover = death_rate / birth_rate
+turn_alpha <- 2.0
+turn_beta <- 2.0
+turnover ~ dnBeta(turn_alpha, turn_beta) 
+
+## Creating deterministic nodes for birth & death rates to match previous implmentation
+denom := abs(1.0 - turnover) # even though this will always be pos, this is needed for det nodes to be RealPos for cBDP
+birth_rate := diversification / (denom)
+death_rate := (turnover * diversification) / (denom)
+
+## putting a Normal prior on the age of the origin
+mean_origin <- treeHeight(T) * 1.5	
+stdv_origin <- 20.0
+origin_time ~ dnNorm(mean_origin, stdv_origin)
+rp_ot := abs(origin_time) # there's no truncated normal, and origin must be RealPos for cBDP
+
+rho <- 1.0
+
+# get some useful variables from the data
+n_taxa <- D.ntaxa()
+n_sites <- D.nchar(1)
+names <- D.names()
+seed(43136341, 461432)
+
+phylogeny ~ dnBDP(lambda=birth_rate,
+                 mu=death_rate,
+                 origin=rp_ot,
+                 rho=rho,
+                 samplingStrategy="uniform",
+                 condition="nTaxa",
+                 nTaxa=n_taxa,
+                 names=names)
+
+
+moves[1] = mvNodeTimeSlideUniform(phylogeny, weight=30.0)
+moves[2] = mvRootTimeSlide(phylogeny, delta=50.0, tune=true, weight=10.0)
 
 ##### phylogeny := treeAssembly(topology, br_lens)
-
-topology.setValue(T)
+# phylogeny.setValue(T)
 
 scaleRate <- 1.0
-seq ~ dnPhyloCTMCFiltered(tree=topology,
+seq ~ dnPhyloCTMCFiltered(tree=phylogeny,
                           Q=Q,
                           branchRates=scaleRate,
                           nSites=n_sites,
                           type="Standard",
-                          conditioningColumns="MimicMissing")
+                          conditioningColumns="NoMissing")
 seq.clamp(D)
 structure(seq)
 
 mymodel = model(Q)
 
-monitors[1] = mnModel(filename="output/morpo-mcmc.log", printgen=10, separator = TAB)
-monitors[2] = mnFile(filename="output/morpo-mcmc.trees", printgen=10, separator = TAB, phylogeny)
+monitors[1] = mnModel(filename="output/morpo-mcmc-N.log", printgen=10, separator = TAB)
+monitors[2] = mnFile(filename="output/morpo-mcmc-N.trees", printgen=10, separator = TAB, phylogeny)
 
 mymcmc = mcmc(mymodel, monitors, moves)
 
-mymcmc.run(generations=5000)
+mymcmc.run(generations=500)
 
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
-treetrace = readTreeTrace("output/morpo-mcmc.trees", treetype="non-clock")
+treetrace = readTreeTrace("output/morpo-mcmc-N.trees", treetype="non-clock")
 # and get the summary of the tree trace
 treetrace.summarize()
-mapTree(treetrace,"output/morpo-mcmc.tree")
+mapTree(treetrace,"output/morpo-mcmc-N.tree")
+
+q()
+

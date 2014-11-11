@@ -25,12 +25,17 @@ std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::all
     return x;
 }
 
-void RevBayesCore::freeAscBiasCorrStructs(std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> &x) {
+void RevBayesCore::freeAscBiasCorrStructs(std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> &v) {
+    std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> x = v;
+    v.clear();
     for (size_t i = 0 ; i < x.size(); ++i) {
-        delete x[i];
+        try {
+            delete x[i];
+        } catch (...) {
+        }
         x[i] = NULL;
     }
-    x.clear();
+
 }
 double RevBayesCore::computeRootFilteredLikelihood2Nodes(const double *p_left,
                                    const double *p_right,

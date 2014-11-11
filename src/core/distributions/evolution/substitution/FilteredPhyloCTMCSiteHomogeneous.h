@@ -80,7 +80,7 @@ void computeTipNodeFilteredLikelihood(double * p_node,
                                          bool compressed,
                                          size_t nSites,
                                          bool mimicMissing);
-        virtual                                            ~FilteredPhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
+        virtual ~FilteredPhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
         
         // public member functions
         FilteredPhyloCTMCSiteHomogeneous*                           clone(void) const;                                                                          //!< Create an independent clone
@@ -103,7 +103,9 @@ void computeTipNodeFilteredLikelihood(double * p_node,
         void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
         
         
-    private:        
+    private:
+        FilteredPhyloCTMCSiteHomogeneous(const FilteredPhyloCTMCSiteHomogeneous<charType, treeType> &other);
+        FilteredPhyloCTMCSiteHomogeneous & operator=(const FilteredPhyloCTMCSiteHomogeneous &);
         std::vector<AscertainmentBiasCorrectionStruct *> ascBiasCorrStructs;
         double uncorrectedLnProb;
         double ascBiasLnProb;
@@ -137,9 +139,16 @@ RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyl
                                                                                                      bool mimicMissing)
    : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, compressed, nSites),
    mimicMissingColumns(mimicMissing) {
-    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes, nChars, 0, mimicMissing);
+    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes, this->numChars, 0, mimicMissing);
 }
 
+template<class charType, class treeType>
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyloCTMCSiteHomogeneous(
+  const FilteredPhyloCTMCSiteHomogeneous<charType, treeType> &n)
+   : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(n),
+   mimicMissingColumns(n.mimicMissingColumns) {
+    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes, this->numChars, 0, this->mimicMissingColumns);
+}
 
 template<class charType, class treeType>
 RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::~FilteredPhyloCTMCSiteHomogeneous( void ) {
@@ -150,9 +159,9 @@ RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::~FilteredPhy
 
 
 template<class charType, class treeType>
-RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>* RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::clone( void ) const {
-    
-    return new FilteredPhyloCTMCSiteHomogeneous<charType, treeType>( *this );
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>*
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::clone( void ) const {
+    return new FilteredPhyloCTMCSiteHomogeneous<charType, treeType>(*this);
 }
 
 
