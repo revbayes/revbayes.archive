@@ -95,9 +95,9 @@ bool TestFilteredStandardLikelihood::run( void ) {
 #   else
         DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new JcRateMatrixFunction(numStates));
 #       if defined (USE_NUCLEOTIDE)
-            FilteredPhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType> *charModel = new FilteredPhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType>(tau, false, numChar);
+            FilteredPhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType> *charModel = new FilteredPhyloCTMCSiteHomogeneousNucleotide<StandardState, TestTreeType>(tau, false, numChar, true);
 #       else
-            FilteredPhyloCTMCSiteHomogeneous<StandardState, TestTreeType> *charModel = new FilteredPhyloCTMCSiteHomogeneous<StandardState, TestTreeType>(tau, numStates, false, numChar);
+            FilteredPhyloCTMCSiteHomogeneous<StandardState, TestTreeType> *charModel = new FilteredPhyloCTMCSiteHomogeneous<StandardState, TestTreeType>(tau, numStates, false, numChar, true);
 #       endif
 #   endif
 #   if defined(USE_RATE_HET)

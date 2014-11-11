@@ -351,7 +351,7 @@ double lnSumRootSiteProb(const double *per_mixture_Likelihoods, const size_t * p
             } else {
                 lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
             }
-//            //std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum << std::endl;
+            //std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum << std::endl;
         }
     } else {
         for (size_t site = 0; site < numPatterns; ++site) {

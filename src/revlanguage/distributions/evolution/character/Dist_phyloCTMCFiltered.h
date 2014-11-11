@@ -45,6 +45,7 @@ namespace RevLanguage {
         RevPtr<const Variable>                          pInv;
         RevPtr<const Variable>                          nSites;
         RevPtr<const Variable>                          type;
+        RevPtr<const Variable>                          conditioningColumns;
         
     };
     
@@ -90,7 +91,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    
+    const std::string& conditioningColumnsVal = static_cast<const RlString &>( conditioningColumns->getRevObject() ).getValue();
+    if (conditioningColumnsVal != "NoMissing" && conditioningColumnsVal != "MimicMissing") {
+        throw RbException("conditioningColumns option must be \"NoMissing\" or \"MimicMissing\"");
+    }
+    const bool mimicMissing = (conditioningColumnsVal == "MimicMissing");
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
     
@@ -105,7 +110,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     }
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData > *d = NULL;
-	
+
     if ( dt == "Standard" ){
         size_t numStates = 1;
         if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) ) {
@@ -117,8 +122,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             numStates = rm->getValue().getNumberOfStates();
         }
 
-		RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState,  typename treeType::valueType> *dist =
-			new RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState,  typename treeType::valueType>(tau, numStates, false, n);
+        RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState,  typename treeType::valueType> *dist =
+            new RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState,  typename treeType::valueType>(tau, numStates, false, n, mimicMissing);
         
         // set the probability for invariant site (by default this pInv=0.0)
         dist->setPInv( pInvNode );
@@ -229,11 +234,10 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCFiltered<treeType>::g
         options.push_back( "Standard" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("Standard"), options ) );
         
-//		std::vector<std::string> options2;
-//        options2.push_back( "Variable" );
-//        options2.push_back( "ParsInform" );
-//        options2.push_back( "All" );
-//        distMemberRules.push_back( new OptionRule( "filter-by", new RlString("Variable"), options2 ) );
+        std::vector<std::string> options2;
+        options2.push_back( "NoMissing" );
+        options2.push_back( "MimicMissing" );
+        distMemberRules.push_back( new OptionRule( "conditioningColumns", new RlString("NoMissing"), options2 ) );
         
        rulesSet = true;
     }
@@ -334,6 +338,10 @@ void RevLanguage::Dist_phyloCTMCFiltered<treeType>::setConstParameter(const std:
     else if ( name == "type" ) 
     {
         type = var;
+    }
+    else if ( name == "conditioningColumns" ) 
+    {
+        conditioningColumns = var;
     }
     else
     {

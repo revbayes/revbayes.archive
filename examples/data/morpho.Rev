@@ -8,8 +8,12 @@ Q := fnJC(3)
 T <- readTrees("morpho.tre")[1]
 phylogeny <- T
 scaleRate <- 1.0
-seq ~ dnPhyloCTMCFiltered(tree=phylogeny, Q=Q, branchRates=scaleRate, nSites=n_sites, type="Standard")
+seq ~ dnPhyloCTMCFiltered(tree=phylogeny,
+                          Q=Q,
+                          branchRates=scaleRate,
+                          nSites=n_sites,
+                          type="Standard",
+                          conditioningColumns="MimicMissing")
 seq.clamp(D)
 structure(seq)
-q()
 

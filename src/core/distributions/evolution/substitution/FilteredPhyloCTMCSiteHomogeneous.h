@@ -12,6 +12,7 @@
 
 namespace RevBayesCore {
 class AscertainmentBiasCorrectionStruct;
+
 double computeRootFilteredLikelihood2Nodes(const double *p_left,
                                    const double *p_right,
                                    const size_t numSiteRates,
@@ -73,9 +74,12 @@ void computeTipNodeFilteredLikelihood(double * p_node,
     
     template<class charType, class treeType>
     class FilteredPhyloCTMCSiteHomogeneous : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
-        
     public:
-        FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode< treeType > *t, size_t nChars, bool compressed, size_t nSites);
+        FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode< treeType > *t,
+                                         size_t nChars,
+                                         bool compressed,
+                                         size_t nSites,
+                                         bool mimicMissing);
         virtual                                            ~FilteredPhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
         
         // public member functions
@@ -103,8 +107,14 @@ void computeTipNodeFilteredLikelihood(double * p_node,
         std::vector<AscertainmentBiasCorrectionStruct *> ascBiasCorrStructs;
         double uncorrectedLnProb;
         double ascBiasLnProb;
+        bool mimicMissingColumns;
     };
-    std::vector<AscertainmentBiasCorrectionStruct *> allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes, const size_t numStates, const size_t numMixtures=0);
+    std::vector<AscertainmentBiasCorrectionStruct *> allocAscBiasCorrStructs(const size_t numCopies,
+                                                                             const size_t numNodes,
+                                                                             const size_t numStates,
+                                                                             const size_t numMixtures,
+                                                                             bool mimicMissing
+                                                                             );
     void freeAscBiasCorrStructs(std::vector<AscertainmentBiasCorrectionStruct *> &);
 }
 
@@ -120,8 +130,14 @@ void computeTipNodeFilteredLikelihood(double * p_node,
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, bool compressed, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, compressed, nSites ) {
-    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes, nChars);
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t,
+                                                                                                     size_t nChars,
+                                                                                                     bool compressed,
+                                                                                                     size_t nSites,
+                                                                                                     bool mimicMissing)
+   : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, compressed, nSites),
+   mimicMissingColumns(mimicMissing) {
+    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes, nChars, 0, mimicMissing);
 }
 
 
