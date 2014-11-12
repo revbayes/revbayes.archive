@@ -85,8 +85,15 @@ Create a directory called {\textcolor{red}{\cl{RevBayes\_scripts}}} in your tuto
 This tutorial will guide you through creating all of the files necessary to execute the analyses without typing the \Rev~language syntax directly in the \RevBayes~console. 
 Since the scripts must point to model and analysis files in a modular way, it is important to be aware of you directory structure and if you choose to do something different, make sure that the file paths given throughout the tutorial are correct.
 
+Finally, we'll need a directory for all of the files written by our analyses. For some operations, \RevBayes~can create this directory on the fly for you. 
+However, it may be safer just to add it now.
+\begin{framed}
+Create a directory called {\textcolor{red}{\cl{output}}} in your tutorial directory.
+\end{framed}
+
+The only files you need for this exercise are now in the \cl{data} directory. Otherwise, you will create all of the \Rev~files specifying the models and analyses. 
 All of the \Rev~files you write for this tutorial are available on the \href{https://github.com/revbayes/revbayes}{\RevBayes~GitHub repository} at this URL: \href{http://bit.ly/1zj5u9n}{http://bit.ly/1zj5u9n}.
-You can refer to these examples if necessary.
+You can refer to these examples to verify your own work.
 
 \bigskip
 \subsection{Calibrating the Birth-Death Model}\label{brMods} 
@@ -379,7 +386,7 @@ The next sections will walk you through setting up the files specifying differen
 Each section will require you to create a separate \Rev~file for each relaxed clock model, as well as for each marginal-likelihood analysis.
 
 \bigskip
-\subsubsection{The Global Molecular Clock Model}
+\subsubsection{The Global Molecular Clock Model}\label{globalClockSec}
 
 The global molecular clock assumes that the rate of substitution is constant over the tree and over time.
 When estimating trees on an absolute time-scale, it is often necessary to parameterize relaxed clock models with two rates, a base rate which effectively scales the tree and a clock rate. 
@@ -553,7 +560,7 @@ Once you have completed this analysis, record the marginal likelihoods under the
 \end{framed}}
 
 \bigskip
-\subsubsection{The Uncorrelated Lognormal Rates Model}
+\subsubsection{The Uncorrelated Lognormal Rates Model}\label{UCLNModelSec}
 
 The uncorrelated lognormal (UCLN) model relaxes the assumption of a single-rate molecular clock. 
 Under this model, the rate associated with each branch in the tree is a stochastic node.
@@ -733,7 +740,7 @@ Once you have completed this analysis, record the marginal likelihoods under the
 \end{framed}}
 
 \bigskip
-\subsubsection{The Autocorrelated Lognormal Rates Model}
+\subsubsection{The Autocorrelated Lognormal Rates Model}\label{ACLNModelSec}
 
 A model assuming that the rate at each node is lognormally distributed with a mean centered on its parent rate and a variance proportional to the time-duration since the parent node is an autocorrelated model \citep[ACLN;][]{thorne98,kishino01,thorne02}. 
 This corresponds to a geometric Brownian motion model.
@@ -889,7 +896,7 @@ Open your text editor and create the marginal-likelihood analysis file under the
 Refer to the section describing this process for the GMC and UCLN models above.
 Write your own \Rev~language script to estimate the marginal likelihood under the ACLN model. 
 Be sure to change the file names in all of the relevant places.
-Additionally, you may find that the power-posterior analysis runs far too slow under this model, thus it may be advisable for you to decrease the number of steps (\cl{cats}) or the length of the burn-in period or run.
+Additionally, you may find that the power-posterior analysis runs too slow under this model, thus it may be advisable for you to decrease the number of cycles or tuning frequency in the burn-in period.
 
 {\begin{framed}
 Once you have completed this analysis, record the marginal likelihoods under the ACLN model in Table \ref{ssTable}.
@@ -905,18 +912,18 @@ Use Table \ref{ssTable} to summarize the marginal log-likelihoods estimated usin
 \begin{Form}
 \begin{table}[h!]
 \centering
-\caption{\small Estimated marginal likelihoods for different partition configurations$^*$.}
+\caption{\small Estimated marginal likelihoods for different across-branch substitution rate models$^*$.}
 \begin{tabular}{l c c c c}
 \hline
 \multicolumn{1}{l}{\textbf{ }} &\multicolumn{1}{r}{\textbf{ }} & \multicolumn{3}{c}{\textbf{Marginal lnL estimates}} \\ 
 \cline{3-5}
-\multicolumn{1}{l}{\textbf{Partition}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
+\multicolumn{1}{l}{\textbf{Clock Model}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
 \hline
-Global molecular clock ($M_0$) & \hspace{15mm} & \TextField[name=m1,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml2,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+\ref{globalClockSec} Global molecular clock ($M_0$) & \hspace{15mm} & \TextField[name=m1,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml2,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
-Uncorrelated lognormal ($M_1$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+\ref{UCLNModelSec} Uncorrelated lognormal ($M_1$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
-Autocorrelated lognormal ($M_2$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+\ref{ACLNModelSec} Autocorrelated lognormal ($M_2$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
 %\ref{mlnl_ACLN} Autocorrelated lognormal  ($M_2$) & \hspace{3mm} & \TextField[name=ml5,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml6,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 {\footnotesize{$^*$you can edit this table}}\\
@@ -952,7 +959,7 @@ Enter your answers in Table \ref{bfTable} using the stepping-stone and the path-
 \begin{Form}
 \begin{table}[h!]
 \centering
-\caption{\small Bayes factor calculation$^*$.}
+\caption{\small Bayes factor calculation based on marginal likelihood estimates in Table \ref{ssTable}$^*$.}
 \begin{tabular}{l c c c c}
 \hline
 \multicolumn{1}{l}{\textbf{ }} &\multicolumn{1}{r}{\textbf{ }} & \multicolumn{3}{c}{\textbf{ln-Bayes Factor} ($\mathcal{K}$)} \\ 
@@ -1115,8 +1122,7 @@ Then, execute the MCMC analysis using: \colorbox{shadecolor}{\cl{source("RevBaye
 \section*{Useful Links}
 
 \begin{itemize}
-\item RevBayes: \href{https://github.com/revbayes/code}{https://github.com/revbayes/code} \\ \vspace{-7mm}
-\item TreePar: \href{http://cran.r-project.org/web/packages/TreePar/index.html}{http://cran.r-project.org/web/packages/TreePar/index.html} \\ \vspace{-7mm}
+\item RevBayes: \href{https://github.com/revbayes/revbayes}{https://github.com/revbayes/revbayes} \\ \vspace{-7mm}
 \item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org} \\ \vspace{-7mm}
 \end{itemize}
 
