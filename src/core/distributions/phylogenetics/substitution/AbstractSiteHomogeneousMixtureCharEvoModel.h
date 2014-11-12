@@ -246,6 +246,13 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     siteRatesProbs              = NULL;
     pInv                        = new ConstantNode<double>("pInv", new double(0.0) );
     
+	// initialize liklihood vectors to 0.0
+	for (size_t i = 0; i < 2*numNodes*numSiteRates*numSites*numChars; i++) {
+		partialLikelihoods[i] = 0.0;
+	}
+	for (size_t i = 0; i < numNodes*numSiteRates*numSites*numChars; i++) {
+		partialLikelihoods[i] = 0.0;
+	}
     
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = false;
@@ -318,7 +325,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
 //	memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
 //
 //  // copy the marginal likelihoods
-//  memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
+//  memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));	
 	
     activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
@@ -635,7 +642,6 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
 #endif
         
     }
-    
     return this->lnProb;
 }
 
@@ -915,7 +921,7 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
 		for (int j = 0; j < siteMarginals.size(); j++) {
 			sumMarginals += siteMarginals[j];
 		}
-
+		
 		double u = rng->uniform01();
 		if (sumMarginals == 0.0) {
 			
@@ -948,6 +954,7 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
 				}
 			}		
 		}
+		
         // add the character to the sequence
         ancestralSeq.push_back( c );
     }
@@ -1236,6 +1243,14 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     partialLikelihoods = new double[2*numNodes*numSiteRates*numPatterns*numChars];
     marginalLikelihoods = new double[numNodes*numSiteRates*numPatterns*numChars];
     
+	// reinitialize likelihood vectors
+	for (size_t i = 0; i < 2*numNodes*numSiteRates*numSites*numChars; i++) {
+		partialLikelihoods[i] = 0.0;
+	}
+	for (size_t i = 0; i < numNodes*numSiteRates*numSites*numChars; i++) {
+		partialLikelihoods[i] = 0.0;
+	}
+	
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
     
     // set the offsets for easier iteration through the likelihood vector 
@@ -1806,18 +1821,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::updateMarginalNodeLikelihoods( void )
 {
- 
-	// The values in the likelihood vector are getting lost when using memcpy to copy the partial and marginal 
-	// likelihood vectors in the copy constructor, so I have changed the copy constructor to be initialize
-	// them as normal members. Another option is refilling the partial likelihoods vector here, but that is 
-	// probably slower.
-//    const TopologyNode &root = tau->getValue().getRoot();
-//    size_t rootIndex = root.getIndex();
-//	  fillLikelihoodVector( root, rootIndex );
-	
-	
-    // we need to compute first the root marginal likelihood and then start the recursive call down the tree
-    this->computeMarginalRootLikelihood();
+
+    // the root marginal likelihood has already been computed, so now start the recursive call down the tree
     
     // update the marginal likelihoods by a recursive downpass
     this->recursiveMarginalLikelihoodComputation( tau->getValue().getRoot().getIndex() );
