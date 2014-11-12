@@ -36,7 +36,8 @@ extinction.setValue(0.3)
 tree_height.setValue(0.8)
 psi ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=names)
 
-psi.clamp(tree)
+# In principle we should clamp, but then we can't compare it to the Hyphy loglk. 
+#psi.clamp(tree)
 
 #############
 ## Model
@@ -87,6 +88,7 @@ P := pomo(Q, base_fitnesses, virtual_population_size)
 
 # First, the proportion of polymorphic sites at the root
 root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+root_polymorphism_proportion.setValue(0.1)
 
 # Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
 root_base_frequencies ~ dnDirichlet(sf_prior)
@@ -110,15 +112,10 @@ phyloSeq.clamp(data)
 moveIndex <- 0
 
 # moves on the parameters of the substitution model
-moves[moveIndex++] <- mvSimplexElementScale(er, alpha=10, tune=true, weight=3) 
 moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
 
 # moves on the parameters of the root frequencies
 moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
-moves[moveIndex++] <- mvScale(root_polymorphism_proportion, lambda=10, tune=true, weight=2) 
-moves[moveIndex++] <- mvSlide(root_polymorphism_proportion, delta=10, tune=true, weight=2) 
-moves[moveIndex++] <- mvSlice(root_polymorphism_proportion, window=1.0, tune=true, weight=3.0)
-moves[moveIndex++] <- mvSlice(root_polymorphism_proportion, window=0.1, tune=true, weight=3.0)
 
 # We define a few monitors to keep track of how things go.
 
@@ -153,7 +150,7 @@ mymcmc <- mcmc(mymodel, monitors, moves, moveschedule="single")
 # and the tuning interval for tuning parameters of moves on scalar variables.
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
-mymcmc.burnin(generations=200,tuningInterval=100)
-mymcmc.run(generations=400000)
+mymcmc.burnin(generations=400,tuningInterval=100)
+mymcmc.run(generations=40000)
 
 
