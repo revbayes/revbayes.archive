@@ -43,13 +43,13 @@ namespace RevLanguage {
         const ArgumentRules&                                    getArgumentRules(void) const;                                                   //!< Get argument rules
        
     protected:
-        void                                                    setConstParameter(const std::string& name, const RevPtr<const Variable> &var);  //!< Set member variable
+        void                                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);  //!< Set member variable
 
     private:
-        RevPtr<const Variable>                                  q;
-        RevPtr<const Variable>                                  rate;
-        RevPtr<const Variable>                                  rootFrequencies;
-        RevPtr<const Variable>                                  numChars;
+        RevPtr<const RevVariable>                                  q;
+        RevPtr<const RevVariable>                                  rate;
+        RevPtr<const RevVariable>                                  rootFrequencies;
+        RevPtr<const RevVariable>                                  numChars;
     };
     
 }

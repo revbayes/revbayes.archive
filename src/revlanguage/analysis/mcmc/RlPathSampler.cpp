@@ -44,7 +44,7 @@ void PathSampler::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "marginal")
@@ -53,7 +53,7 @@ RevPtr<Variable> PathSampler::executeMethod(std::string const &name, const std::
         
         double ml = value->marginalLikelihood();
         
-        return new Variable( new Real( ml ) );
+        return new RevVariable( new Real( ml ) );
     }
     
     return RevObject::executeMethod( name, args, found );
@@ -118,7 +118,7 @@ void PathSampler::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void PathSampler::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void PathSampler::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "likelihoodColumnName")
     {

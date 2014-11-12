@@ -39,12 +39,12 @@ namespace RevLanguage {
         virtual void                                        printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
         // Member method inits
-        RevPtr<Variable>                                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
+        RevPtr<RevVariable>                                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     protected:
         
         void                                                readTrace(const std::string &fn, std::vector<RevBayesCore::Trace> &data);
-        void                                                setConstParameter(const std::string& name, const RevPtr<const Variable> &var);          //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
         
         std::string                                         delimiter;
         std::set<std::string>                               filenames;

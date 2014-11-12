@@ -39,7 +39,7 @@ SyntaxWorkspaceVariableAssignment* SyntaxWorkspaceVariableAssignment::clone () c
  * Note that the return variable is not set to a WorkspaceVariable variable, in case it is
  * used in further assignments of other types.
  */
-void SyntaxWorkspaceVariableAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxWorkspaceVariableAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating WorkspaceVariable assignment\n" );

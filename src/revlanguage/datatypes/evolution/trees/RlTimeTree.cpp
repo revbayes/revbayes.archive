@@ -110,7 +110,7 @@ TimeTree* TimeTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "nnodes") 
@@ -118,21 +118,21 @@ RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string c
         found = true;
         
         size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new Variable( new Natural( n ) );
+        return new RevVariable( new Natural( n ) );
     }
     else if (name == "ntips") 
     {
         found = true;
         
         size_t n = this->dagNode->getValue().getNumberOfTips();
-        return new Variable( new Natural( n ) );
+        return new RevVariable( new Natural( n ) );
     } 
     else if (name == "names") 
     {
         found = true;
         
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Variable( new ModelVector<RlString>( n ) );
+        return new RevVariable( new ModelVector<RlString>( n ) );
     } 
     else if (name == "rescale")
     {
@@ -149,7 +149,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string c
         found = true;
         
         double a = this->dagNode->getValue().getRoot().getAge();
-        return new Variable( new RealPos( a ) );
+        return new RevVariable( new RealPos( a ) );
     }
     
     return ModelObject<RevBayesCore::TimeTree>::executeMethod( name, args, found );

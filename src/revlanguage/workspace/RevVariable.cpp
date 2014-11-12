@@ -4,7 +4,7 @@
 #include "RbOptions.h"
 #include "RevNullObject.h"
 #include "TypeSpec.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 #include <cassert>
 #include <string>
@@ -12,8 +12,8 @@
 
 using namespace RevLanguage;
 
-/** Constructor of empty variable with specified type. */
-Variable::Variable( const TypeSpec& ts, const std::string& n ) :
+/** Constructor of empty RevVariable with specified type. */
+RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
@@ -29,8 +29,8 @@ Variable::Variable( const TypeSpec& ts, const std::string& n ) :
     
 }
 
-/** Constructor of filled variable (no type restrictions). */
-Variable::Variable(RevObject *v, const std::string &n) :
+/** Constructor of filled RevVariable (no type restrictions). */
+RevVariable::RevVariable(RevObject *v, const std::string &n) :
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
@@ -47,8 +47,8 @@ Variable::Variable(RevObject *v, const std::string &n) :
 }
 
 
-/** Constructor of reference variable (no type restrictions). */
-Variable::Variable(const RevPtr<Variable>& refVar, const std::string &n) :
+/** Constructor of reference RevVariable (no type restrictions). */
+RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n) :
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
@@ -68,7 +68,7 @@ Variable::Variable(const RevPtr<Variable>& refVar, const std::string &n) :
 
 
 /** Copy constructor */
-Variable::Variable(const Variable &v) :
+RevVariable::RevVariable(const RevVariable &v) :
     name( v.name ),
     refCount( 0 ),
     revObject( NULL ),
@@ -95,10 +95,10 @@ Variable::Variable(const Variable &v) :
 }
 
 
-Variable::~Variable( void )
+RevVariable::~RevVariable( void )
 {
 #if defined ( DEBUG_MEMORY )
-    std::cerr << "Deleting variable '" << name << "' <" << this << ">" << std::endl;
+    std::cerr << "Deleting RevVariable '" << name << "' <" << this << ">" << std::endl;
 #endif
     
     if ( !isReferenceVar && revObject != NULL )
@@ -109,7 +109,7 @@ Variable::~Variable( void )
 }
 
 
-Variable& Variable::operator=(const Variable &v)
+RevVariable& RevVariable::operator=(const RevVariable &v)
 {
     if ( this != &v )
     {
@@ -149,8 +149,8 @@ Variable& Variable::operator=(const Variable &v)
 }
 
 
-/** Resize the index boundaries for this vector variable to include this index. */
-void Variable::addIndexBoundary(int idx)
+/** Resize the index boundaries for this vector RevVariable to include this index. */
+void RevVariable::addIndexBoundary(int idx)
 {
     
     if ( min > idx )
@@ -166,15 +166,15 @@ void Variable::addIndexBoundary(int idx)
 }
 
 
-/* Clone variable and variable */
-Variable* Variable::clone( void ) const {
+/* Clone RevVariable and RevVariable */
+RevVariable* RevVariable::clone( void ) const {
     
-    return new Variable( *this );
+    return new RevVariable( *this );
 }
 
 
 /* Decrement the reference count. */
-size_t Variable::decrementReferenceCount( void ) const {
+size_t RevVariable::decrementReferenceCount( void ) const {
     
     refCount--;
     
@@ -182,19 +182,19 @@ size_t Variable::decrementReferenceCount( void ) const {
 }
 
 
-int Variable::getMaxIndex( void ) const
+int RevVariable::getMaxIndex( void ) const
 {
     return max;
 }
 
 
-int Variable::getMinIndex( void ) const
+int RevVariable::getMinIndex( void ) const
 {
     return min;
 }
 
 
-const std::string& Variable::getName( void ) const {
+const std::string& RevVariable::getName( void ) const {
     
     return name;
 }
@@ -202,14 +202,14 @@ const std::string& Variable::getName( void ) const {
 
 
 /* Get the reference count for this instance. */
-size_t Variable::getReferenceCount(void) const
+size_t RevVariable::getReferenceCount(void) const
 {
     return refCount;
 }
 
 
-/* Get the value of the variable */
-RevObject& Variable::getRevObject(void) const
+/* Get the value of the RevVariable */
+RevObject& RevVariable::getRevObject(void) const
 {
     if ( isReferenceVar )
     {
@@ -226,19 +226,19 @@ RevObject& Variable::getRevObject(void) const
 
 
 /**
- * Get the required type specs for values stored inside this variable.
+ * Get the required type specs for values stored inside this RevVariable.
  * We return our own type specification even if we reference another
- * variable. By reassignment, we receive the new value, so it is
+ * RevVariable. By reassignment, we receive the new value, so it is
  * more important what our type spec is.
  */
-const TypeSpec& Variable::getRevObjectTypeSpec(void) const
+const TypeSpec& RevVariable::getRevObjectTypeSpec(void) const
 {
     return revObjectTypeSpec;
 }
 
 
 /* Increment the reference count for this instance. */
-void Variable::incrementReferenceCount( void ) const
+void RevVariable::incrementReferenceCount( void ) const
 {
     refCount++;
 }
@@ -246,17 +246,17 @@ void Variable::incrementReferenceCount( void ) const
 
 
 /**
- * Is the variable or any of its members (upstream DAG nodes) assignable, that is,
+ * Is the RevVariable or any of its members (upstream DAG nodes) assignable, that is,
  * modifiable by the user? For them to be assignable, they have to be named, otherwise
  * there is no chance for the user to change them.
  */
-bool Variable::isAssignable( void ) const
+bool RevVariable::isAssignable( void ) const
 {
     // Check if we are assignable
     if ( name != "" )
         return true;
     
-    // Ask our object for assignable upstream variables
+    // Ask our object for assignable upstream RevVariables
     if ( revObject != NULL && revObject->isAssignable() )
         return true;
     
@@ -266,37 +266,37 @@ bool Variable::isAssignable( void ) const
 
 
 /** 
- * Return the internal flag signalling whether the variable is an element of a vector, e.g., x[1] would be.
+ * Return the internal flag signalling whether the RevVariable is an element of a vector, e.g., x[1] would be.
  */
-bool Variable::isElementVariable( void ) const
+bool RevVariable::isElementVariable( void ) const
 {
     return isElementVar;
 }
 
 
-/** Return the internal flag signalling whether the variable is currently a hidden variable. Hidden variables will not show in the ls() function. */
-bool Variable::isHiddenVariable( void ) const
+/** Return the internal flag signalling whether the RevVariable is currently a hidden RevVariable. Hidden RevVariables will not show in the ls() function. */
+bool RevVariable::isHiddenVariable( void ) const
 {
     return isHiddenVar;
 }
 
 
-/** Return the internal flag signalling whether the variable is currently a reference variable */
-bool Variable::isReferenceVariable( void ) const
+/** Return the internal flag signalling whether the RevVariable is currently a reference RevVariable */
+bool RevVariable::isReferenceVariable( void ) const
 {
     return isReferenceVar;
 }
 
 
-/** Return the internal flag signalling whether the variable is currently a vector variable, that is, should be computed by x := v(x[1],...) */
-bool Variable::isVectorVariable( void ) const
+/** Return the internal flag signalling whether the RevVariable is currently a vector RevVariable, that is, should be computed by x := v(x[1],...) */
+bool RevVariable::isVectorVariable( void ) const
 {
     return isVectorVar;
 }
 
 
-/** Return the internal flag signalling whether the variable is currently a workspace (control) variable */
-bool Variable::isWorkspaceVariable( void ) const
+/** Return the internal flag signalling whether the RevVariable is currently a workspace (control) RevVariable */
+bool RevVariable::isWorkspaceVariable( void ) const
 {
     if ( isReferenceVar )
     {
@@ -309,8 +309,8 @@ bool Variable::isWorkspaceVariable( void ) const
 }
 
 
-/** Make this variable a reference to another variable. Make sure we delete any object we held before. */
-void Variable::makeReference(const RevPtr<Variable>& refVar)
+/** Make this RevVariable a reference to another RevVariable. Make sure we delete any object we held before. */
+void RevVariable::makeReference(const RevPtr<RevVariable>& refVar)
 {
     if ( !isReferenceVar )
     {
@@ -328,8 +328,8 @@ void Variable::makeReference(const RevPtr<Variable>& refVar)
 }
 
 
-/* Print value of the variable variable */
-void Variable::printValue(std::ostream& o) const
+/* Print value of the RevVariable RevVariable */
+void RevVariable::printValue(std::ostream& o) const
 {
     
     if (revObject == NULL)
@@ -344,8 +344,8 @@ void Variable::printValue(std::ostream& o) const
 }
 
 
-/** Replace the variable and update the DAG structure. */
-void Variable::replaceRevObject( RevObject *newValue )
+/** Replace the RevVariable and update the DAG structure. */
+void RevVariable::replaceRevObject( RevObject *newValue )
 {
     if ( isReferenceVar )
     {
@@ -353,7 +353,7 @@ void Variable::replaceRevObject( RevObject *newValue )
         referencedVariable = NULL;
     }
     
-    // Make sure default assignment is not a workspace (control) variable assignment
+    // Make sure default assignment is not a workspace (control) RevVariable assignment
     isWorkspaceVar = false;
     
     if ( revObject != NULL )
@@ -392,16 +392,16 @@ void Variable::replaceRevObject( RevObject *newValue )
 
 
 /**
- * Set whether this variable is an element of a vector variable.
- * All element variable are also hidden.
- * Throw an error if the variable is a reference variable. 
- * If so, you need to set the Rev object first, and then set the hidden variable flag.
+ * Set whether this RevVariable is an element of a vector RevVariable.
+ * All element RevVariable are also hidden.
+ * Throw an error if the RevVariable is a reference RevVariable. 
+ * If so, you need to set the Rev object first, and then set the hidden RevVariable flag.
  */
-void Variable::setElementVariableState(bool flag)
+void RevVariable::setElementVariableState(bool flag)
 {
     if ( isReferenceVar )
     {
-        throw "A reference variable cannot be made a hidden variable";
+        throw "A reference RevVariable cannot be made a hidden RevVariable";
     }
     
     isElementVar = flag;
@@ -413,15 +413,15 @@ void Variable::setElementVariableState(bool flag)
 
 
 /**
- * Set whether this variable is a hidden variable. Throw an error if the variable
- * is a reference variable. If so, you need to set the Rev object first, and then set
- * the hidden variable flag.
+ * Set whether this RevVariable is a hidden RevVariable. Throw an error if the RevVariable
+ * is a reference RevVariable. If so, you need to set the Rev object first, and then set
+ * the hidden RevVariable flag.
  */
-void Variable::setHiddenVariableState(bool flag)
+void RevVariable::setHiddenVariableState(bool flag)
 {
     if ( isReferenceVar )
     {
-        throw "A reference variable cannot be made a hidden variable";
+        throw "A reference RevVariable cannot be made a hidden RevVariable";
     }
     
     isHiddenVar = flag;
@@ -443,15 +443,15 @@ void Variable::setHiddenVariableState(bool flag)
 
 
 /**
- * Set whether this variable is a vector variable. Throw an error if the variable
- * is a reference variable. If so, you need to set the Rev object first, and then set
- * the vector variable flag.
+ * Set whether this RevVariable is a vector RevVariable. Throw an error if the RevVariable
+ * is a reference RevVariable. If so, you need to set the Rev object first, and then set
+ * the vector RevVariable flag.
  */
-void Variable::setVectorVariableState(bool flag)
+void RevVariable::setVectorVariableState(bool flag)
 {
     if ( isReferenceVar )
     {
-        throw "A reference variable cannot be made a vector variable";
+        throw "A reference RevVariable cannot be made a vector RevVariable";
     }
     
     isVectorVar = flag;
@@ -459,23 +459,23 @@ void Variable::setVectorVariableState(bool flag)
 
 
 /**
- * Check whether this variable is a workspace (control) variable. Throw an error if the variable
- * is a reference variable. If so, you need to set the Rev object first, and then set
- * the workspace (control) variable flag.
+ * Check whether this RevVariable is a workspace (control) RevVariable. Throw an error if the RevVariable
+ * is a reference RevVariable. If so, you need to set the Rev object first, and then set
+ * the workspace (control) RevVariable flag.
  */
-void Variable::setWorkspaceVariableState(bool flag)
+void RevVariable::setWorkspaceVariableState(bool flag)
 {
     if ( isReferenceVar )
     {
-        throw "A reference variable cannot be made a workspace (control) variable";
+        throw "A reference RevVariable cannot be made a workspace (control) RevVariable";
     }
     
     isWorkspaceVar = flag;
 }
 
 
-/** Set the name of the variable */
-void Variable::setName(std::string const &n)
+/** Set the name of the RevVariable */
+void RevVariable::setName(std::string const &n)
 {
     
     name = n;
@@ -490,9 +490,9 @@ void Variable::setName(std::string const &n)
 
 /**
  * We set here the required value type spec. An error is thrown if the
- * current Rev object of the variable, if any, is not of the specified type.
+ * current Rev object of the RevVariable, if any, is not of the specified type.
  */
-void Variable::setRevObjectTypeSpec(const TypeSpec &ts)
+void RevVariable::setRevObjectTypeSpec(const TypeSpec &ts)
 {
     
     const RevObject& theObject = this->getRevObject();
@@ -501,7 +501,7 @@ void Variable::setRevObjectTypeSpec(const TypeSpec &ts)
         
         if ( !theObject.isType( ts ) )
         {
-            throw RbException( "Existing variable object is not of the required type" );
+            throw RbException( "Existing RevVariable object is not of the required type" );
         }
         
     }

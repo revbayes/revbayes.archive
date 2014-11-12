@@ -104,7 +104,7 @@ void Dist_offsetLnorm::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_offsetLnorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_offsetLnorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "mean" ) 
     {

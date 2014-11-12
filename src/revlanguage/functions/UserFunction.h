@@ -35,8 +35,8 @@ namespace RevLanguage {
         const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions   
-        virtual RevPtr<Variable>                    execute(void);                                              //!< Execute function (create det var)
-        virtual RevPtr<Variable>                    executeCode(void);                                          //!< Execute function (execute code)
+        virtual RevPtr<RevVariable>                    execute(void);                                              //!< Execute function (create det var)
+        virtual RevPtr<RevVariable>                    executeCode(void);                                          //!< Execute function (execute code)
         const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
         std::set<const RevBayesCore::DagNode*>      getParameters(void) const;                                  //!< Get parameters
         const TypeSpec&                             getReturnType(void) const;                                  //!< Get type of return value

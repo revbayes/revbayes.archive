@@ -36,13 +36,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
-        RevPtr<const Variable>                      cp;                                                                                              //!< The variable holding the real valued vector.
-        RevPtr<const Variable>                      numCats;                                                                                         //!< The variable for the tuning parameter.
-        RevPtr<const Variable>                      gammaShape;
-        RevPtr<const Variable>                      gammaRate;
-        RevPtr<const Variable>                      numElements;
+        RevPtr<const RevVariable>                      cp;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                      numCats;                                                                                         //!< The variable for the tuning parameter.
+        RevPtr<const RevVariable>                      gammaShape;
+        RevPtr<const RevVariable>                      gammaRate;
+        RevPtr<const RevVariable>                      numElements;
         
     };
     

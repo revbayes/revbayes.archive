@@ -41,7 +41,7 @@ Func_range* Func_range::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_range::execute( void )
+RevPtr<RevVariable> Func_range::execute( void )
 {
     
     int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -63,7 +63,7 @@ RevPtr<Variable> Func_range::execute( void )
         }
     }
     
-    return new Variable( range );
+    return new RevVariable( range );
 }
 
 

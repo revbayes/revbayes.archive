@@ -128,7 +128,7 @@ RevBayesCore::TypedFunction<double>* DistributionFunctionCdf::createFunction( vo
         
             if ( args[i].isConstant() )
             {
-                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (const Variable*) args[i].getVariable() ) );
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const RevVariable>( (const RevVariable*) args[i].getVariable() ) );
             }
             else
             {
@@ -150,7 +150,7 @@ RevBayesCore::TypedFunction<double>* DistributionFunctionCdf::createFunction( vo
             
             if ( args[i].isConstant() )
             {
-                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (const Variable*) args[i].getVariable() ) );
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const RevVariable>( (const RevVariable*) args[i].getVariable() ) );
             }
             else
             {

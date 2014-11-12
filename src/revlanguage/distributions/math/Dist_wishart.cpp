@@ -141,7 +141,7 @@ void Dist_wishart::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_wishart::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_wishart::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "omega" ) {
 //        omega = var;

@@ -42,7 +42,7 @@ SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const
  * contexts. For instance, it might be used in a chain assignment or in passing a
  * variable to a function.
  */
-void SyntaxConstantAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxConstantAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating constant assignment\n" );

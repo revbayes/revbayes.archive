@@ -139,7 +139,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 #endif
 
     // Declare a variable for the result
-    RevPtr<Variable> result = NULL;
+    RevPtr<RevVariable> result = NULL;
 
     //! Execute syntax tree
     try {

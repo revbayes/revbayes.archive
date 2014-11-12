@@ -79,13 +79,13 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 }
 
 /* Map calls to member methods */
-RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     if (name == "chartype")
     {
         found = true;
         
-        return new Variable( new RlString( charDataObject->getDatatype() ) );
+        return new RevVariable( new RlString( charDataObject->getDatatype() ) );
     }
     else if (name == "excludeCharacter")
     {
@@ -177,7 +177,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
             n->push_back( charDataObject->getTaxonNameWithIndex( i ) );
         }
         
-        return new Variable( n );
+        return new RevVariable( n );
     }
     else if (name == "nchar") 
     {
@@ -204,7 +204,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
                     
                 }
             }
-            return new Variable( numChar );
+            return new RevVariable( numChar );
         }
         else
         {
@@ -236,7 +236,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
                     }
                     
                 }
-                return new Variable( numChar );
+                return new RevVariable( numChar );
             }
         }
     }
@@ -246,7 +246,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
         
         int n = (int)charDataObject->getNumberOfTaxa();
         
-        return new Variable( new Natural(n) );
+        return new RevVariable( new Natural(n) );
     }
     else if (name == "size") 
     {
@@ -254,7 +254,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
         
         int n = (int)charDataObject->getNumberOfTaxa();
         
-        return new Variable( new Natural(n) );
+        return new RevVariable( new Natural(n) );
     }
     else if (name == "removeTaxa" || name == "removeTaxon" )
     {

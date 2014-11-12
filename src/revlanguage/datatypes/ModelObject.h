@@ -44,13 +44,13 @@ namespace RevLanguage {
         virtual const TypeSpec&                 getTypeSpec(void) const = 0;                                                //!< Get Rev type spec (instance)
     
         // Utility functions you might want to override
-        virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Execute member functions
+        virtual RevPtr<RevVariable>                executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Execute member functions
         
         // Basic utility functions you should not have to override
         bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue(void);                                                    //!< Convert to constant object
-        void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert to conversion object
+        void                                    makeConversionValue(RevPtr<RevVariable> var);                                  //!< Convert to conversion object
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         void                                    makeUserFunctionValue(UserFunction* fxn);                                   //!< Convert to user-defined Rev function object
         virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
@@ -92,7 +92,7 @@ namespace RevLanguage {
 #include "RlUtils.h"
 #include "StochasticNode.h"
 #include "UserFunctionNode.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
 
 #include <cassert>
@@ -201,10 +201,10 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 
 /* Map calls to member methods */
 template <typename rbType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    RevPtr<Variable> retVal = dynamic_cast<RevMemberObject *>( dagNode )->executeMethod(name, args, found);
+    RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dagNode )->executeMethod(name, args, found);
     
     if ( found == true )
     {

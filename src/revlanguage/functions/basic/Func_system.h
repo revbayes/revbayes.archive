@@ -34,7 +34,7 @@ namespace RevLanguage {
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
         bool                                    throws(void) const { return false; }                                         //!< Function may throw exceptions
         
-        RevPtr<Variable>                        execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                        execute(void);                                                              //!< Execute function
         
     };
     

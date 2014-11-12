@@ -32,7 +32,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
-    defaultVar( new Variable( defVal ) ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label(argName),
@@ -62,7 +62,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
-    defaultVar( new Variable( defVal ) ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label(argName),
@@ -98,7 +98,7 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
 Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
 
-    RevPtr<Variable> theVar = arg.getVariable();
+    RevPtr<RevVariable> theVar = arg.getVariable();
     if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() )
     {
         once = true;
@@ -142,8 +142,8 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             // Fit by type conversion
             if ( once )
             {
-                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-                Variable*  convertedVar    = new Variable( convertedObject );
+                RevObject*    convertedObject = theVar->getRevObject().convertTo( *it );
+                RevVariable*  convertedVar    = new RevVariable( convertedObject );
                 convertedVar->setRevObjectTypeSpec( *it );
 
                 if ( !isEllipsis() )
@@ -180,7 +180,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 func->setExecutionEnviroment( &env );
                 
                 // Evaluate the function
-                RevPtr<Variable> conversionVar = func->execute();
+                RevPtr<RevVariable> conversionVar = func->execute();
                 
                 // free the memory
                 delete func;
@@ -219,7 +219,7 @@ const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const
 
 
 
-const Variable& ArgumentRule::getDefaultVariable( void ) const {
+const RevVariable& ArgumentRule::getDefaultVariable( void ) const {
     
     if ( defaultVar == NULL ) 
     {
@@ -251,7 +251,7 @@ bool ArgumentRule::hasDefault(void) const {
  *
  * @todo See the TODOs for fitArgument(...)
  */
-bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const
+bool ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool once) const
 {
     
     if ( var == NULL )

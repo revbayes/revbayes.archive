@@ -24,11 +24,11 @@ Func_type* Func_type::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_type::execute( void ) {
+RevPtr<RevVariable> Func_type::execute( void ) {
     
     RlString* type = new RlString( args[0].getVariable()->getRevObject().getType() );
     
-    return new Variable( type );
+    return new RevVariable( type );
 }
 
 

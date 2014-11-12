@@ -135,7 +135,7 @@ void Move_MultivariateRealNodeValTreeTranslation::printValue(std::ostream &o) co
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_MultivariateRealNodeValTreeTranslation::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_MultivariateRealNodeValTreeTranslation::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "process" ) {
         process = var;

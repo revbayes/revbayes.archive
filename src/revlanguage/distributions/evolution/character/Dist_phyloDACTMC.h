@@ -23,7 +23,7 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
-//        RevPtr<RevLanguage::Variable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
+//        RevPtr<RevLanguage::RevVariable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
 //        MethodTable                                     makeMethods(void) const;
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
@@ -33,17 +33,17 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                          tree;
-        RevPtr<const Variable>                          q;
-        RevPtr<const Variable>                          cladoStateFreqs;
-        RevPtr<const Variable>                          forbidExtinction;
-        RevPtr<const Variable>                          useCladogenesis;
-        RevPtr<const Variable>                          type;
+        RevPtr<const RevVariable>                          tree;
+        RevPtr<const RevVariable>                          q;
+        RevPtr<const RevVariable>                          cladoStateFreqs;
+        RevPtr<const RevVariable>                          forbidExtinction;
+        RevPtr<const RevVariable>                          useCladogenesis;
+        RevPtr<const RevVariable>                          type;
         
     };
     
@@ -250,7 +250,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::printValue(std::ostream& o) const 
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::Dist_phyloDACTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_phyloDACTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" )
     {

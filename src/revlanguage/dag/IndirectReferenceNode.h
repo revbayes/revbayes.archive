@@ -64,7 +64,7 @@ namespace RevLanguage {
 #include "Cloneable.h"
 #include "IsDerivedFrom.h"
 #include "RevPtr.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 using namespace RevLanguage;
 

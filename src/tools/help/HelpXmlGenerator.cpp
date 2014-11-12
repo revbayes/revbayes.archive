@@ -11,7 +11,7 @@
 #include "RlFunction.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
 
 #include <fstream>
@@ -74,7 +74,7 @@ void writeFunctionBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, s
         if ( (*it)->hasDefault() )
         {
             outStream << " = ";
-            const RevLanguage::Variable& var = (*it)->getDefaultVariable();
+            const RevLanguage::RevVariable& var = (*it)->getDefaultVariable();
             RevLanguage::RevObject& revObj = var.getRevObject();
             if ( revObj != RevLanguage::RevNullObject::getInstance() )
             {
@@ -163,7 +163,7 @@ void writeFunctionBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, s
         if ( (*it)->hasDefault() )
         {
             outStream << tabbing << "        <defaultValue>";
-            const RevLanguage::Variable& var = (*it)->getDefaultVariable();
+            const RevLanguage::RevVariable& var = (*it)->getDefaultVariable();
             RevLanguage::RevObject& revObj = var.getRevObject();
             if ( revObj != RevLanguage::RevNullObject::getInstance() )
             {

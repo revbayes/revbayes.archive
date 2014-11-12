@@ -80,7 +80,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
  * @todo This is the old code, which needs to be changed when the member
  *       variable code is revised.
  */
-RevPtr<Variable> ConstructorFunction::execute( void )
+RevPtr<RevVariable> ConstructorFunction::execute( void )
 {
     
     RevObject* copyObject = templateObject->clone();
@@ -90,7 +90,7 @@ RevPtr<Variable> ConstructorFunction::execute( void )
         
         if ( args[i].isConstant() )
         {
-            copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+            copyObject->setConstParameter( args[i].getLabel(), RevPtr<const RevVariable>( (RevVariable*) args[i].getVariable() ) );
         }
         else
         {
@@ -101,7 +101,7 @@ RevPtr<Variable> ConstructorFunction::execute( void )
     // now call the constructor for the internal object
     copyObject->constructInternalObject();
     
-    return new Variable( copyObject );
+    return new RevVariable( copyObject );
 }
 
 

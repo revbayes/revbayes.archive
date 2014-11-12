@@ -104,7 +104,7 @@ RevObject* RevObject::divide(const RevObject &rhs) const
 /** 
  * Execute simple method. 
  */
-RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if ( name == "methods" )
@@ -312,7 +312,7 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 
 
 /** Set a member variable */
-void RevObject::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void RevObject::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     throw RbException("No constant parameter with name \"" + name + "\" found to set.");
@@ -321,13 +321,13 @@ void RevObject::setConstParameter(const std::string& name, const RevPtr<const Va
 
 /* Set a member variable.
  * In this default implementation, we delegate to setConstParameter.
- * Derived classes of MemberObject who need non-const variable should overwrite this function.
+ * Derived classes of MemberObject who need non-const RevVariable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstParameter.
  */
-void RevObject::setParameter(const std::string& name, const RevPtr<Variable> &var)
+void RevObject::setParameter(const std::string& name, const RevPtr<RevVariable> &var)
 {
     
-    setConstParameter(name, RevPtr<const Variable>( var ) );
+    setConstParameter(name, RevPtr<const RevVariable>( var ) );
     
 }
 

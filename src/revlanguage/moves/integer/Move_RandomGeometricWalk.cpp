@@ -165,7 +165,7 @@ void Move_RandomGeometricWalk::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_RandomGeometricWalk::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_RandomGeometricWalk::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "x" ) 

@@ -28,7 +28,7 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Member method inits
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Override to map member methods to internal functions
         
     };
     
@@ -74,7 +74,7 @@ RevLanguage::DiscreteTaxonData<rlType>* RevLanguage::DiscreteTaxonData<rlType>::
 
 /* Map calls to member methods */
 template <typename rlType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteTaxonData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found) {
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteTaxonData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found) {
     
     if ( name == "[]") 
     {
@@ -89,7 +89,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteTaxonData<rlType
         }
             
         RevObject* element = new rlType( this->dagNode->getValue().getElement( size_t(index.getValue()) - 1) );
-        return new Variable( element );
+        return new RevVariable( element );
     } 
     
     return ModelObject<RevBayesCore::DiscreteTaxonData<typename rlType::valueType> >::executeMethod( name, args, found );

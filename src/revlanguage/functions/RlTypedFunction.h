@@ -36,7 +36,7 @@ namespace RevLanguage {
         
         void bogusFoo() {}
         
-        virtual RevPtr<Variable>                        execute(void);                                                                      //!< Create a random variable from this distribution
+        virtual RevPtr<RevVariable>                        execute(void);                                                                      //!< Create a random variable from this distribution
         virtual const TypeSpec&                         getReturnType(void) const;                                                          //!< Get type of return value
         
 
@@ -82,13 +82,13 @@ RevLanguage::TypedFunction<valueType>::~TypedFunction() {
 
 
 template <typename valueType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TypedFunction<valueType>::execute(void)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::TypedFunction<valueType>::execute(void)
 {
     
     RevBayesCore::TypedFunction<typename valueType::valueType>* d = createFunction();
     RevBayesCore::DeterministicNode<typename valueType::valueType>* rv  = new DeterministicNode<typename valueType::valueType>("", d, this->clone());
     
-    return new Variable( new valueType(rv) );
+    return new RevVariable( new valueType(rv) );
 }
 
 

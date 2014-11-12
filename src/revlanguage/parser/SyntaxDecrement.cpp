@@ -79,17 +79,17 @@ SyntaxDecrement* SyntaxDecrement::clone () const
  * Evaluate the content of this syntax element. This will perform
  * a decrement assignment operation.
  */
-RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxDecrement::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating decrement assignment\n" );
 #endif
     
-    RevPtr<Variable> retVar;
+    RevPtr<RevVariable> retVar;
     
     // Get variable. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
-    RevPtr<Variable> theVariable = variable->evaluateContent( env );
+    RevPtr<RevVariable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by variable expression in decrement assignment" );
     
@@ -102,7 +102,7 @@ RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env, bool dynami
     
     if ( postDecrement )
     {
-        retVar = new Variable( lhs_value.clone() );
+        retVar = new RevVariable( lhs_value.clone() );
     }
 
     // Decrement the lhs value. This will not change the control variable status.
@@ -110,7 +110,7 @@ RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env, bool dynami
     
     if ( !postDecrement )
     {
-        retVar = new Variable( lhs_value.clone() );
+        retVar = new RevVariable( lhs_value.clone() );
     }
     
 #ifdef DEBUG_PARSER

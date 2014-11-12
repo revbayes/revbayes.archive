@@ -37,9 +37,9 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
-        RevPtr<const Variable>                      x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                      x;                                                                                              //!< The variable holding the real valued vector.
         
     };
     
@@ -165,7 +165,7 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::printValue(std::ostream &
 
 /** Set a member variable */
 template <class rlValueType>
-void RevLanguage::Move_MixtureAllocation<rlValueType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Move_MixtureAllocation<rlValueType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" )
     {

@@ -43,7 +43,7 @@ void Model::constructInternalObject( void ) {
     
     // now allocate a model
     std::set<const RevBayesCore::DagNode*> s;
-    for (std::set<RevPtr<const Variable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
+    for (std::set<RevPtr<const RevVariable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
         RevBayesCore::DagNode* n = (*it)->getRevObject().getDagNode();
         s.insert( n );
     }
@@ -52,7 +52,7 @@ void Model::constructInternalObject( void ) {
 }
 
 /* Map calls to member methods */
-RevPtr<Variable> Model::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> Model::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "graph")
@@ -174,7 +174,7 @@ void Model::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Model::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Model::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
 
     if ( name == "" || name == "x") {
         sources.insert( var );

@@ -35,7 +35,7 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const
 
 
 /** Execute function */
-RevPtr<Variable> Func_readTreeTrace::execute( void ) {
+RevPtr<RevVariable> Func_readTreeTrace::execute( void ) {
     
     // get the information from the arguments for reading the file
     const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
@@ -77,7 +77,7 @@ RevPtr<Variable> Func_readTreeTrace::execute( void ) {
         throw RbException("Unknown tree type to read.");
     }
     
-    return new Variable( rv );
+    return new RevVariable( rv );
 }
 
 

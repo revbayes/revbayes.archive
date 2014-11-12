@@ -133,7 +133,7 @@ const TypeSpec& Dist_autocorrelatedLnBranchRates::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_autocorrelatedLnBranchRates::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_autocorrelatedLnBranchRates::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
 
     if ( name == "tree" )
     {

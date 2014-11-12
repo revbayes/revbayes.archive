@@ -178,10 +178,10 @@ SyntaxStatement* SyntaxStatement::clone( void ) const
  *       for loops. The return variable is discarded and the loop
  *       just continues.
  */
-RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic)
+RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic)
 {
 
-    RevPtr<Variable> result = NULL;
+    RevPtr<RevVariable> result = NULL;
     
     if (statementType == For)
     {
@@ -393,7 +393,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
 {
-    RevPtr<Variable> temp = expr->evaluateContent( env );
+    RevPtr<RevVariable> temp = expr->evaluateContent( env );
     
     if ( temp == NULL )
         return false;
