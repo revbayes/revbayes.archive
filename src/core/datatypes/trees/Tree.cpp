@@ -221,7 +221,8 @@ const std::string& Tree::getNewickRepresentation() const {
 }
 
 TopologyNode& Tree::getRoot(void) {
-    return *topology->getNodes()[topology->getNumberOfNodes()-1];
+    //return *topology->getNodes()[topology->getNumberOfNodes()-1];
+    return topology->getRoot(); //SK
 }
 
 const TopologyNode& Tree::getRoot(void) const {

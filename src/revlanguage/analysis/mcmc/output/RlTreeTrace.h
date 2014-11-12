@@ -110,7 +110,8 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::exe
         
         int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
-        summary.summarize( b );
+        summary.summarizeTrees( b );
+        summary.summarizeClades( b );
         summary.printTreeSummary(std::cerr);
         
         return NULL;
