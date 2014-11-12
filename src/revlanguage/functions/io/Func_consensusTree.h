@@ -36,7 +36,7 @@ namespace RevLanguage {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>                execute(void);                                                          //!< Execute function
+        RevPtr<RevVariable>             execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
         
@@ -80,7 +80,7 @@ RevLanguage::Func_consensusTree<treeType>* RevLanguage::Func_consensusTree<treeT
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_consensusTree<treeType>::execute(void) {
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_consensusTree<treeType>::execute(void) {
     
     
     const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
@@ -105,7 +105,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_consensusTree<treeT
         
     }
     
-    return new Variable( new treeType( tree ) );
+    return new RevVariable( new treeType( tree ) );
 }
 
 
