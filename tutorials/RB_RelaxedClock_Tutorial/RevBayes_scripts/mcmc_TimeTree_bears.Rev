@@ -40,16 +40,16 @@ mymodel = model(er)
 ### set up the monitors that will output parameter values to file and screen 
 monitors[1] = mnModel(filename="output/TimeTree_bears_mcmc.log", printgen=10)
 monitors[2] = mnFile(filename="output/TimeTree_bears_mcmc.trees", printgen=10, timetree)
-monitors[3] = mnScreen(printgen=10, mean_rt, ucln_mean, root_time, base_rate)
+monitors[3] = mnScreen(printgen=10, root_time, base_rate)
 
 ### workspace mcmc ###
 mymcmc = mcmc(mymodel, monitors, moves)
 
 ### pre-burnin to tune the proposals ###
-mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.burnin(generations=2000,tuningInterval=100)
 
 ### run the MCMC ###
-mymcmc.run(generations=400)
+mymcmc.run(generations=5000)
 
 ### display proposal acceptance rates and tuning ###
 mymcmc.operatorSummary()
