@@ -163,13 +163,13 @@ historyLikelihoods( n.historyLikelihoods ),
 charMatrix( n.charMatrix ),
 gapMatrix( n.gapMatrix ),
 histories( n.histories ),
+tipProbs( n.tipProbs ),
 changedNodes( n.changedNodes ),
 dirtyNodes( n.dirtyNodes ),
 usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
 treatUnknownAsGap( n.treatUnknownAsGap ),
 treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
-tipsInitialized( n.tipsInitialized ),
-tipProbs( n.tipProbs )
+tipsInitialized( n.tipsInitialized )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );

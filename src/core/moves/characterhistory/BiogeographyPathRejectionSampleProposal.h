@@ -262,7 +262,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
             do
             {
                 unsigned int nextState = (currState == 1 ? 0 : 1);
-                double r = rm.getSiteRate( *(this->node), currState, nextState, *it, currAge);
+                double r = rm.getSiteRate( *(this->node), currState, nextState, (int)(*it), currAge);
      
                 
                 // MJL: figure this out later...

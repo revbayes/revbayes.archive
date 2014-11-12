@@ -60,7 +60,7 @@ double AdmixtureShiftTreeRates::performSimpleMove( void ) {
     // random number of branches??
     // ...
     
-    for (size_t i = 0; i < branchRates.size(); i++)
+    for (int i = 0; i < (int)branchRates.size(); i++)
     {
         double v = branchRates[i]->getValue();
         storedRates[i] = v;

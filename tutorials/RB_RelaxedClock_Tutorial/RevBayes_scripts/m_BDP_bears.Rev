@@ -31,14 +31,14 @@ moves[mi++] = mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
 ##### create a variable to ensure the rates are always positive (RealPos)
 denom := abs(1.0 - turnover) 
 ##### birth_rate = diversification / (1 - turnover)
-birth_rate := diversification / (denom)
+birth_rate := diversification / denom
 ##### death_rate = (turnover * diversification) / (1 - turnover)
-death_rate := (turnover * diversification) / (denom)
+death_rate := (turnover * diversification) / denom
 
 ### rho is the probability of sampling species at the present
-### fix this to 0.68, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
+### fix this to 0.068, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
 ### and we have sampled 10
-rho <- 0.68
+rho <- 0.068
 
 ### the root age is an independent stochastic node with a lognormal prior
 ### the lognormal distribution is off-set by the age of the canid fossil in the genus Hesperocyon

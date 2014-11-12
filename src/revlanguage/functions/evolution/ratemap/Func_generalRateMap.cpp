@@ -43,7 +43,7 @@ RevBayesCore::TypedFunction<RevBayesCore::RateMap>* Func_generalRateMap::createF
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
-    unsigned ns = rm->getValue().getNumberOfStates();
+    size_t ns = rm->getValue().getNumberOfStates();
 
     RevBayesCore::GeneralRateMapFunction* f = new RevBayesCore::GeneralRateMapFunction(ns, nc);
         

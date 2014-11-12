@@ -315,7 +315,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
             // proceed with rejection sampling
             currState = parentVector[*it]->getState();
             double t = 0.0;
-            double sr = 0.0;
+//            double sr = 0.0;
             
             // repeated rejection sampling
             do
@@ -331,7 +331,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
                 else
                 {
                     std::vector<double> rates(numStates,0.0);
-                    for (size_t i = 0; i < numStates; i++)
+                    for (unsigned i = 0; i < numStates; i++)
                     {
                         if (i == currState)
                             continue;
@@ -340,7 +340,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
                         r += v;
                     }
                     double u = GLOBAL_RNG->uniform01() * r;
-                    for (size_t i = 0; i < numStates; i++)
+                    for (unsigned i = 0; i < numStates; i++)
                     {
                         u -= rates[i];
                         if (u <= 0.0)

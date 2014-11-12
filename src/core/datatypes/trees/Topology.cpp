@@ -53,6 +53,34 @@ Topology::Topology(const Topology& t) :
     
 }
 
+//SK
+Topology::Topology(TopologyNode* Root, std::vector<TopologyNode*> Nodes) :
+root(Root),
+nodes(Nodes),
+treesUsingThisTopology()
+{
+	numNodes = nodes.size();
+	numTips = 0;
+	for (size_t i = 0; i < numNodes; i++) {
+		if (nodes[i]->getNumberOfChildren() == 0)
+			numTips++;
+	}
+    
+	if (root->getNumberOfChildren() == 2) {
+		rooted = true;
+		if (numNodes == 2 * numTips - 1) {
+			binary = true;
+		} else binary = false;
+	}
+	else {
+		rooted = false;
+		if (numNodes == 2 * numTips - 2) {
+			binary = true;
+		}
+		else binary = false;
+	}
+    
+}
 
 /* Destructor */
 Topology::~Topology(void) 
