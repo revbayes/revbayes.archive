@@ -113,7 +113,7 @@
 				names <- D.names()
 
 				### initialize an iterator for the moves vector
-				mi <- 1
+				mi = 1
 
 				### Specify Yule (pure birth) tree prior
 				birth_rate <- 0.1
@@ -125,7 +125,7 @@
 				moves[mi++] = mvScale(root_time, lambda=2.0, tune=true, weight=10.0)
 
 				### set up the base-rate parameter of the ACLN model 
-				base_rate <- 1.0
+				base_rate <- 0.01
 
 				### set up the variance parameter of the ACLN model 
 				nu <- 0.1

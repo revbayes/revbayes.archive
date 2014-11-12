@@ -695,7 +695,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
                 {
                     unsigned int s = nodeChildState[*it]->getState();
-                    unsigned int st = s * trunkAreas[*it];
+                    unsigned int st = s * (unsigned)trunkAreas[*it];
                     unsigned int sb = s * (trunkAreas[*it] == 1 ? 0 : 1);
                   
                     trunkParentState[*it]->setState(st);

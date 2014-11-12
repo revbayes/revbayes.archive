@@ -190,7 +190,9 @@ void TopologyNode::addNodeParameter(std::string const &n, double p)
 {
     
     std::stringstream o;
-    o << n << "=" << p;
+    char s[32];
+    std::snprintf(s, sizeof(s), "%f",p);
+    o << n << "=" << s; //SK
     std::string comment = o.str();
     nodeComments.push_back( comment );
     
@@ -238,7 +240,9 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
     if ( !internalOnly || !isTip()  )
     {
         std::stringstream o;
-        o << n << "=" << p[index];
+        char s[32];
+        std::snprintf(s, sizeof(s), "%f",p[index]);
+        o << n << "=" << s; //SK
         std::string comment = o.str();
         nodeComments.push_back( comment );
         
@@ -1008,6 +1012,15 @@ void TopologyNode::setName(std::string const &n) {
     
     // mark for newick recomputation
     flagNewickRecomputation();
+    
+}
+
+//SK
+void TopologyNode::setNodeType(bool tip, bool root, bool interior) {
+	
+	tipNode = tip;
+	rootNode = root;
+	interiorNode = interior;
     
 }
 

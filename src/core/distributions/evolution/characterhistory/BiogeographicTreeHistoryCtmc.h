@@ -845,7 +845,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
     // sample bud area index
     const std::vector<CharacterEvent*>& nodeState = this->histories[ node.getIndex() ]->getChildCharacters();
     std::vector<unsigned> presentAreas;
-    for (size_t i = 0; i < nodeState.size(); i++)
+    for (unsigned i = 0; i < nodeState.size(); i++)
         if (nodeState[i]->getState() == 1)
             presentAreas.push_back(i);
     
@@ -892,14 +892,14 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
         
         
         // for sampling probs
-        const std::vector<CharacterEvent*>& nodeChildState = this->histories[node.getIndex() ]->getChildCharacters();
+//        const std::vector<CharacterEvent*>& nodeChildState = this->histories[node.getIndex() ]->getChildCharacters();
         
         // to update
         std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
             homogeneousRateMap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix, *it);
-            unsigned int desS1 = nodeChildState[*it]->getState();
+//            unsigned int desS1 = nodeChildState[*it]->getState();
             
             //            double u = GLOBAL_RNG->uniform01();
             //            double g0 = nodeTpMatrix[0][desS1];
@@ -1178,7 +1178,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
     double u_csf = GLOBAL_RNG->uniform01();
     int cs = 0;
     const std::vector<double>& csf = cladogenicStateFreqs->getValue();
-    for (size_t i = 0; i < csf.size(); i++)
+    for (unsigned i = 0; i < csf.size(); i++)
     {
         
         u_csf -= csf[i];
@@ -1261,8 +1261,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
     // allopatry AB|CD
     else if (cs == 3)
     {
-        std::vector<size_t> trunkAreas(this->numSites, 0);
-        std::vector<size_t> budAreas(this->numSites, 0);
+        std::vector<unsigned> trunkAreas(this->numSites, 0);
+        std::vector<unsigned> budAreas(this->numSites, 0);
         for (size_t i = 0; i < nodeChildState.size(); i++)
         {
             if (nodeChildState[i]->getState() == 1)
@@ -1276,7 +1276,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
         for (size_t i = 0; i < children.size(); i++)
         {
             std::vector<CharacterEvent*> childParentState;
-            for (size_t j = 0; j < nodeChildState.size(); j++)
+            for (unsigned j = 0; j < nodeChildState.size(); j++)
             {
                 if ( buddingState[ children[i]->getIndex() ] == 0 )
                     childParentState.push_back(new CharacterEvent(j, trunkAreas[j], 0.0));
@@ -1297,7 +1297,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
 {
-    unsigned nodeIndex = node.getIndex();
+    size_t nodeIndex = node.getIndex();
     
     const RateMap_Biogeography* rm;
     if (branchHeterogeneousSubstitutionMatrices)
@@ -1309,7 +1309,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     
     // simulate path
-    double sum_rates = rm->getSiteRate(node, 0, 1) + rm->getSiteRate(node, 1, 0);
+//    double sum_rates = rm->getSiteRate(node, 0, 1) + rm->getSiteRate(node, 1, 0);
     std::set<CharacterEvent*,CharacterEventCompare> history;
     double startAge = ( node.isRoot() ? node.getAge() * 5 : node.getParent().getAge() );
     double branchLength = startAge - node.getAge();
@@ -1424,7 +1424,7 @@ template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa)
 {
     
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the sequence of this node
     size_t nodeIndex = node.getIndex();
