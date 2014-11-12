@@ -4,7 +4,7 @@
 
 Central among the questions explored in biology are those that seek to understand the timing and rates of evolutionary processes. Accurate estimates of species divergence times are vital to understanding historical biogeography, estimating diversification rates, and identifying the causes of variation in rates of molecular evolution. 
 
-This tutorial will provide a general overview of divergence time estimation and fossil calibration in a Bayesian framework. The exercise will guide you through the steps necessary for estimating phylogenetic relationships and dating species divergences using the program \RevBayes. 
+This tutorial will provide a general overview of divergence time estimation using fossil calibration and relaxed-clock model comparison in a Bayesian framework. The exercise will guide you through the steps necessary for estimating phylogenetic relationships and dating species divergences using the program \href{https://github.com/revbayes/revbayes}{\RevBayes}. 
 
 %\begin{figure}[h!]
 %\centering
@@ -15,14 +15,17 @@ This tutorial will provide a general overview of divergence time estimation and 
 %
 
 \bigskip
-\subsection{Getting Started}
+\subsection{Getting Started}\label{gettingStarted}
 
 
 The various exercises in this tutorial take you through the steps required to perform phylogenetic analyses of the example datasets. 
 In addition, we have provided the output files for every exercise so you can verify your results. (Note that since the MCMC runs you perform will start from different random seeds, the output files resulting from your analyses \textit{will not} be identical to the ones we provide you.)
 
-\exs{Download data and output files from: \href{http://bit.ly/1oplDTb}{http://bit.ly/1oplDTb}
-}
+\begin{framed}
+Download the starting tree file: \href{http://bit.ly/1tFOXXX}{http://bit.ly/1tFOXXX}
+
+Download the alignment file: \href{http://bit.ly/1xs6pEd}{http://bit.ly/1xs6pEd}
+\end{framed}
 
 In this exercise, we will compare among different relaxed clock models and estimate a posterior distribution of calibrated time trees.
 The dataset we will use is an alignment of 10 caniform sequences, comprising 8 bears, 1 spotted seal, and 1 gray wolf. 
@@ -53,8 +56,37 @@ The alignment in file \cl{data/bears\_irbp.nex} contains interphotoreceptor reti
 This tutorial sets up three different relaxed clock models and a calibrated birth-death model. 
 Because of the complexity of the various models, this exercise is best performed by specifying the models and samplers in different \Rev~files.
 At the beginning of each section, you will be given a suggested name for each component file; these names correspond to the provided \Rev~scripts that reproduce these commands.
- 
 
+\textbf{\textit{Directory Structure}}
+
+This tutorial assumes that you have a very specific directory structure when running \RevBayes. 
+First, you may want to put the \RevBayes~binary in your path if you're using a Unix-based operating system.
+Alternatively, you can place the binary in a directory from which you will execute \RevBayes, e.g., the tutorial directory. 
+The tutorial directory can be any directory on your file system, but you may want to create a new one so that you avoid conflicts with other \RevBayes~tutorials.
+
+\begin{framed}
+Create a directory for this tutorial called {\textcolor{red}{\cl{RB\_RelaxedClock\_Tutorial}}} (or any name you like), and navigate to that directory. This is the tutorial directory mentioned above.
+\end{framed}
+
+For this exercise, the \Rev~code provided assumes that within the tutorial directory exists  subdirectories. 
+These directories must have the same names given here, unless you wish to also change the \Rev~code to conform to your specific directory names.
+
+The first subdirectory will contain the data files (downloaded in Section \ref{gettingStarted}).
+\begin{framed}
+Create a directory called {\textcolor{red}{\cl{data}}} in your tutorial directory. 
+
+Save the tree and alignment files downloaded above (Section \ref{gettingStarted}) in the \cl{data} directory.
+\end{framed}
+
+The second subdirectory will contain the \Rev~files you write to execute the exercises in this tutorial. 
+\begin{framed}
+Create a directory called {\textcolor{red}{\cl{RevBayes\_scripts}}} in your tutorial directory. 
+\end{framed}
+This tutorial will guide you through creating all of the files necessary to execute the analyses without typing the \Rev~language syntax directly in the \RevBayes~console. 
+Since the scripts must point to model and analysis files in a modular way, it is important to be aware of you directory structure and if you choose to do something different, make sure that the file paths given throughout the tutorial are correct.
+
+All of the \Rev~files you write for this tutorial are available on the \href{https://github.com/revbayes/revbayes}{\RevBayes~GitHub repository} at this URL: \href{http://bit.ly/1zj5u9n}{http://bit.ly/1zj5u9n}.
+You can refer to these examples if necessary.
 
 \bigskip
 \subsection{Calibrating the Birth-Death Model}\label{brMods} 
@@ -127,10 +159,15 @@ names <- T.names()
 
 We will begin by setting up the model parameters and proposal mechanisms of the birth-death model. 
 Note that we have not initialized the workspace iterator \cl{mi} yet. 
-Because of this, if you typed these lines in \RevBayes, you would get an error. 
+Because of this, if you typed these lines in the \RevBayes~console, you would get an error. 
 Since this code is intended to be in a sourced \Rev~file, we are assuming that you would initialize \cl{mi} before calling \cl{source("RevBayes\_scripts/m\_BDP\_Tree\_bears.Rev")}.
 
+We will use the parameterization of the birth-death process specifying the diversification and turnover.
+For a more detailed tutorial on the simple birth-death model, please refer to the tutorial in the \RevBayes~repository: \href{http://bit.ly/10UKeuq}{http://bit.ly/10UKeuq}.
+
 \textbf{\textit{Diversification}}
+
+Diversification ($d$) is the speciation rate ($\lambda$) minus the extinction rate ($\mu$): $d = \lambda - \mu$.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 diversification ~ dnExponential(10.0) 
@@ -139,6 +176,8 @@ moves[mi++] = mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
 \end{snugshade*}}
 
 \textbf{\textit{Turnover}}
+
+Turnover is: $r = \mu / \lambda$.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 turnover ~ dnBeta(2.0, 2.0) 
@@ -202,7 +241,7 @@ mu_ra <- ln(mean_ra) - ((stdv_ra*stdv_ra) * 0.5)
 With these parameters we can instantiate the root age stochastic node with the offset value.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-root_time ~ dnLnorm(mu_ra, stdv_ra, offset=tHesperocyon)
+root_time ~ dnLognormal(mu_ra, stdv_ra, offset=tHesperocyon)
 \end{lstlisting}
 \end{snugshade*}}
 
