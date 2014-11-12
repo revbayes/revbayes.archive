@@ -13,19 +13,19 @@
 #########
 
 # read the quantitative trait data 
-contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+contData = readContinuousCharacterData("data/plac40lhtlog.nex")
 
 # get some useful variables from the data
-nTraits <- contData.nchar()[1]
+nTraits = contData.nchar()[1]
 
 # read the sequence data
 # the readCharacter function returns a vector of matrices. We just take the first one
-seqData <- readDiscreteCharacterData("data/plac40_4fold.nex")
+seqData = readDiscreteCharacterData("data/plac40_4fold.nex")
 
 # get some useful variables from the data
-nTaxa <- seqData.ntaxa()
-names <- seqData.names()
-nSites <- seqData.nchar()[1]
+nTaxa = seqData.ntaxa()
+names = seqData.names()
+nSites = seqData.nchar()[1]
 
 
 ######### 
@@ -43,8 +43,8 @@ sampling_fraction := 0.01
 psi ~ dnBDP(lambda=speciation, mu=extinction, rho=sampling_fraction, rootAge=1.0, nTaxa=nTaxa, names=names)
 
 # work under fixed, externally provided, tree topology
-treeArray <- readTrees("data/chronoplac40.tree")
-fixedTree <- treeArray[1]
+treeArray = readTrees("data/chronoplac40.tree")
+fixedTree = treeArray[1]
 psi.setValue(fixedTree)
 
 
@@ -61,8 +61,8 @@ psi.setValue(fixedTree)
 
 kappa ~ dnLogUniform(min=0.001,max=1000)
 kappa.setValue(0.1)
-df <- nTraits+2
-covdim <- nTraits
+df = nTraits+2
+covdim = nTraits
 
 Sigma ~ dnInvWishart(dim=covdim, kappa=kappa, df=df)
 
@@ -83,12 +83,12 @@ for (i in 1:covdim)	{
 	var[i] := Sigma.covariance(i,i)
 }
 
-k <- 1;
+k = 1;
 for (i in 1:(covdim-1))	{
 	for (j in (i+1):covdim)	{
 		correl[k] := Sigma.correlation(i,j)
 		pCorrel[k] := Sigma.partialCorrelation(i,j)
-		k <- k+1
+		k = k+1
 	}
 }
 
@@ -106,11 +106,11 @@ for (i in 1:covdim)	{
 clockrate ~ dnLogUniform(0.001,1000)
 
 # equilibrium frequencies 
-bf <- v(1,1,1,1)
+bf = v(1,1,1,1)
 pi ~ dnDirichlet(bf)
 
 # exchangeabilities
-e <- v(1,1,1,1,1,1)
+e = v(1,1,1,1,1,1)
 er ~ dnDirichlet(e)
 
 # rate matrix
@@ -130,7 +130,7 @@ mymodel = model(kappa)
 #########
 
 # initializing index
-index <- 1
+index = 1
 
 # rescaling moves on speciation and extinction rates
 moves[index++] = mvScale(speciation, lambda=1, tune=true, weight=3.0)
@@ -150,7 +150,7 @@ moves[index++] = mvNodeTimeSlideUniform(psi, weight=10.0)
 moves[index++] = mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
 
 # conjugate Gibbs move on covariance matrix
-moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+# moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
 
 # moves on the Brownian process
 moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
@@ -188,7 +188,7 @@ monitors[6] = mnFile(filename="output/placdatestraits.trees",printgen=10, separa
 
 # a model monitor
 monitors[7] = mnModel(filename="output/placdatestraits.log",printgen=10, separator = TAB)
- 
+
 mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.burnin(generations=2000,tuningInterval=250)

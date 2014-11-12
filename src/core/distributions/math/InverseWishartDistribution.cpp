@@ -132,13 +132,6 @@ void InverseWishartDistribution::redrawValue(void)  {
         std::cerr << "error in inverse wishart: no parameter\n";
         throw(0);
     }
-    /*
-    for (size_t i=0; i<getValue().getDim(); i++)   {
-        for (size_t j=0; j<getValue().getDim(); j++)   {
-            getValue()[i][j] = (i == j) ? 1.0 : 0.0;
-        }
-    }
-    */
     getValue().update();
 
 
