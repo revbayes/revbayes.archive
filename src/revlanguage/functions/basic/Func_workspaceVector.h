@@ -1,8 +1,8 @@
 #ifndef Func_workspaceVector_H
 #define Func_workspaceVector_H
 
-#include "Function.h"
-#include <map>
+#include "Procedure.h"
+
 #include <string>
 
 namespace RevLanguage {
@@ -15,7 +15,7 @@ namespace RevLanguage {
      * the elements are workspace objects.
      */
     template <typename valType>
-    class Func_workspaceVector :  public Function {
+    class Func_workspaceVector :  public Procedure {
         
     public:
         Func_workspaceVector(void);                                                             //!< Default constructor
@@ -49,8 +49,7 @@ namespace RevLanguage {
 
 /** Default constructor */
 template <typename valType>
-RevLanguage::Func_workspaceVector<valType>::Func_workspaceVector() :
-Function()
+RevLanguage::Func_workspaceVector<valType>::Func_workspaceVector() : Procedure()
 {
 }
 
@@ -67,11 +66,11 @@ RevLanguage::Func_workspaceVector<valType>* RevLanguage::Func_workspaceVector<va
 template <typename valType>
 RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_workspaceVector<valType>::execute( void )
 {
-    std::vector<valType*> params;
+    RevBayesCore::RbVector<valType> params;
     for ( size_t i = 0; i < args.size(); i++ )
     {
         const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
-        params.push_back( val.clone() );
+        params.push_back( val );
     }
     
     WorkspaceVector<valType> *theVector = new WorkspaceVector<valType>( params );

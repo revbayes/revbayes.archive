@@ -1,6 +1,7 @@
 #ifndef SwitchRateJumpMove_H
 #define SwitchRateJumpMove_H
 
+#include "RbVector.h"
 #include "SimpleMove.h"
 #include "StochasticNode.h"
 
@@ -23,7 +24,7 @@ namespace RevBayesCore {
     class SwitchRateJumpMove : public SimpleMove {
         
     public:
-        SwitchRateJumpMove(StochasticNode<std::vector<double> >* n, double w);                                                          //!< Constructor
+        SwitchRateJumpMove(StochasticNode<RbVector<double> >* n, double w);                                                          //!< Constructor
         
         // Basic utility functions
         SwitchRateJumpMove*                         clone(void) const;                                                                  //!< Clone this object.
@@ -39,7 +40,7 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<std::vector<double> >*       variable;
+        StochasticNode<RbVector<double> >*          variable;
         
         size_t                                      index;                                                                              //!< The index of the last modified element.
 		double                                      storedValue;                                                                        //!< The stored value of the last modified element.

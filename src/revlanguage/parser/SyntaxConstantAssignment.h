@@ -1,8 +1,7 @@
 #ifndef SyntaxConstantAssignment_H
 #define SyntaxConstantAssignment_H
 
-#include "SyntaxElement.h"
-#include "SyntaxVariable.h"
+#include "SyntaxAssignment.h"
 
 #include <iostream>
 #include <list>
@@ -27,30 +26,20 @@ namespace RevLanguage {
      * standard evaluateContent() function, and not its dynamic or
      * lhs versions.
      */
-    class SyntaxConstantAssignment : public SyntaxElement {
+    class SyntaxConstantAssignment : public SyntaxAssignment {
         
     public:
         SyntaxConstantAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                                   //!< Basic constructor
-        SyntaxConstantAssignment(const SyntaxConstantAssignment& x);                                                //!< Copy constructor
-
-	    virtual                    ~SyntaxConstantAssignment();                                                     //!< Destructor
         
-        // Assignment operator
-        SyntaxConstantAssignment&   operator=(const SyntaxConstantAssignment& x);                                   //!< Assignment operator
+        virtual                    ~SyntaxConstantAssignment();                                                     //!< Destructor
+        
         
         // Basic utility functions
         SyntaxConstantAssignment*   clone() const;                                                                  //!< Clone object
-        bool                        isAssignment(void) const;                                                       //!< Is this an assignment statement?
-        void                        printValue(std::ostream& o) const;                                              //!< Print info about object
-        
-        // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env);                                              //!< Get semantic value
-        bool                        isFunctionSafe(const Environment&       env,
-                                                   std::set<std::string>&   localVars) const;                       //!< Is this element safe in a function?
         
     protected:
-        SyntaxElement*              lhsExpression;                                                                  //!< The lhs expression
-        SyntaxElement*              rhsExpression;                                                                  //!< The rhs expression
+        
+        void                        assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);                           //!< The assignment operation.
         
     };
     

@@ -22,19 +22,18 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-//        const MethodTable&                              getMethods(void) const;                                                         //!< Get member methods
+        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
 //        RevPtr<RevLanguage::Variable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
 //        MethodTable                                     makeMethods(void) const;
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
         // Distribution functions you have to override
-        RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >*      createDistribution(void) const;
+        RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >*      createDistribution(void) const;
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
@@ -81,7 +80,7 @@ RevLanguage::Dist_phyloDACTMC<treeType>* RevLanguage::Dist_phyloDACTMC<treeType>
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLanguage::Dist_phyloDACTMC<treeType>::createDistribution( void ) const {
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* RevLanguage::Dist_phyloDACTMC<treeType>::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
@@ -90,7 +89,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     size_t nChars = rm->getValue().getNumberOfCharacters();
     
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
+    RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData > *d = NULL;
     
     if ( dt == "DNA" )
     {
@@ -132,7 +131,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     {
         bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
         bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
-        const RevBayesCore::TypedDagNode< std::vector< double > > *csf = NULL;
+        const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *csf = NULL;
         
         if ( cladoStateFreqs->getRevObject() != RevNullObject::getInstance() )
         {
@@ -174,7 +173,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getClassTy
 
 /** Return member rules (no members) */
 template <class treeType>
-const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -201,21 +200,6 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
     
     return distMemberRules;
 }
-
-//template <class treeType>
-//const RevLanguage::MethodTable& RevLanguage::Dist_phyloDACTMC<treeType>::getMethods( void ) const
-//{
-//    static MethodTable  myMethods   = MethodTable();
-//    static bool         methodsSet  = false;
-//    
-//    if ( !methodsSet )
-//    {quit
-//        myMethods = makeMethods();
-//        methodsSet = true;
-//    }
-//    
-//    return myMethods;
-//}
 
 
 template <class treeType>
@@ -266,7 +250,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::printValue(std::ostream& o) const 
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_phyloDACTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" )
     {
@@ -293,7 +277,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::
         cladoStateFreqs = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

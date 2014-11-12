@@ -10,6 +10,7 @@
 #include "RbIterator.h"
 #include "RbMathLogic.h"
 #include "RbOptions.h"
+#include "RlUserInterface.h"
 #include "SequenctialMoveSchedule.h"
 #include "SingleRandomMoveSchedule.h"
 #include "RandomMoveSchedule.h"
@@ -110,23 +111,28 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
         movesPerIteration += it->getUpdateWeight();
     }
     
-    /* Let user know what we are doing */
-    std::cout << "\nRunning MCMC burnin simulation for " << generations << " iterations" << std::endl;
+    // Let user know what we are doing
+    std::stringstream ss;
+    ss << "\nRunning MCMC burnin simulation for " << generations << " iterations";
+    RBOUT( ss.str() );
     
     if ( scheduleType == "single" )
     {
-        std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
-        std::cout << "single move picked randomly per iteration" << std::endl;
+        std::stringstream stream;
+        stream << "The simulator uses " << moves.size() << " different moves, with a single move picked randomly per iteration" << std::endl;
+        RBOUT( stream.str() );
     }
     else if ( scheduleType == "random" )
     {
-        std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+        std::stringstream stream;
+        stream << "The simulator uses " << moves.size() << " different moves in a random move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+        RBOUT( stream.str() );
     }
     else if ( scheduleType == "sequential" )
     {
-        std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
-        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+        std::stringstream stream;
+        stream << "The simulator uses " << moves.size() << " different moves in a sequential move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+        RBOUT( stream.str() );
     }
 
     // Print progress bar (68 characters wide)
@@ -313,7 +319,7 @@ void MonteCarloSampler::initializeChain( bool priorOnly )
             if ( !RbMath::isAComputableNumber(lnProb) )
             {
                 std::cerr << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
-                node->printValue(std::cerr,"");
+                node->printValue(std::cerr);
                 std::cerr << std::endl;
             }
             lnProbability += lnProb;
@@ -613,16 +619,28 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
         for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
+            RevBayesCore::DagNode *theNode = *j;
+            
             // error checking
-            if ( (*j)->getName() == "" )
+            if ( theNode->getName() == "" )
             {
+                std::cerr << "The move has the following nodes:\n";
+                for (std::set<DagNode*>::const_iterator k = nodes.begin(); k != nodes.end(); ++k)
+                {
+                    std::cerr << (*k)->getName() << std::endl;
+                }
+                std::cerr << "The model has the following nodes:\n";
+                for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
+                {
+                    std::cerr << (*k)->getName() << std::endl;
+                }
                 throw RbException( "Unable to connect move '" + theMove->getMoveName() + "' to DAG copy because variable name was lost");
             }
             
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
-                if ( (*k)->getName() == (*j)->getName() )
+                if ( (*k)->getName() == theNode->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -631,13 +649,14 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a move working on it.");
+                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a move working on it.");
             }
             
             // now swap the node
             theMove->swapNode( *j, theNewNode );
         }
-        moves.push_back( theMove );
+        moves.push_back( *theMove );
+        delete theMove;
     }
     
     for (RbConstIterator<Monitor> it = mons.begin(); it != mons.end(); ++it)
@@ -647,14 +666,18 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
+            RevBayesCore::DagNode *theNode = (*j);
+            
             // error checking
-            if ( (*j)->getName() == "" )
+            if ( theNode->getName() == "" )
+            {
                 throw RbException( "Unable to connect monitor to DAG copy because variable name was lost");
+            }
             
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
-                if ( (*k)->getName() == (*j)->getName() )
+                if ( (*k)->getName() == theNode->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -663,13 +686,14 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a monitor working on it.");
+                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a monitor working on it.");
             }
             
             // now swap the node
             theMonitor->swapNode( *j, theNewNode );
         }
-        monitors.push_back( theMonitor );
+        monitors.push_back( *theMonitor );
+        delete theMonitor;
         
     }
     

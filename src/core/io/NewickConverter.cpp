@@ -72,7 +72,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     std::stringstream ss (std::stringstream::in | std::stringstream::out);
     ss << n;
     
-    char c;
+    char c = ' ';
     ss.get(c);
     
     // the initial character has to be '('

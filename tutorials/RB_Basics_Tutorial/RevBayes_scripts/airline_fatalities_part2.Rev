@@ -1,0 +1,44 @@
+################################################################################
+#
+# RevBayes Exercise: Compute the posterior probabilities of a Poisson regression model 
+#                               for airline fatalities
+# 
+# This file: Specifies the full model parameters and moves for the model and runs the analysis
+#
+# authors: Sebastian Hoehna
+#
+################################################################################
+
+
+
+observed_fatalities <- v(24,25,31,31,22,21,26,20,16,22)
+x <- 1976:1985 - mean(1976:1985)
+
+alpha ~ dnUnif(-10,10) 
+beta ~ dnUnif(-10,10)
+
+# let us use reasonable starting value
+alpha.setValue(0.0)
+beta.setValue(0.0)
+
+mi <- 1
+moves[mi++] = mvSlide(alpha)
+moves[mi++] = mvSlide(beta)
+
+for (i in 1:x.size() ) {
+    lambda[i] := exp( alpha + beta * x[i] )
+    y[i] ~ dnPoisson(lambda[i])
+    y[i].clamp(observed_fatalities[i])
+}
+
+mymodel = model( alpha )
+
+monitors[1] = mnModel(filename="output/airline_fatalities.log",printgen=1, separator = TAB)
+monitors[2] = mnScreen(printgen=1000, alpha, beta)
+
+mymcmc = mcmc(mymodel, monitors, moves)
+
+mymcmc.run(generations=10000)
+
+q()
+

@@ -1,0 +1,116 @@
+############################################################################################
+#   File: timetree tutorial birth-death, rho=10/147 model specification file -- estimate topology
+############################################################################################
+
+## read in the tree 
+T <- readTrees("data/bears_dosReis.tre")[1]
+
+### get helpful variables from the tree
+n_taxa <- T.ntips()
+names <- T.names()
+
+#######################################
+###### birth-death process model  #####
+#######################################
+
+### diversification = birth_rate - death_rate
+### assume an exponential prior distribution 
+### and apply a scale proposal
+diversification ~ dnExponential(10.0) 
+moves[mi++] = mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
+
+### turnover = death_rate / birth_rate
+### this parameter can only take values between 0 and 1
+### use a Beta prior distribution
+### and a slide move
+turnover ~ dnBeta(2.0, 2.0) 
+moves[mi++] = mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
+
+### the parameters of the BDP include birth and death rates
+### these are deterministic variables of the diversification & turnover
+##### create a variable to ensure the rates are always positive (RealPos)
+denom := abs(1.0 - turnover) 
+##### birth_rate = diversification / (1 - turnover)
+birth_rate := diversification / (denom)
+##### death_rate = (turnover * diversification) / (1 - turnover)
+death_rate := (turnover * diversification) / (denom)
+
+### rho is the probability of sampling species at the present
+### fix this to 0.068, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
+### and we have sampled 10
+rho <- 0.068
+
+### the root age is an independent stochastic node with a lognormal prior
+### the lognormal distribution is off-set by the age of the canid fossil in the genus Hesperocyon
+### the observation time of Hesperocyon is ~ 38 Mya
+tHesperocyon <- 38.0
+### the mean of the lognormal distribution is set to 15 Mya older than the observed fossil
+### when offset by tHesperocyon, this gives a mean root_time of 49 Mya
+mean_ra <- 11.0
+stdv_ra <- 0.25
+### the lognormal distribution is parameterized by mu which is a function of the mean and standard deviation
+mu_ra <- ln(mean_ra) - ((stdv_ra*stdv_ra) * 0.5)
+root_time ~ dnLnorm(mu_ra, stdv_ra, offset=tHesperocyon)
+
+### two internal calibrations will be used
+### first we have to create constraints on which we will condition the birth-death process tree topology
+### create a constraint using the clade function for the bear family Ursidae
+clade_Ursidae <- clade("Ailuropoda_melanoleuca","Tremarctos_ornatus","Helarctos_malayanus",
+						"Ursus_americanus","Ursus_thibetanus","Ursus_arctos","Ursus_maritimus","Melursus_ursinus")
+### create a constraint for Ursidae + Pinnipedia (Phoca largha)
+clade_UrsPinn <- clade("Ailuropoda_melanoleuca","Tremarctos_ornatus","Helarctos_malayanus",
+						"Ursus_americanus","Ursus_thibetanus","Ursus_arctos","Ursus_maritimus","Melursus_ursinus",
+						"Phoca_largha")
+### load the constraints into a vector for the BDP model
+constraints <- v(clade_Ursidae, clade_UrsPinn)
+
+### the time tree is a stochastic node modeled by the constant rate birth-death process (dnBDP)
+timetree ~ dnBDP(lambda=birth_rate, mu=death_rate, rho=rho, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names,constraints=constraints)
+
+### set the initial value of the time tree to the dos Reis et al. (2013) tree
+### this is needed because the starting value must be consistent with our internal node constraints
+timetree.setValue(T)
+
+####### Internal node constraints #######
+
+### first create a deterministic node for the age of the MRCA of all Ursidae
+tmrca_Ursidae := tmrca(timetree,clade_Ursidae)
+### create an additional deterministic node that is negative, representing time in the past
+n_TMRCA_Ursidae := -(tmrca_Ursidae)
+### the age of the node is a function of the fossil age, which as the observation time of -11.2 My from the present
+tKretzoiarctos <- -11.2
+### the age of the fossil is a stochastic node that has a lognormal waiting time that is a function of the age of the calibration node
+### we will model this waiting time so that the fossil is 10 My younger than its ancestor
+M <- 10
+sdv <- 0.25
+mu <- ln(M) - ((sdv * sdv) * 0.5)
+### using these parameters we create a stochastic node for the fossil 
+### Kretzoiarctos is a fossil panda, and thus a crown fossil
+crown_Ursid_fossil ~ dnLnorm(mu, sdv, offset=n_TMRCA_Ursidae)
+### then we clamp this node with the observed fossil specimen, treating the fossil like data
+crown_Ursid_fossil.clamp(tKretzoiarctos)
+
+### create a deterministic node for the age of the MRCA of all ursids and the gray seal
+tmrca_UrsidaePinn := tmrca(timetree,clade_UrsPinn)
+n_TMRCA_UrsidaePinn := -(tmrca_UrsidaePinn)
+### the age of the node is a function of the fossil age, which as the observation time of -33.0 My from the present
+tParictis <- -33.9
+### the age of the fossil is a stochastic node that has an exponential waiting time that is a function of the age of the calibration node
+### we will model this waiting time so that the fossil is 30 My younger than its ancestor
+### Parictis is the earliest known genus of bears, in the family Ursidae
+### this fossil is a stem ursid fossil, and branched off the tree before the MRCA of living bears
+stem_Ursid_fossil ~ dnExponential(lambda=0.0333, offset=n_TMRCA_UrsidaePinn)
+### then we clamp this node with the observed fossil specimen, treating the fossil like data
+stem_Ursid_fossil.clamp(tParictis)
+
+### add moves on the tree node times, including the root time, which is outside of the timetree 
+moves[mi++] = mvNodeTimeSlideUniform(timetree, weight=30.0)
+moves[mi++] = mvSlide(root_time, delta=2.0, tune=true, weight=10.0)
+moves[mi++] = mvScale(root_time, lambda=2.0, tune=true, weight=10.0)
+moves[mi++] = mvTreeScale(tree=timetree, rootAge=root_time, delta=1.0, tune=true, weight=3.0)
+
+### and moves for the tree topology
+moves[mi++] = mvNNI(timetree, weight=8.0)
+moves[mi++] = mvNarrow(timetree, weight=8.0)
+moves[mi++] = mvFNPR(timetree, weight=8.0)
+

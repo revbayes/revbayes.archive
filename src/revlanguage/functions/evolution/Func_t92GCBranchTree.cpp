@@ -7,8 +7,7 @@
 
 #include "T92GCBranchTree.h"
 #include "Func_t92GCBranchTree.h"
-
-#include "ModelVectorAbstractElement.h"
+#include "ModelVector.h"
 #include "Probability.h"
 #include "RealPos.h"
 #include "RbVector.h"
@@ -16,8 +15,6 @@
 #include "RlRateMatrix.h"
 
 using namespace RevLanguage;
-
-Func_t92GCBranchTree::Func_t92GCBranchTree( const Func_t92GCBranchTree &x ) : Function(x) {}
 
 
 Func_t92GCBranchTree* Func_t92GCBranchTree::clone( void ) const {
@@ -63,15 +60,6 @@ const TypeSpec& Func_t92GCBranchTree::getClassTypeSpec(void) {
 }
 
 
-/* Get return type */
-const TypeSpec& Func_t92GCBranchTree::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec();
-    
-    return returnTypeSpec;
-}
-
-
 
 const TypeSpec& Func_t92GCBranchTree::getTypeSpec( void ) const {
     
@@ -81,21 +69,18 @@ const TypeSpec& Func_t92GCBranchTree::getTypeSpec( void ) const {
 }
 
 
-RevPtr<Variable> Func_t92GCBranchTree::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RbVector< RevBayesCore::RateMatrix > >* Func_t92GCBranchTree::createFunction( void ) const
+{
         
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* gcprocess = static_cast<const ModelVector<Probability> &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* gcprocess = static_cast<const ModelVector<Probability> &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::TypedDagNode< double >* kappa = static_cast<const RealPos &>( args[2].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::T92GCBranchTree* result = new RevBayesCore::T92GCBranchTree( tau, gcprocess, kappa );
 
-    DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* dag = new DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >("", result, this->clone());
-    
-    ModelVectorAbstractElement<RateMatrix>* wrappedresult = new ModelVectorAbstractElement<RateMatrix>( dag );
-
-    return new Variable( wrappedresult );
+    return result;
 }
 
 

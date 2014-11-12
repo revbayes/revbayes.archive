@@ -1853,13 +1853,13 @@ void NxsAssumptionsBlock::HandleCharSet(
 	//charset_name.ToUpper();
 	NxsAssumptionsBlockAPI * effectiveAssumpBlock = DealWithPossibleParensInCharDependentCmd(token, "CharSet");
 	token.GetNextToken();
-	effectiveAssumpBlock->ReadCharsetDef(charset_name, token, asterisked);
+	effectiveAssumpBlock->readDiscreteCharsetDef(charset_name, token, asterisked);
 	}
 
 /*!
 	Called after verifying that the correct Char block pointer is set.
 */
-void NxsAssumptionsBlock::ReadCharsetDef(NxsString charset_name, NxsToken &token, bool asterisked)
+void NxsAssumptionsBlock::readDiscreteCharsetDef(NxsString charset_name, NxsToken &token, bool asterisked)
 	{
 	NCL_ASSERT(charBlockPtr != NULL);
 	NxsCharactersBlockAPI &charBlock = *charBlockPtr;

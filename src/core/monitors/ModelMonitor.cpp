@@ -149,10 +149,13 @@ void ModelMonitor::monitor(unsigned long gen)
             outStream << separator;
             
             // get the node
-            DagNode *node = *i;
+            DagNode *theNode = *i;
             
-            // print the value
-            node->printValue(outStream,separator);
+            if ( theNode->getName() != "" && theNode->isHidden() == false )
+            {
+                // print the value
+                theNode->printValueElements(outStream,separator);
+            }
         }
         
         outStream << std::endl;
@@ -220,12 +223,9 @@ void ModelMonitor::printHeader()
         const DagNode* theNode = *it;
         
         // print the header
-        if (theNode->getName() != "")
+        if (theNode->getName() != "" && theNode->isHidden() == false)
         {
             // print the name
-//            std::cerr << "<" << theNode << "> ";
-//            theNode->printName( std::cerr, ", " );
-//            std::cerr << std::endl;
             theNode->printName(outStream,separator);
         }
         else
@@ -259,19 +259,21 @@ void ModelMonitor::resetDagNodes( void )
         for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
         {
             
+            DagNode *theNode = *it;
+            
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
-            if ( (*it)->isSimpleNumeric() && !(*it)->isClamped())
+            if ( theNode->isSimpleNumeric() && !theNode->isClamped())
             {
-                if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" && !(*it)->isComposite() ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
+                if ( (!stochasticNodesOnly && !theNode->isConstant() && theNode->getName() != "" && !theNode->isHidden() ) || ( theNode->isStochastic() && !theNode->isClamped() && theNode->isHidden() == false ) )
                 {
-                    if ( varNames.find( (*it)->getName() ) == varNames.end() )
+                    if ( varNames.find( theNode->getName() ) == varNames.end() )
                     {
-                        nodes.push_back( *it );
-                        varNames.insert( (*it)->getName() );
+                        nodes.push_back( theNode );
+                        varNames.insert( theNode->getName() );
                     }
                     else
                     {
-                        std::cerr << "Trying to add variable with name '" << (*it)->getName() << "' twice." << std::endl;
+                        std::cerr << "Trying to add variable with name '" << theNode->getName() << "' twice." << std::endl;
                     }
                 }
             }

@@ -34,7 +34,7 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* sig  = static_cast<const RealSymmetricMatrix&>( sigma->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode< RbVector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
     
 //    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
     RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, sig );
@@ -64,7 +64,7 @@ const TypeSpec& Dist_mvtBrownian::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_mvtBrownian::getMemberRules(void) const
+const MemberRules& Dist_mvtBrownian::getParameterRules(void) const
 {
     
     static MemberRules dist;
@@ -131,7 +131,7 @@ const TypeSpec& Dist_mvtBrownian::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_mvtBrownian::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_mvtBrownian::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {
@@ -148,7 +148,7 @@ void Dist_mvtBrownian::setConstMemberVariable(const std::string& name, const Rev
     }
     */
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

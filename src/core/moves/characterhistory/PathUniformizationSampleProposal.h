@@ -51,7 +51,7 @@ namespace RevBayesCore {
     class PathUniformizationSampleProposal : public Proposal {
         
     public:
-        PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
+        PathUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, TypedDagNode<treeType>* t, TypedDagNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
 //        PathUniformizationSampleProposal( const PathUniformizationSampleProposal& p );
         
         // Basic utility functions
@@ -61,20 +61,21 @@ namespace RevBayesCore {
         void                            cleanProposal(void);
         PathUniformizationSampleProposal*    clone(void) const;                                                                  //!< Clone object
         double                          doProposal(void);                                                                   //!< Perform proposal
-        const std::set<DagNode*>&       getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
         const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                            prepareProposal(void);                                                              //!< Prepare the proposal
-        void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the DAG nodes on which the Proposal is working on
         void                            tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                            undoProposal(void);                                                                 //!< Reject the proposal
         
     protected:
         
+        void                            swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
+        
+        
         void                            fillStateCounts(std::vector<CharacterEvent*> s, unsigned* counts);
         
         // parameters
-        StochasticNode<AbstractCharacterData>*  ctmc;
+        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
         TypedDagNode<treeType>*                 tau;
         TypedDagNode<RateMap>*                  qmap;
                 
@@ -101,9 +102,6 @@ namespace RevBayesCore {
         bool                                    failed;
         TransitionProbabilityMatrix             tpCtmc;
         std::vector<MatrixReal>                 tpDtmc;
-
-        
-        std::set<DagNode*>                      nodes;
     };
     
 }
@@ -116,7 +114,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
+RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::PathUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, TypedDagNode<treeType> *t, TypedDagNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -130,9 +128,9 @@ tpCtmc(q->getValue().getNumberOfStates()),
 tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().getNumberOfStates()))
 {
 
-    nodes.insert(ctmc);
-    nodes.insert(tau);
-    nodes.insert(qmap);
+    addNode( ctmc );
+    addNode( tau );
+    addNode( qmap );
     
     numNodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
@@ -143,7 +141,7 @@ tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().
 template<class charType, class treeType>
 void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::cleanProposal( void )
 {
-    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
+//    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
 //    BranchHistory* bh = &p.getHistory(*node);
     
     // delete old events
@@ -262,19 +260,6 @@ const std::string& RevBayesCore::PathUniformizationSampleProposal<charType, tree
     static std::string name = "PathUniformizationSampleProposal";
     
     return name;
-}
-
-
-/**
- * Get the vector of nodes on which this proposal is working on.
- *
- * \return  Const reference to a vector of nodes pointer on which the proposal operates.
- */
-template<class charType, class treeType>
-const std::set<RevBayesCore::DagNode*>& RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::getNodes( void ) const
-{
-    
-    return nodes;
 }
 
 
@@ -423,7 +408,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
                 for (it = tmpHistory.begin(); it != tmpHistory.end(); it++)
                 {
                     CharacterEvent* evt = *it;
-                    unsigned int nextState;
+                    unsigned int nextState = 0;
 
                     // the last event must transition to endState
                     if (jumpIdx == numJumps)
@@ -446,7 +431,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
                         
                         // sample next state for jumpIdx-th event
                         double uIdx = GLOBAL_RNG->uniform01() * sampleProbSum;
-                        for (size_t i = 0; i < sampleProbs.size(); i++)
+                        for (unsigned int i = 0; i < sampleProbs.size(); i++)
                         {
                             uIdx -= sampleProbs[i];
                             if (uIdx <= 0)
@@ -619,11 +604,11 @@ void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::undoPro
  * \param[in]     newN     The new ctmc.
  */
 template<class charType, class treeType>
-void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::swapNode(DagNode *oldN, DagNode *newN)
+void RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {

@@ -227,6 +227,11 @@ std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
 /** Create an object to hold aligned amino acid data */
 DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
     
+    if ( charblock == NULL )
+    {
+        throw RbException("Trying to create an AA matrix from a NULL pointer.");
+    }
+    
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::protein)
         return NULL;
@@ -376,7 +381,13 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
 
 
 /** Create an object to hold aligned DNA data */
-DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
+{
+    
+    if ( charblock == NULL )
+    {
+        throw RbException("Trying to create an DNA matrix from a NULL pointer.");
+    }
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
@@ -614,23 +625,23 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
-        
+        //std::cerr << "Reading data for taxon " << tName << " which has index " << origTaxIndex <<"\n";
         // allocate a vector of Standard states
         DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tName);
-        
+
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
         {
+            //std::cerr << "Reading data for site " << ++site_counter << "\n";
             // add the character state to the matrix
             StandardState stdState = StandardState(sym);
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
             {
                 stdState.setGapState(true);
-                stdState.setState('-');
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                stdState.setState('?');
+                stdState.setMissing();
             }
             else
                 for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
@@ -675,14 +686,6 @@ std::string NclReader::findFileNameFromPath(const std::string& fp) const {
         return fn;
     }
     return "";
-}
-
-
-/** Get a reference to this singleton object */
-NclReader& NclReader::getInstance(void) {
-    
-	static NclReader rb;
-	return rb;
 }
 
 
@@ -807,29 +810,6 @@ std::string NclReader::intuitDataType(std::string& s) {
     }
     
     return "";
-}
-
-
-
-/** Format the error exception string for problems specifying the file/path name */
-void NclReader::formatError(RbFileManager& fm, std::string& errorStr) {
-    
-    bool fileNameProvided    = fm.isFileNamePresent();
-    bool isFileNameGood      = fm.testFile();
-    bool isDirectoryNameGood = fm.testDirectory();
-    
-    if ( fileNameProvided == false && isDirectoryNameGood == false )
-        errorStr += "Could not read contents of directory \"" + fm.getFilePath() + "\" because the directory does not exist";
-    else if (fileNameProvided == true && (isFileNameGood == false || isDirectoryNameGood == false))
-    {
-        errorStr += "Could not read file named \"" + fm.getFileName() + "\" in directory named \"" + fm.getFilePath() + "\" ";
-        if (isFileNameGood == false && isDirectoryNameGood == true)
-            errorStr += "because the file does not exist";
-        else if (isFileNameGood == true && isDirectoryNameGood == false)
-            errorStr += "because the directory does not exist";
-        else
-            errorStr += "because neither the directory nor the file exist";
-    }
 }
 
 
@@ -987,7 +967,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
     if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
     {
         std::string errorStr = "";
-        formatError(myFileManager, errorStr);
+        myFileManager.formatError(errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
     }
     
@@ -1324,7 +1304,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     if ( (myFileManager.getFileName() == "" && myFileManager.getFilePath() == "") || myFileManager.testFile() == false )
     {
         std::string errorStr = "";
-        formatError(myFileManager, errorStr);
+        myFileManager.formatError(errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
     }
     
@@ -1414,29 +1394,32 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     if (readingDirectory == true)
     {
         std::stringstream o2;
+        std::size_t size = 0;
         if ( trees == NULL || trees->size() == 0 )
         {
             o2 << "Failed to read any tree";
         }
         else if ( trees->size() == 1 )
         {
+            size = trees->size();
             o2 << "Successfully read one tree";
         }
         else
         {
+            size = trees->size();
             o2 << "Successfully read " << trees->size() << " trees";
         }
         RBOUT( o2.str() );
         std::set<std::string> myWarnings = getWarnings();
-        if ( vectorOfFileNames.size() - trees->size() > 0 && myWarnings.size() > 0 ) {
+        if ( vectorOfFileNames.size() - size > 0 && myWarnings.size() > 0 ) {
             std::stringstream o3;
-            if (vectorOfFileNames.size() - trees->size() == 1)
+            if (vectorOfFileNames.size() - size == 1)
             {
                 o3 << "Did not read a file for the following ";
             }
             else
             {
-                o3 << "Did not read " << vectorOfFileNames.size() - trees->size() << " files for the following ";
+                o3 << "Did not read " << vectorOfFileNames.size() - size << " files for the following ";
             }
             if (myWarnings.size() == 1)
             {
@@ -1455,7 +1438,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     }
     else
     {
-        if (trees->size() > 0)
+        if ( trees != NULL && trees->size() > 0)
         {
             RBOUT( "Successfully read file" );
         }

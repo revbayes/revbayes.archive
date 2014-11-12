@@ -22,6 +22,7 @@
 #include <set>
 #include <string>
 
+#include "RbVector.h"
 #include "StochasticNode.h"
 #include "SimpleMove.h"
 
@@ -30,7 +31,7 @@ namespace RevBayesCore {
     class SimplexSingleElementScale : public SimpleMove {
         
     public:
-        SimplexSingleElementScale(StochasticNode<std::vector<double> >* node, double a, bool tuning, double weight);                           //!< Internal constructor
+        SimplexSingleElementScale(StochasticNode< RbVector<double> >* node, double a, bool tuning, double weight);                           //!< Internal constructor
         
         // Basic utility functions
         SimplexSingleElementScale*              clone(void) const;                                                                  //!< Clone object
@@ -45,7 +46,7 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<std::vector<double> >*   variable;
+        StochasticNode< RbVector<double> >*     variable;
         double                                  alpha;
         std::vector<double>                     storedValue;
         

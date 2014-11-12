@@ -94,7 +94,7 @@ const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_uniformTopology::getMemberRules(void) const 
+const MemberRules& Dist_uniformTopology::getParameterRules(void) const 
 {
     
     static MemberRules distUniformTopologyMemberRules;
@@ -137,7 +137,7 @@ const TypeSpec& Dist_uniformTopology::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_uniformTopology::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_uniformTopology::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "nTaxa" ) 
@@ -149,6 +149,6 @@ void Dist_uniformTopology::setConstMemberVariable(const std::string& name, const
         taxonNames = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

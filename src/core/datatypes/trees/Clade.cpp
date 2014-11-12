@@ -1,6 +1,7 @@
 #include "Clade.h"
 #include <algorithm>
 #include <iostream>
+#include <sstream> //SK: for class stringstream
 
 
 using namespace RevBayesCore;
@@ -34,6 +35,36 @@ Clade::Clade(const std::vector<std::string> &n, double a) :
     std::sort(taxonNames.begin(), taxonNames.end());    
 }
 
+//SK
+/**
+ * Constructor that takes a single string object containing a list of taxon names,
+ * in the format produced by the 'toString' function.
+ * Additionally, we sort the vector of taxon names.
+ *
+ * \param[in]   n    String containing the taxon names.
+ */
+Clade::Clade(std::string cladeString, double a)
+{
+	char delim = ',';
+	std::string tN;
+    
+	if (cladeString[0] == '{')
+	{
+		cladeString.erase(std::remove(cladeString.begin(), cladeString.end(), '{'), cladeString.end());
+		cladeString.erase(std::remove(cladeString.begin(), cladeString.end(), '}'), cladeString.end());
+	}
+    
+	std::stringstream ss(cladeString);
+	while (std::getline(ss, tN, delim))
+	{
+		taxonNames.push_back(tN);
+	}
+    
+	age = a;
+    
+	// for identifiability we always keep the taxon names sorted
+	std::sort(taxonNames.begin(), taxonNames.end());
+}
 
 
 /**
@@ -73,6 +104,15 @@ bool Clade::operator!=(const Clade &c) const
 bool Clade::operator<(const Clade &c) const 
 {
     return taxonNames.size() < c.size();
+}
+
+
+/**
+ * Less than operator so that we can sort the clades.
+ */
+bool Clade::operator<=(const Clade &c) const
+{
+    return operator<( c ) || operator==( c );
 }
 
 

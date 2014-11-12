@@ -5,15 +5,18 @@
 
 using namespace RevBayesCore;
 
-MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< std::vector<double> > *inmean, const TypedDagNode<MatrixRealSymmetric>* inprec) :
-    TypedDistribution< std::vector<double> >( new std::vector<double>() ), mean( inmean ), precision(inprec) {
+MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *inmean, const TypedDagNode<MatrixRealSymmetric>* inprec) :
+    TypedDistribution< RbVector<double> >( new RbVector<double>() ),
+    mean( inmean ),
+    precision(inprec)
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( mean );
+    addParameter( precision );
     
     redrawValue();
-}
-
-
-MultivariateNormalDistribution::MultivariateNormalDistribution(const MultivariateNormalDistribution &n) : TypedDistribution<std::vector<double> >( n ), mean( n.mean ), precision( n.precision) {
-
 }
 
 
@@ -39,26 +42,12 @@ void MultivariateNormalDistribution::redrawValue( void ) {
     precision->getValue().drawNormalSamplePrecision(getValue());
 }
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> MultivariateNormalDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( mean );
-    parameters.insert( precision );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void MultivariateNormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+void MultivariateNormalDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == mean)
     {
-        mean = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        mean = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     if (oldP == precision)
     {

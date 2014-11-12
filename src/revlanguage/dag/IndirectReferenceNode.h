@@ -23,7 +23,7 @@ namespace RevLanguage {
      */
     template<typename rlType>
     class IndirectReferenceNode : public RevBayesCore::DynamicNode<typename rlType::valueType> {
-
+        
     public:
         IndirectReferenceNode(const std::string& n, RevBayesCore::TypedDagNode<typename rlType::valueType>* var);       //!< Basic constructor
         IndirectReferenceNode(const IndirectReferenceNode<rlType>& n);                                                  //!< Copy constructor
@@ -35,16 +35,20 @@ namespace RevLanguage {
         
         // Public methods
         IndirectReferenceNode<rlType>*          clone(void) const;                                                      //!< Type-safe clone
+        double                                  getLnProbability(void) { return 0.0; }                                  //!< Get ln prob
+        double                                  getLnProbabilityRatio(void) { return 0.0; }                             //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                         //!< Get the value
         const typename rlType::valueType&       getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
+        void                                    redraw(void) {}                                                         //!< Redraw (or not)
         
         // Parent DAG nodes management functions
         std::set<const RevBayesCore::DagNode*>  getParents(void) const;                                                                     //!< Get the set of parents
         void                                    swapParent(const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent); //!< Exchange the parent (element variable)
         
     protected:
+        void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
         void                                    keepMe(RevBayesCore::DagNode* affecter);                                                    //!< Keep value of this and affected nodes
         void                                    restoreMe(RevBayesCore::DagNode *restorer);                                                 //!< Restore value of this nodes
         void                                    touchMe(RevBayesCore::DagNode *toucher);                                                    //!< Touch myself and tell affected nodes value is reset
@@ -71,8 +75,8 @@ using namespace RevLanguage;
  */
 template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const std::string& n, RevBayesCore::TypedDagNode<typename rlType::valueType>* var ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    referencedNode( var )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+referencedNode( var )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -88,8 +92,8 @@ IndirectReferenceNode<rlType>::IndirectReferenceNode( const std::string& n, RevB
  */
 template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const IndirectReferenceNode<rlType>& n ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    referencedNode( n.referencedNode )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+referencedNode( n.referencedNode )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -130,7 +134,7 @@ IndirectReferenceNode<rlType>& IndirectReferenceNode<rlType>::operator=( const I
         referencedNode->removeChild( this );
         if ( referencedNode->decrementReferenceCount() == 0 )
             delete referencedNode;
-
+        
         // Copy the referenced node
         referencedNode = x.referencedNode;
         
@@ -153,6 +157,16 @@ IndirectReferenceNode<rlType>* IndirectReferenceNode<rlType>::clone( void ) cons
     return new IndirectReferenceNode<rlType>( *this );
 }
 
+
+/**
+ * Get the affected nodes.
+ * This call is started by the parent. We need to delegate this call to all our children.
+ */
+template<typename rlType>
+void IndirectReferenceNode<rlType>::getAffected( std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter )
+{
+    this->getAffectedNodes( affected );
+}
 
 
 /**
@@ -207,9 +221,6 @@ bool IndirectReferenceNode<rlType>::isConstant( void ) const
 template<typename rlType>
 void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Pass the call on
     this->keepAffected();
@@ -235,7 +246,7 @@ void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool ve
         else
             o << "_dagNode      = <" << this << ">" << std::endl;
     }
-
+    
     o << "_dagType      = Indirect reference DAG node" << std::endl;
     
     if ( verbose == true )
@@ -262,10 +273,6 @@ void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool ve
 template<typename rlType>
 void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
-
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // dispatch call to others
     this->restoreAffected();
@@ -280,10 +287,7 @@ void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 template<typename rlType>
 void IndirectReferenceNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-
+    
     // Dispatch the touch message to downstream nodes
     this->touchAffected();
 }
@@ -302,7 +306,7 @@ void IndirectReferenceNode<rlType>::swapParent(const RevBayesCore::DagNode* oldP
     // Check whether we have the old parent node
     if ( oldParent != referencedNode )
         throw RbException( "Invalid attempt to swap non-parent" );
-
+    
     // Replace the referenced node with new parent
     referencedNode = static_cast< const RevBayesCore::TypedDagNode<typename rlType::valueType>* >( newParent );
     
@@ -310,7 +314,7 @@ void IndirectReferenceNode<rlType>::swapParent(const RevBayesCore::DagNode* oldP
     oldParent->removeChild( this );
     if( oldParent->decrementReferenceCount() == 0 )
         delete oldParent;
-
+    
     // Adopt new parent
     newParent->addChild( this );
     newParent->incrementReferenceCount();

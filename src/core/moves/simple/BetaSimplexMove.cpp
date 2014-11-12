@@ -59,7 +59,6 @@ double BetaSimplexMove::performSimpleMove( void ) {
     storedValue = variable->getValue();
     
 	const double& curVal = variable->getValue();
-	double newVal = curVal;
     
 	/* We update the simplex values by proposing new values from a Beta distribution centered
      on the current values. */
@@ -69,7 +68,7 @@ double BetaSimplexMove::performSimpleMove( void ) {
     double alphaForward = curVal * alpha;
     
     // then, we propose new values
-    newVal = RbStatistics::Beta::rv( alphaForward, alphaForward, *rng );
+    double newVal = RbStatistics::Beta::rv( alphaForward, alphaForward, *rng );
     
     // and calculate the Dirichlet parameters for the (imagined) reverse move
     double alphaReverse = newVal * alpha;

@@ -1,0 +1,44 @@
+\begin{tikzpicture}
+\node (m01) at (2,2) {$\Psi$ $\nu$};
+\node (a1) at ($(m01)+(0,-0.5)$) {};
+\node (a2) at ($(m01)+(0,-1.5)$) {};
+\node[rectangle, rounded corners, fill=shc, inner sep=2mm, draw=black!100, fit = (a1) (a2)] (gtr0) {};
+\node (m03) at ($(m01)+(0,-0.5)$) {$\theta$};
+\node (m04) at ($(m03)+(0,-0.5)$) {$\pi$};
+\node (m05) at ($(m04)+(0,-0.5)$) {$\alpha$};
+\node[rectangle, rounded corners, inner sep=2mm, draw=black!100, fit = (gtr0) (m01)] (m0) {};
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\node (m01) at (2,2) {$\Psi$ $\nu$};
+\node (a1) at ($(m01)+(-0.2,-0.5)$) {};
+\node (a2) at ($(m01)+(0.2,-1.5)$) {};
+\node[rectangle, rounded corners, fill=shc, inner sep=2mm, draw=black!100, fit = (a1) (a2)] (gtr0) {};
+\node (m03a) at ($(a1)+(0,0)$) {$\theta_1$};
+\node (m03b) at ($(m03a)+(0.4,0)$) {$\theta_2$};
+\node (m04a) at ($(m03a)+(0,-0.5)$) {$\pi_1$};
+\node (m04b) at ($(m04a)+(0.4,0)$) {$\pi_2$};
+\node (m05a) at ($(m04a)+(0,-0.5)$) {$\alpha_1$};
+\node (m05b) at ($(m05a)+(0.4,0)$) {$\alpha_2$};
+\node[rectangle, rounded corners, inner sep=2mm, draw=black!100, fit = (gtr0) (m01)] (m0) {};
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\node (m01) at (2,2) {$\Psi$ $\nu$};
+\node (a1) at ($(m01)+(-0.6,-0.5)$) {};
+\node (a2) at ($(m01)+(0.6,-1.5)$) {};
+\node[rectangle, rounded corners, fill=shc, inner sep=2mm, draw=black!100, fit = (a1) (a2)] (gtr0) {};
+\node (m03a) at ($(a1)+(0,0)$) {$\theta_1$};
+\node (m03b) at ($(m03a)+(0.4,0)$) {$\theta_2$};
+\node (m03c) at ($(m03b)+(0.4,0)$) {$\theta_3$};
+\node (m03d) at ($(m03c)+(0.4,0)$) {$\theta_4$};
+\node (m04a) at ($(m03a)+(0,-0.5)$) {$\pi_1$};
+\node (m04b) at ($(m04a)+(0.4,0)$) {$\pi_2$};
+\node (m04c) at ($(m04b)+(0.4,0)$) {$\pi_3$};
+\node (m04d) at ($(m04c)+(0.4,0)$) {$\pi_4$};
+\node (m05a) at ($(m04a)+(0,-0.5)$) {$\alpha_1$};
+\node (m05b) at ($(m05a)+(0.4,0)$) {$\alpha_2$};
+\node (m05c) at ($(m05b)+(0.4,0)$) {$\alpha_3$};
+\node (m05d) at ($(m05c)+(0.4,0)$) {$\alpha_4$};
+\node[rectangle, rounded corners, inner sep=2mm, draw=black!100, fit = (gtr0) (m01)] (m0) {};
+\end{tikzpicture}

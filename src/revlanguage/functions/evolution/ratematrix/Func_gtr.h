@@ -18,28 +18,28 @@
 #ifndef Func_gtr_H
 #define Func_gtr_H
 
-#include "RlFunction.h"
+#include "RlRateMatrix.h"
+#include "RlTypedFunction.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_gtr :  public Function {
+    class Func_gtr : public TypedFunction<RateMatrix> {
         
     public:
         Func_gtr( void );
         
         // Basic utility functions
-        Func_gtr*                                       clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_gtr*                                                       clone(void) const;                                                              //!< Clone the object
+        static const std::string&                                       getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction< RevBayesCore::RateMatrix>*         createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                                            getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };
     

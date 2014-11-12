@@ -27,8 +27,8 @@ namespace RevBayesCore {
         
     public:
        
-        //AdmixtureEdgeDivergenceMerge( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);   //!<  constructor
-        AdmixtureEdgeDivergenceMerge( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector<ContinuousStochasticNode*> br, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);   //!<  constructor
+        //AdmixtureEdgeDivergenceMerge( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode< RbVector<double> >* res, int ag, bool asa, double weight);   //!<  constructor
+        AdmixtureEdgeDivergenceMerge( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector<ContinuousStochasticNode*> br, StochasticNode<int>* ac, DeterministicNode< RbVector<double> >* res, int ag, bool asa, double weight);   //!<  constructor
         
         
         // Basic utility functions
@@ -55,7 +55,7 @@ namespace RevBayesCore {
         StochasticNode<double>*         admixtureRate;
         StochasticNode<int>*            admixtureCount;
         std::vector<ContinuousStochasticNode*> branchRates;
-        DeterministicNode<std::vector<double> >* residuals;
+        DeterministicNode< RbVector<double> >* residuals;
         //ConstantNode<int>*              delayTimer;
         bool                            changed;
         bool                            failed;

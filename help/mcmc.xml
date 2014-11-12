@@ -1,1 +1,360 @@
-<?xml version="1.0"?><?xml-stylesheet href="lib/help.xsl" type="text/xsl"?><revbayes-help    xmlns="http://www.revbayes.org/schema/help-entry"    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd">    <function-help-entry>        <name>mcmc</name>        <title>Create an MCMC analysis object</title>        <description>            <p>                This function is used to create an MCMC analysis object from a model and associated                monitors and moves.            </p>        </description>        <usage>        <![CDATA[            MCMC mcmc (Model model, Monitor[] monitors, Move[] moves)        ]]>        </usage>        <argument>            <label>model</label>            <description>                The model to use in the analysis. The function makes an independent copy of the model                and stores it internally in the MCMC object.            </description>            <argumentType>fixed</argumentType>            <valueType>Model</valueType>        </argument>        <argument>            <label>monitors</label>            <description>                The monitors to use in the analysis. The function makes an independent copy of the monitors                and stores them internally in the MCMC object.            </description>            <argumentType>fixed</argumentType>            <valueType>Vector of monitors</valueType>        </argument>        <argument>            <label>moves</label>            <description>                The moves to use in the analysis. The function makes an independent copy of the moves                and stores them internally in the MCMC object.            </description>            <argumentType>fixed</argumentType>            <valueType>Vector of moves</valueType>        </argument>        <returnValue>An MCMC object</returnValue>        <details>            <p>                The MCMC analysis object produced by a call to this function keeps copies of the model and the associated moves and monitors.                The MCMC analysis object is used to run Markov chain Monte Carlo (MCMC) simulation on the model, using the provided moves,                to obtain a sample of the posterior probability distribution. During the analysis, the monitors are responsible for sampling                model parameters of interest.            </p>        </details>                <example>        <![CDATA[            # Create a simple model (unclamped)            a ~ exponential(1)            mymodel <- model(a)                        # Create a move vector and a monitor vector            moves[1] <- mScale(a, lambda=1.0, weight=1.0)            monitors[1] <- modelmonitor("out.txt")                        # Create an mcmc object            mymcmcObject <- mcmc( mymodel, monitors, moves)                        # Run a short analysis            mymcmcObject.run( generations = 100)        ]]>        </example>                <author>Sebastian Hoehna</author>                <seeAlso>            <entry>MCMC</entry>            <entry>model</entry>            <entry>Model</entry>            <entry>Move</entry>        </seeAlso>    </function-help-entry>            <type-help-entry>        <name>MCMC</name>        <title>MCMC analysis object</title>        <description>            <p>                The MCMC analysis object keeps a model and the associated moves and monitors.                The object is used to run Markov chain Monte Carlo (MCMC) simulation on                the model, using the provided moves, to obtain a sample of the posterior probability                distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.            </p>        </description>        <memberMethod>            <methodName>MCMC</methodName>            <description> Create an MCMC analysis object (constructor).</description>            <usage>            <![CDATA[                MCMC MCMC (Model model, Monitor[] monitors, Move[] moves)            ]]>            </usage>            <methodType>                mutable            </methodType>            <argument>                <label>model</label>                <description>                    The model to use in the analysis. The constructor makes an independent copy of the model                    and stores it internally in the MCMC object.                </description>                <argumentType>fixed</argumentType>                <valueType>Model</valueType>            </argument>            <argument>                <label>monitors</label>                <description>                    The monitors to use in the analysis. The constructor makes an independent copy of the monitors                    and stores them internally in the MCMC object.                </description>                <argumentType>fixed</argumentType>                <valueType>Vector of monitors</valueType>            </argument>            <argument>                <label>moves</label>                <description>                    The moves to use in the analysis. The constructor makes an independent copy of the moves                    and stores them internally in the MCMC object.                </description>                <argumentType>fixed</argumentType>                <valueType>Vector of moves</valueType>            </argument>            <returnValue>An MCMC object</returnValue>        </memberMethod>            <memberMethod>            <methodName>run</methodName>            <description> Run an MCMC analysis.</description>            <usage>            <![CDATA[                void run (Natural generations)            ]]>            </usage>            <methodType>                mutable            </methodType>            <argument>                <label>generations</label>                <description>                    The number of generations to run. If you have already run an MCMC analysis                    on the object, the previous results will be discarded.                </description>                <argumentType>fixed</argumentType>                <valueType>Natural</valueType>            </argument>            <returnValue>void</returnValue>        </memberMethod>        <memberMethod>            <methodName>burnin</methodName>            <description>                Run a burnin simulation to let the MCMC procedure find the target distribution and to autotune move tuning parameters.                No parameter values are sampled.            </description>            <usage>            <![CDATA[            void burnin (Natural generations, Natural tuningInterval)            ]]>            </usage>            <methodType>                mutable            </methodType>            <argument>                <label>generations</label>                <description>                    The number of generations of the burnin run.                </description>                <argumentType>fixed</argumentType>                <valueType>Natural</valueType>            </argument>            <argument>                <label>tuningInterval</label>                <description>                    The tuning interval in number of generations. The tuning interval must not be larger than the number of generations.                </description>                <argumentType>fixed</argumentType>                <valueType>Natural</valueType>            </argument>            <returnValue>void</returnValue>        </memberMethod>        <details>            <p>                Markov chain Monte Carlo (MCMC) simulation is a numerical method that, in this program, is used                to approximate the posterior probability distribution of the parameters of a model. The basic                sampling mechanism we use is the Metropolis-Hastings algorithm (Metropolis et al. 1953; Hastings 1970).            </p>            <p>                An MCMC simulation is known to converge to the posterior probability distribution, such that the frequency with                which a particular parameter value is sampled is a valid approximation of its posterior probability. However,                convergence to the target distribution may be slow, so it is important to assess convergence to ensure that you                are likely to have a reasonable sample from the posterior.            </p>        </details>        <author>Sebastian Hoehna</author>        <reference>            <citation>                Metropolis N, AW Rosenbluth, MN Rosenbluth, AH Teller, E Teller (1953) Equation of                state calculations by fast computing machines. Journal of Chemical Physics, 21:1087-1092.            </citation>        </reference>        <reference>            <citation>                Hastings WK (1970) Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57:97-109.            </citation>        </reference>      </type-help-entry></revbayes-help>
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <type-help-entry>
+
+        <name>mcmc</name>
+        
+        <title>MCMC analysis object</title>
+
+        <description>
+            <p>
+                The MCMC analysis object keeps a model and the associated moves and monitors.
+                The object is used to run Markov chain Monte Carlo (MCMC) simulation on
+                the model, using the provided moves, to obtain a sample of the posterior probability
+                distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+            <name>mcmc</name>
+
+            <usage>
+                <![CDATA[
+                 mcmc( Model model, Monitor[] monitors, Move[] moves, String moveschedule = random )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>model</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>
+                    The model to use in the analysis. The function makes an independent copy of the model
+                    and stores it internally in the MCMC object.
+                </description>
+                <valueType>Model</valueType>
+            </argument>
+            <argument>
+                <label>monitors</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>
+                    The monitors to use in the analysis. The function makes an independent copy of the monitors
+                    and stores them internally in the MCMC object.
+                </description>
+                <valueType>Monitor[]</valueType>
+            </argument>
+            <argument>
+                <label>moves</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>
+                    The moves to use in the analysis. The function makes an independent copy of the moves
+                    and stores them internally in the MCMC object.
+                </description>
+                <valueType>Move[]</valueType>
+            </argument>
+            <argument>
+                <label>moveschedule</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>
+                    The schedule used within this move, which is a mechanism on how to choose new moves.
+                    Either a new single move is chosen or a set of moves is chosen proportional to the sum of weights in sequential order or in random order.
+                </description>
+                <valueType>String</valueType>
+                <option>"sequential"</option>
+                <option>"random"</option>
+                <option>"single"</option>
+                <defaultValue>random</defaultValue>
+            </argument>
+
+            <returnValue>MCMC, WorkspaceObject, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                    The MCMC analysis object produced by a call to this function keeps copies of the model and the associated moves and monitors.
+                    The MCMC analysis object is used to run Markov chain Monte Carlo (MCMC) simulation on the model, using the provided moves,
+                    to obtain a sample of the posterior probability distribution. During the analysis, the monitors are responsible for sampling
+                    model parameters of interest.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel <- model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] <- modelmonitor("out.txt")
+                    
+                    # Create an mcmc object
+                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
+                 ]]>
+
+            </example>
+            
+            <reference>
+                <citation>
+                    Metropolis N, AW Rosenbluth, MN Rosenbluth, AH Teller, E Teller (1953) Equation of
+                    state calculations by fast computing machines. Journal of Chemical Physics, 21:1087-1092.
+                </citation>
+            </reference>
+            <reference>
+                <citation>
+                    Hastings WK (1970) Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57:97-109.
+                </citation>
+            </reference>
+            
+            <author>Sebastian Hoehna</author>
+            
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>mcmc.run</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+        <method-help-entry>
+        
+            <name>burnin</name>
+
+            <title>Burn-in an MCMC analysis.</title>
+        
+            <description>
+                <p>
+                    Run a burnin simulation to let the MCMC procedure find the target distribution and to autotune move tuning parameters.
+                    No parameter values are sampled.
+                </p>
+            </description>
+
+            <usage>
+                <![CDATA[
+                 burnin( Natural generations, Natural tuningInterval )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>generations</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The number of generations of the burnin run.</description>
+                <valueType>Natural</valueType>
+            </argument>
+            <argument>
+                <label>tuningInterval</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>
+                    The tuning interval in number of generations.
+                    The tuning interval should not be larger than the number of generations.
+                </description>
+                <valueType>Natural</valueType>
+            </argument>
+
+            <returnValue>void</returnValue>
+
+            <example>
+                <![CDATA[
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel <- model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] <- modelmonitor("out.txt")
+                    
+                    # Create an mcmc object
+                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
+                 ]]>
+
+            </example>
+
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>mcmc.run</entry>
+            </seeAlso>
+
+
+        </method-help-entry>
+    
+    
+        <method-help-entry>
+        
+            <name>operatorSummary</name>
+
+            <title>Show summary of the moves after an MCMC run.</title>
+        
+            <description>
+                <p>
+                    This function provides information about the number of proposals, the acceptance rates and the tuning parameter after an MCMC sampler has run for some iterations.
+                </p>
+            </description>
+
+            <usage>
+                <![CDATA[
+                 operatorSummary(  )
+                 ]]> 
+            </usage>
+        
+
+            <returnValue>void</returnValue>
+
+            <example>
+                <![CDATA[
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel <- model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] <- modelmonitor("out.txt")
+                    
+                    # Create an mcmc object
+                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
+                 ]]>
+
+            </example>
+
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>mcmc.burnin</entry>
+                <entry>mcmc.run</entry>
+            </seeAlso>
+
+
+        </method-help-entry>
+    
+    
+        <method-help-entry>
+        
+            <name>run</name>
+
+            <title>Running an MCMC analysis.</title>
+        
+            <description>
+                <p>
+                    Running an MCMC analysis for a given number of iterations.
+                    This may continue a previous run or start a new run if this is the first run.
+                    You can also run the MCMC under the prior which disregards the likelihood contribution from the clamped variables.
+                </p>
+            </description>
+
+            <usage>
+                <![CDATA[
+                 run( Natural generations, Bool underPrior = FALSE )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>generations</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The number of iterations the MCMC should run.</description>
+                <valueType>Natural</valueType>
+            </argument>
+            <argument>
+                <label>underPrior</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>If this MCMC should run under the prior by setting all the likelihoods from the clamped variables to 1.0.</description>
+                <valueType>Bool</valueType>
+                <defaultValue>FALSE</defaultValue>
+            </argument>
+
+            <returnValue>void</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                    Markov chain Monte Carlo (MCMC) simulation is a numerical method that, in this program, is used
+                    to approximate the posterior probability distribution of the parameters of a model. The basic
+                    sampling mechanism we use is the Metropolis-Hastings algorithm (Metropolis et al. 1953; Hastings 1970).
+                </p>
+                <p>
+                    An MCMC simulation is known to converge to the posterior probability distribution, such that the frequency with
+                    which a particular parameter value is sampled is a valid approximation of its posterior probability. However,
+                    convergence to the target distribution may be slow, so it is important to assess convergence to ensure that you
+                    are likely to have a reasonable sample from the posterior.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel <- model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] <- modelmonitor("out.txt")
+                    
+                    # Create an mcmc object
+                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.run( generations = 100)
+                 ]]>
+
+            </example>
+
+            <reference>
+                <citation>
+                    Metropolis N, AW Rosenbluth, MN Rosenbluth, AH Teller, E Teller (1953) Equation of
+                    state calculations by fast computing machines. Journal of Chemical Physics, 21:1087-1092.
+                </citation>
+            </reference>
+            <reference>
+                <citation>
+                    Hastings WK (1970) Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57:97-109.
+                </citation>
+            </reference>
+
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>mcmc.burnin</entry>
+            </seeAlso>
+
+
+        </method-help-entry>
+    
+    </type-help-entry>
+</revbayes-help>
+

@@ -42,15 +42,15 @@ for (i in 1:n_species) {
 }
 
 # Birth-Death process priors.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0.0,100.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUniform(0.0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 
 # Species tree from birth-death process
 tree_height.setValue(1)
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -70,7 +70,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=1,rate=1)
+Ne ~ dnGamma(shape=1,rate=1)
 Ne.setValue(0.01)
 
 # Simulate gene trees
@@ -78,7 +78,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 
 # For fun, let's look at the symmetric differences between the simulated gene tree topologies:

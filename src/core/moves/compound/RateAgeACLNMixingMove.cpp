@@ -16,7 +16,7 @@ using namespace RevBayesCore;
 RateAgeACLNMixingMove::RateAgeACLNMixingMove( std::vector<DagNode*> n, double ep, bool t, double w) : CompoundMove( n, w, t), epsilon( ep ) {
     
     tree = static_cast<StochasticNode<TimeTree>* > (n[0]);
-    rates = static_cast<StochasticNode<std::vector<double> >* > (n[1]);
+    rates = static_cast<StochasticNode< RbVector<double> >* > (n[1]);
 	rootRate = static_cast<StochasticNode<double >* >( n[2] ) ;
     
 }
@@ -126,7 +126,7 @@ void RateAgeACLNMixingMove::swapNode(DagNode *oldN, DagNode *newN) {
 	if(oldN == tree)
 		tree = static_cast<StochasticNode<TimeTree>* >(newN) ;
     if(oldN == rates)
-		rates = static_cast<StochasticNode<std::vector<double> >* >( newN ) ;
+		rates = static_cast<StochasticNode< RbVector<double> >* >( newN ) ;
     if(oldN == rootRate)
 		rootRate = static_cast<StochasticNode<double >* >( newN ) ;
 }

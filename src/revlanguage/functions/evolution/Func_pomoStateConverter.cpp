@@ -19,7 +19,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomoStateConverter::Func_pomoStateConverter( void ) : Function( ) {
+Func_pomoStateConverter::Func_pomoStateConverter( void ) : Procedure( ) {
     
 }
 
@@ -33,23 +33,21 @@ Func_pomoStateConverter* Func_pomoStateConverter::clone( void ) const {
 
 RevPtr<Variable> Func_pomoStateConverter::execute() {
     
-    const RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData>* aln = static_cast<const AbstractCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData>* aln = static_cast<const AbstractDiscreteCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
 
     RevBayesCore::PomoStateConverter* c = new RevBayesCore::PomoStateConverter(  );
     
-    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> >* taxa  = static_cast< const ModelVector<Taxon> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::Taxon> >* taxa  = static_cast< const ModelVector<Taxon> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
     std::map <std::string, std::string > gene2species;
 
-    for (std::vector<RevBayesCore::Taxon>::const_iterator it=taxa->getValue().begin(); it!=taxa->getValue().end(); ++it)
+    for (RevBayesCore::RbIterator<RevBayesCore::Taxon> it=taxa->getValue().begin(); it!=taxa->getValue().end(); ++it)
     {
         gene2species[it->getName()] = it->getSpeciesName();
     }
-
-
     
     AbstractDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
         

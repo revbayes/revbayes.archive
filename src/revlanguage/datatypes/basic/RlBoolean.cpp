@@ -94,25 +94,6 @@ const TypeSpec& RlBoolean::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RlBoolean::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& RlBoolean::getTypeSpec( void ) const {
     

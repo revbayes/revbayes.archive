@@ -29,20 +29,15 @@ namespace RevLanguage {
         
         RealSymmetricMatrix(void);
         RealSymmetricMatrix(RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> *mat);                                                            //!< Construct from DAG node
-        RealSymmetricMatrix(const RealSymmetricMatrix& from);                                                                                    //!< Copy constructor
         
         
         // the value type definition
         virtual RealSymmetricMatrix*    clone(void) const;                                                      //!< Clone object
-        virtual RevObject*       convertTo(const TypeSpec& type) const;                                         //!< Convert to type
+        virtual RevObject*              convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
-        
-        // Member method functions
-        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
-        MethodTable                     makeMethods(void) const;                                                //!< Make member methods
         
     };
 

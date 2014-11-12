@@ -83,74 +83,47 @@ SyntaxUnaryExpr* SyntaxUnaryExpr::clone () const
  * It is not necessary to clone the function, we simply clear out
  * the argument after we are done.
  *
- * Note that we call the static evaluate function of the argument,
- * and make sure we return a constant value.
- *
- * @todo Support this evaluation context better
- */
-RevPtr<Variable> SyntaxUnaryExpr::evaluateContent( Environment& env )
-{
-    // Package the argument
-    std::vector<Argument> arg;
-    arg.push_back( Argument( operand->evaluateContent( env ), "" ) );
-
-    // Find the function
-    std::string funcName = "_" + opCode[ operation ];
-    Function* func = Workspace::globalWorkspace().getFunction( funcName, arg, true ).clone();
-    func->processArguments( arg, true );
-    
-    RevPtr<Variable> funcReturnValue = func->execute();
-
-    delete func;
-
-    // Return value after making sure it is constant
-    if ( funcReturnValue != NULL )
-        funcReturnValue->getRevObject().makeConstantValue();
-    return funcReturnValue;
-}
-
-
-/**
- * @brief Get semantic value (dynamic version)
- *
- * In the dynamic version of this function, we look up the function
- * and ask it to generate a deterministic variable with the function
- * inside. For now, we simply call the standard execute() function,
- * which is set up to produce a deterministic variable in most
- * functions.
- *
- * Note that we look up the function in the global workspace, which means
- * that we do not allow users to override internal functions corresponding
- * to unary expressions.
- *
  * Even in the dynamic version of this function, it is not necessary to
  * clone the function. We simply use it to generate a deterministic
  * variable after setting the appropriate argument. After executing
  * the function, we make sure to clear out the argument of the function,
  * so that it is ready for the next round of execution.
  *
+ * Note that we call the static evaluate function of the argument,
+ * and make sure we return a constant value.
+ *
  * Unlike the static version of this function, we call the dynamic evaluate
  * function of the argument. We also return the return value as is, without
  * making it a constant value first.
+ *
+ * @todo Support this evaluation context better
  */
-RevPtr<Variable> SyntaxUnaryExpr::evaluateDynamicContent( Environment& env )
+RevPtr<Variable> SyntaxUnaryExpr::evaluateContent( Environment& env, bool dynamic )
 {
     // Package the argument
     std::vector<Argument> arg;
-    arg.push_back( Argument( operand->evaluateDynamicContent( env ), "" ) );
+    arg.push_back( Argument( operand->evaluateContent( env, dynamic ), "" ) );
     
-    // Find the function and clone it
+    // Find the function
     std::string funcName = "_" + opCode[ operation ];
-    Function* func = Workspace::globalWorkspace().getFunction( funcName, arg, false ).clone();
+    Function* func = Workspace::globalWorkspace().getFunction( funcName, arg, !dynamic ).clone();
     func->processArguments( arg, false );
     
-    // Execute function
     RevPtr<Variable> funcReturnValue = func->execute();
     
-    // Delete function clone
+    // free the memory of our copy
     delete func;
-
-    // Return new deterministic variable
+    
+    if ( dynamic == false )
+    {
+        // Return value after making sure it is constant
+        if ( funcReturnValue != NULL )
+        {
+            funcReturnValue->getRevObject().makeConstantValue();
+        }
+        
+    }
+    
     return funcReturnValue;
 }
 

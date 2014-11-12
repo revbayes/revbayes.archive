@@ -1,17 +1,10 @@
-//
-//  RlContinuousCharacterData.cpp
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-27.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
 #include "RlContinuousCharacterData.h"
-
-
 
 #include "ConstantNode.h"
+#include "Natural.h"
+#include "ModelVector.h"
 #include "RlContinuousCharacterData.h"
+#include "RlString.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 
@@ -20,18 +13,51 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-ContinuousCharacterData::ContinuousCharacterData(void) : AbstractCharacterData() {
-    
-}
-
-/** Construct from bool */
-ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::ContinuousCharacterData *d) : AbstractCharacterData( new RevBayesCore::ContinuousCharacterData(*d) ) {
-    
-}
-
-
-ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : AbstractCharacterData( d )
+ContinuousCharacterData::ContinuousCharacterData(void) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>(),
+    AbstractCharacterData( NULL )
 {
+
+}
+
+/** Construct from core data type */
+ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>( d.clone() ),
+    AbstractCharacterData( NULL )
+{
+    // set the internal value pointer
+    setCharacterDataObject( &this->getDagNode()->getValue() );
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
+    
+}
+
+/** Construct from core data type */
+ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
+    AbstractCharacterData( NULL )
+{
+    // set the internal value pointer
+    setCharacterDataObject( &this->getDagNode()->getValue() );
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
+}
+
+
+ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) :
+    ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
+    AbstractCharacterData( NULL )
+{
+    // set the internal value pointer
+    setCharacterDataObject( &this->getDagNode()->getValue() );
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
     
 }
 
@@ -75,6 +101,30 @@ RevObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
 }
 
 
+/* Map calls to member methods */
+RevPtr<Variable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
+    
+    if ( this->getDagNode() != NULL )
+    {
+        // set the internal value pointer
+        setCharacterDataObject( &this->getDagNode()->getValue() );
+    }
+    
+    RevPtr<Variable> retVal = executeCharacterDataMethod(name, args, found);
+    
+    if ( found == true )
+    {
+        return retVal;
+    }
+    else
+    {
+        return ModelObject<RevBayesCore::ContinuousCharacterData>::executeMethod(name, args, found);
+    }
+    
+}
+
+
 /** Get Rev type of object */
 const std::string& ContinuousCharacterData::getClassType(void) {
     
@@ -86,28 +136,9 @@ const std::string& ContinuousCharacterData::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::ContinuousCharacterData>::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& ContinuousCharacterData::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
 }
 
 
@@ -124,13 +155,6 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
 bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type, bool once) const {
     
     return RevObject::isConvertibleTo(type, once);
-}
-
-
-const RevBayesCore::ContinuousCharacterData& RevLanguage::ContinuousCharacterData::getValue( void ) const
-{
-    
-    return static_cast<const RevBayesCore::ContinuousCharacterData&>( this->dagNode->getValue() );
 }
 
 

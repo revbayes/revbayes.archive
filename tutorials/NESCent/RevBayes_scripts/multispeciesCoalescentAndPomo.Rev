@@ -50,15 +50,15 @@ for (i in 1:n_species) {
 }
 
 # Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0,100.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUniform(0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.08)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -76,7 +76,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=0.1,rate=0.1)
+Ne ~ dnGamma(shape=0.1,rate=0.1)
 Ne.setValue(0.0000004)
 
 # Simulate gene trees
@@ -84,7 +84,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 
 # For fun, let's look at the symmetric differences between the simulated gene tree topologies:
@@ -117,7 +117,7 @@ for (i in 1:n_genes) {
   sf_prior[i] <- v(1,1,1,1)
   sf[i] ~ dnDirichlet(sf_prior[i])
 
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
 }
 
@@ -138,7 +138,7 @@ for (i in 1:n_genes) {
 # This makes it possible to have large differences in rates of evolution between two different gene families. 
 
 for (i in 1:n_genes) {
-  familyRates[i] ~ exponential(1.0)
+  familyRates[i] ~ dnExp(1.0)
 }
 
 # Making a backup for future reference:
@@ -159,7 +159,7 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4, false )
 
 }
 
@@ -172,7 +172,7 @@ for (i in 1:n_genes) {
 # To link all the parts of the model together we use the phyloCTMC object.
 
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ dnPhyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
 }
 
 
@@ -319,14 +319,14 @@ for (i in 1:n_genes) {
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # One monitor for each gene family tree:
 for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
+   monitors[mntrIndex++] <- mnFile(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
 }
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
@@ -391,7 +391,7 @@ distRates := diffVectors(trueFamilyRates, familyRates)
 
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq, distExchange, distRates)
+monitors[mntrIndex++] <- mnScreen(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq, distExchange, distRates)
 	
 # We could do similar things for the few remaining parameters, but really I think that's enough.
 
@@ -499,7 +499,7 @@ er ~ dnDirichlet(er_prior)
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 
 # Second, one can have different fitnesses for A, C, G, T. 
 # Here, we are going to assume that all 4 bases have the same fitness.
@@ -507,13 +507,13 @@ base_fitnesses <- v(1, 1, 1, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
-P := pomo(Q, base_fitnesses, virtual_population_size)
+P := fnPomo(Q, base_fitnesses, virtual_population_size)
 
 # We also need to define root frequencies for all the states.
 # To do that we need two variables:
 
 # First, the proportion of polymorphic sites at the root
-root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+root_polymorphism_proportion ~ dnBeta(alpha=1,beta=1)
 
 # Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
 root_base_frequencies ~ dnDirichlet(sf_prior)
@@ -526,13 +526,13 @@ root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion,
 # Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := fnDiscretizeGamma( shape, shape, 4, false )
 
 # We do not assume variation among branches in rates
 branch_rates <- 1.0
 
 # We do not assume a proportion of invariant
-p_inv ~ beta(alpha=1,beta=1)
+p_inv ~ dnBeta(alpha=1,beta=1)
 p_inv.setValue(0.000001)
 
 ###################
@@ -541,7 +541,7 @@ p_inv.setValue(0.000001)
 
 # To link all the parts of the model together we use the phyloCTMC object.
 
-aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
 
 aln.clamp(pomo_concatenate)
 
@@ -614,10 +614,10 @@ mntrIndex <- 0
 clear(monitors)
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename="pomo_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="pomo_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -625,7 +625,7 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree)
 	
 
 #############

@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "RbSettings.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 #include "RlUserInterface.h"
@@ -55,7 +56,7 @@ bool UserInterface::ask(std::string msg) {
 /** Print a message and a newline */
 void UserInterface::output(std::string msg) {
 
-    std::cout << StringUtilities::formatStringForScreen( msg, RevBayesCore::RbUtils::PAD, RevBayesCore::RbUtils::PAD, 80 );
+    std::cout << StringUtilities::formatStringForScreen( msg, RevBayesCore::RbUtils::PAD, RevBayesCore::RbUtils::PAD, RbSettings::userSettings().getLineWidth() );
 }
 
 

@@ -17,12 +17,14 @@
 #ifndef Character_H
 #define Character_H
 
+#include "Cloneable.h"
+
 #include <ostream>
 #include <string>
 
 namespace RevBayesCore {
 
-    class CharacterState {
+    class CharacterState : public Cloneable {
     
     public:
         virtual                        ~CharacterState(void) {}

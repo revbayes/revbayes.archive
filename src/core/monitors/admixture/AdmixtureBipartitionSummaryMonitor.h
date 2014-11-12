@@ -11,6 +11,7 @@
 
 #include "Monitor.h"
 #include "AdmixtureTree.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 
 #include <fstream>
@@ -62,7 +63,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
+        AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< RbVector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
         AdmixtureBipartitionSummaryMonitor(const AdmixtureBipartitionSummaryMonitor& f);
         
         // basic methods
@@ -91,7 +92,7 @@ namespace RevBayesCore {
         
         // parameters
         TypedDagNode<AdmixtureTree>*        tree;
-        TypedDagNode< std::vector< double > >* branchRates;
+        TypedDagNode< RbVector< double > >* branchRates;
         TypedDagNode<int>* delayTimer;
         
         std::set<DagNode *>                 nodeVariables;

@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RbFileManager, which 
- * handles the opening, closing, testing presence of, etc. files.
- *
- * @brief Declaration of RbFileManager
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbSettings.h"
@@ -24,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
+#include <cstdlib>
 
 //#include <boost/filesystem.hpp>
 
@@ -55,17 +39,18 @@ RbFileManager::RbFileManager( void )
 	setFilePath("");
     
     fullFileName = filePath;
-    if ( fullFileName == "") 
+    if ( fullFileName != "")
     {
-        fullFileName = ".";
+        fullFileName += pathSeparator;
     }
-    fullFileName += pathSeparator + fileName;
+    
+    fullFileName += fileName;
     
 }
 
 
 /** Constructor taking as an argument a string containing a file path and (maybe) a file name */
-RbFileManager::RbFileManager(std::string s) 
+RbFileManager::RbFileManager(const std::string &fn)
 {
     
 #	ifdef WIN32
@@ -83,17 +68,50 @@ RbFileManager::RbFileManager(std::string s)
 //    setCurrentDirectory( findCurrentDirectory() );
     
     // set the path and file for the string
-    parsePathFileNames(s);
+    parsePathFileNames( fn );
     
     fullFileName = filePath;
-    if ( fullFileName == "") 
+    if ( fullFileName != "")
     {
-        fullFileName = ".";
+        fullFileName += pathSeparator;
     }
     
-    fullFileName += pathSeparator + fileName;
+    fullFileName += fileName;
     
 }
+
+
+/** Constructor taking as an argument a string containing a file path and (maybe) a file name */
+RbFileManager::RbFileManager(const std::string &pn, const std::string &fn)
+{
+    
+#	ifdef WIN32
+    pathSeparator = "\\";
+#	else
+    pathSeparator = "/";
+#   endif
+    
+    // make certain the current file/path information is empty
+    //    setCurrentDirectory("");
+    setFileName("");
+    setFilePath("");
+    
+    // initialize the current directory to be the directory the binary is sitting in
+    //    setCurrentDirectory( findCurrentDirectory() );
+    
+    // set the path and file for the string
+    parsePathFileNames( pn + pathSeparator + fn);
+    
+    fullFileName = filePath;
+    if ( fullFileName != "")
+    {
+        fullFileName += pathSeparator;
+    }
+    
+    fullFileName += fileName;
+    
+}
+
 
 
 /** Closes an input file */
@@ -119,7 +137,23 @@ void RbFileManager::closeFile(std::ofstream& strm)
 void RbFileManager::createDirectoryForFile( void )
 {
     
-    std::string dir_path = getLastPathComponent( fullFileName );
+    std::string dir_path = getStringByDeletingLastPathComponent( fullFileName );
+    
+    std::vector<std::string> pathComponents;
+    StringUtilities::stringSplit(filePath, pathSeparator, pathComponents);
+    
+    std::string directoryName = "";
+    for ( std::vector<std::string>::const_iterator it=pathComponents.begin(); it != pathComponents.end(); ++it)
+    {
+        directoryName += *it;
+        
+        if ( isDirectoryPresent(directoryName) == false )
+        {
+            makeDirectory( directoryName );
+        }
+        
+        directoryName += pathSeparator;
+    }
     
 //    boost::filesystem::path dir(dir_path);
 //	if(boost::filesystem::create_directory(dir))
@@ -169,6 +203,14 @@ const std::string& RbFileManager::getCurrentDirectory( void ) const
 }
 
 
+std::string RbFileManager::getFileExtension( void ) const
+{
+    std::vector<std::string> tokens;
+    StringUtilities::stringSplit(fileName,".",tokens);
+    return tokens[tokens.size()-1];
+}
+
+
 const std::string& RbFileManager::getFileName( void ) const
 {
     return fileName;
@@ -197,6 +239,12 @@ std::string RbFileManager::getFullFilePath( void ) const
 //    }
 //    std::string tmp = d->d_name;
     return RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
+}
+
+
+const std::string& RbFileManager::getPathSeparator( void ) const
+{
+    return pathSeparator;
 }
 
 
@@ -370,6 +418,29 @@ bool RbFileManager::openFile(std::ifstream& strm)
 	}
     
     return true;
+}
+
+
+/**
+ * Make a directory for the given path.
+ */
+bool RbFileManager::makeDirectory(const std::string &dn)
+{
+    
+#	ifdef WIN32
+    
+    std::string cmd = "mkdir " + dn;
+    system( cmd.c_str() );
+    
+#	else
+
+    std::string cmd = "mkdir " + dn;
+    return (system( cmd.c_str() ) == 0);
+
+#   endif
+    
+    return true;
+    
 }
 
 

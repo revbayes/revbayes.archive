@@ -97,14 +97,14 @@ for (i in 1:n_genes) {
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"MultiSpeciesCoalescentWithSequences_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename=dataFolder+"MultiSpeciesCoalescentWithSequences_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"MultiSpeciesCoalescentWithSequences_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename=dataFolder+"MultiSpeciesCoalescentWithSequences_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # One monitor for each gene family tree:
 for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
+   monitors[mntrIndex++] <- mnFile(filename=dataFolder+"multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
 }
 
 
@@ -125,7 +125,7 @@ meanDistGeneTree := mean(distGeneTree)
 distNe := trueNe - Ne
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree, meanDistGeneTree, distNe, Ne)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree, meanDistGeneTree, distNe, Ne)
 	
 
 #############

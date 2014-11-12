@@ -33,7 +33,7 @@ RootedTripletDistribution::RootedTripletDistribution(void) : ttrees( NULL ), blt
 }
 
 
-RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames, bool recordBls ) : ttrees(ts), bltrees( NULL ), taxa(), species(spNames), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( true ), recordBranchLengths( recordBls ) {
+RootedTripletDistribution::RootedTripletDistribution( const RbVector<TimeTree>& ts, const std::vector< std::string > spNames, bool recordBls ) : ttrees(ts), bltrees( NULL ), taxa(), species(spNames), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( true ), recordBranchLengths( recordBls ) {
 //    std::sort ( spNames.begin(), spNames.end() );
     for (size_t i = 0; i< spNames.size(); ++i) {
         speciesToIndex[spNames[i]] = i;
@@ -43,7 +43,7 @@ RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree
 }
 
 
-RootedTripletDistribution::RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< std::string > spNames, bool recordBls ) : ttrees( NULL ), bltrees(ts), taxa(), species(spNames), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( true ), recordBranchLengths( recordBls ) {
+RootedTripletDistribution::RootedTripletDistribution( const RbVector<BranchLengthTree>& ts, const std::vector< std::string > spNames, bool recordBls ) : ttrees( NULL ), bltrees(ts), taxa(), species(spNames), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( true ), recordBranchLengths( recordBls ) {
 //    std::sort ( spNames.begin(), spNames.end() );
     for (size_t i = 0; i< spNames.size(); ++i) {
         speciesToIndex[spNames[i]] = i;
@@ -53,7 +53,7 @@ RootedTripletDistribution::RootedTripletDistribution( const std::vector<BranchLe
 }
 
 
-RootedTripletDistribution::RootedTripletDistribution( const std::vector< std::string > spNames ): ttrees( NULL ), bltrees( NULL ), taxa(), species(spNames), tripletDistribution(), numberOfTrees(0), taxonToIndex(), speciesToIndex(), speciesOnly( true ), recordBranchLengths( false ) {
+RootedTripletDistribution::RootedTripletDistribution( const RbVector< std::string > spNames ): ttrees( NULL ), bltrees( NULL ), taxa(), species(spNames), tripletDistribution(), numberOfTrees(0), taxonToIndex(), speciesToIndex(), speciesOnly( true ), recordBranchLengths( false ) {
 //    std::sort ( spNames.begin(), spNames.end() );
     for (size_t i = 0; i< spNames.size(); ++i) {
         speciesToIndex[spNames[i]] = i;
@@ -61,7 +61,7 @@ RootedTripletDistribution::RootedTripletDistribution( const std::vector< std::st
 
 }
 
-RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< Taxon > tax, bool recordBls ) : ttrees(ts), bltrees( NULL ), taxa( tax ), species(), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( false ), recordBranchLengths( recordBls ) {
+RootedTripletDistribution::RootedTripletDistribution( const RbVector<TimeTree>& ts, const std::vector< Taxon > tax, bool recordBls ) : ttrees(ts), bltrees( NULL ), taxa( tax ), species(), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( false ), recordBranchLengths( recordBls ) {
  //   std::sort ( taxa.begin(), taxa.end() );
     for (size_t i = 0; i< taxa.size(); ++i) {
         taxonToIndex[taxa[i]] = i;
@@ -71,7 +71,7 @@ RootedTripletDistribution::RootedTripletDistribution( const std::vector<TimeTree
 }
 
 
-RootedTripletDistribution::RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< Taxon > tax, bool recordBls ) : ttrees( NULL ), bltrees(ts), taxa( tax ), species(), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( false ), recordBranchLengths( recordBls ) {
+RootedTripletDistribution::RootedTripletDistribution( const RbVector<BranchLengthTree>& ts, const std::vector< Taxon > tax, bool recordBls ) : ttrees( NULL ), bltrees(ts), taxa( tax ), species(), tripletDistribution(), numberOfTrees(ts.size()), taxonToIndex(), speciesToIndex(), speciesOnly( false ), recordBranchLengths( recordBls ) {
    // std::sort ( taxa.begin(), taxa.end() );
     for (size_t i = 0; i< taxa.size(); ++i) {
         taxonToIndex[taxa[i]] = i;
@@ -494,7 +494,7 @@ void RootedTripletDistribution::setTaxa ( std::vector< Taxon > t) {
 }
 
 
-void RootedTripletDistribution::setTrees( const std::vector< TimeTree >& ts ) {
+void RootedTripletDistribution::setTrees( const RbVector< TimeTree >& ts ) {
     
     ttrees = ts;
     bltrees.clear() ;
@@ -502,7 +502,7 @@ void RootedTripletDistribution::setTrees( const std::vector< TimeTree >& ts ) {
     
 }
 
-void RootedTripletDistribution::setTrees( const std::vector< BranchLengthTree >& ts ) {
+void RootedTripletDistribution::setTrees( const RbVector< BranchLengthTree >& ts ) {
     
     ttrees.clear() ;
     bltrees = ts;

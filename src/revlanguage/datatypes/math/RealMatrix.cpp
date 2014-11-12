@@ -71,25 +71,6 @@ const TypeSpec& RealMatrix::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RealMatrix::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& RealMatrix::getTypeSpec( void ) const {
     
@@ -115,7 +96,7 @@ void RealMatrix::printValue(std::ostream &o) const {
     std::fixed( o );
     o.precision( 3 );
 
-    dagNode->printValue( o , "" );
+    dagNode->printValue( o );
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

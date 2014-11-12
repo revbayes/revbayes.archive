@@ -1,7 +1,0 @@
-# testing the simple arithmetic stuff
-source("math/arithmetics.Rev")
-clear()
-
-# testing simple math functions
-source("math/functions.Rev")
-clear()

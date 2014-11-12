@@ -1,0 +1,45 @@
+{
+    "name":"Australia33",
+    "epochs":
+    [
+        {
+            "name":"epoch1",
+            "start_age":20.0,
+            "end_age":0.0,
+            "areas":
+            	[{"name":"A00", "latitude":-12.5, "longitude":132.5},
+				{"name":"A01", "latitude":-12.5, "longitude":142.5},
+				{"name":"A02", "latitude":-17.5, "longitude":122.5},
+				{"name":"A03", "latitude":-17.5, "longitude":127.5},
+				{"name":"A04", "latitude":-17.5, "longitude":132.5},
+				{"name":"A05", "latitude":-17.5, "longitude":137.5},
+				{"name":"A06", "latitude":-17.5, "longitude":142.5},
+				{"name":"A07", "latitude":-22.5, "longitude":117.5},
+				{"name":"A08", "latitude":-22.5, "longitude":122.5},
+				{"name":"A09", "latitude":-22.5, "longitude":127.5},
+				{"name":"A10", "latitude":-22.5, "longitude":132.5},
+				{"name":"A11", "latitude":-22.5, "longitude":137.5},
+				{"name":"A12", "latitude":-22.5, "longitude":142.5},
+				{"name":"A13", "latitude":-22.5, "longitude":147.5},
+				{"name":"A14", "latitude":-27.5, "longitude":117.5},
+				{"name":"A15", "latitude":-27.5, "longitude":122.5},
+				{"name":"A16", "latitude":-27.5, "longitude":127.5},
+				{"name":"A17", "latitude":-27.5, "longitude":132.5},
+				{"name":"A18", "latitude":-27.5, "longitude":137.5},
+				{"name":"A19", "latitude":-27.5, "longitude":142.5},
+				{"name":"A20", "latitude":-27.5, "longitude":147.5},
+				{"name":"A21", "latitude":-27.5, "longitude":152.5},
+				{"name":"A22", "latitude":-32.5, "longitude":117.5},
+				{"name":"A23", "latitude":-32.5, "longitude":122.5},
+				{"name":"A24", "latitude":-32.5, "longitude":127.5},
+				{"name":"A25", "latitude":-32.5, "longitude":132.5},
+				{"name":"A26", "latitude":-32.5, "longitude":137.5},
+				{"name":"A27", "latitude":-32.5, "longitude":142.5},
+				{"name":"A28", "latitude":-32.5, "longitude":147.5},
+				{"name":"A29", "latitude":-32.5, "longitude":152.5},
+				{"name":"A30", "latitude":-37.5, "longitude":142.5},
+				{"name":"A31", "latitude":-37.5, "longitude":147.5},
+				{"name":"A32", "latitude":-42.5, "longitude":147.5}]
+		}
+	]
+}

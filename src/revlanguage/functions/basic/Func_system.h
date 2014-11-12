@@ -1,7 +1,7 @@
 #ifndef Func_system_H
 #define Func_system_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
@@ -18,7 +18,7 @@ namespace RevLanguage {
      * @since 2014-08-29, version 1.0
      *
      */
-    class Func_system : public Function {
+    class Func_system : public Procedure {
         
     public:
         Func_system( void );

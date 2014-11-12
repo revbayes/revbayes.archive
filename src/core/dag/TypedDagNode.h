@@ -23,6 +23,7 @@
 
 #include "DagNode.h"
 #include "RbUtil.h"
+#include "StringUtilities.h"
 
 #include <ostream>
 #include <string>
@@ -31,43 +32,115 @@ namespace RevBayesCore {
     
     template<class valueType>
     class TypedDagNode : public DagNode {
-        
+    
     public:
         TypedDagNode(const std::string &n);
-        virtual                                            ~TypedDagNode(void);                                                                         //!< Virtual destructor
-        
+        virtual                                            ~TypedDagNode(void);                                                                             //!< Virtual destructor
+    
         // pure virtual methods
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
-        
+
         // member functions
-        virtual size_t                                      getNumberOfElements(void) const;                                                            //!< Get the number of elements for this value
-        virtual bool                                        isSimpleNumeric(void) const;                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
-        virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;         //!< Monitor/Print this variable
-        virtual void                                        printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;        //!< Monitor/Print this variable
-        //        virtual void                                        printValue(std::ostream &o, size_t i, size_t l=12, bool left=false) const;                  //!< Monitor/Print the i-th element of this variable
-        
+        virtual size_t                                      getNumberOfElements(void) const;                                                                //!< Get the number of elements for this value
+        virtual bool                                        isSimpleNumeric(void) const;                                                                    //!< Is this variable a simple numeric variable? Currently only integer and real number are.
+        virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;             //!< Monitor/Print this variable
+        virtual void                                        printValue(std::ostream &o, int l=-1, bool left=true) const;                                    //!< Monitor/Print this variable
+        virtual void                                        printValueElements(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;    //!< Monitor/Print this variable
+
         // getters and setters
         virtual valueType&                                  getValue(void) = 0;
         virtual const valueType&                            getValue(void) const = 0;
-        
+
         
     };
     
     
     template<>
-    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; }
+    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; } 
     
     template<>
     inline bool                                  TypedDagNode<double>::isSimpleNumeric(void) const { return true; }
+
+    template<>
+    inline bool                                  TypedDagNode<RbVector<int> >::isSimpleNumeric(void) const { return true; }
     
     template<>
-    inline bool                                  TypedDagNode<std::vector<int> >::isSimpleNumeric(void) const { return true; }
+    inline bool                                  TypedDagNode<RbVector<double> >::isSimpleNumeric(void) const { return true; }
+
+    template<>
+    inline void                                  TypedDagNode<bool>::printValue(std::ostream &o, int l, bool left) const {
+                                                        std::stringstream ss;
+                                                        if ( this->getValue() == true ) ss << "TRUE"; else ss << "FALSE";
+                                                        std::string s = ss.str();
+                                                        if ( l > 0 ) StringUtilities::fillWithSpaces(s, l, left);
+                                                        o << s;
+                                                    }
+    
+    
+    
     
     template<>
-    inline bool                                  TypedDagNode<std::vector<double> >::isSimpleNumeric(void) const { return true; }
+    inline void TypedDagNode<double>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    {
+        
+        std::stringstream ss;
+        ss << getValue();
+        std::string s = ss.str();
+        if ( l > 0 )
+        {
+            StringUtilities::fillWithSpaces(s, l, left);
+        }
+        o << s;
+    }
+
+    
+    template<>
+    inline void TypedDagNode<int>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    {
+        
+        std::stringstream ss;
+        ss << getValue();
+        std::string s = ss.str();
+        if ( l > 0 )
+        {
+            StringUtilities::fillWithSpaces(s, l, left);
+        }
+        o << s;
+    }
+    
+    
+    template<>
+    inline void TypedDagNode<bool>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    {
+        
+        std::stringstream ss;
+        ss << getValue();
+        std::string s = ss.str();
+        if ( l > 0 )
+        {
+            StringUtilities::fillWithSpaces(s, l, left);
+        }
+        o << s;
+    }
+    
+    
+    template<>
+    inline void TypedDagNode<std::string>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    {
+        
+        std::stringstream ss;
+        ss << getValue();
+        std::string s = ss.str();
+        if ( l > 0 )
+        {
+            StringUtilities::fillWithSpaces(s, l, left);
+        }
+        o << s;
+    }
     
 }
 
+#include "RbContainer.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 
@@ -108,12 +181,12 @@ template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep, int l, bool left) const
 {
     
-    if ( RbUtils::is_vector<valueType>::value )
+    if ( RbUtils::is_vector<valueType>::value ) 
     {
         size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
-        for (size_t i = 0; i < numElements; ++i)
+        for (size_t i = 0; i < numElements; ++i) 
         {
-            if ( i > 0 )
+            if ( i > 0 ) 
             {
                 o << sep;
             }
@@ -126,8 +199,8 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
             }
             o << n;
         }
-    }
-    else
+    } 
+    else 
     {
         std::string n = getName();
         if ( l > 0 )
@@ -140,29 +213,27 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
 
 
 template<class valueType>
-void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const std::string &sep, int l, bool left) const
+void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, int l, bool left) const
 {
     
-    if ( RbUtils::is_vector<valueType>::value )
+    std::stringstream ss;
+    ss << getValue();
+    std::string s = ss.str();
+    if ( l > 0 )
     {
-        size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
-        for (size_t i = 0; i < numElements; ++i)
-        {
-            if ( i > 0 )
-            {
-                o << sep;
-            }
-            std::stringstream ss;
-            ss << RbUtils::sub_vector<valueType>::getElement( getValue(), i );
-            std::string s = ss.str();
-            if ( l > 0 )
-            {
-                StringUtilities::fillWithSpaces(s, l, left);
-            }
-            o << s;
-        }
+        StringUtilities::fillWithSpaces(s, l, left);
     }
-    else
+    o << s;
+}
+
+
+template<class valueType>
+void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+{
+    
+    // check if this is a container
+    const Container *c = dynamic_cast< const Container *>( &getValue() );
+    if ( c == NULL )
     {
         std::stringstream ss;
         ss << getValue();
@@ -173,32 +244,19 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const st
         }
         o << s;
     }
+    else
+    {
+        for (size_t i=0; i<c->size(); ++i)
+        {
+            c->printElement(o, i, sep, l, left);
+            if ( i < (c->size()-1) )
+            {
+                o << sep;
+            }
+            
+        }
+    }
 }
-
-
-//template<class valueType>
-//void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, size_t index) const {
-//
-//    if ( RbUtils::is_vector<valueType>::value )
-//    {
-//        o << RbUtils::sub_vector<valueType>::getElement( getValue(), index );
-//    }
-//    else
-//    {
-//        o << getValue();
-//    }
-//
-//}
-
-
-//template <typename T, typename Alloc>
-//void RevBayesCore::TypedDagNode<std::vector<T,Alloc> >::printValue(std::ostream &o, size_t index) const {
-////    if ( is_vector<valueType>::value ) {
-//        o << getValue()[index];
-////    } else {
-////        o << getValue();
-////    }
-//}
 
 #endif
 

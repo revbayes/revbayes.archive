@@ -32,21 +32,20 @@ namespace RevBayesCore {
     public:
         ExponentialDistribution(const TypedDagNode<double> *l);
         ExponentialDistribution(const TypedDagNode<double> *l, const TypedDagNode<double> *o);
-        ExponentialDistribution(const ExponentialDistribution &n);                                                                      //!< Copy constructor
         virtual                                            ~ExponentialDistribution(void);                                              //!< Virtual destructor
         
         // public member functions
-        double                                              cdf(void) const;                                                                  //!< Cummulative density function
+        double                                              cdf(void) const;                                                            //!< Cummulative density function
         ExponentialDistribution*                            clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         double                                              getMax(void) const;
         double                                              getMin(void) const;
-        double                                              quantile(double p) const;                                                       //!< Qu
+        double                                              quantile(double p) const;                                                   //!< Qu
         void                                                redrawValue(void);
 
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

@@ -1,3 +1,4 @@
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -17,22 +18,32 @@ Variable::Variable( const TypeSpec& ts, const std::string& n ) :
     refCount( 0 ),
     revObject( NULL ),
     revObjectTypeSpec( ts ),
-    isReferenceVariable( false ),
-    isControlVariable( false )
+    isElementVar( false ),
+    isHiddenVar( false ),
+    isReferenceVar( false ),
+    isVectorVar( false ),
+    isWorkspaceVar( false ),
+    min( RbConstants::Integer::max ),
+    max( 0 )
 {
     
 }
 
 /** Constructor of filled variable (no type restrictions). */
-Variable::Variable(RevObject *v, const std::string &n) : 
+Variable::Variable(RevObject *v, const std::string &n) :
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
     revObjectTypeSpec( RevObject::getClassTypeSpec() ),
-    isReferenceVariable( false ),
-    isControlVariable( false )
+    isElementVar( false ),
+    isHiddenVar( false ),
+    isReferenceVar( false ),
+    isVectorVar( false ),
+    isWorkspaceVar( false ),
+    min( RbConstants::Integer::max ),
+    max( 0 )
 {
-    setRevObject( v );
+    replaceRevObject( v );
 }
 
 
@@ -42,8 +53,13 @@ Variable::Variable(const RevPtr<Variable>& refVar, const std::string &n) :
     refCount( 0 ),
     revObject( NULL ),
     revObjectTypeSpec( RevObject::getClassTypeSpec() ),
-    isReferenceVariable( true ),
-    isControlVariable( false )
+    isElementVar( false ),
+    isHiddenVar( false ),
+    isReferenceVar( true ),
+    isVectorVar( false ),
+    isWorkspaceVar( false ),
+    min( RbConstants::Integer::max ),
+    max( 0 )
 {
     
     referencedVariable = refVar;
@@ -52,19 +68,24 @@ Variable::Variable(const RevPtr<Variable>& refVar, const std::string &n) :
 
 
 /** Copy constructor */
-Variable::Variable(const Variable &v) : 
-    name( v.name ), 
+Variable::Variable(const Variable &v) :
+    name( v.name ),
     refCount( 0 ),
     revObject( NULL ),
     revObjectTypeSpec( v.revObjectTypeSpec ),
-    isReferenceVariable( v.isReferenceVariable ),
-    isControlVariable( v.isControlVariable ),
-    referencedVariable( v.referencedVariable )
+    isElementVar( v.isElementVar ),
+    isHiddenVar( v.isHiddenVar ),
+    isReferenceVar( v.isHiddenVar ),
+    isVectorVar( v.isVectorVar ),
+    isWorkspaceVar( v.isWorkspaceVar ),
+    referencedVariable( v.referencedVariable ),
+    min( v.min ),
+    max( v.max )
 {
     
     if ( v.revObject != NULL )
     {
-        setRevObject( v.revObject->clone() );
+        replaceRevObject( v.revObject->clone() );
     }
     else
     {
@@ -79,10 +100,12 @@ Variable::~Variable( void )
 #if defined ( DEBUG_MEMORY )
     std::cerr << "Deleting variable '" << name << "' <" << this << ">" << std::endl;
 #endif
-    if ( !isReferenceVariable && revObject != NULL )
+    
+    if ( !isReferenceVar && revObject != NULL )
     {
         delete revObject;
     }
+    
 }
 
 
@@ -93,12 +116,19 @@ Variable& Variable::operator=(const Variable &v)
         
         name                = v.name;
         revObjectTypeSpec   = v.revObjectTypeSpec;
-        isReferenceVariable = v.isReferenceVariable;
-        isControlVariable   = v.isControlVariable;
+        isElementVar        = v.isElementVar;
+        isHiddenVar         = v.isHiddenVar;
+        isReferenceVar      = v.isReferenceVar;
+        isVectorVar         = v.isVectorVar;
+        isWorkspaceVar      = v.isWorkspaceVar;
         referencedVariable  = v.referencedVariable;
+        min                 = v.min;
+        max                 = v.max;
         
-        if ( isReferenceVariable )
+        if ( isReferenceVar )
+        {
             revObject = NULL;
+        }
         else
         {
             if ( revObject != NULL )
@@ -106,13 +136,33 @@ Variable& Variable::operator=(const Variable &v)
                 delete revObject;
                 revObject = NULL;
             }
-        
+            
             if ( v.revObject != NULL )
-                setRevObject( v.revObject->clone() );
+            {
+                replaceRevObject( v.revObject->clone() );
+            }
+            
         }
     }
     
     return *this;
+}
+
+
+/** Resize the index boundaries for this vector variable to include this index. */
+void Variable::addIndexBoundary(int idx)
+{
+    
+    if ( min > idx )
+    {
+        min = idx;
+    }
+    
+    if ( max < idx )
+    {
+        max = idx;
+    }
+    
 }
 
 
@@ -132,6 +182,18 @@ size_t Variable::decrementReferenceCount( void ) const {
 }
 
 
+int Variable::getMaxIndex( void ) const
+{
+    return max;
+}
+
+
+int Variable::getMinIndex( void ) const
+{
+    return min;
+}
+
+
 const std::string& Variable::getName( void ) const {
     
     return name;
@@ -146,22 +208,10 @@ size_t Variable::getReferenceCount(void) const
 }
 
 
-/** Get the referenced variable, if this is a reference variable */
-RevPtr<Variable> Variable::getReferencedVariable(void) const
-{
-    if ( !isReferenceVariable )
-    {
-        throw RbException( "Illegal attempt to get a referenced variable from a non-reference variable" );
-    }
-    
-    return referencedVariable;
-}
-
-
 /* Get the value of the variable */
 RevObject& Variable::getRevObject(void) const
 {
-    if ( isReferenceVariable )
+    if ( isReferenceVar )
     {
         return referencedVariable->getRevObject();
     }
@@ -194,6 +244,7 @@ void Variable::incrementReferenceCount( void ) const
 }
 
 
+
 /**
  * Is the variable or any of its members (upstream DAG nodes) assignable, that is,
  * modifiable by the user? For them to be assignable, they have to be named, otherwise
@@ -214,36 +265,54 @@ bool Variable::isAssignable( void ) const
 }
 
 
-/** Return the internal flag signalling whether the variable is currently a control variable */
-bool Variable::isControlVar(void) const
+/** 
+ * Return the internal flag signalling whether the variable is an element of a vector, e.g., x[1] would be.
+ */
+bool Variable::isElementVariable( void ) const
 {
-    if ( isReferenceVariable )
-    {
-        return referencedVariable->isControlVar();
-    }
-    else
-    {
-        return isControlVariable;
-    }
-    
+    return isElementVar;
+}
+
+
+/** Return the internal flag signalling whether the variable is currently a hidden variable. Hidden variables will not show in the ls() function. */
+bool Variable::isHiddenVariable( void ) const
+{
+    return isHiddenVar;
 }
 
 
 /** Return the internal flag signalling whether the variable is currently a reference variable */
-bool Variable::isReferenceVar(void) const
+bool Variable::isReferenceVariable( void ) const
 {
-    return isReferenceVariable;
+    return isReferenceVar;
 }
 
 
-/**
- * Make this variable a reference to another variable. Make sure we delete any object we held before.
- * We also check whether the argument is a reference variable, in which case we retrieve the
- * referenced variable so that we do not make reference variable chains.
- */
+/** Return the internal flag signalling whether the variable is currently a vector variable, that is, should be computed by x := v(x[1],...) */
+bool Variable::isVectorVariable( void ) const
+{
+    return isVectorVar;
+}
+
+
+/** Return the internal flag signalling whether the variable is currently a workspace (control) variable */
+bool Variable::isWorkspaceVariable( void ) const
+{
+    if ( isReferenceVar )
+    {
+        return referencedVariable->isWorkspaceVariable();
+    }
+    else
+    {
+        return isWorkspaceVar;
+    }
+}
+
+
+/** Make this variable a reference to another variable. Make sure we delete any object we held before. */
 void Variable::makeReference(const RevPtr<Variable>& refVar)
 {
-    if ( !isReferenceVariable )
+    if ( !isReferenceVar )
     {
         if ( revObject != NULL )
         {
@@ -251,29 +320,21 @@ void Variable::makeReference(const RevPtr<Variable>& refVar)
         }
         
         revObject = NULL;
-        isReferenceVariable = true;
-        isControlVariable = false;
-    }
-
-    if ( refVar->isReferenceVar() )
-    {
-        referencedVariable = refVar->getReferencedVariable();
-    }
-    else
-    {
-        referencedVariable = refVar;
+        isReferenceVar = true;
+        isWorkspaceVar = false;
     }
     
+    referencedVariable = refVar;
 }
 
 
-/* Print value of the variable */
+/* Print value of the variable variable */
 void Variable::printValue(std::ostream& o) const
 {
     
     if (revObject == NULL)
     {
-        o << "NA";
+        o << "NULL";
     }
     else
     {
@@ -283,78 +344,148 @@ void Variable::printValue(std::ostream& o) const
 }
 
 
-/**
- * Replace Rev object and update the DAG in the process.
- * This is a private function so we can assume that the
- * caller knows not to call this function if the variable
- * is in the reference variable state.
- */
-void Variable::replaceRevObject( RevObject *newObj ) {
-    
-    if ( newObj != NULL && !newObj->isTypeSpec( getRevObjectTypeSpec() ) )
-        throw RbException ( "Cannot set '" + getRevObjectTypeSpec().getType() + "' variable with '" + newObj->getType() + "' object" );
-    
-    if (revObject != NULL)
+/** Replace the variable and update the DAG structure. */
+void Variable::replaceRevObject( RevObject *newValue )
+{
+    if ( isReferenceVar )
     {
-        // I need to tell my children that I'm being exchanged
-        revObject->replaceVariable( newObj );
-        
-        delete revObject;
+        isReferenceVar = false;
+        referencedVariable = NULL;
     }
     
-    revObject = newObj;
+    // Make sure default assignment is not a workspace (control) variable assignment
+    isWorkspaceVar = false;
+    
+    if ( revObject != NULL )
+    {
+        
+        if ( revObject->isModelObject() && revObject->getDagNode() != NULL )
+        {
+            revObject->getDagNode()->replace( newValue->getDagNode() );
+        }
+        
+    }
+    
+    delete revObject;
+    revObject = newValue;
     
     if ( revObject != NULL )
     {
         revObject->setName( name );
     }
     
+    try
+    {
+        if ( revObject != NULL && revObject->isModelObject() == true && revObject->getDagNode() != NULL )
+        {
+            revObject->getDagNode()->setHidden( isHiddenVar );
+        }
+    }
+    catch (RbException e)
+    {
+        // do nothing
+    }
+    
+}
+
+
+
+
+/**
+ * Set whether this variable is an element of a vector variable.
+ * All element variable are also hidden.
+ * Throw an error if the variable is a reference variable. 
+ * If so, you need to set the Rev object first, and then set the hidden variable flag.
+ */
+void Variable::setElementVariableState(bool flag)
+{
+    if ( isReferenceVar )
+    {
+        throw "A reference variable cannot be made a hidden variable";
+    }
+    
+    isElementVar = flag;
+    
+    // delegate to setHidden
+    setHiddenVariableState( flag );
+    
 }
 
 
 /**
- * Check whether this variable is a control variable. Throw an error if the variable
+ * Set whether this variable is a hidden variable. Throw an error if the variable
  * is a reference variable. If so, you need to set the Rev object first, and then set
- * the control variable flag.
+ * the hidden variable flag.
  */
-void Variable::setControlVarState(bool flag)
+void Variable::setHiddenVariableState(bool flag)
 {
-    if ( isReferenceVariable )
+    if ( isReferenceVar )
     {
-        throw "A reference variable cannot be made a control variable";
+        throw "A reference variable cannot be made a hidden variable";
     }
     
-    isControlVariable = flag;
+    isHiddenVar = flag;
+    
+    try {
+        
+        if ( revObject != NULL && revObject->getDagNode() != NULL )
+        {
+            revObject->getDagNode()->setHidden( flag );
+        }
+        
+    }
+    catch (RbException e)
+    {
+        // do nothing
+    }
+
+}
+
+
+/**
+ * Set whether this variable is a vector variable. Throw an error if the variable
+ * is a reference variable. If so, you need to set the Rev object first, and then set
+ * the vector variable flag.
+ */
+void Variable::setVectorVariableState(bool flag)
+{
+    if ( isReferenceVar )
+    {
+        throw "A reference variable cannot be made a vector variable";
+    }
+    
+    isVectorVar = flag;
+}
+
+
+/**
+ * Check whether this variable is a workspace (control) variable. Throw an error if the variable
+ * is a reference variable. If so, you need to set the Rev object first, and then set
+ * the workspace (control) variable flag.
+ */
+void Variable::setWorkspaceVariableState(bool flag)
+{
+    if ( isReferenceVar )
+    {
+        throw "A reference variable cannot be made a workspace (control) variable";
+    }
+    
+    isWorkspaceVar = flag;
 }
 
 
 /** Set the name of the variable */
-void Variable::setName(std::string const &n) {
+void Variable::setName(std::string const &n)
+{
     
     name = n;
     if ( revObject != NULL )
     {
         revObject->setName( n );
     }
-}
-
-
-/** Set the variable and update the DAG structure. */
-void Variable::setRevObject( RevObject *newValue )
-{
-    if ( isReferenceVariable )
-    {
-        isReferenceVariable = false;
-        referencedVariable = NULL;
-    }
-    
-    // Make sure default assignment is not a control variable assignment
-    isControlVariable = false;
-
-    // Replace the Rev object and make sure we update the DAG as necessary
-    replaceRevObject( newValue );
     
 }
+
 
 
 /**
@@ -367,10 +498,12 @@ void Variable::setRevObjectTypeSpec(const TypeSpec &ts)
     const RevObject& theObject = this->getRevObject();
     if ( theObject != RevNullObject::getInstance() )
     {
-        if ( !theObject.isTypeSpec( ts ) )
+        
+        if ( !theObject.isType( ts ) )
         {
             throw RbException( "Existing variable object is not of the required type" );
         }
+        
     }
     
     revObjectTypeSpec = ts;

@@ -16,8 +16,8 @@ using namespace RevLanguage;
  *
  * \param[in]   v   The variable expression
  */
-SyntaxDecrement::SyntaxDecrement( SyntaxVariable* v ) :
-    SyntaxElement(),
+SyntaxDecrement::SyntaxDecrement( SyntaxElement* v, bool post ) : SyntaxElement(),
+    postDecrement( post ),
     variable( v )
 {
 }
@@ -28,8 +28,8 @@ SyntaxDecrement::SyntaxDecrement( SyntaxVariable* v ) :
  * parser to return a NULL variable statement, so we do not have
  * to check for a NULL pointer.
  */
-SyntaxDecrement::SyntaxDecrement( const SyntaxDecrement& x ) :
-    SyntaxElement(x)
+SyntaxDecrement::SyntaxDecrement( const SyntaxDecrement& x ) : SyntaxElement(x),
+    postDecrement( x.postDecrement )
 {
     variable   = x.variable->clone();
 }
@@ -53,6 +53,8 @@ SyntaxDecrement& SyntaxDecrement::operator=( const SyntaxDecrement& x )
     {
         SyntaxElement::operator=( x );
 
+        postDecrement = x.postDecrement;
+        
         delete variable;
         variable = x.variable->clone();
     }
@@ -77,11 +79,13 @@ SyntaxDecrement* SyntaxDecrement::clone () const
  * Evaluate the content of this syntax element. This will perform
  * a decrement assignment operation.
  */
-RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env ) 
+RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating decrement assignment\n" );
 #endif
+    
+    RevPtr<Variable> retVar;
     
     // Get variable. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
@@ -95,16 +99,26 @@ RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env )
     
     // Get a non-const reference to the lhs value object
     RevObject& lhs_value = theVariable->getRevObject();
+    
+    if ( postDecrement )
+    {
+        retVar = new Variable( lhs_value.clone() );
+    }
 
     // Decrement the lhs value. This will not change the control variable status.
     lhs_value.decrement();
+    
+    if ( !postDecrement )
+    {
+        retVar = new Variable( lhs_value.clone() );
+    }
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
 
     // Return the variable for further assignment
-    return theVariable;
+    return retVar;
 }
 
 

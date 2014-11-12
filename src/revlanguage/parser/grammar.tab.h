@@ -44,51 +44,52 @@
      NAME = 260,
      STRING = 261,
      RBNULL = 262,
-     FALSE = 263,
-     TRUE = 264,
-     FUNCTION = 265,
-     PROCEDURE = 266,
-     CLASS = 267,
-     FOR = 268,
-     IN = 269,
-     IF = 270,
-     ELSE = 271,
-     WHILE = 272,
-     NEXT = 273,
-     BREAK = 274,
-     RETURN = 275,
-     MOD_CONST = 276,
-     MOD_DYNAMIC = 277,
-     MOD_STOCHASTIC = 278,
-     MOD_DETERMINISTIC = 279,
-     PROTECTED = 280,
-     ARROW_ASSIGN = 281,
-     TILDE_ASSIGN = 282,
-     EQUATION_ASSIGN = 283,
-     CONTROL_ASSIGN = 284,
-     REFERENCE_ASSIGN = 285,
-     ADDITION_ASSIGN = 286,
-     SUBTRACTION_ASSIGN = 287,
-     MULTIPLICATION_ASSIGN = 288,
-     DIVISION_ASSIGN = 289,
-     DECREMENT = 290,
-     INCREMENT = 291,
-     EQUAL = 292,
-     AND = 293,
-     OR = 294,
-     AND2 = 295,
-     OR2 = 296,
-     GT = 297,
-     GE = 298,
-     LT = 299,
-     LE = 300,
-     EQ = 301,
-     NE = 302,
-     END_OF_INPUT = 303,
-     UNOT = 304,
-     UPLUS = 305,
-     UMINUS = 306,
-     UAND = 307
+     RBTAB = 263,
+     FALSE = 264,
+     TRUE = 265,
+     FUNCTION = 266,
+     PROCEDURE = 267,
+     CLASS = 268,
+     FOR = 269,
+     IN = 270,
+     IF = 271,
+     ELSE = 272,
+     WHILE = 273,
+     NEXT = 274,
+     BREAK = 275,
+     RETURN = 276,
+     MOD_CONST = 277,
+     MOD_DYNAMIC = 278,
+     MOD_STOCHASTIC = 279,
+     MOD_DETERMINISTIC = 280,
+     PROTECTED = 281,
+     ARROW_ASSIGN = 282,
+     TILDE_ASSIGN = 283,
+     EQUATION_ASSIGN = 284,
+     WORKSPACE_ASSIGN = 285,
+     REFERENCE_ASSIGN = 286,
+     ADDITION_ASSIGN = 287,
+     SUBTRACTION_ASSIGN = 288,
+     MULTIPLICATION_ASSIGN = 289,
+     DIVISION_ASSIGN = 290,
+     DECREMENT = 291,
+     INCREMENT = 292,
+     EQUAL = 293,
+     AND = 294,
+     OR = 295,
+     AND2 = 296,
+     OR2 = 297,
+     GT = 298,
+     GE = 299,
+     LT = 300,
+     LE = 301,
+     EQ = 302,
+     NE = 303,
+     END_OF_INPUT = 304,
+     UNOT = 305,
+     UPLUS = 306,
+     UMINUS = 307,
+     UAND = 308
    };
 #endif
 /* Tokens.  */
@@ -97,58 +98,59 @@
 #define NAME 260
 #define STRING 261
 #define RBNULL 262
-#define FALSE 263
-#define TRUE 264
-#define FUNCTION 265
-#define PROCEDURE 266
-#define CLASS 267
-#define FOR 268
-#define IN 269
-#define IF 270
-#define ELSE 271
-#define WHILE 272
-#define NEXT 273
-#define BREAK 274
-#define RETURN 275
-#define MOD_CONST 276
-#define MOD_DYNAMIC 277
-#define MOD_STOCHASTIC 278
-#define MOD_DETERMINISTIC 279
-#define PROTECTED 280
-#define ARROW_ASSIGN 281
-#define TILDE_ASSIGN 282
-#define EQUATION_ASSIGN 283
-#define CONTROL_ASSIGN 284
-#define REFERENCE_ASSIGN 285
-#define ADDITION_ASSIGN 286
-#define SUBTRACTION_ASSIGN 287
-#define MULTIPLICATION_ASSIGN 288
-#define DIVISION_ASSIGN 289
-#define DECREMENT 290
-#define INCREMENT 291
-#define EQUAL 292
-#define AND 293
-#define OR 294
-#define AND2 295
-#define OR2 296
-#define GT 297
-#define GE 298
-#define LT 299
-#define LE 300
-#define EQ 301
-#define NE 302
-#define END_OF_INPUT 303
-#define UNOT 304
-#define UPLUS 305
-#define UMINUS 306
-#define UAND 307
+#define RBTAB 263
+#define FALSE 264
+#define TRUE 265
+#define FUNCTION 266
+#define PROCEDURE 267
+#define CLASS 268
+#define FOR 269
+#define IN 270
+#define IF 271
+#define ELSE 272
+#define WHILE 273
+#define NEXT 274
+#define BREAK 275
+#define RETURN 276
+#define MOD_CONST 277
+#define MOD_DYNAMIC 278
+#define MOD_STOCHASTIC 279
+#define MOD_DETERMINISTIC 280
+#define PROTECTED 281
+#define ARROW_ASSIGN 282
+#define TILDE_ASSIGN 283
+#define EQUATION_ASSIGN 284
+#define WORKSPACE_ASSIGN 285
+#define REFERENCE_ASSIGN 286
+#define ADDITION_ASSIGN 287
+#define SUBTRACTION_ASSIGN 288
+#define MULTIPLICATION_ASSIGN 289
+#define DIVISION_ASSIGN 290
+#define DECREMENT 291
+#define INCREMENT 292
+#define EQUAL 293
+#define AND 294
+#define OR 295
+#define AND2 296
+#define OR2 297
+#define GT 298
+#define GE 299
+#define LT 300
+#define LE 301
+#define EQ 302
+#define NE 303
+#define END_OF_INPUT 304
+#define UNOT 305
+#define UPLUS 306
+#define UMINUS 307
+#define UAND 308
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 79 "./grammar.y"
+#line 80 "./grammar.y"
 {
     char*                                           c_string;
     std::string*                                    string;
@@ -165,7 +167,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 169 "./grammar.tab.h"
+#line 171 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

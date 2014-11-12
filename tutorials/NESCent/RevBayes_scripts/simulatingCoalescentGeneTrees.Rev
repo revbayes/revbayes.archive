@@ -30,15 +30,15 @@ for (i in 1:n_species) {
 }
 
 # Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0,1.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUniform(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.08)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -55,7 +55,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=0.5,rate=0.5)
+Ne ~ dnGamma(shape=0.5,rate=0.5)
 Ne.setValue(0.00004)
 
 # Simulate gene trees
@@ -63,7 +63,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 
 #Rescaling
@@ -73,7 +73,7 @@ for (i in (n_genes+1):(2*n_genes)) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 
 #Rescaling
@@ -83,7 +83,7 @@ for (i in (2*n_genes+1):(3*n_genes)) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 
 

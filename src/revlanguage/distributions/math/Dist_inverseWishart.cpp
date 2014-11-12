@@ -36,7 +36,7 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
     
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* sg = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* dv = static_cast<const ModelVector<RealPos> &>( diagonal->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* dv = static_cast<const ModelVector<RealPos> &>( diagonal->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int>* deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
     RevBayesCore::TypedDagNode<int>* dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
@@ -80,7 +80,7 @@ const TypeSpec& Dist_inverseWishart::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_inverseWishart::getMemberRules(void) const {
+const MemberRules& Dist_inverseWishart::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -132,7 +132,7 @@ void Dist_inverseWishart::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_inverseWishart::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_inverseWishart::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "sigma" ) {
         sigma = var;
@@ -150,6 +150,6 @@ void Dist_inverseWishart::setConstMemberVariable(const std::string& name, const 
         dim = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

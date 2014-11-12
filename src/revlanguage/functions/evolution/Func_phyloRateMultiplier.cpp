@@ -8,7 +8,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_phyloRateMultiplier::Func_phyloRateMultiplier( void ) : Function( ) {
+Func_phyloRateMultiplier::Func_phyloRateMultiplier( void ) : TypedFunction< ModelVector<RealPos> >( ) {
     
 }
 
@@ -21,19 +21,15 @@ Func_phyloRateMultiplier* Func_phyloRateMultiplier::clone( void ) const
 }
 
 
-RevPtr<Variable> Func_phyloRateMultiplier::execute()
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_phyloRateMultiplier::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< std::vector<double> >* rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* baseRate = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RateMultiplierPhyloFunction* f = new RevBayesCore::RateMultiplierPhyloFunction( tree, rates, baseRate );
     
-    DeterministicNode< std::vector<double> > *detNode = new DeterministicNode< std::vector<double> >("", f, this->clone());
-    
-    ModelVector<RealPos>* value = new ModelVector<RealPos>( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -71,15 +67,6 @@ const TypeSpec& Func_phyloRateMultiplier::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_phyloRateMultiplier::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = ModelVector<RealPos>::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

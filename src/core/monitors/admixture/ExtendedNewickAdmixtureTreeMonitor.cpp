@@ -15,7 +15,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, bool sr, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr) {
+ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< RbVector< double > >* br, bool sm, bool sr, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr) {
     
     nodes.push_back(branchRates);
     
@@ -242,7 +242,7 @@ void ExtendedNewickAdmixtureTreeMonitor::swapNode(DagNode *oldN, DagNode *newN) 
     }
     else if (oldN == branchRates)
     {
-        branchRates = static_cast<TypedDagNode<std::vector<double> >* >(newN);
+        branchRates = static_cast<TypedDagNode< RbVector<double> >* >(newN);
     }
     
     else {

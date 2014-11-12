@@ -26,10 +26,10 @@
 
 namespace RevBayesCore {
     
-    class VectorDoubleProductStatistic : public TypedFunction< std::vector<double> > {
+    class VectorDoubleProductStatistic : public TypedFunction< RbVector<double> > {
         
     public:
-		VectorDoubleProductStatistic(const TypedDagNode< std::vector<double> >* v, const TypedDagNode< double >* r);	//!< Default constructor
+		VectorDoubleProductStatistic(const TypedDagNode< RbVector<double> >* v, const TypedDagNode< double >* r);	//!< Default constructor
 		VectorDoubleProductStatistic(const VectorDoubleProductStatistic& t);			//!< Copy constructor
         virtual													~VectorDoubleProductStatistic(void);											//!< Destructor
         
@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
     private:
         // members
-        const TypedDagNode< std::vector<double> >*			elementVals;
+        const TypedDagNode< RbVector<double> >*			elementVals;
 		const TypedDagNode<double>*							multiplier;
     };
 }

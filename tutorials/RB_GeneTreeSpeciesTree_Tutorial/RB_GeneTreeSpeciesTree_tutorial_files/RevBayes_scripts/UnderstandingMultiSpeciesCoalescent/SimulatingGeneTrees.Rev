@@ -33,13 +33,13 @@ for (i in 1:n_species) {
 
 
 # We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to Leaché and Rannala (2011)):
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0,1.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUniform(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.8)
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
 
 ###########################################
 # Gene-Tree multispecies coalescent model #
@@ -60,7 +60,7 @@ for (i in 1:n_species) {
 
 
 # Set the effective population size
-Ne ~ gamma(shape=0.1,rate=0.1)
+Ne ~ dnGamma(shape=0.1,rate=0.1)
 Ne.setValue(0.004)
 
 # Simulate gene trees
@@ -70,7 +70,7 @@ for (i in 1:n_genes) {
 	# instead of a single value,
 	# allowing 1 parameter per branch of the species tree, the same
 	# line would work.
-	geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=
+	geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=
 Ne, taxa=taxa)
 }
 

@@ -1,0 +1,137 @@
+Type of 1:				Natural
+Type of 2:				Natural
+Type of 1+2:				Natural
+Type of 1-2:				Integer
+Type of 1*2:				Natural
+Type of 1/2:				RealPos
+Type of -2:				Integer
+Type of 5:				Natural
+Type of -2 * 5:				Integer
+Type of -2 / 5:				Real
+Type of -1.2345:			Real
+Type of |-1.2345|:			RealPos
+Type of 2.3:				RealPos
+Type of 2.3 + 1.2345:			RealPos
+Type of 2.3 - 1.2345:			Real
+Type of 2.3 * 1.2345:			RealPos
+Type of 2.3 / 1.2345:			RealPos
+Type of Hello World!:			String
+Type of v(1,2,3,4,5,6,7,8,9,0):			Natural[]			Value:		[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+Size:			10
+Sorted:			[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+Unique:			[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+Type of v(5,1,3,2,5,3,4,2,3,1):			Natural[]			Value:		[ 5, 1, 3, 2, 5, 3, 4, 2, 3, 1 ]
+Size:			10
+Sorted:			[ 1, 1, 2, 2, 3, 3, 3, 4, 5, 5 ]
+Unique:			[ 1, 2, 3, 4, 5 ]
+Type of [1,2,3,4,5,6,7,8,9,10]:			Natural[]			Value:		[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+Type of 1:10:					Integer[]			Value:		[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+Size:			10
+Type of 10:-10:					Integer[]			Value:		[ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10
+]
+Size:			21
+Type of simplex(1,2,3,4):				Simplex			Value:		[ 0.1, 0.2, 0.3, 0.4 ]
+Type of [ 1:5, 6:10, 11:15, 16:20, 21:25 ]:		Natural[][]			Value:	
+[ [ 1, 2, 3, 4, 5 ], [ 6, 7, 8, 9, 10 ], [ 11, 12, 13, 14, 15 ], 
+  [ 16, 17, 18, 19, 20 ], [ 21, 22, 23, 24, 25 ] ]
+Type of primatex.nex:			DiscreteCharacterData<DNA>			Value:	
+
+DNA character matrix with 12 taxa and 898 characters
+====================================================
+Origination:                   primates.nex
+Number of taxa:                12
+Number of included taxa:       12
+Number of characters:          898
+Number of included characters: 898
+Datatype:                      DNA
+
+
+Size:			12
+Names:			[ Tarsius_syrichta, Lemur_catta, Homo_sapiens, Pan, Gorilla, Pongo, 
+  Hylobates, Macaca_fuscata, M_mulatta, M_fascicularis, M_sylvanus, 
+  Saimiri_sciureus ]
+#chars:			[ 898, 898, 898, 898, 898, 898, 898, 898, 898, 898, 898, 898 ]
+#taxa:			12
+cha type:			DNA
+Type of tree:			Topology			Value:	
+((Macaca_fuscata[&index=11],M_mulatta[&index=10])[&index=12],((Hylobates[&index=9],((Pongo[&index=8],Lemur_catta[&index=7])[&index=13],(Pan[&index=6],(Homo_sapiens[&index=5],Saimiri_sciureus[&index=4])[&index=14])[&index=15])[&index=16])[&index=17],(Gorilla[&index=3],M_fascicularis[&index=2])[&index=18])[&index=19],(M_sylvanus[&index=1],Tarsius_syrichta[&index=0])[&index=20])[&index=21]
+ TRUE && TRUE -> TRUE
+ TRUE || FALSE -> TRUE
+ TRUE || TRUE -> TRUE
+ FALSE || TRUE -> TRUE
+ FALSE || FALSE -> FALSE
+ !TRUE -> FALSE
+ !FALSE -> TRUE
+Sum of 1:100:			5050
+Fibonacci series of 1:10:		[ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]
+Factorial 10:			3628800
+2
+5
+25
+5
+8
+2.71828
+0
+4
+4
+3.2
+Beta distribution
+PDF:			0
+log-PDF:		0
+
+Dirichlet distribution
+PDF:			1.79176
+log-PDF:		1.79176
+
+Exponential distribution
+PDF:			-1
+log-PDF:		-1
+Quantile:		0.693147
+CDF:			0.393469
+
+Gamma distribution
+PDF:			-1
+log-PDF:		-1
+Quantile:		0.693147
+CDF:			0.999955
+
+Lognormal distribution
+PDF:			-13.4189
+log-PDF:		-13.4189
+Quantile:		148.413
+CDF:			2.86652e-07
+
+Standard normal distribution
+PDF:			-1.41894
+log-PDF:		-1.41894
+Quantile:		1.49005e-08
+CDF:			0.691462
+
+Normal distribution
+PDF:			-3.22652
+log-PDF:		-3.22652
+Quantile:		11.7449
+CDF:			0.344578
+
+Uniform distribution
+PDF:			-0.693147
+log-PDF:		-0.693147
+Quantile:		-0.5
+CDF:			0.875
+
+1
+2.71828
+1
+1
+true
+2
+7.38906
+2
+1
+false
+1
+0
+0
+720
+5050
+8

@@ -22,7 +22,12 @@ TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(ino
 omega0(inomega0),
 kappa(NULL),
 df(indf),
-dim(0)  {
+dim( NULL )  {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( inomega0 );
+    addParameter( df );
     
     redrawValue();
 }
@@ -32,24 +37,16 @@ TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( si
     omega0(NULL),
     kappa(inkappa),
     df(indf),
-    dim(indim)    {
+    dim(indim)
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( inkappa );
+    addParameter( df );
+    addParameter( dim );
     
-        redrawValue();
-}
-
-WishartDistribution::WishartDistribution(const WishartDistribution& from) :
-    TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(from.getValue().getDim())),
-    omega0(from.omega0),
-    kappa(from.kappa),
-    df(from.df),
-    dim(from.dim)   {
-
-        if (omega0) {
-            std::cerr << "omega0??\n";
-            exit(1);
-        }
-
-        redrawValue();
+    redrawValue();
 }
 
 WishartDistribution* WishartDistribution::clone(void) const   {
@@ -58,28 +55,13 @@ WishartDistribution* WishartDistribution::clone(void) const   {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> WishartDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( omega0 );
-    parameters.insert( kappa );
-    parameters.insert( dim );
-    parameters.insert( df );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void WishartDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     if (oldP == omega0)
     {
         std::cerr << "omega0??\n";
         exit(1);
-        omega0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
+//        omega0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
     }
     if (oldP == kappa)
     {

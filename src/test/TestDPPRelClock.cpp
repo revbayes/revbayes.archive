@@ -20,7 +20,7 @@
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
-#include "GeneralBranchHeterogeneousCharEvoModel.h"
+#include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "GtrRateMatrixFunction.h"
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
@@ -44,7 +44,7 @@
 #include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
-#include "SlidingMove.h"
+#include "SlideProposal.h"
 #include "SubtreeScale.h"
 #include "TestDPPRelClock.h"
 #include "TimeTree.h"
@@ -53,6 +53,7 @@
 #include "UniformDistribution.h"
 #include "VectorDoubleProductStatistic.h"
 #include "VectorFunction.h"
+//#include "RbVector.h"
 
 using namespace RevBayesCore;
 
@@ -75,12 +76,15 @@ bool TestDPPRelClock::run( void ) {
     alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
     treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
-	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
+	std::vector<AbstractCharacterData*> data = NclReader().readMatrices(alignmentFilename);
+	
+	AbstractDiscreteCharacterData *discrD = dynamic_cast<AbstractDiscreteCharacterData* >(data[0]);
+    
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     std::cout << data[0] << std::endl;
 	
 	// First, we read in the data 
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
@@ -123,7 +127,7 @@ bool TestDPPRelClock::run( void ) {
         taxa.push_back( Taxon( names[i] ) );
     }
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, birthRate, deathRate, rho, "uniform", "nTaxa", taxa, std::vector<Clade>()) );
-	DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
+	//DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	tau->setValue( trees[0] );
 
 	
@@ -152,10 +156,10 @@ bool TestDPPRelClock::run( void ) {
 	TypedDistribution<double> *g = new GammaDistribution(a, b);
 	
 	// branchRates ~ DPP(g, cp, numBranches)
-	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
+	StochasticNode<RbVector<double> > *branchRates = new StochasticNode<RbVector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
 
 	// a deterministic node for calculating the number of rate categories (required for the Gibbs move on cp)
-	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(branchRates) );
+	//DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(branchRates) );
 	
 //	ConstantNode<double> *crA  = new ConstantNode<double>("CR.gammA", new double(0.1) );
 //	ConstantNode<double> *crL  = new ConstantNode<double>("CR.gammL", new double(100.0) );
@@ -176,48 +180,49 @@ bool TestDPPRelClock::run( void ) {
 
     // ###### GTR model priors ######
 	//    Constant nodes
-    ConstantNode<std::vector<double> > *bf   = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(4,1.0) );
-    ConstantNode<std::vector<double> > *e    = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(6,1.0) );
+    ConstantNode<RbVector<double> > *bf   = new ConstantNode<RbVector<double> >( "bf", new RbVector<double>(4,1.0) );
+    ConstantNode<RbVector<double> > *e    = new ConstantNode<RbVector<double> >( "e", new RbVector<double>(6,1.0) );
     //    Stochastic nodes
-    StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
-    StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
+	DirichletDistribution *bfDD = new DirichletDistribution(bf);
+    StochasticNode<RbVector<double> > *pi = new StochasticNode<RbVector<double> >( "pi", bfDD );
+    StochasticNode<RbVector<double> > *er = new StochasticNode<RbVector<double> >( "er", new DirichletDistribution(e) );
 
     DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
     std::cout << "Q:\t" << q->getValue() << std::endl;
 	
-	// ####### Gamma Rate Het. ######
-	
-	ConstantNode<double> *shapePr = new ConstantNode<double>("gammaShPr", new double(0.5));
-	ContinuousStochasticNode *srAlpha = new ContinuousStochasticNode("siteRates.alpha", new ExponentialDistribution(shapePr));
-    ConstantNode<double> *q1 = new ConstantNode<double>("q1", new double(0.125) );
-    DeterministicNode<double> *q1Value = new DeterministicNode<double>("q1_value", new QuantileFunction(q1, new GammaDistribution(srAlpha, srAlpha) ) );
-    ConstantNode<double> *q2 = new ConstantNode<double>("q2", new double(0.375) );
-    DeterministicNode<double> *q2Value = new DeterministicNode<double>("q2_value", new QuantileFunction(q2, new GammaDistribution(srAlpha, srAlpha) ) );
-    ConstantNode<double> *q3 = new ConstantNode<double>("q3", new double(0.625) );
-    DeterministicNode<double> *q3Value = new DeterministicNode<double>("q3_value", new QuantileFunction(q3, new GammaDistribution(srAlpha, srAlpha) ) );
-    ConstantNode<double> *q4 = new ConstantNode<double>("q4", new double(0.875) );
-    DeterministicNode<double> *q4Value = new DeterministicNode<double>("q4_value", new QuantileFunction(q4, new GammaDistribution(srAlpha, srAlpha) ) );
-    std::vector<const TypedDagNode<double>* > gammaRates = std::vector<const TypedDagNode<double>* >();
-    gammaRates.push_back(q1Value);
-    gammaRates.push_back(q2Value);
-    gammaRates.push_back(q3Value);
-    gammaRates.push_back(q4Value);
-    DeterministicNode<std::vector<double> > *siteRates = new DeterministicNode<std::vector<double> >( "site_rates", new VectorFunction<double>(gammaRates) );
-    DeterministicNode<std::vector<double> > *siteRatesNormed = new DeterministicNode<std::vector<double> >( "site_rates_norm", new NormalizeVectorFunction(siteRates) );
-	
+//	// ####### Gamma Rate Het. ######
+//	
+//	ConstantNode<double> *shapePr = new ConstantNode<double>("gammaShPr", new double(0.5));
+//	ContinuousStochasticNode *srAlpha = new ContinuousStochasticNode("siteRates.alpha", new ExponentialDistribution(shapePr));
+//    ConstantNode<double> *q1 = new ConstantNode<double>("q1", new double(0.125) );
+//    DeterministicNode<double> *q1Value = new DeterministicNode<double>("q1_value", new QuantileFunction(q1, new GammaDistribution(srAlpha, srAlpha) ) );
+//    ConstantNode<double> *q2 = new ConstantNode<double>("q2", new double(0.375) );
+//    DeterministicNode<double> *q2Value = new DeterministicNode<double>("q2_value", new QuantileFunction(q2, new GammaDistribution(srAlpha, srAlpha) ) );
+//    ConstantNode<double> *q3 = new ConstantNode<double>("q3", new double(0.625) );
+//    DeterministicNode<double> *q3Value = new DeterministicNode<double>("q3_value", new QuantileFunction(q3, new GammaDistribution(srAlpha, srAlpha) ) );
+//    ConstantNode<double> *q4 = new ConstantNode<double>("q4", new double(0.875) );
+//    DeterministicNode<double> *q4Value = new DeterministicNode<double>("q4_value", new QuantileFunction(q4, new GammaDistribution(srAlpha, srAlpha) ) );
+//    std::vector<const TypedDagNode<double>* > gammaRates = std::vector<const TypedDagNode<double>* >();
+//    gammaRates.push_back(q1Value);
+//    gammaRates.push_back(q2Value);
+//    gammaRates.push_back(q3Value);
+//    gammaRates.push_back(q4Value);
+//    DeterministicNode<RbVector<double> > *siteRates = new DeterministicNode<RbVector<double> >( "site_rates", new VectorFunction<double>(gammaRates) );
+//    DeterministicNode<RbVector<double> > *siteRatesNormed = new DeterministicNode<RbVector<double> >( "site_rates_norm", new NormalizeVectorFunction(siteRates) );
+//	
     
 	
     std::cout << "tau:\t" << tau->getValue() << std::endl;
 	std::cout << " ** origin   " << origin->getValue() << std::endl;
 	std::cout << " ** root age " << trees[0]->getRoot().getAge() << std::endl;
 
-    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree> *phyloCTMC = new PhyloCTMCSiteHomogeneousNucleotide<DnaState, TimeTree>(tau, true, data[0]->getNumberOfCharacters());
     phyloCTMC->setClockRate( branchRates );
 //	phyloCTMC->setClockRate( branchSubRates );
     phyloCTMC->setRateMatrix( q );
-	phyloCTMC->setSiteRates( siteRatesNormed );
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
-	charactermodel->clamp( data[0] );
+//	phyloCTMC->setSiteRates( siteRatesNormed );
+    StochasticNode< AbstractDiscreteCharacterData > *charactermodel = new StochasticNode< AbstractDiscreteCharacterData >("S", phyloCTMC );
+	charactermodel->clamp( discrD );
 	
 	std::cout << " branch rates: " << branchRates->getValue() << std::endl;
 	std::cout << " diversification: " << div->getValue() << std::endl;
@@ -226,97 +231,98 @@ bool TestDPPRelClock::run( void ) {
 	std::cout << " death rate: " << deathRate->getValue() << std::endl;
 
 	/* add the moves */
-    RbVector<Move> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
-//    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
-//    moves.push_back( new NarrowExchange( tau, 10.0 ) );
-//    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
-//    moves.push_back( new SubtreeScale( tau, 5.0 ) );
-//    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-//	moves.push_back( new OriginTimeSlide( origin, tau, 20.0, true, 5.0 ) );
-//	moves.push_back( new RootTimeSlide( tau, 10.0, true, 10.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(srAlpha, log(2.0)), 1, true ) );
-    moves.push_back( new NodeTimeSlideUniform( tau, 3.0 * ((double)numBranches) ) );
-    moves.push_back( new SimplexMove( er, 200.0, 6, 0, true, 2.0, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 150.0, 4, 0, true, 2.0, 2.0 ) ); 
-    moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 2.0 ) );
-    moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
-    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
-    moves.push_back( new DPPGibbsConcentrationMove( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
-    moves.push_back( new SlidingMove( srAlpha, 0.25, false, 1.0 ) );
-	
-    // add some tree stats to monitor
-	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
-
-    /* add the monitors */
-    RbVector<Monitor> monitors;
-    std::vector<DagNode*> monitoredNodes;
-	monitoredNodes.push_back( treeHeight );
-	monitoredNodes.push_back( origin );
-    monitoredNodes.push_back( numCats );
-    monitoredNodes.push_back( meanBrRate );
-    monitoredNodes.push_back( cp );
-    monitoredNodes.push_back( div );
-    monitoredNodes.push_back( srAlpha );
-	monitoredNodes.push_back( pi );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 1, " | " ) );
- 
-	monitoredNodes.push_back( div );
-	monitoredNodes.push_back( turn );
-	monitoredNodes.push_back( birthRate );
-	monitoredNodes.push_back( deathRate );
-    monitoredNodes.push_back( er );
-    monitoredNodes.push_back( srAlpha );
- 	monitoredNodes.push_back( branchRates );
-    monitoredNodes.push_back( siteRates );
-    monitoredNodes.push_back( siteRatesNormed );
-// 	monitoredNodes.push_back( scaleRate );
-// 	monitoredNodes.push_back( branchSubRates );
-
-	std::string logFN = "dpp_test/rb_tt_CLK_rn_1.log";
-	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
-
-//    std::set<DagNode*> monitoredNodes2;
-//    monitoredNodes2.insert( tau );
+//    std::vector<Move* > moves;
+//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
+//    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
+////    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
+////    moves.push_back( new NarrowExchange( tau, 10.0 ) );
+////    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
+////    moves.push_back( new SubtreeScale( tau, 5.0 ) );
+////    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+////	moves.push_back( new OriginTimeSlide( origin, tau, 20.0, true, 5.0 ) );
+////	moves.push_back( new RootTimeSlide( tau, 10.0, true, 10.0 ) );
+////    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(srAlpha, log(2.0)), 1, true ) );
+//    moves.push_back( new NodeTimeSlideUniform( tau, 3.0 * ((double)numBranches) ) );
+//    moves.push_back( new SimplexMove( er, 200.0, 6, 0, true, 2.0, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 150.0, 4, 0, true, 2.0, 2.0 ) ); 
+//    moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 2.0 ) );
+//    moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
+//    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
+//    moves.push_back( new DPPGibbsConcentrationMove( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
+////    moves.push_back( new SlidingMove( srAlpha, 0.25, false, 1.0 ) );
+//	
+//    // add some tree stats to monitor
+//	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
 //
-//	std::string treFN = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/rb_tt_CLK_pr.trees";
-//    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
-    
-    /* instantiate the model */
-    Model myModel = Model(q);
-    
-	mcmcGenerations = 3000;
-
-    /* instiate and run the MCMC */
-    Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    myMcmc.run(mcmcGenerations);
-    
-    myMcmc.printOperatorSummary();
-	
-   
-	/* clean up */
-//	delete div;
-//	delete turn;
-//	delete rho;
-//	delete cp;
-//	delete branchRates;
-//	delete q;
-//	delete tau;
-//	delete charactermodel;
-//	delete treeHeight;
-	delete meanBrRate;
-	delete numCats;
-	delete g;
-//	delete a;
-//	delete birthRate;
-//	delete phyloCTMC;
-//	delete dLambda;
-
-	
-	monitors.clear();
-	moves.clear();
+//    /* add the monitors */
+//    std::vector<Monitor* > monitors;
+//    std::vector<DagNode*> monitoredNodes;
+//	monitoredNodes.push_back( treeHeight );
+//	monitoredNodes.push_back( origin );
+//    monitoredNodes.push_back( numCats );
+//    monitoredNodes.push_back( meanBrRate );
+//    monitoredNodes.push_back( cp );
+//    monitoredNodes.push_back( div );
+////    monitoredNodes.push_back( srAlpha );
+//	monitoredNodes.push_back( pi );
+//	ScreenMonitor *sm = new ScreenMonitor( monitoredNodes, 10);
+//    monitors.push_back( sm );
+// 
+//	monitoredNodes.push_back( div );
+//	monitoredNodes.push_back( turn );
+//	monitoredNodes.push_back( birthRate );
+//	monitoredNodes.push_back( deathRate );
+//    monitoredNodes.push_back( er );
+////    monitoredNodes.push_back( srAlpha );
+// 	monitoredNodes.push_back( branchRates );
+////    monitoredNodes.push_back( siteRates );
+////    monitoredNodes.push_back( siteRatesNormed );
+//// 	monitoredNodes.push_back( scaleRate );
+//// 	monitoredNodes.push_back( branchSubRates );
+//
+//	std::string logFN = "dpp_test/rb_tt_CLK_rn_1.log";
+//	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
+//
+////    std::set<DagNode*> monitoredNodes2;
+////    monitoredNodes2.insert( tau );
+////
+////	std::string treFN = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/rb_tt_CLK_pr.trees";
+////    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
+//    
+//    /* instantiate the model */
+//    Model myModel = Model(q);
+//    
+//	mcmcGenerations = 3000;
+//
+//    /* instiate and run the MCMC */
+//    Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+//    myMcmc.run(mcmcGenerations);
+//    
+//    myMcmc.printOperatorSummary();
+//	
+//   
+//	/* clean up */
+////	delete div;
+////	delete turn;
+////	delete rho;
+////	delete cp;
+////	delete branchRates;
+////	delete q;
+////	delete tau;
+////	delete charactermodel;
+////	delete treeHeight;
+//	delete meanBrRate;
+//	delete numCats;
+//	delete g;
+////	delete a;
+////	delete birthRate;
+////	delete phyloCTMC;
+////	delete dLambda;
+//
+//	
+//	monitors.clear();
+//	moves.clear();
 	
     return true;
 }

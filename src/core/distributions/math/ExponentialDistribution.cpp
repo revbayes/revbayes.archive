@@ -7,9 +7,14 @@ using namespace RevBayesCore;
 
 
 ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l) : ContinuousDistribution( new double( 0.0 ) ),
-lambda( l ),
-offset( NULL )
+    lambda( l ),
+    offset( NULL )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( lambda );
+    
     *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG);
 }
 
@@ -17,14 +22,13 @@ ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l, 
     lambda( l ),
     offset( o )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( lambda );
+    addParameter( offset );
+    
     *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG) + offset->getValue();
-}
-
-
-ExponentialDistribution::ExponentialDistribution(const ExponentialDistribution &n) : ContinuousDistribution( n ), 
-    lambda( n.lambda ),
-    offset( n.offset )
-{
 }
 
 
@@ -82,21 +86,8 @@ void ExponentialDistribution::redrawValue( void )
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> ExponentialDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( lambda );
-    parameters.insert( offset );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void ExponentialDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+void ExponentialDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == lambda)
     {

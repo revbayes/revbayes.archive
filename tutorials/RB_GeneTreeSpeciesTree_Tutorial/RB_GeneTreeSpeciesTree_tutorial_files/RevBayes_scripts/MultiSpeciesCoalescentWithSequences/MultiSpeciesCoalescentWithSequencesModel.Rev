@@ -48,7 +48,7 @@ for (i in 1:n_genes) {
 
 # Getting the gene sequences
 for (i in 1:n_genes) {
-	trueAlns[i] <- readCharacterData(dataFolder+"alignment_"+i+".fasta")
+	trueAlns[i] <- readDiscreteCharacterData(dataFolder+"alignment_"+i+".fasta")
 }
 
 # Getting the true species tree
@@ -71,12 +71,12 @@ for (i in 1:n_species) {
 ###############################
 
 # Birth-Death process priors
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
 
 # A species tree larger than the gene trees has probability 0.
 # To be sure to start from a state with a non-null probability, we start from the true values.
-tree_height ~ unif(0.0,100.0)
+tree_height ~ dnUniform(0.0,100.0)
 tree_height.setValue(trueRootAge)
 
 write("Starting species tree height: "+tree_height)
@@ -84,7 +84,7 @@ write("Compared to smallest gene tree height: " + min(geneTreeRootAges) )
 
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 speciesTree.setValue(trueSpeciesTree)
 
@@ -93,7 +93,7 @@ write( speciesTree)
 
 
 # Set the effective population size
-Ne ~ gamma(shape=1,rate=1)
+Ne ~ dnGamma(shape=1,rate=1)
 Ne.setValue(trueNe)
 
 # Simulate gene trees
@@ -101,7 +101,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
    geneTrees[i].setValue(trueGeneTrees[i])
 }
 
@@ -119,7 +119,7 @@ for (i in 1:n_genes) {
   sf_prior[i] <- v(1,1,1,1)
   sf[i] ~ dnDirichlet(sf_prior[i])
 
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
 }
 
@@ -134,7 +134,7 @@ for (i in 1:n_genes) {
 # This makes it possible to have large differences in rates of evolution between two different gene families. 
 
 for (i in 1:n_genes) {
-  familyRates[i] ~ exponential(1.0)
+  familyRates[i] ~ dnExp(1.0)
 }
 
 #############################
@@ -149,7 +149,7 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4, false )
 
 }
 
@@ -162,7 +162,7 @@ for (i in 1:n_genes) {
 # To link all the parts of the model together we use the phyloCTMC object.
 
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ dnPhyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
   alns[i].clamp(trueAlns[i])
 }
 

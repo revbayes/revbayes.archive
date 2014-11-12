@@ -1,0 +1,39 @@
+############################################################################################
+#   File: diversification tutorial MCMC setup file using the Birth-death rho=10/147 model
+############################################################################################
+
+## read in the tree 
+T <- readTrees("data/bears_dosReis.tre")[1]
+
+## get useful variables from the tree
+n_taxa <- T.ntips()
+names <- T.names()
+
+## Moves iterator
+mi = 1 
+
+### load the model from file 
+source("RevBayes_scripts/m_BD_bears.Rev")
+
+### workspace model wrapper ###
+mymodel = model(diversification)
+
+### set up the monitors that will output parameter values to file and screen 
+monitors[1] = mnFile(filename="output/BD_mcmc_bears.log",printgen=10,
+						   diversification, birth_rate, turnover, death_rate)
+monitors[2] = mnScreen(printgen=10000, birth_rate)
+
+### workspace mcmc ###
+mymcmc = mcmc(mymodel, monitors, moves)
+
+### pre-burnin to tune the proposals ###
+mymcmc.burnin(generations=10000,tuningInterval=1000)
+
+### run the MCMC ###
+mymcmc.run(generations=50000)
+
+### display proposal acceptance rates and tuning ###
+mymcmc.operatorSummary()
+
+## quit ##
+#q()

@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "LogFunction.h"
 #include "Func_log.h"
 #include "Real.h"
@@ -16,7 +8,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_log::Func_log( void ) : Function( ) {
+Func_log::Func_log( void ) : TypedFunction<Real>( ) {
     
 }
 
@@ -28,17 +20,14 @@ Func_log* Func_log::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_log::execute() {
+RevBayesCore::TypedFunction<double>* Func_log::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<double>* a = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* b = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::LogFunction* f = new RevBayesCore::LogFunction( a, b );
     
-    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-    
-    Real* value = new Real( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -73,15 +62,6 @@ const TypeSpec& Func_log::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_log::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

@@ -27,7 +27,7 @@ filenames <- v("data/Cettiidae_cytb.nex", "data/Cettiidae_G3P.nex", "data/Cettii
 
 n_genes <- filenames.size()
 for (i in 1:n_genes) {
-  data[i] <- readCharacterData(filenames[i])
+  data[i] <- readDiscreteCharacterData(filenames[i])
   n_sites[i] <- data[i].nchar(1)
 }
 
@@ -50,9 +50,9 @@ n_species <- speciesNames.size()
 ######################
 
 # Birth-Death process priors
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-org ~ unif(0,100.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+org ~ dnUniform(0,100.0)
 
 moveIndex <- 0
 
@@ -62,7 +62,7 @@ moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
 moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
 
 # tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=org, nTaxa=n_species, names=speciesNames)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=org, nTaxa=n_species, names=speciesNames)
 
 # moves on the tree
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
@@ -84,7 +84,7 @@ taxaFileNames <- ["data/Cettiidae_cytb_taxon_data.txt", "data/Cettiidae_G3P_taxo
 
 # We assume a single effective population size for the entire species tree.
 # We could also assume different parameters for each branch of the species tree.
-Ne ~ gamma(shape=1.0,rate=1.0)
+Ne ~ dnGamma(shape=1.0,rate=1.0)
 moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
 
 for (i in 1:n_genes) {
@@ -94,7 +94,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTree[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 
    # moves on the tree
    moves[moveIndex++] <- mvNNI(geneTree[i], 1.0)
@@ -123,7 +123,7 @@ for (i in 1:n_genes) {
   sf[i] ~ dnDirichlet(sf_prior[i])
   moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
 
-  Q[i] := gtr(er[i],sf[i]) 
+  Q[i] := fnGTR(er[i],sf[i]) 
 
 }
 
@@ -139,7 +139,7 @@ for (i in 1:n_genes) {
 # and also to have huge differences between rates associated to a given branch in two different gene families. 
 
 for (i in 1:n_genes) {
-  branchRates[i] ~ exponential(1.0)
+  branchRates[i] ~ dnExp(1.0)
   moves[moveIndex++] <- mvScale(branchRates[i], lambda=0.8, tune=true, weight=3.0)
 }
 
@@ -156,7 +156,7 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := fnDiscretizeGamma( shape[i], shape[i], 4, false )
   moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
 
 }
@@ -173,7 +173,7 @@ for (i in 1:n_genes) {
 # and we clamp the phyloCTMC object to the gene family alignments.
 
 for (i in 1:n_genes) {
-  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
+  phyloSeq[i] ~ dnPhyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 
@@ -200,19 +200,19 @@ mymodel <- model(speciesTree)
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis
-monitors[mntrIndex++] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename="gtr_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC
-monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
 gene <- ["cytB", "G3P", "myo", "ODC"]
 
 # One monitor for each gene family tree.
 for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
+   monitors[mntrIndex++] <- mnFile(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
 }
 
 # One simple monitor that will output on the screen one parameter, Ne
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne)
+monitors[mntrIndex++] <- mnScreen(printgen=10, Ne)
 
 
 

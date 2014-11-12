@@ -46,7 +46,7 @@ echo 'you can turn this of with argument "-boost false"'
 
 cd ../../boost_1_55_0
 rm ./project-config.jam*  # clean up from previous runs
-./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
+./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
 
 if [ "$mavericks" = "true" ]
 then
@@ -83,6 +83,11 @@ project(RevBayes)
 
 ' > "$HERE/CMakeLists.txt"
 
+if ! test -z $DEBUG_REVBAYES
+then
+	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
+	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
+else
 if [ "$mavericks" = "true" ]
 then
 echo '
@@ -102,6 +107,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread"
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 fi
+fi
 
 echo '
 # Add extra CMake libraries into ./CMake
@@ -117,8 +123,7 @@ SET(Boost_USE_STATIC_RUNTIME true)
 #find_package(Boost 1.55.0 COMPONENTS filesystem regex signals context system thread date_time program_options iostreams serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.55.0
-COMPONENTS filesystem
-regex
+COMPONENTS regex
 program_options
 system
 thread
@@ -137,59 +142,36 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
-find ui libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find libs core test revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
 ####
 
 # Split into much smaller libraries
-add_subdirectory(ui)
 add_subdirectory(libs)
 add_subdirectory(core)
 add_subdirectory(revlanguage)
+add_subdirectory(test)
 
 ############# executables #################
 # basic rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 
-# extended rev-bayes binary
-add_executable(rb-extended ${PROJECT_SOURCE_DIR}/ui/main.cpp)
+add_executable(testrb ${PROJECT_SOURCE_DIR}/test/RevBayesCoreTestMain.cpp)
+target_link_libraries(testrb rb-test rb-core libs ${Boost_LIBRARIES})
 
+# extended rev-bayes binary
 ' >> "$HERE/CMakeLists.txt"
 
-if [ "$win" = "true" ]
-then
-echo '
-target_link_libraries(rb-extended rb-ui rb-parser rb-core libs ${Boost_LIBRARIES})
-'  >> "$HERE/CMakeLists.txt"
-else
-echo '
-target_link_libraries(rb-extended rb-ui rb-parser rb-core libs pthread ${Boost_LIBRARIES})
-'  >> "$HERE/CMakeLists.txt"
-fi
-
 
 echo '
-
-
-# utility for generating help html files.
-#add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/utils/HelpHtmlGenerator.cpp)
-#target_link_libraries(help-html-generator rb-parser rb-core libs ${Boost_LIBRARIES})
 
 
 ' >> $HERE/CMakeLists.txt
 
 echo
-
-if [ ! -d "$HERE/ui" ]; then
-mkdir "$HERE/ui"
-fi
-echo 'set(UI_FILES' > "$HERE/ui/CMakeLists.txt"
-find ui | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/ui/CMakeLists.txt"
-echo ')
-add_library(rb-ui ${UI_FILES})'  >> "$HERE/ui/CMakeLists.txt"
 
 if [ ! -d "$HERE/libs" ]; then
 mkdir "$HERE/libs"
@@ -215,3 +197,14 @@ find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
 
+if [ ! -d "$HERE/test" ]; then
+mkdir "$HERE/test"
+fi
+#@TEMP @TODO this should be made generic when the tests are working again...
+echo 'set(TEST_FILES' > "$HERE/test/CMakeLists.txt"
+echo test/TestFilteredStandardLikelihood.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/TestDPPRelClock.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/Test.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo test/RevBayesCoreTestMain.cpp | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/test/CMakeLists.txt"
+echo ')
+add_library(rb-test ${TEST_FILES})'  >> "$HERE/test/CMakeLists.txt"

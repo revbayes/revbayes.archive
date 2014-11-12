@@ -73,6 +73,10 @@ namespace RevBayesCore {
         size_t                                      numCycles;                                                          //!< Total number of cycles to monitor
     };
     
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const Monitor& x);                                //!< Overloaded output operator
+
+    
 }
 
 
