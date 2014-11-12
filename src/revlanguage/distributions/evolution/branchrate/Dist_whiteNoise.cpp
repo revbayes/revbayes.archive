@@ -1,13 +1,3 @@
-//
-//  RlWhiteNoiseProcess.cpp
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-22.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_whiteNoise.h"
@@ -71,7 +61,7 @@ const TypeSpec& Dist_whiteNoise::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_whiteNoise::getMemberRules(void) const {
+const MemberRules& Dist_whiteNoise::getParameterRules(void) const {
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -122,7 +112,7 @@ const TypeSpec& Dist_whiteNoise::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_whiteNoise::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_whiteNoise::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {
@@ -133,7 +123,7 @@ void Dist_whiteNoise::setConstMemberVariable(const std::string& name, const RevP
         sigma = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

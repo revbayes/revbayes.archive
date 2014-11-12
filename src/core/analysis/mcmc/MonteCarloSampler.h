@@ -88,7 +88,10 @@ namespace RevBayesCore {
         std::string                                         scheduleType;                                                                           //!< Type of move schedule to be used
         
     };
-    
+
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const MonteCarloSampler& x);                                //!< Overloaded output operator
+
 }
 
 #endif

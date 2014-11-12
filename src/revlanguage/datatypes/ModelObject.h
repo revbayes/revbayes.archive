@@ -44,18 +44,11 @@ namespace RevLanguage {
         virtual const TypeSpec&                 getTypeSpec(void) const = 0;                                                //!< Get Rev type spec (instance)
     
         // Utility functions you might want to override
-        virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual RevPtr<Variable>                getMember(const std::string& name) const;                                   //!< Get member variable
-        virtual const MethodTable&              getMethods(void) const = 0;                                                 //!< Get member methods
-        virtual MethodTable                     makeMethods(void) const;                                                    //!< Make member methods
-        virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
-
+        virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Execute member functions
+        
         // Basic utility functions you should not have to override
-        RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
-        bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
-        bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
         void                                    makeConstantValue(void);                                                    //!< Convert to constant object
         void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert to conversion object
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
@@ -68,7 +61,8 @@ namespace RevLanguage {
         
         // Getters and setters
         RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;                                                     //!< Get the internal DAG node
-        virtual const rbType&                   getValue(void) const;                                                       //!< Get the value
+        virtual const rbType&                   getValue(void) const;                                                       //!< Get the value (const)
+        virtual rbType&                         getValue(void);                                                             //!< Get the value (non-const)
         void                                    setValue(rbType *x);                                                        //!< Set new constant value
         
     protected:
@@ -90,10 +84,10 @@ namespace RevLanguage {
 #include "Cloner.h"
 #include "ConstantNode.h"
 #include "ContinuousCharacterData.h"
-#include "ConverterNode.h"
+#include "Func__conversion.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
-#include "NAValueNode.h"
+#include "RlConstantNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
@@ -102,6 +96,7 @@ namespace RevLanguage {
 #include "Workspace.h"
 
 #include <cassert>
+#include <cmath>
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject() :
@@ -115,7 +110,7 @@ RevLanguage::ModelObject<rbType>::ModelObject() :
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
     AbstractModelObject(),
-    dagNode( new RevBayesCore::ConstantNode<rbType>("",v) )
+    dagNode( new ConstantNode<rbType>("",v) )
 {
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
@@ -131,13 +126,18 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
 {
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
+    
+    // add the DAG node member methods
+    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+    methods.insertInheritedMethods( dagMethods );
+
 }
 
 
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
-    AbstractModelObject(),
+    AbstractModelObject( v ),
     dagNode( NULL )
 {
     if ( v.dagNode != NULL )
@@ -171,7 +171,9 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
     
     if ( this != &v ) 
     {
-        // free the memory
+        // delegate to base class
+        AbstractModelObject::operator=( v );
+        
         // free the old value
         if ( dagNode != NULL )
         {
@@ -197,108 +199,22 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 }
 
 
-/**
- * Clone the model DAG connected to this object. This function is used
- * by the DAG node cloneDAG function, for DAG node types belonging to the
- * RevLanguage layer and handling Rev objects.
- *
- * @todo This is a temporary hack that makes different Rev objects sharing
- *       the same internal DAG node keeping their value. Replace with code
- *       that actually clones the model DAG with the included Rev objects
- *       (and possibly also the included variables).
- */
-template<typename rbType>
-RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
-{
-    ModelObject<rbType>* theClone = clone();
-
-    theClone->setDagNode( NULL );
-    
-    RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
-    
-    theClone->setDagNode( theNodeClone );
-    
-    return theClone;
-}
-
-
 /* Map calls to member methods */
 template <typename rbType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "clamp") 
+    RevPtr<Variable> retVal = dynamic_cast<RevMemberObject *>( dagNode )->executeMethod(name, args, found);
+    
+    if ( found == true )
     {
-        // check whether the variable is actually a stochastic node
-        if ( !dagNode->isStochastic() )
-        {
-            throw RbException("Only stochastic variables can be clamped.");
-        }
-        // convert the pointer to the DAG node
-        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-        
-        // get the observation
-        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
-        
-        // clamp
-        stochNode->clamp( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
-        
-        return NULL;
-    } 
-    else if (name == "redraw")
-    {
-        // check whether the variable is actually a stochastic node
-        if ( !dagNode->isStochastic() )
-        {
-            throw RbException("You can only set the value for stochastic variables.");
-        }
-        // convert the pointer to the DAG node
-        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-        
-        // redraw the value
-        stochNode->redraw();
-        
-        return NULL;
+        return retVal;
     }
-    else if (name == "setValue")
+    else
     {
-        // check whether the variable is actually a stochastic node
-        if ( !dagNode->isStochastic() )
-        {
-            throw RbException("You can only set the value for stochastic variables.");
-        }
-        // convert the node
-        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-        
-        // get the observation
-        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
-        
-        // set value
-        stochNode->setValue( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
-        
-        return NULL;
-    }
-    else if (name == "unclamp")
-    {
-        // Check whether the variable is actually a stochastic node
-        if ( !dagNode->isStochastic() )
-        {
-            throw RbException("Only stochastic variables can be clamped.");
-        }
-        // Convert the pointer to the DAG node
-        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-        
-        // Unclamp
-        stochNode->unclamp();
-        
-        return NULL;
+        return RevObject::executeMethod( name, args, found );
     }
     
-    if ( dagNode->isStochastic() )
-    {
-        
-    }
-    
-    return RevObject::executeMethod( name, args );
 }
 
 
@@ -312,8 +228,8 @@ const std::string& RevLanguage::ModelObject<rbType>::getClassType(void) {
 
 
 /** Get class type spec describing type of object */
-template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::ModelObject<rlType>::getClassTypeSpec(void) {
+template <typename rbType>
+const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
@@ -321,36 +237,11 @@ const RevLanguage::TypeSpec& RevLanguage::ModelObject<rlType>::getClassTypeSpec(
 }
 
 
-/* Find member variables */
-template <typename rbType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::getMember(std::string const &name) const
-{
-    
-    // check whether the variable is actually a stochastic node
-    if ( dagNode->isStochastic() )
-    {
-        if ( name == "prob" || name == "probability" ) 
-        {
-            // convert the node
-            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-            double lnProb = stochNode->getLnProbability();
-            RevObject *p = RlUtils::RlTypeConverter::toReal( exp(lnProb) );
-            
-            return new Variable( p );
-        } 
-        else if ( name == "lnProb" || name == "lnProbability" ) 
-        {
-            // convert the node
-            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
-            double lnProb = stochNode->getLnProbability();
-            RevObject *p = RlUtils::RlTypeConverter::toReal( lnProb );
-            
-            return new Variable( p );
-            
-        }
-    }
 
-    return RevObject::getMember( name );
+template <typename rbType>
+RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
+    
+    return dagNode;
 }
 
 
@@ -364,46 +255,14 @@ const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
 }
 
 
-
 template <typename rbType>
-RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
-    
-    return dagNode;
-}
-
-
-/** Make sure users understand we have an internal DAG node */
-template <typename rbType>
-bool RevLanguage::ModelObject<rbType>::hasDagNode( void ) const {
-    
-    return true;
-}
-
-
-/**
- * Has this object a member with the given name?
- *
- */
-template<typename rbType>
-bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const 
+rbType& RevLanguage::ModelObject<rbType>::getValue( void )
 {
-    // first the general members ...
-    // if ( name == )
     
-    // members that all stochastic variables have
-    if ( dagNode->isStochastic() )
-    {
-        if ( name == "prob" || name == "probability" ) 
-        {
-            return true;
-        } 
-        else if ( name == "lnProb" || name == "lnProbability" ) 
-        {
-            return true;
-        }
-    } 
+    if ( dagNode == NULL )
+        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     
-    return false;
+    return dagNode->getValue();
 }
 
 
@@ -430,13 +289,6 @@ bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
 
 
 template <typename rbType>
-bool RevLanguage::ModelObject<rbType>::isNAObject( void ) const {
-    
-    return dagNode->isNAValue();
-}
-
-
-template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
     
     if ( dagNode == NULL )
@@ -446,7 +298,7 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
     else
     {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
-        RevBayesCore::ConstantNode<rbType>* newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
+        RevBayesCore::ConstantNode<rbType>* newNode = new ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
         dagNode->replace(newNode);
         
         // delete the value if there are no other references to it.
@@ -465,32 +317,6 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 
 
 /**
- * Convert a model object to a conversion object, the value of which is determined by a type
- * conversion from a specified variable.
- */
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeConversionValue( RevPtr<Variable> var )
-{
-    // Create the converter node
-    ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var, getTypeSpec() );
-
-    // Signal replacement and delete the value if there are no other references to it.
-    if ( dagNode != NULL )
-    {
-        dagNode->replace( newNode );
-        if ( dagNode->decrementReferenceCount() == 0 )
-            delete dagNode;
-    }
-    
-    // Shift the actual node
-    dagNode = newNode;
-    
-    // Increment the reference counter
-    dagNode->incrementReferenceCount();
-}
-
-
-/**
  * Make an indirect reference to the variable. This is appropriate for the contexts
  * where the object occurs on the righ-hand side of expressions like a := b
  */
@@ -504,43 +330,6 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
     newObj->setDagNode( newNode );
     
     return newObj;
-}
-
-
-/**
- * In this function we make member methods that belong to this level to serve
- * derived classes when they construct their static member method tables.
- * Using this mechanism, we ensure that the methods constructed at this
- * level for each derived class can use the appropriate type specification
- * for the derived class in its argument rules, if necessary. See the setValue
- * function for an example.
- *
- * This mechanism makes it impossible for derived classes to construct their
- * static method tables from the call to our getMethods(), which is therefore
- * declared abstract.
- */
-template <typename rbType>
-RevLanguage::MethodTable RevLanguage::ModelObject<rbType>::makeMethods(void) const
-{
-    MethodTable methods;
-    
-    ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
-    
-    ArgumentRules* redrawArgRules = new ArgumentRules();
-    methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
-    
-    ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", getTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
-    
-    ArgumentRules* unclampArgRules = new ArgumentRules();
-    methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
-    
-    methods.insertInheritedMethods( RevObject::makeMethods() );
-    
-    return methods;
 }
 
 
@@ -570,11 +359,24 @@ void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn 
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o, bool verbose ) const
 {
-    RevObject::printStructure( o, verbose );
+    o << "_RevType      = " << getType() << std::endl;
+    o << "_RevTypeSpec  = [ " << getTypeSpec() << " ]" << std::endl;
+    o << "_value        = ";
+    
+    std::ostringstream o1;
+    printValue( o1 );
+    o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
     dagNode->printStructureInfo( o, verbose );
-
-    printMemberInfo( o );
+    
+    
+    const MethodTable& methods = getMethods();
+    for ( MethodTable::const_iterator it = methods.begin(); it != methods.end(); ++it )
+    {
+        o << "." << (*it).first << " = ";
+        (*it).second->printValue( o );
+        o << std::endl;
+    }
 }
 
 
@@ -586,24 +388,14 @@ template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
 {
     if ( dagNode == NULL )
-        o << "NA";
-    else
-        dagNode->printValue(o, "" );
-}
-
-
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
-    
-    RevBayesCore::DagNode* newParent = newVar->getDagNode();
-    
-    if ( dagNode != NULL )
     {
-        while ( dagNode->getNumberOfChildren() > 0 )
-        {
-            dagNode->getFirstChild()->swapParent(dagNode, newParent);
-        }
+        o << "NA";
     }
+    else
+    {
+        dagNode->printValue( o );
+    }
+    
 }
 
 
@@ -612,7 +404,10 @@ template <typename rbType>
 void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
 {
     if ( dagNode != NULL )
+    {
         dagNode->setName( n );
+    }
+    
 }
 
 
@@ -627,7 +422,10 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
     if ( dagNode != NULL )
     {
         if ( newNode != NULL )
+        {
             newNode->setName( dagNode->getName() );
+        }
+        
         dagNode->replace(newNode);
         
         if ( dagNode->decrementReferenceCount() == 0 )
@@ -642,7 +440,9 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
     
     // Increment the reference count to the new value node
     if ( dagNode != NULL )
+    {
         dagNode->incrementReferenceCount();
+    }
     
 }
 
@@ -654,11 +454,11 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
     
     if ( dagNode == NULL )
     {
-        newNode = new RevBayesCore::ConstantNode<rbType>("",x);
+        newNode = new ConstantNode<rbType>("",x);
     }
     else
     {
-        newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(),x);
+        newNode = new ConstantNode<rbType>(dagNode->getName(),x);
         dagNode->replace(newNode);
         
         if ( dagNode->decrementReferenceCount() == 0 )

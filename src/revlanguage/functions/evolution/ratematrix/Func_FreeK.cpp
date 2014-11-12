@@ -1,11 +1,3 @@
-//
-//  Func_FreeK.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 9/19/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "Func_FreeK.h"
 #include "FreeKRateMatrixFunction.h"
 #include "Natural.h"
@@ -20,28 +12,28 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_FreeK::Func_FreeK( void ) : Function( ) {
+Func_FreeK::Func_FreeK( void ) : TypedFunction<RateMatrix>( )
+{
     
 }
 
 
 /** Clone object */
-Func_FreeK* Func_FreeK::clone( void ) const {
+Func_FreeK* Func_FreeK::clone( void ) const
+{
     
     return new Func_FreeK( *this );
 }
 
 
-RevPtr<Variable> Func_FreeK::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_FreeK::createFunction( void ) const
+{
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* tr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* sf = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sf = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr,sf );
-    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     
-    RateMatrix* value = new RateMatrix( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -75,15 +67,6 @@ const TypeSpec& Func_FreeK::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_FreeK::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

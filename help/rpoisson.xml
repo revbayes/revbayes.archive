@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>rpoisson</name>
+
+        <alias>anotherNameForTheSameFunction</alias>
+        <alias>yetAnotherNameForTheSameFunction</alias>
+
+        <title>Some title you want to give this function</title>
+    
+        <description>
+            <p>
+            This is a 'brief' description of the amazing function you have implemented.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             rpoisson( Natural n = 1, RealPos lambda )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>n</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>A description of the argument.</description>
+            <valueType>Natural</valueType>
+            <defaultValue>1</defaultValue>
+        </argument>
+        <argument>
+            <label>lambda</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>A description of the argument.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+
+        <returnValue>Real, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            The implementation of this fancy function ... 
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+             # an executable example of the function described here
+             trueTree <- readTrees("data/primates.tree")[1]
+             ...
+             ]]>
+
+        </example>
+
+        <reference>
+            <citation>
+                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+            </citation>
+            <url>An optional URL to the paper</url>
+            <doi>An optional DOI to the paper</doi>
+        </reference>
+
+        <author>Your name here</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>similar function</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

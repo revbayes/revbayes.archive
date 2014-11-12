@@ -18,7 +18,7 @@
 
 dataFolder <- "data/"
 
-concatenate <- readCharacterData(dataFolder+"concatenate.fasta")
+concatenate <- readDiscreteCharacterData(dataFolder+"concatenate.fasta")
 
 
 #####################################################
@@ -74,15 +74,15 @@ for (i in 1:n_species) {
 
 
 # Birth-Death process priors.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0.0,100.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUniform(0.0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 
 # Species tree from birth-death process
 #We assume 1000,000 generations
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Second, one needs to define a transition matrix for DNA mutations.
 # Here we are going to use a GTR matrix. 
@@ -94,24 +94,24 @@ er ~ dnDirichlet(er_prior)
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 
 # Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := fnDiscretizeGamma( shape, shape, 4, false )
 
 # We do not assume variation among branches in rates
 branch_rates <- 1.0
 
 # We do not assume a proportion of invariant
-p_inv ~ beta(alpha=1,beta=1)
+p_inv ~ dnBeta(alpha=1,beta=1)
 p_inv.setValue(0.000001)
 
 
 # To link all the parts of the model together we use the phyloCTMC object.
 
-aln ~ phyloCTMC(tree=speciesTree, Q=Q, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, type="DNA")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=Q, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, type="DNA")
 
 aln.clamp( concatenate )
 

@@ -11,7 +11,9 @@
 using namespace RevLanguage;
 
 /** Basic constructor. */
-Function::Function(void) : RevObject(), args( ) {
+Function::Function(void) : RevObject( false ),
+    args( )
+{
 
     argsProcessed = false;
 }
@@ -46,7 +48,7 @@ std::string Function::callSignature(void) const {
     
     if (argsProcessed)
     {
-        o << "Arguments processed; there are " << args.size() << " values." << std::endl;
+
         for ( size_t i = 0;  i < args.size(); i++ ) {
             o << " args[" << i << "] = ";
             args[i].getVariable()->getRevObject().printValue(o);
@@ -55,7 +57,6 @@ std::string Function::callSignature(void) const {
     }
     else
     {
-        o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
         
         for ( size_t i = 0;  i < getArgumentRules().size(); i++ ) {
             o << " args[" << i << "] = ";
@@ -705,6 +706,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         
         const ArgumentRule& theRule = theRules[i];
         RevPtr<Variable> theVar = theRule.getDefaultVariable().clone();
+        theVar->setName( "." + theRule.getArgumentLabel() );
         theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;

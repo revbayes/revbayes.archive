@@ -18,7 +18,7 @@
 
 dataFolder <- "data/"
 
-concatenate <- readCharacterData(dataFolder+"concatenate.fasta")
+concatenate <- readDiscreteCharacterData(dataFolder+"concatenate.fasta")
 
 
 #####################################################
@@ -96,13 +96,13 @@ write(pomo_concatenate)
 #######################
 
 # Birth-Death process priors.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0.0,10.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUniform(0.0,10.0)
 tree_height.setValue(trueRootAge)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 speciesTree.setValue(trueSpeciesTree)
 speciesTree.rescale(0.0000001)
 
@@ -119,7 +119,7 @@ er ~ dnDirichlet(er_prior)
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := fnGTR(er,sf) 
 
 # Second, one can have different fitnesses for A, C, G, T. 
 # Here, we are going to assume that all 4 bases have the same fitness.
@@ -127,13 +127,13 @@ base_fitnesses <- v(1, 1, 1, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
-P := pomo(Q, base_fitnesses, virtual_population_size)
+P := fnPomo(Q, base_fitnesses, virtual_population_size)
 
 # We also need to define root frequencies for all the states.
 # To do that we need two variables:
 
 # First, the proportion of polymorphic sites at the root
-root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+root_polymorphism_proportion ~ dnBeta(alpha=1,beta=1)
 
 # Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
 root_base_frequencies ~ dnDirichlet(sf_prior)
@@ -145,13 +145,13 @@ root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion,
 # Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+norm_gamma_rates := fnDiscretizeGamma( shape, shape, 4, false )
 
 # We do not assume variation among branches in rates
 branch_rates <- 1.0
 
 # We do not assume a proportion of invariant
-p_inv ~ beta(alpha=1,beta=1)
+p_inv ~ dnBeta(alpha=1,beta=1)
 p_inv.setValue(0.000001)
 
 ###################
@@ -160,6 +160,6 @@ p_inv.setValue(0.000001)
 
 # To link all the parts of the model together we use the phyloCTMC object.
 
-aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Pomo")
+aln ~ dnPhyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Pomo")
 
 aln.clamp(pomo_concatenate)

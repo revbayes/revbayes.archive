@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DeterministicNode.h"
 #include "Func_mtMam.h"
 #include "Natural.h"
@@ -19,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_mtMam::Func_mtMam( void ) : Function( ) {
+Func_mtMam::Func_mtMam( void ) : Procedure( ) {
     
 }
 

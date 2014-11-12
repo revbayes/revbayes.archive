@@ -16,8 +16,9 @@
 #ifndef DistributionFunctionCdf_H
 #define DistributionFunctionCdf_H
 
+#include "Probability.h"
 #include "RlContinuousDistribution.h"
-#include "RlFunction.h"
+#include "RlTypedFunction.h"
 #include "RlPositiveContinuousDistribution.h"
 
 #include <string>
@@ -25,32 +26,31 @@
 
 namespace RevLanguage {
     
-    class DistributionFunctionCdf :  public Function {
+    class DistributionFunctionCdf : public TypedFunction<Probability> {
         
     public:
         DistributionFunctionCdf(ContinuousDistribution *d); 
-        DistributionFunctionCdf(PositiveContinuousDistribution *d);                                                                               //!< Object constructor
+        DistributionFunctionCdf(PositiveContinuousDistribution *d);                                                                     //!< Object constructor
         DistributionFunctionCdf(const DistributionFunctionCdf& obj);                                                                    //!< Copy constructor
         
         // overloaded operators
-        DistributionFunctionCdf&                operator=(const DistributionFunctionCdf& c);
+        DistributionFunctionCdf&                        operator=(const DistributionFunctionCdf& c);
         
         // Basic utility functions
-        DistributionFunctionCdf*                clone(void) const;                                                              //!< Clone the object
-        static const std::string&               getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
+        DistributionFunctionCdf*                        clone(void) const;                                                              //!< Clone the object
+        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
-        const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         
     protected:
         
-        ArgumentRules                           argRules;                                                                       //!< Member rules converted to reference rules
-        ContinuousDistribution*                 templateObject;                                                                 //!< The template object
-        PositiveContinuousDistribution*         templateObjectPositive;                                                                 //!< The template object
+        ArgumentRules                                   argRules;                                                                       //!< Member rules converted to reference rules
+        ContinuousDistribution*                         templateObject;                                                                 //!< The template object
+        PositiveContinuousDistribution*                 templateObjectPositive;                                                         //!< The template object
         
     };
     

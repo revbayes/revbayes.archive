@@ -29,17 +29,16 @@ namespace RevBayesCore {
         
     public:
         BernoulliDistribution(const TypedDagNode<double> *p);
-        BernoulliDistribution(const BernoulliDistribution &n);                                                                      //!< Copy constructor
         virtual                                            ~BernoulliDistribution(void);                                              //!< Virtual destructor
         
         // public member functions
         BernoulliDistribution*                              clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        
+
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

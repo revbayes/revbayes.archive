@@ -1,7 +1,7 @@
 # Test file for fossilized birth-death process (not work yet)
 
 # read the data/tree
-data <- readCharacterData("data/test.nex")[1]
+data <- readDiscreteCharacterData("data/test.nex")[1]
 
 # get some useful variables from the data
 names <- data.names()

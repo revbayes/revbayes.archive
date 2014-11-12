@@ -58,7 +58,7 @@ const TypeSpec& Dist_lnorm::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_lnorm::getMemberRules(void) const {
+const MemberRules& Dist_lnorm::getParameterRules(void) const {
     
     static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
@@ -110,7 +110,7 @@ void Dist_lnorm::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_lnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_lnorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {
@@ -126,6 +126,6 @@ void Dist_lnorm::setConstMemberVariable(const std::string& name, const RevPtr<co
     }
     else 
     {
-        PositiveContinuousDistribution::setConstMemberVariable(name, var);
+        PositiveContinuousDistribution::setConstParameter(name, var);
     }
 }

@@ -26,16 +26,35 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap) {
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t),
+    outStream(),
+    tree( t ),
+    filename( fname ),
+    separator( del ),
+    posterior( pp ),
+    prior( pr ),
+    likelihood( l ),
+    append(ap)
+{
     
 }
 
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< std::vector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), nodeVariables( n ), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap) {
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< RbVector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t),
+    outStream(),
+    tree( t ),
+    nodeVariables( n ),
+    filename( fname ),
+    separator( del ),
+    posterior( pp ),
+    prior( pr ),
+    likelihood( l ),
+    append(ap)
+{
 //    this->nodes.insert( tree );
     
-    for (std::set<TypedDagNode< std::vector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it) {
+    for (std::set<TypedDagNode< RbVector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it) {
         this->nodes.push_back( *it );
     }
 }
@@ -121,7 +140,7 @@ void ExtendedNewickTreeMonitor::monitor(unsigned long gen) {
         outStream << separator;
         
         tree->getValue().clearBranchParameters();
-        for (std::set<TypedDagNode< std::vector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it) {
+        for (std::set<TypedDagNode< RbVector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it) {
             tree->getValue().addBranchParameter((*it)->getName(), (*it)->getValue(), false);
         }
             
@@ -177,17 +196,20 @@ void ExtendedNewickTreeMonitor::printHeader() {
 
 void ExtendedNewickTreeMonitor::swapNode(DagNode *oldN, DagNode *newN) {
     
-    TypedDagNode<std::vector<double> >* nodeVar = dynamic_cast< TypedDagNode<std::vector<double> > *>(oldN);
-    if ( oldN == tree ) {
+    TypedDagNode< RbVector<double> >* nodeVar = dynamic_cast< TypedDagNode< RbVector<double> > *>(oldN);
+    if ( oldN == tree )
+    {
         tree = static_cast< TypedDagNode< TimeTree > *>( newN );
-    } else if ( nodeVar != NULL ) {
+    }
+    else if ( nodeVar != NULL )
+    {
         // error catching
         if ( nodeVariables.find(nodeVar) == nodeVariables.end() ) {
             throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this extended newick monitor because the monitor doesn't hold this DAG node.");
         }
         
         nodeVariables.erase( nodeVar );
-        nodeVariables.insert( static_cast< TypedDagNode<std::vector<double> > *>(newN) );
+        nodeVariables.insert( static_cast< TypedDagNode< RbVector<double> > *>(newN) );
     }
     
     // delegate to base class

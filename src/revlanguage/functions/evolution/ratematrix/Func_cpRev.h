@@ -14,14 +14,14 @@
 #ifndef Func_cpRev_H
 #define Func_cpRev_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_cpRev :  public Function {
+    class Func_cpRev : public Procedure {
         
     public:
         Func_cpRev( void );

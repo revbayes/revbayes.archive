@@ -101,10 +101,10 @@ void ScreenMonitor::monitor(unsigned long gen)
         std::stringstream ss;
         
         // set column width
-        size_t columnWidth = 12;
+        int columnWidth = 12;
         
         // set cycle column width
-        size_t cycleWidth = floor( log10( numCycles ) ) + 1;
+        int cycleWidth = floor( log10( numCycles ) ) + 1;
         cycleWidth = 5 > cycleWidth ? 5 : cycleWidth;
 
         // print the cycle number
@@ -174,7 +174,7 @@ void ScreenMonitor::monitor(unsigned long gen)
             DagNode *node = *i;
             
             // print the value
-            node->printValue(ss, prefixSeparator + suffixSeparator, int( columnWidth ), false);
+            node->printValueElements(ss, prefixSeparator + suffixSeparator, int( columnWidth ), false);
             std::cout << prefixSeparator << ss.str() << suffixSeparator;
             ss.str("");
         }
@@ -222,12 +222,12 @@ void ScreenMonitor::printHeader( void )
     // print one column for the iteration number
     std::string header = "Iter";
 
-    size_t width = 4;
+    int width = 5;
     
-    size_t numWidth = size_t( log10( numCycles ) ) + 1;
+    int numWidth = int( log10( numCycles ) ) + 1;
     width = width > numWidth ? width : numWidth;
     
-    size_t columnWidth = 12;
+    int columnWidth = 12;
 
     StringUtilities::fillWithSpaces( header, width, true );
     ss << header << suffixSeparator;

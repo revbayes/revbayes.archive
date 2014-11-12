@@ -32,9 +32,9 @@ RevBayesCore::BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess* Dist_branchHeter
     RevBayesCore::BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess* dist = new RevBayesCore::BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess( tau );
 
     //Sigma:
-    if ( sigma->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( sigma->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode<std::vector<double> >* s = static_cast<const ModelVector<RealPos> &>( sigma->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s = static_cast<const ModelVector<RealPos> &>( sigma->getRevObject() ).getDagNode();
 
         // sanity check
         if ( (nNodes-1) != s->getValue().size() )
@@ -51,9 +51,9 @@ RevBayesCore::BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess* Dist_branchHeter
     }
     
     //Mean:
-    if ( mean->getRevObject().isTypeSpec( ModelVector<Real>::getClassTypeSpec() ) )
+    if ( mean->getRevObject().isType( ModelVector<Real>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode<std::vector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
         
         // sanity check
         if ( (nNodes-1) != m->getValue().size() )
@@ -70,9 +70,9 @@ RevBayesCore::BranchHeterogeneousOrnsteinUhlenbeckPhyloProcess* Dist_branchHeter
     }
 
     //Phi:
-    if ( phi->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( phi->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode<std::vector<double> >* p = static_cast<const ModelVector<RealPos> &>( phi->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* p = static_cast<const ModelVector<RealPos> &>( phi->getRevObject() ).getDagNode();
         
         // sanity check
         if ( (nNodes-1) != p->getValue().size() )
@@ -196,7 +196,7 @@ void Dist_branchHeterogeneousOrnsteinUhlenbeck::printValue(std::ostream& o) cons
 
 
 /** Set a member variable */
-void Dist_branchHeterogeneousOrnsteinUhlenbeck::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_branchHeterogeneousOrnsteinUhlenbeck::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" )
     {
@@ -215,7 +215,7 @@ void Dist_branchHeterogeneousOrnsteinUhlenbeck::setConstMemberVariable(const std
         phi = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

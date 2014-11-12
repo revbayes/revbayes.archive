@@ -1,0 +1,88 @@
+################################################################################
+#
+# RevBayes test file: Bayesian inference of biogeography
+# 
+# This file: Specifies the full DEC model with parameters and moves 
+#            with different rates of area gain and loss, then runs MCMC.
+#
+# authors: Michael Landis
+#
+################################################################################
+
+############
+# Settings #
+############
+
+# analysis input/output
+in_fp           <- "data/"
+data_fn         <- "psychotria_range.nex"
+area_fn         <- "hawaii_dynamic.atlas.txt"
+
+# input objects
+vdata           <- readDiscreteCharacterData(in_fp + data_fn)
+atlas           <- readAtlas(in_fp + area_fn)
+vtree           <- readTrees(in_fp + data_fn)
+tree			<- vtree[1]
+data			<- vdata
+
+###########
+#  Model  #
+###########
+
+# Per-area gain and loss rates 
+#   glr[1]: 1->0, glr[2]: 0->1
+for (i in 1:2) { glr[i] ~ dnExponential(10.0) }
+
+# dp is the distance-dependence power parameter, beta
+dp          ~ dnExponential(10.0)
+
+# grm is the geographical rate modifier function, eta
+grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
+
+# Q models the dispersal-extinction process (CTMC)
+Q           := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+
+# csf models the cladogenic state frequencies (sympatry, peripatry, allopatry)
+csf 		~  dnDirichlet([1,1,1])
+
+# M is focal model, the range data given the tree, the atlas, and the DEC process
+M           ~  dnPhyloDACTMC(tree=tree, Q=Q, C=csf, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+
+# attach observation to M
+M.clamp(data)
+
+# create the model!
+my_model    <- model(glr)
+
+#########
+# Moves #
+#########
+
+n_nodes  <- tree.nnodes()
+
+# standard parameter moves
+moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=5.0)
+moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=5.0)
+moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=5.0)
+moves[4] <- mvSimplexElementScale(csf, alpha=50.0, tune=true, weight=4.0)
+
+# data augmentation moves
+moves[5] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+moves[6] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+
+
+############
+# Monitors #
+############
+
+# standard monitors
+monitors[1] = mnScreen(printgen=1, glr, csf, dp)
+
+############
+#   MCMC   #
+############
+my_mcmc <- mcmc(my_model, monitors, moves)
+my_mcmc.run(generations=10)
+
+quit()
+

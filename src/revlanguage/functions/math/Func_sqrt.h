@@ -18,13 +18,14 @@
 #ifndef Func_sqrt_H
 #define Func_sqrt_H
 
-#include "RlFunction.h"
+#include "RealPos.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_sqrt :  public Function {
+    class Func_sqrt : public TypedFunction<RealPos> {
         
     public:
         Func_sqrt( void );
@@ -36,9 +37,8 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
     };
     

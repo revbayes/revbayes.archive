@@ -37,18 +37,21 @@ namespace RevBayesCore {
 
     public:
                                 RbFileManager(void);                                                                                //!< Default constructor
-                                RbFileManager(std::string s);                                                                       //!< Constructor with file/directory name
+                                RbFileManager(const std::string &fn);                                                               //!< Constructor with file/directory name
+                                RbFileManager(const std::string &pn, const std::string &fn);                                        //!< Constructor with path name and file/directory name
 
         void                    closeFile(std::ifstream& strm);                                                                     //!< Close input file
         void                    closeFile(std::ofstream& strm);                                                                     //!< Close output file
         void                    createDirectoryForFile(void);                                                                       //!< Create the directories in which this files exist.
         void                    formatError(std::string& errorStr);                                                                 //!< Format the error string when (mis)reading files
         const std::string&      getCurrentDirectory(void) const;                                                                    //!< Returns the default directory for the process 
+        std::string             getFileExtension(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFileName(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFilePath(void) const;                                                                            //!< Returns the name of the path
         const std::string&      getFullFileName(void) const;
         std::string             getFullFilePath(void) const;                                                                            //!< Returns the name of the path
         std::string             getLastPathComponent(std::string& s);
+        const std::string&      getPathSeparator(void) const;                                                                       //!< Returns the path separator
         std::string             getStringByDeletingLastPathComponent(std::string& s);
         bool                    isDirectory(void) const;                                                                            //!< Is this a directory
         bool                    isFile(void) const;                                                                                 //!< Is this a file
@@ -69,6 +72,7 @@ namespace RevBayesCore {
         bool                    isDirectoryPresent(const std::string &mp) const;                                                    //!< Checks for presence of a directory
         bool                    isFilePresent(const std::string &fn) const;                                                         //!< Checks for the presence of a file
         bool                    isFilePresent(const std::string &mp, const std::string &mf) const;                                  //!< Checks for the presence of a file
+        bool                    makeDirectory(const std::string &dn);
         bool                    parsePathFileNames(std::string s);                                                                  //!< Divides a string into the file path and file name
     
         std::string             fileName;                                                                                           //!< string with file name       

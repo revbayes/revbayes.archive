@@ -13,6 +13,7 @@
 
 #include "TypedDistribution.h"
 #include "MatrixRealSymmetric.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
@@ -25,13 +26,10 @@ namespace RevBayesCore {
         InverseWishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf);
 
         // inverse InverseWishart distribution of parameter sigma0 = Diagonal(kappaVector) and df degrees of freedom
-        InverseWishartDistribution(const TypedDagNode<std::vector<double> > *inkappaVector, const TypedDagNode<int>* indf);
+        InverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<int>* indf);
 
         // inverse InverseWishart distribution of parameter sigma0 kappa * Identitymatrix and df degrees of freedom
         InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
-
-        // copy constructor
-        InverseWishartDistribution(const InverseWishartDistribution& from);
 
         virtual                                            ~InverseWishartDistribution(void) {}
         
@@ -43,14 +41,15 @@ namespace RevBayesCore {
         
         int                                                 getDF() const {return df->getValue();}
         
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
 
     private:
 
         const TypedDagNode<MatrixRealSymmetric>*            sigma0;
-        const TypedDagNode<std::vector<double> >*           kappaVector;
+        const TypedDagNode<RbVector<double> >*              kappaVector;
         const TypedDagNode<double>*                         kappa;
         const TypedDagNode<int>*                            df;
         const TypedDagNode<int>*                            dim;

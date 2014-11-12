@@ -36,21 +36,11 @@ std::string RbVersion::getHeader( void ) const {
     header += "\n";
     header += "RevBayes version " + getVersion() + " (" + getDate() + ")\n";
     header += "\n";
-    header += "RevBayes provides an interactive environment for Bayesian\n";
-    header += "phylogenetic modeling and inference. It is based on probabi-\n";
-    header += "listic graphical model concepts and uses its own interpreted\n";
-    header += "language, Rev.\n";
+    header += "Visit the website www.RevBayes.com for more information about RevBayes.\n";
     header += "\n";
-    header += "RevBayes is free software released under the GPL license,\n";
-    header += "version 3. Type 'license()' for details.\n";
+    header += "RevBayes is free software released under the GPL license, version 3. Type 'license()' for details.\n";
     header += "\n";
-    header += "RevBayes is a collaborative project with many contributors.\n";
-    header += "Type 'contributors()' for more information. Type 'citation()'\n";
-    header += "for information on how to cite RevBayes, and 'contacts()' for\n";
-    header += "contact details of core contributors.\n";
-    header += "\n";
-    header += "For help on using RevBayes, type 'help()'. To quit RevBayes\n";
-    header += "type 'quit()' or 'q()'.\n";
+    header += "To quit RevBayes type 'quit()' or 'q()'.\n";
     
     return header;
     

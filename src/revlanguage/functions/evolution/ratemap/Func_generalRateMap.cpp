@@ -25,7 +25,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_generalRateMap::Func_generalRateMap( void ) : Function( ) {
+Func_generalRateMap::Func_generalRateMap( void ) : TypedFunction<RateMap>( ) {
     
 }
 
@@ -37,18 +37,19 @@ Func_generalRateMap* Func_generalRateMap::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_generalRateMap::execute() {
+RevBayesCore::TypedFunction<RevBayesCore::RateMap>* Func_generalRateMap::createFunction() const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
-    unsigned ns = rm->getValue().getNumberOfStates();
+    size_t ns = rm->getValue().getNumberOfStates();
 
     RevBayesCore::GeneralRateMapFunction* f = new RevBayesCore::GeneralRateMapFunction(ns, nc);
         
-    if ( this->args[3].getVariable()->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( this->args[3].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
         
         //        // sanity check
         //        if ( (nNodes-1) != clockRates->getValue().size() )
@@ -68,12 +69,7 @@ RevPtr<Variable> Func_generalRateMap::execute() {
     f->setRootFrequencies(rf);
     
     
-    
-    DeterministicNode<RevBayesCore::RateMap> *detNode = new DeterministicNode<RevBayesCore::RateMap>("", f, this->clone());
-    
-    RateMap* value = new RateMap( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -119,15 +115,6 @@ const TypeSpec& Func_generalRateMap::getClassTypeSpec(void) {
 }
 
 
-/* Get return type */
-const TypeSpec& Func_generalRateMap::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMap::getClassTypeSpec();
-    
-    return returnTypeSpec;
-}
-
-
 const TypeSpec& Func_generalRateMap::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -136,7 +123,7 @@ const TypeSpec& Func_generalRateMap::getTypeSpec( void ) const {
 }
 
 /** Set a member variable */
-void Func_generalRateMap::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void Func_generalRateMap::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
 
     if ( name == "qSite" )
@@ -157,7 +144,7 @@ void Func_generalRateMap::setConstMemberVariable(const std::string& name, const 
     }
     else
     {
-        Function::setConstMemberVariable(name, var);
+        Function::setConstParameter(name, var);
     }
     
 }

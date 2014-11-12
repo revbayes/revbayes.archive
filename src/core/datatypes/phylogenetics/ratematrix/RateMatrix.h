@@ -19,7 +19,12 @@ namespace RevBayesCore {
         // overloaded operators
         virtual std::vector<double>&                operator[](size_t i) = 0;                                                           //!< Subscript operator
         virtual const std::vector<double>&          operator[](size_t i) const = 0;                                                     //!< Subscript operator (const)
-           
+        
+        virtual bool                        operator==(const RateMatrix &rm) const { return this == &rm; }
+        virtual bool                        operator!=(const RateMatrix &rm) const { return !operator==(rm); }
+        virtual bool                        operator<(const RateMatrix &rm) const { return this < &rm; }
+        virtual bool                        operator<=(const RateMatrix &rm) const { return operator<(rm) || operator==(rm); }
+        
         virtual std::vector<std::vector<double> >::const_iterator       begin(void) const = 0;
         virtual std::vector<std::vector<double> >::iterator             begin(void) = 0;
         virtual std::vector<std::vector<double> >::const_iterator       end(void) const = 0;

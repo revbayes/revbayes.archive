@@ -11,14 +11,13 @@
 #include "Integer.h"
 #include "MatrixReal.h"
 #include "ModelVector.h"
+#include "Natural.h"
 #include "RealPos.h"
 #include "Probability.h"
 #include "RlMultivariateRealNodeValTree.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
-
-Func_tanhBranchTree::Func_tanhBranchTree( const Func_tanhBranchTree &x ) : Function(x) {}
 
 
 Func_tanhBranchTree* Func_tanhBranchTree::clone( void ) const {
@@ -66,15 +65,6 @@ const TypeSpec& Func_tanhBranchTree::getClassTypeSpec(void) {
 }
 
 
-/* Get return type */
-const TypeSpec& Func_tanhBranchTree::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = ModelVector<Probability>::getClassTypeSpec();
-    
-    return returnTypeSpec;
-}
-
-
 
 const TypeSpec& Func_tanhBranchTree::getTypeSpec( void ) const {
     
@@ -84,8 +74,8 @@ const TypeSpec& Func_tanhBranchTree::getTypeSpec( void ) const {
 }
 
 
-RevPtr<Variable> Func_tanhBranchTree::execute() {
-    
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_tanhBranchTree::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
@@ -97,11 +87,8 @@ RevPtr<Variable> Func_tanhBranchTree::execute() {
 
     RevBayesCore::HyperbolicTangentBranchTree* result = new RevBayesCore::HyperbolicTangentBranchTree( tau, process, offset, traitindex );
 
-    DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
-    ModelVector<Probability>* wrappedresult = new ModelVector<Probability>(dag);
-    
-    return new Variable( wrappedresult );
+    return result;
 }
 
 

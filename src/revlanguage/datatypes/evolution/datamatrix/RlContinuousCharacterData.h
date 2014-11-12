@@ -22,18 +22,19 @@
 
 namespace RevLanguage {
     
-    class ContinuousCharacterData : public AbstractCharacterData  { //ModelObject<RevBayesCore::ContinuousCharacterData> {
+    class ContinuousCharacterData : public ModelObject<RevBayesCore::ContinuousCharacterData>, AbstractCharacterData {
         
     public:
         ContinuousCharacterData(void);                                                                          //!< Default constructor
-        ContinuousCharacterData( RevBayesCore::ContinuousCharacterData *d);                                //!< Constructor 
-        ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d);                                //!< Constructor requires character type
+        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d);                                //!< Constructor from core data type (need to create my own copy)
+        ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d);                                      //!< Constructor from new core data type pointer
+        ContinuousCharacterData(RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData>*d);           //!< Constructor with DAG node
 
-        typedef RevBayesCore::AbstractCharacterData valueType;
+        // Operators
         
         // Basic utility functions
-        ContinuousCharacterData*              add(const RevObject& d) const;                                                          //!< Addition operator used for example in '+=' statements
-        ContinuousCharacterData*              add(const ContinuousCharacterData& d) const;                                              //!< Addition operator used for example in '+=' statements
+        ContinuousCharacterData*        add(const RevObject& d) const;                                          //!< Addition operator used for example in '+=' statements
+        ContinuousCharacterData*        add(const ContinuousCharacterData& d) const;                            //!< Addition operator used for example in '+=' statements
 
         ContinuousCharacterData*        clone(void) const;                                                      //!< Clone object
         RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
@@ -41,12 +42,9 @@ namespace RevLanguage {
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
-        
-        const RevBayesCore::ContinuousCharacterData& getValue( void ) const;                                  //!< Get value as base class reference
-        
-        // Member method functions
-        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
-        
+
+        RevPtr<Variable>                executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found);     //!< Execute member method
+
     };
     
 }

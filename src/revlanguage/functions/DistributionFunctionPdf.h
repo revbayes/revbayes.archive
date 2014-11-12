@@ -18,7 +18,7 @@
 #define DistributionFunctionPdf_H
 
 #include "RlTypedDistribution.h"
-#include "RlFunction.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 #include <vector>
@@ -26,25 +26,24 @@
 namespace RevLanguage {
     
     template <class valueType>
-    class DistributionFunctionPdf :  public Function {
+    class DistributionFunctionPdf : public TypedFunction<Real> {
         
     public:
-        DistributionFunctionPdf(TypedDistribution<valueType> *d);                                                                             //!< Object constructor
+        DistributionFunctionPdf(TypedDistribution<valueType> *d);                                                                       //!< Object constructor
         DistributionFunctionPdf(const DistributionFunctionPdf& obj);                                                                    //!< Copy constructor
         
         // overloaded operators
-        DistributionFunctionPdf&                operator=(const DistributionFunctionPdf& c);
+        DistributionFunctionPdf&                        operator=(const DistributionFunctionPdf& c);
         
         // Basic utility functions
-        DistributionFunctionPdf*                clone(void) const;                                                              //!< Clone the object
-        static const std::string&               getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
+        DistributionFunctionPdf*                        clone(void) const;                                                              //!< Clone the object
+        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
-        const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                                     //!< Create a function object
+        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         
     protected:
         
@@ -69,11 +68,14 @@ namespace RevLanguage {
 
 /** Constructor */
 template <class valueType>
-RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf( TypedDistribution<valueType> *d ) : Function(), templateObject( d ) {
+RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf( TypedDistribution<valueType> *d ) : TypedFunction<Real>(),
+    templateObject( d )
+{
     
     argRules.push_back( new ArgumentRule("x", valueType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObject->getMemberRules();
-    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
+    const ArgumentRules &memberRules = templateObject->getParameterRules();
+    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
+    {
         argRules.push_back( (*it)->clone() );
     }
     argRules.push_back( new ArgumentRule("log", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
@@ -82,7 +84,9 @@ RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf( TypedD
 
 /** Constructor */
 template <class valueType>
-RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf(const DistributionFunctionPdf& obj) : Function(obj), argRules( obj.argRules )  {
+RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf(const DistributionFunctionPdf& obj) : TypedFunction<Real>(obj),
+    argRules( obj.argRules )
+{
     
     templateObject = obj.templateObject->clone();
     
@@ -106,7 +110,8 @@ RevLanguage::DistributionFunctionPdf<valueType>& RevLanguage::DistributionFuncti
 
 /** Clone the object */
 template <class valueType>
-RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFunctionPdf<valueType>::clone(void) const {
+RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFunctionPdf<valueType>::clone(void) const
+{
     
     return new DistributionFunctionPdf<valueType>(*this);
 }
@@ -114,16 +119,21 @@ RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFuncti
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
+RevBayesCore::TypedFunction<double>* RevLanguage::DistributionFunctionPdf<valueType>::createFunction( void ) const
+{
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     
-    for ( size_t i = 1; i < (args.size()-1); i++ ) {
+    for ( size_t i = 1; i < (args.size()-1); i++ )
+    {
         
-        if ( args[i].isConstant() ) {
-            copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-        } else {
-            copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+        if ( args[i].isConstant() )
+        {
+            copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (const Variable*) args[i].getVariable() ) );
+        }
+        else
+        {
+            copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
         }
     }
     
@@ -131,11 +141,8 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionFunctionPdf<
     
     RevBayesCore::TypedDagNode<typename valueType::valueType>* arg = static_cast<const valueType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>* f = new RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>( arg, copyObject->createDistribution() );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
-    Real* value = new Real( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -172,14 +179,6 @@ const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::ge
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getReturnType(void) const {
-    
-    return Probability::getClassTypeSpec();
 }
 
 

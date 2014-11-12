@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReplaceSubtreeRegraft::AdmixtureEdgeReplaceSubtreeRegraft(StochasticNode<AdmixtureTree> *v, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double w) : MoveOld( v, w), variable( v ), residuals(res), changed(false), failed(false), activeGen(ag), maxEvents(me), allowSisterAdmixture(asa), delta(d) {
+AdmixtureEdgeReplaceSubtreeRegraft::AdmixtureEdgeReplaceSubtreeRegraft(StochasticNode<AdmixtureTree> *v, DeterministicNode< RbVector<double> >* res, double d, int ag, int me, bool asa, double w) : MoveOld( v, w), variable( v ), residuals(res), changed(false), failed(false), activeGen(ag), maxEvents(me), allowSisterAdmixture(asa), delta(d) {
     
     //nodes.insert(rate);
     nodes.insert(residuals);
@@ -580,7 +580,7 @@ void AdmixtureEdgeReplaceSubtreeRegraft::swapNode(DagNode *oldN, DagNode *newN) 
     }
     else if (oldN == residuals)
     {
-        residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
+        residuals = static_cast<DeterministicNode< RbVector<double> >* >(newN);
     }
 }
 

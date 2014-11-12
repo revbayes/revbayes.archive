@@ -108,6 +108,7 @@ namespace RevBayesCore {
         void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
+  		void										setNodeType(bool tip, bool root, bool interior); //SK
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
 

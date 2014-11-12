@@ -20,53 +20,135 @@
 #ifndef RbVector_H
 #define RbVector_H
 
-#include "Cloneable.h"
+#include "IsAbstract.h"
+#include "RbVectorImpl.h"
 #include "RbIterator.h"
 #include "RbConstIterator.h"
+#include "StringUtilities.h"
+
+#include <boost/dynamic_bitset.hpp>
+
 
 #include <vector>
 #include <iostream>
+#include <sstream>
 
 namespace RevBayesCore {
     
     template <class valueType>
-    class RbVector : public Cloneable {
+    class RbVector : public RbVectorImpl<valueType, IsAbstract<valueType>::Is > {
         
     public:
         // constructor(s)
         RbVector();
         RbVector(size_t n);
         RbVector(size_t n, const valueType &v);
+        RbVector(const typename RbVectorImpl<valueType, IsAbstract<valueType>::Is >::vectorType &v);
         RbVector(const RbVector<valueType> &v);
         virtual                                            ~RbVector(void);
         
-        typedef typename std::vector<valueType*>::iterator           iterator;
-        typedef typename std::vector<valueType*>::const_iterator     const_iterator;
-
-        
         // public member functions
         RbVector<valueType>*                                clone(void) const;                                                                      //!< Create an independent clone
+        void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const;                                          //!< Print the i-th element
         
-        // public (stl-like) vector functions
-        valueType&                                          operator[](size_t i);
-        const valueType&                                    operator[](size_t i) const;
-        RbIterator<valueType>                               begin(void);
-        RbConstIterator<valueType>                          begin(void) const;
-        void                                                clear(void);
-        RbIterator<valueType>                               end(void);
-        RbConstIterator<valueType>                          end(void) const;
-        void                                                insert(size_t i, const valueType &v);
-        void                                                insert(size_t i, valueType *v);
-        void                                                push_back(const valueType &v);
-        void                                                push_back(valueType *v);
-        size_t                                              size(void) const;
+        void                                                sort(void);
         
     private:
         
+        // private methods
+        int                                                 pivot(int l, int r);
+        void                                                quicksort(int l, int r);
+        void                                                swap( valueType& a, valueType& b);
+        
         // private members
-		std::vector<valueType*>								values;
+
     };
- 
+    
+//    template<>
+//    class RbVector<int> : public RbVectorImpl<int, IsAbstract<int>::Is > {
+//        
+//    public:
+//        // constructor(s)
+//        RbVector() : RbVectorImpl<int, IsAbstract<int>::Is  >( ) {}
+//        RbVector(size_t n) : RbVectorImpl<int, IsAbstract<int>::Is  >( n ) {}
+//        RbVector(size_t n, const int &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( n, v ) {}
+//        RbVector(const RbVectorImpl<int, IsAbstract<int>::Is >::vectorType &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( v ) {}
+//        RbVector(const RbVector<double> &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( ) {  for (size_t i=0; i<v.size(); ++i) push_back( int(v[i]) ); }
+//        RbVector(const RbVector<int> &v) : RbVectorImpl<int, IsAbstract<int>::Is  >( v ) {}
+//        virtual                                            ~RbVector(void) {}
+//        
+//        // public member functions
+//        RbVector<int>*                                      clone(void) const { return new RbVector<int>( *this ); }                                                                            //!< Create an independent clone
+//        void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const { o << this->operator[](i); }         //!< Print the i-th element
+//        
+//        void                                                sort(void) { std::sort(this->std::vector<int>::begin(), this->std::vector<int>::end() ); }
+//        
+//        
+//    };
+    
+    template<>
+    class RbVector<double> : public RbVectorImpl<double, IsAbstract<double>::Is > {
+        
+    public:
+        // constructor(s)
+        RbVector() : RbVectorImpl<double, IsAbstract<double>::Is  >( ) {}
+        RbVector(size_t n) : RbVectorImpl<double, IsAbstract<double>::Is  >( n ) {}
+        RbVector(size_t n, const double &v) : RbVectorImpl<double, IsAbstract<int>::Is  >( n, v ) {}
+        RbVector(const std::vector<double> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( v ) {}
+        RbVector(const RbVector<int> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( ) {  for (size_t i=0; i<v.size(); ++i) push_back( double(v[i]) ); }
+        RbVector(const RbVector<double> &v) : RbVectorImpl<double, IsAbstract<double>::Is  >( v ) {}
+        virtual                                            ~RbVector(void) {}
+        
+        // public member functions
+        RbVector<double>*                                   clone(void) const { return new RbVector<double>( *this ); }                                                                            //!< Create an independent clone
+        void                                                printElement(std::ostream &o, size_t i, std::string sep="\t", int l=-1, bool left=true) const { std::stringstream ss; ss << this->operator[](i); std::string s = ss.str(); StringUtilities::fillWithSpaces( s, l, left ); o << s; } //!< Print the i-th element
+        
+//        StringUtilities::fillWithSpaces( s, columnWidth, false );
+        void                                                sort(void) { std::sort(this->std::vector<double>::begin(), this->std::vector<double>::end() ); }
+        
+        
+    };
+    
+    template <>
+    inline void RbVector<int>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        std::stringstream ss;
+        ss << this->operator[](idx);
+        std::string s = ss.str();
+        StringUtilities::fillWithSpaces( s, l, left );
+        o << s;
+    }
+    
+    template <>
+    inline void RbVector<bool>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        std::stringstream ss;
+        ss << this->operator[](idx);
+        std::string s = ss.str();
+        StringUtilities::fillWithSpaces( s, l, left );
+        o << s;
+    }
+    
+    template <>
+    inline void RbVector<std::string>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        std::stringstream ss;
+        ss << this->operator[](idx);
+        std::string s = ss.str();
+        StringUtilities::fillWithSpaces( s, l, left );
+        o << s;
+    }
+    
+    template <>
+    inline void RbVector<boost::dynamic_bitset<> >::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    {
+        std::stringstream ss;
+        ss << this->operator[](idx);
+        std::string s = ss.str();
+        StringUtilities::fillWithSpaces( s, l, left );
+        o << s;
+    }
+    
     
     template <class valueType>
     std::ostream&                       operator<<(std::ostream& o, const RbVector<valueType>& x);                            //!< Overloaded output operator
@@ -76,96 +158,48 @@ namespace RevBayesCore {
 
 
 #include "Cloner.h"
+#include "IsAbstract.h"
 #include "IsDerivedFrom.h"
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>::RbVector() : values() {
+RevBayesCore::RbVector<valueType>::RbVector() : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >()
+{
     
 }
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>::RbVector(size_t n) : values(n, NULL) {
+RevBayesCore::RbVector<valueType>::RbVector(size_t n) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(n)
+{
     
 }
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>::RbVector(size_t n, const valueType &v) : values() {
-    
-    // fill the vector with n independent copies
-    for (size_t i = 0; i < n; ++i) 
-    {
-        values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v ) );
-    }
+RevBayesCore::RbVector<valueType>::RbVector(size_t n, const valueType &v) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(n,v)
+{
     
 }
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>::RbVector( const RbVector<valueType> &v ) : values() {
-    
-    // fill the vector with n independent copies
-    size_t n = v.size();
-    for (size_t i = 0; i < n; ++i) 
-    {
-        values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[i] ) );
-    }
+RevBayesCore::RbVector<valueType>::RbVector( const typename RbVectorImpl<valueType, IsAbstract<valueType>::Is >::vectorType &v ) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(v)
+{
     
 }
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>::~RbVector( void ) {
+RevBayesCore::RbVector<valueType>::RbVector( const RbVector<valueType> &v ) : RbVectorImpl<valueType, IsAbstract<valueType>::Is  >(v)
+{
     
-    // delete the independent copies
-    // we delegate to the clear method
-    clear();
-
 }
 
 
 template <class valueType>
-valueType& RevBayesCore::RbVector<valueType>::operator[](size_t i) {
-    
-    return *values[i];
-}
+RevBayesCore::RbVector<valueType>::~RbVector( void )
+{
 
-
-template <class valueType>
-const valueType& RevBayesCore::RbVector<valueType>::operator[](size_t i) const {
-    
-    return *values[i];
-}
-
-
-template <class valueType>
-RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) {
-    
-    return RbIterator<valueType>( values.begin() );
-}
-
-
-template <class valueType>
-RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::begin(void) const {
-    
-    return RbConstIterator<valueType>( values.begin() );
-}
-
-
-template <class valueType>
-void RevBayesCore::RbVector<valueType>::clear( void ) {
-    
-    // delete the independent copies
-    size_t n = values.size();
-    for (size_t i = 0; i < n; ++i) 
-    {
-        valueType* v = values[i];
-        delete v;
-    }
-    
-    values.clear();
-    
 }
 
 
@@ -175,73 +209,128 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::RbVector<valueType>::clone(void
     return new RbVector<valueType>( *this );
 }
 
-
+/**
+ * Find and return the index of pivot element.
+ * @param a - The array.
+ * @param first - The start of the sequence.
+ * @param last - The end of the sequence.
+ * @return - the pivot element
+ */
 template <class valueType>
-RevBayesCore::RbIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) {
+int RevBayesCore::RbVector<valueType>::pivot(int first, int last)
+{
+    int  p = first;
+    const valueType& pivotElement = this->operator[](first);
     
-    return RbIterator<valueType>( values.end() );
-}
-
-
-template <class valueType>
-RevBayesCore::RbConstIterator<valueType> RevBayesCore::RbVector<valueType>::end(void) const {
-   
-    return RbConstIterator<valueType>( values.end() );
-}
-
-
-template <class valueType>
-void RevBayesCore::RbVector<valueType>::insert(size_t i, const valueType &v) {
+    for(int i = first+1 ; i <= last ; i++)
+    {
+        /* If you want to sort the list in the other order, change "<=" to ">" */
+        if(this->operator[](i) <= pivotElement)
+        {
+            p++;
+            
+            valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( this->operator[](i) );
+            this->operator[](i) = this->operator[](p);
+            this->operator[](p) = *temp;
+            
+            delete temp;
+        }
+    }
     
-    values[i] = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v );
-
-}
-
-
-template <class valueType>
-void RevBayesCore::RbVector<valueType>::insert(size_t i, valueType *v) {
-
-    values[i] = v;
-
-}
-
-
-template <class valueType>
-void RevBayesCore::RbVector<valueType>::push_back(const valueType &v) {
+    valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( this->operator[](p) );
+    this->operator[](p) = this->operator[](first);
+    this->operator[](first) = *temp;
     
-    values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v ) );
-
+    delete temp;
+    
+    return p;
 }
 
 
 template <class valueType>
-void RevBayesCore::RbVector<valueType>::push_back(valueType *v) {
+void RevBayesCore::RbVector<valueType>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+{
     
-    values.push_back( v );
+    const valueType &element = this->operator[](idx);
 
+    const Container *c = dynamic_cast< const Container *>( &element );
+    if ( c == NULL )
+    {
+        o << element;
+    }
+    else
+    {
+        for (size_t i=0; i<c->size(); ++i)
+        {
+            if ( i > 0)
+            {
+                o << sep;
+            }
+            c->printElement(o, i, sep, l+1, left);
+        }
+    }
+    
 }
 
 
 template <class valueType>
-size_t RevBayesCore::RbVector<valueType>::size(void) const {
+void RevBayesCore::RbVector<valueType>::quicksort(int first, int last)
+{
     
-    return values.size();
+    if(first < last)
+    {
+        int pivotElement = pivot(first, last);
+        quicksort(first, pivotElement-1);
+        quicksort(pivotElement+1, last);
+    }
+}
+
+
+template <class valueType>
+void RevBayesCore::RbVector<valueType>::sort(void)
+{
+    // just delegate to our internal quicksort method.
+    quicksort(0, int(this->size())-1);
+}
+
+
+/**
+ * Swap the parameters.
+ * @param a - The first parameter.
+ * @param b - The second parameter.
+ */
+template <class valueType>
+void RevBayesCore::RbVector<valueType>::swap( valueType& a, valueType& b)
+{
+    valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( a );
+    a = b;
+    b = *temp;
+    
+    delete temp;
 }
 
 
 template <class valueType>
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x) {
     
-    o << "(";
+    size_t lineLength = 75;
+    
+    o << "[ ";
+    size_t curLength = 2;
+
     for (RbConstIterator<valueType> it = x.begin(); it != x.end(); ++it) 
     {
         if ( it != x.begin() ) 
         {
             o << ", ";
         }
-        o << *it;
+        const valueType& v = *it;
+        o << v;
     }
-    o << ")";
+    if ( curLength + 2 > lineLength )
+        o << std::endl << "]";
+    else
+        o << " ]";
     
     return o;
 }

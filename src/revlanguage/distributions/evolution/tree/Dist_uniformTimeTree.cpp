@@ -65,7 +65,7 @@ const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
 
 
 /* Return member rules */
-const MemberRules& Dist_uniformTimeTree::getMemberRules(void) const {
+const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const {
     
     static MemberRules distUTTDMemberRules;
     static bool rulesSet = false;
@@ -92,7 +92,7 @@ const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_uniformTimeTree::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "originTime" ) {
         originTime = var;
@@ -101,7 +101,7 @@ void Dist_uniformTimeTree::setConstMemberVariable(const std::string& name, const
         taxonNames = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

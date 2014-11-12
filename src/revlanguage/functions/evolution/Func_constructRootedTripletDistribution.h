@@ -18,27 +18,27 @@
 #ifndef Func_constructRootedTripletDistribution_H
 #define Func_constructRootedTripletDistribution_H
 
-#include "RlFunction.h"
+#include "RlRootedTripletDistribution.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_constructRootedTripletDistribution :  public Function {
+    class Func_constructRootedTripletDistribution : public TypedFunction<RootedTripletDistribution> {
         
     public:
         Func_constructRootedTripletDistribution( void );
         
         // Basic utility functions
-        Func_constructRootedTripletDistribution*                               clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_constructRootedTripletDistribution*                                            clone(void) const;                                                              //!< Clone the object
+        static const std::string&                                                           getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                                                              getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                                                     getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >*             createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                                                                getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };
     

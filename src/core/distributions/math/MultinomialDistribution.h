@@ -16,10 +16,10 @@
 
 namespace RevBayesCore {
     
-    class MultinomialDistribution : public TypedDistribution< std::vector<int> > {
+    class MultinomialDistribution : public TypedDistribution< RbVector<int> > {
         
     public:
-        MultinomialDistribution(const TypedDagNode< std::vector<double> > *p, const TypedDagNode<int> *n);
+        MultinomialDistribution(const TypedDagNode< RbVector<double> > *p, const TypedDagNode<int> *n);
         MultinomialDistribution(const MultinomialDistribution &m);                                                                          //!< Copy constructor
         virtual                                            ~MultinomialDistribution(void);                                                //!< Virtual destructor
         
@@ -28,14 +28,14 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           p;
+        const TypedDagNode< RbVector<double> >*             p;
         const TypedDagNode<int>*                            n;
     };
     

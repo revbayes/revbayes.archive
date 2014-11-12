@@ -23,20 +23,26 @@
 using namespace RevLanguage;
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : Function(), templateObject( d ), templateObjectPositive( NULL ) {
+DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : TypedFunction<Probability>(),
+    templateObject( d ),
+    templateObjectPositive( NULL )
+{
     
     argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObject->getMemberRules();
+    const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
     }
 }
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution *d ) : Function(), templateObject( NULL ), templateObjectPositive( d ) {
+DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution *d ) : TypedFunction<Probability>(),
+    templateObject( NULL ),
+    templateObjectPositive( d )
+{
     
     argRules.push_back( new ArgumentRule("x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    const ArgumentRules &memberRules = templateObjectPositive->getMemberRules();
+    const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
         argRules.push_back( (*it)->clone() );
@@ -46,7 +52,7 @@ DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution
 
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& obj) : Function(obj), argRules( obj.argRules )  {
+DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& obj) : TypedFunction<Probability>(obj), argRules( obj.argRules )  {
     
     if ( obj.templateObject != NULL )
     {
@@ -107,38 +113,48 @@ DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
 }
 
 
-/** Execute function: we reset our template object here and give out a copy */
-RevPtr<Variable> DistributionFunctionCdf::execute( void ) {
+RevBayesCore::TypedFunction<double>* DistributionFunctionCdf::createFunction( void ) const
+{
     
     RevBayesCore::ContinuousDistribution *d = NULL;
     
-    if ( templateObject != NULL ) {
+    if ( templateObject != NULL )
+    {
     
         ContinuousDistribution* copyObject = templateObject->clone();
     
-        for ( size_t i = 1; i < args.size(); i++ ) {
+        for ( size_t i = 1; i < args.size(); i++ )
+        {
         
-            if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-            } else {
-                copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+            if ( args[i].isConstant() )
+            {
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (const Variable*) args[i].getVariable() ) );
+            }
+            else
+            {
+                copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
             }
         }
         
         d = copyObject->createDistribution();
         
     }
-    else {
+    else
+    {
         
         
         PositiveContinuousDistribution* copyObject = templateObjectPositive->clone();
         
-        for ( size_t i = 1; i < args.size(); i++ ) {
+        for ( size_t i = 1; i < args.size(); i++ )
+        {
             
-            if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-            } else {
-                copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+            if ( args[i].isConstant() )
+            {
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (const Variable*) args[i].getVariable() ) );
+            }
+            else
+            {
+                copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
             }
         }
         
@@ -150,11 +166,8 @@ RevPtr<Variable> DistributionFunctionCdf::execute( void ) {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::CummulativeDistributionFunction* f = new RevBayesCore::CummulativeDistributionFunction( arg, d );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
-    Probability* value = new Probability( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -187,11 +200,4 @@ const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& DistributionFunctionCdf::getReturnType(void) const {
-    
-    return Probability::getClassTypeSpec();
 }

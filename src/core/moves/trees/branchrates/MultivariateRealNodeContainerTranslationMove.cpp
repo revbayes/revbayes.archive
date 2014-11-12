@@ -56,7 +56,7 @@ double MultivariateRealNodeContainerTranslationMove::performSimpleMove( void ) {
     
     double u = rng->uniform01();
     double slidingFactor = lambda * ( u - 0.5 );
-    recursiveTranslate(tau->getRoot(),component,slidingFactor);
+    recursiveTranslate(tau->getRoot(),int(component),slidingFactor);
     
     double lnHastingsratio = 0;
     

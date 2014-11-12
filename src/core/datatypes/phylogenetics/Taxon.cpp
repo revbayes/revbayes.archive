@@ -33,19 +33,6 @@ Taxon::Taxon(const std::string &n, const std::string &sn) :
 
 
 /**
- * Constructor from another Taxon.
- *
- * \param[in]    t     another Taxon object.
- */
-Taxon::Taxon(const Taxon &t) :
-date( t.date ),
-name( t.name ),
-speciesName( t.speciesName )
-{
-}
-
-
-/**
  * Equals operator.
  * We check the species name and the individuals name.
  */
@@ -111,24 +98,15 @@ bool Taxon::operator<(const RevBayesCore::Taxon &t) const
 }
 
 
-Taxon& Taxon::operator=(const Taxon& t) {
-    
-    if (this != &t) {
-        name = t.name;
-        date = t.date;
-        speciesName = t.speciesName;
-    }
-    
-    return *this;
 
+/**
+ * Less-than or equals operator.
+ */
+bool Taxon::operator<=(const RevBayesCore::Taxon &t) const
+{
     
+    return operator<(t) || operator==(t);
 }
-
-
-Taxon* Taxon::clone(void) const {
-    return new Taxon(*this);
-}
-
 
 
 /**

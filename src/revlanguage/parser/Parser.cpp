@@ -1,6 +1,8 @@
-#include "IHelp.h"
 #include "Parser.h"
 #include "RbException.h"
+#include "RbHelpRenderer.h"
+#include "RbHelpSystem.h"
+#include "RbSettings.h"
 #include "RbUtil.h"
 #include "RevNullObject.h"
 #include "RlString.h"
@@ -159,7 +161,8 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
         // usage help on a function
         SyntaxVariable* rootPtr = dynamic_cast<SyntaxVariable*> ((SyntaxElement*) root);
         SyntaxVariable* theVariable = rootPtr;
-        if (rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable()) {
+        if (rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL)
+        {
 
             const std::string& fxnName = theVariable->getIdentifier();
             const std::vector<Function*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions(fxnName);
@@ -240,39 +243,67 @@ void RevLanguage::Parser::getline(char* buf, size_t maxsize) {
 
 /** This function gets help info about a symbol */
 int RevLanguage::Parser::help(const std::string& symbol) const {
-
+    
     std::ostringstream msg;
-
-#if defined DEBUG_PARSER
-    // Print syntax tree 
+    
+#	if defined DEBUG_PARSER
+    // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Parser trying to get help for symbol '" << symbol << "'";
     std::cerr << std::endl;
-#endif
-
+#	endif
+    
     // Get some help
-    std::string qs(symbol);
-    if (this->helpEntity->isHelpAvailableForQuery(qs)) {
-        std::string hStr = this->helpEntity->getHelp(qs, 100);
-        UserInterface::userInterface().output(hStr, false);
-    } else {
-
-        RBOUT("Help is not available for \"" + symbol + "\"");
-
-        std::vector<Function *> functions = Workspace::userWorkspace().getFunctionTable().findFunctions(symbol);
-        if (functions.size() != 0) {
-            RBOUT("Usage:");
-            for (std::vector<Function *>::const_iterator i = functions.begin(); i != functions.end(); i++) {
-                RBOUT((*i)->callSignature());
-                delete *i;
-            }
-        }
-
+    RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
+    if ( hs.isHelpAvailableForQuery(symbol) )
+    {
+        const RevBayesCore::RbHelpEntry& h = hs.getHelp( symbol );
+        RevBayesCore::HelpRenderer hRenderer;
+        std::string hStr = hRenderer.renderHelp(h, RbSettings::userSettings().getLineWidth() - RevBayesCore::RbUtils::PAD.size());
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output(hStr, true);
     }
-
+    else
+    {
+        
+        RBOUT("Help is not available for \"" + symbol + "\"");
+        
+    }
+    
     // Return success
     return 0;
 }
+
+
+/** This function gets help info about a symbol */
+int RevLanguage::Parser::help(const std::string& baseSymbol, const std::string& symbol) const
+{
+    
+    std::ostringstream msg;
+    
+    // Get some help
+    RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
+    if ( hs.isHelpAvailableForQuery( baseSymbol, symbol) )
+    {
+        const RevBayesCore::RbHelpEntry& h = hs.getHelp( baseSymbol, symbol );
+        RevBayesCore::HelpRenderer hRenderer;
+        std::string hStr = hRenderer.renderHelp(h, RbSettings::userSettings().getLineWidth() - RevBayesCore::RbUtils::PAD.size());
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output("\n", true);
+        UserInterface::userInterface().output(hStr, true);
+    }
+    else
+    {
+        
+        RBOUT("Help is not available for \"" + baseSymbol + "." + symbol + "\"");
+        
+    }
+    
+    // Return success
+    return 0;
+}
+
 
 /**
  * This function prints help info about a function if it sees a function call.
@@ -280,20 +311,20 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
  * deleting the syntax tree (the function call).
  */
 int RevLanguage::Parser::help(const SyntaxFunctionCall* root) const {
-
+    
     std::ostringstream msg;
-
-#if defined DEBUG_PARSER
+    
+#	if defined DEBUG_PARSER
     // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Syntax tree root before help:\n";
     root->printValue(std::cerr);
     std::cerr << std::endl;
-#endif
-
+#	endif
+    
     RlString symbol = root->getFunctionName();
-
-    return help(symbol.getValue());
+    
+    return help( symbol.getValue() );
 }
 
 

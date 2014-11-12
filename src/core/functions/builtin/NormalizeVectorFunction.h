@@ -22,6 +22,7 @@
 #ifndef NormalizeVectorFunction_H
 #define NormalizeVectorFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -29,10 +30,10 @@
 
 namespace RevBayesCore {
     
-    class NormalizeVectorFunction : public TypedFunction< std::vector<double> > {
+    class NormalizeVectorFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        NormalizeVectorFunction(const TypedDagNode<std::vector<double> > * v);
+        NormalizeVectorFunction(const TypedDagNode< RbVector<double> > * v, const TypedDagNode< double > * s);
 //        NormalizeVectorFunction(const NormalizeVectorFunction &n);                                                                                        //!< Copy constructor
 //        virtual                                            ~NormalizeVectorFunction(void);                                                       //!< Virtual destructor
         
@@ -46,7 +47,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode< RbVector<double> >*             vals;
+        const TypedDagNode< double >*                       sum;
         
     };
     

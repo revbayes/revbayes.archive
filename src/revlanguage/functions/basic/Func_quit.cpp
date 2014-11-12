@@ -29,7 +29,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_quit::Func_quit( void ) : Function() {
+Func_quit::Func_quit( void ) : Procedure() {
     
 }
 

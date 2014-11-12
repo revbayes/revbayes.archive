@@ -1,0 +1,12 @@
+\BOOKMARK [2][-]{subsection.0.1}{Probabilistic\040Graphical\040Models}{}% 1
+\BOOKMARK [2][-]{subsection.0.2}{The\040Rev\040Language}{}% 2
+\BOOKMARK [1][-]{section.1}{Exercise:\040Model\040Selection\040&\040Partitioning\040using\040Bayes\040Factors}{}% 3
+\BOOKMARK [2][-]{subsection.1.1}{Introduction}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.2}{Getting\040Started}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.3}{Launch\040RevBayes}{section.1}% 6
+\BOOKMARK [2][-]{subsection.1.4}{An\040Unpartitioned\040Analysis}{section.1}% 7
+\BOOKMARK [2][-]{subsection.1.5}{Partitioning\040by\040Gene\040Region}{section.1}% 8
+\BOOKMARK [2][-]{subsection.1.6}{Partitioning\040by\040Codon\040Position\040and\040by\040Gene}{section.1}% 9
+\BOOKMARK [2][-]{subsection.1.7}{Compute\040Bayes\040Factors\040and\040Select\040Model}{section.1}% 10
+\BOOKMARK [2][-]{subsection.1.8}{Perform\040MCMC\040Analysis\040Under\040Preferred\040Model}{section.1}% 11
+\BOOKMARK [2][-]{subsection.1.9}{Summarize\040and\040Analyze\040MCMC\040Output}{section.1}% 12

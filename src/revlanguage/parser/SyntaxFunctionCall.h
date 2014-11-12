@@ -81,17 +81,17 @@ namespace RevLanguage {
 
         // Regular functions
         const std::string&                  getFunctionName(void) const { return functionName; }                        //!< Get function name
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                          //!< Get semantic value (static)
-        RevPtr<Variable>                    evaluateDynamicContent(Environment& env);                                   //!< Get semantic value (dynamic)
-        void                                setBaseVariable(SyntaxVariable* var) { baseVariable = var; }                //!< Set base variable
+        RevPtr<Variable>                    evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
+        void                                setBaseVariable(SyntaxElement* var) { baseVariable = var; }                 //!< Set base variable
         bool                                isConstExpression(void) const;                                              //!< Is this a constant expression?
         bool                                isFunctionSafe(const Environment&       env,
                                                            std::set<std::string>&   localVars) const;                   //!< Is this element safe in a function?
  
     protected:
+        
         std::list<SyntaxLabeledExpr*>*      arguments;                                                                  //!< The arguments passed to the function
         std::string                         functionName;                                                               //!< The name of the function
-        SyntaxVariable*                     baseVariable;                                                               //!< Variable holding member function
+        SyntaxElement*                      baseVariable;                                                               //!< Variable holding member function
 
     };
     

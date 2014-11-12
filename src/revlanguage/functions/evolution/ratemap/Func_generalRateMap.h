@@ -19,37 +19,37 @@
 #ifndef Func_generalRateMap_H
 #define Func_generalRateMap_H
 
-#include "RlFunction.h"
+#include "RlRateMap.h"
+#include "RlTypedFunction.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_generalRateMap :  public Function {
+    class Func_generalRateMap :  public TypedFunction<RateMap> {
         
     public:
         Func_generalRateMap( void );
         
         // Basic utility functions
-        Func_generalRateMap*                                clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_generalRateMap*                                    clone(void) const;                                                              //!< Clone the object
+        static const std::string&                               getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                                  getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                         getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
-
+        RevBayesCore::TypedFunction<RevBayesCore::RateMap>*     createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                                    getArgumentRules(void) const;                                                   //!< Get argument rules
+       
     protected:
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                                    setConstParameter(const std::string& name, const RevPtr<const Variable> &var);  //!< Set member variable
 
     private:
-        RevPtr<const Variable>                          q;
-        RevPtr<const Variable>                          rate;
-        RevPtr<const Variable>                          rootFrequencies;
-        RevPtr<const Variable>                          numChars;
+        RevPtr<const Variable>                                  q;
+        RevPtr<const Variable>                                  rate;
+        RevPtr<const Variable>                                  rootFrequencies;
+        RevPtr<const Variable>                                  numChars;
     };
     
 }

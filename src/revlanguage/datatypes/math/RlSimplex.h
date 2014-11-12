@@ -27,8 +27,8 @@ namespace RevLanguage {
         
     public:
         Simplex(void);                                                                                  //!< Construct empty simplex
-        Simplex(const std::vector<double>& v);                                                          //!< Construct simplex from double (real) vector
-        Simplex(RevBayesCore::TypedDagNode<std::vector<double> >* c);                                   //!< Construct simplex from DAG node
+        Simplex(const RevBayesCore::RbVector<double>& v);                                                          //!< Construct simplex from double (real) vector
+        Simplex(RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* c);                                   //!< Construct simplex from DAG node
 
         virtual                                    ~Simplex(void);                                                      //!< Destructor        
 
@@ -39,18 +39,16 @@ namespace RevLanguage {
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
         
         // ModelVector functions overridden here to protect from assignment or external modification
-        RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);   //!< Find or create element variable
-        RevPtr<Variable>                            getElement(size_t oneOffsetIndex);                                  //!< Get element variable
+//        RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);   //!< Find or create element variable
+//        RevPtr<Variable>                            getElement(size_t oneOffsetIndex);                                  //!< Get element variable
 
         // ModelVector functions that we override here to stop inappropriate actions
         void                                        sort(void);                                                         //!< Sort vector
         void                                        unique(void);                                                       //!< Remove consecutive duplicates
         
-        // Member methods
-        const MethodTable&                          getMethods(void) const;                                             //!< Get member methods
-
     private:
-        std::vector<double>*                        makeNormalizedValue(const std::vector<double>& v);                  //!< Help function
+        
+        RevBayesCore::RbVector<double>*             makeNormalizedValue(const RevBayesCore::RbVector<double>& v);                  //!< Help function
         
     };
     

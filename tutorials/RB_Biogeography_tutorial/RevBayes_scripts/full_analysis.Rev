@@ -1,0 +1,5 @@
+source("RevBayes_Scripts/biogeography_DEC_2rate.Rev")
+clear()
+
+
+q()

@@ -31,7 +31,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_setwd::Func_setwd( void ) : Function()
+Func_setwd::Func_setwd( void ) : Procedure()
 {
     
 }

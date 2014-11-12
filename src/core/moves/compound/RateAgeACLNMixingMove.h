@@ -36,7 +36,7 @@ namespace RevBayesCore {
         
         // member variables
         StochasticNode<TimeTree>*				tree;
-        StochasticNode<std::vector<double> >*	rates;
+        StochasticNode< RbVector<double> >*	rates;
 		StochasticNode< double >*				rootRate;
         double									epsilon;
         

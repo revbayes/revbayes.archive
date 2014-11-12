@@ -61,7 +61,7 @@ const TypeSpec& Dist_brownian::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_brownian::getMemberRules(void) const {
+const MemberRules& Dist_brownian::getParameterRules(void) const {
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -125,7 +125,7 @@ const TypeSpec& Dist_brownian::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_brownian::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_brownian::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {
@@ -140,7 +140,7 @@ void Dist_brownian::setConstMemberVariable(const std::string& name, const RevPtr
         drift = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

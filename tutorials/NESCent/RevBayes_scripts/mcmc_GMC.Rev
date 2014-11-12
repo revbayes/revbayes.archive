@@ -2,13 +2,13 @@ source("RevBayes_scripts/m_GMC_bears.Rev")
 
 mymodel <- model(er)
 
-monitors[1] <- filemonitor(filename="output/GMC_bears_mcmc_t.log", printgen=10,
+monitors[1] <- mnFile(filename="output/GMC_bears_mcmc_t.log", printgen=10,
 							diversification, turnover, birth_rate, death_rate, 
 							root_time, tmrca_Urs, tmrca_UrsPinn,
 							er, sf,
 							clock_rate)
-monitors[2] <- filemonitor(filename="output/GMC_bears_mcmc_t.tree", printgen=10, tau)
-monitors[3] <- screenmonitor(printgen=10, clock_rate, root_time)
+monitors[2] <- mnFile(filename="output/GMC_bears_mcmc_t.tree", printgen=10, tau)
+monitors[3] <- mnScreen(printgen=10, clock_rate, root_time)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 

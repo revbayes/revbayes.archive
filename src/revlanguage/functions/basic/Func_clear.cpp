@@ -31,7 +31,8 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_clear::Func_clear( void ) : Function() {
+Func_clear::Func_clear( void ) : Procedure()
+{
     
 }
 

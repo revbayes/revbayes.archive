@@ -18,28 +18,25 @@
 #ifndef Func_ifelse_H
 #define Func_ifelse_H
 
-#include "Function.h"
+#include "RlTypedFunction.h"
 
 namespace RevLanguage {
     
     template <typename valType>
-    class Func_ifelse :  public Function {
+    class Func_ifelse : public TypedFunction<valType> {
         
     public:
         Func_ifelse();
         
         // Basic utility functions
-        Func_ifelse*                clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func_ifelse*                                                    clone(void) const;                                          //!< Clone the object
+        static const std::string&                                       getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                          getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-        
-        
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction< typename valType::valueType>*      createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                                            getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -57,7 +54,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Func_ifelse<valType>::Func_ifelse() : Function()
+RevLanguage::Func_ifelse<valType>::Func_ifelse() : TypedFunction<valType>()
 {
     
 }
@@ -71,22 +68,17 @@ RevLanguage::Func_ifelse<valType>* RevLanguage::Func_ifelse<valType>::clone( voi
 }
 
 
-/** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_ifelse<valType>::execute( void )
+RevBayesCore::TypedFunction< typename valType::valueType >* RevLanguage::Func_ifelse<valType>::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<bool>                        *c = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<typename valType::valueType> *a = static_cast<const valType &>( args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<typename valType::valueType> *b = static_cast<const valType &>( args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<bool>                        *c = static_cast<const RlBoolean &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<typename valType::valueType> *a = static_cast<const valType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<typename valType::valueType> *b = static_cast<const valType &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::IfElseFunction<typename valType::valueType> *func = new RevBayesCore::IfElseFunction<typename valType::valueType>( c, a, b );
     
-    DeterministicNode< typename valType::valueType > *detNode = new DeterministicNode< typename valType::valueType >("", func, this->clone());
-    
-    valType *retValue = new valType( detNode );
-    
-    return new Variable( retValue );
+    return func;
 }
 
 
@@ -141,15 +133,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func_ifelse<valType>::getTypeSpec( voi
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_ifelse<valType>::getReturnType( void ) const
-{
-    
-    return valType::getClassTypeSpec();
 }
 
 

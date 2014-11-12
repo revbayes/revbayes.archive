@@ -147,7 +147,7 @@ const MemberRules& Dist_MPEST::getMemberRules(void) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_MPEST::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void Dist_MPEST::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
 {
     
     if ( name == "speciesTree" )
@@ -164,7 +164,7 @@ void Dist_MPEST::setConstMemberVariable(const std::string& name, const RevPtr<co
     }
     else
     {
-        TypedDistribution<RootedTripletDistribution>::setConstMemberVariable(name, var);
+        TypedDistribution<RootedTripletDistribution>::setConstParameter(name, var);
     }
     
 }

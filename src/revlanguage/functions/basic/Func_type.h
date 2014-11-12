@@ -1,30 +1,23 @@
-/**
- * @file
- * This file contains the declaration of Func_type, which is
- * the function used to get the type of a variable.
- *
- * @brief Declaration of Func_type
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-22 12:06:58 -0700 (Sun, 22 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2012-09-07
- *
- * $Id: Func_source.h 1431 2012-04-22 19:06:58Z hoehna $
- */
-
 #ifndef Func_type_H
 #define Func_type_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_type : public Function {
+    /**
+     * @brief Rev function to print the type of a workspace variable.
+     *
+     * The type function is used by Rev to print type information,
+     * of a variable.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2014-01-21
+     *
+     */
+    class Func_type : public Procedure {
         
     public:
         Func_type( void );

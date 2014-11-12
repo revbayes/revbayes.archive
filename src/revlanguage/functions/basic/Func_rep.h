@@ -1,7 +1,7 @@
 #ifndef Func_rep_H
 #define Func_rep_H
 
-#include "Function.h"
+#include "Procedure.h"
 #include <string>
 
 namespace RevLanguage {
@@ -26,7 +26,7 @@ namespace RevLanguage {
      */
     
     template <typename valType>
-    class Func_rep :  public Function {
+    class Func_rep : public Procedure {
         
     public:
         Func_rep();
@@ -58,7 +58,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Func_rep<valType>::Func_rep() : Function()
+RevLanguage::Func_rep<valType>::Func_rep() : Procedure()
 {
     
 }
@@ -77,8 +77,8 @@ template <typename valType>
 RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rep<valType>::execute( void )
 {
     
-    typename valType::valueType v   = static_cast<const valType &>( args[1].getVariable()->getRevObject() ).getValue();
-    int                         n   = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+    typename valType::valueType v   = static_cast<const valType &>( args[0].getVariable()->getRevObject() ).getValue();
+    int                         n   = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
     
     ModelVector<valType> *rep = new ModelVector<valType>();
     for ( int i=0; i<n; ++i )

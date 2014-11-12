@@ -24,17 +24,17 @@ We also recommend that---if you are working on a Unix machine---you put the {\tt
 For the exercises outlined in this tutorial, we will use \RevBayes~interactively by typing commands in the command-line console.
 The format of this exercise uses \colorbox{shadecolor}{\tt lavender blush shaded boxes} to delineate important steps. 
 The various \RevBayes~commands and syntax are specified using \cl{typewriter text}. 
-And the specific commands that you should type (or copy/paste) into \RevBayes~are indicated by shaded box and prompt. For example, after opening the \RevBayes~program, you can load your data file:
+And the specific commands that you should type (or copy/paste) into \RevBayes~are indicated by shaded box and prompt. For example, after opening the \RevBayes~program, you can create a constant node \cl{x}:
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > x <- 12.0
+x <- 12.0
 \end{lstlisting}
 \end{snugshade*}}
 
-For this command, type in the command and its options:\\ \cl{x <- 12.0}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
+For this step, type (or paste) in the line contents: \cl{x <- 12.0}. The prompt, \cl{>}, that you see in the RevBayes console is not replicated here so that you do not inadvertently copy and paste it with the \Rev~syntax
 
-Multi-line entries, particularly loops, will often be displayed in boxes without the \cl{RevBayes >} prompt so that they can be copied and pasted wholly. 
+Multi-line entries, particularly loops, will also be displayed in boxes without the \cl{>} prompt so that they can be copied and pasted wholly. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 for( i in 1:12 ){
@@ -59,7 +59,7 @@ This tutorial also includes hyperlinks: bibliographic citations are {\textcolor{
 The various exercises in this tutorial take you through the steps required to perform phylogenetic analyses of the example datasets. 
 %In addition, we have provided the output files for every exercise so you can verify your results. (Note that since the MCMC runs you perform will start from different random seeds, the output files resulting from your analyses \textit{will not} be identical to the ones we provide you.)
 
-\exs{Download data and output files from: 
+\exs{Download data and \Rev~files from: 
 \href{http://bit.ly/1tEDwTg}{http://bit.ly/1tEDwTg}}
 
 \subsection{The ``Observed'' Data}
@@ -83,58 +83,39 @@ In this exercise, this time tree is treated as an ``observation'', and we are es
 \subsection{Launch RevBayes}
 
 Execute the \RevBayes~binary. If this program is in your path, then you can simply type in your Unix terminal:
+\colorbox{shadecolor}{\cl{rb}}
 
-\exs{\cl{\$ rb}}
+When you execute the program, you will see the program information, including the current version number the URL for the RevBayes Project: \href{http://www.RevBayes.com}{RevBayes.com}.
+Additionally, RevBayes has a number of resources documenting the syntax, walkthroughs of methods, and general help tools.
+Some of these resources are given below, but please consult the \href{http://www.RevBayes.com}{website} for more information.
 
-When you execute the program, you will see the program information, including the current version number and functions that will provide information about the program --- \cl{contributors()} and \cl{license()}. % --- and a command reference \cl{help}. 
-%Execute the \cl{help()} function by typing:
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
+\bigskip
+\subsubsection{Getting Help}
 
-%RevBayes > help()
-%\end{lstlisting}
-%\end{snugshade*}}
+In the RevBayes console, you can query the help system for any function by typing \cl{?} followed by the function name. 
+For example, if you would like detailed information about the \cl{mean()} function type:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+?mean
+\end{lstlisting}
+\end{snugshade*}}
 
-%\taha{will there be help information by this time?}
-%
-%This displays a list of the different elements and commands available in RevBayes. The \cl{help} command also provides more detailed information about each of these items.
-%
-%For example, we can view the \cl{help()} information about the \cl{log()} function:
-%
+This will provide a description of the function as well as information about the argument and return types. 
+The function help also gives a working example of the use of the function:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+# compute the mean of some random draws from a normal distribution
+x <- rnorm(n=10, 5,1)
+mean(x)
+\end{lstlisting}
+\end{snugshade*}}
 
-%Currently, the help-system of \RevBayes~is virtually nonexistent. This will not always be the case, but is par for the course when using new/experimental software. 
-%The most complete help file available is for the \cl{mcmc()} function. Display the help for this function using the \cl{?} symbol:
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%RevBayes > ?mcmc
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%Additionally, \RevBayes~will print the correct usage of a function if it is executed without any arguments:
-%{\tt \small \begin{snugshade*}
-%\begin{lstlisting}
-%RevBayes > mcmc()
-%   Error:   Argument mismatch for call to function 'mcmc'( ). Correct usage is:
-%   MCMC function (Model model, VectorRbPointer<Monitor> monitors,
-%   VectorRbPointer<Move> moves, String moveschedule = sequential|random|single)
-%\end{lstlisting}
-%\end{snugshade*}}
-%
+\bigskip
+\subsubsection{RevBayes Users' Forum}
 
-%allows you to save all of the screen output from your analysis to a log file. 
-%The \cl{help} information for this command displays all of the available options for specifying screen logging.
-%We are going to log our screen output to a file called \cl{conifer-partn-log.txt}.
-%\mbcl{log start filename=conifer-partn-log.txt}
-%
-%Next, load the sequences into the program using the \cl{execute} command.
-%\mbcl{execute conifer\_dna.nex}
+An email list has been created for users of RevBayes to discuss RevBayes-related topics, including: RevBayes installation and use, scripting and programming, phylogenetics, population genetics, models of evolution, graphical models, etc. The forum is hosted by Google Groups:
 
-%\bigskip
-%\subsubsection*{Load the Sequences}% \& Specify the Outgroup}
-
-
-
+\exs{\href{http://bit.ly/107aW2R}{revbayes-users}}
 
 \bigskip
 \subsection{Specifying Constant-Rate Birth-Death Models}\label{secModelSpec} 
@@ -188,22 +169,22 @@ Begin by reading in the observed tree from Figure \ref{bearTree}.
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > T <- readTrees("data/bears_dosReis.tre")[1]
+T <- readTrees("data/bears_dosReis.tre")[1]
 \end{lstlisting}
 \end{snugshade*}}
 
 From this tree, we can get some helpful variables:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > n_taxa <- T.ntips()
-RevBayes > names <- T.names()
+n_taxa <- T.ntips()
+names <- T.names()
 \end{lstlisting}
 \end{snugshade*}}
 
 Additionally, we can initialize an iterator variable for our vector of moves:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > mi <- 0 
+mi = 1 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -213,7 +194,7 @@ The model we are specifying only has three nodes (Fig.~\ref{yuleGMfig2}).
 We can specify the birth rate $\lambda$, the rate-parameter $\nu$ of the exponential hyperprior on $\lambda$, and the conditional dependency of the two parameters all in one line of \Rev~code.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > birth_rate ~ dnExponential(0.1) 
+birth_rate ~ dnExponential(0.1) 
 \end{lstlisting}
 \end{snugshade*}}
 Here, the stochastic node called \cl{birth\_rate} represents $\lambda$ and the \cl{0.1} is the constant node $\nu$, given the value 0.1. 
@@ -226,7 +207,7 @@ We need to create a vector of moves and we can do this by using vector indexing 
 We will use a scaling move on $\lambda$ called \cl{mvScale}.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > moves[mi++] <- mvScale(birth_rate,lambda=1,tune=true,weight=3)
+moves[mi++] = mvScale(birth_rate,lambda=1,tune=true,weight=3)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -236,7 +217,7 @@ Our prior belief is that we have sampled 10 out of 147 living caniform species.
 To account for this we can set the sampling parameter as a constant node with a value of 0.068
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > rho <- 0.068
+rho <- 0.068
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -253,7 +234,7 @@ We can get the value for the root from the \citet{dosReis2012} tree.
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > root_time <- treeHeight(T)
+root_time <- treeHeight(T)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -271,20 +252,52 @@ If you refer back to Equation \ref{bayesTher} and Figure \ref{yuleGMfig2}, the t
 We can set this in the \Rev~language by using the \cl{clamp()} function.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > timetree.clamp(T)
+timetree.clamp(T)
 \end{lstlisting}
 \end{snugshade*}}
 Here we are fixing the value of the time tree to our observed tree from \citet{dosReis2012}.
-If we did not clamp this node, and ran MCMC, we would simply simulate time trees under the model, i.e, run the MCMC under the prior.
+If we did not clamp this node, and ran MCMC, we would simply simulate time trees under the model.
 
 Finally, we can create a workspace object of our whole model using the \cl{model()} function. 
-This is a convenience function that makes it easy to work with the model in the \Rev~language. 
+Workspace objects are initialized using the \cl{=} operator. This distinguishes the objects used by the program
+to run the MCMC analysis from the distinct nodes of our graphical model.
+The model workspace objects makes it easy to work with the model in the \Rev~language and creates a wrapper around our model DAG. 
 Because our model is a directed, acyclic graph (DAG), we only need to give the model wrapper function a single node and it does the work to find all the other nodes through their connections.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > mymodel <- model(birth_rate)
+mymodel = model(birth_rate)
 \end{lstlisting}
 \end{snugshade*}}
+
+The \cl{model()} function traversed all of the connections and found all of the nodes we specified. 
+We can now visualize our graphical model using the \cl{.graph()} member method of the model object. 
+This function writes a file in the \href{http://en.wikipedia.org/wiki/DOT_(graph_description_language)}{DOT graph-description language}.
+The contents of this file describes the nodes and edges of the model DAG and can be read by an interpreter program called \href{http://www.graphviz.org/}{Graphviz}.
+First create the model graph file using the \cl{.graph()} method. Set the flag for extra output (good for development debugging) to false: \cl{verbose=false}.
+And specify a \href{http://web.njit.edu/~kevin/rgb.txt.html}{named RBG color} for the background (for this graph, we like \cl{"honeydew2"}). 
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mymodel.graph("output/m_Yule_bears_GM.dot", verbose=false, bg="honeydew2")
+\end{lstlisting}
+\end{snugshade*}}
+
+Open the \cl{output/m\_Yule\_bears\_GM.dot} file in the \href{http://www.graphviz.org/}{Graphviz} program or paste the contents in an online viewer:
+\begin{itemize}[noitemsep,nolistsep]  \item \href{http://graphviz-dev.appspot.com/}{http://graphviz-dev.appspot.com/}  \item \href{http://stamm-wilbrandt.de/GraphvizFiddle/}{http://stamm-wilbrandt.de/GraphvizFiddle/}\end{itemize}
+
+Your graph should look like the one depicted in Figure \ref{yuleGMGVfig}.
+Compare this figure to the model in Figure \ref{yuleGMfig2}.
+You should notice that there are two extra nodes in the Figure \ref{yuleGMGVfig}. 
+The constant node with the value \cl{0} connected to the \cl{birth\_rate} stochastic node represents the \cl{offset} variable of the exponential distribution which is given the default value of 0 when no offset is provided. 
+Additionally, there is a nameless constant node with the value of \cl{0} pointing into the clamped \cl{timetree} stochastic node. 
+This constant node represents the death rate, \cl{mu}, which we set to \cl{0} when we initialized \cl{timetree} using the \cl{dnBDP()} constructor function.
+Viewing the model graph is helpful for identifying any problems prior to running MCMC. 
+\begin{figure}[h!]
+\centering
+\fbox{\includegraphics[width=3in]{figures/m_Yule_bears_GM.eps}}
+\caption{\small The graphical model representation of the pure-birth (Yule) process generated using the DOT language and the \href{http://www.graphviz.org/}{Graphviz} program.}
+\label{yuleGMGVfig}
+\end{figure}
+
 
 \textbf{\textit{Estimating the marginal likelihood of the model}}
 
@@ -296,49 +309,49 @@ This method computes a vector of powers from a beta distribution, then executes 
 First, we create the variable containing the power posterior. This requires us to provide a model and vector of moves, as well as an output file name. The \cl{cats} argument sets the number of power steps.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > pow_p <- powerPosterior(mymodel, moves, "output/Yule_bears_powp.out", cats=50) 
+pow_p = powerPosterior(mymodel, moves, "output/Yule_bears_powp.out", cats=50) 
 \end{lstlisting}
 \end{snugshade*}}
 
 We can start the power posterior by first burning in the chain and and discarding the first 10000 states.  
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > pow_p.burnin(generations=10000,tuningInterval=1000)
+pow_p.burnin(generations=10000,tuningInterval=1000)
 \end{lstlisting}
 \end{snugshade*}}
 
 Now execute the run with the \cl{.run()} function:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > pow_p.run(generations=1000)  
+pow_p.run(generations=1000)  
 \end{lstlisting}
 \end{snugshade*}}
 
 Once the power posteriors have been saved to file, create a stepping stone sampler. This function can read any file of power posteriors and compute the marginal likelihood using stepping-stone sampling. 
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > ss <- steppingStoneSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss = steppingStoneSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 \end{lstlisting}
 \end{snugshade*}}
 
 Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ss} variable and record the value in Table \ref{ssTable}.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > ss.marginal() 
+ss.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
 
 Path sampling is an alternative to stepping-stone sampling and also takes the same power posteriors as input. 
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > ps <- pathSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/Yule_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 \end{lstlisting}
 \end{snugshade*}}
 
 Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ps} variable and record the value in Table \ref{ssTable}.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > ps.marginal() 
+ps.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -346,10 +359,10 @@ RevBayes > ps.marginal()
 \subsubsection{Birth-Death Process}\label{birthDeathSec}
 
 The pure-birth model does not account for  extinction, thus it assumes that every lineage at the start of the process will have sampled descendants at time 0.
-This assumption is fairly unrealistic for most phylogenetic datasets on a macroevolutionary scale since the fossil record provides evidence of extinct lineages.
+This assumption is fairly unrealistic for most phylogenetic datasets on a macroevolutionary time scale since the fossil record provides evidence of extinct lineages.
 \citet{kendall48} described a more general branching process model to account for lineage extinction called the \textit{birth-death process}.
 Under this model, at any instant in time, every lineage has the same rate of speciation $\lambda$ and the same rate of extinction $\mu$.
-This is the \textit{constant-rate} birth-death process, which considers the rates constant over time and over the tree.
+This is the \textit{constant-rate} birth-death process, which considers the rates constant over time and over the tree \citep{nee94}.
 Importantly, this model assumes that all of the extant descendants of the process have been sampled at time 0.
 
 \citet{yang97b} and \citet{stadler09} derived the probability of time trees under an extension of the birth-death model that accounts for incomplete sampling of the tips (Fig.~\ref{bdrGMFig1}). 
@@ -399,23 +412,23 @@ There are approximately 147 described caniform species, so we will fix the param
 It is best to remove all of the previous model variables created in the previous section.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > clear()
+clear()
 \end{lstlisting}
 \end{snugshade*}}
 
 Now read in the observed tree from Figure \ref{bearTree}. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > T <- readTrees("data/bears_dosReis.tre")[1]
+T <- readTrees("data/bears_dosReis.tre")[1]
 \end{lstlisting}
 \end{snugshade*}}
 
 Initialize the useful variables:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > n_taxa <- T.ntips()
-RevBayes > names <- T.names()
-RevBayes > mi <- 0 
+n_taxa <- T.ntips()
+names <- T.names()
+mi = 1 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -425,16 +438,16 @@ The diversification and turnover are the parameters which we will treat as stoch
 We will assume an exponential prior on \cl{diversification} and assign it a scale move.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > diversification ~ dnExponential(10.0) 
-RevBayes > moves[mi++] <- mvScale(diversification,lambda=1.0,tune=true,weight=3.0) 
+diversification ~ dnExponential(10.0) 
+moves[mi++] = mvScale(diversification,lambda=1.0,tune=true,weight=3.0) 
 \end{lstlisting}
 \end{snugshade*}}
 
 The \cl{turnover} parameter can only take values between 0 and 1, thus we will assume a beta prior on this parameter and sample from the posterior distribution using a scale move.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > turnover ~ dnBeta(2.0, 2.0) 
-RevBayes > moves[mi++] <- mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
+turnover ~ dnBeta(2.0, 2.0) 
+moves[mi++] = mvSlide(turnover,delta=1.0,tune=true,weight=3.0)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -446,13 +459,13 @@ Refer to Equation \ref{lambdamufxns}. Note that both the birth rate and death ra
 Because our variable transformations use the \cl{-} operator, we must additionally use the \cl{abs()} function to ensure that the rates are of type \cl{RealPos}, which is required by the birth-death process model.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > birth_rate := abs(diversification / (1.0 - turnover))
+birth_rate := abs(diversification / (1.0 - turnover))
 \end{lstlisting}
 \end{snugshade*}}
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > death_rate := abs(turnover * diversification / (1.0 - turnover))
+death_rate := abs(turnover * diversification / (1.0 - turnover))
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -461,7 +474,7 @@ RevBayes > death_rate := abs(turnover * diversification / (1.0 - turnover))
 If we assume that the 147 described caniform species represent all of the living caniforms on Earth, then it is quite reasonable to fix the parameter $\rho$ to a known value.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > rho <- 0.068
+rho <- 0.068
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -471,7 +484,7 @@ Get the value for the root from the \citet{dosReis2012} tree.
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > root_time <- treeHeight(T)
+root_time <- treeHeight(T)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -487,16 +500,31 @@ timetree ~ dnBDP(lambda=birth_rate, mu=death_rate, rootAge=root_time, rho=rho, s
 Since we are computing the likelihood on the \citet{dosReis2012} tree, we can consider this time tree as an observation and clamp the stochastic node.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > timetree.clamp(T)
+timetree.clamp(T)
 \end{lstlisting}
 \end{snugshade*}}
 
 Now set the workspace model variable.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > mymodel <- model(diversification)
+mymodel = model(diversification)
 \end{lstlisting}
 \end{snugshade*}}
+
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mymodel.graph("output/m_BD_bears_GM.dot", bg="LightSteelBlue2")
+\end{lstlisting}
+\end{snugshade*}}
+
+\begin{figure}[h!]
+\centering
+\fbox{\includegraphics[width=3in]{figures/m_BD_bears_GM.eps}}
+\caption{\small The graphical model representation of the birth-death process.}
+\label{BDGMGVfig}
+\end{figure}
+
+
 
 \textbf{\textit{Estimating the marginal likelihood of the model}}
 
@@ -504,7 +532,7 @@ RevBayes > mymodel <- model(diversification)
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-pow_p <- powerPosterior(mymodel, moves, "output/BD_bears_powp.out", cats=50) 
+pow_p = powerPosterior(mymodel, moves, "output/BD_bears_powp.out", cats=50) 
 pow_p.burnin(generations=10000,tuningInterval=1000)
 pow_p.run(generations=1000)  
 \end{lstlisting}
@@ -513,7 +541,7 @@ pow_p.run(generations=1000)
 Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ss} variable and record the value in Table \ref{ssTable}.
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-ss <- steppingStoneSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss = steppingStoneSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ss.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
@@ -521,7 +549,7 @@ ss.marginal()
 Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ps} variable and record the value in Table \ref{ssTable}.
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-ps <- pathSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps = pathSampler(file="output/BD_bears_powp.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 \end{lstlisting}
 \end{snugshade*}}
@@ -569,7 +597,7 @@ Enter your answers in Table \ref{ssTable} using the stepping-stone and the path-
 \hline
 \ref{yuleModSec} Marginal likelihood Yule ($M_0$) & \hspace{15mm} & \TextField[name=ml7,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml8,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
-\ref{birthDeathSec} Marginal likelihood birth-death & \hspace{3mm} & \TextField[name=ml9,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml10,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+\ref{birthDeathSec} Marginal likelihood birth-death ($M_1$) & \hspace{3mm} & \TextField[name=ml9,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml10,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
 Eq.~\ref{LNbfFormula}: $BF(M_0,M_1)$ & \hspace{3mm} &  \TextField[name=ml11,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml12,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
@@ -593,7 +621,7 @@ With this model, we can now estimate posterior probability of the the global rat
 \end{align}
 
 
-\exs{The \Rev~file for performing this analysis: \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_Diversification_Exercise/RB_diversification_files/RevBayes_scripts/mcmc_BD_bears.Rev}{\cl{mcmc\_BD\_bears.Rev}}.}
+\exs{The \Rev~file for performing this analysis: \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_Diversification_Exercise/RB_diversification_files/RevBayes_scripts/mcmc_BD_bears.Rev}{\cl{mcmc\_BD\_bears.Rev}} or  \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB_TimeTree_Tutorials/RB_Diversification_Exercise/RB_diversification_files/RevBayes_scripts/mcmc_Yule_bears.Rev}{\cl{mcmc\_Yule\_bears.Rev}}.}
 
 
 \textbf{\textit{Clear the workspace and load the preferred model}}
@@ -601,7 +629,7 @@ With this model, we can now estimate posterior probability of the the global rat
 It is best to remove all of the previous model variables created in the previous section.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > clear()
+clear()
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -609,16 +637,16 @@ RevBayes > clear()
 Now read in the observed tree from Figure \ref{bearTree}. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > T <- readTrees("data/bears_dosReis.tre")[1]
+T <- readTrees("data/bears_dosReis.tre")[1]
 \end{lstlisting}
 \end{snugshade*}}
 
 Initialize the useful variables:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > n_taxa <- T.ntips()
-RevBayes > names <- T.names()
-RevBayes > mi <- 0 
+n_taxa <- T.ntips()
+names <- T.names()
+mi = 1 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -627,13 +655,13 @@ RevBayes > mi <- 0
 Source the model file of your favorite model ($* = $ \cl{Yule} or \cl{BD}).
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > source("RevBayes_scripts/m_*_bears.Rev")
+source("RevBayes_scripts/m_*_bears.Rev")
 \end{lstlisting}
 \end{snugshade*}}
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > mymodel <- model(birth_rate)
+mymodel = model(birth_rate)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -643,29 +671,31 @@ RevBayes > mymodel <- model(birth_rate)
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-monitors[1] <- filemonitor(filename="output/BDR_mcmc_bears.log",printgen=10, diversification, birth_rate, turnover, death_rate)
-monitors[2] <- screenmonitor(printgen=1000, turnover)
+monitors[1] = mnFile(filename="output/BDR_mcmc_bears.log",printgen=10, diversification, birth_rate, turnover, death_rate)
+monitors[2] = mnScreen(printgen=1000, birth_rate)
 \end{lstlisting}
 \end{snugshade*}}
+
+Note that if your preferred model was the Yule process, then you would only have the \cl{birth\_rate} parameter listed in the \cl{mnFile} monitor.
 
 \textbf{\textit{Run MCMC}}
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 \end{lstlisting}
 \end{snugshade*}}
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > mymcmc.burnin(generations=10000,tuningInterval=1000)
-RevBayes > mymcmc.run(generations=50000)
+mymcmc.burnin(generations=10000,tuningInterval=1000)
+mymcmc.run(generations=50000)
 \end{lstlisting}
 \end{snugshade*}}
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > mymcmc.operatorSummary()
+mymcmc.operatorSummary()
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -682,14 +712,15 @@ RevBayes > mymcmc.operatorSummary()
 \section*{Useful Links}
 
 \begin{itemize}
-\item RevBayes: \href{https://github.com/revbayes/revbayes}{https://github.com/revbayes/revbayes} \\ \vspace{-7mm}
+\item RevBayes documentation and project information: \href{http://www.RevBayes.com}{RevBayes.com} \\ \vspace{-7mm}
+\item RevBayes source: \href{https://github.com/revbayes/revbayes}{https://github.com/revbayes/revbayes} \\ \vspace{-7mm}
 \item TreePar: \href{http://cran.r-project.org/web/packages/TreePar/index.html}{http://cran.r-project.org/web/packages/TreePar/index.html} \\ \vspace{-7mm}
 \item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org} \\ \vspace{-7mm}
 \end{itemize}
 
 Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \begin{itemize}
-\item Tracy Heath (email: \href{mailto:tracyh@berkeley.edu}{tracyh@berkeley.edu}) \\\vspace{-8mm}
+\item Tracy Heath (email: \href{mailto:trayc7@gmail.com}{trayc7@gmail.com}) \\\vspace{-8mm}
 \item Tanja Stadler (email: \href{mailto:tanja.stadler@bsse.ethz.ch}{tanja.stadler@bsse.ethz.ch}) \\\vspace{-8mm} 
 \item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
 \end{itemize}

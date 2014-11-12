@@ -19,6 +19,7 @@
 #ifndef MixtureDistribution_H
 #define MixtureDistribution_H
 
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -29,7 +30,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p);
+        MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p);
         
         // public member functions
         MixtureDistribution*                                clone(void) const;                                                                      //!< Create an independent clone
@@ -48,9 +49,9 @@ namespace RevBayesCore {
         void                                                restoreSpecialization(DagNode *restorer);
         void                                                touchSpecialization(DagNode *toucher);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
         
     private:
@@ -58,8 +59,8 @@ namespace RevBayesCore {
         const mixtureType&                                  simulate();
         
         // private members
-        const TypedDagNode<std::vector<mixtureType> >*      parameterValues;
-        const TypedDagNode<std::vector<double> >*           probabilities;
+        const TypedDagNode< RbVector<mixtureType> >*        parameterValues;
+        const TypedDagNode< RbVector<double> >*             probabilities;
         
         size_t                                              index;
     };
@@ -72,11 +73,16 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class mixtureType>
-RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p) : TypedDistribution<mixtureType>( new mixtureType( v->getValue()[0]) ),
+RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode< RbVector<double> > *p) : TypedDistribution<mixtureType>( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( v->getValue()[0] ) ),
     parameterValues( v ),
     probabilities( p ),
     index( 0 )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( parameterValues );
+    this->addParameter( probabilities );
     
     *this->value = simulate();
 }
@@ -200,32 +206,17 @@ void RevBayesCore::MixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
 }
 
 
-
-/** Get the parameters of the distribution */
-template <class mixtureType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::MixtureDistribution<mixtureType>::getParameters( void ) const
-{
-    std::set<const RevBayesCore::DagNode*> parameters;
-    
-    parameters.insert( parameterValues );
-    parameters.insert( probabilities );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+void RevBayesCore::MixtureDistribution<mixtureType>::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == parameterValues)
     {
-        parameterValues = static_cast<const TypedDagNode<std::vector<mixtureType> >* >( newP );
+        parameterValues = static_cast<const TypedDagNode< RbVector<mixtureType> >* >( newP );
     }
     else if (oldP == probabilities)
     {
-        probabilities = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        probabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 
@@ -247,7 +238,7 @@ template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType const &v)
 {
     
-    const std::vector<mixtureType> &vals = parameterValues->getValue();
+    const RbVector<mixtureType> &vals = parameterValues->getValue();
     // we need to catch the value and increment the index
     for (index = 0; index < vals.size(); ++index)
     {

@@ -36,8 +36,11 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
        
         // Basit utility functions
+        virtual const TypeSpec&                         getVariableTypeSpec(void) const = 0;                                                //!< Get the variable type spec of this distribution
         virtual void                                    printStructure(std::ostream& o, bool verbose=false) const {}                        //!< Print structure of language object for user
         void                                            printValue(std::ostream& o) const;                                                  //!< Print value for user
+
+        // GUI methods
         std::string                                     getGuiDistributionName(void) { return guiDistributionName; }
         std::string                                     getGuiDistributionToolTip(void) { return guiDistributionToolTip; }
         void                                            setGuiDistributionName(std::string s) { guiDistributionName = s; }

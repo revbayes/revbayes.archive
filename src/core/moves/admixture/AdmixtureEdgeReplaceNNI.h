@@ -44,7 +44,7 @@ namespace RevBayesCore {
     class AdmixtureEdgeReplaceNNI : public MoveOld {
         
     public:
-        AdmixtureEdgeReplaceNNI( StochasticNode<AdmixtureTree> *n, DeterministicNode<std::vector<double> >* res, double delta, int ag, int me, bool asa, double weight);                                            //!<  constructor
+        AdmixtureEdgeReplaceNNI( StochasticNode<AdmixtureTree> *n, DeterministicNode< RbVector<double> >* res, double delta, int ag, int me, bool asa, double weight);                                            //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeReplaceNNI*       clone(void) const;                                                                  //!< Clone object
@@ -68,7 +68,7 @@ namespace RevBayesCore {
         
         // member variables
         StochasticNode<AdmixtureTree>*  variable;
-        DeterministicNode<std::vector<double> >* residuals;
+        DeterministicNode< RbVector<double> >* residuals;
         bool changed;
         bool failed;
         unsigned long activeGen;

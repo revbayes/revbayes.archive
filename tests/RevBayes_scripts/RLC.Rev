@@ -1,0 +1,177 @@
+################################################################################
+#
+# MCMC analysis of simulated test data
+# 
+# Model:
+# GTR model
+# random local clock model.
+#
+#
+# author: Sebastian Hoehna
+#
+################################################################################
+
+########
+# Data #
+########
+
+# read the data
+# the readDiscreteCharacterData function returns a vector of matrices. We just take the first one
+D <- readDiscreteCharacterData("data/Primates.nex")
+
+# get some useful variables from the data
+taxaCount <- D.ntaxa()
+nSites <- D.nchar()[1]
+names <- D.names()
+
+
+
+#######
+# GTR #
+#######
+
+# substitution model priors
+bf <- v(1,1,1,1)
+e <- v(1,1,1,1,1,1)
+pi ~ dnDirichlet(bf)
+er ~ dnDirichlet(e)
+
+# moves on the substitution process parameters
+# first some moves only changing one value of the simplex
+mi <- 0
+moves[++mi] = mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=2.0)
+moves[++mi] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+
+# the rate matrix
+Q := fnGTR(er,pi)
+
+
+
+#######
+# BDP #
+#######
+
+# read in the reference tree
+startingTree <- readTrees("data/primates.tree")[1]
+
+# tree from birth-death process
+# if we wanted to estimate the tree topology
+speciation ~ dnExponential(0.1)
+extinction ~ dnExponential(0.2)
+root ~ dnNorm(startingTree.rootAge(),0.01)
+
+# initialize with good values
+speciation.setValue(0.2)
+extinction.setValue(0.01)
+root.setValue(60)
+
+moves[++mi] = mvScale(speciation,lambda=1,tune=true,weight=1)
+moves[++mi] = mvScale(extinction,lambda=1,tune=true,weight=1)
+moves[++mi] = mvSlide(root,delta=1,tune=true,weight=1)
+
+psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=abs(root), nTaxa=taxaCount, names=names )
+
+moves[++mi] = mvNarrow(psi, weight=5.0)
+moves[++mi] = mvNNI(psi, weight=1.0)
+moves[++mi] = mvFNPR(psi, weight=3.0)
+moves[++mi] = mvSubtreeScale(psi, weight=3.0)
+moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
+
+psi.setValue( startingTree )
+#psi <- startingTree 
+
+# only for monitoring purposes
+tmrca := treeHeight( psi )
+
+
+
+#######
+# RLC #
+#######
+
+# get a clock rate variable
+rho ~ dnBeta(1,1)
+# We need to initialize the probability of a rate change with a very low value because we want to start our MCMC at or close to the strict clock model.
+# Starting from a strict clock model makes it easier for the MCMC to add new local clocks.
+rho.setValue(0.001)
+moves[++mi] = mvSlide(rho, delta=0.01, tune=true, weight=2.0)
+
+#rho <- 0.01
+lambda <- 0.0
+
+
+#meanRateChange <- 2.0                      # this gives a mean rate change by a factor of 7.811176 (choose a mean-value of 1.0 if you want an expected factor of 2.873571)
+meanRateChange ~ dnUnif(1.9,2.1)              # this gives a mean rate change by a factor of 7.811176 (choose a mean-value of 1.0 if you want an expected factor of 2.873571)
+stDevRateChange := meanRateChange / 3.0    # We could also divide by 5.0
+valueDist = dnBimodalLnorm(-meanRateChange,meanRateChange, stDevRateChange, stDevRateChange,0.5)
+
+moves[++mi] = mvSlide(meanRateChange, delta=0.01, tune=true, weight=2.0)
+
+branchRateMultipliers ~ dnBranchRateJumpProcess(valueDistribution=valueDist, tree=psi, lambda=lambda, rho=rho)
+moves[++mi] = mvSwitchRateJump(branchRateMultipliers, weight=10)
+moves[++mi] = mvRlcRateScale(branchRateMultipliers, lambda=0.1, tune=true, weight=5)
+
+meanClockRate ~ dnUnif(0.0,100.0)
+meanClockRate.setValue(5.6812E-3)
+moves[++mi] = mvSlide(meanClockRate, delta=0.1, tune=true, weight=2.0)
+moves[++mi] = mvScale(meanClockRate, lambda=0.1, tune=true, weight=2.0)
+
+
+clockRates := rateMultiplierPhyloFunction(tree=psi, rates=branchRateMultipliers, baseRate=meanClockRate)
+
+
+
+
+########
+# ASRV #
+########
+
+# set up the prior for the gamma distributed rates per site
+alpha_prior <- 1.0
+alpha ~ dnExponential(alpha_prior)
+moves[++mi] = mvScale(alpha,lambda=1,tune=true,weight=1.0)
+
+# construct the gamma distributed rate variables
+for ( i in 1:4 ) {
+  gammaRates[i] := qgamma( i*0.25 - 0.125, alpha, alpha )
+}
+# now normalize the rates
+# this is necessary to keep the parameters identifiable
+normGammaRates := normalize( gammaRates )
+
+
+
+########
+# CTMC #
+########
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRates, siteRates= normGammaRates, nSites=nSites, type="DNA")
+
+# attach the data
+seq.clamp(D)
+
+
+
+########
+# MCMC #
+########
+
+mymodel = model(rho)
+
+monitors[1] = mnModel(filename="test_RLC.log",printgen=10, separator = TAB)
+monitors[2] = mnFile(filename="test_RLC_ClockRates.log",printgen=10, separator = TAB, branchRateMultipliers, posterior=false, prior=false, likelihood=false)
+monitors[3] = mnExtNewick(filename="test_RLC.trees",printgen=10, separator = "	", psi, clockRates, branchRateMultipliers, posterior=false, prior=false, likelihood=false)
+monitors[4] = mnScreen(printgen=100, rho, meanClockRate, tmrca)
+
+ 
+mymcmc = mcmc(mymodel, monitors, moves)
+mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.run(generations=400)
+
+mymcmc.operatorSummary()
+
+write(file="result.txt", append=TRUE, "Finished RLC.Rev")
+
+q()
+

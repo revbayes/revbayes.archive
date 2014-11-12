@@ -44,11 +44,11 @@ namespace RevBayesCore {
         RootedTripletDistribution(void);                                                                           //!< Default constructor
         RootedTripletDistribution(const RootedTripletDistribution& t);                                             //!< Copy constructor
         virtual                                    ~RootedTripletDistribution(void);                                                                                                        //!< Destructor
-        RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames, bool recordBls = false ) ;
-        RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< std::string > spNames, bool recordBls= false ) ;
-        RootedTripletDistribution( const std::vector< std::string > spNames ) ;
-        RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< Taxon > tax, bool recordBls = false ) ;
-        RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< Taxon > tax, bool recordBls = false ) ;
+        RootedTripletDistribution( const RbVector<TimeTree>& ts, const std::vector< std::string > spNames, bool recordBls = false ) ;
+        RootedTripletDistribution( const RbVector<BranchLengthTree>& ts, const std::vector< std::string > spNames, bool recordBls= false ) ;
+        RootedTripletDistribution( const RbVector< std::string > spNames ) ;
+        RootedTripletDistribution( const RbVector<TimeTree>& ts, const std::vector< Taxon > tax, bool recordBls = false ) ;
+        RootedTripletDistribution( const RbVector<BranchLengthTree>& ts, const std::vector< Taxon > tax, bool recordBls = false ) ;
         RootedTripletDistribution( const std::vector< Taxon > tax ) ;
 
         RootedTripletDistribution&                                   operator=(const RootedTripletDistribution& t);
@@ -82,9 +82,9 @@ namespace RevBayesCore {
 
         void setSpecies ( std::vector< std::string > s );
         void setTaxa ( std::vector< Taxon > t );
-       // void setTrees( TypedDagNode< std::vector< Tree > >* ts ) ;
-        void setTrees ( const std::vector< TimeTree >& ts );
-        void setTrees ( const std::vector< BranchLengthTree >& ts );
+       // void setTrees( TypedDagNode< RbVector< Tree > >* ts ) ;
+        void setTrees ( const RbVector< TimeTree >& ts );
+        void setTrees ( const RbVector< BranchLengthTree >& ts );
         void setRecordBranchLengths ( const bool b );
         std::vector< std::string > getSpecies ( ) const;
         std::vector< Taxon > getTaxa ( ) const;
@@ -99,8 +99,8 @@ namespace RevBayesCore {
 
         
         //Members:
-        std::vector< TimeTree >                                                      ttrees;
-        std::vector< BranchLengthTree >                                             bltrees;
+        RbVector< TimeTree >                                                      ttrees;
+        RbVector< BranchLengthTree >                                             bltrees;
         std::vector< Taxon >                                                           taxa;
         std::vector< std::string >                                                  species;
         std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >              tripletDistribution;

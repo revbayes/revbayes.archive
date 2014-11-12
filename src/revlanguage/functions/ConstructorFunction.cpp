@@ -26,20 +26,23 @@
 using namespace RevLanguage;
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction( RevObject *obj ) : Function(), templateObject(obj) {
+ConstructorFunction::ConstructorFunction( RevObject *obj ) : Procedure(),
+    templateObject(obj)
+{
     
     // Hack: we know that we will not own the argRules.
-    argRules = &templateObject->getMemberRules();
+    argRules = &templateObject->getParameterRules();
 }
 
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Function(obj) {
+ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Procedure(obj)
+{
     
     templateObject = obj.templateObject->clone();
     
     // Hack: we know that we will not own the argRules.
-    argRules = &templateObject->getMemberRules();
+    argRules = &templateObject->getParameterRules();
 }
 
 
@@ -51,7 +54,7 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
         templateObject = c.templateObject->clone();
         
         // Hack: we know that we will not own the argRules.
-        argRules = &templateObject->getMemberRules();
+        argRules = &templateObject->getParameterRules();
     }
     
     return *this;
@@ -77,16 +80,21 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
  * @todo This is the old code, which needs to be changed when the member
  *       variable code is revised.
  */
-RevPtr<Variable> ConstructorFunction::execute( void ) {
+RevPtr<Variable> ConstructorFunction::execute( void )
+{
     
     RevObject* copyObject = templateObject->clone();
     
-    for ( size_t i = 0; i < args.size(); i++ ) {
+    for ( size_t i = 0; i < args.size(); i++ )
+    {
         
-        if ( args[i].isConstant() ) {
-            copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
-        } else {
-            copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
+        if ( args[i].isConstant() )
+        {
+            copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+        }
+        else
+        {
+            copyObject->setParameter( args[i].getLabel(), args[i].getReferenceVariable() );
         }
     }
     
@@ -98,7 +106,8 @@ RevPtr<Variable> ConstructorFunction::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
+const ArgumentRules& ConstructorFunction::getArgumentRules(void) const
+{
     
     return *argRules;
 }

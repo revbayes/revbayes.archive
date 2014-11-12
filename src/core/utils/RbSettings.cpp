@@ -55,10 +55,16 @@ RbSettings::RbSettings(std::string& defaultFileName) {
 }
 
 
+size_t RbSettings::getLineWidth( void ) const
+{
+    // return the internal value
+    return lineWidth;
+}
+
 
 bool RbSettings::getPrintNodeIndex( void ) const
 {
-    
+    // return the internal value
     return printNodeIndex;
 }
 
@@ -81,7 +87,8 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 #define	MAX_DIR_PATH	2048
 void RbSettings::initializeUserSettings(void)
 {
-
+    
+    lineWidth = 100;             // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = false;     // print node indices of tree nodes as comments
 
@@ -111,19 +118,24 @@ void RbSettings::initializeUserSettings(void)
 }
 
 
+void RbSettings::setLineWidth(size_t w)
+{
+    // replace the internal value with this new value
+    lineWidth = w;
+}
+
+
 void RbSettings::setPrintNodeIndex(bool tf)
 {
-    
+    // replace the internal value with this new value
     printNodeIndex = tf;
-    
 }
 
 
 void RbSettings::setTolerance(double t)
 {
-    
+    // replace the internal value with this new value
     tolerance = t;
-    
 }
 
 

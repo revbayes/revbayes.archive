@@ -18,14 +18,14 @@
 #ifndef Func_dayhoff_H
 #define Func_dayhoff_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_dayhoff :  public Function {
+    class Func_dayhoff : public Procedure {
         
     public:
         Func_dayhoff( void );

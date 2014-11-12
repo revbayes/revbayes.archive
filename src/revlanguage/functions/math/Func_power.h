@@ -18,14 +18,14 @@
 #ifndef Func_power_H
 #define Func_power_H
 
-#include "RlFunction.h"
+#include "RealPos.h"
+#include "RlTypedFunction.h"
 
-#include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_power :  public Function {
+    class Func_power : public TypedFunction<RealPos> {
         
     public:
         Func_power( void );
@@ -37,9 +37,8 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
     };
     
