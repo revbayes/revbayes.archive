@@ -63,17 +63,20 @@ write(pomo_data)
 # Here we are going to use a GTR matrix. 
 # So we define the GTR matrix.
 
-er_prior <- v(1,1,1,1,1,1)
-er ~ dnDirichlet(er_prior)
+kappa_prior <- 10.0
+kappa ~ exponential(kappa_prior)
+
+kappa.setValue(0.02)
+
 
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := hky(kappa,sf) 
 
 # Second, one can have different fitnesses for A, C, G, T. 
-# Here, we are going to assume that all 4 bases have the same fitness.
-base_fitnesses <- v(1, 1, 1, 1)
+# Here, C and G have a higher fitness.
+base_fitnesses <- v(1, 1.01, 1.01, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
