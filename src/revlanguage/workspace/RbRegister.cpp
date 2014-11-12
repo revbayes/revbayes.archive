@@ -576,7 +576,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
         // autocorrelated log-normal branch rates relaxed clock model
-        addDistribution( "dnAutocorrrelatedLNBranchRates", new Dist_autocorrelatedLnBranchRates() );
         addDistribution( "dnACLN", new Dist_autocorrelatedLnBranchRates() );
 		
 		
