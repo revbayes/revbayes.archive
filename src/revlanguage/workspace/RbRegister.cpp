@@ -349,6 +349,7 @@
 
 
 /* Input/output functions (in folder "functions/io") */
+#include "Func_consensusTree.h"
 #include "Func_mapTree.h"
 #include "Func_readAtlas.h"
 #include "Func_readContinuousCharacterData.h"
@@ -942,6 +943,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
 
         /* Input/output functions (in folder "functions/io") */
+		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
+		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()     );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
         addFunction( "print",                       new Func_write()                       );
