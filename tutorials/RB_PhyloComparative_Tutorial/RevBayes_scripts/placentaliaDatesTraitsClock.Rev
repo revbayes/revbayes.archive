@@ -61,7 +61,7 @@ psi.setValue(fixedTree)
 
 kappa ~ dnLogUniform(min=0.001,max=1000)
 kappa.setValue(0.1)
-df = nTraits+2
+df <- nTraits+2
 covdim = nTraits
 
 Sigma ~ dnInvWishart(dim=covdim, kappa=kappa, df=df)
@@ -150,7 +150,7 @@ moves[index++] = mvNodeTimeSlideUniform(psi, weight=10.0)
 moves[index++] = mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
 
 # conjugate Gibbs move on covariance matrix
-# moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+ moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
 
 # moves on the Brownian process
 moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
@@ -193,6 +193,6 @@ mymcmc = mcmc(mymodel, monitors, moves)
 
 mymcmc.burnin(generations=2000,tuningInterval=250)
 
-mymcmc.run(5000)
+mymcmc.run(10000)
 
 
