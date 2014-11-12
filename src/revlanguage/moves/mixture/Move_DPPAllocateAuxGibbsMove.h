@@ -38,10 +38,10 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
-        RevPtr<const Variable>                      x;                                                                                              //!< The variable holding the real valued vector.
-        RevPtr<const Variable>                      nAux;                                                                                         //!< The variable for the tuning parameter.
+        RevPtr<const RevVariable>                      x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                      nAux;                                                                                         //!< The variable for the tuning parameter.
         
     };
     
@@ -163,7 +163,7 @@ void Move_DPPAllocateAuxGibbsMove<valType>::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 template <class valType>
-void Move_DPPAllocateAuxGibbsMove<valType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_DPPAllocateAuxGibbsMove<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         x = var;

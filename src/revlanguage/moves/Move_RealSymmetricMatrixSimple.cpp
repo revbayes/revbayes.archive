@@ -119,7 +119,7 @@ void Move_RealSymmetricMatrixSimple::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_RealSymmetricMatrixSimple::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_RealSymmetricMatrixSimple::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         mat = var;

@@ -36,7 +36,7 @@ Func_readDiscreteCharacterData* Func_readDiscreteCharacterData::clone( void ) co
 
 
 /** Execute function */
-RevPtr<Variable> Func_readDiscreteCharacterData::execute( void )
+RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
 {
     
     // get the information from the arguments for reading the file
@@ -268,7 +268,7 @@ RevPtr<Variable> Func_readDiscreteCharacterData::execute( void )
         }
     }
     
-    return new Variable( retVal );
+    return new RevVariable( retVal );
 }
 
 

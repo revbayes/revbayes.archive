@@ -159,7 +159,7 @@ void Move_RandomIntegerWalk::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_RandomIntegerWalk::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_RandomIntegerWalk::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "x" ) 

@@ -109,7 +109,7 @@ void Move_NNINonclock::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NNINonclock::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NNINonclock::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

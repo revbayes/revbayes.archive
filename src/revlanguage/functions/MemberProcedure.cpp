@@ -47,11 +47,11 @@ MemberProcedure* MemberProcedure::clone(void) const
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RevPtr<Variable> MemberProcedure::execute( void )
+RevPtr<RevVariable> MemberProcedure::execute( void )
 {
     
     bool found = false;
-    RevPtr<Variable> retValue = object->getRevObject().executeMethod( getName(), args, found );
+    RevPtr<RevVariable> retValue = object->getRevObject().executeMethod( getName(), args, found );
     
     if ( found == false )
     {
@@ -123,7 +123,7 @@ bool MemberProcedure::isProcedure( void ) const
 }
 
 
-void MemberProcedure::setMemberObject( const RevPtr<Variable> &obj) {
+void MemberProcedure::setMemberObject( const RevPtr<RevVariable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;

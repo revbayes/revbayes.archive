@@ -38,13 +38,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
 
-        RevPtr<const Variable>                          lambda;                                                                                 //!< The speciation rate
-        RevPtr<const Variable>                          mu;                                                                                     //!< The extinction rate
+        RevPtr<const RevVariable>                          lambda;                                                                                 //!< The speciation rate
+        RevPtr<const RevVariable>                          mu;                                                                                     //!< The extinction rate
         
     };
     

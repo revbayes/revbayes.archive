@@ -112,7 +112,7 @@ const TypeSpec& Dist_whiteNoise::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_whiteNoise::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_whiteNoise::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
 
     if ( name == "tree" )
     {

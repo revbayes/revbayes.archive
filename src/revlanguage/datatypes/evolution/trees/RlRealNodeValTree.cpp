@@ -123,7 +123,7 @@ RealNodeValTree* RealNodeValTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevVariable> RealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if ( name == "clampAt" )
@@ -136,7 +136,7 @@ RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &
         RevBayesCore::ContinuousCharacterData* c = & data->getValue();
         
         this->dagNode->getValue().clampAt(c, k->getValue());   
-        return new Variable( new Real( 0 ) );
+        return new RevVariable( new Real( 0 ) );
     }
 
     std::cerr << "sending to core execute method\n";

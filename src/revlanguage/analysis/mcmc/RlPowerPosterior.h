@@ -43,19 +43,19 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
         // Member method inits
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);          //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
         
-        RevPtr<const Variable>                      model;
-        RevPtr<const Variable>                      moves;
-        RevPtr<const Variable>                      powers;
-        RevPtr<const Variable>                      filename;
-        RevPtr<const Variable>                      cats;
-        RevPtr<const Variable>                      alphaVal;
-        RevPtr<const Variable>                      sampFreq;
+        RevPtr<const RevVariable>                      model;
+        RevPtr<const RevVariable>                      moves;
+        RevPtr<const RevVariable>                      powers;
+        RevPtr<const RevVariable>                      filename;
+        RevPtr<const RevVariable>                      cats;
+        RevPtr<const RevVariable>                      alphaVal;
+        RevPtr<const RevVariable>                      sampFreq;
         
     };
     

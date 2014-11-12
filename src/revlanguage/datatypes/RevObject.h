@@ -36,7 +36,7 @@ namespace RevLanguage {
     class TypeSpec;
     class UserFunction;
     class UserFunctionCall;
-    class Variable;
+    class RevVariable;
 
     typedef ArgumentRules MemberRules;                                                                                                  //!< Member rules type def, for convenience
 
@@ -70,7 +70,7 @@ namespace RevLanguage {
         // Basic utility functions you may want to override
         virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
         virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);      //!< Execute member method (if applicable)
         virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
         virtual const MemberRules&          getParameterRules(void) const;                                                                  //!< Get member rules
         virtual bool                        isAbstract(void) const;                                                                         //!< Is this an abstract type/object?
@@ -81,8 +81,8 @@ namespace RevLanguage {
         virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
         virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
         virtual void                        makeUserFunctionValue(UserFunction* fxn);                                                       //!< Convert to deterministic object with a userdefined Rev function
-        virtual void                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);                  //!< Set member variable
-        virtual void                        setParameter(const std::string& name, const RevPtr<Variable> &var);                             //!< Set member variable
+        virtual void                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
+        virtual void                        setParameter(const std::string& name, const RevPtr<RevVariable> &var);                          //!< Set member variable
         virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
 
         // Basic utility functions you should not have to override
@@ -92,7 +92,7 @@ namespace RevLanguage {
     
     protected:
         
-        RevObject( bool includeMemberMethods=true );                                                                                                  //!< Constructor without member methods.
+        RevObject( bool includeMemberMethods=true );                                                                                        //!< Constructor without member methods.
     
         // members
         MethodTable                         methods;

@@ -156,7 +156,7 @@ const ArgumentRule* SyntaxFormal::getArgumentRule(void ) const
 
 
 /** Get semantic value (not applicable so return NULL) */
-RevPtr<Variable> SyntaxFormal::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxFormal::evaluateContent( Environment& env, bool dynamic )
 {
     return NULL;
 }

@@ -38,7 +38,7 @@ Func_write* Func_write::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_write::execute( void ) {
+RevPtr<RevVariable> Func_write::execute( void ) {
     
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();

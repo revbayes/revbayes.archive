@@ -31,7 +31,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         // Execute function
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
         
     };
     
@@ -64,7 +64,7 @@ RevLanguage::Func_workspaceVector<valType>* RevLanguage::Func_workspaceVector<va
 
 /** Execute function: assemble a workspace vector */
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_workspaceVector<valType>::execute( void )
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_workspaceVector<valType>::execute( void )
 {
     RevBayesCore::RbVector<valType> params;
     for ( size_t i = 0; i < args.size(); i++ )
@@ -75,7 +75,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_workspaceVector<val
     
     WorkspaceVector<valType> *theVector = new WorkspaceVector<valType>( params );
     
-    return new Variable( theVector );
+    return new RevVariable( theVector );
 }
 
 

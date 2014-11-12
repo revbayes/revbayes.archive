@@ -114,7 +114,7 @@ void Move_VectorSingleElementSlide::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_VectorSingleElementSlide::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_VectorSingleElementSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         v = var;

@@ -1,0 +1,101 @@
+/* Graphical model description in DOT language                                    */
+/*    To view graph:                                                              */
+/*       open this file in the program Graphviz: http://www.graphviz.org          */
+/*       or paste contents into an online viewer: http://stamm-wilbrandt.de/GraphvizFiddle */
+
+digraph REVDAG {
+   n_0x7ffdc3b5ef80 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_br_s [shape=record, style=filled, fillcolor=white, label="{br_s|0.05}"]
+   n_sf_hp [shape=record, style=filled, fillcolor=white, label="{sf_hp|1 1 1 1}"]
+   n_Q [shape=oval, style="dashed,filled", fillcolor=white, label="Q\n[ fnGTR( ) ]"]
+   n_sf [shape=oval, style=filled, fillcolor=white, label="sf"]
+   n_branch_rates [shape=oval, style=filled, fillcolor=white, label="branch_rates"]
+   n_er_hp [shape=record, style=filled, fillcolor=white, label="{er_hp|1 1 1 1 1 1}"]
+   n_0x7ffdc3b7cce0 [shape=box, style=filled, fillcolor=white, label="2"]
+   n_turnover [shape=oval, style=filled, fillcolor=white, label="turnover"]
+   n_br_mu [shape=record, style=filled, fillcolor=white, label="{br_mu|-5.22261}"]
+   n_sdv [shape=record, style=filled, fillcolor=white, label="{sdv|0.25}"]
+   n_timetree [shape=oval, style=filled, fillcolor=white, label="timetree"]
+   n_mu [shape=record, style=filled, fillcolor=white, label="{mu|2.27134}"]
+   n_root_time [shape=oval, style=filled, fillcolor=white, label="root_time"]
+   n_er [shape=oval, style=filled, fillcolor=white, label="er"]
+   n_death_rate [shape=oval, style="dashed,filled", fillcolor=white, label="death_rate\n[ _div( ) ]"]
+   n_n_TMRCA_Ursidae [shape=oval, style="dashed,filled", fillcolor=white, label="n_TMRCA_Ursidae\n[ _uminus( ) ]"]
+   n_phySeq_pInv [shape=record, style=filled, fillcolor=white, label="{phySeq.pInv|0}"]
+   n_diversification [shape=oval, style=filled, fillcolor=white, label="diversification"]
+   n_mu_ra [shape=record, style=filled, fillcolor=white, label="{mu_ra|2.36665}"]
+   n_concentration [shape=record, style=filled, fillcolor=white, label="{concentration|0.753479}"]
+   n_denom [shape=oval, style="dashed,filled", fillcolor=white, label="denom\n[ abs( ) ]"]
+   n_0x7ffdc1fe4490 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ _mul( ) ]"]
+   n_base_rate_offset [shape=record, style=filled, fillcolor=white, label="{base_rate.offset|0}"]
+   n_0x7ffdc3904d50 [shape=box, style=filled, fillcolor=white, label="0.0333"]
+   n_birth_rate [shape=oval, style="dashed,filled", fillcolor=white, label="birth_rate\n[ _div( ) ]"]
+   n_tmrca_UrsidaePinn [shape=oval, style="dashed,filled", fillcolor=white, label="tmrca_UrsidaePinn\n[ tmrca( ) ]"]
+   n_crown_Ursid_fossil [shape=oval, style=filled, fillcolor=gray, label="crown_Ursid_fossil"]
+   n_stem_Ursid_fossil [shape=oval, style=filled, fillcolor=gray, label="stem_Ursid_fossil"]
+   n_base_rate [shape=oval, style=filled, fillcolor=white, label="base_rate"]
+   n_stdv_ra [shape=record, style=filled, fillcolor=white, label="{stdv_ra|0.25}"]
+   n_0x7ffdc3f7e830 [shape=box, style=filled, fillcolor=white, label="2"]
+   n_g0_a [shape=record, style=filled, fillcolor=white, label="{g0_a|4}"]
+   n_n_cats [shape=oval, style="dashed,filled", fillcolor=white, label="n_cats\n[ fnNumUniqueInVector( ) ]"]
+   n_branch_subrates [shape=oval, style="dashed,filled", fillcolor=white, label="branch_subrates\n[ _mul( ) ]"]
+   n_rho [shape=record, style=filled, fillcolor=white, label="{rho|0.68}"]
+   n_0x7ffdc398ee20 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ _sub( ) ]"]
+   n_diversification_offset [shape=record, style=filled, fillcolor=white, label="{diversification.offset|0}"]
+   n_tmrca_Ursidae [shape=oval, style="dashed,filled", fillcolor=white, label="tmrca_Ursidae\n[ tmrca( ) ]"]
+   n_n_TMRCA_UrsidaePinn [shape=oval, style="dashed,filled", fillcolor=white, label="n_TMRCA_UrsidaePinn\n[ _uminus( ) ]"]
+   n_tHesperocyon [shape=record, style=filled, fillcolor=white, label="{tHesperocyon|38}"]
+   n_g0_b [shape=record, style=filled, fillcolor=white, label="{g0_b|8}"]
+   n_mean_rt [shape=oval, style="dashed,filled", fillcolor=white, label="mean_rt\n[ mean( ) ]"]
+   n_phySeq [shape=oval, style=filled, fillcolor=gray, label="phySeq"]
+   n_0x7ffdc3b17860 [shape=box, style=filled, fillcolor=white, label="10"]
+   n_0x7ffdc3b5ef80 -> n_0x7ffdc398ee20[style=dashed]
+   n_br_s -> n_base_rate
+   n_sf_hp -> n_sf
+   n_Q -> n_phySeq
+   n_sf -> n_Q[style=dashed]
+   n_branch_rates -> n_branch_subrates[style=dashed]
+   n_branch_rates -> n_n_cats[style=dashed]
+   n_branch_rates -> n_mean_rt[style=dashed]
+   n_er_hp -> n_er
+   n_0x7ffdc3b7cce0 -> n_turnover
+   n_turnover -> n_0x7ffdc1fe4490[style=dashed]
+   n_turnover -> n_0x7ffdc398ee20[style=dashed]
+   n_br_mu -> n_base_rate
+   n_sdv -> n_crown_Ursid_fossil
+   n_timetree -> n_phySeq
+   n_timetree -> n_tmrca_UrsidaePinn[style=dashed]
+   n_timetree -> n_tmrca_Ursidae[style=dashed]
+   n_mu -> n_crown_Ursid_fossil
+   n_root_time -> n_timetree
+   n_er -> n_Q[style=dashed]
+   n_death_rate -> n_timetree
+   n_n_TMRCA_Ursidae -> n_crown_Ursid_fossil
+   n_phySeq_pInv -> n_phySeq
+   n_diversification -> n_birth_rate[style=dashed]
+   n_diversification -> n_0x7ffdc1fe4490[style=dashed]
+   n_mu_ra -> n_root_time
+   n_concentration -> n_branch_rates
+   n_denom -> n_birth_rate[style=dashed]
+   n_denom -> n_death_rate[style=dashed]
+   n_0x7ffdc1fe4490 -> n_death_rate[style=dashed]
+   n_base_rate_offset -> n_base_rate
+   n_0x7ffdc3904d50 -> n_stem_Ursid_fossil
+   n_birth_rate -> n_timetree
+   n_tmrca_UrsidaePinn -> n_n_TMRCA_UrsidaePinn[style=dashed]
+   n_base_rate -> n_branch_subrates[style=dashed]
+   n_stdv_ra -> n_root_time
+   n_0x7ffdc3f7e830 -> n_turnover
+   n_g0_a -> n_branch_rates
+   n_branch_subrates -> n_phySeq
+   n_rho -> n_timetree
+   n_0x7ffdc398ee20 -> n_denom[style=dashed]
+   n_diversification_offset -> n_diversification
+   n_tmrca_Ursidae -> n_n_TMRCA_Ursidae[style=dashed]
+   n_n_TMRCA_UrsidaePinn -> n_stem_Ursid_fossil
+   n_tHesperocyon -> n_root_time
+   n_g0_b -> n_branch_rates
+   n_0x7ffdc3b17860 -> n_diversification
+   {rank=same; n_crown_Ursid_fossil; n_stem_Ursid_fossil; n_phySeq;}
+   graph [bgcolor=lavenderblush2, pad=0.25]
+}

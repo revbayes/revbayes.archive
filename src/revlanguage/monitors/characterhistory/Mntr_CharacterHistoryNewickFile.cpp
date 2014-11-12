@@ -44,7 +44,7 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
    
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     std::set<RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> > *> n;
-    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
@@ -149,7 +149,7 @@ void Mntr_CharacterHistoryNewickFile::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mntr_CharacterHistoryNewickFile::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_CharacterHistoryNewickFile::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );

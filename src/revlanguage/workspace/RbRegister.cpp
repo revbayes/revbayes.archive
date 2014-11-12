@@ -28,6 +28,8 @@
 #include <set>
 #include <cstdlib>
 
+#include "Func_dagNodeCount.h"
+
 /* Files including helper classes */
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
@@ -957,6 +959,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "writeFasta",                  new Func_writeFasta()                  );
         addFunction( "writeNexus",                  new Func_writeNexus()                  );
 
+        
+        
+        addFunction("dagNodeCount", new Func_dagNodeCount());
         
         /* Math functions (in folder "functions/math") */
 		

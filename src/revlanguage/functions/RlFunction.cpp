@@ -265,7 +265,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             
             if ( filled[j] == false ) 
             {
-                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
+                const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
 
                 if ( theRules[j].isArgumentValid( argVar, once ) )
                 {
@@ -341,7 +341,7 @@ void Function::clearArguments(void)
 
 
 /** Compute the match score between the argument and the argument rule. */
-double Function::computeMatchScore(const Variable *var, const ArgumentRule &rule)
+double Function::computeMatchScore(const RevVariable *var, const ArgumentRule &rule)
 {
    
     double     score = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -659,7 +659,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
             if ( filled[j] == false ) 
             {
-                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
+                const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
                 
                 if ( theRules[j].isArgumentValid( argVar, once ) )
                 {
@@ -705,7 +705,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
         
         const ArgumentRule& theRule = theRules[i];
-        RevPtr<Variable> theVar = theRule.getDefaultVariable().clone();
+        RevPtr<RevVariable> theVar = theRule.getDefaultVariable().clone();
         theVar->setName( "." + theRule.getArgumentLabel() );
         theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
         size_t idx = pArgs.size();

@@ -46,7 +46,7 @@ void SteppingStoneSampler::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "marginal")
@@ -55,7 +55,7 @@ RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, co
         
         double ml = value->marginalLikelihood();
         
-        return new Variable( new Real( ml ) );
+        return new RevVariable( new Real( ml ) );
     }
     
     return RevObject::executeMethod( name, args, found );
@@ -121,7 +121,7 @@ void SteppingStoneSampler::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void SteppingStoneSampler::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void SteppingStoneSampler::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "likelihoodColumnName")

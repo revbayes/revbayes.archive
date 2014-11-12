@@ -196,7 +196,7 @@ void Dist_branchHeterogeneousOrnsteinUhlenbeck::printValue(std::ostream& o) cons
 
 
 /** Set a member variable */
-void Dist_branchHeterogeneousOrnsteinUhlenbeck::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_branchHeterogeneousOrnsteinUhlenbeck::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" )
     {

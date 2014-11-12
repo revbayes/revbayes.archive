@@ -9,7 +9,7 @@
 namespace RevLanguage {
 
     class SyntaxFunctionCall;
-    class VariableSlot;
+    class RevVariableSlot;
 
     /**
      * This is the class used to hold variables in the syntax tree.
@@ -36,8 +36,8 @@ namespace RevLanguage {
         void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
 
         // Regular functions
-        RevPtr<Variable>                    evaluateLHSContent(Environment& env, const std::string& varType);                       //!< Get semantic lhs value
-        RevPtr<Variable>                    evaluateContent(Environment& env, bool dynamic=false);                                  //!< Get semantic value
+        RevPtr<RevVariable>                    evaluateLHSContent(Environment& env, const std::string& varType);                       //!< Get semantic lhs value
+        RevPtr<RevVariable>                    evaluateContent(Environment& env, bool dynamic=false);                                  //!< Get semantic value
         SyntaxElement*                      getBaseVariable(void);                                                                  //!< Get the base variable for this expression
         
     protected:

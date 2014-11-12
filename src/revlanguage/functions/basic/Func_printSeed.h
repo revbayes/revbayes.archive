@@ -38,7 +38,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
         
     };
     

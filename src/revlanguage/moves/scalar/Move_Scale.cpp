@@ -172,7 +172,7 @@ void Move_Scale::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_Scale::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_Scale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "x" ) 

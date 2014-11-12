@@ -29,19 +29,19 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                          tree;
-        RevPtr<const Variable>                          q;
-        RevPtr<const Variable>                          rate;
-        RevPtr<const Variable>                          siteRates;
-        RevPtr<const Variable>                          rootFrequencies;
-        RevPtr<const Variable>                          pInv;
-        RevPtr<const Variable>                          nSites;
-        RevPtr<const Variable>                          type;
+        RevPtr<const RevVariable>                          tree;
+        RevPtr<const RevVariable>                          q;
+        RevPtr<const RevVariable>                          rate;
+        RevPtr<const RevVariable>                          siteRates;
+        RevPtr<const RevVariable>                          rootFrequencies;
+        RevPtr<const RevVariable>                          pInv;
+        RevPtr<const RevVariable>                          nSites;
+        RevPtr<const RevVariable>                          type;
         
     };
     
@@ -543,7 +543,7 @@ void RevLanguage::Dist_phyloCTMC<treeType>::printValue(std::ostream& o) const
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::Dist_phyloCTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void RevLanguage::Dist_phyloCTMC<treeType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" ) 

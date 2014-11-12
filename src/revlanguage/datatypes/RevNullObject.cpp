@@ -42,7 +42,7 @@ bool RevNullObject::operator==(const RevObject& obj)
  * Execute the member method.
  * We don't have any here.
  */
-RevPtr<Variable> RevNullObject::executeMethod(const std::string &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> RevNullObject::executeMethod(const std::string &name, const std::vector<Argument> &args, bool &found)
 {
     
     found = false;

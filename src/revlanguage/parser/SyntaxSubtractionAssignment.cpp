@@ -48,7 +48,7 @@ SyntaxSubtractionAssignment* SyntaxSubtractionAssignment::clone () const
  * Evaluate the content of this syntax element. This will perform a
  * subtraction assignment operation.
  */
-void SyntaxSubtractionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxSubtractionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating subtraction assignment\n" );
@@ -85,7 +85,7 @@ void SyntaxSubtractionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable>
     // Generate result of the multiplication
     RevObject *newValue = lhs_value.subtract( rhs_value );
     
-    // Fill the slot with the new variable
+    // Fill the slot with the new RevVariable
     lhs->replaceRevObject( newValue );
     
     // Reset it as workspace (control) variable, if it was a workspace (control) variable before the assignment.

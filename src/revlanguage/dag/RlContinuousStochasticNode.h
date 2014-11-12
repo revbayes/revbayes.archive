@@ -20,7 +20,7 @@ namespace RevLanguage {
         
         // public methods
         ContinuousStochasticNode*                   clone(void) const;                                                                              //!< Clone the node
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        virtual RevPtr<RevVariable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
         const MethodTable&                          getMethods( void ) const;                                                                       //!< Get the member methods
         Distribution&                               getRlDistribution(void);                                                                        //!< Get the Rev distribution
         const Distribution&                         getRlDistribution(void) const;                                                                  //!< Get the Rev distribution (const)

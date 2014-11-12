@@ -26,7 +26,7 @@ Func_printSeed* Func_printSeed::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func_printSeed::execute( void ) {
+RevPtr<RevVariable> Func_printSeed::execute( void ) {
     
     
     RevBayesCore::RandomNumberGenerator *rng = RevBayesCore::GLOBAL_RNG;
