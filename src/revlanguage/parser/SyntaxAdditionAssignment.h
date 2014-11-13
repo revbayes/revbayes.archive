@@ -42,7 +42,7 @@ namespace RevLanguage {
         SyntaxAdditionAssignment*           clone() const;                                                  //!< Clone object
         
     protected:
-        void                                assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs);           //!< The assignment operation.
+        void                                assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs);           //!< The assignment operation.
         
     };
     

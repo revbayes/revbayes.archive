@@ -79,17 +79,17 @@ SyntaxIncrement* SyntaxIncrement::clone () const
  * Evaluate the content of this syntax element. This will perform
  * an increment assignment operation.
  */
-RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxIncrement::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating increment assignment\n" );
 #endif
     
-    RevPtr<Variable> retVar;
+    RevPtr<RevVariable> retVar;
     
     // Get variable. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
-    RevPtr<Variable> theVariable = variable->evaluateContent( env );
+    RevPtr<RevVariable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by variable expression in increment assignment" );
     
@@ -102,7 +102,7 @@ RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env, bool dynami
     
     if ( postIncrement )
     {
-        retVar = new Variable( lhs_value.clone() );
+        retVar = new RevVariable( lhs_value.clone() );
     }
     
     // Increment the lhs value. This will not change the control variable status.
@@ -110,7 +110,7 @@ RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env, bool dynami
     
     if ( !postIncrement )
     {
-        retVar = new Variable( lhs_value.clone() );
+        retVar = new RevVariable( lhs_value.clone() );
     }
     
 #ifdef DEBUG_PARSER

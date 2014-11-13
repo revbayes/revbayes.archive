@@ -81,7 +81,7 @@ void Clade::constructInternalObject( void )
     
     // now allocate a new Clade
     std::vector<std::string> n;
-    for (std::vector<RevPtr<const Variable> >::iterator it = names.begin(); it != names.end(); ++it) 
+    for (std::vector<RevPtr<const RevVariable> >::iterator it = names.begin(); it != names.end(); ++it) 
     {
         n.push_back( static_cast<const RlString &>( (*it)->getRevObject() ).getValue() );
     }
@@ -136,7 +136,7 @@ const TypeSpec& Clade::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Clade::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "taxonName" || name == "") 
     {

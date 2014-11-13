@@ -44,7 +44,7 @@
                 {
                 NSString* taxonName = [p name];
                 NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
-                NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+                NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
                 if (textSize.size.width > biggestNameRect.size.width)
                     biggestNameRect.size.width = textSize.size.width;
                 if (textSize.size.height > biggestNameRect.size.height)

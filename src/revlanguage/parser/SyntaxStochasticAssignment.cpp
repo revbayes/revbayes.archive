@@ -38,7 +38,7 @@ SyntaxStochasticAssignment* SyntaxStochasticAssignment::clone () const
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-void SyntaxStochasticAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxStochasticAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating tilde assignment\n" );

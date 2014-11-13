@@ -14,7 +14,7 @@
 #include "RbOptions.h"
 #include "RlString.h"
 #include "SyntaxFunctionCall.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
 #include "SyntaxVariable.h"
 
@@ -22,18 +22,8 @@ using namespace RevLanguage;
 
 
 /** Construct from identifier and index */
-SyntaxVariable::SyntaxVariable( const std::string &n ) :
-SyntaxElement(),
-identifier( n )
-{
-    
-}
-
-
-/** Deep copy constructor */
-SyntaxVariable::SyntaxVariable(const SyntaxVariable& x) :
-SyntaxElement( x ),
-identifier( x.identifier )
+SyntaxVariable::SyntaxVariable( const std::string &n ) : SyntaxElement(),
+    identifier( n )
 {
     
 }
@@ -43,20 +33,6 @@ identifier( x.identifier )
 SyntaxVariable::~SyntaxVariable()
 {
     
-}
-
-
-/** Assignment operator */
-SyntaxVariable& SyntaxVariable::operator=( const SyntaxVariable& x )
-{
-    if (&x != this)
-    {
-        SyntaxElement::operator=( x );
-        
-        identifier   = x.identifier;
-    }
-    
-    return (*this);
 }
 
 
@@ -80,10 +56,10 @@ SyntaxVariable* SyntaxVariable::clone () const
  * clones of themselves (temporary variables) rather than themselves,
  * so that they are not included in the DAG.
  */
-RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic)
+RevPtr<RevVariable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic)
 {
     
-    RevPtr<Variable> theVar;
+    RevPtr<RevVariable> theVar;
     
     // Get variable from the environment (no dynamic version of identifier)
     theVar = env.getVariable( identifier );
@@ -101,7 +77,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
         for (int i=min; i<=max; ++i)
         {
             std::string elementIdentifier = identifier + "[" + i + "]";
-            RevPtr<Variable>& elementVar = env.getVariable( elementIdentifier );
+            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
             // check that the element is not NULL
             if ( elementVar == NULL || elementVar->getRevObject() == RevNullObject::getInstance() )
             {
@@ -113,7 +89,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
         func->processArguments(args,false);
         
         // Evaluate the function (call the static evaluation function)
-        RevPtr<Variable> funcReturnValue = func->execute();
+        RevPtr<RevVariable> funcReturnValue = func->execute();
         
         // free the memory of our copy
         delete func;
@@ -127,7 +103,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
         // Check whether we have a control variable and make a clone in that case
         if ( theVar->isWorkspaceVariable() )
         {
-            theVar = new Variable( theVar->getRevObject().clone() );
+            theVar = new RevVariable( theVar->getRevObject().clone() );
         }
         
     }
@@ -145,9 +121,9 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
  * do not throw an error if the variable does not exist in the
  * frame; instead, we create and return a new null variable.
  */
-RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std::string& elemType )
+RevPtr<RevVariable> SyntaxVariable::evaluateLHSContent( Environment& env, const std::string& elemType )
 {
-    RevPtr<Variable> theVar;
+    RevPtr<RevVariable> theVar;
     
     // Find or create the variable
     if ( env.existsVariable( identifier ) )
@@ -156,7 +132,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
     }
     else    // add it
     {
-        theVar = new Variable( NULL, identifier );
+        theVar = new RevVariable( NULL, identifier );
         env.addVariable( identifier, theVar );
     }
     

@@ -5,6 +5,8 @@
 #include "RbException.h"
 #include "RbOptions.h"
 
+#include "RbDagNodeMemoryManager.h"
+
 using namespace RevBayesCore;
 
 /**
@@ -22,6 +24,11 @@ DagNode::DagNode( const std::string &n ) :
     refCount( 0 )
 {
     
+    RbDagNodeMemoryManager::getInstance().increaseCounter();
+    
+#if defined ( DEBUG_MEMORY )
+    std::cerr << "Creating node <" << this << "> with name '" << name << "'\n";
+#endif
 }
 
 
@@ -44,6 +51,12 @@ DagNode::DagNode( const DagNode &n ) :
     refCount( 0 )
 {
     
+    RbDagNodeMemoryManager::getInstance().increaseCounter();
+    
+#if defined ( DEBUG_MEMORY )
+    std::cerr << "Creating node <" << this << "> with name '" << name << "'\n";
+#endif
+    
 }
 
 
@@ -60,6 +73,7 @@ DagNode::DagNode( const DagNode &n ) :
  */
 DagNode::~DagNode( void )
 {
+    
 #if defined ( DEBUG_MEMORY )
     // For debugging memory leaks
     if ( getName() != "" )
@@ -85,6 +99,9 @@ DagNode::~DagNode( void )
 //        throw RbException( o );
     }
 #endif
+    
+    
+    RbDagNodeMemoryManager::getInstance().decreaseCounter();
 }
 
 

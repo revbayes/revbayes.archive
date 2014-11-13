@@ -4,12 +4,12 @@
 #include <string>
 
 #include "MethodTable.h"
-//#include "Variable.h"
+//#include "RevVariable.h"
 
 namespace RevLanguage {
     
     class Argument;
-    class Variable;
+    class RevVariable;
     
     /**
      * @brief Rev interface for member object which provide methods.
@@ -26,7 +26,7 @@ namespace RevLanguage {
         
     public:
         
-        virtual RevPtr<Variable>                executeMethod(const std::string &name, const std::vector<Argument> &args, bool &found) = 0;     //!< Execute the member method
+        virtual RevPtr<RevVariable>             executeMethod(const std::string &name, const std::vector<Argument> &args, bool &found) = 0;     //!< Execute the member method
         virtual const MethodTable&              getMethods(void) const = 0;                                                                     //!< Get member methods
 
     };

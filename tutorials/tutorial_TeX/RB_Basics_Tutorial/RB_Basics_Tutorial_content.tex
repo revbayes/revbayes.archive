@@ -23,7 +23,7 @@ This framework provides a set of symbols for depicting a \href{http://en.wikiped
 The different nodes and components of a phylogenetic graphical model are shown in Figure \ref{gmnotation} \citep[Fig. 1 from][]{hoehnaGM2014}. 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=1.8in,angle=0]{figures/GM_notation_figure.eps}}
+\fbox{\includegraphics[width=1.8in,angle=0]{../RB_Basics_Tutorial/figures/GM_notation_figure.eps}}
 \caption{\small The symbols for a visual representation of a graphical model. 
 a) Solid squares represent constant nodes, which specify fixed-valued variables. 
 b) Stochastic nodes are represented by solid circles. 
@@ -51,7 +51,7 @@ $\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma)$. Now we can get the posterior prob
 $$\mathbb{P}(M,\sigma \mid \boldsymbol{x}, \alpha, \beta, \lambda) = \frac{\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma) \mathbb{P}(M \mid \alpha,\beta) \mathbb{P}(\sigma \mid \lambda)}{\mathbb{P}(\boldsymbol{x})}.$$
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=2.5in,angle=0]{figures/simple_GM.eps}}
+\fbox{\includegraphics[width=2.5in,angle=0]{../RB_Basics_Tutorial/figures/simple_GM.eps}}
 \caption{\small Graphical model representation of a simple lognormal model. A total of $N$ states of parameter $x$ are observed and occupy a clamped node. 
 This parameter is log-normally distributed with parameters $\mu$ and $\sigma$ (log mean and standard deviation, respectively). 
 The parameter $\mu$ is a deterministic node that is calculated from the stochastic nodes $M$ (the mean of the distribution) and $\sigma$. 
@@ -141,7 +141,7 @@ M ~ dnBimodalLnorm(0.5, 2.0, 1.0, 1.0, 0.5)
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=5in,angle=0]{figures/simple_GM_rev.eps}}
+\fbox{\includegraphics[width=5in,angle=0]{../RB_Basics_Tutorial/figures/simple_GM_rev.eps}}
 \caption{\small Specifying a model with \Rev. 
 The graphical model of the observed parameter $x$ is shown on the left. 
 In this example, $x$ is log-normally distributed with a location parameter of $\mu$ and a standard deviation of $\sigma$, thus $x \sim \mbox{Lognormal}(\mu, \sigma)$. 
@@ -1134,3 +1134,11 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 
 \nocite{rannala96,robert02,Rubinstein1981,Smith1993,yang97b}
 
+\href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics[scale=0.8]{../shared_figures/ccby.eps}} This tutorial was written by Sebastian H\"{o}hna, \href{http://phylo.bio.ku.edu/content/tracy-heath}{Tracy Heath}, and \href{http://michaeljameslandis.com/}{Michael Landis}; licensed under a \href{http://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}. 
+
+
+%\bibliographystyle{plainnat}
+%\bibliography{../bib_tex/master_refs}
+
+
+\printbibliography[heading=relevref]

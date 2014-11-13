@@ -1,5 +1,5 @@
-#ifndef Variable_H
-#define Variable_H
+#ifndef RevVariable_H
+#define RevVariable_H
 
 #include "RevObject.h"
 #include "RevPtr.h"
@@ -36,20 +36,20 @@ namespace RevLanguage {
      *
      * @author RevBayes core development team
      */
-    class Variable {
+    class RevVariable {
     public:
-        Variable(const TypeSpec& ts, const std::string& n="");                          //!< Constructor of empty variable with a type specification
-        Variable(RevObject *revObj, const std::string &n = "");                         //!< Constructor of filled variable
-        Variable(const RevPtr<Variable>& refVar, const std::string &n = "");            //!< Constructor of reference variable
-        Variable(const Variable &v);                                                    //!< Copy constructor
+        RevVariable(const TypeSpec& ts, const std::string& n="");                       //!< Constructor of empty variable with a type specification
+        RevVariable(RevObject *revObj, const std::string &n = "");                      //!< Constructor of filled variable
+        RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n = "");      //!< Constructor of reference variable
+        RevVariable(const RevVariable &v);                                              //!< Copy constructor
         
-        virtual                 ~Variable(void);                                        //!< Virtual destructor
+        virtual                 ~RevVariable(void);                                     //!< Virtual destructor
         
-        Variable&               operator=(const Variable &v);                           //!< Assignment operator
-        
+        RevVariable&            operator=(const RevVariable &v);                        //!< Assignment operator
+
         // Regular functions
         void                    addIndexBoundary(int idx);                              //!< Resize the vector boundaries to include this index.
-        Variable*               clone(void) const;                                      //!< Clone variable
+        RevVariable*            clone(void) const;                                      //!< Clone variable
         int                     getMaxIndex(void) const;                                //!< Get the maximum index for this vector variable.
         int                     getMinIndex(void) const;                                //!< Get the minimum index for this vector variable.
         const std::string&      getName(void) const;                                    //!< Get the name of the variable
@@ -61,7 +61,7 @@ namespace RevLanguage {
         bool                    isReferenceVariable(void) const;                        //!< Is this a reference variable?
         bool                    isVectorVariable(void) const;                           //!< Is this a vector variable?
         bool                    isWorkspaceVariable(void) const;                        //!< Is this a workspace variable?
-        void                    makeReference(const RevPtr<Variable>& refVar);          //!< Make this a reference variable
+        void                    makeReference(const RevPtr<RevVariable>& refVar);       //!< Make this a reference variable
         void                    printValue(std::ostream& o) const;                      //!< Print value of variable
         void                    setElementVariableState(bool flag = true);              //!< Set (or unset) element variable status
         void                    setHiddenVariableState(bool flag = true);               //!< Set (or unset) hidden variable status
@@ -90,7 +90,7 @@ namespace RevLanguage {
         bool                    isWorkspaceVar;                                         //!< Is this a workspace variable?
         int                     min;                                                    //!< Minimum index of vector.
         int                     max;                                                    //!< Maximum index of vector.
-        RevPtr<Variable>        referencedVariable;                                     //!< Smart pointer to referenced variable
+        RevPtr<RevVariable>     referencedVariable;                                     //!< Smart pointer to referenced variable
     };
     
 }

@@ -44,7 +44,7 @@
 #include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
-#include "SlidingMove.h"
+#include "SlideProposal.h"
 #include "SubtreeScale.h"
 #include "TestDPPRelClock.h"
 #include "TimeTree.h"
@@ -76,7 +76,7 @@ bool TestDPPRelClock::run( void ) {
     alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
     treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
-	std::vector<AbstractCharacterData*> data = NclReader::NclReader().readMatrices(alignmentFilename);
+	std::vector<AbstractCharacterData*> data = NclReader().readMatrices(alignmentFilename);
 	
 	AbstractDiscreteCharacterData *discrD = dynamic_cast<AbstractDiscreteCharacterData* >(data[0]);
     
@@ -84,7 +84,7 @@ bool TestDPPRelClock::run( void ) {
     std::cout << data[0] << std::endl;
 	
 	// First, we read in the data 
-    std::vector<TimeTree*> trees = NclReader::NclReader().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
@@ -127,7 +127,7 @@ bool TestDPPRelClock::run( void ) {
         taxa.push_back( Taxon( names[i] ) );
     }
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, birthRate, deathRate, rho, "uniform", "nTaxa", taxa, std::vector<Clade>()) );
-	DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
+	//DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	tau->setValue( trees[0] );
 
 	
@@ -159,7 +159,7 @@ bool TestDPPRelClock::run( void ) {
 	StochasticNode<RbVector<double> > *branchRates = new StochasticNode<RbVector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
 
 	// a deterministic node for calculating the number of rate categories (required for the Gibbs move on cp)
-	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(branchRates) );
+	//DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(branchRates) );
 	
 //	ConstantNode<double> *crA  = new ConstantNode<double>("CR.gammA", new double(0.1) );
 //	ConstantNode<double> *crL  = new ConstantNode<double>("CR.gammL", new double(100.0) );

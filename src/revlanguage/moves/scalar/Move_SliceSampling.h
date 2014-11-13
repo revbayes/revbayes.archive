@@ -42,11 +42,11 @@ namespace RevLanguage {
             
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);         //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);         //!< Set member variable
         
-        RevPtr<const Variable>                      x;                                                                                          //!< The variable on which the move works
-        RevPtr<const Variable>                      window;                                                                                     //!< The tuning parameter
-        RevPtr<const Variable>                      tune;                                                                                       //!< If autotuning should be used.
+        RevPtr<const RevVariable>                      x;                                                                                          //!< The variable on which the move works
+        RevPtr<const RevVariable>                      window;                                                                                     //!< The tuning parameter
+        RevPtr<const RevVariable>                      tune;                                                                                       //!< If autotuning should be used.
         
     };
     

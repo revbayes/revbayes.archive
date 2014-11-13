@@ -60,7 +60,7 @@ void Mcmc::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevPtr<Variable> Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "run") 
@@ -167,7 +167,7 @@ void Mcmc::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mcmc::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Mcmc::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "model") {
         model = var;

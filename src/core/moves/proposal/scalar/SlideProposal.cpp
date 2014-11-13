@@ -159,7 +159,7 @@ void SlideProposal::undoProposal( void )
  * Swap the current variable for a new one.
  *
  * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new variable.
+ * \param[in]     newN     The new RevVariable.
  */
 void SlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {

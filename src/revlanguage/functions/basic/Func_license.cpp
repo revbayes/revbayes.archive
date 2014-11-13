@@ -25,7 +25,7 @@ Func_license* Func_license::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_license::execute( void )
+RevPtr<RevVariable> Func_license::execute( void )
 {
     RBOUT( "" );
     RBOUT( "RevBayes license" );

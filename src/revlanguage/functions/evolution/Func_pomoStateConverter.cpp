@@ -31,7 +31,7 @@ Func_pomoStateConverter* Func_pomoStateConverter::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_pomoStateConverter::execute() {
+RevPtr<RevVariable> Func_pomoStateConverter::execute() {
     
     const RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData>* aln = static_cast<const AbstractDiscreteCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
@@ -51,7 +51,7 @@ RevPtr<Variable> Func_pomoStateConverter::execute() {
     
     AbstractDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
         
-    return new Variable( new AbstractDiscreteCharacterData( PomoAln ) );
+    return new RevVariable( new AbstractDiscreteCharacterData( PomoAln ) );
 }
 
 

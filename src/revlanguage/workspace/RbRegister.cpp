@@ -28,6 +28,8 @@
 #include <set>
 #include <cstdlib>
 
+#include "Func_dagNodeCount.h"
+
 /* Files including helper classes */
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
@@ -349,6 +351,7 @@
 
 
 /* Input/output functions (in folder "functions/io") */
+#include "Func_consensusTree.h"
 #include "Func_mapTree.h"
 #include "Func_readAtlas.h"
 #include "Func_readContinuousCharacterData.h"
@@ -576,7 +579,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
         // autocorrelated log-normal branch rates relaxed clock model
-        addDistribution( "dnAutocorrrelatedLNBranchRates", new Dist_autocorrelatedLnBranchRates() );
         addDistribution( "dnACLN", new Dist_autocorrelatedLnBranchRates() );
 		
 		
@@ -943,6 +945,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
 
         /* Input/output functions (in folder "functions/io") */
+		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
+		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()     );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
         addFunction( "print",                       new Func_write()                       );
@@ -958,6 +962,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "writeFasta",                  new Func_writeFasta()                  );
         addFunction( "writeNexus",                  new Func_writeNexus()                  );
 
+        
+        
+        addFunction("dagNodeCount", new Func_dagNodeCount());
         
         /* Math functions (in folder "functions/math") */
 		

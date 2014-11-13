@@ -33,7 +33,7 @@ Func_writeFasta* Func_writeFasta::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RevPtr<Variable> Func_writeFasta::execute( void ) 
+RevPtr<RevVariable> Func_writeFasta::execute( void ) 
 {
     
     // get the information from the arguments for reading the file

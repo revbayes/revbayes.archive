@@ -13,7 +13,7 @@
 #include "RlTaxonData.h"
 #include "RlSimplex.h"
 #include "TimeAtlas.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include <vector>
 
 using namespace RevLanguage;
@@ -114,20 +114,20 @@ RlAtlas* RlAtlas::clone() const {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "nAreas")
     {
         found = true;
         
-        return new Variable(new Natural((int)this->dagNode->getValue().getNumAreas())) ;
+        return new RevVariable(new Natural((int)this->dagNode->getValue().getNumAreas())) ;
     }
     else if (name == "nEpochs")
     {
         found = true;
         
-        return new Variable(new Natural((int)this->dagNode->getValue().getNumEpochs())) ;
+        return new RevVariable(new Natural((int)this->dagNode->getValue().getNumEpochs())) ;
     }
     else if (name == "names")
     {
@@ -140,13 +140,13 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
             std::string name = areas[0][i]->getName();
             n->push_back( name );
         }
-        return new Variable( n );
+        return new RevVariable( n );
     }
     else if (name == "epochs")
     {
         found = true;
         ModelVector<RealPos> *n = new ModelVector<RealPos>( this->dagNode->getValue().getEpochs() );
-        return new Variable( n );
+        return new RevVariable( n );
     }
     else if (name == "getEpochValues")
     {
@@ -185,7 +185,7 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
             f->push_back( Simplex(v) );
         }
         
-        return new Variable(f);
+        return new RevVariable(f);
     }
     
     return ModelObject<RevBayesCore::TimeAtlas>::executeMethod( name, args, found );

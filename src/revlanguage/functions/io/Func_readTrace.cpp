@@ -44,7 +44,7 @@ Func_readTrace* Func_readTrace::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_readTrace::execute( void ) {
+RevPtr<RevVariable> Func_readTrace::execute( void ) {
 
     // get the information from the arguments for reading the file
     const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -150,7 +150,7 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
     }
     
     // return the vector of traces
-    return new Variable( rv );
+    return new RevVariable( rv );
 }
 
 

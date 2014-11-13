@@ -134,7 +134,7 @@ void Mntr_CharacterHistoryNhxFile::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mntr_CharacterHistoryNhxFile::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_CharacterHistoryNhxFile::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );

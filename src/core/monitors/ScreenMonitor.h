@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of Monitor, used to save information
+ * This file contains the declaration of ScreenMonitor, used to save information
  * to the screen (std::cout) about the monitoring of a variable DAG node.
  *
  * @brief Declaration of ScreenMonitor
@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-09-08, version 1.0
  *
- * $Id: FileMonitor.h 1833 2012-11-15 15:03:33Z hoehna $
+ * $Id: ScreenMonitor.h 1833 2012-11-15 15:03:33Z hoehna $
  */
 
 #ifndef ScreenMonitor_H

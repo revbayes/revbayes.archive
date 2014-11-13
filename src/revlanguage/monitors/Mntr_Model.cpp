@@ -120,7 +120,7 @@ void Mntr_Model::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Mntr_Model::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
+void Mntr_Model::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "filename" ) 

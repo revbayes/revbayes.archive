@@ -3,7 +3,7 @@
 
 #include "DynamicNode.h"
 #include "RevPtr.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 #include <vector>
 
@@ -55,7 +55,7 @@ namespace RevLanguage {
         
     private:
         UserFunction*                           userFunction;                                                       //!< The user function used to compute the value
-        RevPtr<Variable>                        returnVariable;                                                     //!< The current value of the function, wrapped as a variable
+        RevPtr<RevVariable>                        returnVariable;                                                     //!< The current value of the function, wrapped as a variable
     };
     
 }
@@ -240,7 +240,7 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBay
             std::map<std::string, const RevBayesCore::DagNode*> names;
             AbstractModelObject *rObjClone = modelObj.clone();
             rObjClone->setDagNode( theNode->cloneDAG( newNodes, names ) );
-            RevPtr<Variable> theArgumentVariableClone = new Variable( rObjClone, args[i].getVariable()->getName() );
+            RevPtr<RevVariable> theArgumentVariableClone = new RevVariable( rObjClone, args[i].getVariable()->getName() );
             copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
         
             // Manage the DAG node connections

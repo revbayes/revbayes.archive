@@ -17,7 +17,7 @@
 #ifndef RevNullObject_H
 #define RevNullObject_H
 
-#include "Variable.h"
+#include "RevVariable.h"
 #include "WorkspaceObject.h"
 
 #include <ostream>
@@ -44,7 +44,7 @@ public:
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     RevNullObject*                      clone(void) const;                                                                          //!< Clone object
-    RevPtr<Variable>                    executeMethod(const std::string &name, const std::vector<Argument> &args, bool &found);     //!< Execute the member method
+    RevPtr<RevVariable>                    executeMethod(const std::string &name, const std::vector<Argument> &args, bool &found);     //!< Execute the member method
     static const std::string&           getClassType(void);                                                                         //!< Get Rev type
     static const TypeSpec&              getClassTypeSpec(void);                                                                     //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                                                    //!< Get the type spec for this instance

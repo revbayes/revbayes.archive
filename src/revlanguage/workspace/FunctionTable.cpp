@@ -134,10 +134,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 ///** Execute function and get its variable value (evaluate once) */
-//RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+//RevPtr<RevVariable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 //
 //    const Function&   theFunction = findFunction(name, args, true);
-//    RevPtr<Variable>  theValue    = theFunction.execute();
+//    RevPtr<RevVariable>  theValue    = theFunction.execute();
 //
 //    theFunction.clear();
 //
@@ -344,7 +344,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 {
                     msg << ",";
                 }
-                const RevPtr<const Variable>& theVar = j->getVariable();
+                const RevPtr<const RevVariable>& theVar = j->getVariable();
                 msg << " " << theVar->getRevObject().getTypeSpec().getType();
                 
             }

@@ -112,7 +112,7 @@ RevLanguage::ContinuousStochasticNode* RevLanguage::ContinuousStochasticNode::cl
 
 
 /* Execute calls to member methods */
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ContinuousStochasticNode::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ContinuousStochasticNode::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "clamp")
@@ -135,7 +135,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ContinuousStochasticNode
         // we found the corresponding member method
         found = true;
         
-        return RevPtr<Variable>( new Variable( new Real( this->getLnProbability() ), "" ) );
+        return RevPtr<RevVariable>( new RevVariable( new Real( this->getLnProbability() ), "" ) );
     }
     else if (name == "probability")
     {
@@ -143,7 +143,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ContinuousStochasticNode
         // we found the corresponding member method
         found = true;
         
-        return RevPtr<Variable>( new Variable( new RealPos( exp( this->getLnProbability() ) ), "" ) );
+        return RevPtr<RevVariable>( new RevVariable( new RealPos( exp( this->getLnProbability() ) ), "" ) );
     }
     else if (name == "redraw")
     {

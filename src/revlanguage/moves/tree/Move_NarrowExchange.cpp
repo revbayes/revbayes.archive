@@ -106,7 +106,7 @@ void Move_NarrowExchange::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NarrowExchange::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NarrowExchange::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" ) 
     {

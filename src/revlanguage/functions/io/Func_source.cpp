@@ -48,7 +48,7 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_source::execute( void ) {
+RevPtr<RevVariable> Func_source::execute( void ) {
     
     /* Open file */
     std::string fname = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();

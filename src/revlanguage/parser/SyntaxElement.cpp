@@ -11,7 +11,7 @@ using namespace RevLanguage;
  * semantic value in the standard way for constant expressions, which is appropriate for all
  * other types of syntax elements when they appear on the left-hand sign of an assignment.
  */
-RevPtr<Variable> SyntaxElement::evaluateLHSContent( Environment& env, const std::string& varType )
+RevPtr<RevVariable> SyntaxElement::evaluateLHSContent( Environment& env, const std::string& varType )
 {
     return evaluateContent( env );
 }

@@ -58,10 +58,10 @@ BurninEstimationConvergenceAssessment* BurninEstimationConvergenceAssessment::cl
 
 
 /* Map calls to member methods */
-RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    RevPtr<Variable> retVar;
+    RevPtr<RevVariable> retVar;
     
     if (name == "run")
     {
@@ -307,7 +307,7 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
         
         RBOUT("\n");
         
-        retVar = new Variable( new RlBoolean( passed ) );
+        retVar = new RevVariable( new RlBoolean( passed ) );
         
     }
     else if (name == "setBurninMethod")
@@ -475,7 +475,7 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
 
 
 /** Set a member variable */
-void BurninEstimationConvergenceAssessment::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void BurninEstimationConvergenceAssessment::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "filename")
     {

@@ -102,7 +102,7 @@ RevObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if ( this->getDagNode() != NULL )
@@ -111,7 +111,7 @@ RevPtr<Variable> ContinuousCharacterData::executeMethod(std::string const &name,
         setCharacterDataObject( &this->getDagNode()->getValue() );
     }
     
-    RevPtr<Variable> retVal = executeCharacterDataMethod(name, args, found);
+    RevPtr<RevVariable> retVal = executeCharacterDataMethod(name, args, found);
     
     if ( found == true )
     {

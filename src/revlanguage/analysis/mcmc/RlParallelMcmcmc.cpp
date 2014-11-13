@@ -81,7 +81,7 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
 
     
@@ -187,7 +187,7 @@ void ParallelMcmcmc::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void ParallelMcmcmc::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void ParallelMcmcmc::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "model") {
         model = var;
