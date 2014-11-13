@@ -353,6 +353,36 @@ void Topology::setRoot( TopologyNode* r) {
 }
 
 
+// used when reading in tree with existing node indexes we need to keep
+void Topology::setRootNoReIndexing( TopologyNode* r) {
+    
+    // set the root
+    root = r;
+	
+    nodes.clear();
+	fillNodesByPhylogeneticTraversal(r);
+	numNodes = nodes.size();
+	
+	// order nodes by their existing index
+	std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(numNodes);
+	for (int i = 0; i < numNodes; i++) {
+		for (int j = 0; j < numNodes; j++) {
+			if (i == nodes[j]->getIndex()) {
+				nodes_copy[i] = nodes[j];
+			}
+		}
+	}
+	nodes = nodes_copy;
+    
+    // Set the tree pointer of the nodes
+    if ( treesUsingThisTopology.empty() )
+        root->setTree( NULL );
+    else
+        root->setTree( *treesUsingThisTopology.begin() );
+    
+}
+
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Topology& x) {
     o << x.getNewickRepresentation();
