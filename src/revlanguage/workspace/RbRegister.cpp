@@ -384,8 +384,10 @@
 #include "Func_simplex.h"
 #include "Func_simplexFromVector.h"
 #include "Func_sum.h"
+#include "Func_standardDeviation.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
+#include "Func_variance.h"
 
 
 /* Statistics functions (in folder "functions/statistics") */
@@ -1022,14 +1024,21 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
         
-        // mean function
-		addFunction( "sum",       new Func_sum()  );
+        // sum function
+        addFunction( "sum",       new Func_sum()  );
+        
+        // standard deviation function
+        addFunction( "stdev",     new Func_standardDeviation()  );
+        addFunction( "sd",        new Func_standardDeviation()  );
 		
 		// truncate function
         addFunction( "trunc",     new Func_trunc<Real,Integer>()  );
         addFunction( "trunc",     new Func_trunc<RealPos,Natural>()  );
+        
+        // mean function
+        addFunction( "var",       new Func_variance()  );
 
-
+        
  		/* Statistics functions (in folder "functions/statistics") */
 		
 		// some helper statistics for the DPP distribution
