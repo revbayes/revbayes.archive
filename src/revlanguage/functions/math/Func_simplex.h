@@ -9,9 +9,17 @@
 namespace RevLanguage {
     
     /**
-     * @brief Simplex constructor from RealPos values
+     * The RevLanguage wrapper of the simplex function.
      *
-     * This function constructs a simplex from two or more RealPos values.
+     * The RevLanguage wrapper of the simplex function connects
+     * the variables/parameters of the function and creates the internal SimplexFunction object.
+     * Please read the SimplexFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-07-27, version 1.0
+     *
      */
     class Func_simplex : public TypedFunction<Simplex> {
         

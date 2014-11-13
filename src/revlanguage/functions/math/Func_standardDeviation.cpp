@@ -1,5 +1,5 @@
-#include "MeanFunction.h"
-#include "Func_mean.h"
+#include "standardDeviationFunction.h"
+#include "Func_standardDeviation.h"
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -9,31 +9,31 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_mean::Func_mean( void ) : TypedFunction<Real>( )
+Func_standardDeviation::Func_standardDeviation( void ) : TypedFunction<Real>( )
 {
     
 }
 
 
 /** Clone object */
-Func_mean* Func_mean::clone( void ) const {
+Func_standardDeviation* Func_standardDeviation::clone( void ) const {
     
-    return new Func_mean( *this );
+    return new Func_standardDeviation( *this );
 }
 
 
-RevBayesCore::TypedFunction<double>* Func_mean::createFunction( void ) const
+RevBayesCore::TypedFunction<double>* Func_standardDeviation::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::MeanFunction* f = new RevBayesCore::MeanFunction( arg );
+    RevBayesCore::StandardDeviationFunction* f = new RevBayesCore::StandardDeviationFunction( arg );
     
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_mean::getArgumentRules( void ) const {
+const ArgumentRules& Func_standardDeviation::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -50,23 +50,23 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_mean::getClassType(void) { 
+const std::string& Func_standardDeviation::getClassType(void) {
     
-    static std::string revType = "Func_mean";
+    static std::string revType = "Func_standardDeviation";
     
-	return revType; 
+    return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_mean::getClassTypeSpec(void) { 
+const TypeSpec& Func_standardDeviation::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
-const TypeSpec& Func_mean::getTypeSpec( void ) const {
+const TypeSpec& Func_standardDeviation::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

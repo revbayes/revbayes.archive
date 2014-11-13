@@ -1,5 +1,5 @@
-#ifndef MeanFunction_H
-#define MeanFunction_H
+#ifndef VarianceFunction_H
+#define VarianceFunction_H
 
 #include "RbVector.h"
 #include "TypedFunction.h"
@@ -11,25 +11,25 @@ namespace RevBayesCore {
     
     
     /**
-     * @brief Arithmetic mean of a vector of real numbers.
+     * @brief Variance of a vector of real numbers.
      *
-     * This function computes the arithmetic mean of a vector of real number:
-     *   y = sum_{i=1}^{n}x[i]/n
+     * This function computes the variance of a vector of real number:
+     *   y = sum_{i=1}^{n}(x[i]-\bar{x})*(x[i]-\bar{x})/(n-1)
      *
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since Version 1.0, 2014-07-04
+     * @since Version 1.0, 2014-11-13
      *
      */
-    class MeanFunction : public TypedFunction<double> {
+    class VarianceFunction : public TypedFunction<double> {
         
     public:
-        MeanFunction(const TypedDagNode< RbVector<double> > * v);
-        virtual                                            ~MeanFunction(void);                                                       //!< Virtual destructor
+        VarianceFunction(const TypedDagNode< RbVector<double> > * v);
+        virtual                                            ~VarianceFunction(void);                                                     //!< Virtual destructor
         
         // public member functions
-        MeanFunction*                                       clone(void) const;                                                          //!< Create an independent clone
+        VarianceFunction*                                   clone(void) const;                                                          //!< Create an independent clone
         void                                                update(void);
         
     protected:
