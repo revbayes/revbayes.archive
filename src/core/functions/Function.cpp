@@ -171,7 +171,7 @@ void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
     } 
     else 
     {
-        throw RbException("Could not find the parameter to be swapped.");
+        throw RbException("Could not find the Function parameter to be swapped: " + oldP->getName());
     }
     
 }
