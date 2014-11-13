@@ -14,6 +14,7 @@
 # Settings #
 ############
 
+
 # analysis input/output
 in_fp           = "./data/"
 data_fn         = "psychotria_range.nex"
@@ -22,20 +23,16 @@ out_fp 	        = "./output/"
 out_str         = "bg_2rate"
 
 # input objects
-vdata           = readDiscreteCharacterData(in_fp + data_fn)
+data            = readDiscreteCharacterData(in_fp + data_fn)
 atlas           = readAtlas(in_fp + area_fn)
-vtree           = readTrees(in_fp + data_fn)
-tree	        <- vtree[1]
-data	        <- vdata
+tau             <- readTrees(in_fp + data_fn)[1]
 n_areas	        = atlas.nAreas()
-n_nodes	        = tree.nnodes()
+n_nodes	        = tau.nnodes()
 
 # MCMC settings
 # Please increase for real analyses
-nGens           <- 5000
+nGens           <- 100000
 fBurn           <- 0.2
-
-
 
 ###########
 #  Model  #
@@ -43,9 +40,8 @@ fBurn           <- 0.2
 
 # Per-area gain and loss rates 
 #   glr[1]: 1->0, glr[2]: 0->1
-for (i in 1:2)
-{
-	glr[i] ~ dnExponential(10.0)
+for (i in 1:2) {
+    glr[i] ~ dnExponential(10.0)
 }
 Q_area 		:= fnFreeBinary(glr)
 
@@ -53,7 +49,7 @@ Q_area 		:= fnFreeBinary(glr)
 dp          ~ dnExponential(10.0)
 
 # grm is the geographical rate modifier function, eta
-grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
+grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=false, useAvailable=true, useDistance=true)
 
 # Q models the dispersal-extinction process (CTMC)
 Q_range     := fnBiogeoDE(gainLossRates=Q_area, geoRateMod=grm, numAreas=n_areas, forbidExtinction=true)
@@ -62,14 +58,13 @@ Q_range     := fnBiogeoDE(gainLossRates=Q_area, geoRateMod=grm, numAreas=n_areas
 csf         ~ dnDirichlet([1,1,1])
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
-M           ~  dnPhyloDACTMC(tree=tree, Q=Q_range, C=csf, type="Biogeo", forbidExtinction=true, useCladogenesis=true)
+M           ~  dnPhyloDACTMC(tree=tau, Q=Q_range, C=csf, type="Biogeo", forbidExtinction=true, useCladogenesis=!true)
 
 # attach observation to M
 M.clamp(data)
 
 # create the model!
-my_model = model( dp )
-
+my_model = model( M )
 
 
 #########
@@ -85,11 +80,11 @@ moves[mvIdx++] = mvScale(x=dp, lambda=0.5, tune=false, weight=5.0)
 moves[mvIdx++] = mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
 
 # data augmentation moves
-moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.1, type="Biogeo", graph="branch", weight=n_nodes/1.0)
-moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.1, type="Biogeo", graph="node", weight=n_nodes/1.0)
-moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.4, type="Biogeo", graph="branch", weight=n_nodes/2.0)
-moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tree, lambda=0.4, type="Biogeo", graph="node", weight=n_nodes/2.0)
-
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.3, type="Biogeo", graph="branch", weight=2.0*n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.3, type="Biogeo", graph="node", weight=2.0*n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.9, type="Biogeo", graph="branch", weight=n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.9, type="Biogeo", graph="node", weight=n_nodes)
+"moves added"
 
 
 ############
@@ -103,14 +98,15 @@ monitors[mnIdx++] = mnScreen(printgen=10, glr[1], glr[2], csf, dp)
 monitors[mnIdx++] = mnFile(filename=out_fp+out_str+".parameters.txt", printgen=10, glr[1], glr[2], csf, dp)
 
 # character history monitors
-monitors[mnIdx++] = mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=M, tree=tree, printgen=10, style="events")
-monitors[mnIdx++] = mnCharHistoryNewick(filename=out_fp+out_str+".counts.txt", ctmc=M, tree=tree, printgen=10, style="counts")
-monitors[mnIdx++] = mnCharHistoryNhx(filename=out_fp+out_str+".nhx.txt", ctmc=M, tree=tree, atlas=atlas, samplegen=10, maxgen=nGens, burnin=0.25)
+monitors[mnIdx++] = mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=M, tree=tau, printgen=10, style="events")
+monitors[mnIdx++] = mnCharHistoryNewick(filename=out_fp+out_str+".counts.txt", ctmc=M, tree=tau, printgen=10, style="counts")
+monitors[mnIdx++] = mnCharHistoryNhx(filename=out_fp+out_str+".nhx.txt", ctmc=M, tree=tau, atlas=atlas, samplegen=10, maxgen=nGens, burnin=0.25)
 
+"monitors added"
 
 ############
 #   MCMC   #
 ############
 my_mcmc = mcmc(my_model, monitors, moves)
-my_mcmc.burnin(generations=2000, tuningInterval=100)
+my_mcmc.burnin(generations=2000, tuningInterval=50)
 my_mcmc.run(generations=nGens)
