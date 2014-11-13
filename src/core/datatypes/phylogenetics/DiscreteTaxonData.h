@@ -29,8 +29,6 @@ namespace RevBayesCore {
         void                                    addCharacter(const charType &newChar );                             //!< Push back a new character
         const charType&                         getCharacter(size_t index) const;                                   //!< Get the character at position index
         charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
-        charType&                               getElement(size_t i);                                               //!< Index op allowing change
-        const charType&                         getElement(size_t i) const;                                         //!< Const index op
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
         void                                    setTaxonName(std::string tn);                                       //!< Set the taxon name
@@ -247,42 +245,6 @@ const charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t i
         throw RbException("Index out of bounds");
     
     return sequence[index];
-}
-
-
-/**
- * Getter  for convenience access.
- *
- * \param[in]    i    The position of the character.
- *
- * \return            A non-const reference to the character
- */
-template<class charType>
-charType& RevBayesCore::DiscreteTaxonData<charType>::getElement(size_t i) 
-{
-    
-    if (i >= sequence.size())
-        throw RbException("Index out of bounds");
-    
-    return sequence[i];
-}
-
-
-/**
- * Getter for convenience access.
- *
- * \param[in]    i    The position of the character.
- *
- * \return            A const reference to the character
- */
-template<class charType>
-const charType& RevBayesCore::DiscreteTaxonData<charType>::getElement(size_t i) const 
-{
-    
-    if (i >= sequence.size())
-        throw RbException("Index out of bounds");
-    
-    return sequence[i];
 }
 
 

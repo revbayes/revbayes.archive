@@ -364,9 +364,9 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
         {
-            ContinuousCharacterState contObs ;
+            double contObs ;
             const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
-            contObs.setMean(x[0]);
+            contObs = x[0];
             dataVec.addCharacter( contObs );
         }
         

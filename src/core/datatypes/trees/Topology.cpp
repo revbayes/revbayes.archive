@@ -213,23 +213,23 @@ std::vector<TopologyNode *> Topology::getNodes( void ) const {
 
 TopologyNode& Topology::getNode(size_t idx) {
     
-    if ( idx >= nodes.size() ) 
+    if ( idx > nodes.size() || idx == 0 )
     {
         throw RbException("Index out of bounds in getNode of Topology.");
     }
     
-    return *nodes[idx];
+    return *nodes[idx-1];
 }
 
 
 const TopologyNode& Topology::getNode(size_t idx) const {
     
-    if ( idx >= nodes.size() ) 
+    if ( idx > nodes.size() || idx == 0 )
     {
         throw RbException("Index out of bounds in getNode of Topology.");
     }
     
-    return *nodes[idx];
+    return *nodes[idx-1];
 }
 
 
@@ -367,7 +367,7 @@ void Topology::setRoot( TopologyNode* r) {
     fillNodesByPhylogeneticTraversal(r);
     for (unsigned int i = 0; i < nodes.size(); ++i)
     {
-        nodes[i]->setIndex(i);
+        nodes[i]->setIndex(i+1);
     }
     
     numNodes = nodes.size();

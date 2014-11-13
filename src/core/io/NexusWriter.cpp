@@ -68,7 +68,7 @@ void NexusWriter::writeNexusBlock(const AbstractDiscreteCharacterData &data)
     for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it) 
     {
         outStream << *it << "   " << std::endl;
-        const AbstractTaxonData &taxon = data.getTaxonData( *it );
+        const AbstractDiscreteTaxonData &taxon = data.getTaxonData( *it );
         size_t nChars = taxon.getNumberOfCharacters();
         for (size_t i = 0; i < nChars; ++i) 
         {
@@ -110,14 +110,14 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it)
     {
         outStream << *it << "   " << std::endl;
-        const AbstractTaxonData &taxon = data.getTaxonData( *it );
+        const ContinuousTaxonData &taxon = data.getTaxonData( *it );
         size_t nChars = taxon.getNumberOfCharacters();
         for (size_t i = 0; i < nChars; ++i)
         {
             if ( !data.isCharacterExcluded( i ) )
             {
-                const CharacterState &c = taxon.getCharacter( i );
-                outStream << c.getStringValue() << " ";
+                const double &c = taxon.getCharacter( i );
+                outStream << c << " ";
             }
         }
         

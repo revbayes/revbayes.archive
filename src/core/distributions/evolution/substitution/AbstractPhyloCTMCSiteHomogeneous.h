@@ -455,7 +455,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
             {
                 if ( (*it)->isTip() ) 
                 {
-                    AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+                    AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
                     CharacterState &c = taxon.getCharacter(siteIndices[site]);
                     pattern += c.getStringValue();
                 }
@@ -501,7 +501,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
         if ( (*it)->isTip() ) 
         {
             size_t nodeIndex = (*it)->getIndex();
-            AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+            AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
             
             // resize the column
             charMatrix[nodeIndex].resize(numPatterns);

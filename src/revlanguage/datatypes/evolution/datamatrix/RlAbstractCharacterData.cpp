@@ -5,7 +5,6 @@
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
-#include "RlTaxonData.h"
 
 
 using namespace RevLanguage;
@@ -368,31 +367,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
     {
         found = true;
         
-        size_t nt = charDataObject->getNumberOfTaxa();
-        for (size_t i=0; i<nt; i++)
-        {
-            
-            const RevBayesCore::AbstractTaxonData& taxonData = charDataObject->getTaxonData(i);
-            std::string taxonName = charDataObject->getTaxonNameWithIndex(i);
-            size_t nc = taxonData.getNumberOfCharacters();
-            std::cout << "   " << taxonName << std::endl;
-            std::cout << "   ";
-            for (size_t j=0; j<nc; j++)
-            {
-                
-                const RevBayesCore::CharacterState& o = taxonData[j];
-                std::string s = o.getStringValue();
-                
-                std::cout << s << " ";
-                if ( (j+1) % 100 == 0 && (j+1) != nc )
-                {
-                    std::cout << std::endl << "   ";
-                }
-                
-            }
-            
-            std::cout << std::endl;
-        }
+        charDataObject->show(std::cout);
         
         return NULL;
     }

@@ -249,7 +249,7 @@ void ContinuousCharacterData::excludeTaxon(std::string& s)
  *
  * \return              The cn-th character of the tn-th taxon. 
  */
-const ContinuousCharacterState& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) const 
+const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) const
 {
     
     if ( cn >= getNumberOfCharacters() )
@@ -267,16 +267,7 @@ const ContinuousCharacterState& ContinuousCharacterData::getCharacter( size_t tn
 std::string ContinuousCharacterData::getDatatype(void) const 
 {
     
-    std::string dt = "";
-    if ( sequenceNames.size() > 0 ) 
-    {
-        const ContinuousTaxonData &t = getTaxonData( sequenceNames[0] );
-        if ( t.size() > 0 ) 
-        {
-            dt = t[0].getDatatype();
-        }
-        
-    }
+    std::string dt = "Continuous";
     
     return dt;
 }
@@ -777,6 +768,42 @@ void ContinuousCharacterData::setTaxonName(std::string& currentName, std::string
     }
     taxonMap.erase( currentName );
     taxonMap.insert( std::pair<std::string, ContinuousTaxonData >( newName, t ) );
+    
+}
+
+
+
+
+
+/**
+ * Print the content of the data matrix.
+ */
+void ContinuousCharacterData::show(std::ostream &out)
+{
+    
+    size_t nt = this->getNumberOfTaxa();
+    for (size_t i=0; i<nt; i++)
+    {
+        
+        const ContinuousTaxonData& taxonData = this->getTaxonData(i);
+        std::string taxonName = this->getTaxonNameWithIndex(i);
+        size_t nc = taxonData.getNumberOfCharacters();
+        std::cout << "   " << taxonName << std::endl;
+        std::cout << "   ";
+        for (size_t j=0; j<nc; j++)
+        {
+            
+            
+            std::cout << taxonData[j] << " ";
+            if ( (j+1) % 100 == 0 && (j+1) != nc )
+            {
+                std::cout << std::endl << "   ";
+            }
+            
+        }
+        
+        std::cout << std::endl;
+    }
     
 }
 

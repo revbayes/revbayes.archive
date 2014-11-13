@@ -66,31 +66,8 @@ TimeTree* TimeTree::clone(void) const {
 }
 
 
-void TimeTree::equalizeBranchLengths( void ) {
-    
-//    equalizeBranchLengths( topology->getRoot() );
-}
-
-
-
-//void TimeTree::equalizeBranchLengths( TimeNode &node ) {
-//    
-//    if ( !node.isTip() ) {
-//        equalizeBranchLengths( node.getChild(0) );
-//        equalizeBranchLengths( node.getChild(1) );
-//        
-//        double left = node.getChild(0).getAge() + node.getChild( 0 ).getBranchLength();
-//        double right = node.getChild(1).getAge() + node.getChild( 1 ).getBranchLength();
-//        std::cout << node.getAge() << " = " << ((left + right) / 2.0) << std::endl;
-//        node.setAge( (left + right) / 2.0 );
-//    }
-//    
-//}
-
-
-
 double TimeTree::getAge(size_t idx) const {
-    return ages[idx];
+    return ages[idx-1];
 }
 
 
@@ -102,7 +79,7 @@ double TimeTree::getBranchLength(size_t idx) const {
         return 0.0;
     } else {
         size_t parentIdx = n.getParent().getIndex();
-        return ages[parentIdx] - ages[idx];
+        return ages[parentIdx-1] - ages[idx-1];
     }
 }
 
@@ -115,7 +92,7 @@ double TimeTree::getTime(size_t idx) const {
         return 0.0;
     } else {
         size_t parentIdx = n.getParent().getIndex();
-        return ages[parentIdx] - ages[idx] + getTime(parentIdx);
+        return ages[parentIdx-1] - ages[idx-1] + getTime(parentIdx);
     }
 }
 
@@ -145,10 +122,8 @@ void TimeTree::setAge(size_t idx, double a) {
     // fire a tree change event
     const std::set<TreeChangeEventListener*> &listeners = changeEventHandler.getListeners();
     const TopologyNode &n = topology->getNode(idx);
-    for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it) {
-
-        // added 07/25/2014 Nicolas
-        // (*it)->fireTreeChangeEvent(n);
+    for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it)
+    {
 
         for (size_t i = 0; i < n.getNumberOfChildren(); ++i) {
             (*it)->fireTreeChangeEvent(n.getChild(i));
@@ -161,7 +136,7 @@ void TimeTree::setAge(size_t idx, double a) {
         (*it)->flagNewickRecomputation();
     }
     
-    ages[idx] = a;
+    ages[idx-1] = a;
 }
 
 

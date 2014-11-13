@@ -77,7 +77,8 @@ namespace RevBayesCore {
         virtual void                                setFileName(const std::string &fn) = 0;                                     //!< Set the file name
         virtual void                                setFilePath(const std::string &fn) = 0;                                     //!< Set the file path
         virtual void                                setHomologyEstablished(bool tf) = 0;                                        //!< Set whether the homology of the characters has been established
-        
+        virtual void                                show(std::ostream &out) = 0;                                                //!< Show the entire content
+
     protected:
                                                     AbstractDiscreteCharacterData() {}                                          //!< Constructor requires character type
         
