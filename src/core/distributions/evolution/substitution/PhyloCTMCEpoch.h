@@ -380,6 +380,80 @@ size_t RevBayesCore::PhyloCTMCEpoch<charType>::getEpochIndex(double t)
     return index;
 }
 
+
+template<class charType>
+void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochRateMatrices(const TypedDagNode< RbVector< RateMatrix > > *rm) {
+    
+    if (epochRateMatrices != NULL)
+    {
+        this->removeParameter( epochRateMatrices );
+        epochRateMatrices = NULL;
+    }
+    
+    // set the value
+    epochRateMatrices = rm;
+    
+    // add the new parameter
+    this->addParameter( epochRateMatrices );
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+template<class charType>
+void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochClockRates(const TypedDagNode< RbVector< double > > *r)
+{
+    
+    if (epochClockRates != NULL)
+    {
+        this->removeParameter( epochClockRates );
+        epochClockRates = NULL;
+    }
+    
+    // set the value
+    useEpochClockRates = true;
+    epochClockRates = r;
+    
+    // add the new parameter
+    this->addParameter( epochClockRates );
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+template<class charType>
+void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochTimes(const TypedDagNode< RbVector< double > > *t)
+{
+    
+    if (epochTimes != NULL)
+    {
+        this->removeParameter( epochTimes );
+        epochTimes = NULL;
+    }
+    
+    // set the value
+    epochTimes = t;
+    
+    // add the new parameter
+    this->addParameter( epochTimes );
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
 /** Swap a parameter of the distribution */
 template<class charType>
 void RevBayesCore::PhyloCTMCEpoch<charType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
@@ -399,7 +473,8 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::swapParameterInternal(const DagNode
     }
     else
     {
-        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>::swapParameter(oldP, newP);
+        
+        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>::swapParameterInternal(oldP, newP);
     }
 }
 
@@ -476,80 +551,6 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
     this->transitionProbMatrices[0] = TransitionProbabilityMatrix(tp);
     
 }
-
-template<class charType>
-void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochRateMatrices(const TypedDagNode< RbVector< RateMatrix > > *rm) {
-    
-    if (epochRateMatrices != NULL)
-    {
-        this->removeParameter( epochRateMatrices );
-        epochRateMatrices = NULL;
-    }
-    
-    // set the value
-    epochRateMatrices = rm;
-    
-    // add the new parameter
-    this->addParameter( epochRateMatrices );
-    
-    // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
-    {
-        this->redrawValue();
-    }
-    
-}
-
-
-template<class charType>
-void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochClockRates(const TypedDagNode< RbVector< double > > *r)
-{
-    
-    if (epochClockRates != NULL)
-    {
-        this->removeParameter( epochClockRates );
-        epochClockRates = NULL;
-    }
-    
-    // set the value
-    useEpochClockRates = true;
-    epochClockRates = r;
-    
-    // add the new parameter
-    this->addParameter( epochClockRates );
-    
-    // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
-    {
-        this->redrawValue();
-    }
-    
-}
-
-template<class charType>
-void RevBayesCore::PhyloCTMCEpoch<charType>::setEpochTimes(const TypedDagNode< RbVector< double > > *t)
-{
-    
-    if (epochTimes != NULL)
-    {
-        this->removeParameter( epochTimes );
-        epochTimes = NULL;
-    }
-    
-    // set the value
-    epochTimes = t;
-    
-    // add the new parameter
-    this->addParameter( epochTimes );
-    
-    // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
-    {
-        this->redrawValue();
-    }
-    
-}
-
 
 
 #endif /* defined(__revbayes_proj__PhyloCTMCEpoch__) */

@@ -142,7 +142,7 @@ void Proposal::swapNode(DagNode *oldP, DagNode *newP) {
     }
     else
     {
-        throw RbException("Could not find the parameter to be swapped.");
+        throw RbException("Could not find the Proposal parameter to be swapped: " + oldP->getName());
     }
     
 }
