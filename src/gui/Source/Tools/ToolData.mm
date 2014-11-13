@@ -220,7 +220,7 @@
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
     RbData* m = [[RbData alloc] init];
     [m setNumTaxa:(int)(cd.getNumberOfTaxa())];
-    if ( cd.getHomologyEstablished() == true )
+    if ( cd.isHomologyEstablished() == true )
         [m setIsHomologyEstablished:YES];
     else
         [m setIsHomologyEstablished:NO];

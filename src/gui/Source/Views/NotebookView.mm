@@ -29,7 +29,7 @@
 	
 	[tempPrintInfo setVerticallyCentered: NO];
 	[tempPrintInfo setHorizontallyCentered: NO];
-	[tempPrintInfo setHorizontalPagination: 1];
+	[tempPrintInfo setHorizontalPagination: NSAutoPagination];
 	
 	NSPrintOperation *op = [NSPrintOperation printOperationWithView:self printInfo:tempPrintInfo];		
 	

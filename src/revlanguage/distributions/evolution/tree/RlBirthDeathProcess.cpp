@@ -111,7 +111,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) 
+void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "origin" ) 

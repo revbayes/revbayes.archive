@@ -105,7 +105,7 @@ void Move_DPPScaleCatValsMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_DPPScaleCatValsMove::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_DPPScaleCatValsMove::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         x = var;

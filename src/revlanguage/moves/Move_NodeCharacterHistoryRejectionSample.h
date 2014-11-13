@@ -42,13 +42,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);         //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);         //!< Set member variable
         
-        RevPtr<const Variable>                      ctmc;                                                                                       //!< The variable on which the move works
-        RevPtr<const Variable>                      qmap;                                                                                          //!< The variable on which the move works
-        RevPtr<const Variable>                      tree;                                                                                          //!< The variable on which the move works
-        RevPtr<const Variable>                      lambda;                                                                                     //!< The tuning parameter used.
-        RevPtr<const Variable>                      type;
+        RevPtr<const RevVariable>                      ctmc;                                                                                       //!< The variable on which the move works
+        RevPtr<const RevVariable>                      qmap;                                                                                          //!< The variable on which the move works
+        RevPtr<const RevVariable>                      tree;                                                                                          //!< The variable on which the move works
+        RevPtr<const RevVariable>                      lambda;                                                                                     //!< The tuning parameter used.
+        RevPtr<const RevVariable>                      type;
         
     };
     

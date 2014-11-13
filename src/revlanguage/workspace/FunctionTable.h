@@ -15,7 +15,7 @@ namespace RevLanguage {
     class ArgumentRules;
     class Function;
     class RevObject;
-    class Variable;
+    class RevVariable;
 
     /**
      * @brief FunctionTable: A multimap from function names to functions
@@ -44,7 +44,7 @@ namespace RevLanguage {
         // FunctionTable functions
         virtual void                            addFunction(const std::string& name, Function *func);                                       //!< Add function
         void                                    clear(void);                                                                                //!< Clear table
-//        RevPtr<Variable>                        executeFunction(const std::string&           name,
+//        RevPtr<RevVariable>                        executeFunction(const std::string&           name,
 //                                                                const std::vector<Argument>& args);                                         //!< Evaluate function (once)
         bool                                    existsFunction(const std::string &name) const;                                              //!< Does this table contain a function with given name?
         bool                                    existsFunctionInFrame(const std::string &name, const ArgumentRules& r) const;               //!< Does this table contain a function with given name?

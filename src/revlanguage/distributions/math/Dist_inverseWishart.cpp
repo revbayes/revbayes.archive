@@ -90,7 +90,7 @@ const MemberRules& Dist_inverseWishart::getParameterRules(void) const {
         
         distMemberRules.push_back( new ArgumentRule( "sigma"   , RealSymmetricMatrix::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealSymmetricMatrix()  ) );
         distMemberRules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>()  ) );
-        distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
         distMemberRules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0) ) );
         distMemberRules.push_back( new ArgumentRule( "dim"     , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
         
@@ -132,7 +132,7 @@ void Dist_inverseWishart::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_inverseWishart::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_inverseWishart::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "sigma" ) {
         sigma = var;

@@ -4,7 +4,7 @@
 
 Central among the questions explored in biology are those that seek to understand the timing and rates of evolutionary processes. Accurate estimates of species divergence times are vital to understanding historical biogeography, estimating diversification rates, and identifying the causes of variation in rates of molecular evolution. 
 
-This tutorial will provide a general overview of divergence time estimation and fossil calibration in a Bayesian framework. The exercise will guide you through the steps necessary for estimating phylogenetic relationships and dating species divergences using the program \RevBayes. 
+This tutorial will provide a general overview of divergence time estimation using fossil calibration and relaxed-clock model comparison in a Bayesian framework. The exercise will guide you through the steps necessary for estimating phylogenetic relationships and dating species divergences using the program \href{https://github.com/revbayes/revbayes}{\RevBayes}. 
 
 %\begin{figure}[h!]
 %\centering
@@ -15,14 +15,17 @@ This tutorial will provide a general overview of divergence time estimation and 
 %
 
 \bigskip
-\subsection{Getting Started}
+\subsection{Getting Started}\label{gettingStarted}
 
 
 The various exercises in this tutorial take you through the steps required to perform phylogenetic analyses of the example datasets. 
 In addition, we have provided the output files for every exercise so you can verify your results. (Note that since the MCMC runs you perform will start from different random seeds, the output files resulting from your analyses \textit{will not} be identical to the ones we provide you.)
 
-\exs{Download data and output files from: \href{http://bit.ly/1oplDTb}{http://bit.ly/1oplDTb}
-}
+\begin{framed}
+Download the starting tree file: \href{http://bit.ly/1tFOXXX}{http://bit.ly/1tFOXXX}
+
+Download the alignment file: \href{http://bit.ly/1xs6pEd}{http://bit.ly/1xs6pEd}
+\end{framed}
 
 In this exercise, we will compare among different relaxed clock models and estimate a posterior distribution of calibrated time trees.
 The dataset we will use is an alignment of 10 caniform sequences, comprising 8 bears, 1 spotted seal, and 1 gray wolf. 
@@ -53,8 +56,44 @@ The alignment in file \cl{data/bears\_irbp.nex} contains interphotoreceptor reti
 This tutorial sets up three different relaxed clock models and a calibrated birth-death model. 
 Because of the complexity of the various models, this exercise is best performed by specifying the models and samplers in different \Rev~files.
 At the beginning of each section, you will be given a suggested name for each component file; these names correspond to the provided \Rev~scripts that reproduce these commands.
- 
 
+\textbf{\textit{Directory Structure}}
+
+This tutorial assumes that you have a very specific directory structure when running \RevBayes. 
+First, you may want to put the \RevBayes~binary in your path if you're using a Unix-based operating system.
+Alternatively, you can place the binary in a directory from which you will execute \RevBayes, e.g., the tutorial directory. 
+The tutorial directory can be any directory on your file system, but you may want to create a new one so that you avoid conflicts with other \RevBayes~tutorials.
+
+\begin{framed}
+Create a directory for this tutorial called {\textcolor{red}{\cl{RB\_RelaxedClock\_Tutorial}}} (or any name you like), and navigate to that directory. This is the tutorial directory mentioned above.
+\end{framed}
+
+For this exercise, the \Rev~code provided assumes that within the tutorial directory exists  subdirectories. 
+These directories must have the same names given here, unless you wish to also change the \Rev~code to conform to your specific directory names.
+
+The first subdirectory will contain the data files (downloaded in Section \ref{gettingStarted}).
+\begin{framed}
+Create a directory called {\textcolor{red}{\cl{data}}} in your tutorial directory. 
+
+Save the tree and alignment files downloaded above (Section \ref{gettingStarted}) in the \cl{data} directory.
+\end{framed}
+
+The second subdirectory will contain the \Rev~files you write to execute the exercises in this tutorial. 
+\begin{framed}
+Create a directory called {\textcolor{red}{\cl{RevBayes\_scripts}}} in your tutorial directory. 
+\end{framed}
+This tutorial will guide you through creating all of the files necessary to execute the analyses without typing the \Rev~language syntax directly in the \RevBayes~console. 
+Since the scripts must point to model and analysis files in a modular way, it is important to be aware of you directory structure and if you choose to do something different, make sure that the file paths given throughout the tutorial are correct.
+
+Finally, we'll need a directory for all of the files written by our analyses. For some operations, \RevBayes~can create this directory on the fly for you. 
+However, it may be safer just to add it now.
+\begin{framed}
+Create a directory called {\textcolor{red}{\cl{output}}} in your tutorial directory.
+\end{framed}
+
+The only files you need for this exercise are now in the \cl{data} directory. Otherwise, you will create all of the \Rev~files specifying the models and analyses. 
+All of the \Rev~files you write for this tutorial are available on the \href{https://github.com/revbayes/revbayes}{\RevBayes~GitHub repository} at this URL: \href{http://bit.ly/1zj5u9n}{http://bit.ly/1zj5u9n}.
+You can refer to these examples to verify your own work.
 
 \bigskip
 \subsection{Calibrating the Birth-Death Model}\label{brMods} 
@@ -84,7 +123,7 @@ The root age can thus be given any parametric distribution over positive real nu
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=6in]{figures/calib_BDR_gm.eps}}
+\fbox{\includegraphics[width=6in]{../RB_RelaxedClock_Tutorial/figures/calib_BDR_gm.eps}}
 \caption{\small The graphical model representation of the node-calibrated birth-death process in \RevBayes.}
 \label{m_BDCal:fig}
 \end{figure}
@@ -127,10 +166,15 @@ names <- T.names()
 
 We will begin by setting up the model parameters and proposal mechanisms of the birth-death model. 
 Note that we have not initialized the workspace iterator \cl{mi} yet. 
-Because of this, if you typed these lines in \RevBayes, you would get an error. 
+Because of this, if you typed these lines in the \RevBayes~console, you would get an error. 
 Since this code is intended to be in a sourced \Rev~file, we are assuming that you would initialize \cl{mi} before calling \cl{source("RevBayes\_scripts/m\_BDP\_Tree\_bears.Rev")}.
 
+We will use the parameterization of the birth-death process specifying the diversification and turnover.
+For a more detailed tutorial on the simple birth-death model, please refer to the tutorial in the \RevBayes~repository: \href{http://bit.ly/10UKeuq}{http://bit.ly/10UKeuq}.
+
 \textbf{\textit{Diversification}}
+
+Diversification ($d$) is the speciation rate ($\lambda$) minus the extinction rate ($\mu$): $d = \lambda - \mu$.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 diversification ~ dnExponential(10.0) 
@@ -139,6 +183,8 @@ moves[mi++] = mvScale(diversification,lambda=1.0,tune=true,weight=3.0)
 \end{snugshade*}}
 
 \textbf{\textit{Turnover}}
+
+Turnover is: $r = \mu / \lambda$.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 turnover ~ dnBeta(2.0, 2.0) 
@@ -202,7 +248,7 @@ mu_ra <- ln(mean_ra) - ((stdv_ra*stdv_ra) * 0.5)
 With these parameters we can instantiate the root age stochastic node with the offset value.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-root_time ~ dnLnorm(mu_ra, stdv_ra, offset=tHesperocyon)
+root_time ~ dnLognormal(mu_ra, stdv_ra, offset=tHesperocyon)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -340,7 +386,7 @@ The next sections will walk you through setting up the files specifying differen
 Each section will require you to create a separate \Rev~file for each relaxed clock model, as well as for each marginal-likelihood analysis.
 
 \bigskip
-\subsubsection{The Global Molecular Clock Model}
+\subsubsection{The Global Molecular Clock Model}\label{globalClockSec}
 
 The global molecular clock assumes that the rate of substitution is constant over the tree and over time.
 When estimating trees on an absolute time-scale, it is often necessary to parameterize relaxed clock models with two rates, a base rate which effectively scales the tree and a clock rate. 
@@ -348,7 +394,7 @@ Then, the absolute rate applied to the tree is a deterministic node (Fig.~\ref{m
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{figures/gmc_gm.eps}}
+\fbox{\includegraphics[width=3in]{../RB_RelaxedClock_Tutorial/figures/gmc_gm.eps}}
 \caption{\small The graphical model representation of the global molecular clock model used in this exercise.}
 \label{m_GMC:fig}
 \end{figure}
@@ -393,7 +439,7 @@ abs_clock_rt := clock_rate * base_rate
 \end{lstlisting}
 \end{snugshade*}}
 
-\textbf{\textit{The Sequence Model and Tree Plate}}
+\textbf{\textit{The Sequence Model and Phylogenetic CTMC}}
 
 Specify the parameters of the GTR model and the moves to operate on them.
 {\tt \begin{snugshade*}
@@ -514,9 +560,9 @@ Once you have completed this analysis, record the marginal likelihoods under the
 \end{framed}}
 
 \bigskip
-\subsubsection{The Uncorrelated Lognormal Rates Model}
+\subsubsection{The Uncorrelated Lognormal Rates Model}\label{UCLNModelSec}
 
-The uncorrelated lognormal model relaxes the assumption of a single-rate molecular clock. 
+The uncorrelated lognormal (UCLN) model relaxes the assumption of a single-rate molecular clock. 
 Under this model, the rate associated with each branch in the tree is a stochastic node.
 Each branch-rate variable is drawn from the same lognormal distribution (Fig.~\ref{m_UCLN:fig}).
 
@@ -530,7 +576,7 @@ Thus, $\mu$ is a deterministic node, which is a function of $M$ and $\sigma$.
 In Figure \ref{m_UCLN:fig}, we can represent the vector of $N$ branch rates using the plate notation. Additionally, each branch rate is rescaled by the base rate. 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{figures/ucln_gm.eps}}
+\fbox{\includegraphics[width=3in]{../RB_RelaxedClock_Tutorial/figures/ucln_gm.eps}}
 \caption{\small The graphical model representation of the UCLN model used in this exercise.}
 \label{m_UCLN:fig}
 \end{figure}
@@ -649,7 +695,7 @@ mean_rt := mean(branch_rates)
 \end{lstlisting}
 \end{snugshade*}}
 
-\textbf{\textit{The Sequence Model and Tree Plate}}
+\textbf{\textit{The Sequence Model and Phylogenetic CTMC}}
 
 Now, specify the stationary frequencies and exchangeability rates of the GTR matrix.
 {\tt \begin{snugshade*}
@@ -671,6 +717,11 @@ phySeq.clamp(D)
 \end{lstlisting}
 \end{snugshade*}}
 
+{\begin{framed}
+Save and close the file called {\textcolor{red}{\cl{m\_UCLN\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
+\end{framed}}
+
+
 
 \textbf{\textit{Estimate the Marginal Likelihood}}
 
@@ -680,15 +731,177 @@ Just as we did for the strict clock model, we can execute a power-posterior anal
 Open your text editor and create the marginal-likelihood analysis file under the global molecular clock model. Call the file: {\textcolor{red}{\cl{mlnl\_UCLN\_bears.Rev}}} and save it in the \cl{RevBayes\_scripts} directory.
 \end{framed}}
 
-Refer to the section describing this process for the GMC model.
+Refer to the section describing this process for the GMC model above.
 Write your own \Rev~language script to estimate the marginal likelihood under the UCLN model. 
-Be sure to change the file names in all of the relevant places (e.g., your output file for the \cl{powerPosterior()} function should be \colorbox{shadecolor}{\cl{UCLN\_bears\_powp.out}} and be sure to \cl{source()} the correct model file \colorbox{shadecolor}{\cl{source("RevBayes\_scripts/m\_UCLN\_bears.out")}}).
+Be sure to change the file names in all of the relevant places (e.g., your output file for the \cl{powerPosterior()} function should be \colorbox{shadecolor}{\cl{UCLN\_bears\_powp.out}} and be sure to \cl{source()} the correct model file \colorbox{shadecolor}{\cl{source("RevBayes\_scripts/m\_UCLN\_bears.Rev")}}).
 
 {\begin{framed}
 Once you have completed this analysis, record the marginal likelihoods under the UCLN model in Table \ref{ssTable}.
 \end{framed}}
 
+\bigskip
+\subsubsection{The Autocorrelated Lognormal Rates Model}\label{ACLNModelSec}
 
+A model assuming that the rate at each node is lognormally distributed with a mean centered on its parent rate and a variance proportional to the time-duration since the parent node is an autocorrelated model \citep[ACLN;][]{thorne98,kishino01,thorne02}. 
+This corresponds to a geometric Brownian motion model.
+The ACLN model relies on the topology and branch-durations of the time-tree and is thus more complex to represent graphically.
+Thus, we use the convenience of the tree plate to show the conditional dependence structure among node rates and ages in Figure \ref{m_ACLN:fig}.
+
+\begin{figure}[h!]
+\centering
+\fbox{\includegraphics[width=6in]{figures/acln_gm.eps}}
+\caption{\small The graphical model representation of the ACLN model used in this exercise.}
+\label{m_ACLN:fig}
+\end{figure}
+
+In this model, for any node (internal or tip) that is not the root, the rate at that node $r_i$ is drawn from a lognormal distribution with an expected value equal to the rate of the parent node $r_{\tilde{p}(i)}$ and a variance that is the product of the time difference $t_i$ and the variance parameter $\nu$. 
+Note that the graphical model represented in Figure \ref{m_ACLN:fig} is simplified to to make it easier to understand, thus some deterministic nodes are obfuscated.  
+Importantly, it is worth recognizing that the ACLN model describes the rate values at the \textit{nodes} of the tree and not the branches. 
+Because of this, additional deterministic nodes are used to compute the rate along branch $i$, $b_i$, which is the average of the two nodes subtending that branch: $b_i = (r_i + r_{\tilde{p}(i)}) / 2$.
+
+\textbf{\textit{Create the Rev File}}
+
+{\begin{framed}
+Open your text editor and create the autocorrelated-lognormal relaxed-clock model file called {\textcolor{red}{\cl{m\_ACLN\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
+
+Enter the \Rev~code provided in this section in the new model file. Keep in mind that we are creating modular model files that can be sourced by different analysis files. Thus, the \Rev~code below will still depend on variable initialized in different files.
+\end{framed}}
+
+
+
+\textbf{\textit{The Base Clock Rate}}
+
+As in the strict clock and UCLN models above, we create a lognormally distributed stochastic node, representing the base rate.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+br_M <- 5.4E-3
+br_s <- 0.05
+br_mu <- ln(br_M) - ((br_s * br_s) * 0.5)
+base_rate ~ dnLnorm(br_mu, br_s)
+moves[mi++] = mvScale(base_rate,lambda=0.25,tune=true,weight=5.0)
+\end{lstlisting}
+\end{snugshade*}}
+
+
+\textbf{\textit{Autocorrelated Node Rates}}
+
+Begin by declaring the parameters of the ACLN model. The first is the parameter \cl{nu} which determines the degree of autocorrelation among node rates. If \cl{nu} is very large, then the variance of the lognormal distribution on node rates is also very large, resulting in low autocorrelation. 
+Conversely, if \cl{nu} is very small, then closely related nodes will have very similar rates.
+And if \cl{nu = 0} the model collapses to a strict clock, where all nodes have the same substitution rate.
+For this dataset we will assign an exponential prior to \cl{nu} with an expected value of 1.0 and use a scale-type move to propose changes.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+nu ~ dnExponential(1.0)
+moves[mi++] = mvScale(nu, lambda=0.5, tune=true, weight=4.0)
+\end{lstlisting}
+\end{snugshade*}}
+
+The next parameter of the ACLN model is the rate value at the root of the tree. 
+We will assume that this rate is drawn from a gamma distribution with an expected value of 0.5.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+root_rate ~ dnGamma(2.0, 4.0)
+moves[mi++] = mvScale(root_rate, lambda=0.5, tune=true, weight=4.0)
+\end{lstlisting}
+\end{snugshade*}}
+
+Now we can declare our stochastic node containing the node rates. 
+This is conditioned on the \cl{timetree} node we defined by our birth-death model, the variance parameter \cl{nu}, the \cl{root\_rate}, and the \cl{base\_rate}.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+node_rates ~ dnACLN(timetree, nu, root_rate, base_rate)
+\end{lstlisting}
+\end{snugshade*}}
+
+Because the ACLN model describes the distribution of rates at the nodes of the tree, we must compute the rate for each \textit{branch} as a vector of deterministic nodes. Where the rate for a given branch is the average of the rates a the nodes subtending that branch.
+For this, we can use an explicit function written at the \Rev~language level that takes the tree and all other parameters of the ACLN model and looks up the relevant parameters for a given index. 
+We can declare a vector of deterministic branch rates using a \cl{for} loop.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+n_branches <- 2 * n_taxa - 2
+for(i in 1:n_branches){
+   branch_rates[i] := aveRateOnBranch(node_rates, timetree, root_rate, base_rate, index=i)
+}
+\end{lstlisting}
+\end{snugshade*}}
+
+The mean of the branch rates is a convenient deterministic node to monitor, particularly in the screen output when conducting MCMC.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mean_rt := mean(branch_rates) 
+\end{lstlisting}
+\end{snugshade*}}
+
+Defining moves for a model like the ACLN is a bit tricky. Because of strong parameter interactions among all of the node rates and ages, the model doesn't mix well with standard moves. 
+The autocorrelation may also make it difficult to efficiently sample the tree topology jointly under this model.
+Thus, it is worth putting some thought into the MCMC proposals. 
+In \RevBayes~there are two moves especially for the ACLN-distributed node rates.
+The first, \cl{mvScaleSingleACLNRates}, selects a single non-root node at random and proposes a new value for the rate using a scale-type move. 
+Because of the variance in rates across nodes, it is difficult to specify the move so that the tuning parameter is optimal for all nodes. 
+Therefore, it may be necessary to declare multiple instances of this move with different tuning values that are not changed during burn-in.
+Additionally, we can also add a move that is retuned so that the proposal size is optimal for the average node rate. 
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+moves[mi++] = mvScaleSingleACLNRates(node_rates, 4.0, false, n_branches)
+moves[mi++] = mvScaleSingleACLNRates(node_rates, 2.0, false, n_branches)
+moves[mi++] = mvScaleSingleACLNRates(node_rates, 3.0, true, 3* n_branches)
+\end{lstlisting}
+\end{snugshade*}}
+
+The second move for ACLN node rates is a ``mixing step'' \citep{thorne98,kishino01,thorne02,rannala2003,yang06}.
+This move rescales the node ages and proportionally changes the node rates so that the absolute branch lengths remain unchanged and the likelihood is unaffected.
+This type of proposal can help your chain more efficiently sample parameter space without requiring costly recalculations of the model likelihood.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+moves[mi++] = mvACLNMixingStep(timetree, node_rates, root_rate, 0.5, false, n_branches)
+\end{lstlisting}
+\end{snugshade*}}
+
+\textbf{\textit{The Sequence Model and Phylogenetic CTMC}}
+
+Now, specify the stationary frequencies and exchangeability rates of the GTR matrix.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+sf ~ dnDirichlet(v(1,1,1,1))
+er ~ dnDirichlet(v(1,1,1,1,1,1))
+Q := fnGTR(er,sf)
+moves[mi++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] = mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
+\end{lstlisting}
+\end{snugshade*}}
+
+Now, we can put the whole model together in the phylogenetic CTMC and clamp that node with our sequence data.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+phySeq ~ dnPhyloCTMC(tree=timetree, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
+attach the observed sequence data
+phySeq.clamp(D)
+\end{lstlisting}
+\end{snugshade*}}
+
+{\begin{framed}
+Save and close the file called {\textcolor{red}{\cl{m\_ACLN\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory.
+\end{framed}}
+
+
+
+\textbf{\textit{Estimate the Marginal Likelihood}}
+
+Just as we did for the strict clock and UCLN models, we can execute a power-posterior analysis to compute the marginal likelihood under the ACLN model. 
+
+{\begin{framed}
+Open your text editor and create the marginal-likelihood analysis file under the global molecular clock model. Call the file: {\textcolor{red}{\cl{mlnl\_ACLN\_bears.Rev}}} and save it in the \cl{RevBayes\_scripts} directory.
+\end{framed}}
+
+Refer to the section describing this process for the GMC and UCLN models above.
+Write your own \Rev~language script to estimate the marginal likelihood under the ACLN model. 
+Be sure to change the file names in all of the relevant places.
+Additionally, you may find that the power-posterior analysis runs too slow under this model, thus it may be advisable for you to decrease the number of cycles or tuning frequency in the burn-in period.
+
+{\begin{framed}
+Once you have completed this analysis, record the marginal likelihoods under the ACLN model in Table \ref{ssTable}.
+\end{framed}}
+% -2775.66
 
 \FloatBarrier
 \subsection{Compute Bayes Factors and Select Model}
@@ -699,16 +912,18 @@ Use Table \ref{ssTable} to summarize the marginal log-likelihoods estimated usin
 \begin{Form}
 \begin{table}[h!]
 \centering
-\caption{\small Estimated marginal likelihoods for different partition configurations$^*$.}
+\caption{\small Estimated marginal likelihoods for different across-branch substitution rate models$^*$.}
 \begin{tabular}{l c c c c}
 \hline
 \multicolumn{1}{l}{\textbf{ }} &\multicolumn{1}{r}{\textbf{ }} & \multicolumn{3}{c}{\textbf{Marginal lnL estimates}} \\ 
 \cline{3-5}
-\multicolumn{1}{l}{\textbf{Partition}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
+\multicolumn{1}{l}{\textbf{Clock Model}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
 \hline
-Global molecular clock ($M_0$) & \hspace{15mm} & \TextField[name=m1,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml2,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+\ref{globalClockSec} Global molecular clock ($M_0$) & \hspace{15mm} & \TextField[name=m1,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml2,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
-Uncorrelated lognormal ($M_1$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+\ref{UCLNModelSec} Uncorrelated lognormal ($M_1$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+\hline
+\ref{ACLNModelSec} Autocorrelated lognormal ($M_2$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
 %\ref{mlnl_ACLN} Autocorrelated lognormal  ($M_2$) & \hspace{3mm} & \TextField[name=ml5,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml6,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 {\footnotesize{$^*$you can edit this table}}\\
@@ -744,7 +959,7 @@ Enter your answers in Table \ref{bfTable} using the stepping-stone and the path-
 \begin{Form}
 \begin{table}[h!]
 \centering
-\caption{\small Bayes factor calculation$^*$.}
+\caption{\small Bayes factor calculation based on marginal likelihood estimates in Table \ref{ssTable}$^*$.}
 \begin{tabular}{l c c c c}
 \hline
 \multicolumn{1}{l}{\textbf{ }} &\multicolumn{1}{r}{\textbf{ }} & \multicolumn{3}{c}{\textbf{ln-Bayes Factor} ($\mathcal{K}$)} \\ 
@@ -752,6 +967,8 @@ Enter your answers in Table \ref{bfTable} using the stepping-stone and the path-
 \multicolumn{1}{l}{\textbf{Model comparison}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
 \hline
 $M_0,M_1$ & \hspace{15mm} & \TextField[name=ml7,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml8,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+$M_0,M_2$ & \hspace{15mm} & \TextField[name=ml7,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml8,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
+$M_1,M_2$ & \hspace{15mm} & \TextField[name=ml7,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml8,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
 Supported model? & \hspace{3mm} &  \TextField[name=ml13,backgroundcolor={1 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml14,backgroundcolor={.85 .85 1},color={0 0 1},height=4ex]{} \\
 \hline
@@ -764,169 +981,148 @@ Supported model? & \hspace{3mm} &  \TextField[name=ml13,backgroundcolor={1 .85 .
 \bigskip
 \subsection{Estimate the Topology and Branch Times}
 
-Below the code is provided to run the MCMC analysis under the UCLN model while estimating the topology and branching times.
+After computing the Bayes factors and determining the relative support of each model, you can choose your favorite model among the three tested in this tutorial. 
+The next step, then, is to use MCMC to jointly estimate the tree topology and branch times. 
+
+{\begin{framed}
+Open your text editor and create the MCMC analysis file under the your favorite clock model. Call the file: {\textcolor{red}{\cl{mcmc\_TimeTree\_bears.Rev}}} and save it in the \cl{RevBayes\_scripts} directory.
+\end{framed}}
+
+This file will contain much of the same initial \Rev~code as the files you wrote for the marginal-likelihood analyses. 
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-
 ### Load the sequence alignment
 D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 
 ### get helpful variables from the data
-n_taxa <- D.ntaxa()
 n_sites <- D.nchar(1)
-names <- D.names()
 
 ### initialize an iterator for the moves vector
 mi = 1
-
-### set up the birth-death model from file
-### this file includes tree topology moves
-source("RevBayes_scripts/m_BDP_Tree_bears.Rev")
-
-####################################
-############ UCLN model ###########
-###################################
-
-source("RevBayes_scripts/m_UCLN_bears.Rev")
-
 \end{lstlisting}
 \end{snugshade*}}
 
-Set up the MCMC
+This is how you should begin your MCMC analysis file. The next step is to source the birth-death model. 
+However, if you're interested in estimating the tree topology, then you must add proposals that will do this.
+These moves can be added right after the birth-death model is sourced.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
+### set up the birth-death model from file
+source("RevBayes_scripts/m_BDP_bears.Rev")
+
+### and moves for the tree topology
+moves[mi++] = mvNNI(timetree, weight=8.0)
+moves[mi++] = mvNarrow(timetree, weight=8.0)
+moves[mi++] = mvFNPR(timetree, weight=8.0)
+\end{lstlisting}
+\end{snugshade*}}
+
+Next load the file containing your favorite model (where the wildcard \cl{*} indicates the name of the model you prefer: \cl{GMC}, \cl{UCLN}, or \cl{ACLN}).
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+### load the model from file 
+source("RevBayes_scripts/m_*_bears.Rev")
 
 ### workspace model wrapper ###
 mymodel = model(er)
-
-monitors[1] = mnFile(filename="output/TimeTree_bears_mcmc.log", printgen=10,diversification, turnover, birth_rate, death_rate, root_time, tmrca_Ursidae, tmrca_UrsidaePinn,er, sf,mean_rt, ucln_mean, ucln_sigma, branch_rates, base_rate)
-monitors[2] = mnFile(filename="output/TimeTree_bears_mcmc.trees", printgen=10, timetree)
-monitors[3] = mnScreen(printgen=10, mean_rt, ucln_mean, root_time, base_rate)
-
-### workspace mcmc ###
-mymcmc = mcmc(mymodel, monitors, moves)
-
-### pre-burnin to tune the proposals ###
-mymcmc.burnin(generations=3000,tuningInterval=100)
-
-### run the MCMC ###
-mymcmc.run(generations=50000)
-
-### display proposal acceptance rates and tuning ###
-mymcmc.operatorSummary()
-
 \end{lstlisting}
 \end{snugshade*}}
 
-Summarize the tree
+\textbf{\textit{MCMC Monitors}}
+
+Before you instantiate the MCMC workspace object, you need to create a vector of ``monitors'' that are responsible for monitoring parameter values and saving those to file or printing them to the screen. 
+
+First, create a monitor of all the model parameters except the \cl{timetree} using the model monitor: \cl{mnModel}.
+This monitor takes \textit{all} of the named parameters in the model DAG and saves their value to a file. 
+Thus, every variable that you gave a name in your model files will be written to your log file. 
+This makes it very easy to get an analysis going, but can generate very large files with a lot of redundant output. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
+monitors[1] = mnModel(filename="output/TimetTree_bears_mcmc.log", printgen=10)
+\end{lstlisting}
+\end{snugshade*}}
 
-### summarize the trees ###
+If the model monitor is too verbose for your needs, you should use the file monitor instead: \cl{mnFile}. For this monitor, you have to provide the names of all the parameters you're interested in after the file name and print interval. 
+(Refer to the example files for how to set up the file monitor for model parameters.)
+
+In fact, we use the file monitor for saving the sampled chronograms to file. 
+It is important that you \textit{do not} save the sampled trees in the same file with other numerical parameters you would like to summarize. That is because tools for reading MCMC log files---like \href{http://tree.bio.ed.ac.uk/software/tracer/}{Tracer} \citep{rambaut09}---cannot load files with non-numerical states.
+Therefore, you must save the sampled trees to a different file.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+monitors[2] = mnFile(filename="output/TimeTree_bears_mcmc.trees", printgen=10, timetree)
+\end{lstlisting}
+\end{snugshade*}}
+
+
+Finally, we will create a monitor in charge of writing information to the screen: \cl{mnScreen}.
+We will report the root age and base rate to the screen. If there is anything else you'd like to see in your screen output (e.g., the mean rate of the UCLN or ACLN model), feel free to add them to the list of parameters give to this model.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+monitors[3] = mnScreen(printgen=10, root_time, base_rate)
+\end{lstlisting}
+\end{snugshade*}}
+
+\textbf{\textit{Setting-Up \& Executing the MCMC}}
+
+Now everything is in place to create the MCMC object in the workspace.
+This object allows you to perform a burn-in, execute a run of a given length, continue an analysis that might not have reached stationarity, and summarize the performance of the various proposals.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mymcmc = mcmc(mymodel, monitors, moves)
+\end{lstlisting}
+\end{snugshade*}}
+
+With this object instantiated, specify a burn-in period that will sample parameter space while re-tuning the proposals (only for the moves with \cl{tune=true}). 
+The monitors do not sample the states of the chain during burn-in.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mymcmc.burnin(generations=2000,tuningInterval=100)
+\end{lstlisting}
+\end{snugshade*}}
+
+Once the burn-in is complete, we want the analysis to run the full MCMC. 
+Specify the length of the chain. 
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mymcmc.run(generations=5000)
+\end{lstlisting}
+\end{snugshade*}}
+
+When the MCMC run has completed, it's often good to evaluate the acceptance rates of the various proposal mechanisms. 
+The \cl{.operatorSummary()} member method of the MCMC object prints a table summarizing each of the parameter moves to the screen. 
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mymcmc.operatorSummary()
+\end{lstlisting}
+\end{snugshade*}}
+
+\textbf{\textit{Summarize the Sampled Time-Trees}}
+
+During the MCMC, the sampled trees will be written to a file that we will summarize using the \cl{mapTree} function in \RevBayes.
+This first requires that you add the code for reading in the tree-trace file and performing an analysis of those trees.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
 tt = readTreeTrace("output/TimeTree_bears_mcmc.trees", "clock")
 tt.summarize()
 
 ### write MAP tree to file
 mapTree(tt, "output/TimeTree_bears_mcmc_MAP.tre")
-
-## quit ##
-q()
 \end{lstlisting}
 \end{snugshade*}}
 
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-%
-%\end{lstlisting}
-%\end{snugshade*}}
-%
+{\begin{framed}
+Save and close the file called {\textcolor{red}{\cl{mcmc\_TimeTree\_bears.Rev}}} in the \cl{RevBayes\_scripts} directory. 
+Then, execute the MCMC analysis using: \colorbox{shadecolor}{\cl{source("RevBayes\_scripts/mcmc\_TimeTree\_bears.Rev")}}
+\end{framed}}
 
 
 \bigskip
 \section*{Useful Links}
 
 \begin{itemize}
-\item RevBayes: \href{https://github.com/revbayes/code}{https://github.com/revbayes/code} \\ \vspace{-7mm}
-\item TreePar: \href{http://cran.r-project.org/web/packages/TreePar/index.html}{http://cran.r-project.org/web/packages/TreePar/index.html} \\ \vspace{-7mm}
+\item RevBayes: \href{https://github.com/revbayes/revbayes}{https://github.com/revbayes/revbayes} \\ \vspace{-7mm}
 \item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org} \\ \vspace{-7mm}
 \end{itemize}
 

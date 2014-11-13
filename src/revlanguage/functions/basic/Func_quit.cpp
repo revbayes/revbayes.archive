@@ -42,7 +42,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_quit::execute( void ) {
+RevPtr<RevVariable> Func_quit::execute( void ) {
     
     throw RbException( RbException::QUIT );
     

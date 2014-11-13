@@ -88,7 +88,7 @@ RateMatrix* RateMatrix::clone() const {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "[]")
@@ -108,14 +108,14 @@ RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::v
             elementVector.push_back( element[i] );
         }
         
-        return new Variable( new ModelVector<Real>( elementVector ) );
+        return new RevVariable( new ModelVector<Real>( elementVector ) );
     }
     else if (name == "size")
     {
         found = true;
         
         int n = (int)this->dagNode->getValue().getNumberOfStates();
-        return new Variable( new Natural(n) );
+        return new RevVariable( new Natural(n) );
     }
     
     return ModelObject<RevBayesCore::RateMatrix>::executeMethod( name, args, found );

@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of the TreeSummary class. 
+ * This file contains the declaration of the TreeSummary class.
  * The tree summary summarizes the output from an mcmc run (a trace).
  *
  *
@@ -19,10 +19,13 @@
 #ifndef TreeSummary_H
 #define TreeSummary_H
 
+#include "BranchLengthTree.h"
 #include "Clade.h"
 #include "ConditionalClade.h"
 #include "NewickConverter.h"
+#include "RlUserInterface.h"
 #include "Sample.h"
+#include "Topology.h"
 #include "TreeTrace.h"
 #include "TreeUtilities.h"
 
@@ -30,30 +33,37 @@
 #include <map>
 
 namespace RevBayesCore {
-
+    
     template<class treeType>
     class TreeSummary {
-    
+        
     public:
-    
+        
         TreeSummary(const TreeTrace<treeType> &t);
-    
+        
         treeType*                                                               map(int burnin=-1);
-        void                                                                    summarize(int burnin=-1);
+		treeType*																conTree(double cutoff, int burnin = -1);
         void                                                                    printTreeSummary(std::ostream& o);
         void                                                                    printCladeSummary(void);
-    
+		void                                                                    summarizeClades(int burnin = -1);
+		void                                                                    summarizeConditionalClades(int burnin = -1);
+		void                                                                    summarizeTrees(int burnin = -1);
+        
     private:
-        
-        Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c);
+		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
+		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c);
+		Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c);
         Sample<std::string>&                                                    findCladeSample(const std::string &n);
+		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
+		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff, double burnin);
         
-        size_t                                                                  burnin;
+		size_t                                                                  burnin;
         TreeTrace<treeType>                                                     trace;
-//        std::map<std::string, unsigned int>                                     treeFrequencies;
+        //        std::map<std::string, unsigned int>                                     treeFrequencies;
         std::vector<Sample<std::string> >                                       treeSamples;
         std::vector<Sample<std::string> >                                       cladeSamples;
-        std::map<std::string, std::map<std::string, std::vector<double> > >     conditionalCladeFrequencies;
+		std::map<std::string, std::vector<double> >                             cladeAges;
+		std::map<std::string, std::map<std::string, std::vector<double> > >     conditionalCladeFrequencies;
     };
     
     
@@ -61,7 +71,8 @@ namespace RevBayesCore {
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
     {
         
-        summarize( b );
+        summarizeConditionalClades( b );
+		summarizeTrees( b );
         
         std::string bestNewick = treeSamples.rbegin()->getValue();
         NewickConverter converter;
@@ -115,15 +126,16 @@ namespace RevBayesCore {
     }
     
     template <>
-    inline TimeTree* TreeSummary<TimeTree>::map( int b ) 
+    inline TimeTree* TreeSummary<TimeTree>::map( int b )
     {
         
-        summarize( b );
+        summarizeConditionalClades( b );
+		summarizeTrees( b );
         
         double sampleSize = trace.size() - burnin;
         
         double meanRootAge = 0.0;
-        for (size_t i = burnin; i < trace.size(); ++i) 
+        for (size_t i = burnin; i < trace.size(); ++i)
         {
             // get the sampled tree
             TimeTree& tree = trace.objectAt( i );
@@ -139,17 +151,17 @@ namespace RevBayesCore {
         TimeTree* bestTimeTree = TreeUtilities::convertTree( *bestTree );
         size_t numTaxa = bestTree->getNumberOfTips();
         
-        const std::vector<TopologyNode*> &nodes = bestTimeTree->getNodes();        
-        for (size_t i = numTaxa; i < nodes.size(); ++i) 
+        const std::vector<TopologyNode*> &nodes = bestTimeTree->getNodes();
+        for (size_t i = numTaxa; i < nodes.size(); ++i)
         {
             TopologyNode* n = nodes[i];
-            if ( !n->isTip() ) 
+            if ( !n->isTip() )
             {
                 // first we compute the posterior probability of the clade
                 std::vector<std::string> taxa;
                 n->getTaxaStringVector(taxa);
                 Clade c( taxa, 0.0 );
-
+                
                 double cladeFreq = findCladeSample( c.toString() ).getFrequency();
                 double pp = cladeFreq / sampleSize;
                 n->addNodeParameter("posterior",pp);
@@ -157,7 +169,7 @@ namespace RevBayesCore {
                 // second we compute the conditional clade probability
                 double ccp = 1.0;
                 double age = 0.0;
-                if ( !n->isRoot() ) 
+                if ( !n->isRoot() )
                 {
                     std::vector<std::string> parentTaxa;
                     n->getParent().getTaxaStringVector(parentTaxa);
@@ -169,12 +181,12 @@ namespace RevBayesCore {
                     ccp = condCladeSampleSize / parentCladeFreq;
                     
                     // finally, we compute the mean conditional age
-                    for (size_t i = 0; i<condCladeSampleSize; ++i) 
+                    for (size_t i = 0; i<condCladeSampleSize; ++i)
                     {
                         age += condCladeSamples[i];
                     }
                     age /= condCladeSampleSize;
-
+                    
                 }
                 else
                 {
@@ -190,8 +202,178 @@ namespace RevBayesCore {
         
         return bestTimeTree;
     }
+    
+    
+	template <>  //consensus tree function for BranchLengthTree
+	inline BranchLengthTree* TreeSummary<BranchLengthTree>::conTree(double cutoff, int b) {
+        
+		//make sure burnin is proper
+		if (b == -1)
+		{
+			burnin = trace.size() / 4;
+		}
+		else
+		{
+			burnin = (size_t)(b);
+		}
+		std::stringstream ss;
+		ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+		RBOUT(ss.str());
+        
+		//fill in clades, use all above 50% to resolve the bush with the consensus partitions
+		RBOUT("Calculating clade frequencies...\n");
+		summarizeClades(b);		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
+        
+		//set up variables for consensus tree assembly
+		BranchLengthTree& temptree = trace.objectAt(0);
+		std::vector<std::string> tipNames = temptree.getTipNames();
+		std::vector<double> pp;
+		std::vector<TopologyNode*> nodes;
+		
+		if (cutoff < 0.0 || cutoff > 1.0) cutoff = 0.5;
+        
+		ss << "Assembling clades into a MR consensus tree, using a " << cutoff << " cutoff...\n";
+		RBOUT(ss.str());
+		TopologyNode* root = assembleConsensusTopology(&nodes, tipNames, &pp, cutoff, burnin);
+		
+		//calculate branch lengths
+		RBOUT("Calculating median branch lengths...\n");
+        
+		std::vector<double> medianBranchLengths(nodes.size(), 0.0);
+		
+		for (size_t m = 0; m < nodes.size(); m++)
+		{
+			std::vector<std::string> taxa;
+			nodes[m]->getTaxaStringVector(taxa);
+			Clade c(taxa, 0.0); //clade age not used here
+			std::vector<double> brlensVec = cladeAges.find(c.toString())->second;
+			std::sort(brlensVec.begin(), brlensVec.end());
+            
+			int nbValues = brlensVec.size();
+			if ((nbValues % 2) == 0)
+			{
+				medianBranchLengths[m] = (brlensVec[nbValues / 2] + brlensVec[(nbValues / 2) - 1]) / 2.0;
+			}
+			else
+			{
+				medianBranchLengths[m] = brlensVec[nbValues / 2];
+			}
+		}
+        
+		//now put the tree together
+		Topology *tau = new Topology(root, nodes);
+        
+		BranchLengthTree* consensusTree = new BranchLengthTree();
+		consensusTree->setTopology(tau, true);
+        
+		for (size_t p = 0; p < nodes.size(); ++p )
+		{
+			consensusTree->setBranchLength(p, medianBranchLengths[p]);
+		}
+		consensusTree->addNodeParameter("posterior", pp, true);
+		RBOUT("Done.\n");
+        
+		return consensusTree;
+	}
+    
+    
+	template <>  //consensus tree function for TimeTree
+	inline TimeTree* TreeSummary<TimeTree>::conTree(double cutoff, int b) {
+        
+		//make sure burnin is proper
+		if (b == -1)
+		{
+			burnin = trace.size() / 4;
+		}
+		else
+		{
+			burnin = (size_t)(b);
+		}
+		std::stringstream ss;
+		ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+		RBOUT(ss.str());
+        
+		//fill in clades, use all above 50% to resolve the bush with the consensus partitions
+		RBOUT("Calculating clade frequencies...\n");
+		summarizeClades(b);		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
+        
+		//set up variables for consensus tree assembly
+		TimeTree& temptree = trace.objectAt(0);
+		std::vector<std::string> tipNames = temptree.getTipNames();
+		std::vector<double> pp;
+		std::vector<TopologyNode*> nodes;
+        
+		if (cutoff < 0.0 || cutoff > 1.0) cutoff = 0.5;
+        
+		ss << "Assembling clades into a MR consensus tree, using a " << cutoff << " cutoff...\n";
+		RBOUT(ss.str());
+		TopologyNode* root = assembleConsensusTopology(&nodes, tipNames, &pp, cutoff, burnin);
+        
+		//now put the tree together
+		Topology *tau = new Topology(root, nodes);
+		TimeTree* consensusTree = new TimeTree();
+		consensusTree->setTopology(tau, true);
+		consensusTree->addNodeParameter("posterior", pp, true);
+        
+		//calculate node ages for consensus tree
+		RBOUT("Calculating node ages...\n");
+		double maxAge = 2147483647; //just a very high nb, so that age of root will be smaller
+		std::vector<double> ages(nodes.size(), 0.0);
+		calculateMedianAges(root, maxAge, &ages);
+		
+		for (size_t x = 0; x < ages.size(); x++)
+		{
+			consensusTree->setAge(x, ages[x]);
+		}
+        
+		RBOUT("Done.\n");
+        
+		return consensusTree;
+	}
+    
+	//filling in clades and clade ages - including tip nodes in clade sample - to get age for serially sampled tips in time trees
+	template <>
+	inline Clade TreeSummary<TimeTree>::fillClades(const RevBayesCore::TopologyNode &n, std::vector<RevBayesCore::Clade> &clades)
+	{
+		std::vector<std::string> taxa;
+		n.getTaxaStringVector(taxa);
+		Clade parentClade (taxa, n.getAge());
+		clades.push_back(parentClade);
+        
+		if (!n.isTip())
+		{
+			for (size_t i = 0; i < n.getNumberOfChildren(); i++)
+			{
+				const TopologyNode &childNode = n.getChild(i);
+				Clade ChildClade = fillClades(childNode, clades);
+			}
+		}
+		return parentClade;
+	}
+    
+	template <>
+	inline Clade TreeSummary<BranchLengthTree>::fillClades(const RevBayesCore::TopologyNode &n, std::vector<RevBayesCore::Clade> &clades)
+	{
+		std::vector<std::string> taxa;
+		n.getTaxaStringVector(taxa);
+		Clade parentClade(taxa, n.getBranchLength());
+		clades.push_back(parentClade);
+        
+		if (!n.isTip() )
+		{
+			for (size_t i = 0; i < n.getNumberOfChildren(); i++)
+			{
+				const TopologyNode &childNode = n.getChild(i);
+				Clade ChildClade = fillClades(childNode, clades);
+			}
+		}
+		return parentClade;
+	}
+    
+    
+} //end namespace RevBayesCore
 
-}
+
 
 #include "StringUtilities.h"
 #include "TopologyNode.h"
@@ -200,46 +382,73 @@ namespace RevBayesCore {
 #include <vector>
 
 template <class treeType>
-RevBayesCore::TreeSummary<treeType>::TreeSummary( const TreeTrace<treeType> &t) : 
-    burnin( 0 ), 
-    trace( t ) 
+RevBayesCore::TreeSummary<treeType>::TreeSummary( const TreeTrace<treeType> &t) :
+burnin( 0 ),
+trace( t )
 {
     
 }
 
-
-
-/**
- *
- *
+/*
+ *	recursively calculates the median node age from the root, and tests that it is not older than its parent node
  */
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages)
+{
+	if (cladeAges.size() < 1)
+		return;
+	
+	std::vector<std::string> taxa;
+	n->getTaxaStringVector(taxa);
+	Clade c (taxa, n->getAge());
+	
+	std::vector<double> ageVec = cladeAges.find(c.toString())->second;
+	std::sort(ageVec.begin(), ageVec.end());
+	double medianAge;
+    
+	int nbValues = ageVec.size();
+	if ((nbValues % 2) == 0)
+	{
+		medianAge = (ageVec[nbValues / 2] + ageVec[(nbValues / 2) - 1]) / 2.0;
+	}
+	else
+	{
+		medianAge = ageVec[nbValues / 2];
+	}
+	if (parentAge < medianAge) medianAge = parentAge;
+	ages->at( n->getIndex() ) = medianAge;
+    
+	if ( !n->isTip() )
+	{
+		for (size_t i = 0; i < n->getNumberOfChildren(); i++)
+		{
+			calculateMedianAges(&(n->getChild(i)), medianAge, ages);
+		}
+	}
+}
+
+
 template <class treeType>
 RevBayesCore::Clade RevBayesCore::TreeSummary<treeType>::fillConditionalClades(const RevBayesCore::TopologyNode &n, std::vector<RevBayesCore::ConditionalClade> &condClades, std::vector<RevBayesCore::Clade> &clades)
 {
- 
-    std::vector<std::string> taxa;
-    n.getTaxaStringVector( taxa );
-    Clade parent( taxa, n.getAge() );
-    clades.push_back( parent );
     
-    const TopologyNode &leftChild = n.getChild( 0 );
-    const TopologyNode &rightChild = n.getChild( 1 );
+	std::vector<std::string> taxa;
+	n.getTaxaStringVector(taxa);
+	Clade parent(taxa, n.getAge());
+	clades.push_back(parent);
     
-    // only add non tip clades
-    if ( !leftChild.isTip() )
-    {
-        Clade leftChildClade = fillConditionalClades(leftChild, condClades, clades);
-        ConditionalClade cc = ConditionalClade(parent,leftChildClade);
-        condClades.push_back( cc );
-    }
-    if ( !rightChild.isTip() )
-    {
-        Clade rightChildClade = fillConditionalClades(rightChild, condClades, clades);
-        ConditionalClade cc = ConditionalClade(parent,rightChildClade);
-        condClades.push_back( cc );
-    }
+	for (size_t i = 0; i < n.getNumberOfChildren(); i++)	//SK: extended for multifurcating trees
+	{
+		const TopologyNode &childNode = n.getChild(i);
+		if (!childNode.isTip())
+		{
+			Clade ChildClade = fillConditionalClades(childNode, condClades, clades);
+			ConditionalClade cc = ConditionalClade(parent, ChildClade);
+			condClades.push_back(cc);
+		}
+	}
     
-    return parent;
+	return parent;
 }
 
 
@@ -260,62 +469,101 @@ RevBayesCore::Sample<std::string>& RevBayesCore::TreeSummary<treeType>::findClad
 }
 
 
-
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::summarizeClades(int b)
+{
+	if (b == -1)
+	{
+		burnin = trace.size() / 4;
+	}
+	else
+	{
+		burnin = size_t(b);
+	}
+    
+    
+	for (size_t i = burnin; i < trace.size(); ++i)
+	{
+		treeType& tree = trace.objectAt(i);
+        
+		// get the clades for this tree
+		std::vector<Clade> clades;
+		fillClades(tree.getRoot(), clades);
+        
+		// collect clade ages and increment the clade frequency counter
+		for (size_t j = 0; j < clades.size(); ++j)
+		{
+			const Clade & c = clades[j];
+			std::string cladeString = c.toString();
+			Sample<std::string> thisSample = Sample<std::string>(cladeString, 0);
+            
+			if (cladeSamples.size() == 0) {
+				cladeSamples.push_back(thisSample);
+				cladeSamples[0].addObservation(true);
+				std::vector<double> tempAgeVec(1, c.getAge());
+				cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
+			}
+			else
+			{
+				bool found = false;
+				for (size_t ii = 0; ii < cladeSamples.size(); ii++)
+				{
+					if (!cladeString.compare(cladeSamples[ii].getValue()) )
+					{
+						found = true;
+						cladeSamples[ii].addObservation(true);
+                        
+						std::map<std::string, std::vector<double> >::iterator entry = cladeAges.find(cladeString);
+						if (entry != cladeAges.end())
+						{
+							entry->second.push_back(c.getAge());
+						}
+						break;
+					}
+					else
+					{
+						cladeSamples[ii].addObservation(false);
+					}
+				}
+                
+				if (!found)
+				{
+					cladeSamples.push_back(thisSample);
+					cladeSamples.rbegin()->addObservation(true);
+					std::vector<double> tempAgeVec(1, c.getAge());
+					cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
+                    
+				}
+			}
+		}
+	}
+    
+	// sort the samples by frequency
+	sort(cladeSamples.begin(), cladeSamples.end());
+}
 
 template <class treeType>
-void RevBayesCore::TreeSummary<treeType>::summarize( int b ) 
+void RevBayesCore::TreeSummary<treeType>::summarizeConditionalClades( int b )
 {
-    
-    std::map<std::string, Sample<std::string> > treeAbsencePresence;
     std::map<std::string, Sample<std::string> > cladeAbsencePresence;
     
-    if (b == -1) 
+    if (b == -1)
     {
         burnin = trace.size() / 4;
     }
-    else 
+    else
     {
         burnin = size_t( b );
     }
     
-    for (size_t i = burnin; i < trace.size(); ++i) 
+    for (size_t i = burnin; i < trace.size(); ++i)
     {
         treeType& tree = trace.objectAt( i );
-        std::string newick = TreeUtilities::uniqueNewickTopology( tree );
-        const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find( newick );
-        if ( entry == treeAbsencePresence.end() )
-        {
-            Sample<std::string> treeSample = Sample<std::string>(newick,0);
-            if ( i > burnin )
-            {
-                treeSample.setTrace( std::vector<double>(i - burnin,0.0) );
-            }
-            else
-            {
-                treeSample.setTrace( std::vector<double>() );
-            }
-            treeAbsencePresence.insert( std::pair<std::string, Sample<std::string> >(newick, treeSample));
-        }
         
-        for (std::map<std::string, Sample<std::string> >::iterator it=treeAbsencePresence.begin(); it!=treeAbsencePresence.end(); ++it )
-        {
-            
-            if ( it->first == newick )
-            {
-                it->second.addObservation( true );
-            }
-            else
-            {
-                it->second.addObservation( false );
-            }
-            
-        }
-        
-        // get the conditional clades for this
+		// get the conditional clades for this
         std::vector<ConditionalClade> condClades;
         std::vector<Clade> clades;
         fillConditionalClades(tree.getRoot(), condClades, clades);
-        
         
         // first increment the clade frequency counter
         // there need to be two loops because otherwise we count the the parent clade twice
@@ -323,7 +571,7 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
         {
             const Clade & c = clades[i];
             std::string parentString = c.toString();
-            const std::map<std::string, Sample<std::string> >::iterator& entry = cladeAbsencePresence.find( newick );
+            const std::map<std::string, Sample<std::string> >::iterator& entry = cladeAbsencePresence.find( parentString );
             if ( entry == cladeAbsencePresence.end() )
             {
                 Sample<std::string> cladeSample = Sample<std::string>(parentString,0);
@@ -338,7 +586,7 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
                 cladeAbsencePresence.insert( std::pair<std::string, Sample<std::string> >(parentString, cladeSample));
                 
                 conditionalCladeFrequencies.insert( std::pair<std::string, std::map<std::string, std::vector<double> > >(parentString, std::map<std::string, std::vector<double> >()) );
-
+                
             }
             
         }
@@ -396,18 +644,6 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
     }
     
     // collect the samples
-    treeSamples.clear();
-    for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
-    {
-        it->second.computeStatistics();
-        treeSamples.push_back( it->second );
-    }
-    
-    // sort the samples by frequency
-    sort(treeSamples.begin(), treeSamples.end());
-    
-    
-    // collect the samples
     cladeSamples.clear();
     for (std::map<std::string, Sample<std::string> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
     {
@@ -420,6 +656,67 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
 }
 
 
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::summarizeTrees(int b)
+{
+    
+	std::map<std::string, Sample<std::string> > treeAbsencePresence;
+    
+	if (b == -1)
+	{
+		burnin = trace.size() / 4;
+	}
+	else
+	{
+		burnin = size_t(b);
+	}
+    
+	for (size_t i = burnin; i < trace.size(); ++i)
+	{
+		treeType& tree = trace.objectAt(i);
+		std::string newick = TreeUtilities::uniqueNewickTopology(tree);
+		const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find(newick);
+		if (entry == treeAbsencePresence.end())
+		{
+			Sample<std::string> treeSample = Sample<std::string>(newick, 0);
+			if (i > burnin)
+			{
+				treeSample.setTrace(std::vector<double>(i - burnin, 0.0));
+			}
+			else
+			{
+				treeSample.setTrace(std::vector<double>());
+			}
+			treeAbsencePresence.insert(std::pair<std::string, Sample<std::string> >(newick, treeSample));
+		}
+        
+		for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+		{
+            
+			if (it->first == newick)
+			{
+				it->second.addObservation(true);
+			}
+			else
+			{
+				it->second.addObservation(false);
+			}
+		}
+	}
+    
+	// collect the samples
+	treeSamples.clear();
+	for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+	{
+		it->second.computeStatistics();
+		treeSamples.push_back(it->second);
+	}
+    
+	// sort the samples by frequency
+	sort(treeSamples.begin(), treeSamples.end());
+    
+}
+
 
 template <class treeType>
 void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o)
@@ -428,7 +725,7 @@ void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o)
     std::stringstream ss;
     ss << std::fixed;
     ss << std::setprecision(4);
-
+    
     o << "========================================" << std::endl;
     o << "Printing Posterior Distribution of Trees" << std::endl;
     o << "========================================" << std::endl;
@@ -528,8 +825,151 @@ void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o)
         o << it->getValue();
         o << std::endl;
     }
-
+    
 }
 
+template <class treeType>
+RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin)
+{
+	//first create a bush
+	TopologyNode* root = new TopologyNode(tipNames.size()); //construct root node with index = nb Tips
+	root->setNodeType(false, true, true);
+    
+	for (size_t i = 0; i < tipNames.size(); i++)
+	{
+		TopologyNode* tipNode = new TopologyNode(tipNames.at(i), i); //Topology node constructor adding tip name and index=taxon nb
+		tipNode->setNodeType(true, false, false);
+        
+		// set the parent-child relationship
+		root->addChild(tipNode);
+		tipNode->setParent(root);
+		nodes->push_back(tipNode); //add the tip nodes to the node vector (they need to be first in the vector)
+		pp->push_back(1.0);
+	}
+    
+	nodes->push_back(root); //finally add the root node, is next index after the tips
+	pp->push_back(1.0);
+    
+	size_t nIndex = tipNames.size();
+    
+	for (size_t j = 0; j < cladeSamples.size(); j++)
+	{
+		size_t rIndex = cladeSamples.size() - 1 - j;	//reverse pass through because clades are sorted in ascending frequency
+		float cladeFreq = cladeSamples[rIndex].getFrequency() / (float)(trace.size() - burnin);
+		if (cladeFreq < cutoff)  break;
+        
+		Clade clade = Clade(cladeSamples[rIndex].getValue(), 0.0);
+		std::vector<std::string> intNodeTaxa = clade.getTaxonNames();
+        
+		//make sure we have an internal node
+		if (intNodeTaxa.size() == 1 || intNodeTaxa.size() == tipNames.size())  continue;
+        
+		nIndex++;	//increment node index
+		TopologyNode* intNode = new TopologyNode(nIndex); //Topology node constructor, with proper node index
+		intNode->setNodeType(false, false, true);
+        
+		//find parent node
+		std::string firstTaxon = intNodeTaxa.at(0);
+		TopologyNode* parentNode = NULL;
+		bool isCompatible = true;
+        
+		for (size_t l = 0; l < tipNames.size(); l++)
+		{
+			if (!firstTaxon.compare(nodes->at(l)->getName()))
+			{
+				parentNode = &nodes->at(l)->getParent();
+				break;
+			}
+		}
+		while (parentNode != NULL)
+		{
+			std::vector<std::string> subtendedTaxa;
+			parentNode->getTaxaStringVector(subtendedTaxa);
+			if (subtendedTaxa.size() >= intNodeTaxa.size())
+			{
+				//check if parent is compatible with new node
+				size_t inBoth = 0;
+				for (size_t ll = 0; ll < intNodeTaxa.size(); ll++)
+				{
+					for (size_t lll = 0; lll < subtendedTaxa.size(); lll++)
+					{
+						if (!intNodeTaxa[ll].compare(subtendedTaxa[lll]))
+							inBoth++;
+					}
+				}
+				if (inBoth != intNodeTaxa.size()) {
+					isCompatible = false;
+				}
+                
+				break;
+			}
+			parentNode = &parentNode->getParent();
+		}
+        
+		if (!isCompatible)
+		{
+			delete intNode;
+			nIndex--;
+			continue;
+		}
+        
+		//go through nodes subtended by parent, get children
+		std::vector<TopologyNode*> children = parentNode->getChildren();
+		std::vector<bool> isChild(children.size(), false);
+		TopologyNode* childNode;
+        
+		for (size_t k = 0; k < children.size(); k++)
+		{
+			childNode = children[k];
+			std::vector<std::string> childTaxa;
+			int found = 0;
+			childNode->getTaxaStringVector(childTaxa);
+            
+			for (size_t i = 0; i < childTaxa.size(); i++)
+			{
+				for (size_t ii = 0; ii < intNodeTaxa.size(); ii++)
+				{
+					if (!childTaxa[i].compare(intNodeTaxa[ii]))
+					{
+						found++;
+					}
+				}
+			}
+            
+			if (found == childTaxa.size())
+			{
+				isChild[k] = true;
+			}
+			else if (found > 0 && found < childTaxa.size()) {
+				isCompatible = false;
+				break;
+			}
+		}
+        
+		if (!isCompatible)
+		{
+			delete intNode;
+			nIndex--;
+			continue;
+		}
+        
+		for (size_t kk = 0; kk < children.size(); kk++)
+		{
+			if (isChild[kk])
+			{
+				childNode = children[kk];
+				parentNode->removeChild(childNode);
+				intNode->addChild(childNode, true);
+				childNode->setParent(intNode);
+			}
+		}
+		intNode->setParent(parentNode);
+		parentNode->addChild(intNode);
+		nodes->push_back(intNode); //add internal node to node vector
+		pp->push_back(cladeFreq);
+	}
+    
+	return(root);
+}
 
 #endif

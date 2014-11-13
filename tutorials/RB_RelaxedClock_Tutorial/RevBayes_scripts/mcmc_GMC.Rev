@@ -9,7 +9,7 @@ D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 n_sites <- D.nchar(1)
 
 ### initialize an iterator for the moves vector
-mi <- 1
+mi = 1
 
 ### set up the birth-death model from file
 source("RevBayes_scripts/m_BDP_bears.Rev")

@@ -213,7 +213,7 @@ void Move_NodeCharacterHistoryRejectionSample::printValue(std::ostream &o) const
  * \param[in]    var      Pointer to the variable.
  */
 
-void Move_NodeCharacterHistoryRejectionSample::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void Move_NodeCharacterHistoryRejectionSample::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "ctmc" )

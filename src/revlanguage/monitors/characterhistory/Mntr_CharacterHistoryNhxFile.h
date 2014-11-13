@@ -44,21 +44,21 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        std::set<RevPtr<const Variable> >           vars;
-        RevPtr<const Variable>                      filename;
-        RevPtr<const Variable>                      tree;
-        RevPtr<const Variable>                      ctmc;
-        RevPtr<const Variable>                      atlas;
-        RevPtr<const Variable>                      maxgen;
-        RevPtr<const Variable>                      samplegen;
-        RevPtr<const Variable>                      burnin;
-        RevPtr<const Variable>                      separator;
-        RevPtr<const Variable>                      prior;
-        RevPtr<const Variable>                      posterior;
-        RevPtr<const Variable>                      likelihood;
-        RevPtr<const Variable>                      type;
+        std::set<RevPtr<const RevVariable> >           vars;
+        RevPtr<const RevVariable>                      filename;
+        RevPtr<const RevVariable>                      tree;
+        RevPtr<const RevVariable>                      ctmc;
+        RevPtr<const RevVariable>                      atlas;
+        RevPtr<const RevVariable>                      maxgen;
+        RevPtr<const RevVariable>                      samplegen;
+        RevPtr<const RevVariable>                      burnin;
+        RevPtr<const RevVariable>                      separator;
+        RevPtr<const RevVariable>                      prior;
+        RevPtr<const RevVariable>                      posterior;
+        RevPtr<const RevVariable>                      likelihood;
+        RevPtr<const RevVariable>                      type;
         
     };
     

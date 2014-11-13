@@ -80,7 +80,7 @@ void PowerPosterior::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "run")
@@ -170,7 +170,7 @@ void PowerPosterior::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void PowerPosterior::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void PowerPosterior::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "model")
     {

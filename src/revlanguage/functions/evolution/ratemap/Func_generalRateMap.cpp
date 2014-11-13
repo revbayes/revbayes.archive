@@ -123,7 +123,7 @@ const TypeSpec& Func_generalRateMap::getTypeSpec( void ) const {
 }
 
 /** Set a member variable */
-void Func_generalRateMap::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void Func_generalRateMap::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
 
     if ( name == "qSite" )

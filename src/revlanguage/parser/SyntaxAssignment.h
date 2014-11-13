@@ -25,7 +25,7 @@ namespace RevLanguage {
         SyntaxAssignment&           operator=(const SyntaxAssignment& x);                                           //!< Assignment operator
         
         // Basic utility functions
-        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
+        RevPtr<RevVariable>            evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
         bool                        isAssignment(void) const;                                                       //!< Is this an assignment statement?
         bool                        isFunctionSafe(const Environment&       env,
                                                    std::set<std::string>&   localVars) const;                       //!< Is this element safe in a function?
@@ -36,9 +36,9 @@ namespace RevLanguage {
         
     protected:
         // protected methods
-        virtual void                assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs) = 0;                       //!< The assignment operation.
+        virtual void                assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs) = 0;                       //!< The assignment operation.
         virtual bool                isDynamic(void);                                                                //!< Should the rhs be evaluated dynamically?
-        void                        removeElementVariables(Environment &env, RevPtr<Variable> &theVar);             //!< Removing element variables from this variable.
+        void                        removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar);             //!< Removing element variables from this variable.
         
         // protected members
         SyntaxElement*              lhsExpression;                                                                  //!< The lhs expression

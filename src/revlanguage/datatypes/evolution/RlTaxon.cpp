@@ -90,7 +90,7 @@ void Taxon::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "getSpeciesName")
@@ -98,7 +98,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string cons
         found = true;
         
         std::string n = this->dagNode->getValue().getSpeciesName();
-        return RevPtr<Variable>( new Variable( new RlString( n ) ) );
+        return RevPtr<RevVariable>( new RevVariable( new RlString( n ) ) );
     }
 //    else if (name == "names") {
 //        const std::vector<std::string>& n = this->value->getValue().getNames();
@@ -157,7 +157,7 @@ const TypeSpec& Taxon::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Taxon::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "taxonName") 
     {

@@ -81,7 +81,7 @@ namespace RevLanguage {
 
         // Regular functions
         const std::string&                  getFunctionName(void) const { return functionName; }                        //!< Get function name
-        RevPtr<Variable>                    evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
+        RevPtr<RevVariable>                 evaluateContent(Environment& env, bool dynamic=false);                      //!< Get semantic value
         void                                setBaseVariable(SyntaxElement* var) { baseVariable = var; }                 //!< Set base variable
         bool                                isConstExpression(void) const;                                              //!< Is this a constant expression?
         bool                                isFunctionSafe(const Environment&       env,

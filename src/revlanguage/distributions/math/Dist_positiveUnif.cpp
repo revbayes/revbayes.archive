@@ -100,7 +100,7 @@ void Dist_positiveUnif::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_positiveUnif::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_positiveUnif::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "lower" ) 
     {

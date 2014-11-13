@@ -3,7 +3,7 @@
 #include "RlFunction.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 #include <cstdio>
 
@@ -77,7 +77,7 @@ Environment& Environment::operator=(const Environment &x)
 
 
 /** Add alias to variable to frame. */
-void Environment::addAlias( const std::string& name, const RevPtr<Variable>& theVar )
+void Environment::addAlias( const std::string& name, const RevPtr<RevVariable>& theVar )
 {
     
     /* Throw an error if the name string is empty. */
@@ -95,7 +95,7 @@ void Environment::addAlias( const std::string& name, const RevPtr<Variable>& the
     }
     
     /* Insert new alias to variable in variable table (we do not and should not name it) */
-    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
     
 #ifdef DEBUG_WORKSPACE
     printf("Inserted \"%s\" (alias of \"%s\") in frame\n", name.c_str(), theVar->getName() );
@@ -122,8 +122,8 @@ bool Environment::addFunction(const std::string& name, Function* func)
 /** Add an empty (NULL) variable to frame. */
 void Environment::addNullVariable( const std::string& name )
 {
-    // Create a new variable object
-    RevPtr<Variable> var = RevPtr<Variable>( new Variable( NULL ) );
+    // Create a new RevVariable object
+    RevPtr<RevVariable> var = RevPtr<RevVariable>( new RevVariable( NULL ) );
     
     // Add the variable to the table
     addVariable( name, var );
@@ -131,7 +131,7 @@ void Environment::addNullVariable( const std::string& name )
 
 
 /** Add reference to variable to frame. */
-void Environment::addReference( const std::string& name, const RevPtr<Variable>& theVar )
+void Environment::addReference( const std::string& name, const RevPtr<RevVariable>& theVar )
 {
     
     /* Throw an error if the name string is empty. */
@@ -149,8 +149,8 @@ void Environment::addReference( const std::string& name, const RevPtr<Variable>&
     }
     
     /* Insert new reference variable in variable table */
-    RevPtr<Variable> theRef = new Variable( theVar );
-    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theRef ) );
+    RevPtr<RevVariable> theRef = new RevVariable( theVar );
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theRef ) );
     theRef->setName( name );
     
 #ifdef DEBUG_WORKSPACE
@@ -161,7 +161,7 @@ void Environment::addReference( const std::string& name, const RevPtr<Variable>&
 
 
 /** Add variable to frame. */
-void Environment::addVariable( const std::string& name, const RevPtr<Variable>& theVar )
+void Environment::addVariable( const std::string& name, const RevPtr<RevVariable>& theVar )
 {
     
     /* Throw an error if the name string is empty. */
@@ -178,8 +178,8 @@ void Environment::addVariable( const std::string& name, const RevPtr<Variable>& 
         throw RbException( "Variable " + name + " already exists in frame" );
     }
     
-    /* Insert new variable in variable table */
-    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
+    /* Insert new RevVariable in variable table */
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
     theVar->setName( name );
 
 #ifdef DEBUG_WORKSPACE
@@ -192,8 +192,8 @@ void Environment::addVariable( const std::string& name, const RevPtr<Variable>& 
 /** Add variable to frame from a "naked" Rev object. */
 void Environment::addVariable(const std::string& name, RevObject* obj)
 {
-    // Create a new variable object
-    RevPtr<Variable> var = new Variable( obj ) ;
+    // Create a new RevVariable object
+    RevPtr<RevVariable> var = new RevVariable( obj ) ;
 
     // Add the variable to the table
     addVariable( name, var );
@@ -250,7 +250,7 @@ void Environment::clear(void)
 /** Erase a variable by name given to it in the frame. */
 void Environment::eraseVariable(const std::string& name)
 {
-    std::map<std::string, RevPtr<Variable> >::iterator it = variableTable.find(name);
+    std::map<std::string, RevPtr<RevVariable> >::iterator it = variableTable.find(name);
 
     if ( it == variableTable.end() )
     {
@@ -271,7 +271,7 @@ void Environment::eraseVariable(const std::string& name)
  * of operation in performance-critical code, we simply use a linear search of the map
  * to find the variable address here.
  */
-void Environment::eraseVariable(const RevPtr<Variable>& var) {
+void Environment::eraseVariable(const RevPtr<RevVariable>& var) {
     
     VariableTable::iterator it;
     for ( it=variableTable.begin(); it != variableTable.end(); ++it )
@@ -300,7 +300,7 @@ void Environment::eraseVariable(const RevPtr<Variable>& var) {
 // * Execute function to get its value. This will either return a constant value or a deterministic value
 // * depending on the return type of the function.
 // */
-//RevPtr<Variable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
+//RevPtr<RevVariable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
 //{
 //    
 //    return functionTable.executeFunction(name, args);
@@ -427,9 +427,9 @@ const RevObject& Environment::getRevObject(const std::string& name) const
 
 
 /** Return a specific variable */
-RevPtr<Variable>& Environment::getVariable(const std::string& name)
+RevPtr<RevVariable>& Environment::getVariable(const std::string& name)
 {
-    std::map<std::string, RevPtr<Variable> >::iterator it = variableTable.find( name );
+    std::map<std::string, RevPtr<RevVariable> >::iterator it = variableTable.find( name );
     
     if ( variableTable.find(name) == variableTable.end() )
     {
@@ -454,9 +454,9 @@ RevPtr<Variable>& Environment::getVariable(const std::string& name)
 
 
 /** Return a specific variable (const version) */
-const RevPtr<Variable>& Environment::getVariable(const std::string& name) const
+const RevPtr<RevVariable>& Environment::getVariable(const std::string& name) const
 {
-    std::map<std::string, RevPtr<Variable> >::const_iterator it = variableTable.find(name);
+    std::map<std::string, RevPtr<RevVariable> >::const_iterator it = variableTable.find(name);
     
     if ( variableTable.find(name) == variableTable.end() )
     {

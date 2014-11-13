@@ -125,7 +125,7 @@ const TypeSpec& Dist_brownian::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_brownian::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_brownian::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
 
     if ( name == "tree" )
     {

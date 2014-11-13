@@ -36,7 +36,8 @@ extinction.setValue(0.3)
 tree_height.setValue(0.8)
 psi ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=names)
 
-psi.clamp(tree)
+# In principle we should clamp, but then we can't compare it to the Hyphy loglk. 
+#psi.clamp(tree)
 
 #############
 ## Model
@@ -63,17 +64,20 @@ write(pomo_data)
 # Here we are going to use a GTR matrix. 
 # So we define the GTR matrix.
 
-er_prior <- v(1,1,1,1,1,1)
-er ~ dnDirichlet(er_prior)
+kappa_prior <- 10.0
+kappa ~ exponential(kappa_prior)
+
+kappa.setValue(0.02)
+
 
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := gtr(er,sf) 
+Q := hky(kappa,sf) 
 
 # Second, one can have different fitnesses for A, C, G, T. 
-# Here, we are going to assume that all 4 bases have the same fitness.
-base_fitnesses <- v(1, 1, 1, 1)
+# Here, C and G have a higher fitness.
+base_fitnesses <- v(1, 1.01, 1.01, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
@@ -84,6 +88,7 @@ P := pomo(Q, base_fitnesses, virtual_population_size)
 
 # First, the proportion of polymorphic sites at the root
 root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+root_polymorphism_proportion.setValue(0.1)
 
 # Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
 root_base_frequencies ~ dnDirichlet(sf_prior)
@@ -107,15 +112,10 @@ phyloSeq.clamp(data)
 moveIndex <- 0
 
 # moves on the parameters of the substitution model
-moves[moveIndex++] <- mvSimplexElementScale(er, alpha=10, tune=true, weight=3) 
 moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
 
 # moves on the parameters of the root frequencies
 moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
-moves[moveIndex++] <- mvScale(root_polymorphism_proportion, lambda=10, tune=true, weight=2) 
-moves[moveIndex++] <- mvSlide(root_polymorphism_proportion, delta=10, tune=true, weight=2) 
-moves[moveIndex++] <- mvSlice(root_polymorphism_proportion, window=1.0, tune=true, weight=3.0)
-moves[moveIndex++] <- mvSlice(root_polymorphism_proportion, window=0.1, tune=true, weight=3.0)
 
 # We define a few monitors to keep track of how things go.
 
@@ -150,7 +150,7 @@ mymcmc <- mcmc(mymodel, monitors, moves, moveschedule="single")
 # and the tuning interval for tuning parameters of moves on scalar variables.
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
-mymcmc.burnin(generations=200,tuningInterval=100)
-mymcmc.run(generations=400000)
+mymcmc.burnin(generations=400,tuningInterval=100)
+mymcmc.run(generations=40000)
 
 

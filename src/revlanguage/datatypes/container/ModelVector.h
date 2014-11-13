@@ -47,7 +47,7 @@ namespace RevLanguage {
         virtual bool                                isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
         // Member object functions
-        virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
+        virtual RevPtr<RevVariable>                    executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
         
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
@@ -76,7 +76,7 @@ namespace RevLanguage {
 #include "RbException.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
 
 #include <algorithm>
@@ -242,15 +242,15 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
  * Map calls to member methods.
  */
 template <typename rlType>
-RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
+RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
     if ( name == "size" )
     {
         found = true;
         
-        // return a new variable with the size of this container
-        return RevPtr<Variable>( new Variable( new Natural( size() ), "" ) );
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
     }
     else if ( name == "sort" )
     {

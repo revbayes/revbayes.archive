@@ -34,7 +34,7 @@ Func_writeNexus* Func_writeNexus::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RevPtr<Variable> Func_writeNexus::execute( void )
+RevPtr<RevVariable> Func_writeNexus::execute( void )
 {
     
     // get the information from the arguments for reading the file

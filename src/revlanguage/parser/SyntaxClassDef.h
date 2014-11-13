@@ -39,7 +39,7 @@ namespace RevLanguage {
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
+        RevPtr<RevVariable>         evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
 
     protected:
         std::string                 className;                                                                      //!< The name of the class

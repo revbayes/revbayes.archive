@@ -21,7 +21,7 @@ namespace RevLanguage {
         
         // Regular functions
         RevBayesCore::TypedFunction< typename retType::valueType>*      createFunction(void) const;                     //!< Execute function
-        void                                                            setMemberObject(const RevPtr<Variable> &obj);   //!< Set the member object to which this function belongs
+        void                                                            setMemberObject(const RevPtr<RevVariable> &obj);   //!< Set the member object to which this function belongs
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
         void                                                            setMethodName(const std::string& name);         //!< Set name of member method
         
@@ -30,7 +30,7 @@ namespace RevLanguage {
         
         const ArgumentRules*                                            argumentRules;                                  //!< Argument rules (different for different member functions)
         std::string                                                     funcName;                                       //!< Name of member method
-        RevPtr<Variable>                                                object;
+        RevPtr<RevVariable>                                                object;
         const memberObjectType*                                         theMemberObject;
     };
     
@@ -122,7 +122,7 @@ const RevLanguage::TypeSpec& RevLanguage::MemberFunction<memberObjectType, retTy
 
 
 template <typename memberObjectType, typename retType>
-void RevLanguage::MemberFunction<memberObjectType, retType>::setMemberObject( const RevPtr<Variable> &obj) {
+void RevLanguage::MemberFunction<memberObjectType, retType>::setMemberObject( const RevPtr<RevVariable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;

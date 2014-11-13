@@ -30,7 +30,7 @@ Func_readContinuousCharacterData* Func_readContinuousCharacterData::clone( void 
 
 
 /** Execute function */
-RevPtr<Variable> Func_readContinuousCharacterData::execute( void )
+RevPtr<RevVariable> Func_readContinuousCharacterData::execute( void )
 {
     
     // get the information from the arguments for reading the file
@@ -243,7 +243,7 @@ RevPtr<Variable> Func_readContinuousCharacterData::execute( void )
         }
     }
     
-    return new Variable( retVal );
+    return new RevVariable( retVal );
 }
 
 

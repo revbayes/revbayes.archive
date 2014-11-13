@@ -110,7 +110,7 @@ void Dist_lnorm::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_lnorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_lnorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "mean" ) 
     {

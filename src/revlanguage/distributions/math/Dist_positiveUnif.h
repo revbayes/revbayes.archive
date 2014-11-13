@@ -45,13 +45,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                          lower;
-        RevPtr<const Variable>                          upper;
+        RevPtr<const RevVariable>                          lower;
+        RevPtr<const RevVariable>                          upper;
         
     };
     
