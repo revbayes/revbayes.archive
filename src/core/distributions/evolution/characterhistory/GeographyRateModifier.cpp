@@ -55,13 +55,6 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
         }
     }
     
-
-//    // initialize provided area dispersal/extinction rates
-//    dispersalValues.resize(numEpochs * numAreas * numAreas, 1.0);
-//    extinctionValues.resize(numEpochs * numAreas, 1.0);
-//    if (useAreaAdjacency && useAreaAvailable)
-//        initializeDispersalExtinctionValues();
-
     // initialize adjacencies between areas
     std::set<size_t> tmpSet;
     for (size_t i = 0; i < numAreas; i++)
@@ -261,7 +254,6 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         {
             for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                std::cout << currState[*it]->getState();
                 if (currState[*it]->getState() == 0)
                 {
                     absent.insert(currState[*it]);
@@ -450,7 +442,7 @@ void GeographyRateModifier::initializeDistances(void)
                         adjacentAreaVector[epochOffset*i + areaOffset*k + j] > 0)
                     {
                         std::stringstream ss;
-                        ss << "ERROR: Areas " << i << " and " << j << " have zero distance";
+                        ss << "ERROR: Areas " << j << " and " << k << " have zero distance";
                         throw RbException(ss.str());
                     }
                 }
