@@ -382,6 +382,7 @@
 #include "Func_powerVector.h"
 #include "Func_round.h"
 #include "Func_simplex.h"
+#include "Func_simplexFromVector.h"
 #include "Func_sum.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
@@ -1016,7 +1017,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "simplex",   new Func_simplex()                  );
 
         // simplex constructor function (from vector of RealPos values)
-        addFunction( "simplex",   new Func_normalize()                );
+        addFunction( "simplex",   new Func_simplexFromVector()        );
 
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );

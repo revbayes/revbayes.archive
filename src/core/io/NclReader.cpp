@@ -612,7 +612,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
     const NxsDiscreteDatatypeMapper* mapper = charblock->GetDatatypeMapperForChar(0);
     std::string sym = charblock->GetSymbols();
     size_t nStates = mapper->GetNumStates();
-    if (nStates > 10)
+    if (nStates > 100)
         return NULL;
     
     // instantiate the character matrix

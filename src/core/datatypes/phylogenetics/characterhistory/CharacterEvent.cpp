@@ -63,7 +63,8 @@ std::string CharacterEvent::getStateStr(void)
 {
     std::stringstream ss;
     // want to do this based on DiscreteDataType...
-    ss << (char)(70+state);
+//    ss << (char)(70+state);
+    ss << state;
     return ss.str();
 }
 
