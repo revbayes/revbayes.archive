@@ -45,19 +45,73 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
         if ( c != ' ')
             trimmed += c;
     }
-    
-    // construct the tree starting from the root
+	
+	// construct the tree starting from the root
     TopologyNode *root = createNode( trimmed, nodes, brlens );
     
-    // set up the tree
-	tau->setRoot( root );
+	// remember the current order of nodes - we need these to properly set branch lengths
+	std::vector<TopologyNode*> old_nodes = nodes;
+	
+    // set up the tree (nodes are reordered by index)
+	tau->setRootNoReIndexing( root );
 	
     // connect the topology to the tree
     t->setTopology( tau, true );
     
-    // set the branch lengths
+    // correctly set the branch lengths using the old order of nodes
     for (size_t i = 0; i < nodes.size(); ++i) {
-		t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
+		t->setBranchLength(old_nodes[i]->getIndex(), brlens[i]);
+    }
+	
+	// now reorder nodes by tree traversal
+	tau->setRoot( root );
+	
+    // return the tree, the caller is responsible for destruction
+    return t;
+}
+
+
+
+// used for reading in tree with existing node indexes we need to keep
+BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string const &n) {
+    
+    // create and allocate the tree object
+    BranchLengthTree *t = new BranchLengthTree();
+    
+    Topology *tau = new Topology();
+    
+    std::vector<TopologyNode*> nodes;
+    std::vector<double> brlens;
+    
+    // create a string-stream and throw the string into it
+    std::stringstream ss (std::stringstream::in | std::stringstream::out);
+    ss << n;
+    
+    // ignore white spaces
+    std::string trimmed = "";
+    char c;
+    while ( ss.good() )
+    {
+        c = char( ss.get() );
+        if ( c != ' ')
+            trimmed += c;
+    }
+	
+	// construct the tree starting from the root
+    TopologyNode *root = createNode( trimmed, nodes, brlens );
+    
+	// remember the current order of nodes - we need these to properly set branch lengths
+	std::vector<TopologyNode*> old_nodes = nodes;
+	
+    // set up the tree (nodes are reordered)
+	tau->setRootNoReIndexing( root );
+	
+    // connect the topology to the tree
+    t->setTopology( tau, true );
+    
+    // correctly set the branch lengths using the old order of nodes
+    for (size_t i = 0; i < nodes.size(); ++i) {
+		t->setBranchLength(old_nodes[i]->getIndex(), brlens[i]);
     }
 	
     // return the tree, the caller is responsible for destruction

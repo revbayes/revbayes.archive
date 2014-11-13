@@ -246,14 +246,11 @@ TreeTrace<BranchLengthTree>* Func_readAncestralStateTreeTrace::readBranchLengthT
             RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree>& t = data[0];
             
             RevBayesCore::NewickConverter c;
-            RevBayesCore::BranchLengthTree *tau = c.convertFromNewick( columns[index] );
+            RevBayesCore::BranchLengthTree *tau = c.convertFromNewickNoReIndexing( columns[index] );
 			
-            t.addObject( *tau );
-            
-            delete tau;
+            t.addObject( tau );
         }
-    }
-    
+    }	
     return new TreeTrace<BranchLengthTree>( data[0] );
 }
 
@@ -346,9 +343,7 @@ TreeTrace<TimeTree>* Func_readAncestralStateTreeTrace::readTimeTrees(const std::
             RevBayesCore::BranchLengthTree *blTree = c.convertFromNewick( columns[index] );
             RevBayesCore::TimeTree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
             
-            t.addObject( *tau );
-            
-            delete tau;
+            t.addObject( tau );
 			
         }
     }

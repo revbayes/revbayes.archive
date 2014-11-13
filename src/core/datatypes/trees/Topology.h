@@ -62,7 +62,8 @@ namespace RevBayesCore {
         bool                                                isBinary(void) const;                                                   //!< Is the BranchLengthTree rooted
         bool                                                isRooted(void) const;                                                   //!< Get a pointer to the root node of the Tree
         void                                                removeTree(Tree *t);                                                    //!< Remove a tree user
-        void                                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the Tree from it
+        void                                                setRoot(TopologyNode* r);   //!< Set the root and bootstrap the Tree from it
+		void                                                setRootNoReIndexing(TopologyNode* r);
         void                                                setRooted(bool tf);
         
     private:
