@@ -101,12 +101,12 @@ void RealNodeContainer::recursiveClampAt(const TopologyNode& from, const Continu
         
         // get taxon index
         size_t index = from.getIndex();
-        std::string taxon = tree->getTipNames()[index];
+        std::string taxon = tree->getTipNames()[index-1];
         size_t dataindex = data->getIndexOfTaxon(taxon);
         
         if (data->getCharacter(dataindex,l) != -1000) {
-           (*this)[index] = data->getCharacter(dataindex,l);
-            clampVector[index] = true;
+           (*this)[index-1] = data->getCharacter(dataindex,l);
+            clampVector[index-1] = true;
             //std::cerr << "taxon : " << index << '\t' << taxon << " trait value : " << (*this)[index] << '\n';
         }
         else    {
@@ -166,7 +166,7 @@ double RealNodeContainer::getStdev() const {
 
 void RealNodeContainer::recursiveGetStats(const TopologyNode& from, double& e1, double& e2, int& n) const {
 
-    double tmp = (*this)[from.getIndex()];
+    double tmp = (*this)[from.getIndex()-1];
 
     n++;
     e1 += tmp;
@@ -184,7 +184,7 @@ void RealNodeContainer::recursiveGetStats(const TopologyNode& from, double& e1, 
 void RealNodeContainer::recursiveGetStatsOverTips(const TopologyNode& from, double& e1, double& e2, int& n) const {
 
     if(from.isTip())   {
-        double tmp = (*this)[from.getIndex()];
+        double tmp = (*this)[from.getIndex()-1];
 
         n++;
         e1 += tmp;
@@ -241,8 +241,8 @@ for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
 void RealNodeContainer::recursiveGetTipValues(const TopologyNode& from, ContinuousCharacterData& nameToVal) const {
     
     if(from.isTip())   {
-        double tmp = (*this)[from.getIndex()];
-        std::string name =  tree->getTipNames()[from.getIndex()];
+        double tmp = (*this)[from.getIndex()-1];
+        std::string name =  tree->getTipNames()[from.getIndex()-1];
         
         ContinuousTaxonData dataVec = ContinuousTaxonData(name);
         double contObs = tmp;
@@ -272,7 +272,7 @@ std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) cons
     std::ostringstream s;
     
     if (from.isTip())   {
-        s << getTimeTree()->getTipNames()[from.getIndex()] << "_";
+        s << getTimeTree()->getTipNames()[from.getIndex()-1] << "_";
 //        std::cerr << from.getIndex() << '\t' << getTimeTree()->getTipNames()[from.getIndex()] << "_";
 //        std::cerr << (*this)[from.getIndex()] << '\n';
 //        exit(1);
@@ -289,7 +289,7 @@ std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) cons
         }
         s << ")";
     }
-    s << (*this)[from.getIndex()];
+    s << (*this)[from.getIndex()-1];
 /*    if (from.isTip() && (! isClamped(from.getIndex()))) {
         std::cerr << "leaf is not clamped\n";
         // get taxon index
