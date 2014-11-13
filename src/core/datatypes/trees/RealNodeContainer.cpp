@@ -104,8 +104,8 @@ void RealNodeContainer::recursiveClampAt(const TopologyNode& from, const Continu
         std::string taxon = tree->getTipNames()[index];
         size_t dataindex = data->getIndexOfTaxon(taxon);
         
-        if (data->getCharacter(dataindex,l).getMean() != -1000) {
-           (*this)[index] = data->getCharacter(dataindex,l).getMean();
+        if (data->getCharacter(dataindex,l) != -1000) {
+           (*this)[index] = data->getCharacter(dataindex,l);
             clampVector[index] = true;
             //std::cerr << "taxon : " << index << '\t' << taxon << " trait value : " << (*this)[index] << '\n';
         }
@@ -245,8 +245,7 @@ void RealNodeContainer::recursiveGetTipValues(const TopologyNode& from, Continuo
         std::string name =  tree->getTipNames()[from.getIndex()];
         
         ContinuousTaxonData dataVec = ContinuousTaxonData(name);
-        ContinuousCharacterState contObs ;
-        contObs.setMean(tmp);
+        double contObs = tmp;
         dataVec.addCharacter( contObs );
         nameToVal.addTaxonData( dataVec );
         return;

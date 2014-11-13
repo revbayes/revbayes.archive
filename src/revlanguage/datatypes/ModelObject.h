@@ -44,7 +44,7 @@ namespace RevLanguage {
         virtual const TypeSpec&                 getTypeSpec(void) const = 0;                                                //!< Get Rev type spec (instance)
     
         // Utility functions you might want to override
-        virtual RevPtr<RevVariable>                executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Execute member functions
+        virtual RevPtr<RevVariable>             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Execute member functions
         
         // Basic utility functions you should not have to override
         bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?

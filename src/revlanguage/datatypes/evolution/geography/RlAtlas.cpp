@@ -10,7 +10,6 @@
 #include "RlAtlas.h"
 #include "RlBoolean.h"
 #include "RlString.h"
-#include "RlTaxonData.h"
 #include "RlSimplex.h"
 #include "TimeAtlas.h"
 #include "RevVariable.h"

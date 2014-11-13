@@ -47,7 +47,7 @@ namespace RevBayesCore {
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                            excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                            excludeTaxon(std::string& s);                                               //!< Exclude taxon
-        const ContinuousCharacterState&                 getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
+        const double&                                   getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                     getDatatype(void) const;
         const std::string&                              getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                              getFilePath(void) const;                                                    //!< Returns the name of the file path the data came from
@@ -76,6 +76,7 @@ namespace RevBayesCore {
         void                                            setFilePath(const std::string &fn);                                         //!< Set the file path
         void                                            setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
         void                                            setTaxonName(std::string& currentName, std::string& newName);               //!< Change the name of a taxon
+        void                                            show(std::ostream &out);                                                //!< Show the entire content
 
         
     protected:

@@ -111,8 +111,8 @@ void MultivariateRealNodeContainer::recursiveClampAt(const TopologyNode& from, c
         std::string taxon = getTimeTree()->getTipNames()[index];
         size_t dataindex = data->getIndexOfTaxon(taxon);
         
-        if (data->getCharacter(dataindex,l).getMean() != -1000) {
-           (*this)[index][k] = data->getCharacter(dataindex,l).getMean();
+        if (data->getCharacter(dataindex,l) != -1000) {
+           (*this)[index][k] = data->getCharacter(dataindex,l);
             clampVector[index][k] = true;
         }
         else    {

@@ -48,7 +48,7 @@ namespace RevBayesCore {
         virtual void                            excludeCharacter(size_t i) = 0;                                             //!< Exclude character
         virtual void                            excludeTaxon(size_t i) = 0;                                                 //!< Exclude taxon
         virtual void                            excludeTaxon(std::string& s) = 0;                                           //!< Exclude taxon
-        virtual const CharacterState&           getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
+//        virtual const CharacterState&           getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
         virtual std::string                     getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual const std::string&              getFileName(void) const = 0;                                                //!< Returns the name of the file the data came from
         virtual const std::string&              getFilePath(void) const = 0;                                                //!< Returns the name of the file path
@@ -77,7 +77,7 @@ namespace RevBayesCore {
         virtual void                            setFilePath(const std::string &fn) = 0;                                     //!< Set the file path
         virtual void                            setHomologyEstablished(bool tf) = 0;                                        //!< Set whether the homology of the characters has been established
         virtual void                            setTaxonName(std::string& currentName, std::string& newName) = 0;           //!< Change the name of a taxon
-
+        virtual void                            show(std::ostream &out) = 0;                                                //!< Show the entire content
         
     protected:
                                                 AbstractCharacterData() {}                                                                                      //!< Constructor requires character type
