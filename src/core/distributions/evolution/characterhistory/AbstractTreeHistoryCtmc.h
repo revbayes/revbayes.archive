@@ -42,7 +42,8 @@ namespace RevBayesCore {
         // pure virtual
         virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
-        virtual void                                                        initializeValue(void) = 0;
+        virtual void                                                        drawInitValue(void) = 0;
+        virtual void                                                        initializeTipValues(void) = 0;
         virtual bool                                                        samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
@@ -453,7 +454,9 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
     
     // delegate to the parent class
     TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
-    this->dagNode->redraw();
+
+    
+    drawInitValue();
     this->dagNode->getLnProbability();
 
 }
@@ -486,7 +489,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 //        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
     }
     
-
     TypedDistribution< AbstractDiscreteCharacterData >::setValue(this->value);
 }
 

@@ -437,7 +437,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     {
         siteIndexSet.clear();
         siteIndexSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
-        if (useAreaAdjacency || !true)
+        if (useAreaAdjacency)
         {
             const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
@@ -703,7 +703,8 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 }
             }
             
-            lnP += log( csf[storedCladogenicState-1] / csf[proposedCladogenicState-1] );
+            if (storedCladogenicState != 0)
+                lnP += log( csf[storedCladogenicState-1] / csf[proposedCladogenicState-1] );
         }
         else
         {
