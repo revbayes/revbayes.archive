@@ -5,7 +5,7 @@
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
-#include "RlTaxonData.h"
+#include "RlDiscreteTaxonData.h"
 
 
 using namespace RevLanguage;

@@ -1,7 +1,8 @@
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RlBranchLengthTree.h"
 #include "RbUtil.h"
+#include "RlBranchLengthTree.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
@@ -17,9 +18,6 @@ BranchLengthTree::BranchLengthTree(void) : ModelObject<RevBayesCore::BranchLengt
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
     
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
-    
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
     
@@ -28,6 +26,16 @@ BranchLengthTree::BranchLengthTree(void) : ModelObject<RevBayesCore::BranchLengt
     
     methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
 
+    
+    
+    // member functions
+    ArgumentRules* parentArgRules = new ArgumentRules();
+    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("parent", new MemberFunction<BranchLengthTree, Natural>(this, parentArgRules   ) );
+    
+    ArgumentRules* branchLengthArgRules = new ArgumentRules();
+    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("branchLength", new MemberFunction<BranchLengthTree, RealPos>(this, branchLengthArgRules   ) );
 
 }
 
@@ -38,9 +46,6 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : ModelObj
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
     
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
-    
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
     
@@ -49,11 +54,45 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : ModelObj
     
     methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
 
+    
+    
+    // member functions
+    ArgumentRules* parentArgRules = new ArgumentRules();
+    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("parent", new MemberFunction<BranchLengthTree, Natural>(this, parentArgRules   ) );
+    
+    ArgumentRules* branchLengthArgRules = new ArgumentRules();
+    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("branchLength", new MemberFunction<BranchLengthTree, RealPos>(this, branchLengthArgRules   ) );
 
 }
 
 /** Construct from bool */
-BranchLengthTree::BranchLengthTree(const RevBayesCore::BranchLengthTree &t) : ModelObject<RevBayesCore::BranchLengthTree>( new RevBayesCore::BranchLengthTree( t ) ) {
+BranchLengthTree::BranchLengthTree(const RevBayesCore::BranchLengthTree &t) : ModelObject<RevBayesCore::BranchLengthTree>( new RevBayesCore::BranchLengthTree( t ) )
+{
+    
+    ArgumentRules* nnodesArgRules = new ArgumentRules();
+    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
+    
+    ArgumentRules* namesArgRules = new ArgumentRules();
+    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
+    
+    ArgumentRules* rerootArgRules = new ArgumentRules();
+    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    
+    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+    
+    
+    
+    
+    // member functions
+    ArgumentRules* parentArgRules = new ArgumentRules();
+    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("parent", new MemberFunction<BranchLengthTree, Natural>(this, parentArgRules   ) );
+    
+    ArgumentRules* branchLengthArgRules = new ArgumentRules();
+    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("branchLength", new MemberFunction<BranchLengthTree, RealPos>(this, branchLengthArgRules   ) );
     
 }
 
@@ -64,9 +103,6 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::Bran
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
     
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
-    
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
     
@@ -75,6 +111,17 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::Bran
     
     methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
 
+    
+    
+    
+    // member functions
+    ArgumentRules* parentArgRules = new ArgumentRules();
+    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("parent", new MemberFunction<BranchLengthTree, Natural>(this, parentArgRules   ) );
+    
+    ArgumentRules* branchLengthArgRules = new ArgumentRules();
+    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("branchLength", new MemberFunction<BranchLengthTree, RealPos>(this, branchLengthArgRules   ) );
 
 }
 
@@ -97,13 +144,6 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
         size_t n = this->dagNode->getValue().getNumberOfNodes();
         return new RevVariable( new Natural( n ) );
     }
-    else if (name == "height")
-    {
-        found = true;
-        
-        const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
-        return new RevVariable( new RealPos( r.getBranchLength() ) );
-    } 
     else if (name == "names")
     {
         found = true;

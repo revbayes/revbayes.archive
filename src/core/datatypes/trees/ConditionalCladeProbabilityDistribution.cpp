@@ -309,7 +309,7 @@ std::string ConditionalCladeProbabilityDistribution::set2name(boost::dynamic_bit
       if ( leaf_set[i] )  {
 	//stringstream tmp;
 	//tmp<<i;
-	name += id_leaves.at(i) + name_separator;
+	name += id_leaves.at( int(i) ) + name_separator;
 		//XX
 	    }
     }

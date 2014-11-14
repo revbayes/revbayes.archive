@@ -1,11 +1,3 @@
-//
-//  RlRateMatrix.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 4/5/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlRateMatrix.h"
 
 #include "ArgumentRule.h"
@@ -14,7 +6,6 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
-#include "RlTaxonData.h"
 
 using namespace RevLanguage;
 

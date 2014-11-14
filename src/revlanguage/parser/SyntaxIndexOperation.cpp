@@ -2,6 +2,7 @@
 #include "Function.h"
 #include "Integer.h"
 #include "RevNullObject.h"
+#include "RlMemberMethod.h"
 #include "SyntaxIndexOperation.h"
 #include "Workspace.h"
 
@@ -227,13 +228,14 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
     else
     {
 
-        // convert the value into a member object
-        std::vector<Argument> args;
-        args.push_back( Argument( theParentVar, "v" ) );
-        args.push_back( Argument( indexVar, "index" ) );
 
         try
         {
+            // convert the value into a member object
+            std::vector<Argument> args;
+            args.push_back( Argument( theParentVar, "v" ) );
+            args.push_back( Argument( indexVar, "index" ) );
+            
             Function* f = Workspace::userWorkspace().getFunction("[]", args, false).clone();
             f->processArguments( args, false );
             theVar = f->execute();
@@ -243,7 +245,34 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
         }
         catch (RbException e)
         {
-            throw e;
+            // We are trying to find a member function
+        
+            // Now we get a reference to the member object inside
+            RevObject &theMemberObject = theParentVar->getRevObject();
+            
+            const MethodTable& mt = theMemberObject.getMethods();
+            
+            // convert the value into a member object
+            std::vector<Argument> args;
+            args.push_back( Argument( indexVar, "index" ) );
+            
+            Function* theFunction = mt.getFunction( "[]", args, !dynamic ).clone();
+            theFunction->processArguments(args, !dynamic);
+            
+            MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( theFunction );
+            if ( theMemberMethod != NULL )
+            {
+                theMemberMethod->setMemberObject( theParentVar );
+
+                theVar = theFunction->execute();
+                theVar->setName( identifier );
+            }
+            else
+            {
+                delete theFunction;
+                throw e;
+            }
+            
         }
 
     }

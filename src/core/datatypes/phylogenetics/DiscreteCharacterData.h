@@ -82,8 +82,11 @@ namespace RevBayesCore {
         void                                                setFileName(const std::string &fn);                                         //!< Set the file name
         void                                                setFilePath(const std::string &fn);                                         //!< Set the file name
         void                                                setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
-        void                                                updateNames();                                                              //!< Update the sequence names when individual taxa have changed names
         void                                                setTaxonName(std::string& currentName, std::string& newName);               //!< Change the name of a taxon
+        void                                                show(std::ostream &out);                                                //!< Show the entire content
+        void                                                updateNames();                                                              //!< Update the sequence names when individual taxa have changed names
+
+    
     protected:
         // Utility functions
         size_t                                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
@@ -1150,6 +1153,42 @@ void RevBayesCore::DiscreteCharacterData<charType>::setTaxonName(std::string& cu
     }
     taxonMap.erase( currentName );
     taxonMap.insert( std::pair<std::string, DiscreteTaxonData<charType> >( newName, t ) );
+    
+}
+
+
+/**
+ * Print the content of the data matrix.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::show(std::ostream &out)
+{
+    
+    size_t nt = this->getNumberOfTaxa();
+    for (size_t i=0; i<nt; i++)
+    {
+        
+        const AbstractDiscreteTaxonData& taxonData = this->getTaxonData(i);
+        std::string taxonName = this->getTaxonNameWithIndex(i);
+        size_t nc = taxonData.getNumberOfCharacters();
+        std::cout << "   " << taxonName << std::endl;
+        std::cout << "   ";
+        for (size_t j=0; j<nc; j++)
+        {
+            
+            const CharacterState& o = taxonData[j];
+            std::string s = o.getStringValue();
+            
+            std::cout << s << " ";
+            if ( (j+1) % 100 == 0 && (j+1) != nc )
+            {
+                std::cout << std::endl << "   ";
+            }
+            
+        }
+        
+        std::cout << std::endl;
+    }
     
 }
 
