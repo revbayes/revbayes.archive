@@ -67,7 +67,7 @@ TimeTree* TimeTree::clone(void) const {
 
 
 double TimeTree::getAge(size_t idx) const {
-    return ages[idx-1];
+    return ages[idx];
 }
 
 
@@ -79,7 +79,7 @@ double TimeTree::getBranchLength(size_t idx) const {
         return 0.0;
     } else {
         size_t parentIdx = n.getParent().getIndex();
-        return ages[parentIdx-1] - ages[idx-1];
+        return ages[parentIdx] - ages[idx];
     }
 }
 
@@ -92,7 +92,7 @@ double TimeTree::getTime(size_t idx) const {
         return 0.0;
     } else {
         size_t parentIdx = n.getParent().getIndex();
-        return ages[parentIdx-1] - ages[idx-1] + getTime(parentIdx);
+        return ages[parentIdx] - ages[idx] + getTime(parentIdx);
     }
 }
 
@@ -136,7 +136,7 @@ void TimeTree::setAge(size_t idx, double a) {
         (*it)->flagNewickRecomputation();
     }
     
-    ages[idx-1] = a;
+    ages[idx] = a;
 }
 
 

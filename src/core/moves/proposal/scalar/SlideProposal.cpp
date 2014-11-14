@@ -89,13 +89,10 @@ double SlideProposal::doProposal( void )
     double u      = rng->uniform01();
     double delta  = ( lambda * ( u - 0.5 ) );
     
-    double orgDelta = delta;
-    
     if ( fabs(delta) > 2.0*size )
     {
         delta -= floor(delta / (2.0*size)) * (2.0*size);
     }
-    double adaptedDelta = delta;
     double newVal = val + delta;
     
     /* reflect the new value */

@@ -164,12 +164,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     }
     else if ( n == "branchLength" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue();
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = getBranchLength( index );
     }
     else if ( n == "nodeAge" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue();
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = getAge( index );
     }
     else
@@ -185,8 +185,8 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     
     if ( n == "parent" )
     {
-        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue();
-        rv = int( getNode( index ).getParent().getIndex() );
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = int( getNode( index ).getParent().getIndex() )+1;
     }
     else
     {

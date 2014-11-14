@@ -86,7 +86,7 @@ double BranchLengthTree::getAge(size_t idx) const {
 
 
 double BranchLengthTree::getBranchLength(size_t idx) const {
-    return branchLengths[idx-1];
+    return branchLengths[idx];
 }
 
 
@@ -166,7 +166,7 @@ void BranchLengthTree::setBranchLength(size_t idx, double bl) {
         (*it)->fireTreeChangeEvent( topology->getNode(idx) );
     }
     
-    branchLengths[idx-1] = bl;
+    branchLengths[idx] = bl;
 }
 
 

@@ -50,7 +50,8 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     waitingTime( true ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
-    headerPrintingInterval( 20 ){
+    headerPrintingInterval( 20 )
+{
     
 }
 
