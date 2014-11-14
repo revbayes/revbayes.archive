@@ -697,10 +697,6 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::keepSpecialization( DagNode* affecter )
 {
     
-    // test
-    // SH-20140822: Who and why is this in here?
-//    this->computeLnProbability();
-    
     // reset all flags
     for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 
     {
