@@ -44,7 +44,7 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Regular functions
-        virtual RevPtr<RevVariable>            execute(void);                                                              //!< Execute function
+        virtual RevPtr<RevVariable>         execute(void);                                                              //!< Execute function
         const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
         bool                                isProcedure(void) const;                                                    //!< Is this a procedure?
@@ -53,7 +53,7 @@ namespace RevLanguage {
         
     protected:
         const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
-        RevPtr<RevVariable>                    object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
+        RevPtr<RevVariable>                 object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
         const TypeSpec                      returnType;                                                                 //!< Return type (different for different member functions)
         
     };

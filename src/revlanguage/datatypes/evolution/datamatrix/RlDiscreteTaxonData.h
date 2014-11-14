@@ -28,7 +28,7 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Member method inits
-        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Override to map member methods to internal functions
         
     };
     
@@ -88,7 +88,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteTaxonData<rlT
             throw RbException("Index out of bounds in []");
         }
             
-        RevObject* element = new rlType( this->dagNode->getValue().getElement( size_t(index.getValue()) - 1) );
+        RevObject* element = new rlType( this->dagNode->getValue().getCharacter( size_t(index.getValue()) - 1) );
         return new RevVariable( element );
     } 
     

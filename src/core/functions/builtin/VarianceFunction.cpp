@@ -1,12 +1,12 @@
-#include "MeanFunction.h"
+#include "VarianceFunction.h"
 
 using namespace RevBayesCore;
 
 /**
  * Constructor. Here we simply set up the parameter dependencies.
  */
-MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
-    vals( v )
+VarianceFunction::VarianceFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
+vals( v )
 {
     // add the parameters as parents
     this->addParameter( vals );
@@ -18,7 +18,7 @@ MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFun
 /**
  * Empty destructor.
  */
-MeanFunction::~MeanFunction( void ) {
+VarianceFunction::~VarianceFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
@@ -27,23 +27,29 @@ MeanFunction::~MeanFunction( void ) {
 /**
  * Clone function for deep copies.
  */
-MeanFunction* MeanFunction::clone( void ) const {
-    return new MeanFunction( *this );
+VarianceFunction* VarianceFunction::clone( void ) const {
+    return new VarianceFunction( *this );
 }
 
 
 /**
  * Update the current value based on the current parameter values.
  */
-void MeanFunction::update( void ) {
+void VarianceFunction::update( void ) {
     
     double m = 0;
     const std::vector<double> &v = vals->getValue();
     for ( std::vector<double>::const_iterator it = v.begin(); it != v.end(); ++it) {
         m += *it;
     }
+    m /= v.size();
     
-    *this->value = m / v.size();
+    double var = 0.0;
+    for ( std::vector<double>::const_iterator it = v.begin(); it != v.end(); ++it) {
+        var += (*it-m)*(*it-m);
+    }
+    
+    *this->value = var / (int(v.size())-1);
     
 }
 
@@ -53,7 +59,7 @@ void MeanFunction::update( void ) {
  * Swap the internal parameters. This happens when the parameters are re-assigned or the entire model graph is cloned.
  * Here we only need to store the new pointer to the vector of real values.
  */
-void MeanFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void VarianceFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if ( oldP == vals )

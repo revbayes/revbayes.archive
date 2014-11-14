@@ -333,7 +333,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(cons
         const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
         for (size_t j = 0; j < numCharacters; j++)
         {
-            double v = cd->getCharacter(j).getMean();
+            double v = cd->getCharacter(j);
             //tipProbs[nd->getIndex()].push_back(1-v);
             tipProbs[nd->getIndex()].push_back(v);
         }

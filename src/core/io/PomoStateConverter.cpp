@@ -30,7 +30,7 @@ PomoStateConverter::PomoStateConverter( void )
  * using the given mapping between sequence name and species name.
  */
 DiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
-                                                                                const AbstractCharacterData &d,
+                                                                                const AbstractDiscreteCharacterData &d,
                                                                                 const unsigned int virtualPopulationSize,
                                                                                 const std::map<std::string, std::string> sequenceNameToSpeciesName) {
     DiscreteCharacterData<PomoState>* data = new DiscreteCharacterData<PomoState> ();

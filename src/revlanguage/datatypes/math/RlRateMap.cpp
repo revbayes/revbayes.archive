@@ -4,7 +4,6 @@
 #include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
-#include "RlTaxonData.h"
 
 using namespace RevLanguage;
 
