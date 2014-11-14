@@ -406,6 +406,21 @@ void TopologyNode::clearBranchParameters( void )
 }
 
 
+void TopologyNode::clearNodeParameters( void )
+{
+    
+    nodeComments.clear();
+    if ( !isTip()  )
+    {
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
+            (*it)->clearNodeParameters();
+        }
+    }
+}
+
+
 /** Clone function */
 TopologyNode* TopologyNode::clone(void) const
 {

@@ -151,6 +151,13 @@ void Tree::clearBranchParameters() {
 }
 
 
+void Tree::clearNodeParameters() {
+    
+    getRoot().clearNodeParameters();
+	
+}
+
+
 
 void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
@@ -249,13 +256,13 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const {
 }
 
 
-const Topology& Tree::getTopology( void ) const {
+Topology& Tree::getTopology( void ) {
     
     return *topology;
 }
 
 
-bool Tree::hasSameTopology(const RevBayesCore::Tree &t) const {
+bool Tree::hasSameTopology(RevBayesCore::Tree &t) const {
     
     return hasSameTopology( t.getTopology() );
 }

@@ -57,6 +57,7 @@ namespace RevBayesCore {
         void                                                addNodeParameter(const std::string &n, const std::vector<double> &p, bool io);
 		void                                                addNodeParameter(const std::string &n, const std::vector<std::string*> &p, bool io);
         void                                                clearBranchParameters(void);
+		void                                                clearNodeParameters(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         std::vector<std::string>                            getTipNames() const;
         std::vector<Taxon>                                  getTaxa() const;                                                                //!< Get all the taxa in the tree
@@ -75,8 +76,8 @@ namespace RevBayesCore {
         const TopologyNode&                                 getTipNode(size_t indx) const;                                                  //!< Get a pointer to tip node i
         double                                              getTmrca(const TopologyNode &n);
         TreeChangeEventHandler&                             getTreeChangeEventHandler(void) const;                                          //!< Get the change-event handler for this tree
-        const Topology&                                     getTopology(void) const;                                                        //!< Get the topology of this tree
-        bool                                                hasSameTopology( const Tree &t ) const;                                         //!< Has this tree the same topology?
+		Topology&											getTopology(void);                                                        //!< Get the topology of this tree
+        bool                                                hasSameTopology( Tree &t ) const;                                         //!< Has this tree the same topology?
         bool                                                hasSameTopology( const Topology &t ) const;                                     //!< Has this tree the same topology?
         bool                                                isBinary(void) const;                                                           //!< Is the Tree rooted
         bool                                                isRooted(void) const;                                                           //!< Is the Tree rooted

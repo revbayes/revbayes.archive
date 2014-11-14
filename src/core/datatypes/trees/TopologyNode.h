@@ -72,6 +72,7 @@ namespace RevBayesCore {
         void                                        addParameter(const std::string &n, const std::vector<double> &p, bool io);
 		void                                        addParameter(const std::string &n, const std::vector<std::string*> &p, bool io);
         void                                        clearBranchParameters(void);
+		void                                        clearNodeParameters(void);
         virtual const std::string&                  computeNewick(void);                                                                //!< Compute the newick string for this clade
         std::string                                 computePlainNewick(void) const;                                                     //!< Compute the newick string for this clade as a plain string without branch length
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
