@@ -243,7 +243,8 @@ void AutocorrelatedBranchMatrixDistribution::recursiveSimulate(const TopologyNod
         uniqueBaseFrequencies.push_back( newParent );
         uniqueMatrices.push_back( rm );
         matrixIndex[nodeIndex] = uniqueMatrices.size()-1;
-        values->insert(nodeIndex, rm);
+        // @Sebastian: Fix this!!!
+//        values->insert(nodeIndex, rm);
         
         size_t numChildren = node.getNumberOfChildren();
         if ( numChildren > 0 ) {
@@ -258,7 +259,8 @@ void AutocorrelatedBranchMatrixDistribution::recursiveSimulate(const TopologyNod
     else {
         // no change
         size_t parentIndex = node.getParent().getIndex();
-        values->insert(nodeIndex, uniqueMatrices[ matrixIndex[ parentIndex ] ]);
+        // @Sebastian: Fix this!!!
+//        values->insert(nodeIndex, uniqueMatrices[ matrixIndex[ parentIndex ] ]);
         
         size_t numChildren = node.getNumberOfChildren();
         if ( numChildren > 0 ) {
