@@ -52,7 +52,7 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
 	// remember the current order of nodes - we need these to properly set branch lengths
 	std::vector<TopologyNode*> old_nodes = nodes;
 	
-    // set up the tree (nodes are reordered by index)
+    // set up the tree keeping the existing indexes
 	tau->setRootNoReIndexing( root );
 	
     // connect the topology to the tree
@@ -63,8 +63,8 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
 		t->setBranchLength(old_nodes[i]->getIndex(), brlens[i]);
     }
 	
-	// now reorder nodes by tree traversal
-	tau->setRoot( root );
+	// now reindex the nodes
+	t->getTopology().reindexNodes();
 	
     // return the tree, the caller is responsible for destruction
     return t;
@@ -95,7 +95,7 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
         c = char( ss.get() );
         if ( c != ' ')
             trimmed += c;
-    }
+    }	
 	
 	// construct the tree starting from the root
     TopologyNode *root = createNode( trimmed, nodes, brlens );
@@ -103,12 +103,15 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
 	// remember the current order of nodes - we need these to properly set branch lengths
 	std::vector<TopologyNode*> old_nodes = nodes;
 	
-    // set up the tree (nodes are reordered)
+    // set up the tree keeping the existing indexes
 	tau->setRootNoReIndexing( root );
+	
+	// order the nodes
+	tau->orderNodesByIndex();
 	
     // connect the topology to the tree
     t->setTopology( tau, true );
-    
+	
     // correctly set the branch lengths using the old order of nodes
     for (size_t i = 0; i < nodes.size(); ++i) {
 		t->setBranchLength(old_nodes[i]->getIndex(), brlens[i]);

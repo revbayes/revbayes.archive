@@ -65,16 +65,16 @@ namespace RevBayesCore {
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
     {
         summarize( b );
-        
+
         std::string bestNewick = treeSamples.rbegin()->getValue();
         NewickConverter converter;
         BranchLengthTree* bestTree = converter.convertFromNewick( bestNewick );
-        
+
         const std::vector<TopologyNode*> &nodes = bestTree->getNodes();
         std::vector<double> pp(nodes.size(),0.0);
         std::vector<std::vector<double> > branchLengths(nodes.size(),std::vector<double>());
         double weight = 1.0 / (trace.size()-burnin);
-        
+
         for (size_t i = burnin; i < trace.size(); ++i)
         {
             BranchLengthTree *tree = trace.objectAt( i );
@@ -91,7 +91,7 @@ namespace RevBayesCore {
                 }
             }
         }
-        
+
         std::vector<double> meanBranchLengths;
         for (std::vector<std::vector<double> >::iterator it = branchLengths.begin(); it != branchLengths.end(); ++it)
         {
@@ -287,7 +287,7 @@ namespace RevBayesCore {
 					
 					// get ancestral state vector for this iteration
 					std::vector<std::string> ancestralstate_vector = ancestralstate_trace.getValues();
-					std::string ancestralstate = ancestralstate_vector[inputCladeIndex];
+					std::string ancestralstate = ancestralstate_vector[i];
 					
 					bool state_found = false;
 					int k = 0;
@@ -309,12 +309,14 @@ namespace RevBayesCore {
 		}
 		// find the 3 most probable ancestral states for each node and add them to the tree as parameters
 		std::vector<std::string*> best_states;
+		std::vector<double> posteriors;
 		for (int i = 0; i < input_nodes.size(); i++) {
 			
 			if ( input_nodes[i]->isTip() ) {
 				
 				std::string *s = new std::string("{}");
 				best_states.push_back(s);
+				posteriors.push_back(1.0);
 				
 			} else {
 
@@ -349,6 +351,8 @@ namespace RevBayesCore {
 					}
 				}
 				
+				posteriors.push_back(total_node_pp);
+				
 				std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
 				if (state2_pp > 0.0001) {
 					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
@@ -370,6 +374,8 @@ namespace RevBayesCore {
 				best_states.push_back(s);
 			}
 		}
+		finalInputTree.clearNodeParameters();
+		finalInputTree.addNodeParameter("posterior",posteriors,true);
 		finalInputTree.addNodeParameter("ancestralstates",best_states,true);
 		return &finalInputTree;
 	}
@@ -461,12 +467,14 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
 	}
 	// find the 3 most probable ancestral states for each node and add them to the tree as parameters
 	std::vector<std::string*> best_states;
+	std::vector<double> posteriors;
 	for (int i = 0; i < input_nodes.size(); i++) {
 		
 		if ( input_nodes[i]->isTip() ) {
 			
 			std::string *s = new std::string("{}");
 			best_states.push_back(s);
+			posteriors.push_back(1.0);
 			
 		} else {
 			
@@ -501,6 +509,8 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
 				}
 			}
 			
+			posteriors.push_back(total_node_pp);
+			
 			std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
 			if (state2_pp > 0.0001) {
 				final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
@@ -522,6 +532,8 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
 			best_states.push_back(s);
 		}
 	}
+	finalInputTree.clearNodeParameters();
+	finalInputTree.addNodeParameter("posterior",posteriors,true);
 	finalInputTree.addNodeParameter("ancestralstates",best_states,true);
 	return &finalInputTree;
 }

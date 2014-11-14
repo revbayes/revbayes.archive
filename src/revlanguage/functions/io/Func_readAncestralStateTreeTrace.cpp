@@ -336,7 +336,6 @@ TreeTrace<TimeTree>* Func_readAncestralStateTreeTrace::readTimeTrees(const std::
             }
             
             // adding values to the Traces
-            //            for (size_t j=1; j<columns.size(); j++) {
             RevBayesCore::TreeTrace<RevBayesCore::TimeTree>& t = data[0];
             
             RevBayesCore::NewickConverter c;
