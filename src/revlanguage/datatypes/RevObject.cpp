@@ -234,11 +234,14 @@ bool RevObject::isConstant( void ) const
 }
 
 
-/** Is convertible to type? */
-bool RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
+/** 
+ * Is convertible to type? 
+ * -1 represent false and any positive number the cost of conversion.
+ */
+double RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
 {
     
-    return false;
+    return -1.0;
 }
 
 

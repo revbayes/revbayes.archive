@@ -137,7 +137,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             }
             
         }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
         {
             // Fit by type conversion
             if ( once )
@@ -251,12 +251,12 @@ bool ArgumentRule::hasDefault(void) const {
  *
  * @todo See the TODOs for fitArgument(...)
  */
-bool ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool once) const
+double ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool once) const
 {
     
     if ( var == NULL )
     {
-        return false;
+        return -1;
     }
     
     if ( evalType == BY_VALUE || var->isWorkspaceVariable() )
@@ -268,23 +268,23 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool on
     {
         if ( var->getRevObject().isType( *it ) )
         {
-            return true;
+            return 0.0;
         }
-        else if ( var->getRevObject().isConvertibleTo( *it, once ) )
+        else if ( var->getRevObject().isConvertibleTo( *it, once ) != -1 )
         {
-            return true;
+            return var->getRevObject().isConvertibleTo( *it, once );
         }
         else if ( once == false && !var->isAssignable() &&
                   var->getRevObject().isConvertibleTo( *it, true ) &&
                   (*it).isDerivedOf( var->getRevObjectTypeSpec() )
                 )
         {
-            return true;
+            return var->getRevObject().isConvertibleTo( *it, true );
         }
         
     }
     
-    return false;
+    return -1;
 }
 
 

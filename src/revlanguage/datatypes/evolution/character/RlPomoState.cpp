@@ -43,14 +43,6 @@ PomoState* PomoState::clone(void) const {
 	return new PomoState(*this);
 }
 
-
-/** Convert to type. The caller manages the returned object. */
-RevObject* PomoState::convertTo(const TypeSpec& type) const {
-    
-    return RevObject::convertTo(type);
-}
-
-
 /** Get Rev type of object */
 const std::string& PomoState::getClassType(void) {
     
@@ -74,13 +66,5 @@ const TypeSpec& PomoState::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-
-/** Is convertible to type? */
-bool PomoState::isConvertibleTo(const TypeSpec& type, bool once) const {
-    
-    return RevObject::isConvertibleTo(type, once);
 }
 

@@ -225,19 +225,19 @@ const TypeSpec& Natural::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
+double Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
-        return true;
+        return 0.4;
 
     if ( type == Real::getClassTypeSpec() )
-        return true;
+        return 0.2;
 
     if ( type == RealPos::getClassTypeSpec() )
-        return true;
+        return 0.1;
 
     if ( type == RlString::getClassTypeSpec() )
-        return true;
+        return 0.3;
 
     return Integer::isConvertibleTo( type, once );
 }

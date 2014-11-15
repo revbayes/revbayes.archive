@@ -37,11 +37,9 @@ namespace RevLanguage {
         ContinuousCharacterData*        add(const ContinuousCharacterData& d) const;                            //!< Addition operator used for example in '+=' statements
 
         ContinuousCharacterData*        clone(void) const;                                                      //!< Clone object
-        RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-        bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
 
         RevPtr<RevVariable>             executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found);     //!< Execute member method
 

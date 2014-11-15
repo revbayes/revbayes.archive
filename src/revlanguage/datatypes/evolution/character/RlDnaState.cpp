@@ -44,13 +44,6 @@ DnaState* DnaState::clone(void) const {
 }
 
 
-/** Convert to type. The caller manages the returned object. */
-RevObject* DnaState::convertTo(const TypeSpec& type) const {
-    
-    return RevObject::convertTo(type);
-}
-
-
 /** Get Rev type of object */
 const std::string& DnaState::getClassType(void) { 
     
@@ -74,13 +67,5 @@ const TypeSpec& DnaState::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-
-/** Is convertible to type? */
-bool DnaState::isConvertibleTo(const TypeSpec& type, bool once) const {
-    
-    return RevObject::isConvertibleTo(type, once);
 }
 
