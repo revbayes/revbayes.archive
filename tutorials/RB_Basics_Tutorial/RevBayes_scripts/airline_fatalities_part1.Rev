@@ -35,7 +35,7 @@ for (i in 2:1000) {
       ln_likelihood_ratio += dpoisson(observed_fatalities[j],lambda_prime) - dpoisson(observed_fatalities[j],lambda)
    }
    ratio <- ln_prior_ratio + ln_likelihood_ratio
-   if ( ln(runif(1)[1]) < ratio) {
+   if ( ln(runif(1,0,1)[1]) < ratio) {
       alpha[i] <- alpha_prime
       beta[i] <- beta_prime
    } else {
