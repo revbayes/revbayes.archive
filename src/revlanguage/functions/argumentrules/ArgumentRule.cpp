@@ -313,5 +313,12 @@ void RevLanguage::ArgumentRule::printValue(std::ostream &o) const
         o << (*it).getType();
     }
     o << " " << label;
+    
+    if ( hasDefault() )
+    {
+        std::ostringstream s;
+        getDefaultVariable().getRevObject().printValue( s );
+        o << " = " << StringUtilities::oneLiner( s.str(), 10 );
+    }
 }
 
