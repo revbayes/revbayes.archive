@@ -22,7 +22,25 @@
 #include "StringUtilities.h"
 #include "RlUserInterface.h"
 
+#if defined (RB_MPI)
+#include <mpi.h>
+#endif
+
 using namespace RevLanguage;
+
+
+UserInterface::UserInterface( void ) :
+    processID( 0 )
+{
+#if defined (RB_MPI)
+        processID = MPI::COMM_WORLD.Get_rank();
+#endif
+}
+
+UserInterface::UserInterface( const UserInterface &u ) :
+processID( u.processID )
+{
+}
 
 /** Ask user a yes/no question */
 bool UserInterface::ask(std::string msg) {
@@ -56,17 +74,25 @@ bool UserInterface::ask(std::string msg) {
 /** Print a message and a newline */
 void UserInterface::output(std::string msg) {
 
+    if ( processID == 0 )
+    {
     std::cout << StringUtilities::formatStringForScreen( msg, RevBayesCore::RbUtils::PAD, RevBayesCore::RbUtils::PAD, RbSettings::userSettings().getLineWidth() );
+    }
+    
 }
 
 
 /** Print a message and a newline without the padding */
-void UserInterface::output(std::string msg, const bool hasPadding) {
+void UserInterface::output(std::string msg, const bool hasPadding)
+{
 
-    if (hasPadding == true)
-        output(msg);
-    else
-        std::cout << msg << std::endl;
+    if ( processID == 0 )
+    {
+        if (hasPadding == true)
+            output(msg);
+        else
+            std::cout << msg << std::endl;
+    }
 }
 
 
