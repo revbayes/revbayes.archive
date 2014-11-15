@@ -714,7 +714,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         const ArgumentRule& theRule = theRules[i];
         RevPtr<RevVariable> theVar = theRule.getDefaultVariable().clone();
         theVar->setName( "." + theRule.getArgumentLabel() );
-        theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
+        theVar->setRequiredTypeSpec( theRule.getDefaultVariable().getRequiredTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;
         pArgs.push_back( Argument( theVar, theRule.getArgumentLabel(), theRule.getEvaluationType() != ArgumentRule::BY_CONSTANT_REFERENCE ) );

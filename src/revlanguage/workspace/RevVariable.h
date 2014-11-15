@@ -54,7 +54,7 @@ namespace RevLanguage {
         int                     getMinIndex(void) const;                                //!< Get the minimum index for this vector variable.
         const std::string&      getName(void) const;                                    //!< Get the name of the variable
         RevObject&              getRevObject(void) const;                               //!< Get the value of the variable (non-const to return non-const value)
-        const TypeSpec&         getRevObjectTypeSpec(void) const;                       //!< Get the required Rev object type spec
+        const TypeSpec&         getRequiredTypeSpec(void) const;                        //!< Get the required Rev object type spec
         bool                    isAssignable(void) const;                               //!< Is variable or upstream members assignable?
         bool                    isHiddenVariable(void) const;                           //!< Is this a hidden variable?
         bool                    isElementVariable(void) const;                          //!< Is this a variable an element of a vector?
@@ -69,7 +69,7 @@ namespace RevLanguage {
         void                    setWorkspaceVariableState(bool flag = true);            //!< Set (or unset) control variable status
         void                    setName(const std::string &n);                          //!< Set the name of this variable
         void                    replaceRevObject(RevObject *newObj);                    //!< Replace the Rev object of this variable
-        void                    setRevObjectTypeSpec(const TypeSpec& ts);               //!< set the required Rev object type spec
+        void                    setRequiredTypeSpec(const TypeSpec& ts);                //!< set the required Rev object type spec
         
         // Smart pointer functions
         size_t                  decrementReferenceCount(void) const;                    //!< Decrement the reference count for reference counting in smart pointers
@@ -82,7 +82,7 @@ namespace RevLanguage {
         std::string             name;                                                   //!< Name of variable
         mutable size_t          refCount;                                               //!< Reference count used by RevPtr
         RevObject*              revObject;                                              //!< Pointer to the Rev object inside the variable
-        TypeSpec                revObjectTypeSpec;                                      //!< Required type of the object
+        TypeSpec                requiredTypeSpec;                                       //!< Required type of the object
         bool                    isElementVar;                                           //!< Is this variable an element of a vector?
         bool                    isHiddenVar;                                            //!< Is this a hidden variable?
         bool                    isReferenceVar;                                         //!< Is this a reference variable?

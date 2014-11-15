@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Dirichlet distribution, which is used create
- * random variables of Dirichlet distributions.
- *
- * @brief Declaration of the Dirichlet distribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef Dist_dirichlet_H
 #define Dist_dirichlet_H
 
@@ -24,6 +7,22 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * The RevLanguage wrapper of the Dirichlet distribution.
+     *
+     * The RevLanguage wrapper of the Dirichlet distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the DirichletDistribution for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2012-08-08, version 1.0
+     *
+     */
     class Dist_dirichlet :  public TypedDistribution<Simplex> {
         
     public:

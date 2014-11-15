@@ -17,6 +17,21 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the inverse Wishart distribution.
+     *
+     * The RevLanguage wrapper of the inverse Wishart distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the InverseWishartDistribution.h for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Nicolas Lartillot)
+     * @since 2014-07-15, version 1.0
+     *
+     */
     class Dist_inverseWishart :  public  TypedDistribution<RealSymmetricMatrix> {
         
     public:

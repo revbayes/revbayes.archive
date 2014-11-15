@@ -213,16 +213,19 @@
 #include "Dist_binomial.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
+#include "Dist_exponentialOffset.h"
+#include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
 #include "Dist_geom.h"
 #include "Dist_poisson.h"
 #include "Dist_lnorm.h"
+#include "Dist_lnormOffset.h"
+#include "Dist_lnormOffsetPositive.h"
 #include "Dist_logUniform.h"
 #include "Dist_norm.h"
-#include "Dist_offsetExponential.h"
-#include "Dist_offsetLnorm.h"
-#include "Dist_positiveUnif.h"
 #include "Dist_unif.h"
+#include "Dist_unifPositive.h"
+#include "Dist_unifProbability.h"
 #include "Dist_wishart.h"
 #include "Dist_inverseWishart.h"
 
@@ -582,63 +585,63 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
         // autocorrelated log-normal branch rates relaxed clock model
-        addDistribution( "dnACLN", new Dist_autocorrelatedLnBranchRates() );
+        addDistribution( "dnACLN",                      new Dist_autocorrelatedLnBranchRates() );
 		
 		
 		// branch-rate jump process
-        addDistribution( "dnBranchRateJumpProcess", new Dist_branchRateJumpProcess() );
+        addDistribution( "dnBranchRateJumpProcess",     new Dist_branchRateJumpProcess() );
         
         // white noise process
-        addDistribution( "dnWhiteNoise",    new Dist_whiteNoise() );
+        addDistribution( "dnWhiteNoise",                new Dist_whiteNoise() );
         
         /* trait evolution (in folder "distributions/evolution/branchrate") */
 
         // brownian motion
-        addDistribution( "dnBrownian",              new Dist_brownian() );
-        addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
-        addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnBrownian",                  new Dist_brownian() );
+        addDistribution( "dnOUP",                       new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnOrnsteinUhlenbeck",         new Dist_ornsteinUhlenbeck() );
         
         // multivariate brownian motion
-        addDistribution( "dnBrownianMultiVariate",  new Dist_mvtBrownian() );
+        addDistribution( "dnBrownianMultiVariate",      new Dist_mvtBrownian() );
   
         /* Character state evolution processes (in folder "distributions/evolution/character") */
         
         // simple phylogenetic CTMC on fixed number of discrete states
-        addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<TimeTree>() );
-        addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<BranchLengthTree>() );
-        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
-        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
-        addDistribution( "dnPhyloCTMCEpoch", new Dist_phyloCTMCEpoch() );
+        addDistribution( "dnPhyloCTMC",                 new Dist_phyloCTMC<TimeTree>() );
+        addDistribution( "dnPhyloCTMC",                 new Dist_phyloCTMC<BranchLengthTree>() );
+        addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
+        addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
+        addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
                 
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
-        addDistribution( "dnBDP"                        , new Dist_bdp() );
-        addDistribution( "dnBDPConst"                   , new Dist_bdp() );
-        addDistribution( "dnBirthDeathConstant"         , new Dist_bdp() );
+        addDistribution( "dnBDP",                       new Dist_bdp() );
+        addDistribution( "dnBDPConst",                  new Dist_bdp() );
+        addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
         
         // constant rate birth-death process with serially sampled tips
-        addDistribution( "dnBDPSerial"                  , new Dist_serialBDP() );
-        addDistribution( "dnBDPConstSerial"             , new Dist_serialBDP() );
-        addDistribution( "dnBirthDeathConstantSerial"   , new Dist_serialBDP() );
+        addDistribution( "dnBDPSerial",                 new Dist_serialBDP() );
+        addDistribution( "dnBDPConstSerial",            new Dist_serialBDP() );
+        addDistribution( "dnBirthDeathConstantSerial",  new Dist_serialBDP() );
 
         // piecewise constant rate birth-death process with serially sampled tips
-        addDistribution( "dnBDPSkySerial"               , new Dist_skySerialBDP() );
-        addDistribution( "dnBirthDeathSkySerial"        , new Dist_skySerialBDP() );
+        addDistribution( "dnBDPSkySerial",              new Dist_skySerialBDP() );
+        addDistribution( "dnBirthDeathSkySerial",       new Dist_skySerialBDP() );
 
         // diversity-dependent pure-birth process
-        addDistribution( "dnYuleDivDep"                 , new Dist_divDepYuleProcess() );
-        addDistribution( "dnYuleDiversityDependent"     , new Dist_divDepYuleProcess() );
+        addDistribution( "dnYuleDivDep",                new Dist_divDepYuleProcess() );
+        addDistribution( "dnYuleDiversityDependent",    new Dist_divDepYuleProcess() );
         
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "dnCoalMultiSpeciesConst"      , new Dist_constPopMultispCoal() );
-        addDistribution( "dnCoalMSConst"                , new Dist_constPopMultispCoal() );
+        addDistribution( "dnCoalMultiSpeciesConst",     new Dist_constPopMultispCoal() );
+        addDistribution( "dnCoalMSConst",               new Dist_constPopMultispCoal() );
 
         // uniform time tree distribution
-        addDistribution( "dnUniformTimeTree"            , new Dist_uniformTimeTree() );
+        addDistribution( "dnUniformTimeTree",           new Dist_uniformTimeTree() );
         
         // uniform topology distribution
-        addDistribution( "dnUniformTopology"            , new Dist_uniformTopology() );
+        addDistribution( "dnUniformTopology",           new Dist_uniformTopology() );
         
         
         /* Statistical distributions on simple variables (in folder "distributions/math") */
@@ -672,15 +675,19 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // exponential distribution
         addDistribution( "dnExp",           new Dist_exponential() );
-        addDistribution( "dnExp",           new Dist_offsetExponential() );
+        addDistribution( "dnExp",           new Dist_exponentialOffset() );
+        addDistribution( "dnExp",           new Dist_exponentialOffsetPositive() );
         addDistribution( "dnExponential",   new Dist_exponential() );
-        addDistribution( "dnExponential",   new Dist_offsetExponential() );
+        addDistribution( "dnExponential",   new Dist_exponentialOffset() );
+        addDistribution( "dnExponential",   new Dist_exponentialOffsetPositive() );
         
         // lognormal distribution
         addDistribution( "dnLnorm",         new Dist_lnorm() );
-        addDistribution( "dnLnorm",         new Dist_offsetLnorm() );
+        addDistribution( "dnLnorm",         new Dist_lnormOffset() );
+        addDistribution( "dnLnorm",         new Dist_lnormOffsetPositive() );
         addDistribution( "dnLognormal",     new Dist_lnorm() );
-        addDistribution( "dnLognormal",     new Dist_offsetLnorm() );
+        addDistribution( "dnLognormal",     new Dist_lnormOffset() );
+        addDistribution( "dnLognormal",     new Dist_lnormOffsetPositive() );
         
         // normal distribution
         addDistribution( "dnNorm",          new Dist_norm() );
@@ -691,9 +698,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // uniform distribution
         addDistribution( "dnUnif",          new Dist_unif() );
-        addDistribution( "dnUnif",          new Dist_positiveUnif() );
+        addDistribution( "dnUnif",          new Dist_unifPositive() );
+        addDistribution( "dnUnif",          new Dist_unifProbability() );
         addDistribution( "dnUniform",       new Dist_unif() );
-        addDistribution( "dnUniform",       new Dist_positiveUnif() );
+        addDistribution( "dnUniform",       new Dist_unifPositive() );
+        addDistribution( "dnUniform",       new Dist_unifProbability() );
         
         // Wishart distribution
         addDistribution( "dnWishart",       new Dist_wishart() );
@@ -1102,10 +1111,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("plnorm", new DistributionFunctionCdf( new Dist_lnorm() ) );
         addFunction("qlnorm", new DistributionFunctionQuantilePositiveContinuous( new Dist_lnorm() ) );
         addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new Dist_lnorm() ) );
-        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new Dist_offsetLnorm() ) );
-        addFunction("plnorm", new DistributionFunctionCdf( new Dist_offsetLnorm() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantileContinuous( new Dist_offsetLnorm() ) );
-        addFunction("rlnorm", new DistributionFunctionRv<Real>( new Dist_offsetLnorm() ) );
+        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new Dist_lnormOffset() ) );
+        addFunction("plnorm", new DistributionFunctionCdf( new Dist_lnormOffset() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantileContinuous( new Dist_lnormOffset() ) );
+        addFunction("rlnorm", new DistributionFunctionRv<Real>( new Dist_lnormOffset() ) );
         
         // normal distribution
         addFunction("dnorm", new DistributionFunctionPdf<Real>( new Dist_norm() ) );
@@ -1122,10 +1131,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("punif", new DistributionFunctionCdf( new Dist_unif() ) );
         addFunction("qunif", new DistributionFunctionQuantileContinuous( new Dist_unif() ) );
         addFunction("runif", new DistributionFunctionRv<Real>( new Dist_unif() ) );
-        addFunction("dunif", new DistributionFunctionPdf<RealPos>( new Dist_positiveUnif() ) );
-        addFunction("punif", new DistributionFunctionCdf( new Dist_positiveUnif() ) );
-        addFunction("qunif", new DistributionFunctionQuantilePositiveContinuous( new Dist_positiveUnif() ) );
-        addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_positiveUnif() ) );
+        addFunction("dunif", new DistributionFunctionPdf<RealPos>( new Dist_unifPositive() ) );
+        addFunction("punif", new DistributionFunctionCdf( new Dist_unifPositive() ) );
+        addFunction("qunif", new DistributionFunctionQuantilePositiveContinuous( new Dist_unifPositive() ) );
+        addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_unifPositive() ) );
         
         
         addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<TimeTree>() ) );

@@ -1,11 +1,3 @@
-//
-//  Dist_wishart.cpp
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-27.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "Dist_wishart.h"
 #include "Natural.h"

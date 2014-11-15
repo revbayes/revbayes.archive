@@ -1,12 +1,3 @@
-//
-//  Dist_binomial
-//  RevBayesCore
-//
-//  Created by John Huelsenbeck on 8/25/14.
-//  Copyright 2012 UC Berkeley. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BinomialDistribution.h"

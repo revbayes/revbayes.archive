@@ -65,7 +65,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
     
     RevBayesCore::MultispeciesCoalescent*   d = new RevBayesCore::MultispeciesCoalescent( st, t );
     
-    if ( Ne->getRevObjectTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( Ne->getRequiredTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* neNode = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
         

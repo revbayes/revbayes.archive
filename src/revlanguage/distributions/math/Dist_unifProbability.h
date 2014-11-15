@@ -1,38 +1,37 @@
-/**
- * @file
- * This file contains the declaration of the uniform distribution, which is used create
- * random variables of uniform distributions. 
- * We need this second implementation because the return type must be able to guarantee to be a positive real
- * if both boundaries are positive reals.
- *
- * @brief Declaration and implementation of UniformDistribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-#ifndef Dist_positiveUnif_H
-#define Dist_positiveUnif_H
+#ifndef Dist_unifProbability_H
+#define Dist_unifProbability_H
 
 #include "UniformDistribution.h"
-#include "RlPositiveContinuousDistribution.h"
+#include "RlTypedDistribution.h"
+#include "Probability.h"
 
 namespace RevLanguage {
     
-    class Dist_positiveUnif :  public PositiveContinuousDistribution {
+    /**
+     * The RevLanguage wrapper of the uniform distribution on probabilities.
+     *
+     * The RevLanguage wrapper of the uniform distribution on probabilities simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * We need this second implementation because the return type must be able to guarantee to be a probability
+     * if both boundaries are probabilities.
+     * See the UniformDistribution for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-11-15, version 1.0
+     *
+     */
+    class Dist_unifProbability : public TypedDistribution<Probability> {
         
     public:
-        Dist_positiveUnif( void );
-        virtual ~Dist_positiveUnif();
+        Dist_unifProbability( void );
+        virtual ~Dist_unifProbability();
         
         // Basic utility functions
-        Dist_positiveUnif*                              clone(void) const;                                                              //!< Clone the object
+        Dist_unifProbability*                           clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -50,8 +49,8 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                          lower;
-        RevPtr<const RevVariable>                          upper;
+        RevPtr<const RevVariable>                       lower;
+        RevPtr<const RevVariable>                       upper;
         
     };
     

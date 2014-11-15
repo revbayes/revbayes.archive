@@ -14,7 +14,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the Dist_geom.h for more details.
+     * See the GeometricDistribution.h for more details.
      *
      *
      * @copyright Copyright 2009-

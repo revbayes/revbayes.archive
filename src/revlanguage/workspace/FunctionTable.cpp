@@ -466,33 +466,6 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
         }
     }
 
-    /* Check that the same labels are not used for different positions */
-    for (size_t i=0; i<x.size(); i++) 
-    {
-
-        const std::string& xLabel = x[i].getArgumentLabel();
-        if (xLabel.size() == 0)
-        {
-            continue;
-        }
-        
-        for (size_t j=0; j<y.size(); j++)
-        {
-
-            const std::string& yLabel = y[j].getArgumentLabel();
-            if (yLabel.size() == 0)
-            {
-                continue;
-            }
-            
-            if (xLabel == yLabel && i != j)
-            {
-                return false;
-            }
-            
-        }
-    }
-
     /* Check that types are different for at least one argument without default values */
     size_t i;
     for (i=0; i<x.size() && i<y.size(); i++) 
