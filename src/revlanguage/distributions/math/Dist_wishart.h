@@ -1,16 +1,7 @@
-//
-//  RlDist_wishart.h
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-27.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
-#ifndef __revbayes__Dist_wishart__
-#define __revbayes__Dist_wishart__
+#ifndef Dist_wishart_H
+#define Dist_wishart_H
 
 #include <iostream>
-
 
 #include "RealSymmetricMatrix.h"
 #include "RlTypedDistribution.h"
@@ -18,6 +9,21 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the wishart distribution.
+     *
+     * The RevLanguage wrapper of the wishart distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the WishartDistribution for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Nicolas Lartillot)
+     * @since 2014-03-27, version 1.0
+     *
+     */
     class Dist_wishart :  public  TypedDistribution<RealSymmetricMatrix> {
         
     public:

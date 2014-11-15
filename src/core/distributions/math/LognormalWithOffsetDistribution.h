@@ -19,23 +19,23 @@
 
 
 
-#ifndef LognormalDistribution_H
-#define LognormalDistribution_H
+#ifndef LognormalWithOffsetDistribution_H
+#define LognormalWithOffsetDistribution_H
 
 #include "ContinuousDistribution.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
-    class LognormalDistribution : public ContinuousDistribution {
+    class LognormalWithOffsetDistribution : public ContinuousDistribution {
         
     public:
-        LognormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s);
-        virtual                                            ~LognormalDistribution(void);                                                  //!< Virtual destructor
+        LognormalWithOffsetDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *o);
+        virtual                                            ~LognormalWithOffsetDistribution(void);                                                  //!< Virtual destructor
         
         // public member functions
         double                                              cdf(void) const;                                                                  //!< Cummulative density function
-        LognormalDistribution*                              clone(void) const;                                                          //!< Create an independent clone
+        LognormalWithOffsetDistribution*                    clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         double                                              getMax(void) const;
         double                                              getMin(void) const;
@@ -51,6 +51,7 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double>*                         mean;
         const TypedDagNode<double>*                         sd;
+        const TypedDagNode<double>*                         offset;
         
     };
     

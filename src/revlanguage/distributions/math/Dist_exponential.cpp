@@ -47,8 +47,7 @@ RevBayesCore::ExponentialDistribution* Dist_exponential::createDistribution( voi
 {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( offset->getRevObject() ).getDagNode();
-    RevBayesCore::ExponentialDistribution* d    = new RevBayesCore::ExponentialDistribution( l, o );
+    RevBayesCore::ExponentialDistribution* d    = new RevBayesCore::ExponentialDistribution( l );
     
     return d;
 }
@@ -101,7 +100,6 @@ const MemberRules& Dist_exponential::getParameterRules(void) const
     if ( !rulesSet ) 
     {
         distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) ) );
-        distMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         
         rulesSet = true;
     }
@@ -141,10 +139,6 @@ void Dist_exponential::setConstParameter(const std::string& name, const RevPtr<c
     if ( name == "lambda" ) 
     {
         lambda = var;
-    }
-    else if ( name == "offset" ) 
-    {
-        offset = var;
     }
     else 
     {

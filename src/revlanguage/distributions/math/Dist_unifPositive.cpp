@@ -1,31 +1,31 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_positiveUnif.h"
+#include "Dist_unifPositive.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "UniformDistribution.h"
 
 using namespace RevLanguage;
 
-Dist_positiveUnif::Dist_positiveUnif() : PositiveContinuousDistribution()
+Dist_unifPositive::Dist_unifPositive() : PositiveContinuousDistribution()
 {
     
 }
 
 
-Dist_positiveUnif::~Dist_positiveUnif() {
+Dist_unifPositive::~Dist_unifPositive() {
     
 }
 
 
 
-Dist_positiveUnif* Dist_positiveUnif::clone( void ) const {
-    return new Dist_positiveUnif(*this);
+Dist_unifPositive* Dist_unifPositive::clone( void ) const {
+    return new Dist_unifPositive(*this);
 }
 
 
-RevBayesCore::UniformDistribution* Dist_positiveUnif::createDistribution( void ) const {
+RevBayesCore::UniformDistribution* Dist_unifPositive::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l   = static_cast<const RealPos &>( lower->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* u   = static_cast<const RealPos &>( upper->getRevObject() ).getDagNode();
@@ -37,7 +37,7 @@ RevBayesCore::UniformDistribution* Dist_positiveUnif::createDistribution( void )
 
 
 /* Get Rev type of object */
-const std::string& Dist_positiveUnif::getClassType(void) { 
+const std::string& Dist_unifPositive::getClassType(void) { 
     
     static std::string revType = "Dist_unif";
     
@@ -45,7 +45,7 @@ const std::string& Dist_positiveUnif::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_positiveUnif::getClassTypeSpec(void) { 
+const TypeSpec& Dist_unifPositive::getClassTypeSpec(void) { 
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
@@ -56,14 +56,14 @@ const TypeSpec& Dist_positiveUnif::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_positiveUnif::getParameterRules(void) const {
+const MemberRules& Dist_unifPositive::getParameterRules(void) const {
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -72,7 +72,7 @@ const MemberRules& Dist_positiveUnif::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_positiveUnif::getTypeSpec( void ) const {
+const TypeSpec& Dist_unifPositive::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -81,7 +81,7 @@ const TypeSpec& Dist_positiveUnif::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_positiveUnif::printValue(std::ostream& o) const {
+void Dist_unifPositive::printValue(std::ostream& o) const {
     
     o << " unif (lower=";
     if ( lower != NULL ) {
@@ -100,7 +100,7 @@ void Dist_positiveUnif::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_positiveUnif::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_unifPositive::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "lower" ) 
     {

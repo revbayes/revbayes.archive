@@ -1,43 +1,34 @@
-//
-//  ExponentialDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "Dist_offsetExponential.h"
-#include "ExponentialDistribution.h"
+#include "Dist_exponentialOffset.h"
+#include "ExponentialWithOffsetDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "ContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
-Dist_offsetExponential::Dist_offsetExponential() : ContinuousDistribution() {
+Dist_exponentialOffset::Dist_exponentialOffset() : ContinuousDistribution() {
     
 }
 
 
-Dist_offsetExponential::~Dist_offsetExponential() {
+Dist_exponentialOffset::~Dist_exponentialOffset() {
     
 }
 
 
 
-Dist_offsetExponential* Dist_offsetExponential::clone( void ) const {
-    return new Dist_offsetExponential(*this);
+Dist_exponentialOffset* Dist_exponentialOffset::clone( void ) const {
+    return new Dist_exponentialOffset(*this);
 }
 
 
-RevBayesCore::ExponentialDistribution* Dist_offsetExponential::createDistribution( void ) const {
+RevBayesCore::ExponentialWithOffsetDistribution* Dist_exponentialOffset::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l     = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* o     = static_cast<const Real    &>( offset->getRevObject() ).getDagNode();
-    RevBayesCore::ExponentialDistribution* d  = new RevBayesCore::ExponentialDistribution( l, o );
+    RevBayesCore::ExponentialWithOffsetDistribution* d  = new RevBayesCore::ExponentialWithOffsetDistribution( l, o );
     
     return d;
 }
@@ -45,15 +36,15 @@ RevBayesCore::ExponentialDistribution* Dist_offsetExponential::createDistributio
 
 
 /* Get Rev type of object */
-const std::string& Dist_offsetExponential::getClassType(void) { 
+const std::string& Dist_exponentialOffset::getClassType(void) { 
     
-    static std::string revType = "Dist_offsetExponential";
+    static std::string revType = "Dist_exponentialOffset";
     
 	return revType; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_offsetExponential::getClassTypeSpec(void) { 
+const TypeSpec& Dist_exponentialOffset::getClassTypeSpec(void) { 
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
@@ -64,14 +55,14 @@ const TypeSpec& Dist_offsetExponential::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_offsetExponential::getParameterRules(void) const {
+const MemberRules& Dist_exponentialOffset::getParameterRules(void) const {
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distExpMemberRules.push_back( new ArgumentRule( "offset", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distExpMemberRules.push_back( new ArgumentRule( "offset", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -80,7 +71,7 @@ const MemberRules& Dist_offsetExponential::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_offsetExponential::getTypeSpec( void ) const {
+const TypeSpec& Dist_exponentialOffset::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -89,7 +80,7 @@ const TypeSpec& Dist_offsetExponential::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_offsetExponential::printValue(std::ostream& o) const {
+void Dist_exponentialOffset::printValue(std::ostream& o) const {
     
     o << " exponential(lambda=";
     if ( lambda != NULL ) {
@@ -108,7 +99,7 @@ void Dist_offsetExponential::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_offsetExponential::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_exponentialOffset::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "lambda" ) 
     {

@@ -17,7 +17,7 @@ RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
-    revObjectTypeSpec( ts ),
+    requiredTypeSpec( ts ),
     isElementVar( false ),
     isHiddenVar( false ),
     isReferenceVar( false ),
@@ -34,7 +34,7 @@ RevVariable::RevVariable(RevObject *v, const std::string &n) :
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
-    revObjectTypeSpec( RevObject::getClassTypeSpec() ),
+    requiredTypeSpec( RevObject::getClassTypeSpec() ),
     isElementVar( false ),
     isHiddenVar( false ),
     isReferenceVar( false ),
@@ -52,7 +52,7 @@ RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
-    revObjectTypeSpec( RevObject::getClassTypeSpec() ),
+    requiredTypeSpec( RevObject::getClassTypeSpec() ),
     isElementVar( false ),
     isHiddenVar( false ),
     isReferenceVar( true ),
@@ -72,7 +72,7 @@ RevVariable::RevVariable(const RevVariable &v) :
     name( v.name ),
     refCount( 0 ),
     revObject( NULL ),
-    revObjectTypeSpec( v.revObjectTypeSpec ),
+    requiredTypeSpec( v.requiredTypeSpec ),
     isElementVar( v.isElementVar ),
     isHiddenVar( v.isHiddenVar ),
     isReferenceVar( v.isHiddenVar ),
@@ -115,7 +115,7 @@ RevVariable& RevVariable::operator=(const RevVariable &v)
     {
         
         name                = v.name;
-        revObjectTypeSpec   = v.revObjectTypeSpec;
+        requiredTypeSpec    = v.requiredTypeSpec;
         isElementVar        = v.isElementVar;
         isHiddenVar         = v.isHiddenVar;
         isReferenceVar      = v.isReferenceVar;
@@ -231,9 +231,9 @@ RevObject& RevVariable::getRevObject(void) const
  * RevVariable. By reassignment, we receive the new value, so it is
  * more important what our type spec is.
  */
-const TypeSpec& RevVariable::getRevObjectTypeSpec(void) const
+const TypeSpec& RevVariable::getRequiredTypeSpec(void) const
 {
-    return revObjectTypeSpec;
+    return requiredTypeSpec;
 }
 
 
@@ -490,9 +490,9 @@ void RevVariable::setName(std::string const &n)
 
 /**
  * We set here the required value type spec. An error is thrown if the
- * current Rev object of the RevVariable, if any, is not of the specified type.
+ * current Rev object of the variable, if any, is not of the specified type.
  */
-void RevVariable::setRevObjectTypeSpec(const TypeSpec &ts)
+void RevVariable::setRequiredTypeSpec(const TypeSpec &ts)
 {
     
     const RevObject& theObject = this->getRevObject();
@@ -506,6 +506,6 @@ void RevVariable::setRevObjectTypeSpec(const TypeSpec &ts)
         
     }
     
-    revObjectTypeSpec = ts;
+    requiredTypeSpec = ts;
 }
 

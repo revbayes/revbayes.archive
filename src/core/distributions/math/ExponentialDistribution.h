@@ -31,7 +31,6 @@ namespace RevBayesCore {
         
     public:
         ExponentialDistribution(const TypedDagNode<double> *l);
-        ExponentialDistribution(const TypedDagNode<double> *l, const TypedDagNode<double> *o);
         virtual                                            ~ExponentialDistribution(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -51,7 +50,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                         lambda;
-        const TypedDagNode<double>*                         offset;
+ 
     };
     
 }

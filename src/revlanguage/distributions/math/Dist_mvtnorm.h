@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the MultivariateNormal distribution, which is used create
- * random variables of MultivariateNormal distributions.
- *
- * @brief Declaration of the MultivariateNormal distribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef Dist_mvtnormal_H
 #define Dist_mvtnormal_H
 
@@ -25,6 +8,22 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * The RevLanguage wrapper of the multivariate normal distribution.
+     *
+     * The RevLanguage wrapper of the multivariate normal distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the MultivariateNormalDistribution for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Nicolas Lartillot)
+     * @since 2014-07-15, version 1.0
+     *
+     */
     class Dist_mvtnorm :  public TypedDistribution< ModelVector<Real> > {
         
     public:

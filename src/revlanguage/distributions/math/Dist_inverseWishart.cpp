@@ -1,10 +1,3 @@
-/* 
- * File:   Dist_InverseWishart.cpp
- * Author: nl
- * 
- * Created on 15 juillet 2014, 10:31
- */
-
 #include "ArgumentRule.h"
 #include "Dist_inverseWishart.h"
 #include "Natural.h"

@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of the log-normal distributed random variable class.
+ * This file contains the declaration of the exponentially distributed random variable class.
  * This class is derived from the stochastic node and each instance will represent a random variable
  * from a normal distribution in the model graph.
  *
@@ -19,27 +19,27 @@
 
 
 
-#ifndef LognormalDistribution_H
-#define LognormalDistribution_H
+#ifndef ExponentialWithOffsetDistribution_H
+#define ExponentialWithOffsetDistribution_H
 
 #include "ContinuousDistribution.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
-    class LognormalDistribution : public ContinuousDistribution {
+    class ExponentialWithOffsetDistribution : public ContinuousDistribution {
         
     public:
-        LognormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s);
-        virtual                                            ~LognormalDistribution(void);                                                  //!< Virtual destructor
+        ExponentialWithOffsetDistribution(const TypedDagNode<double> *l, const TypedDagNode<double> *o);
+        virtual                                            ~ExponentialWithOffsetDistribution(void);                                              //!< Virtual destructor
         
         // public member functions
-        double                                              cdf(void) const;                                                                  //!< Cummulative density function
-        LognormalDistribution*                              clone(void) const;                                                          //!< Create an independent clone
+        double                                              cdf(void) const;                                                            //!< Cummulative density function
+        ExponentialWithOffsetDistribution*                  clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         double                                              getMax(void) const;
         double                                              getMin(void) const;
-        double                                              quantile(double p) const;                                                       //!< Qu
+        double                                              quantile(double p) const;                                                   //!< Qu
         void                                                redrawValue(void);
         
     protected:
@@ -49,9 +49,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<double>*                         mean;
-        const TypedDagNode<double>*                         sd;
-        
+        const TypedDagNode<double>*                         lambda;
+        const TypedDagNode<double>*                         offset;
     };
     
 }
