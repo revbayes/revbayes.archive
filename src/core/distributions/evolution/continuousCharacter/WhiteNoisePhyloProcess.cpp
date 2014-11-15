@@ -63,9 +63,9 @@ double WhiteNoisePhyloProcess::recursiveLnProb(const TopologyNode &from)   {
     return lnProb;
 }
 
-void WhiteNoisePhyloProcess::redrawValue(void) {
+void WhiteNoisePhyloProcess::redrawValue(void)
+{
     simulate();
-    std::cerr << "WhiteNoise:\t\t" << *value << std::endl;
 }
 
 

@@ -264,20 +264,25 @@ void Real::increment( void )
 
 
 /** Is convertible to type? */
-bool Real::isConvertibleTo(const TypeSpec& type, bool once) const {
+double Real::isConvertibleTo(const TypeSpec& type, bool once) const {
 
     if (type == RlBoolean::getClassTypeSpec())
-        return true;
+        return 0.6;
+    
     if (once && type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0.0)
-        return true;
+        return 0.4;
+    
     if (once && type == Probability::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() <= 1.0)
-        return true;
+        return 0.1;
+    
     if ( once && type == Integer::getClassTypeSpec() && dagNode->getValue() == int(dagNode->getValue()) )
-        return true;
+        return 0.3;
+    
     if ( once && type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() == int(dagNode->getValue()) )
-        return true;
+        return 0.2;
+    
     if ( type == RlString::getClassTypeSpec() )
-        return true;
+        return 0.5;
 
     return RevObject::isConvertibleTo(type, once);
 }

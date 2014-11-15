@@ -168,7 +168,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                 if ( filled[j] )
                     return false;
 
-                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) )
+                double penalty = theRules[j].isArgumentValid( passedArgs[i].getVariable(), once );
+                if ( penalty != -1 )
                 {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -177,6 +178,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     {
                         double score = computeMatchScore(passedArgs[i].getVariable(), theRules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
+                        score += penalty*100.0;
                         matchScore->push_back(score);
                     }
                 }
@@ -230,7 +232,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             return false;
         }
         
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once ) )
+        double penalty = theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once );
+        if ( penalty != -1 )
         {
             taken[i]                  = true;
             filled[matchRule]         = true;
@@ -239,6 +242,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             {
                 double score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
                 score += abs(int(i)-int(matchRule)) / MAX_ARGS;
+                score += penalty*100.0;
                 matchScore->push_back(score);
             }
         }
@@ -267,7 +271,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             {
                 const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
 
-                if ( theRules[j].isArgumentValid( argVar, once ) )
+                double penalty = theRules[j].isArgumentValid( argVar, once );
+                if ( penalty != -1 )
                 {
                     taken[i]          = true;
                     if ( !theRules[j].isEllipsis() ) 
@@ -279,6 +284,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     {
                         double score = computeMatchScore(argVar, theRules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
+                        score += penalty*100.0;
                         matchScore->push_back(score);
                     }
                     
@@ -661,7 +667,8 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
             {
                 const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
                 
-                if ( theRules[j].isArgumentValid( argVar, once ) )
+                double penalty = theRules[j].isArgumentValid( argVar, once );
+                if ( penalty != -1 )
                 {
                     pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
                     taken[i]          = true;

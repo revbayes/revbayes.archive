@@ -384,6 +384,7 @@
 #include "Func_simplex.h"
 #include "Func_simplexFromVector.h"
 #include "Func_sum.h"
+#include "Func_sumPositive.h"
 #include "Func_standardDeviation.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
@@ -1026,6 +1027,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // sum function
         addFunction( "sum",       new Func_sum()  );
+        addFunction( "sum",       new Func_sumPositive()  );
         
         // standard deviation function
         addFunction( "stdev",     new Func_standardDeviation()  );

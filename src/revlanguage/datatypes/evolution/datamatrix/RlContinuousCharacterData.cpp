@@ -119,13 +119,6 @@ ContinuousCharacterData* ContinuousCharacterData::clone(void) const {
 }
 
 
-/** Convert to type. The caller manages the returned object. */
-RevObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
-    
-    return RevObject::convertTo(type);
-}
-
-
 /* Map calls to member methods */
 RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
@@ -187,14 +180,6 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
-}
-
-
-
-/** Is convertible to type? */
-bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type, bool once) const {
-    
-    return RevObject::isConvertibleTo(type, once);
 }
 
 
