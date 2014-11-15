@@ -48,7 +48,8 @@ namespace RevBayesCore {
         const valueType&                                    operator*(void) const { return (*it); }
         valueType&                                          operator*(void) { return (*it); }
         const valueType*                                    operator->(void) const { return &(*it); }
-        
+        valueType*                                          operator->(void) { return &(*it); }
+            
     private:
         
         // private members
