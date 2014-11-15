@@ -249,9 +249,12 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_contacts.h"
+#include "Func_contributors.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getwd.h"
+#include "Func_help.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
@@ -733,8 +736,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // regular functions
         addFunction( "clear",                    new Func_clear()                    );
+        addFunction( "contacts",                 new Func_contacts()                 );
+        addFunction( "contributors",             new Func_contributors()             );
         addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
+        addFunction( "help",                     new Func_help()                     );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
