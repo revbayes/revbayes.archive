@@ -55,6 +55,7 @@ namespace RevBayesCore {
         void                                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                         getDatatype(void) const;
+        const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
         const std::string&                                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                                  getFilePath(void) const;                                                    //!< Returns the name of the file the data came from
         size_t                                              getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
@@ -101,7 +102,6 @@ namespace RevBayesCore {
         std::string                                         fileName;                                                                   //!< The path/filename from where this matrix originated
         std::string                                         filePath;                                                                   //!< The path/filename from where this matrix originated
         std::vector<std::string>                            sequenceNames;                                                              //!< names of the sequences
-        size_t                                              sequenceLength;                                                             //!< The length of each sequence
         bool                                                homologyEstablished;                                                        //!< Whether the homology of the characters has been established
         
         std::map<std::string, DiscreteTaxonData<charType> > taxonMap;
@@ -211,6 +211,8 @@ template<class charType>
 RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::add(const DiscreteCharacterData<charType> &obsd)
 {
     
+    size_t sequenceLength = getNumberOfCharacters();
+    
     // check if both have the same number of taxa
     if ( sequenceNames.size() != obsd.getNumberOfTaxa() )
     {
@@ -241,6 +243,12 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
         {
             throw RbException("Cannot add two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
         }
+    }
+    
+    const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
+    for (std::set<size_t>::const_iterator it = exclChars.begin(); it != exclChars.end(); ++it)
+    {
+        deletedCharacters.insert( *it + sequenceLength );
     }
     
     // return a reference to this object
@@ -514,6 +522,18 @@ std::string RevBayesCore::DiscreteCharacterData<charType>::getDatatype(void) con
     }
     
     return dt;
+}
+
+/**
+ * Get the set of excluded character indices.
+ *
+ * \return    The excluded character indices.
+ */
+template<class charType>
+const std::set<size_t>& RevBayesCore::DiscreteCharacterData<charType>::getExcludedCharacters(void) const
+{
+    
+    return deletedCharacters;
 }
 
 
