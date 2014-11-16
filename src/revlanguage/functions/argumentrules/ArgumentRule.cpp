@@ -119,7 +119,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         }
         else if ( once == false &&
 //                 !theVar->isAssignable() &&
-                 theVar->getRevObject().isConvertibleTo( *it, true ) &&
+                 theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
                  (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
                  )
         {
@@ -276,7 +276,7 @@ double ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool 
         }
         else if ( once == false &&
 //                 !var->isAssignable() &&
-                  var->getRevObject().isConvertibleTo( *it, true ) &&
+                  var->getRevObject().isConvertibleTo( *it, true ) != -1 &&
                   (*it).isDerivedOf( var->getRequiredTypeSpec() )
                 )
         {

@@ -31,7 +31,7 @@ n_nodes	        = tau.nnodes()
 
 # MCMC settings
 # Please increase for real analyses
-nGens           <- 100000
+nGens           <- 50000
 fBurn           <- 0.2
 
 ###########
@@ -94,7 +94,7 @@ moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.9, 
 mnIdx = 1
 
 # standard monitors
-monitors[mnIdx++] = mnScreen(printgen=10, glr[1], glr[2], csf, dp)
+monitors[mnIdx++] = mnScreen(printgen=1000, glr[1], glr[2], csf, dp)
 monitors[mnIdx++] = mnFile(filename=out_fp+out_str+".parameters.txt", printgen=10, glr[1], glr[2], csf, dp)
 
 # character history monitors
