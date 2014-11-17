@@ -391,7 +391,7 @@
 #include "Func_dppMeanFromConc.h"
 #include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
-
+#include "Func_varianceCovarianceMatrix.h"
 
 
 /** Initialize global workspace */
@@ -1043,6 +1043,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // return a discretized gamma distribution (for gamma-dist rates)
         addFunction( "fnDiscretizeGamma",             new Func_discretizeGamma( )   );
 
+        addFunction( "fnVarCovar",             new Func_varianceCovarianceMatrix( )   );
         
         ///////////////////////////////////////////////////////////////////////////
         /* Add distribution functions (using help classes in folder "functions") */
