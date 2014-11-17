@@ -346,7 +346,7 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
         // set name
         std::string& name = taxonNames[i];
         node->setName(name);
-        node->setIndex(i);
+        node->setIndex(i+1);
         node->setOutgroup(outgroup[i]);
         
     }

@@ -3,7 +3,7 @@
 
 #include "RevObject.h"
 #include "RevPtr.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 #include <iostream>
 #include <string>
@@ -38,8 +38,8 @@ namespace RevLanguage {
         virtual void                    printValue(std::ostream& o) const = 0;                                              //!< Print info about object
         
         // Regular functions
-        virtual RevPtr<Variable>        evaluateContent(Environment& env, bool dynamic=false) = 0;                          //!< Get semantic value (static)
-        virtual RevPtr<Variable>        evaluateLHSContent(Environment& env, const std::string& varType);                   //!< Get semantic value (static)
+        virtual RevPtr<RevVariable>        evaluateContent(Environment& env, bool dynamic=false) = 0;                          //!< Get semantic value (static)
+        virtual RevPtr<RevVariable>        evaluateLHSContent(Environment& env, const std::string& varType);                   //!< Get semantic value (static)
         virtual bool                    isAssignment(void) const;                                                           //!< Is this an assignment statement element?
         virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?        
         virtual bool                    isFunctionSafe(const Environment&       env,

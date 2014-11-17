@@ -46,7 +46,8 @@ namespace RevBayesCore {
         // public member functions
         
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
-        void                                                initializeValue(void);
+        void                                                initializeTipValues(void);
+        void                                                drawInitValue(void);
         void                                                redrawValue(void);
         virtual void                                        simulate(void);
         
@@ -205,7 +206,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeInternal
     double lnL = 0.0;
     double t = 0.0;
     double dt = 0.0;
-    double da = 0.0;
+//    double da = 0.0;
     
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
@@ -259,7 +260,7 @@ const std::vector<double>& RevBayesCore::GeneralTreeHistoryCtmc<charType, treeTy
 }
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeValue( void )
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeTipValues( void )
 {
     //    if (this->dagNode->isClamped())
     {
@@ -291,12 +292,69 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeValue( 
 }
 
 template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::drawInitValue( void )
+{
+    if (this->tipsInitialized == false)
+        initializeTipValues();
+    
+    std::set<size_t> indexSet;
+    for (size_t i = 0; i < this->numSites; i++)
+        indexSet.insert(i);
+    
+    // sample node states
+    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        TopologyNode* nd = nodes[i];
+        
+        int samplePathEndCount = 0;
+        do
+        {
+            samplePathEndCount++;
+        } while (samplePathEnd(*nd,indexSet) == false && samplePathEndCount < 100);
+        
+        int samplePathStartCount = 0;
+        do
+        {
+            samplePathStartCount++;
+        } while (samplePathStart(*nd,indexSet) == false && samplePathStartCount < 100);
+    }
+    
+    // sample paths
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        TopologyNode* nd = nodes[i];
+        
+        int samplePathHistoryCount = 0;
+        do
+        {
+            
+            samplePathHistoryCount++;
+        } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
+        
+        this->histories[i]->print();
+    }
+    
+    double lnL = this->computeLnProbability();
+    
+    if (lnL == RbConstants::Double::neginf)
+    {
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            this->fireTreeChangeEvent(*nodes[i]);
+        }
+        drawInitValue();
+    }
+}
+
+
+template<class charType, class treeType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void )
 {
     if (!true)
     {
         if (this->tipsInitialized == false)
-            initializeValue();
+            initializeTipValues();
         
         std::set<size_t> indexSet;
         for (size_t i = 0; i < this->numSites; i++)
@@ -349,8 +407,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void
     }
     else
     {
-        if (this->dagNode->isClamped())
-            initializeValue();
+//        if (this->dagNode->isClamped())
+//            initializeTipValues();
         
         simulate();
     }
@@ -397,7 +455,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathEnd(con
             
             double u = GLOBAL_RNG->uniform01() * gSum;
             unsigned int s = 0;
-            for (size_t i = 0; i < this->numChars; i++)
+            for (unsigned i = 0; i < this->numChars; i++)
             {
                 u -= g[i];
                 if (u <= 0.0)
@@ -650,7 +708,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulateHistory(c
             double u = GLOBAL_RNG->uniform01() * sr;
             
             bool found = false;
-            size_t i, s;
+            unsigned i, s;
             for (i = 0; !found && i < this->numSites; i++)
             {
                 evt->setIndex(i);
@@ -703,13 +761,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
 {
     
     
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the sequence of this node
     size_t nodeIndex = node.getIndex();
     
     // get rate map for branch leading to node
-    const RateMap& rm = homogeneousRateMap->getValue();
+//    const RateMap& rm = homogeneousRateMap->getValue();
     
     // if root, set tail state
     if (node.isRoot())

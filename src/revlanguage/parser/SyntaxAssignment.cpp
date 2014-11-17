@@ -65,17 +65,17 @@ SyntaxAssignment& SyntaxAssignment::operator=( const SyntaxAssignment& x )
  * contexts. For instance, it might be used in a chain assignment or in passing a
  * variable to a function.
  */
-RevPtr<Variable> SyntaxAssignment::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating constant assignment\n" );
 #endif
     
     // Get the rhs expression wrapped and executed into a variable.
-    RevPtr<Variable> theVariable = rhsExpression->evaluateContent( env, isDynamic() );
+    RevPtr<RevVariable> theVariable = rhsExpression->evaluateContent( env, isDynamic() );
     
     // Get variable slot from lhs
-    RevPtr<Variable> theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
+    RevPtr<RevVariable> theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
     
     // let us remove all potential indexed variables
     removeElementVariables(env, theSlot);
@@ -161,7 +161,7 @@ void SyntaxAssignment::printValue( std::ostream& o ) const
  * First, we need to check if this is a vector variable, 
  * and then we perform the remove element recursively.
  */
-void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<Variable> &theVar)
+void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar)
 {
     // check if the variable is a vector variable
     if ( theVar->isVectorVariable() == true )
@@ -178,7 +178,7 @@ void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<Variable>
             std::ostringstream s;
             s << theVar->getName() << "[" << i << "]";
             std::string elementIdentifier = s.str();
-            RevPtr<Variable>& elementVar = env.getVariable( elementIdentifier );
+            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
             
             // recursively remove the element
             removeElementVariables( env, elementVar );

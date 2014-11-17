@@ -16,7 +16,7 @@ namespace RevLanguage {
         
         // public methods
         ConstantNode<valueType>*            clone(void) const;                                                                              //!< Clone the node
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
         const MethodTable&                  getMethods( void ) const;                                                                       //!< Get the member methods
 
     private:
@@ -64,7 +64,7 @@ RevLanguage::ConstantNode<valueType>* RevLanguage::ConstantNode<valueType>::clon
 
 /* Execute calls to member methods */
 template <typename valueType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ConstantNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ConstantNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     found = false;

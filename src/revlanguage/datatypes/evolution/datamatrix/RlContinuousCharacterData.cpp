@@ -3,7 +3,7 @@
 #include "ConstantNode.h"
 #include "Natural.h"
 #include "ModelVector.h"
-#include "RlContinuousCharacterData.h"
+#include "RlContinuousTaxonData.h"
 #include "RlString.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
@@ -17,6 +17,15 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
     ModelObject<RevBayesCore::ContinuousCharacterData>(),
     AbstractCharacterData( NULL )
 {
+    
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
 
 }
 
@@ -27,6 +36,12 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
+    
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -42,6 +57,11 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
     methods.insertInheritedMethods( charDataMethods );
@@ -54,6 +74,11 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
+    
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -94,15 +119,8 @@ ContinuousCharacterData* ContinuousCharacterData::clone(void) const {
 }
 
 
-/** Convert to type. The caller manages the returned object. */
-RevObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
-    
-    return RevObject::convertTo(type);
-}
-
-
 /* Map calls to member methods */
-RevPtr<Variable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if ( this->getDagNode() != NULL )
@@ -111,16 +129,31 @@ RevPtr<Variable> ContinuousCharacterData::executeMethod(std::string const &name,
         setCharacterDataObject( &this->getDagNode()->getValue() );
     }
     
-    RevPtr<Variable> retVal = executeCharacterDataMethod(name, args, found);
+    RevPtr<RevVariable> retVal = executeCharacterDataMethod(name, args, found);
     
     if ( found == true )
     {
         return retVal;
     }
-    else
+    else if (name == "[]")
     {
-        return ModelObject<RevBayesCore::ContinuousCharacterData>::executeMethod(name, args, found);
+        found = true;
+        
+        // get the member with give index
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
+        
+        if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
+        {
+            throw RbException("Index out of bounds in []");
+        }
+        
+        const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+        
+        return new RevVariable( new ContinuousTaxonData( new RevBayesCore::ContinuousTaxonData( element ) ) );
     }
+    
+    
+    return ModelObject<RevBayesCore::ContinuousCharacterData>::executeMethod( name, args, found );
     
 }
 
@@ -147,14 +180,6 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
-}
-
-
-
-/** Is convertible to type? */
-bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type, bool once) const {
-    
-    return RevObject::isConvertibleTo(type, once);
 }
 
 

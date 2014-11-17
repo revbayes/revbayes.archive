@@ -16,7 +16,7 @@ namespace RevLanguage {
         
         // public methods
         StochasticNode<valueType>*          clone(void) const;                                                                              //!< Clone the node
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
         const MethodTable&                  getMethods( void ) const;                                                                       //!< Get the member methods
         Distribution&                       getRlDistribution(void);                                                                        //!< Get the Rev distribution
         const Distribution&                 getRlDistribution(void) const;                                                                  //!< Get the Rev distribution (const)
@@ -92,7 +92,7 @@ RevLanguage::StochasticNode<valueType>* RevLanguage::StochasticNode<valueType>::
 
 /* Execute calls to member methods */
 template <typename valueType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::StochasticNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "clamp")
@@ -115,7 +115,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::StochasticNode<valueType
         // we found the corresponding member method
         found = true;
         
-        return RevPtr<Variable>( new Variable( new Real( this->getLnProbability() ), "" ) );
+        return RevPtr<RevVariable>( new RevVariable( new Real( this->getLnProbability() ), "" ) );
     }
     else if (name == "probability")
     {
@@ -123,7 +123,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::StochasticNode<valueType
         // we found the corresponding member method
         found = true;
         
-        return RevPtr<Variable>( new Variable( new RealPos( exp( this->getLnProbability() ) ), "" ) );
+        return RevPtr<RevVariable>( new RevVariable( new RealPos( exp( this->getLnProbability() ) ), "" ) );
     }
     else if (name == "redraw")
     {

@@ -40,29 +40,29 @@ RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >* Func_con
     RevBayesCore::RootedTripletDistributionFunction* f ;
     
     
-    if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< RlString >::getClassTypeSpec() ) )
+    if ( this->args[1].getVariable()->getRequiredTypeSpec().isDerivedOf( ModelVector< RlString >::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector< std::string > >* sn = static_cast<const ModelVector< RlString > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
         f = new RevBayesCore::RootedTripletDistributionFunction( sn );
     }
-    else if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< Taxon >::getClassTypeSpec() ) )
+    else if ( this->args[1].getVariable()->getRequiredTypeSpec().isDerivedOf( ModelVector< Taxon >::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::Taxon > >* t = static_cast<const ModelVector< Taxon > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
         f = new RevBayesCore::RootedTripletDistributionFunction( t );
     }
 
-    if ( this->args[0].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< TimeTree >::getClassTypeSpec() ) )
+    if ( this->args[0].getVariable()->getRequiredTypeSpec().isDerivedOf( ModelVector< TimeTree >::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
         f->setTrees(gTrees);
     }
-    else if ( this->args[0].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< BranchLengthTree >::getClassTypeSpec() ) )
+    else if ( this->args[0].getVariable()->getRequiredTypeSpec().isDerivedOf( ModelVector< BranchLengthTree >::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector< RevBayesCore::BranchLengthTree > >* gTrees = static_cast<const ModelVector< BranchLengthTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
         f->setTrees(gTrees);
     }
 
-    if ( this->args[2].getVariable()->getRevObjectTypeSpec().isDerivedOf( RlBoolean::getClassTypeSpec() ) )
+    if ( this->args[2].getVariable()->getRequiredTypeSpec().isDerivedOf( RlBoolean::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode< bool >* t = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
         f ->setRecordBranchLengths( t );

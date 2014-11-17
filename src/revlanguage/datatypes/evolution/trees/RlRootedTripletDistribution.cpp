@@ -141,7 +141,7 @@ RootedTripletDistribution* RootedTripletDistribution::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<RevLanguage::Variable> RootedTripletDistribution::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RootedTripletDistribution::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "nTriplets")
@@ -149,28 +149,28 @@ RevLanguage::RevPtr<RevLanguage::Variable> RootedTripletDistribution::executeMet
         found = true;
         
         size_t n = this->dagNode->getValue().getNumberOfTriplets();
-        return new Variable( new Natural( n ) );
+        return new RevVariable( new Natural( n ) );
     }
     else if (name == "nTrees")
     {
         found = true;
         
         size_t n = this->dagNode->getValue().getNumberOfTrees();
-        return new Variable( new Natural( n ) );
+        return new RevVariable( new Natural( n ) );
     }
     else if (name == "species")
     {
         found = true;
         
         const std::vector<std::string>& n = this->dagNode->getValue().getSpecies();
-        return new Variable( new ModelVector<RlString>( n ) );
+        return new RevVariable( new ModelVector<RlString>( n ) );
     }
     else if (name == "taxa")
     {
         found = true;
         
         const std::vector<RevBayesCore::Taxon>& n = this->dagNode->getValue().getTaxa();
-        return new Variable( new ModelVector<Taxon>( n ) );
+        return new RevVariable( new ModelVector<Taxon>( n ) );
     }
     else if (name == "setTaxa")
     {

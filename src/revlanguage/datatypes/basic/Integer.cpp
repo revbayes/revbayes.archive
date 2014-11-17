@@ -1,6 +1,7 @@
 #include "RlBoolean.h"
 #include "Integer.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
@@ -127,6 +128,9 @@ RevObject* Integer::convertTo( const TypeSpec& type ) const {
 
     if ( type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0)
         return new Natural( dagNode->getValue() );
+    
+    if ( type == Probability::getClassTypeSpec() )
+        return new Probability( dagNode->getValue() );
 
     return RevObject::convertTo( type );
 }
@@ -237,33 +241,36 @@ void Integer::increment( void )
 
 
 /** Is convertible to language object of type? */
-bool Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
+double Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
 
-    if ( type == RlBoolean::getClassTypeSpec())
+    if ( type == RlBoolean::getClassTypeSpec() )
     {
-        return true;
+        return 0.6;
     }
     
     if ( type == Real::getClassTypeSpec() )
     {
-        return true;
+        return 0.4;
     }
     
     if ( type == RlString::getClassTypeSpec() )
     {
-        return true;
+        return 0.5;
     }
     
     if ( once && type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0 )
     {
-        return true;
+        return 0.3;
     }
     
     if ( once && type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0 )
     {
-        return true;
+        return 0.1;
     }
+    
+    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 )
+        return 0.2;
     
     return RevObject::isConvertibleTo( type, once );
 }

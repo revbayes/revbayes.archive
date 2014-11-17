@@ -1,0 +1,112 @@
+################################################################################
+#
+# RevBayes Exercise: Bayesian inference of biogeography
+# 
+# This file: Specifies the full DEC model with parameters and moves 
+#            with equal rates of area gain and loss.
+#
+# authors: Michael Landis
+#
+################################################################################
+
+
+############
+# Settings #
+############
+
+
+# analysis input/output
+in_fp           = "./data/"
+data_fn         = "psychotria_range.nex"
+area_fn         = "hawaii_dynamic.atlas.txt"
+out_fp 	        = "./output/"
+out_str         = "bg_2rate"
+
+# input objects
+data            = readDiscreteCharacterData(in_fp + data_fn)
+atlas           = readAtlas(in_fp + area_fn)
+tau             <- readTrees(in_fp + data_fn)[1]
+n_areas	        = atlas.nAreas()
+n_nodes	        = tau.nnodes()
+
+# MCMC settings
+# Please increase for real analyses
+nGens           <- 50000
+fBurn           <- 0.2
+
+###########
+#  Model  #
+###########
+
+# Per-area gain and loss rates 
+#   glr[1]: 1->0, glr[2]: 0->1
+for (i in 1:2) {
+    glr[i] ~ dnExponential(10.0)
+}
+Q_area 		:= fnFreeBinary(glr)
+
+# dp is the distance-dependence power parameter, beta
+dp          ~ dnExponential(10.0)
+
+# grm is the geographical rate modifier function, eta
+grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=false, useAvailable=true, useDistance=true)
+
+# Q models the dispersal-extinction process (CTMC)
+Q_range     := fnBiogeoDE(gainLossRates=Q_area, geoRateMod=grm, numAreas=n_areas, forbidExtinction=true)
+
+# csf models the cladogenic state frequencies (sympatry, peripatry, allopatry)
+csf         ~ dnDirichlet([1,1,1])
+
+# M is focal model, the range data given the tree, the atlas, and the DEC process
+M           ~  dnPhyloDACTMC(tree=tau, Q=Q_range, C=csf, type="Biogeo", forbidExtinction=true, useCladogenesis=!true)
+
+# attach observation to M
+M.clamp(data)
+
+# create the model!
+my_model = model( M )
+
+
+#########
+# Moves #
+#########
+
+mvIdx = 1
+
+# standard parameter moves
+moves[mvIdx++] = mvScale(x=glr[1], lambda=0.5, tune=false, weight=5.0)
+moves[mvIdx++] = mvScale(x=glr[2], lambda=0.5, tune=false, weight=5.0)
+moves[mvIdx++] = mvScale(x=dp, lambda=0.5, tune=false, weight=5.0)
+moves[mvIdx++] = mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
+
+# data augmentation moves
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.3, type="Biogeo", graph="branch", weight=2.0*n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.3, type="Biogeo", graph="node", weight=2.0*n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.9, type="Biogeo", graph="branch", weight=n_nodes)
+moves[mvIdx++] = mvCharacterHistory(ctmc=M, qmap=Q_range, tree=tau, lambda=0.9, type="Biogeo", graph="node", weight=n_nodes)
+"moves added"
+
+
+############
+# Monitors #
+############
+
+mnIdx = 1
+
+# standard monitors
+monitors[mnIdx++] = mnScreen(printgen=1000, glr[1], glr[2], csf, dp)
+monitors[mnIdx++] = mnFile(filename=out_fp+out_str+".parameters.txt", printgen=10, glr[1], glr[2], csf, dp)
+
+# character history monitors
+monitors[mnIdx++] = mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=M, tree=tau, printgen=10, style="events")
+monitors[mnIdx++] = mnCharHistoryNewick(filename=out_fp+out_str+".counts.txt", ctmc=M, tree=tau, printgen=10, style="counts")
+monitors[mnIdx++] = mnCharHistoryNhx(filename=out_fp+out_str+".nhx.txt", ctmc=M, tree=tau, atlas=atlas, samplegen=10, maxgen=nGens, burnin=0.25)
+
+"monitors added"
+
+############
+#   MCMC   #
+############
+my_mcmc = mcmc(my_model, monitors, moves)
+my_mcmc.burnin(generations=2000, tuningInterval=50)
+my_mcmc.run(generations=nGens)

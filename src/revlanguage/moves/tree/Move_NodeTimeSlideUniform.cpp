@@ -108,7 +108,7 @@ void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

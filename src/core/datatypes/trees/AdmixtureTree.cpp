@@ -610,11 +610,11 @@ void AdmixtureTree::setRoot( AdmixtureNode* r) {
     //size_t intIdx =0 ;
     
     for (size_t i = 0; i < nodes.size(); i++)
-        nodes[i]->setIndex(i);
+        nodes[i]->setIndex(i+1);
     
   //  for (size_t i = 0; i < nodes.size(); ++i) {
   ///      if (nodes[i]->isTip() == false)
-//            nodes[i]->setIndex(i);
+//            nodes[i]->setIndex(i+1);
   //      else
   //          numTips++;
         //std::cout << nodes[i]->getName() << " " << nodes[i]->getIndex() << " " << nodes[i]->getAge() << "\n";
@@ -662,9 +662,9 @@ void AdmixtureTree::updateTipOrderByNames(std::vector<std::string> n)
                 AdmixtureNode* p = nodes[i];
                 nodes[i] = nodes[j];
                 nodes[j] = p;
-                nodes[i]->setIndex(i);
+                nodes[i]->setIndex(i+1);
 //                tmp_nodes[j] = nodes[i];
-  //              tmp_nodes[j]->setIndex(j);
+  //              tmp_nodes[j]->setIndex(j+1);
             }
         }
     }

@@ -31,7 +31,7 @@ SyntaxDeterministicAssignment* SyntaxDeterministicAssignment::clone () const
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-void SyntaxDeterministicAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxDeterministicAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating deterministic assignment\n" );

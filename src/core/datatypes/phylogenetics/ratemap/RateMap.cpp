@@ -46,7 +46,7 @@ RateMap::RateMap(const RateMap& m) {
     
     homogeneousClockRate = m.homogeneousClockRate;
     heterogeneousClockRates = m.heterogeneousClockRates;
-    homogeneousRateMatrix = m.homogeneousRateMatrix;
+    homogeneousRateMatrix = m.homogeneousRateMatrix->clone();
     heterogeneousRateMatrices = m.heterogeneousRateMatrices;
     rootFrequencies = m.rootFrequencies;
     
@@ -62,6 +62,8 @@ RateMap::RateMap(const RateMap& m) {
 /** Destructor */
 RateMap::~RateMap(void) {
     
+    delete homogeneousRateMatrix;
+    
 }
 
 
@@ -72,6 +74,10 @@ RateMap& RateMap::operator=(const RateMap &r) {
         numStates           = r.numStates;
         numCharacters       = r.numCharacters;
         needsUpdate         = true;
+        
+        delete homogeneousRateMatrix;
+        
+        homogeneousRateMatrix = r.homogeneousRateMatrix->clone();
         
     }
     

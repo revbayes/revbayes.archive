@@ -13,7 +13,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the Dist_exponential.h for more details.
+     * See the ExponentialDistribution.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -39,12 +39,12 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
         
     private:
-        RevPtr<const Variable>                          lambda;                                                                                         //!< The rate of the distribution
-        RevPtr<const Variable>                          offset;
+        RevPtr<const RevVariable>                          lambda;                                                                                         //!< The rate of the distribution
+        RevPtr<const RevVariable>                          offset;
 
     };
     

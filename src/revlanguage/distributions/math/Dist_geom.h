@@ -14,7 +14,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the Dist_geom.h for more details.
+     * See the GeometricDistribution.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -40,11 +40,11 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
         
     private:
-        RevPtr<const Variable>                          p;                                                                                              //!< The rate of the distribution
+        RevPtr<const RevVariable>                          p;                                                                                              //!< The rate of the distribution
         
     };
     

@@ -15,12 +15,14 @@
  * $Id: Tree.cpp 1651 2012-07-05 14:47:08Z hoehna $
  */
 
-#include "Tree.h"
+#include "DagNode.h"
 #include "RbException.h"
 #include "RbOptions.h"
+#include "Tree.h"
 #include "Taxon.h"
 #include "Topology.h"
 #include "TopologyNode.h"
+#include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 
@@ -160,6 +162,32 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         rv = getRoot().getAge();
     }
+    else if ( n == "branchLength" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = getBranchLength( index );
+    }
+    else if ( n == "nodeAge" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = getAge( index );
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+{
+    
+    if ( n == "parent" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = int( getNode( index ).getParent().getIndex() )+1;
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -221,7 +249,8 @@ const std::string& Tree::getNewickRepresentation() const {
 }
 
 TopologyNode& Tree::getRoot(void) {
-    return *topology->getNodes()[topology->getNumberOfNodes()-1];
+    //return *topology->getNodes()[topology->getNumberOfNodes()-1];
+    return topology->getRoot(); //SK
 }
 
 const TopologyNode& Tree::getRoot(void) const {

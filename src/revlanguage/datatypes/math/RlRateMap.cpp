@@ -4,7 +4,6 @@
 #include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
-#include "RlTaxonData.h"
 
 using namespace RevLanguage;
 
@@ -56,7 +55,7 @@ RateMap* RateMap::clone() const {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
    
     if (name == "nChars")
@@ -64,14 +63,14 @@ RevPtr<Variable> RateMap::executeMethod(std::string const &name, const std::vect
         found = true;
         
         int n = (int)this->dagNode->getValue().getNumberOfCharacters();
-        return new Variable( new Natural(n) );
+        return new RevVariable( new Natural(n) );
     }
     else if (name == "nStates")
     {
         found = true;
         
         int n = (int)this->dagNode->getValue().getNumberOfStates();
-        return new Variable( new Natural(n) );
+        return new RevVariable( new Natural(n) );
     }
 
     return ModelObject<RevBayesCore::RateMap>::executeMethod( name, args, found );

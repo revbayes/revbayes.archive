@@ -19,6 +19,10 @@
 #include <list>
 #include <sstream>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 #include "grammar.tab.h"
 
 // Global flags indicating flex state
@@ -139,7 +143,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 #endif
 
     // Declare a variable for the result
-    RevPtr<Variable> result = NULL;
+    RevPtr<RevVariable> result = NULL;
 
     //! Execute syntax tree
     try {
@@ -152,8 +156,14 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
         std::ostringstream msg;
 
         // Catch a quit request
-        if (rbException.getExceptionType() == RbException::QUIT) {
+        if (rbException.getExceptionType() == RbException::QUIT)
+        {
             delete( root);
+            
+#ifdef RB_MPI
+            MPI::Finalize();
+#endif
+            
             exit(0);
         }
 
@@ -429,8 +439,12 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 
             // Catch a quit request in case it was not caught before
             if (rbException.getExceptionType() == RbException::QUIT)
+            {
+#ifdef RB_MPI
+                MPI::Finalize();
+#endif
                 exit(0);
-
+            }
             // All other uncaught exceptions
 #ifdef DEBUG_PARSER
             printf("Abnormal exception during parsing or execution of statement; discarding any remaining command buffer\n");

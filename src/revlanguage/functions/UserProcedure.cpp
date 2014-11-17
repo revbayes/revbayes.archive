@@ -34,13 +34,13 @@ UserProcedure* UserProcedure::clone(void) const
  * Arguments are added to our environment as aliases, so we can both modify them and
  * assign to them.
  */
-RevPtr<Variable> UserProcedure::execute( void )
+RevPtr<RevVariable> UserProcedure::execute( void )
 {
     // Clear signals
     Signals::getSignals().clearFlags();
     
     // Set initial return value
-    RevPtr<Variable> retVar = NULL;
+    RevPtr<RevVariable> retVar = NULL;
     
     // Create new evaluation frame with function base class execution environment as parent
     Environment* procedureFrame = new Environment( getEnvironment() );

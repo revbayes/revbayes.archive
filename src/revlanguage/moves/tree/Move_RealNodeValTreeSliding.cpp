@@ -126,7 +126,8 @@ void Move_RealNodeValTreeSliding::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_RealNodeValTreeSliding::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_RealNodeValTreeSliding::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "process" ) {
         process = var;

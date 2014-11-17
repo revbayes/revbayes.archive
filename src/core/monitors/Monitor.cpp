@@ -35,10 +35,13 @@ Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) :
     model( NULL ),
     numCycles( 0 )
 {
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    
+    for (std::set<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
     {
-        
         DagNode *theNode = *it;
+        
+        // push it to our vector
+        nodes.push_back( theNode );
         
         // add myself to the set of monitors
         theNode->addMonitor( this );
@@ -46,6 +49,7 @@ Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) :
         // tell the node that we have a reference to it (avoids deletion)
         theNode->incrementReferenceCount();
     }
+    
 }
 
 Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
@@ -57,7 +61,6 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        
         DagNode *theNode = *it;
         
         // add myself to the set of monitors
@@ -66,20 +69,20 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
         // tell the node that we have a reference to it (avoids deletion)
         theNode->incrementReferenceCount();
     }
+    
 }
 
-Monitor::Monitor(const Monitor &i) :
-    nodes( i.nodes ),
-    model( i.model ),
-    numCycles( i.numCycles )
+Monitor::Monitor(const Monitor &m) :
+    nodes( m.nodes ),
+    model( m.model ),
+    numCycles( m.numCycles )
 {
     
     // set the print gen
-    printgen = i.printgen;
+    printgen = m.printgen;
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        
         DagNode *theNode = *it;
         
         // add myself to the set of monitors
@@ -116,8 +119,8 @@ Monitor::~Monitor( void )
 Monitor& Monitor::operator=(const Monitor &i) {
     
     // check for self-assignment
-    if ( &i != this ) {
-        
+    if ( &i != this )
+    {
         
         for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
         {
@@ -126,7 +129,6 @@ Monitor& Monitor::operator=(const Monitor &i) {
             // remove myself to the set of monitors
             theNode->removeMonitor( this );
 
-            
             // tell the node that we have a reference to it (avoids deletion)
             if ( theNode->decrementReferenceCount() == 0 )
             {

@@ -35,7 +35,7 @@ Func_seed* Func_seed::clone( void ) const
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func_seed::execute( void )
+RevPtr<RevVariable> Func_seed::execute( void )
 {
     
     std::vector<unsigned int> s;

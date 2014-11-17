@@ -1,11 +1,3 @@
-//
-//  Dist_wishart.cpp
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-27.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "Dist_wishart.h"
 #include "Natural.h"
@@ -141,7 +133,7 @@ void Dist_wishart::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_wishart::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_wishart::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "omega" ) {
 //        omega = var;

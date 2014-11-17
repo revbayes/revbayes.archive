@@ -125,7 +125,7 @@ void Move_DPPGibbsConcentration::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_DPPGibbsConcentration::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_DPPGibbsConcentration::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "concentration" ) {
         cp = var;

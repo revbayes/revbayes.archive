@@ -2,6 +2,7 @@
 #include "Function.h"
 #include "Integer.h"
 #include "RevNullObject.h"
+#include "RlMemberMethod.h"
 #include "SyntaxIndexOperation.h"
 #include "Workspace.h"
 
@@ -104,11 +105,11 @@ SyntaxIndexOperation* SyntaxIndexOperation::clone () const
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, const std::string &varType)
+RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, const std::string &varType)
 {
 
-    RevPtr<Variable> indexVar     = index->evaluateContent(env);
-    RevPtr<Variable> theParentVar = baseVariable->evaluateLHSContent(env, varType);
+    RevPtr<RevVariable> indexVar     = index->evaluateContent(env);
+    RevPtr<RevVariable> theParentVar = baseVariable->evaluateLHSContent(env, varType);
     
     // first we need to check if the parent variable is a deterministic vector
     if ( theParentVar->isVectorVariable() || theParentVar->getRevObject() == RevNullObject::getInstance() )
@@ -129,11 +130,11 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, con
                 {
                     std::string elementIdentifier = theParentVar->getName() + "[" + i + "]";
                 
-                    RevPtr<Variable> theElementVar = NULL;
+                    RevPtr<RevVariable> theElementVar = NULL;
                     if ( !env.existsVariable( elementIdentifier ) )
                     {
                         // create a new slot
-                        RevPtr<Variable> theElementVar = RevPtr<Variable>( new Variable( c->getElement(i-1) ) );
+                        RevPtr<RevVariable> theElementVar = RevPtr<RevVariable>( new RevVariable( c->getElement(i-1) ) );
                         env.addVariable(elementIdentifier,theElementVar);
                         theElementVar->setName( elementIdentifier );
                     }
@@ -177,13 +178,13 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, con
     if ( !env.existsVariable( identifier ) )
     {
         // create a new slot
-        RevPtr<Variable> theVar = RevPtr<Variable>( new Variable( NULL ) );
+        RevPtr<RevVariable> theVar = RevPtr<RevVariable>( new RevVariable( NULL ) );
         env.addVariable(identifier,theVar);
         theVar->setName( identifier );
     }
 
     // get the slot and variable
-    RevPtr<Variable> theVar  = env.getVariable( identifier );
+    RevPtr<RevVariable> theVar  = env.getVariable( identifier );
     
     
     // set this variable as an element variable; which is ala by default a hidden variable so that it doesn't show in ls()
@@ -207,14 +208,14 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, con
  * from dynamic evaluation of the index variables. These need to be put
  * in a dynamic lookup variable.
  */
-RevPtr<Variable> SyntaxIndexOperation::evaluateContent( Environment& env, bool dynamic)
+RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, bool dynamic)
 {
 
-    RevPtr<Variable> indexVar     = index->evaluateContent(env,dynamic);
-    RevPtr<Variable> theParentVar = baseVariable->evaluateContent( env );
+    RevPtr<RevVariable> indexVar     = index->evaluateContent(env,dynamic);
+    RevPtr<RevVariable> theParentVar = baseVariable->evaluateContent( env );
     std::string identifier = theParentVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
 
-    RevPtr<Variable> theVar = NULL;
+    RevPtr<RevVariable> theVar = NULL;
 
     // test whether we want to directly assess the variable or if we want to assess subelement of this container
     // if this variable already exists in the workspace
@@ -227,13 +228,14 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateContent( Environment& env, bool d
     else
     {
 
-        // convert the value into a member object
-        std::vector<Argument> args;
-        args.push_back( Argument( theParentVar, "v" ) );
-        args.push_back( Argument( indexVar, "index" ) );
 
         try
         {
+            // convert the value into a member object
+            std::vector<Argument> args;
+            args.push_back( Argument( theParentVar, "v" ) );
+            args.push_back( Argument( indexVar, "index" ) );
+            
             Function* f = Workspace::userWorkspace().getFunction("[]", args, false).clone();
             f->processArguments( args, false );
             theVar = f->execute();
@@ -243,7 +245,34 @@ RevPtr<Variable> SyntaxIndexOperation::evaluateContent( Environment& env, bool d
         }
         catch (RbException e)
         {
-            throw e;
+            // We are trying to find a member function
+        
+            // Now we get a reference to the member object inside
+            RevObject &theMemberObject = theParentVar->getRevObject();
+            
+            const MethodTable& mt = theMemberObject.getMethods();
+            
+            // convert the value into a member object
+            std::vector<Argument> args;
+            args.push_back( Argument( indexVar, "index" ) );
+            
+            Function* theFunction = mt.getFunction( "[]", args, !dynamic ).clone();
+            theFunction->processArguments(args, !dynamic);
+            
+            MemberMethod* theMemberMethod = dynamic_cast<MemberMethod*>( theFunction );
+            if ( theMemberMethod != NULL )
+            {
+                theMemberMethod->setMemberObject( theParentVar );
+
+                theVar = theFunction->execute();
+                theVar->setName( identifier );
+            }
+            else
+            {
+                delete theFunction;
+                throw e;
+            }
+            
         }
 
     }

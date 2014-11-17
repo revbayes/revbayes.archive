@@ -13,4 +13,12 @@ clear()
 source("RevBayes_Scripts/placentaliaDatesTraits.Rev")
 clear()
 
+
+source("RevBayes_Scripts/placentaliaDatesRatesTraits.Rev")
+clear()
+
+
+source("RevBayes_Scripts/placentaliaGCTraits.Rev")
+clear()
+
 q()

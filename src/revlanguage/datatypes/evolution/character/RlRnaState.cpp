@@ -44,13 +44,6 @@ RnaState* RnaState::clone(void) const {
 }
 
 
-/** Convert to type. The caller manages the returned object. */
-RevObject* RnaState::convertTo(const TypeSpec& type) const {
-    
-    return RevObject::convertTo(type);
-}
-
-
 /** Get Rev type of object */
 const std::string& RnaState::getClassType(void) { 
     
@@ -74,13 +67,5 @@ const TypeSpec& RnaState::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-
-/** Is convertible to type? */
-bool RnaState::isConvertibleTo(const TypeSpec& type, bool once) const {
-    
-    return RevObject::isConvertibleTo(type, once);
 }
 

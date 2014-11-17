@@ -21,7 +21,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevPtr<RevVariable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -49,13 +49,13 @@ RevLanguage::Func__rladd<firstValType, secondValType, retType>* RevLanguage::Fun
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__rladd<firstValType, secondValType, retType>::execute() {
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func__rladd<firstValType, secondValType, retType>::execute() {
     
     const firstValType& firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() );
     const secondValType& secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() );
     retType* value = firstArg.add( secondArg );
     
-    return new Variable( value );
+    return new RevVariable( value );
 }
 
 

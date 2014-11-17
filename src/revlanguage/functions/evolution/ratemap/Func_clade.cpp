@@ -18,13 +18,13 @@ Func_clade* Func_clade::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_clade::execute() {
+RevPtr<RevVariable> Func_clade::execute() {
     
     // now allocate a new Clade
     const std::vector<std::string>& n = static_cast<const ModelVector<RlString> &>( args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::Clade *c = new RevBayesCore::Clade(n,0.0);
     
-    return new Variable( new Clade(c) );
+    return new RevVariable( new Clade(c) );
 }
 
 

@@ -36,10 +36,10 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
-        RevPtr<const Variable>                      x;                                                                                              //!< The variable holding the real valued vector.
-        RevPtr<const Variable>                      lambda;                                                                                         //!< The variable for the tuning parameter.
+        RevPtr<const RevVariable>                      x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                      lambda;                                                                                         //!< The variable for the tuning parameter.
         
     };
     

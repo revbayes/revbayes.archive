@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage trunc function, which
- * is used to created deterministic variable associated with the trunc function.
- * This is the standard arithmetic truncating of real numbers. Thus, the real part is simply dropped
- * which makes this function a floor for positive numbers and a ceil for negative numbers.
- *
- * @brief Declaration and implementation of Func_exp
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-
 #ifndef Func_trunc_H
 #define Func_trunc_H
 
@@ -26,6 +7,20 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * The RevLanguage wrapper of the trunc function.
+     *
+     * The RevLanguage wrapper of the trunc function connects
+     * the variables/parameters of the function and creates the internal TruncateFunction object.
+     * Please read the TruncateFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-07-27, version 1.0
+     *
+     */
     template <typename valType, typename retType>
     class Func_trunc : public TypedFunction<retType> {
         

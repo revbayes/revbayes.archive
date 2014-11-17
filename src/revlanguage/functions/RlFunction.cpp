@@ -168,7 +168,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                 if ( filled[j] )
                     return false;
 
-                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) )
+                double penalty = theRules[j].isArgumentValid( passedArgs[i].getVariable(), once );
+                if ( penalty != -1 )
                 {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -177,6 +178,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     {
                         double score = computeMatchScore(passedArgs[i].getVariable(), theRules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
+                        score += penalty*100.0;
                         matchScore->push_back(score);
                     }
                 }
@@ -230,7 +232,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             return false;
         }
         
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once ) )
+        double penalty = theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once );
+        if ( penalty != -1 )
         {
             taken[i]                  = true;
             filled[matchRule]         = true;
@@ -239,6 +242,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             {
                 double score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
                 score += abs(int(i)-int(matchRule)) / MAX_ARGS;
+                score += penalty*100.0;
                 matchScore->push_back(score);
             }
         }
@@ -265,9 +269,10 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             
             if ( filled[j] == false ) 
             {
-                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
+                const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
 
-                if ( theRules[j].isArgumentValid( argVar, once ) )
+                double penalty = theRules[j].isArgumentValid( argVar, once );
+                if ( penalty != -1 )
                 {
                     taken[i]          = true;
                     if ( !theRules[j].isEllipsis() ) 
@@ -279,6 +284,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     {
                         double score = computeMatchScore(argVar, theRules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
+                        score += penalty*100.0;
                         matchScore->push_back(score);
                     }
                     
@@ -341,7 +347,7 @@ void Function::clearArguments(void)
 
 
 /** Compute the match score between the argument and the argument rule. */
-double Function::computeMatchScore(const Variable *var, const ArgumentRule &rule)
+double Function::computeMatchScore(const RevVariable *var, const ArgumentRule &rule)
 {
    
     double     score = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -659,9 +665,10 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
             if ( filled[j] == false ) 
             {
-                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
+                const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
                 
-                if ( theRules[j].isArgumentValid( argVar, once ) )
+                double penalty = theRules[j].isArgumentValid( argVar, once );
+                if ( penalty != -1 )
                 {
                     pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
                     taken[i]          = true;
@@ -705,9 +712,9 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
         
         const ArgumentRule& theRule = theRules[i];
-        RevPtr<Variable> theVar = theRule.getDefaultVariable().clone();
+        RevPtr<RevVariable> theVar = theRule.getDefaultVariable().clone();
         theVar->setName( "." + theRule.getArgumentLabel() );
-        theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
+        theVar->setRequiredTypeSpec( theRule.getDefaultVariable().getRequiredTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;
         pArgs.push_back( Argument( theVar, theRule.getArgumentLabel(), theRule.getEvaluationType() != ArgumentRule::BY_CONSTANT_REFERENCE ) );

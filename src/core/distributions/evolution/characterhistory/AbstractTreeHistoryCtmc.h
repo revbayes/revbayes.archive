@@ -42,7 +42,8 @@ namespace RevBayesCore {
         // pure virtual
         virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
-        virtual void                                                        initializeValue(void) = 0;
+        virtual void                                                        drawInitValue(void) = 0;
+        virtual void                                                        initializeTipValues(void) = 0;
         virtual bool                                                        samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
@@ -163,13 +164,13 @@ historyLikelihoods( n.historyLikelihoods ),
 charMatrix( n.charMatrix ),
 gapMatrix( n.gapMatrix ),
 histories( n.histories ),
+tipProbs( n.tipProbs ),
 changedNodes( n.changedNodes ),
 dirtyNodes( n.dirtyNodes ),
 usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
 treatUnknownAsGap( n.treatUnknownAsGap ),
 treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
-tipsInitialized( n.tipsInitialized ),
-tipProbs( n.tipProbs )
+tipsInitialized( n.tipsInitialized )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -332,7 +333,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(cons
         const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
         for (size_t j = 0; j < numCharacters; j++)
         {
-            double v = cd->getCharacter(j).getMean();
+            double v = cd->getCharacter(j);
             //tipProbs[nd->getIndex()].push_back(1-v);
             tipProbs[nd->getIndex()].push_back(v);
         }
@@ -453,7 +454,9 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
     
     // delegate to the parent class
     TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
-    this->dagNode->redraw();
+
+    
+    drawInitValue();
     this->dagNode->getLnProbability();
 
 }
@@ -486,7 +489,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 //        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
     }
     
-
     TypedDistribution< AbstractDiscreteCharacterData >::setValue(this->value);
 }
 

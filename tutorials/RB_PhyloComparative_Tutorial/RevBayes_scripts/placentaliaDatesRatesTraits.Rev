@@ -9,14 +9,14 @@
 #########
 
 # read the quantitative trait data 
-contData <- readCharacterData("data/plac40lhtlog.nex")
+contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
 
 # get some useful variables from the data
 nTraits <- contData.nchar()[1]
 
 # read the sequence data
 # the readCharacter function returns a vector of matrices. We just take the first one
-seqData <- readCharacterData("data/plac40_4fold.nex")
+seqData <- readDiscreteCharacterData("data/plac40_4fold.nex")
 
 # get some useful variables from the data
 nTaxa <- seqData.ntaxa()
@@ -123,9 +123,9 @@ seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=rate, nSites=nSites, type="DNA")
 seq.clamp(seqData)
 
 # create model
-mymodel <- model(kappa)
+mymodel = model(kappa)
 
-mymodel.gv("placentaliaDatesRatesTraits_DAG.dot")
+mymodel.graph("placentaliaDatesRatesTraits_DAG.dot")
 
 ######### 
 # moves
@@ -135,74 +135,63 @@ mymodel.gv("placentaliaDatesRatesTraits_DAG.dot")
 index <- 1
 
 # rescaling moves on speciation and extinction rates
-moves[index] <- mvScale(speciation, lambda=1, tune=true, weight=3.0)
-index <- index + 1
-moves[index] <- mvScale(extinction, lambda=1, tune=true, weight=3.0)
-index <- index + 1
+moves[index++] = mvScale(speciation, lambda=1, tune=true, weight=3.0)
+moves[index++] = mvScale(extinction, lambda=1, tune=true, weight=3.0)
 
 # moves on the tree: only relative dates
-moves[index] <- mvSubtreeScale(psi, weight=5.0)
-index <- index + 1
-moves[index] <- mvNodeTimeSlideUniform(psi, weight=10.0)
-index <- index + 1
+moves[index++] = mvSubtreeScale(psi, weight=5.0)
+moves[index++] = mvNodeTimeSlideUniform(psi, weight=10.0)
 
 # if we wanted to, we could also move the tree topology
 # and integrate over the posterior induced by the sequence data
 # but mixing is currently a bit challenging 
- moves[index] <- mvNNI(psi, weight=5.0)
- index <- index + 1
- moves[index] <- mvFNPR(psi, weight=5.0)
- index <- index + 1
+ moves[index++] = mvNNI(psi, weight=5.0)
+ moves[index++] = mvNarrow(psi, weight=5.0)
+ moves[index++] = mvFNPR(psi, weight=5.0)
 
 # moves on kappa
-moves[index] <- mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
-index <- index + 1
+moves[index++] = mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
 
 # conjugate Gibbs move on covariance matrix
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
-index <- index + 1
+moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
 
 # moves on the Brownian process
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
-index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
-index <- index + 1
+moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+moves[index++] = mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
 
 # moves on the substitution process parameters
-moves[index] <- mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
-index <- index + 1
-moves[index] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
-index <- index + 1
+moves[index++] = mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
+moves[index++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
 
 ######### 
 # monitors
 #########
 
 # screen monitor
-monitors[1] <- mnScreen(printgen=10, speciation, extinction, correl, meanX)
+monitors[1] = mnScreen(printgen=1000, speciation, extinction, correl, meanX)
 
 # similar monitor, but directly into file
-monitors[2] <- mnFile(filename="output/placdatesratestraits.trace", printgen=10, separator = "	", speciation, extinction, correl, var, meanX)
+monitors[2] = mnFile(filename="output/placdatesratestraits.trace", printgen=10, separator = TAB, speciation, extinction, correl, var, meanX)
 
 # file monitors for the correlation and partial correlation coefficients
-monitors[3] <- mnFile(filename="output/placdatesratestraits.correl",printgen=10, separator = "	", correl, pCorrel)
+monitors[3] = mnFile(filename="output/placdatesratestraits.correl",printgen=10, separator = TAB, correl, pCorrel)
 
 # a file monitor just for the covariance matrix
-monitors[4] <- mnFile(filename="output/placdatesratestraits.cov",printgen=10, separator = "	", Sigma)
+monitors[4] = mnFile(filename="output/placdatesratestraits.cov",printgen=10, separator = TAB, Sigma)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[5] <- mnFile(filename="output/placdatesratestraits.traits",printgen=10, separator = "	", X)
+monitors[5] = mnFile(filename="output/placdatesratestraits.traits",printgen=10, separator = TAB, X)
 
 # monitoring the trees and dates
-monitors[6] <- mnFile(filename="output/placdatesratestraits.trees",printgen=10, separator = "	", psi)
+monitors[6] = mnFile(filename="output/placdatesratestraits.trees",printgen=10, separator = TAB, psi)
 
 # a model monitor
-monitors[7] <- mnModel(filename="output/placdatesratestraits.log",printgen=10, separator = "	")
+monitors[7] = mnModel(filename="output/placdatesratestraits.log",printgen=10, separator = TAB)
  
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=100,tuningInterval=100)
+mymcmc.burnin(generations=2000,tuningInterval=250)
 
-mymcmc.run(100000)
+mymcmc.run(5000)
 
 

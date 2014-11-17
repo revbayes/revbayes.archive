@@ -47,14 +47,14 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                              geneTrees;                                                                                     //!< The population size
-        RevPtr<const Variable>                              speciesTree;                                                                            //!< The species tree
-        RevPtr<const Variable>                              useSpecies;                                                                                 //!< The taxons
+        RevPtr<const RevVariable>                              geneTrees;                                                                                     //!< The population size
+        RevPtr<const RevVariable>                              speciesTree;                                                                            //!< The species tree
+        RevPtr<const RevVariable>                              useSpecies;                                                                                 //!< The taxons
         
         
     };
