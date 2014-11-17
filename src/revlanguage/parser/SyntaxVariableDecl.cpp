@@ -86,7 +86,7 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const
  *
  * @todo Resize the container to the lengths specification
  */
-RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating variable declaration\n" );
@@ -110,7 +110,7 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dyn
         }
         else
         {
-            RevPtr<Variable> temp    = (*it)->evaluateContent( env, dynamic );
+            RevPtr<RevVariable> temp    = (*it)->evaluateContent( env, dynamic );
             const RevObject& value   = temp->getRevObject();
             
             size_t theLength;
@@ -143,8 +143,8 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dyn
 //        static_cast<Container*>( newObject )->resize( lengths );
     }
 
-    // Add the new variable
-    env.addVariable( variableName, new Variable( newObject ) );
+    // Add the new RevVariable
+    env.addVariable( variableName, new RevVariable( newObject ) );
     
     return NULL;
 }

@@ -403,7 +403,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::sampleN
             
             double u = GLOBAL_RNG->uniform01() * gSum;
             unsigned int s = 0;
-            for (size_t i = 0; i < numStates; i++)
+            for (unsigned i = 0; i < numStates; i++)
             {
                 u -= g[i];
                 if (u <= 0.0)

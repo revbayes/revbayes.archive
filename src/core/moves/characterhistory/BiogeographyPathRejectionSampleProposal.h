@@ -51,7 +51,7 @@ namespace RevBayesCore {
         
     public:
         BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
-        BiogeographyPathRejectionSampleProposal( const BiogeographyPathRejectionSampleProposal& p );
+//        BiogeographyPathRejectionSampleProposal( const BiogeographyPathRejectionSampleProposal& p );
         
         virtual void                                prepareProposal(void);
         virtual double                              computeLnProposal(const TopologyNode& nd, const BranchHistory& bh);
@@ -79,15 +79,15 @@ RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::Bioge
     useAreaAdjacency = false;
 }
 
-template<class charType, class treeType>
-RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal(const BiogeographyPathRejectionSampleProposal& m) : PathRejectionSampleProposal<charType,treeType> (m.ctmc, m.tau, m.qmap, m.lambda, m.node)
-{
-    if (this != &m)
-    {
-        epochs = m.epochs;
-        useAreaAdjacency = m.useAreaAdjacency;
-    }
-}
+//template<class charType, class treeType>
+//RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal(const BiogeographyPathRejectionSampleProposal& m) : PathRejectionSampleProposal<charType,treeType> (m.ctmc, m.tau, m.qmap, m.lambda, m.node)
+//{
+//    if (this != &m)
+//    {
+//        epochs = m.epochs;
+//        useAreaAdjacency = m.useAreaAdjacency;
+//    }
+//}
 
 
 
@@ -262,7 +262,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
             do
             {
                 unsigned int nextState = (currState == 1 ? 0 : 1);
-                double r = rm.getSiteRate( *(this->node), currState, nextState, *it, currAge);
+                double r = rm.getSiteRate( *(this->node), currState, nextState, (int)(*it), currAge);
      
                 
                 // MJL: figure this out later...
@@ -387,7 +387,7 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
     {
         this->siteIndexSet.clear();
         this->siteIndexSet.insert(GLOBAL_RNG->uniform01() * this->numCharacters); // at least one is inserted
-        if (useAreaAdjacency || !true)
+        if (useAreaAdjacency)
         {
             const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
@@ -411,37 +411,10 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
     }
     this->sampleSiteIndexSet = true;
     
-  
     
-    //    std::cout << "Sites: ";
-    //    for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
-    //        std::cout << *it << " ";
-    //    std::cout << "\n";
-    
-//    if (this->node->isRoot())
-//    {
-//        return;
-//    }
-    
-    
-    const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
-    
-    
-        
-//    for (std::set<size_t>::iterator it = testSet.begin(); it != testSet.end(); it++)
-//    {
-//        std::cout << *it << " ";
-//    }
-//    std::cout << "\n";
-//    
-//    for (size_t i = 0; i < bh->getParentCharacters().size(); i++)
-//    {
-//        std::cout << bh->getParentCharacters()[i]->getState();
-//        if (i % 5 == 4)
-//            std::cout << "\n";
-//    }
     
     // store history for events in siteIndexSet
+    const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {

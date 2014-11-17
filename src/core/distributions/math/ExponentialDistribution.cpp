@@ -7,8 +7,7 @@ using namespace RevBayesCore;
 
 
 ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l) : ContinuousDistribution( new double( 0.0 ) ),
-    lambda( l ),
-    offset( NULL )
+    lambda( l )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -16,19 +15,6 @@ ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l) 
     addParameter( lambda );
     
     *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG);
-}
-
-ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l, const TypedDagNode<double> *o) : ContinuousDistribution( new double( 0.0 ) ),
-    lambda( l ),
-    offset( o )
-{
-    // add the parameters to our set (in the base class)
-    // in that way other class can easily access the set of our parameters
-    // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( lambda );
-    addParameter( offset );
-    
-    *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG) + offset->getValue();
 }
 
 
@@ -40,7 +26,7 @@ ExponentialDistribution::~ExponentialDistribution( void )
 
 double ExponentialDistribution::cdf( void ) const 
 {
-    return RbStatistics::Exponential::cdf(lambda->getValue(), *value - (offset != NULL ? offset->getValue() : 0.0));
+    return RbStatistics::Exponential::cdf(lambda->getValue(), *value );
 }
 
 
@@ -52,7 +38,7 @@ ExponentialDistribution* ExponentialDistribution::clone( void ) const
 
 double ExponentialDistribution::computeLnProbability( void ) 
 {
-    double v = *value - (offset != NULL ? offset->getValue() : 0.0);
+    double v = *value;
     if ( v < 0.0 )
     {
         return RbConstants::Double::neginf;
@@ -70,19 +56,19 @@ double ExponentialDistribution::getMax( void ) const
 
 double ExponentialDistribution::getMin( void ) const 
 {
-    return (offset != NULL ? offset->getValue() : 0.0);
+    return 0.0;
 }
 
 
 double ExponentialDistribution::quantile(double p) const 
 {
-    return RbStatistics::Exponential::quantile(lambda->getValue(), p) + (offset != NULL ? offset->getValue() : 0.0);
+    return RbStatistics::Exponential::quantile(lambda->getValue(), p);
 }
 
 
 void ExponentialDistribution::redrawValue( void ) 
 {
-    *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG) + (offset != NULL ? offset->getValue() : 0.0);
+    *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG);
 }
 
 
@@ -92,10 +78,6 @@ void ExponentialDistribution::swapParameterInternal(const DagNode *oldP, const D
     if (oldP == lambda)
     {
         lambda = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    if (oldP == offset) 
-    {
-        offset = static_cast<const TypedDagNode<double>* >( newP );
     }
 }
 

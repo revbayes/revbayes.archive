@@ -54,7 +54,7 @@ void Trace::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevPtr<Variable> Trace::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "summarize")
@@ -134,7 +134,7 @@ void Trace::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Trace::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Trace::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "xxx") {
         

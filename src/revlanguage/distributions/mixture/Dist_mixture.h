@@ -42,13 +42,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                          values;
-        RevPtr<const Variable>                          probabilities;
+        RevPtr<const RevVariable>                          values;
+        RevPtr<const RevVariable>                          probabilities;
         
     };
     
@@ -158,7 +158,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getTypeSpec( vo
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::Dist_mixture<valType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_mixture<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "values" )
     {

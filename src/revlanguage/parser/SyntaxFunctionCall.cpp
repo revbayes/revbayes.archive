@@ -112,7 +112,7 @@ SyntaxFunctionCall* SyntaxFunctionCall::clone( void ) const
  *
  * @todo Support this function call context better
  */
-RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dynamic )
 {
     
     // Package arguments
@@ -124,7 +124,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
 #endif
         
         const RlString& theLabel = (*it)->getLabel();
-        RevPtr<Variable> theVar = (*it)->getExpression().evaluateContent(env,dynamic);
+        RevPtr<RevVariable> theVar = (*it)->getExpression().evaluateContent(env,dynamic);
         
         Argument theArg = Argument( theVar, theLabel.getValue() );
         args.push_back( theArg );
@@ -167,7 +167,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
         // We are trying to find a member function
         
         // First we get the base variable
-        RevPtr<Variable> theVar = baseVariable->evaluateContent( env, dynamic );
+        RevPtr<RevVariable> theVar = baseVariable->evaluateContent( env, dynamic );
         
         // Now we get a reference to the member object inside
         RevObject &theMemberObject = theVar->getRevObject();
@@ -192,7 +192,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env, bool dyn
     }
     
     // Evaluate the function
-    RevPtr<Variable> funcReturnValue = func->execute();
+    RevPtr<RevVariable> funcReturnValue = func->execute();
     
     // free the memory of our copy
     delete func;

@@ -115,7 +115,7 @@ void Move_OriginTimeSlide::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_OriginTimeSlide::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_OriginTimeSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "origin" ) {
         originTime = var;

@@ -455,7 +455,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
             {
                 if ( (*it)->isTip() ) 
                 {
-                    AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+                    AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
                     CharacterState &c = taxon.getCharacter(siteIndices[site]);
                     pattern += c.getStringValue();
                 }
@@ -501,7 +501,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
         if ( (*it)->isTip() ) 
         {
             size_t nodeIndex = (*it)->getIndex();
-            AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+            AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
             
             // resize the column
             charMatrix[nodeIndex].resize(numPatterns);
@@ -696,10 +696,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fireTre
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::keepSpecialization( DagNode* affecter )
 {
-    
-    // test
-    // SH-20140822: Who and why is this in here?
-//    this->computeLnProbability();
     
     // reset all flags
     for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 

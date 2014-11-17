@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2012-06-21, version 1.0
  *
- * $Id: FileMonitor.cpp 1833 2012-11-15 15:03:33Z hoehna $
+ * $Id: ScreenMonitor.cpp 1833 2012-11-15 15:03:33Z hoehna $
  */
 
 
@@ -50,7 +50,8 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     waitingTime( true ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
-    headerPrintingInterval( 20 ){
+    headerPrintingInterval( 20 )
+{
     
 }
 

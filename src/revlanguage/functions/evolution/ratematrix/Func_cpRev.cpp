@@ -23,13 +23,13 @@ Func_cpRev* Func_cpRev::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_cpRev::execute() {
+RevPtr<RevVariable> Func_cpRev::execute() {
     
     
     RevBayesCore::RateMatrix_CpRev *rmj = new RevBayesCore::RateMatrix_CpRev();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return new Variable( value );
+    return new RevVariable( value );
 }
 
 

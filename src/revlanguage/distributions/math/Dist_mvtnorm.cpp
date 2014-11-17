@@ -1,12 +1,3 @@
-//
-//  ExponentialDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_mvtnorm.h"
@@ -113,7 +104,7 @@ void Dist_mvtnorm::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_mvtnorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_mvtnorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "mean" ) 
     {

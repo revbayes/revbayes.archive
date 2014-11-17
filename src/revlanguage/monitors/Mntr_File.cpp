@@ -39,7 +39,7 @@ void Mntr_File::constructInternalObject( void ) {
     sort( vars.begin(), vars.end() );
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
     std::vector<RevBayesCore::DagNode *> n;
-    for (std::vector<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    for (std::vector<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
         n.push_back( node );
     }
@@ -114,7 +114,7 @@ void Mntr_File::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mntr_File::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_File::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "" ) {
         vars.push_back( var );

@@ -107,7 +107,7 @@ void Move_NNIClock::printValue(std::ostream &o) const {
 
 
 /** Set a Move_NNIClock variable */
-void Move_NNIClock::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NNIClock::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

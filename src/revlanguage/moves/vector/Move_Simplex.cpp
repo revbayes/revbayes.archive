@@ -118,7 +118,7 @@ void Move_Simplex::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_Simplex::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_Simplex::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         x = var;

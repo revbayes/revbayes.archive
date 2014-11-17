@@ -43,7 +43,7 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
          
         // Member method inits
-        virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);                 //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);                 //!< Override to map member methods to internal functions
         
     };
     
@@ -55,7 +55,7 @@ namespace RevLanguage {
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
-#include "RlTaxonData.h"
+#include "RlDiscreteTaxonData.h"
 
 
 template <class rlType>
@@ -106,7 +106,7 @@ RevLanguage::DiscreteCharacterData<charType>* RevLanguage::DiscreteCharacterData
 
 /* Map calls to member methods */
 template <typename rlType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteCharacterData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "[]") 
@@ -123,7 +123,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<rl
             
         const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename rlType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
     
-        return new Variable( new DiscreteTaxonData<rlType>( new RevBayesCore::DiscreteTaxonData<typename rlType::valueType>( element ) ) );
+        return new RevVariable( new DiscreteTaxonData<rlType>( new RevBayesCore::DiscreteTaxonData<typename rlType::valueType>( element ) ) );
     }
     
     return AbstractDiscreteCharacterData::executeMethod( name, args, found );

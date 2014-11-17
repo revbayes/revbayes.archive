@@ -5,7 +5,6 @@
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
-#include "RlTaxonData.h"
 
 
 using namespace RevLanguage;
@@ -79,13 +78,13 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 }
 
 /* Map calls to member methods */
-RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     if (name == "chartype")
     {
         found = true;
         
-        return new Variable( new RlString( charDataObject->getDatatype() ) );
+        return new RevVariable( new RlString( charDataObject->getDatatype() ) );
     }
     else if (name == "excludeCharacter")
     {
@@ -177,7 +176,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
             n->push_back( charDataObject->getTaxonNameWithIndex( i ) );
         }
         
-        return new Variable( n );
+        return new RevVariable( n );
     }
     else if (name == "nchar") 
     {
@@ -204,7 +203,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
                     
                 }
             }
-            return new Variable( numChar );
+            return new RevVariable( numChar );
         }
         else
         {
@@ -236,7 +235,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
                     }
                     
                 }
-                return new Variable( numChar );
+                return new RevVariable( numChar );
             }
         }
     }
@@ -246,7 +245,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
         
         int n = (int)charDataObject->getNumberOfTaxa();
         
-        return new Variable( new Natural(n) );
+        return new RevVariable( new Natural(n) );
     }
     else if (name == "size") 
     {
@@ -254,7 +253,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
         
         int n = (int)charDataObject->getNumberOfTaxa();
         
-        return new Variable( new Natural(n) );
+        return new RevVariable( new Natural(n) );
     }
     else if (name == "removeTaxa" || name == "removeTaxon" )
     {
@@ -368,31 +367,7 @@ RevPtr<Variable> AbstractCharacterData::executeCharacterDataMethod(std::string c
     {
         found = true;
         
-        size_t nt = charDataObject->getNumberOfTaxa();
-        for (size_t i=0; i<nt; i++)
-        {
-            
-            const RevBayesCore::AbstractTaxonData& taxonData = charDataObject->getTaxonData(i);
-            std::string taxonName = charDataObject->getTaxonNameWithIndex(i);
-            size_t nc = taxonData.getNumberOfCharacters();
-            std::cout << "   " << taxonName << std::endl;
-            std::cout << "   ";
-            for (size_t j=0; j<nc; j++)
-            {
-                
-                const RevBayesCore::CharacterState& o = taxonData[j];
-                std::string s = o.getStringValue();
-                
-                std::cout << s << " ";
-                if ( (j+1) % 100 == 0 && (j+1) != nc )
-                {
-                    std::cout << std::endl << "   ";
-                }
-                
-            }
-            
-            std::cout << std::endl;
-        }
+        charDataObject->show(std::cout);
         
         return NULL;
     }

@@ -112,7 +112,7 @@ void Move_VectorScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_VectorScale::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_VectorScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         x = var;

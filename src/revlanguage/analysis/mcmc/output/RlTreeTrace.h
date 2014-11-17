@@ -45,11 +45,11 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
         // Member method inits
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);          //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
                 
     };
     
@@ -101,7 +101,7 @@ void RevLanguage::TreeTrace<treeType>::constructInternalObject( void ) {
 
 /* Map calls to member methods */
 template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "summarize")
@@ -110,7 +110,8 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::exe
         
         int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
-        summary.summarize( b );
+        summary.summarizeTrees( b );
+        summary.summarizeClades( b );
         summary.printTreeSummary(std::cerr);
         
         return NULL;
@@ -180,7 +181,7 @@ void RevLanguage::TreeTrace<treeType>::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 template <typename treeType>
-void RevLanguage::TreeTrace<treeType>::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::TreeTrace<treeType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "xxx") {
         

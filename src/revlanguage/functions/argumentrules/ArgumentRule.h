@@ -38,18 +38,18 @@ namespace RevLanguage {
         DagNodeType                         getArgumentDagNodeType(void) const;                                             //!< Get the DAG node type
         const std::string&                  getArgumentLabel(void) const;                                                   //!< Get label of argument
         const std::vector<TypeSpec>&        getArgumentTypeSpec(void) const;                                                //!< Get argument type spec
-        virtual const Variable&             getDefaultVariable(void) const;                                                 //!< Get default argument
+        virtual const RevVariable&          getDefaultVariable(void) const;                                                 //!< Get default argument
         EvaluationType                      getEvaluationType(void) const;                                                  //!< Get the evaluation type
         bool                                hasDefault(void) const;                                                         //!< Does the rule have a default value?
-        virtual bool                        isArgumentValid(const RevPtr<const Variable> &var, bool once) const;            //!< Is var a valid argument?
+        virtual double                      isArgumentValid(const RevPtr<const RevVariable> &var, bool once) const;         //!< Is var a valid argument?
         virtual bool                        isEllipsis(void) const;                                                         //!< Is this an ellipsis?
     
 
     protected:
         
         std::vector<TypeSpec>               argTypeSpecs;                                                                   //!< Type specs
-        RevPtr<Variable>                    defaultVar;                                                                     //!< Default value
-        EvaluationType                      evalType;                                                                        //!< Is rule const?
+        RevPtr<RevVariable>                 defaultVar;                                                                     //!< Default value
+        EvaluationType                      evalType;                                                                       //!< Is rule const?
         DagNodeType                         nodeType;
         std::string                         label;                                                                          //!< Label of argument
         bool                                hasDefaultVal;                                                                  //!< Has default

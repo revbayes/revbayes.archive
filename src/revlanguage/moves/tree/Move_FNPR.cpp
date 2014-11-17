@@ -107,7 +107,7 @@ void Move_FNPR::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_FNPR::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_FNPR::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

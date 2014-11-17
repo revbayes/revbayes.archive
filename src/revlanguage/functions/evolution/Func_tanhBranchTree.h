@@ -45,14 +45,14 @@ namespace RevLanguage {
         void                                                                printValue(std::ostream& o) const;                                      //!< Print the general information on the function ('usage')
         
         
-     //   void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+     //   void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
 
         
     private:
 
-        // RevPtr<const Variable>                         tree;
-        // RevPtr<const Variable>                         nodeval;
+        // RevPtr<const RevVariable>                         tree;
+        // RevPtr<const RevVariable>                         nodeval;
     };
     
 }

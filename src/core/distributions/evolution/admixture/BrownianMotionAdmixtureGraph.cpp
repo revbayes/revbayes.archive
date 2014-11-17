@@ -1492,7 +1492,7 @@ void BrownianMotionAdmixtureGraph::updateNodeToIndexContrastData(void)
     for (unsigned i = numNodes; i < t.getNumberOfNodes(); i++)
     {
         AdmixtureNode* p = &t.getNode(i);
-        p->setIndex(i); // can I just do this? ...
+        p->setIndex(i+1); // can I just do this? ...
         nodeToIndex[p] = i;
     }
     

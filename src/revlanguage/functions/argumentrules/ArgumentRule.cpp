@@ -32,7 +32,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
-    defaultVar( new Variable( defVal ) ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label(argName),
@@ -62,7 +62,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
-    defaultVar( new Variable( defVal ) ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label(argName),
@@ -98,7 +98,7 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
 Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
 
-    RevPtr<Variable> theVar = arg.getVariable();
+    RevPtr<RevVariable> theVar = arg.getVariable();
     if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() )
     {
         once = true;
@@ -110,7 +110,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         if ( theVar->getRevObject().isType( *it ) )
         {
             // For now, change the required type of the incoming variable wrapper
-            theVar->setRevObjectTypeSpec( *it );
+            theVar->setRequiredTypeSpec( *it );
             
             if ( !isEllipsis() )
                 return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
@@ -118,15 +118,15 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 return Argument( theVar, arg.getLabel(), true );
         }
         else if ( once == false &&
-                 !theVar->isAssignable() &&
-                 theVar->getRevObject().isConvertibleTo( *it, true ) &&
-                 (*it).isDerivedOf( theVar->getRevObjectTypeSpec() )
+//                 !theVar->isAssignable() &&
+                 theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
+                 (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
                  )
         {
             // Fit by type promotion. For now, we also modify the type of the incoming variable wrapper.
             RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
             theVar->replaceRevObject( convertedObject );
-            theVar->setRevObjectTypeSpec( *it );
+            theVar->setRequiredTypeSpec( *it );
             if ( !isEllipsis() )
             {
                 return Argument( theVar, getArgumentLabel(), false );
@@ -137,14 +137,14 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             }
             
         }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
         {
             // Fit by type conversion
             if ( once )
             {
-                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-                Variable*  convertedVar    = new Variable( convertedObject );
-                convertedVar->setRevObjectTypeSpec( *it );
+                RevObject*    convertedObject = theVar->getRevObject().convertTo( *it );
+                RevVariable*  convertedVar    = new RevVariable( convertedObject );
+                convertedVar->setRequiredTypeSpec( *it );
 
                 if ( !isEllipsis() )
                 {
@@ -180,13 +180,13 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 func->setExecutionEnviroment( &env );
                 
                 // Evaluate the function
-                RevPtr<Variable> conversionVar = func->execute();
+                RevPtr<RevVariable> conversionVar = func->execute();
                 
                 // free the memory
                 delete func;
                 
                 conversionVar->setHiddenVariableState( true );
-                conversionVar->setRevObjectTypeSpec( *it );
+                conversionVar->setRequiredTypeSpec( *it );
                 
                 return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
                 
@@ -219,7 +219,7 @@ const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const
 
 
 
-const Variable& ArgumentRule::getDefaultVariable( void ) const {
+const RevVariable& ArgumentRule::getDefaultVariable( void ) const {
     
     if ( defaultVar == NULL ) 
     {
@@ -251,12 +251,12 @@ bool ArgumentRule::hasDefault(void) const {
  *
  * @todo See the TODOs for fitArgument(...)
  */
-bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const
+double ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool once) const
 {
     
     if ( var == NULL )
     {
-        return false;
+        return -1;
     }
     
     if ( evalType == BY_VALUE || var->isWorkspaceVariable() )
@@ -268,23 +268,24 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
     {
         if ( var->getRevObject().isType( *it ) )
         {
-            return true;
+            return 0.0;
         }
-        else if ( var->getRevObject().isConvertibleTo( *it, once ) )
+        else if ( var->getRevObject().isConvertibleTo( *it, once ) != -1 )
         {
-            return true;
+            return var->getRevObject().isConvertibleTo( *it, once );
         }
-        else if ( once == false && !var->isAssignable() &&
-                  var->getRevObject().isConvertibleTo( *it, true ) &&
-                  (*it).isDerivedOf( var->getRevObjectTypeSpec() )
+        else if ( once == false &&
+//                 !var->isAssignable() &&
+                  var->getRevObject().isConvertibleTo( *it, true ) != -1 &&
+                  (*it).isDerivedOf( var->getRequiredTypeSpec() )
                 )
         {
-            return true;
+            return var->getRevObject().isConvertibleTo( *it, true );
         }
         
     }
     
-    return false;
+    return -1;
 }
 
 

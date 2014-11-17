@@ -5,7 +5,7 @@
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
-#include "RlTaxonData.h"
+#include "RlDiscreteTaxonData.h"
 
 
 using namespace RevLanguage;
@@ -146,7 +146,7 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::clone() const
 
 
 /* Map calls to member methods */
-RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if ( this->getDagNode() != NULL )
@@ -155,7 +155,7 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
         setCharacterDataObject( &this->getDagNode()->getValue() );
     }
     
-    RevPtr<Variable> retVal = executeCharacterDataMethod(name, args, found);
+    RevPtr<RevVariable> retVal = executeCharacterDataMethod(name, args, found);
     
     if ( found == true )
     {
@@ -224,7 +224,7 @@ RevPtr<Variable> AbstractDiscreteCharacterData::executeMethod(std::string const 
         
         bool ih = this->dagNode->getValue().isHomologyEstablished();
         
-        return new Variable( new RlBoolean(ih) );
+        return new RevVariable( new RlBoolean(ih) );
     }
     
     return ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::executeMethod( name, args, found );

@@ -48,7 +48,7 @@ SyntaxAdditionAssignment* SyntaxAdditionAssignment::clone () const
  * Evaluate the content of this syntax element. This will perform an
  * addition assignment operation.
  */
-void SyntaxAdditionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxAdditionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating addition assignment\n" );
@@ -85,7 +85,7 @@ void SyntaxAdditionAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     // Generate result of the multiplication
     RevObject *newValue = lhs_value.add( rhs_value );
     
-    // Fill the slot with the new variable
+    // Fill the slot with the new RevVariable
     lhs->replaceRevObject( newValue );
 
     // Reset it as workspace (control) variable, if it was a workspace (control) variable before the assignment.

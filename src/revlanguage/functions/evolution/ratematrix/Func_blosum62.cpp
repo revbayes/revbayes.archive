@@ -31,13 +31,13 @@ Func_blosum62* Func_blosum62::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_blosum62::execute() {
+RevPtr<RevVariable> Func_blosum62::execute() {
     
     
     RevBayesCore::RateMatrix_Blosum62 *rmj = new RevBayesCore::RateMatrix_Blosum62();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return new Variable( value );
+    return new RevVariable( value );
 }
 
 

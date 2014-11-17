@@ -92,7 +92,7 @@ const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "originTime" ) {
         originTime = var;

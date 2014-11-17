@@ -19,7 +19,7 @@ namespace RevLanguage {
         std::string message;
         std::string functionName;
         std::string argumentLabel;
-        RevPtr<Variable> baseVariable;
+        RevPtr<RevVariable> baseVariable;
     };
     
     class SyntaxElement;
@@ -128,7 +128,7 @@ namespace RevLanguage {
         std::string         functionName;                                           //!< Function name of end state, if any
         std::string         argumentLabel;                                          //!< Argument label of end state, if any
         SyntaxVariable*     baseVariableExpr;                                       //!< Base variable expression of end state
-        RevPtr<Variable>    baseVariable;                                           //!< Base variable of end state
+        RevPtr<RevVariable>    baseVariable;                                           //!< Base variable of end state
 
     };
 

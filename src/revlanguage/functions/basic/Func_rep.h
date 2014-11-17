@@ -42,7 +42,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
         
     };
     
@@ -74,7 +74,7 @@ RevLanguage::Func_rep<valType>* RevLanguage::Func_rep<valType>::clone( void ) co
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rep<valType>::execute( void )
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_rep<valType>::execute( void )
 {
     
     typename valType::valueType v   = static_cast<const valType &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -86,7 +86,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rep<valType>::execu
         rep->push_back( valType( v ) );
     }
     
-    return new Variable( rep );
+    return new RevVariable( rep );
 }
 
 

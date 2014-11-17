@@ -44,10 +44,10 @@ namespace RevLanguage {
  
         // Type conversion functions
         RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
-        virtual bool                                isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
+        virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
         // Member object functions
-        virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
+        virtual RevPtr<RevVariable>                    executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
         
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
@@ -76,7 +76,7 @@ namespace RevLanguage {
 #include "RbException.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
 
 #include <algorithm>
@@ -242,15 +242,15 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
  * Map calls to member methods.
  */
 template <typename rlType>
-RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
+RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
     if ( name == "size" )
     {
         found = true;
         
-        // return a new variable with the size of this container
-        return RevPtr<Variable>( new Variable( new Natural( size() ), "" ) );
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
     }
     else if ( name == "sort" )
     {
@@ -335,7 +335,7 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
  * of Real, for example.
  */
 template <typename rlType>
-bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
+double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
     if ( type.getParentType() == getClassTypeSpec().getParentType() )
     {
@@ -343,18 +343,27 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
 
         // Simply check whether our elements can convert to the desired element type
         typename RevBayesCore::RbConstIterator<elementType> i;
+        double penalty = 0.0;
         for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
             rlType orgElement = rlType(*i);
 
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isType( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
+            if ( !orgElement.isType( *type.getElementTypeSpec() ) )
             {
-                return false;
+            
+                double elementPenalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );
+                if ( elementPenalty == -1 )
+                {
+                    // we cannot convert this element
+                    return -1;
+                }
+                penalty += elementPenalty;
             }
+            
         }
 
-        return true;
+        return penalty;
     }
 
     return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::isConvertibleTo( type, once );

@@ -437,7 +437,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     {
         siteIndexSet.clear();
         siteIndexSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
-        if (useAreaAdjacency || !true)
+        if (useAreaAdjacency)
         {
             const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
@@ -662,7 +662,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             {
                 proposedCladogenicState = 2;
                 std::set<size_t>::iterator it = present.begin();
-                for (size_t i = 0; i < GLOBAL_RNG->uniform01() * present.size() + 1; i++)
+                for (size_t i = 0; i < GLOBAL_RNG->uniform01() * present.size(); i++)
                     it++;
                 size_t budAreaIdx = *it;
                 
@@ -695,7 +695,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
                 {
                     unsigned int s = nodeChildState[*it]->getState();
-                    unsigned int st = s * trunkAreas[*it];
+                    unsigned int st = s * (unsigned)trunkAreas[*it];
                     unsigned int sb = s * (trunkAreas[*it] == 1 ? 0 : 1);
                   
                     trunkParentState[*it]->setState(st);
@@ -703,7 +703,8 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 }
             }
             
-            lnP += log( csf[storedCladogenicState-1] / csf[proposedCladogenicState-1] );
+            if (storedCladogenicState != 0)
+                lnP += log( csf[storedCladogenicState-1] / csf[proposedCladogenicState-1] );
         }
         else
         {

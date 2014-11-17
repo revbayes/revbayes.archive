@@ -35,7 +35,7 @@ void Mntr_Screen::constructInternalObject( void )
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     
     std::set<RevBayesCore::DagNode *> n;
-    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i)
+    for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
     {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
         n.insert( node );
@@ -109,7 +109,7 @@ void Mntr_Screen::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Mntr_Screen::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void Mntr_Screen::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "" )

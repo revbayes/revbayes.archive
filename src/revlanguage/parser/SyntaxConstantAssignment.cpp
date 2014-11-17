@@ -42,7 +42,7 @@ SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const
  * contexts. For instance, it might be used in a chain assignment or in passing a
  * variable to a function.
  */
-void SyntaxConstantAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxConstantAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating constant assignment\n" );
@@ -60,18 +60,18 @@ void SyntaxConstantAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &r
     // TODO: This needs to be cleaned up because it is not used properly anymore! (Sebastian)
     // Perform type conversion if needed, otherwise just clone the value object
     RevObject* newValue;
-    if ( !value.getTypeSpec().isDerivedOf( lhs->getRevObjectTypeSpec() ) )
+    if ( !value.getTypeSpec().isDerivedOf( lhs->getRequiredTypeSpec() ) )
     {
         // We are not of a derived type (or the same type) so we need to cast
-        if (value.isConvertibleTo( lhs->getRevObjectTypeSpec(), true ) )
+        if (value.isConvertibleTo( lhs->getRequiredTypeSpec(), true ) )
         {
-            newValue = value.convertTo( lhs->getRevObjectTypeSpec() );
+            newValue = value.convertTo( lhs->getRequiredTypeSpec() );
         }
         else
         {
             std::ostringstream msg;
             msg << "Cannot assign variable '" << lhs->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
-            msg << " because the variable requires type '" << lhs->getRevObjectTypeSpec().getType() << "'" << std::endl;
+            msg << " because the variable requires type '" << lhs->getRequiredTypeSpec().getType() << "'" << std::endl;
             throw RbException( msg );
         }
     }

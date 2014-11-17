@@ -2,6 +2,7 @@
 #include "RlBoolean.h"
 #include "Natural.h"
 #include "Integer.h"
+#include "Probability.h"
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
@@ -131,6 +132,9 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const {
 
     if ( type == RealPos::getClassTypeSpec() )
         return new RealPos( dagNode->getValue() );
+    
+    if ( type == Probability::getClassTypeSpec() )
+        return new Probability( dagNode->getValue() );
 
     if ( type == RlString::getClassTypeSpec() ) {
 
@@ -225,19 +229,22 @@ const TypeSpec& Natural::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
+double Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
-        return true;
+        return 0.5;
 
     if ( type == Real::getClassTypeSpec() )
-        return true;
+        return 0.3;
 
     if ( type == RealPos::getClassTypeSpec() )
-        return true;
+        return 0.2;
+    
+    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 )
+        return 0.1;
 
     if ( type == RlString::getClassTypeSpec() )
-        return true;
+        return 0.6;
 
     return Integer::isConvertibleTo( type, once );
 }

@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage exponential function, which
- * is used to created deterministic variable associated with the exponential function.
- *
- * @brief Declaration and implementation of Func_exp
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-
 #ifndef Func_abs_H
 #define Func_abs_H
 
@@ -25,6 +8,19 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the absolute value function.
+     *
+     * The RevLanguage wrapper of the abs function connects
+     * the variables/parameters of the function and creates the internal AbsoluteValueFunction object.
+     * Please read the AbsoluteValueFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-07-27, version 1.0
+     *
+     */
     class Func_abs : public TypedFunction<RealPos> {
         
     public:

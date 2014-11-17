@@ -23,13 +23,13 @@ Func_mtMam* Func_mtMam::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_mtMam::execute() {
+RevPtr<RevVariable> Func_mtMam::execute() {
     
     
     RevBayesCore::RateMatrix_MtMam *rmj = new RevBayesCore::RateMatrix_MtMam();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return new Variable( value );
+    return new RevVariable( value );
 }
 
 

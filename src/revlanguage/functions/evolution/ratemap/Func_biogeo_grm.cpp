@@ -40,7 +40,7 @@ RevBayesCore::TypedFunction< RevBayesCore::GeographyRateModifier >* Func_biogeo_
     bool uadj   = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
 
 
-    RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::DistanceDependentDispersalFunction(dp, atlas, uadj, true, udd);
+    RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::DistanceDependentDispersalFunction(dp, atlas, uadj, uav, udd);
     
     return f;
 }

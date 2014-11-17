@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage round function, which
- * is used to created deterministic variable associated with the round function.
- * This is the standard arithmetic rounding of real numbers.
- *
- * @brief Declaration and implementation of Func_exp
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-
 #ifndef Func_round_H
 #define Func_round_H
 

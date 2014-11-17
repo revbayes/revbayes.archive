@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage floor function, which
- * is used to created deterministic variable associated with the floor function.
- * This is the standard arithmetic flooring of real numbers.
- *
- * @brief Declaration and implementation of Func_exp
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-
 #ifndef Func_floor_H
 #define Func_floor_H
 
@@ -25,6 +7,19 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the floor function.
+     *
+     * The RevLanguage wrapper of the floor function connects
+     * the variables/parameters of the function and creates the internal FloorFunction object.
+     * Please read the FloorFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-07-27, version 1.0
+     *
+     */
     template <typename valType, typename retType>
     class Func_floor : public TypedFunction<retType> {
         

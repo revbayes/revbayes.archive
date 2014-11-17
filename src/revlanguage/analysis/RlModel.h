@@ -43,15 +43,15 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
 
         // Member method inits
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         void                                        printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc);
         
-        std::set<RevPtr<const Variable> >           sources;
+        std::set<RevPtr<const RevVariable> >           sources;
         
     };
     

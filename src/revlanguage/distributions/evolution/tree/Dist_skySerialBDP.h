@@ -38,26 +38,26 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                                setConstParameter(const std::string& name, const RevPtr<const Variable> &var); //!< Set member variable
+        void                                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var); //!< Set member variable
         
         
     private:
         
         // members        
-        RevPtr<const Variable>                                              lambda;
-        RevPtr<const Variable>                                              lambdaTimes;
-        RevPtr<const Variable>                                              mu;
-        RevPtr<const Variable>                                              muTimes;
-        RevPtr<const Variable>                                              psi;
-        RevPtr<const Variable>                                              psiTimes;
-        RevPtr<const Variable>                                              rho;
-        RevPtr<const Variable>                                              rhoTimes;
-        RevPtr<const Variable>                                              tLast;
-        RevPtr<const Variable>                                              origin;                                                                             //!< The time of the process since the origin
-        RevPtr<const Variable>                                              rootAge;                                                                             //!< The time of the process since the origin
-        RevPtr<const Variable>                                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
-        RevPtr<const Variable>                                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
-        RevPtr<const Variable>                                              constraints;                                                                        //!< Topological constraints that will be used for calibrations
+        RevPtr<const RevVariable>                                              lambda;
+        RevPtr<const RevVariable>                                              lambdaTimes;
+        RevPtr<const RevVariable>                                              mu;
+        RevPtr<const RevVariable>                                              muTimes;
+        RevPtr<const RevVariable>                                              psi;
+        RevPtr<const RevVariable>                                              psiTimes;
+        RevPtr<const RevVariable>                                              rho;
+        RevPtr<const RevVariable>                                              rhoTimes;
+        RevPtr<const RevVariable>                                              tLast;
+        RevPtr<const RevVariable>                                              origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                                              rootAge;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
+        RevPtr<const RevVariable>                                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const RevVariable>                                              constraints;                                                                        //!< Topological constraints that will be used for calibrations
         
     };
     

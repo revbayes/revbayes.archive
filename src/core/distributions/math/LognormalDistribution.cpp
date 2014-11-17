@@ -5,19 +5,17 @@
 
 using namespace RevBayesCore;
 
-LognormalDistribution::LognormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *o) : ContinuousDistribution( new double( 1.0 ) ), 
+LognormalDistribution::LognormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 1.0 ) ),
     mean( m ), 
-    sd( s ),
-    offset( o )
+    sd( s )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( mean );
     addParameter( sd );
-    addParameter( offset );
     
-    *value = offset->getValue() + RbStatistics::Lognormal::rv(mean->getValue(), sd->getValue(), *GLOBAL_RNG);
+    *value = RbStatistics::Lognormal::rv(mean->getValue(), sd->getValue(), *GLOBAL_RNG);
 }
 
 
@@ -29,7 +27,7 @@ LognormalDistribution::~LognormalDistribution( void )
 
 double LognormalDistribution::cdf( void ) const 
 {
-    return RbStatistics::Lognormal::cdf(mean->getValue(), sd->getValue(), *value - offset->getValue());
+    return RbStatistics::Lognormal::cdf(mean->getValue(), sd->getValue(), *value);
 }
 
 
@@ -41,7 +39,7 @@ LognormalDistribution* LognormalDistribution::clone( void ) const
 
 double LognormalDistribution::computeLnProbability( void ) 
 {
-    return RbStatistics::Lognormal::lnPdf(mean->getValue(), sd->getValue(), *value - offset->getValue());
+    return RbStatistics::Lognormal::lnPdf(mean->getValue(), sd->getValue(), *value);
 }
 
 
@@ -53,19 +51,19 @@ double LognormalDistribution::getMax( void ) const
 
 double LognormalDistribution::getMin( void ) const 
 {
-    return offset->getValue();
+    return 0.0;
 }
 
 
 double LognormalDistribution::quantile(double p) const 
 {
-    return RbStatistics::Lognormal::quantile(mean->getValue(), sd->getValue(), p) + offset->getValue();
+    return RbStatistics::Lognormal::quantile(mean->getValue(), sd->getValue(), p);
 }
 
 
 void LognormalDistribution::redrawValue( void ) 
 {
-    *value = RbStatistics::Lognormal::rv(mean->getValue(), sd->getValue(), *GLOBAL_RNG) + offset->getValue();
+    *value = RbStatistics::Lognormal::rv(mean->getValue(), sd->getValue(), *GLOBAL_RNG);
 }
 
 
@@ -80,9 +78,5 @@ void LognormalDistribution::swapParameterInternal(const DagNode *oldP, const Dag
     if (oldP == sd) 
     {
         sd = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    if (oldP == offset) 
-    {
-        offset = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

@@ -31,12 +31,12 @@ Func_wag* Func_wag::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_wag::execute() {
+RevPtr<RevVariable> Func_wag::execute() {
     
     RevBayesCore::RateMatrix_Wag *rmj = new RevBayesCore::RateMatrix_Wag();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return new Variable( value );
+    return new RevVariable( value );
 }
 
 

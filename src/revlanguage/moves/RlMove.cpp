@@ -63,7 +63,7 @@ const MemberRules& Move::getParameterRules(void) const {
 
 
 /** Set a member variable */
-void Move::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
+void Move::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "weight" ) 
     {

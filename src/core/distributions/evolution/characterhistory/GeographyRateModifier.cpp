@@ -55,13 +55,6 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
         }
     }
     
-
-//    // initialize provided area dispersal/extinction rates
-//    dispersalValues.resize(numEpochs * numAreas * numAreas, 1.0);
-//    extinctionValues.resize(numEpochs * numAreas, 1.0);
-//    if (useAreaAdjacency && useAreaAvailable)
-//        initializeDispersalExtinctionValues();
-
     // initialize adjacencies between areas
     std::set<size_t> tmpSet;
     for (size_t i = 0; i < numAreas; i++)
@@ -154,7 +147,7 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     double eps = 1e-4;
     
     unsigned s = newState->getState();
-    unsigned charIdx = newState->getIndex();
+    size_t charIdx = newState->getIndex();
     bool areaAvailable = availableAreaVector[epochIdx*numAreas + charIdx] > 0.0;
 
     // area exists and is lost
@@ -261,7 +254,6 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         {
             for (it = availableAreaSet[epochIdx].begin(); it != availableAreaSet[epochIdx].end(); it++)
             {
-                std::cout << currState[*it]->getState();
                 if (currState[*it]->getState() == 0)
                 {
                     absent.insert(currState[*it]);
@@ -358,7 +350,7 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
 double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
 {
     unsigned s = newState->getState();
-    unsigned charIdx = newState->getIndex();
+    size_t charIdx = newState->getIndex();
     unsigned epochIdx = getEpochIndex(age);
     
     // r == 1 if available, r == 0 if unavailable
@@ -450,7 +442,7 @@ void GeographyRateModifier::initializeDistances(void)
                         adjacentAreaVector[epochOffset*i + areaOffset*k + j] > 0)
                     {
                         std::stringstream ss;
-                        ss << "ERROR: Areas " << i << " and " << j << " have zero distance";
+                        ss << "ERROR: Areas " << j << " and " << k << " have zero distance";
                         throw RbException(ss.str());
                     }
                 }
@@ -623,7 +615,7 @@ unsigned GeographyRateModifier::getNumAvailableAreas(const TopologyNode& node, s
             }
         }
     }
-    return gainableAreas.size();
+    return (unsigned)gainableAreas.size();
 }
 
 unsigned GeographyRateModifier::getNumEmigratableAreas(const TopologyNode& node, std::vector<CharacterEvent*> currState, double age)
@@ -672,7 +664,7 @@ unsigned GeographyRateModifier::getNumEmigratableAreas(const TopologyNode& node,
             }
         }
     }
-    return emigratableAreas.size();
+    return (unsigned)emigratableAreas.size();
 }
 
 double GeographyRateModifier::computePairwiseDistances(int i, int j, int k)
