@@ -155,7 +155,7 @@ void Dist_multivariateNorm::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_multivariateNorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void Dist_multivariateNorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "mean" ) 
