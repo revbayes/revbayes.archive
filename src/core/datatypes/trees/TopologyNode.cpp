@@ -370,6 +370,10 @@ std::string TopologyNode::buildNewickString( void )
             }
             o << "]";
         }
+        if (rootNode)
+        {
+            o << ";";
+        }
     }
     
     return o.str();
