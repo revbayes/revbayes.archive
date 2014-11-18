@@ -164,7 +164,7 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
     
     outStream << std::endl; 
     outStream << "Begin trees;" << std::endl;
-    outStream << "tree TREE1 = [&R]" << tree << ";" << std::endl;
+    outStream << "tree TREE1 = [&R]" << tree << std::endl;
     outStream << "End;" << std::endl;
     
     
