@@ -81,8 +81,21 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    // present time 
-    double org = origin->getValue();
+    // present time
+    double ra = value->getRoot().getAge();
+    double presentTime = 0.0;
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( startsAtRoot == false )
+    {
+        double org = origin->getValue();
+        presentTime = org;
+        
+    }
+    else
+    {
+        presentTime = ra;
+    }
     
 //    double ra = value->getRoot().getAge();
     
@@ -168,7 +181,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
 //    {
 //        std::cerr << "holala" << std::endl;
 //    }
-    lnProbTimes += log( q(rateChangeTimes.size(), org ) );
+    lnProbTimes += log( q(rateChangeTimes.size(), presentTime ) );
 //    if ( lnProbTimes > 100 )
 //    {
 //        std::cerr << "holala" << std::endl;
