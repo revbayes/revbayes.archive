@@ -2,8 +2,8 @@
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
 #include "Dist_multivariateNorm.h"
-#include "MultivariateNormalDistribution.h"
 #include "ModelVector.h"
+#include "MultivariateNormalDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RealSymmetricMatrix.h"
@@ -16,8 +16,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_multivariateNorm::Dist_multivariateNorm(void) : TypedDistribution<ModelVector<RevLanguage::Real> >()
-{
+Dist_multivariateNorm::Dist_multivariateNorm(void) : TypedDistribution<ModelVector<RevLanguage::Real> >() {
     
 }
 
@@ -32,13 +31,12 @@ Dist_multivariateNorm::Dist_multivariateNorm(void) : TypedDistribution<ModelVect
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::MultivariateNormalDistribution* Dist_multivariateNorm::createDistribution( void ) const
-{
+RevBayesCore::MultivariateNormalDistribution* Dist_multivariateNorm::createDistribution( void ) const {
 
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* S = static_cast<const RealSymmetricMatrix &>( sd->getRevObject() ).getDagNode();
-    RevBayesCore::MultivariateNormalDistribution*   d = new RevBayesCore::MultivariateNormalDistribution(m, S);
+    RevBayesCore::MultivariateNormalDistribution* d = new RevBayesCore::MultivariateNormalDistribution(m, S);
     
     return d;
 }
@@ -50,8 +48,7 @@ RevBayesCore::MultivariateNormalDistribution* Dist_multivariateNorm::createDistr
  *
  * \return A new copy of the process. 
  */
-Dist_multivariateNorm* Dist_multivariateNorm::clone( void ) const
-{
+Dist_multivariateNorm* Dist_multivariateNorm::clone(void) const {
     
     return new Dist_multivariateNorm(*this);
 }
@@ -62,12 +59,10 @@ Dist_multivariateNorm* Dist_multivariateNorm::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& Dist_multivariateNorm::getClassType(void)
-{ 
+const std::string& Dist_multivariateNorm::getClassType(void) {
     
     static std::string revType = "Dist_multivariateNorm";
-    
-	return revType; 
+	return revType;
 }
 
 
@@ -76,12 +71,10 @@ const std::string& Dist_multivariateNorm::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_multivariateNorm::getClassTypeSpec(void)
-{ 
+const TypeSpec& Dist_multivariateNorm::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<ModelVector<Real> >::getClassTypeSpec() ) );
-    
-	return revTypeSpec; 
+	return revTypeSpec;
 }
 
 
@@ -94,20 +87,16 @@ const TypeSpec& Dist_multivariateNorm::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_multivariateNorm::getParameterRules(void) const
-{
+const MemberRules& Dist_multivariateNorm::getParameterRules(void) const {
     
     static MemberRules distNormMemberRules;
     static bool rulesSet = false;
-    
-    if ( !rulesSet ) 
-    {
+    if ( !rulesSet )
+        {
         distNormMemberRules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
-    
         rulesSet = true;
-    }
-    
+        }
     return distNormMemberRules;
 }
 
@@ -117,11 +106,9 @@ const MemberRules& Dist_multivariateNorm::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_multivariateNorm::getTypeSpec( void ) const
-{
+const TypeSpec& Dist_multivariateNorm::getTypeSpec(void) const {
     
     static TypeSpec ts = getClassTypeSpec();
-    
     return ts;
 }
 
@@ -130,17 +117,23 @@ const TypeSpec& Dist_multivariateNorm::getTypeSpec( void ) const
 void Dist_multivariateNorm::printValue(std::ostream& o) const {
     
     o << " norm(mean=";
-    if ( mean != NULL ) {
+    if ( mean != NULL )
+        {
         o << mean->getName();
-    } else {
+        }
+    else
+        {
         o << "?";
-    }
+        }
     o << ", sd=";
-    if ( sd != NULL ) {
+    if ( sd != NULL )
+        {
         o << sd->getName();
-    } else {
+        }
+    else
+        {
         o << "?";
-    }
+        }
     o << ")";
 }
 
@@ -155,19 +148,18 @@ void Dist_multivariateNorm::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_multivariateNorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
-{
+void Dist_multivariateNorm::setConstParameter(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
-    {
+        {
         mean = var;
-    }
+        }
     else if ( name == "sd" ) 
-    {
+        {
         sd = var;
-    }
+        }
     else 
-    {
+        {
         Distribution::setConstParameter(name, var);
-    }
+        }
 }
