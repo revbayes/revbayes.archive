@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class ParallelMcmcmc : Cloneable {
         
     public:
-        ParallelMcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT="random", size_t nc=4, size_t np=4, size_t si=1000, double dt=0.1, double st=1.0, double sh=1.0);
+        ParallelMcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1, double st=1.0, double sh=1.0);
         ParallelMcmcmc(const ParallelMcmcmc &m);
         virtual                                            ~ParallelMcmcmc(void);                                                          //!< Virtual destructor
         
@@ -40,13 +40,19 @@ namespace RevBayesCore {
     private:
         void                                                initialize(void);
         void                                                swapChains(void);
+        void                                                synchronizeValues(void);
+        void                                                synchronizeHeats(void);
+        void                                                updateChainState(size_t j);
         double                                              computeBeta(double d, double s, size_t i);   // incremental temperature schedule
         
         size_t                                              numChains;
         size_t                                              numProcesses;
         std::vector<size_t>                                 chainIdxByHeat;
         std::vector<std::vector<size_t> >                   chainsPerProcess;
+        std::vector<size_t>                                 processPerChain;
         std::vector<Mcmc*>                                  chains;
+        std::vector<double>                                 chainValues;
+        std::vector<double>                                 chainHeats;
         std::string                                         scheduleType;
         size_t                                              currentGeneration;
         size_t                                              swapInterval;
