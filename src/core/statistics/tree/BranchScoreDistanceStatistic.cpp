@@ -76,7 +76,7 @@ void BranchScoreDistanceStatistic::update( void )
             }
         }
         if (!found) {
-            *value += ages1[i]*ages1[i];
+            *value += ages2[i]*ages2[i];
         }
     }
     *value = pow(*value, 0.5);
