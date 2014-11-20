@@ -211,6 +211,7 @@
 #include "Dist_bimodalLnorm.h"
 #include "Dist_bimodalNorm.h"
 #include "Dist_binomial.h"
+#include "Dist_cppNormal.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_exponentialOffset.h"
@@ -661,6 +662,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // bimodal lognormal distribution
         addDistribution( "dnBimodalLnorm",  new Dist_bimodalLnorm() );
+        
+        // compound Poisson w/ normal kernel
+        addDistribution( "dnCppNormal",     new Dist_cppNormal() );
         
         // dirichlet distribution
         addDistribution( "dnDirichlet",     new Dist_dirichlet() );
