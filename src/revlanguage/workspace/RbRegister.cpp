@@ -211,6 +211,7 @@
 #include "Dist_bimodalLnorm.h"
 #include "Dist_bimodalNorm.h"
 #include "Dist_binomial.h"
+#include "Dist_categorical.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_gamma.h"
@@ -660,6 +661,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // bimodal lognormal distribution
         addDistribution( "dnBimodalLnorm",  new Dist_bimodalLnorm() );
         
+        // categorical distribution
+        addDistribution( "dnCat",           new Dist_categorical() );
+        
         // dirichlet distribution
         addDistribution( "dnDirichlet",     new Dist_dirichlet() );
 		
@@ -1084,6 +1088,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         //        addFunction("pbeta", new DistributionFunctionCdf( new Dist_beta() ) );
         //        addFunction("qbeta", new DistributionFunctionQuantile( new Dist_beta() ) );
         addFunction("rbeta", new DistributionFunctionRv<Probability>( new Dist_beta() ) );
+        
+        // categorical distribution
+        addFunction("dcat", new DistributionFunctionPdf<Natural>( new Dist_categorical() ) );
+        addFunction("rcat", new DistributionFunctionRv<Natural>( new Dist_categorical() ) );
         
         // dirichlet distribution
         addFunction("ddirichlet", new DistributionFunctionPdf<Simplex>( new Dist_dirichlet() ) );
