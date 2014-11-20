@@ -269,7 +269,9 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 }
                 std::string type = "NULL";
                 if (it->getVariable() != NULL) type = it->getVariable()->getRevObject().getType();
-                msg << " " << type << " \"" << it->getLabel() << "\"";
+                msg << " " << type;
+                if ( it->getLabel() != "" )
+                    msg << " '" << it->getLabel() << "'";
             }
             msg << " )." << std::endl;
             msg << "Correct usage is:" << std::endl;
