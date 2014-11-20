@@ -318,7 +318,7 @@ void RevLanguage::ArgumentRule::printValue(std::ostream &o) const
     {
         std::ostringstream s;
         getDefaultVariable().getRevObject().printValue( s );
-        o << " = " << StringUtilities::oneLiner( s.str(), 10 );
+        o << " = " << StringUtilities::oneLiner( s.str(), 30 );
     }
 }
 

@@ -84,7 +84,7 @@ void OptionRule::printValue(std::ostream& o) const
 
     ArgumentRule::printValue(o);
 
-    o << " = ";
+    o << " {valid options: ";
     for (std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
     {
         
@@ -93,9 +93,9 @@ void OptionRule::printValue(std::ostream& o) const
             o << "|";
         }
         
-        o << *it;
+        o << "\"" << *it << "\"";
 
     }
-    o << std::endl;
+    o << "}" << std::endl;
 }
 
