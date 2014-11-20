@@ -34,9 +34,11 @@ BernoulliDistribution* BernoulliDistribution::clone( void ) const {
 
 double BernoulliDistribution::computeLnProbability( void ) {
     
+    if ( *value > 1 || *value < 0 )
+        return RbConstants::Double::neginf;
+
     return log( *value == 0 ? ( 1 - p->getValue() ) : p->getValue() );
 }
-
 
 
 void BernoulliDistribution::redrawValue( void ) {
