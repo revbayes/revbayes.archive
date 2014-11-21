@@ -19,8 +19,8 @@
 
 
 
-#ifndef Tamura92RateMatrixFunction_H
-#define Tamura92RateMatrixFunction_H
+#ifndef T92RateMatrixFunction_H
+#define T92RateMatrixFunction_H
 
 #include "RateMatrix_GTR.h"
 #include "TypedDagNode.h"
@@ -30,19 +30,18 @@
 
 namespace RevBayesCore {
     
-    class Tamura92RateMatrixFunction : public TypedFunction<RateMatrix> {
+    class T92RateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
-        Tamura92RateMatrixFunction(const TypedDagNode<double > *eqGc, const TypedDagNode< double > *tstv);
-        Tamura92RateMatrixFunction(const Tamura92RateMatrixFunction &n);                                                                              //!< Copy constructor
-        virtual                                            ~Tamura92RateMatrixFunction(void);                                                         //!< Virtual destructor
+        T92RateMatrixFunction(const TypedDagNode<double > *eqGc, const TypedDagNode< double > *tstv);
+        virtual                                            ~T92RateMatrixFunction(void);                                                            //!< Virtual destructor
         
         // public member functions
-        Tamura92RateMatrixFunction*                         clone(void) const;                                                                        //!< Create an independent clone
+        T92RateMatrixFunction*                              clone(void) const;                                                                      //!< Create an independent clone
         void                                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                          //!< Implementation of swaping parameters
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
     private:
         
