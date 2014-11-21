@@ -94,6 +94,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
             lnProbTimes == RbConstants::Double::inf || 
             lnProbTimes == RbConstants::Double::neginf ) 
         {
+            delete times;
             return RbConstants::Double::nan;
         }
          
