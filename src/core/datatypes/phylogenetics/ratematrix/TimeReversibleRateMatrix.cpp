@@ -80,16 +80,6 @@ void TimeReversibleRateMatrix::setStationaryFrequencies(const std::vector<double
     needsUpdate = true;
 }
 
-// Set the stationary frequencies by copy
-void TimeReversibleRateMatrix::setStationaryFrequenciesByCopy(std::vector<double> f) {
-
-    for (size_t i=0; i<numStates; i++)     {
-        stationaryFreqs[i] = f[i];
-    }
-    // set flags
-    needsUpdate = true;
-}
-
 
 
 const std::vector<double>& TimeReversibleRateMatrix::getStationaryFrequencies( void ) const {
