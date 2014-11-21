@@ -197,7 +197,21 @@ namespace RevBayesCore {
                 // finally, we compute the mean conditional age
                 bestTimeTree->setAge(i, age);
             }
-            
+        }
+        
+        TimeTree& firstTree = trace.objectAt( 0 );
+        const std::vector<TopologyNode*> &firstNodes = firstTree.getNodes();
+        for (size_t i = 0; i < numTaxa; i++)
+        {
+            if (firstNodes[i]->isTip()) {
+                for (size_t j = 0; j < numTaxa; j++)
+                {
+                    if (firstNodes[i]->getName() == nodes[j]->getName())
+                    {
+                        bestTimeTree->setAge(j, firstNodes[i]->getAge());
+                    }
+                }
+            }
         }
         
         return bestTimeTree;

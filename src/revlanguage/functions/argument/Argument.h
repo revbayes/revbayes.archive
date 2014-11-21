@@ -45,7 +45,7 @@ class Argument {
     const RevPtr<RevVariable>&          getReferenceVariable(void) const;
     bool                                isConstant(void) const;
 
-private:
+    private:
     RevPtr<RevVariable>                 var;                                                                        //!< Pointer to the variable slot containing the variable (and value)
     bool                                isConst;                                                                    //!< Is this a constant variable?
     std::string                         label;                                                                      //!< Label of argument

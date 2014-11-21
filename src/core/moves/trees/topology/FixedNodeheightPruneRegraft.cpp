@@ -62,6 +62,8 @@ const std::string& FixedNodeheightPruneRegraft::getMoveName( void ) const {
 /** Perform the move */
 double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
     
+    failed = false;
+    
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -86,6 +88,12 @@ double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
     // collect the possible reattachement points
     std::vector<TopologyNode*> new_brothers;
     findNewBrothers(new_brothers, *parent, &tau.getRoot());
+    
+    if ( new_brothers.size() < 1) {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
     size_t index = size_t(rng->uniform01() * new_brothers.size());
     TopologyNode* newBro = new_brothers[index];
     
@@ -114,24 +122,28 @@ double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
 
 void FixedNodeheightPruneRegraft::rejectSimpleMove( void ) {
     
-    // undo the proposal
-    TopologyNode& parent = storedNewBrother->getParent();
-    TopologyNode& newGrandparent = parent.getParent();
-    TopologyNode& grandparent = storedBrother->getParent();
     
-    // prune
-    newGrandparent.removeChild( &parent );
-    parent.removeChild( storedNewBrother );
-    newGrandparent.addChild( storedNewBrother );
-    storedNewBrother->setParent( &newGrandparent );
-    
-    
-    // regraft
-    grandparent.removeChild( storedBrother );
-    parent.addChild( storedBrother );
-    storedBrother->setParent( &parent );
-    grandparent.addChild( &parent );
-    parent.setParent( &grandparent );
+    // we undo the proposal only if it didn't fail
+    if ( !failed ) {
+        // undo the proposal
+        TopologyNode& parent = storedNewBrother->getParent();
+        TopologyNode& newGrandparent = parent.getParent();
+        TopologyNode& grandparent = storedBrother->getParent();
+        
+        // prune
+        newGrandparent.removeChild( &parent );
+        parent.removeChild( storedNewBrother );
+        newGrandparent.addChild( storedNewBrother );
+        storedNewBrother->setParent( &newGrandparent );
+        
+        
+        // regraft
+        grandparent.removeChild( storedBrother );
+        parent.addChild( storedBrother );
+        storedBrother->setParent( &parent );
+        grandparent.addChild( &parent );
+        parent.setParent( &grandparent );
+    }
     
     
 }
