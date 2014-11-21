@@ -1,5 +1,5 @@
-#ifndef Move_FNPR_H
-#define Move_FNPR_H
+#ifndef Move_GibbsPruneAndRegraft_H
+#define Move_GibbsPruneAndRegraft_H
 
 #include "FixedNodeheightPruneRegraft.h"
 #include "RlMove.h"
@@ -12,9 +12,9 @@ namespace RevLanguage {
     
     
     /**
-     * @brief Rev wrapper class for the FNPR move.
+     * @brief Rev wrapper class for the GibbsPruneAndRegraft move.
      *
-     * This class is the Rev wrapper class for the FNPR move,
+     * This class is the Rev wrapper class for the GibbsPruneAndRegraft move,
      * a move that proposes a new topology based on a subtree-prune
      * and regraft move with fixed node ages.
      *
@@ -22,14 +22,14 @@ namespace RevLanguage {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
      */
-    class Move_FNPR : public Move {
+    class Move_GibbsPruneAndRegraft : public Move {
         
     public:
         
-        Move_FNPR(void);                                                                                  //!< Default constructor
+        Move_GibbsPruneAndRegraft(void);                                                                                  //!< Default constructor
         
         // Basic utility functions
-        virtual Move_FNPR*        clone(void) const;                                                      //!< Clone object
+        virtual Move_GibbsPruneAndRegraft*          clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -41,7 +41,7 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                      tree;
+        RevPtr<const RevVariable>                   tree;
         
     };
     

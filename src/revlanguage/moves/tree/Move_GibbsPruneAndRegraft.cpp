@@ -1,6 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "Move_FNPR.h"
+#include "Move_GibbsPruneAndRegraft.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -11,19 +11,19 @@
 
 using namespace RevLanguage;
 
-Move_FNPR::Move_FNPR() : Move() {
+Move_GibbsPruneAndRegraft::Move_GibbsPruneAndRegraft() : Move() {
     
 }
 
 
 /** Clone object */
-Move_FNPR* Move_FNPR::clone(void) const {
+Move_GibbsPruneAndRegraft* Move_GibbsPruneAndRegraft::clone(void) const {
     
-	return new Move_FNPR(*this);
+    return new Move_GibbsPruneAndRegraft(*this);
 }
 
 
-void Move_FNPR::constructInternalObject( void ) {
+void Move_GibbsPruneAndRegraft::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -36,25 +36,25 @@ void Move_FNPR::constructInternalObject( void ) {
 
 
 /** Get Rev type of object */
-const std::string& Move_FNPR::getClassType(void) { 
+const std::string& Move_GibbsPruneAndRegraft::getClassType(void) {
     
-    static std::string revType = "Move_FNPR";
+    static std::string revType = "Move_GibbsPruneAndRegraft";
     
-	return revType; 
+    return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_FNPR::getClassTypeSpec(void) { 
+const TypeSpec& Move_GibbsPruneAndRegraft::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_FNPR::getParameterRules(void) const {
+const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -75,7 +75,7 @@ const MemberRules& Move_FNPR::getParameterRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& Move_FNPR::getTypeSpec( void ) const {
+const TypeSpec& Move_GibbsPruneAndRegraft::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -85,9 +85,9 @@ const TypeSpec& Move_FNPR::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_FNPR::printValue(std::ostream &o) const {
+void Move_GibbsPruneAndRegraft::printValue(std::ostream &o) const {
     
-    o << "FNPR(";
+    o << "GibbsPruneAndRegraft(";
     if (tree != NULL) {
         o << tree->getName();
     }
@@ -99,7 +99,7 @@ void Move_FNPR::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_FNPR::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_GibbsPruneAndRegraft::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
