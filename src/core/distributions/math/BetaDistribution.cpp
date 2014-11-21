@@ -1,6 +1,7 @@
 #include "BetaDistribution.h"
 #include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
+#include "RbConstants.h"
 
 using namespace RevBayesCore;
 

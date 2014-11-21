@@ -1,6 +1,8 @@
 #include "GeometricDistribution.h"
 #include "DistributionGeometric.h"
 #include "RandomNumberFactory.h"
+#include "RbConstants.h"
+
 
 using namespace RevBayesCore;
 
