@@ -1,10 +1,11 @@
 /**
  * @file
- * This file contains the declaration of the GTR rate matrix function class.
- * This class is derived from the function class and is used to
- * compute the rate matrix of a general time reversible (GTR) Markov chain.
+ * This file contains the declaration of the variance-covariance matrix function class.
+ * This class is derived from the TypedFunction<MatrixRealSymmetric> class and is used to
+ * compute the variance-covariance matrix from the standard deviations and correlation
+ * coefficients.
  *
- * @brief Declaration of the GTR rate matrix function.
+ * @brief Declaration of the variance-covariance matrix function.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -35,14 +36,14 @@ namespace RevBayesCore {
         
     public:
         VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf);
-        virtual                                            ~VarianceCovarianceFunction(void);                                                    //!< Virtual destructor
+        virtual                                            ~VarianceCovarianceFunction(void);                                //!< Virtual destructor
         
         // public member functions
-        VarianceCovarianceFunction*                         clone(void) const;                                                              //!< Create an independent clone
+        VarianceCovarianceFunction*                         clone(void) const;                                               //!< Create an independent clone
         void                                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP); //!< Implementation of swaping parameters
         
     private:
         

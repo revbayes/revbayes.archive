@@ -72,8 +72,22 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     double p     = psi->getValue();
     double r     = rho->getValue();
     
-    // present time 
-    double org = origin->getValue();
+    
+    // present time
+    double ra = value->getRoot().getAge();
+    double presentTime = 0.0;
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( startsAtRoot == false )
+    {
+        double org = origin->getValue();
+        presentTime = org;
+        
+    }
+    else
+    {
+        presentTime = ra;
+    }
     
     // retrieved the speciation times
     std::vector<double>* agesInternalNodes  = getAgesOfInternalNodesFromMostRecentSample();
@@ -114,7 +128,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         lnProbTimes += log( q(t+timeSinceLastSample) * birth );
     }
     
-    lnProbTimes += log( q( org ) );
+    lnProbTimes += log( q( presentTime ) );
     
     delete agesInternalNodes;
     delete agesTips;

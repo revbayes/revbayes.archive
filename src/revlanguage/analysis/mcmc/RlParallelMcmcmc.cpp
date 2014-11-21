@@ -58,8 +58,8 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-#ifndef USE_LIB_OPENMP2
-    throw RbException("You must #define USE_LIB_OPENMP to use ParallelMcmcmc");
+#ifndef RB_MPI
+    throw RbException("You must #define RB_MPI to use ParallelMcmcmc");
     return;
 #endif
     
@@ -69,13 +69,12 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     const RevBayesCore::RbVector<RevBayesCore::Monitor>& mntr    = static_cast<const WorkspaceVector<Monitor> &>( monitors->getRevObject() ).getVectorRbPointer();
     const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     const int                                   nc      = static_cast<const Natural&>( numChains->getRevObject() ).getValue();
-    const int                                   np      = static_cast<const Natural&>( numProcessors->getRevObject() ).getValue();
     const int                                   si      = static_cast<const Natural&>( swapInterval->getRevObject() ).getValue();
     const double                                sh      = static_cast<const Real&>( startHeat->getRevObject() ).getValue();
     const double                                delth   = static_cast<const Real&>( deltaHeat->getRevObject() ).getValue();
     const double                                sigh    = static_cast<const Real&>( sigmaHeat->getRevObject() ).getValue();
     
-    value = new RevBayesCore::ParallelMcmcmc(mdl, mvs, mntr, sched, nc, np, si, delth, sigh, sh);
+    value = new RevBayesCore::ParallelMcmcmc(mdl, mvs, mntr, sched, nc, si, delth, sigh, sh);
     
 }
 
@@ -150,7 +149,6 @@ const MemberRules& ParallelMcmcmc::getParameterRules(void) const {
         memberRules.push_back( new ArgumentRule("monitors"     , WorkspaceVector<Monitor>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         memberRules.push_back( new ArgumentRule("moves"        , WorkspaceVector<Move>::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
         memberRules.push_back( new ArgumentRule("numChains"    , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
-        memberRules.push_back( new ArgumentRule("numProcessors", Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
         memberRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)) );
         memberRules.push_back( new ArgumentRule("deltaHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.2) ) );
         memberRules.push_back( new ArgumentRule("sigmaHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
@@ -203,9 +201,6 @@ void ParallelMcmcmc::setConstParameter(const std::string& name, const RevPtr<con
     }
     else if ( name == "numChains" ) {
         numChains = var;
-    }
-    else if ( name == "numProcessors" ) {
-        numProcessors = var;
     }
     else if ( name == "deltaHeat" )
     {

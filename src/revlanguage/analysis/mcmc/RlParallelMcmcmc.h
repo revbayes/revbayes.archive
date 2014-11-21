@@ -47,7 +47,6 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                      monitors;
         RevPtr<const RevVariable>                      moveSchedule;
         RevPtr<const RevVariable>                      numChains;
-        RevPtr<const RevVariable>                      numProcessors;
         RevPtr<const RevVariable>                      startHeat;
         RevPtr<const RevVariable>                      deltaHeat;
         RevPtr<const RevVariable>                      sigmaHeat;

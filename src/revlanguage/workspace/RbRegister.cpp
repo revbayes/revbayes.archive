@@ -278,6 +278,7 @@
 
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_averageRateOnBranch.h"
+#include "Func_branchScoreDistance.h"
 #include "Func_clade.h"
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_expBranchTree.h"
@@ -800,6 +801,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
+        addFunction( "branchScoreDistance",         new Func_branchScoreDistance()      );
         addFunction( "clade",                       new Func_clade()                    );
         addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
         addFunction( "maximumTree",                 new Func_maximumTree()             );
