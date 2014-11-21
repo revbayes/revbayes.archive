@@ -127,9 +127,6 @@ template <class mixtureType>
 double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::doProposal( void )
 {
     
-    // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
     mixtureType& v = variable->getValue();
     ReversibleJumpMixtureConstantDistribution<mixtureType> &d = static_cast< ReversibleJumpMixtureConstantDistribution<mixtureType>& >( variable->getDistribution() );
     
