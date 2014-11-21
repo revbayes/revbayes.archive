@@ -35,8 +35,18 @@ InverseGammaDistribution* InverseGammaDistribution::clone( void ) const {
 }
 
 
-double InverseGammaDistribution::computeLnProbability( void ) {
-    return RbStatistics::InverseGamma::lnPdf(shape->getValue(), scale->getValue(), *value);
+double InverseGammaDistribution::computeLnProbability( void )
+{
+    
+    double v = *value;
+    
+    // check that the value is inside the boundaries
+    if ( v < 0.0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    return RbStatistics::InverseGamma::lnPdf(shape->getValue(), scale->getValue(), v);
 }
 
 

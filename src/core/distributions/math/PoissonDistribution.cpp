@@ -27,7 +27,17 @@ PoissonDistribution* PoissonDistribution::clone( void ) const {
 }
 
 
-double PoissonDistribution::computeLnProbability( void ) {
+double PoissonDistribution::computeLnProbability( void )
+{
+    
+    double v = *value;
+    
+    // check that the value is inside the boundaries
+    if ( v < 0.0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return RbStatistics::Poisson::lnPdf(lambda->getValue(), *value);
 }
 
