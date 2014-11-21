@@ -16,8 +16,9 @@ using namespace RevBayesCore;
  */
 VectorSingleElementScaleProposal::VectorSingleElementScaleProposal( StochasticNode< RbVector<double> > *n, double l) : Proposal(),
     variable( n ),
-    storedValue( 0.0 ),
-    lambda( l )
+    lambda( l ),
+    index( 0 ),
+    storedValue( 0.0 )
 {
     // tell the base class to add the node
     addNode( variable );

@@ -55,7 +55,6 @@ namespace RevBayesCore {
         double                                      lambda;                                                                             //!< The scale parameter of the move (larger lambda -> larger proposals).
         size_t                                      index;                                                                              //!< The index of the last modified element.
         double                                      storedValue;                                                                        //!< The stored value of the last modified element.
-        double                                      proposedValue;                                                                      //!< The value we propose.
 
         
         
