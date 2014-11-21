@@ -41,7 +41,14 @@ LognormalWithOffsetDistribution* LognormalWithOffsetDistribution::clone( void ) 
 
 double LognormalWithOffsetDistribution::computeLnProbability( void )
 {
-    return RbStatistics::Lognormal::lnPdf(mean->getValue(), sd->getValue(), *value - offset->getValue());
+    
+    double v = *value - offset->getValue();
+    if ( v < 0.0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    return RbStatistics::Lognormal::lnPdf(mean->getValue(), sd->getValue(), v);
 }
 
 
