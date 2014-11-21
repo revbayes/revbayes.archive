@@ -2,7 +2,6 @@
 #define ContinuousTaxonData_H
 
 #include "AbstractTaxonData.h"
-#include "ContinuousCharacterState.h"
 #include "RbOptions.h"
 
 
