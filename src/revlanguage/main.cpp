@@ -11,11 +11,12 @@
 #include <mpi.h>
 #endif
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     
     int processId = 0;
-    int numProcesses = 0;
 #ifdef RB_MPI
+    int numProcesses = 0;
     try {
         MPI::Init(argc, argv);
         processId = MPI::COMM_WORLD.Get_rank();
@@ -82,7 +83,7 @@ int main(int argc, char* argv[]) {
             
         }
         
-        int bsz = commandLine.size();
+        size_t bsz = commandLine.size();
 #ifdef RB_MPI
         MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
 #endif
