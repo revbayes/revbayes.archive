@@ -16,7 +16,6 @@
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
 #include "ExtendedNewickAdmixtureTreeMonitor.h"
-#include "AdmixtureBipartitionMonitor.h"
 
 #include <cmath>
 #include <iomanip>
