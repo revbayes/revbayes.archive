@@ -46,26 +46,20 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
             trimmed += c;
     }
 	
-	// construct the tree starting from the root
+    // construct the tree starting from the root
     TopologyNode *root = createNode( trimmed, nodes, brlens );
     
-	// remember the current order of nodes - we need these to properly set branch lengths
-	std::vector<TopologyNode*> old_nodes = nodes;
-	
-    // set up the tree keeping the existing indexes
-	tau->setRootNoReIndexing( root );
-	
+    // set up the tree
+    tau->setRoot( root );
+    
     // connect the topology to the tree
     t->setTopology( tau, true );
     
-    // correctly set the branch lengths using the old order of nodes
+    // set the branch lengths
     for (size_t i = 0; i < nodes.size(); ++i) {
-		t->setBranchLength(old_nodes[i]->getIndex(), brlens[i]);
+        t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
     }
-	
-	// now reindex the nodes
-	t->getTopology().reindexNodes();
-	
+    
     // return the tree, the caller is responsible for destruction
     return t;
 }
@@ -99,9 +93,6 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
 	
 	// construct the tree starting from the root
     TopologyNode *root = createNode( trimmed, nodes, brlens );
-    
-	// remember the current order of nodes - we need these to properly set branch lengths
-	std::vector<TopologyNode*> old_nodes = nodes;
 	
     // set up the tree keeping the existing indexes
 	tau->setRootNoReIndexing( root );
@@ -112,9 +103,9 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
     // connect the topology to the tree
     t->setTopology( tau, true );
 	
-    // correctly set the branch lengths using the old order of nodes
+    // set the branch lengths
     for (size_t i = 0; i < nodes.size(); ++i) {
-		t->setBranchLength(old_nodes[i]->getIndex(), brlens[i]);
+		t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
     }
 	
     // return the tree, the caller is responsible for destruction
