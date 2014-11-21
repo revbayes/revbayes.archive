@@ -1,5 +1,5 @@
-#ifndef Func_hky_H
-#define Func_hky_H
+#ifndef Func_k80_H
+#define Func_k80_H
 
 #include "RlRateMatrix.h"
 #include "RlTypedFunction.h"
@@ -9,11 +9,11 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the HKY rate matrix function.
+     * The RevLanguage wrapper of the Kimura (1980) rate matrix function.
      *
-     * The RevLanguage wrapper of the HKY rate matrix connects
-     * the variables/parameters of the function and creates the internal HkyRateMatrixFunction object.
-     * Please read the HkyRateMatrixFunction.h for more info.
+     * The RevLanguage wrapper of the Kimura one parameter rate matrix connects
+     * the variables/parameters of the function and creates the internal K80RateMatrixFunction object.
+     * Please read the K80RateMatrixFunction.h for more info.
      *
      *
      * @copyright Copyright 2009-
@@ -21,17 +21,17 @@ namespace RevLanguage {
      * @since 2014-08-14, version 1.0
      *
      */
-    class Func_hky : public TypedFunction<RateMatrix> {
+    class Func_k80 : public TypedFunction<RateMatrix> {
         
     public:
-        Func_hky( void );
+        Func_k80( void );
         
         // Basic utility functions
-        Func_hky*                                                           clone(void) const;                                                              //!< Clone the object
+        Func_k80*                                                           clone(void) const;                                                              //!< Clone the object
         static const std::string&                                           getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                                              getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                                     getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-    
+        
         // Function functions you have to override
         RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >*            createFunction(void) const;                                                     //!< Create a function object
         const ArgumentRules&                                                getArgumentRules(void) const;                                                   //!< Get argument rules
