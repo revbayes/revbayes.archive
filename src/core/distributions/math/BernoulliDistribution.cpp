@@ -32,7 +32,14 @@ BernoulliDistribution* BernoulliDistribution::clone( void ) const {
 }
 
 
-double BernoulliDistribution::computeLnProbability( void ) {
+double BernoulliDistribution::computeLnProbability( void )
+{
+
+    // check that the value is actually a bernoulli trial (1 or 0)
+    if ( *value != 1 && *value != 0 )
+    {
+        return RbConstants::Double::neginf;
+    }
     
     return log( *value == 0 ? ( 1 - p->getValue() ) : p->getValue() );
 }

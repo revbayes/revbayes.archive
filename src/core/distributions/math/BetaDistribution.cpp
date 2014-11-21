@@ -33,7 +33,15 @@ BetaDistribution* BetaDistribution::clone( void ) const {
 }
 
 
-double BetaDistribution::computeLnProbability( void ) {
+double BetaDistribution::computeLnProbability( void )
+{
+    
+    // check that the value is inside the boundaries
+    if ( *value > 1 || *value < 0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return RbStatistics::Beta::lnPdf(alpha->getValue(), beta->getValue(), *value);
 }
 
