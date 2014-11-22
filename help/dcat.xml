@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>rcat</name>
+
+        <title>Probability of the Categorical Distribution</title>
+    
+        <description>
+            <p>
+            This function computes the probability mass of an observation x from a
+            categorical distribution. The probability of the outcomes is specified
+            by the simplex parameter p. The outcomes are labeled from 1 to K, and
+            each outcome i has the probability given by element i in the simplex p.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             dcat( Natural x, Simplex p, Bool log = true )
+             ]]>
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The observation.</description>
+            <valueType>Natural</valueType>
+        </argument>
+        <argument>
+            <label>p</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The probability of the outcomes.</description>
+            <valueType>Simplex</valueType>
+        </argument>
+        <argument>
+            <label>log</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>If TRUE, the probability p is given as log(p).</description>
+            <valueType>Bool</valueType>
+        </argument>
+
+        <returnValue>Real</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            See dnCat for details.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+             # Compute the density of each of the outcomes
+             # in a categorical distribution with the outcome
+             # probabilities being 0.1, 0.2, 0.3, and 0.4,
+             # respectively. Note that the outcomes are
+             # in the set { 1, 2, 3, 4 }
+             x <- v( 1, 2, 3, 4 )
+             for ( i in 1:x.size() )
+                y[i] <- dcat( x[i], simplex( 0.1, 0.2, 0.3, 0.4 ), FALSE )
+             y
+             ]]>
+
+        </example>
+
+        <author>Fredrik Ronquist</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>dnCat</entry>
+            <entry>rcat</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+
