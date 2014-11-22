@@ -31,9 +31,7 @@ namespace RevBayesCore {
         
         
     private:        
-
-    
-    
+        
     };
     
 }
@@ -45,6 +43,7 @@ namespace RevBayesCore {
 #include "RandomNumberFactory.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 #include <cstring>
@@ -114,7 +113,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
     
     // create a vector for the per mixture likelihoods
     // we need this vector to sum over the different mixture likelihoods
-    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
+    std::vector<double> site_Likelihoods = std::vector<double>(this->numPatterns,0.0);
     
     // get pointers the likelihood for both subtrees
     const double*   p_mixture_left     = p_left;
@@ -160,7 +159,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
             tmp += p_site_mixture_left[3] * p_site_mixture_right[3] * f3;
             
             // add the likelihood for this mixture category
-            per_mixture_Likelihoods[site] += tmp;
+            site_Likelihoods[site] += tmp;
             
 //#           endif
             
@@ -182,13 +181,21 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
     {
         for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
         {
+            // set the root's scaling factor
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
+
             if ( this->siteInvariant[site] )
             {
-                this->lnProb += log( p_inv * f[ this->invariantSiteIndex[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
+                this->lnProb += log( p_inv * f[ this->invariantSiteIndex[site] ] + oneMinusPInv * site_Likelihoods[site] / exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site]) / this->numSiteRates ) * *patterns;
             }
             else
             {
-                this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
+                this->lnProb += (log( oneMinusPInv * site_Likelihoods[site] / this->numSiteRates ) - this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site]) * *patterns;
+                if ( !RbMath::isAComputableNumber(this->lnProb) )
+                {
+                    std::cerr << "Could not compute lnProb." << std::endl;
+                    std::cerr << std::endl;
+                }
             }
         }
     }
@@ -197,7 +204,15 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
         
         for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
         {
-            this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
+            // set the root's scaling factor
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
+
+            this->lnProb += (log( site_Likelihoods[site] ) - this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site] ) * *patterns;
+            if ( !RbMath::isAComputableNumber(this->lnProb) )
+            {
+                std::cerr << "Could not compute lnProb." << std::endl;
+                std::cerr << std::endl;
+            }
         }
         
         this->lnProb -= log( this->numSiteRates ) * this->numSites;
@@ -360,7 +375,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
     //    __m128d* p_left   = (__m128d *) this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
     //    __m128d* p_right  = (__m128d *) this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
     //    __m128d* p_node   = (__m128d *) this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
-
+    
 #   elif defined ( AVX_ENABLED )
 
     double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
@@ -498,28 +513,28 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
             sum += p2 * tp_begin[2];
             sum += p3 * tp_begin[3];
             
-            p_site_mixture[0] = sum;
+            p_site_mixture[0] = sum * scalingFactor;
             
             sum = p0 * tp_begin[4];
             sum += p1 * tp_begin[5];
             sum += p2 * tp_begin[6];
             sum += p3 * tp_begin[7];
             
-            p_site_mixture[1] = sum;
+            p_site_mixture[1] = sum * scalingFactor;
             
             sum = p0 * tp_begin[8];
             sum += p1 * tp_begin[9];
             sum += p2 * tp_begin[10];
             sum += p3 * tp_begin[11];
             
-            p_site_mixture[2] = sum;
+            p_site_mixture[2] = sum * scalingFactor;
             
             sum = p0 * tp_begin[12];
             sum += p1 * tp_begin[13];
             sum += p2 * tp_begin[14];
             sum += p3 * tp_begin[15];
             
-            p_site_mixture[3] = sum;
+            p_site_mixture[3] = sum * scalingFactor;
 
 #           endif
             
@@ -531,8 +546,50 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
         
     } // end-for over all mixtures (=rate-categories)
     
-    
-    
+    // iterate over all mixture categories
+    for (size_t site = 0; site < this->numPatterns ; ++site)
+    {
+        
+        // the max probability
+        double max = 0.0;
+        
+        // compute the per site probabilities
+        for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+        {
+            // get the pointers to the likelihood for this mixture category
+            size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+            
+            double*          p_site_mixture          = p_node + offset;
+            
+            for ( size_t i=0; i<4; ++i)
+            {
+                if ( p_site_mixture[i] > max )
+                {
+                    max = p_site_mixture[i];
+                }
+            }
+            
+        }
+        
+        this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
+
+        // compute the per site probabilities
+        for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+        {
+            // get the pointers to the likelihood for this mixture category
+            size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+            
+            double*          p_site_mixture          = p_node + offset;
+            
+            for ( size_t i=0; i<4; ++i)
+            {
+                p_site_mixture[i] /= max;
+            }
+            
+        }
+        
+    }
+
 # if defined ( AVX_ENABLED )
     delete[] tmp_ac;
     delete[] tmp_gt;
