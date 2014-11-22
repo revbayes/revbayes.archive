@@ -190,12 +190,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
             }
             else
             {
-                this->lnProb += (log( oneMinusPInv * site_Likelihoods[site] / this->numSiteRates ) - this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site]) * *patterns;
-                if ( !RbMath::isAComputableNumber(this->lnProb) )
-                {
-                    std::cerr << "Could not compute lnProb." << std::endl;
-                    std::cerr << std::endl;
-                }
+                this->lnProb += ( (log( oneMinusPInv * site_Likelihoods[site] / this->numSiteRates ) - this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site]) ) * *patterns;
+                
             }
         }
     }
@@ -208,11 +204,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
 
             this->lnProb += (log( site_Likelihoods[site] ) - this->perNodeSiteLogScalingFactors[this->activeLikelihood[root]][root][site] ) * *patterns;
-            if ( !RbMath::isAComputableNumber(this->lnProb) )
-            {
-                std::cerr << "Could not compute lnProb." << std::endl;
-                std::cerr << std::endl;
-            }
+            
         }
         
         this->lnProb -= log( this->numSiteRates ) * this->numSites;
