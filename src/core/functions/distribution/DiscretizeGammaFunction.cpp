@@ -43,11 +43,13 @@ void RevBayesCore::DiscretizeGammaFunction::swapParameterInternal(const DagNode 
     {
         shape = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if(oldP == rate)
+    
+    if(oldP == rate)
     {
         rate = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if(oldP == numCats)
+    
+    if(oldP == numCats)
     {
         numCats = static_cast<const TypedDagNode<int>* >( newP );
     }
