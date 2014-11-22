@@ -118,12 +118,14 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 return Argument( theVar, arg.getLabel(), true );
         }
         else if ( once == false &&
-                 !theVar->isAssignable() &&
+                 /* !theVar->isAssignable() && */
+                 theVar->getRevObject().isConstant() &&
                  theVar->getRevObject().isConvertibleTo( *it, true ) &&
                  (*it).isDerivedOf( theVar->getRevObjectTypeSpec() )
                  )
         {
             // Fit by type promotion. For now, we also modify the type of the incoming variable wrapper.
+            // This means we can ignore the possibility of reassignment.
             RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
             theVar->replaceRevObject( convertedObject );
             theVar->setRevObjectTypeSpec( *it );
@@ -246,7 +248,7 @@ bool ArgumentRule::hasDefault(void) const {
 /**
  * Test if argument is valid. The boolean flag 'once' is used to signal whether the argument matching
  * is done in a static or a dynamic context. If the rule is constant, then the argument matching
- * is done in a static context (evaluate-x§once context) regardless of the setting of the once flag.
+ * is done in a static context (evaluate-once context) regardless of the setting of the once flag.
  * If the argument is constant, we try type promotion if permitted by the variable required type.
  *
  * @todo See the TODOs for fitArgument(...)
@@ -274,7 +276,9 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool on
         {
             return true;
         }
-        else if ( once == false && !var->isAssignable() &&
+        else if ( once == false &&
+                 /* !var->isAssignable() && */
+                  var->getRevObject().isConstant() &&
                   var->getRevObject().isConvertibleTo( *it, true ) &&
                   (*it).isDerivedOf( var->getRevObjectTypeSpec() )
                 )
