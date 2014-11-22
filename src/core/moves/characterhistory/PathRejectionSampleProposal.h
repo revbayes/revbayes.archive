@@ -321,7 +321,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
             do
             {
                 double r = 0.0;
-                unsigned int nextState;
+                unsigned int nextState = 0;
                 if (numStates == 2)
                 {
                     nextState = (currState == 1 ? 0 : 1);
