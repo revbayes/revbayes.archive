@@ -89,11 +89,11 @@ double SoftBoundUniformNormalDistribution::computeLnProbability( void )
 {
     if ( *value < min->getValue() )
     {
-        return log((1-prob->getValue())/2) + RbStatistics::Normal::lnPdf( 0.0, stDev->getValue(), *value - min->getValue() );
+        return log((1-prob->getValue())) + RbStatistics::Normal::lnPdf( 0.0, stDev->getValue(), *value - min->getValue() );
     }
     else if ( *value > max->getValue() )
     {
-        return log((1-prob->getValue())/2) + RbStatistics::Normal::lnPdf( 0.0, stDev->getValue(), *value - max->getValue() );
+        return log((1-prob->getValue())) + RbStatistics::Normal::lnPdf( 0.0, stDev->getValue(), *value - max->getValue() );
     }
     else
     {

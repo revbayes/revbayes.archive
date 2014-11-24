@@ -797,6 +797,22 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
     // compress the data and initialize internal variables
     this->compress();
     
+    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
+    {
+        (*it) = true;
+    }
+    
+    // flip the active likelihood pointers
+    for (size_t index = 0; index < changedNodes.size(); ++index)
+    {
+        if ( changedNodes[index] == false )
+        {
+            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+            changedNodes[index] = true;
+        }
+    }
+
+    
 }
 
 

@@ -28,6 +28,7 @@
 
 namespace RevBayesCore {
     
+    class Distribution;
     class Monitor;
     class Move;
 
@@ -61,6 +62,8 @@ namespace RevBayesCore {
         void                                                        getAffectedNodes(std::set<DagNode *>& affected);                                            //!< get affected nodes
         const std::set<DagNode*>&                                   getChildren(void) const;                                                                    //!< Get the set of children
         std::string                                                 getDagNodeType(void) const;
+        virtual Distribution&                                       getDistribution(void);
+        virtual const Distribution&                                 getDistribution(void) const;
         DagNode*                                                    getFirstChild(void) const;                                                                  //!< Get the first child from a our set
         const std::set<Monitor*>&                                   getMonitors(void) const;                                                                    //!< Get the set of monitors
         const std::set<Move*>&                                      getMoves(void) const;                                                                       //!< Get the set of moves
