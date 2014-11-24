@@ -10,14 +10,13 @@
     
         <name>clade</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Construction of a clade from a vector of leaf names.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+                The 'clade' function builds a clade with n leaves from a vector of n strings. 
+                The strings become the leaf names. 
+                The clade is multifurcated if there are more than 2 leaves.
             </p>
         </description>
 
@@ -31,42 +30,26 @@
             <label>taxa</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A vector of strings representing leaf names.</description>
             <valueType>String[]</valueType>
         </argument>
 
         <returnValue>Clade, RevObject</returnValue>
 
-        <details>
-            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-            <p>
-            The implementation of this fancy function ... 
-            </p>
-        </details>
-
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             # Creating a clade from a string
+			 myClade <- clade("A")
+			 print( myClade )
+			 myClade2 <- clade(["A","B","C"])
+			 print( myClade2 )
+			 type(myClade2)
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
 
-        <author>Your name here</author>
-
-        <seeAlso>
-            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
-        </seeAlso>
+        <author>Bastien Boussau</author>
 
 
     </function-help-entry>
