@@ -1,4 +1,5 @@
 #include "DagNode.h"
+#include "Distribution.h"
 #include "DynamicNode.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -274,6 +275,25 @@ std::string DagNode::getDagNodeType( void ) const
     }
     
 }
+
+
+/**
+ * Get the distribution of this node. Only stochastic nodes have a distribution and thus we throw an error here.
+ */
+const Distribution& DagNode::getDistribution( void ) const
+{
+    throw RbException("Only stochastic nodes have a distribution.");
+}
+
+
+/**
+ * Get the distribution of this node. Only stochastic nodes have a distribution and thus we throw an error here.
+ */
+Distribution& DagNode::getDistribution( void )
+{
+    throw RbException("Only stochastic nodes have a distribution.");
+}
+
 
 /**
  * Get the first child of this node.
