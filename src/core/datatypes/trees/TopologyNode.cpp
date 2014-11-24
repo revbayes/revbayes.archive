@@ -688,24 +688,32 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
             return RbConstants::Size_t::nan;
         }
     }
-    
-    if ( myTaxa.size() == yourTaxa.size() )
-    {
+	
+	if ( myTaxa.size() == yourTaxa.size() ) {
+		
+		// this may be the correct node for the clade, but check to see if there
+		// is a child node that contains the clade first
+		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+			
+			if ( (*it)->containsClade(c,true) && !(*it)->isTip() ) 
+				return (*it)->getCladeIndex( c );
+			
+		}
+		
         return index;
-    }
-    else
-    {
-        bool contains = false;
-        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-            contains |= (*it)->containsClade(c,true);
-            if ( contains )
-            {
-                return (*it)->getCladeIndex( c );
-            }
-        }
+		
+    } else {
+		
+		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+			
+			if ( (*it)->containsClade(c,true) ) 
+				return (*it)->getCladeIndex( c );
+			
+		}
+		
         return RbConstants::Size_t::nan;
-    }
+		
+	}
 }
 
 
