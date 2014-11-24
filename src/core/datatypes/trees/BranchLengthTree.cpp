@@ -111,22 +111,42 @@ void BranchLengthTree::reroot(const std::string &outgroup)
     {
         throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup + "'.");
     }
-    
-    TopologyNode& outgroupNode = getTipNode( outgroupIndex );
+	
+    // reset parent/child relationships
+	TopologyNode& outgroupNode = getTipNode( outgroupIndex );
     reverseParentChild( outgroupNode.getParent() );
     outgroupNode.getParent().setParent( NULL );
-    
-    topology->setRoot( &outgroupNode.getParent() );
-    
+	
+	// get copies of the nodes and branchLengths
+	std::vector<double> old_branchLengths = branchLengths;
+	std::vector<TopologyNode*> nodes = getNodes();
+	
+	// set the new root	
+	topology->setRoot( &outgroupNode.getParent() );
+	
+	// reset the branch lengths
+    for (size_t i = 0; i < branchLengths.size(); ++i) {
+		branchLengths[nodes[i]->getIndex()] = old_branchLengths[i];
+    }
 }
 
 void BranchLengthTree::reroot(RevBayesCore::TopologyNode &n)
-{
-
-    reverseParentChild( n.getParent() );
+{	
+	// reset parent/child relationships
+	reverseParentChild( n.getParent() );
     n.getParent().setParent( NULL );
-    topology->setRoot( &n.getParent() );
-    
+	
+	// get copies of the nodes and branchLengths
+	std::vector<double> old_branchLengths = branchLengths;
+	std::vector<TopologyNode*> nodes = getNodes();
+	
+	// set the new root
+	topology->setRoot( &n.getParent() );
+	
+	// reset the branch lengths
+    for (size_t i = 0; i < branchLengths.size(); ++i) {
+		branchLengths[nodes[i]->getIndex()] = old_branchLengths[i];
+    }
 }
 
 
@@ -149,8 +169,14 @@ void BranchLengthTree::reverseParentChild(RevBayesCore::TopologyNode &n)
         p.removeChild( &n );
         p.setParent( &n );
         n.addChild( &p );
+		
+		// swap branch lengths
+		double parent_branch_length = branchLengths[p.getIndex()];
+		double child_branch_length = branchLengths[n.getIndex()];
+		branchLengths[p.getIndex()] = child_branch_length;
+		branchLengths[n.getIndex()] = parent_branch_length;
     }
-    
+
 }
 
 
