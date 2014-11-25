@@ -130,7 +130,9 @@ namespace RevBayesCore {
         // the likelihoods
         double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
-        std::vector<double>                                                 scalingFactors;
+        
+        std::vector< std::vector< std::vector<double> > >                   perNodeSiteLogScalingFactors;
+//        std::vector< std::vector< double > >                                perSiteLogScalingFactors;
         
         // the data
         std::vector<std::vector<unsigned long> >                            charMatrix;
@@ -195,8 +197,6 @@ namespace RevBayesCore {
 
 #include <cmath>
 
-//#define USE_SCALING
-
 template<class charType, class treeType>
 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) :
     TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
@@ -208,8 +208,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
     partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
-    scalingFactors( std::vector<double>(numNodes*2, 1.0) ),
-    charMatrix(), 
+    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
+    charMatrix(),
     gapMatrix(),
     patternCounts(),
     siteInvariant( numSites, false ),
@@ -277,8 +277,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     transitionProbMatrices( n.transitionProbMatrices ),
     partialLikelihoods( new double[2*numNodes*numSiteRates*n.numPatterns*numChars] ),
     activeLikelihood( n.activeLikelihood ),
-    scalingFactors( n.scalingFactors ),
-    charMatrix( n.charMatrix ), 
+    perNodeSiteLogScalingFactors( n.perNodeSiteLogScalingFactors ),
+    charMatrix( n.charMatrix ),
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
     siteInvariant( n.siteInvariant ),
@@ -627,15 +627,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compu
             throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
         }
         
-        
-#ifdef USE_SCALING
-        for (size_t i = 0; i<numNodes; ++i)
-        {
-            double sf = this->scalingFactors[this->activeLikelihood[i]*numNodes+i];
-            this->lnProb += numSites * log( sf );
-        }
-#endif
-        
     }
     
     return this->lnProb;
@@ -673,10 +664,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fillLik
             // now compute the likelihoods of this internal node
             computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
             
-#ifdef USE_SCALING
-            // rescale the partial likelihoods
-            rescale( nodeIndex );
-#endif
         }
     }
 }
@@ -810,6 +797,22 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
     // compress the data and initialize internal variables
     this->compress();
     
+    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
+    {
+        (*it) = true;
+    }
+    
+    // flip the active likelihood pointers
+    for (size_t index = 0; index < changedNodes.size(); ++index)
+    {
+        if ( changedNodes[index] == false )
+        {
+            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+            changedNodes[index] = true;
+        }
+    }
+
+    
 }
 
 
@@ -823,71 +826,14 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::reIniti
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::rescale( size_t nodeIndex )
-{
-    //
-    
-    double* p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
-
-    // iterate over all mixture categories
-    double max = 0.0;
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-    {
-        size_t offset = mixture*this->mixtureOffset;
-        double*          p_site_mixture          = p_node + offset;
-
-        // iterate over the number of sites
-        for (size_t site = 0; site < this->numPatterns ; ++site)
-        {
-            // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1)
-            {
-                double m = p_site_mixture[c1];
-                if ( m > max )
-                {
-                    max = m;
-                }
-            }
-            
-            p_site_mixture+=this->siteOffset;
-        }
-        
-    }
-    
-    this->scalingFactors[this->activeLikelihood[nodeIndex]*numNodes+nodeIndex] = max;
-    
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-    {
-        size_t offset = mixture*this->mixtureOffset;
-        double*          p_site_mixture          = p_node + offset;
-        
-        // iterate over the number of sites
-        for (size_t site = 0; site < this->numPatterns ; ++site)
-        {
-            // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1)
-            {
-                p_site_mixture[c1] /= max;
-            }
-            
-            p_site_mixture+=this->siteOffset;
-        }
-        
-    }
-    
-                
-
-}
-
-
-
-template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeLikelihoodVectors( void )
 {
     
     // we resize the partial likelihood vectors to the new dimensions
     delete [] partialLikelihoods;
     partialLikelihoods = new double[2*numNodes*numSiteRates*numPatterns*numChars];
+    
+    perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(numPatterns, 0.0) ) );
     
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
     

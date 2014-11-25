@@ -5,6 +5,8 @@
 #include "RbConstants.h"
 #include "RbException.h"
 
+#include <cmath>
+
 using namespace RevBayesCore;
 
 /**
@@ -76,7 +78,7 @@ BimodalLognormalDistribution* BimodalLognormalDistribution::clone( void ) const
  */
 double BimodalLognormalDistribution::computeLnProbability( void ) 
 {
-    return p->getValue() * RbStatistics::Lognormal::lnPdf( mean1->getValue(), stDev1->getValue(), *value) + (1.0 - p->getValue()) * RbStatistics::Lognormal::lnPdf( mean2->getValue(), stDev2->getValue(), *value);
+    return log(p->getValue() * RbStatistics::Lognormal::pdf( mean1->getValue(), stDev1->getValue(), *value) + (1.0 - p->getValue()) * RbStatistics::Lognormal::pdf( mean2->getValue(), stDev2->getValue(), *value) );
 }
 
 

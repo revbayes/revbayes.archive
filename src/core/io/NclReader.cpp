@@ -1,7 +1,6 @@
 #include "AminoAcidState.h"
 #include "BranchLengthTree.h"
 #include "ConstantNode.h"
-#include "ContinuousCharacterState.h"
 #include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "NewickConverter.h"

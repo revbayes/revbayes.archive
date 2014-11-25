@@ -22,7 +22,6 @@
 #include "AminoAcidState.h"
 #include "AbstractCharacterData.h"
 #include "ContinuousCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "ncl.h"

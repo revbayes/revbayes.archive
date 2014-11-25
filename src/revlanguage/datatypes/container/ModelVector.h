@@ -346,7 +346,8 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
         double penalty = 0.0;
         for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
-            rlType orgElement = rlType(*i);
+            const elementType& orgInternalElement = *i;
+            rlType orgElement = rlType( orgInternalElement );
 
             // Test whether this element is already of the desired element type or can be converted to it
             if ( !orgElement.isType( *type.getElementTypeSpec() ) )

@@ -2,7 +2,7 @@
  * @file
  * This file contains the declaration of the F81 rate matrix function class.
  * This class is derived from the function class and is used to
- * compute the rate matrix of a Felsenstein (F81) Markov chain.
+ * compute the rate matrix of a F81 (F81) Markov chain.
  *
  * @brief Declaration of the F81 rate matrix function.
  *
@@ -35,10 +35,10 @@ namespace RevBayesCore {
         
     public:
         F81RateMatrixFunction(const TypedDagNode< RbVector<double> > *bf);
-        virtual                                            ~F81RateMatrixFunction(void);                                                    //!< Virtual destructor
+        virtual                                            ~F81RateMatrixFunction(void);                                                            //!< Virtual destructor
         
         // public member functions
-        F81RateMatrixFunction*                              clone(void) const;                                                              //!< Create an independent clone
+        F81RateMatrixFunction*                              clone(void) const;                                                                      //!< Create an independent clone
         void                                                update(void);
         
     protected:

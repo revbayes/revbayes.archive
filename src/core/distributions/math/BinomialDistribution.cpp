@@ -33,8 +33,15 @@ BinomialDistribution* BinomialDistribution::clone( void ) const {
 }
 
 
-double BinomialDistribution::computeLnProbability( void ) {
-
+double BinomialDistribution::computeLnProbability( void )
+{
+    
+    // check that the value is inside the boundaries
+    if ( *value > n->getValue() || *value < 0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return RbStatistics::Binomial::lnPdf(n->getValue(), p->getValue(), *value);
 }
 

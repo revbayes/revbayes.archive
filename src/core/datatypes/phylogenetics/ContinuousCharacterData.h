@@ -2,7 +2,6 @@
 #define ContinuousCharacterData_H
 
 #include "AbstractCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "ContinuousTaxonData.h"
 
 #include <map>

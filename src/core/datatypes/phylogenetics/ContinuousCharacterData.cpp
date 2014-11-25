@@ -1,5 +1,4 @@
 #include "ContinuousCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "ContinuousTaxonData.h"
 #include "RbConstants.h"
 #include "RbException.h"

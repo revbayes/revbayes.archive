@@ -1,11 +1,3 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Move_FNPR.h"

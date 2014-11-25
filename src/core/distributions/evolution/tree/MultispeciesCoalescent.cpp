@@ -599,7 +599,7 @@ double  MultispeciesCoalescent::getNe(size_t index) const
     }
     else if (Nes != NULL)
     {
-        return (Nes->getValue()[index]);
+        return Nes->getValue()[index-1];
     }
     else
     {
@@ -623,7 +623,7 @@ void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* inputNes)
     removeParameter( Ne );
     
     Nes = inputNes;
-    Ne= NULL;
+    Ne  = NULL;
     
     addParameter( Nes );
 
@@ -636,7 +636,7 @@ void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe)
     removeParameter( Ne );
     removeParameter( Nes );
     
-    Ne = inputNe;
+    Ne  = inputNe;
     Nes = NULL;
     
     addParameter( Ne );

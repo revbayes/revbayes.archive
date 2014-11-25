@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Mixture class. 
- * A mixture object holds the mapping between parameter values and the index of this parameters.
- *
- *
- * @brief Declaration of the Mixture class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-07-18
- *
- * $Id$
- */
-
-
 #ifndef MixtureDistribution_H
 #define MixtureDistribution_H
 
@@ -25,6 +7,20 @@
 
 namespace RevBayesCore {
     
+    
+    /**
+     * This class implements a generic mixture distribution between several possible values.
+     *
+     * This mixture can be considered as a multinomial distribution. We specify a vector of probabilities
+     * and a vector of values. Then, a value drawn from this distribution takes each value corresponding to
+     * its probability.
+     * The values are already of the correct mixture type. You may want to apply a mixture allocation move
+     * to change between the current value. The values themselves change automatically when the input parameters change.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-11-18, version 1.0
+     */
     template <class mixtureType>
     class MixtureDistribution : public TypedDistribution<mixtureType>, public MemberObject<int> {
         
@@ -51,7 +47,7 @@ namespace RevBayesCore {
         
     protected:
         // Parameter management functions
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Swap a parameter
         
         
     private:

@@ -28,8 +28,7 @@ namespace RevBayesCore {
         bool                                isTimeReversible(void);                                                                     //!< Return whether the rate matrix is time reversible
         void                                setExchangeabilityRates(const std::vector<double> &er);
         void                                setStationaryFrequencies(const std::vector<double>& f);                                     //!< Directly set the stationary frequencies
-        void                                setStationaryFrequenciesByCopy(std::vector<double> f);                                     //!< Directly set the stationary frequencies
-
+        
         
     protected:        
         TimeReversibleRateMatrix(size_t n);                                                                                             //!< Construct rate matrix with n states

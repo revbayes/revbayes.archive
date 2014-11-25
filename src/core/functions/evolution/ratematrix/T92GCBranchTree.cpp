@@ -66,7 +66,7 @@ void T92GCBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &from)   
         std::vector<double> v(4);
         v[0] = v[3] = 0.5 * (1 - gc);
         v[1] = v[2] = 0.5 * gc;
-        matrix->setStationaryFrequenciesByCopy(v);
+        matrix->setStationaryFrequencies(v);
         matrix->setKappa(kappa->getValue());
     }    
     // simulate the val for each child (if any)

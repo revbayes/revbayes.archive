@@ -17,7 +17,6 @@
 #include <map>
 
 #include "ContinuousCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "MatrixReal.h"
 #include "EigenSystem.h"
 #include "TypedDistribution.h"

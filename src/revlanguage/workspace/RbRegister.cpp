@@ -92,6 +92,7 @@
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
+#include "Mntr_PosteriorPredictive.h"
 #include "Mntr_Screen.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
@@ -139,6 +140,7 @@
 #include "Move_DPPGibbsConcentration.h"
 #include "Move_DPPScaleCatAllocateAux.h"
 #include "Move_MixtureAllocation.h"
+#include "Move_ReversibleJumpSwitchMove.h"
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -157,6 +159,7 @@
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
+#include "Move_GibbsPruneAndRegraft.h"
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
@@ -224,6 +227,7 @@
 #include "Dist_lnormOffsetPositive.h"
 #include "Dist_logUniform.h"
 #include "Dist_norm.h"
+#include "Dist_softBoundUniformNormal.h"
 #include "Dist_unif.h"
 #include "Dist_unifPositive.h"
 #include "Dist_unifProbability.h"
@@ -233,6 +237,7 @@
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
 #include "Dist_mixture.h"
+#include "Dist_reversibleJumpMixtureConstant.h"
 
 /// Functions ///
 
@@ -480,6 +485,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
         addTypeWithConstructor("mnFile",                new Mntr_File());
         addTypeWithConstructor("mnModel",               new Mntr_Model());
+        addTypeWithConstructor("mnPosteriorPredictive", new Mntr_PosteriorPredictive());
         addTypeWithConstructor("mnScreen",              new Mntr_Screen());
         addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
         addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
@@ -539,9 +545,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateMatrix>( ) );
+        
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Real>( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<RealPos>( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Natural>( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Integer>( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Probability>( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
+        addTypeWithConstructor("mvGPR",                     new Move_GibbsPruneAndRegraft() );
         addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
         addTypeWithConstructor("mvNNI",                     new Move_NNIClock() );
         addTypeWithConstructor("mvNNI",                     new Move_NNINonclock() );
@@ -701,6 +715,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // LogUniform distribution   
         addDistribution( "dnLogUniform",    new Dist_logUniform() );
         
+        // LogUniform distribution
+        addDistribution( "dnSoftBoundUniformNormal",    new Dist_SoftBoundUniformNormal() );
+        
         // uniform distribution
         addDistribution( "dnUnif",          new Dist_unif() );
         addDistribution( "dnUnif",          new Dist_unifPositive() );
@@ -732,7 +749,24 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnMixture",       new Dist_mixture<Natural>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
-		addDistribution( "dnMixture",       new Dist_mixture<RateMatrix>() );
+        addDistribution( "dnMixture",       new Dist_mixture<RateMatrix>() );
+        
+        // mixture distribution
+        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
+        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RealPos>() );
+        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Natural>() );
+        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
+        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
+        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
+        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
+        // aliases
+        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
+        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RealPos>() );
+        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Natural>() );
+        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
+        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
+        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
+        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -788,11 +822,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
-        
-        
-        // nonstandard names (for backward compatibility)
-        addFunction( "rateMultiplierPhyloFunction", new Func_phyloRateMultiplier()      );
-        addFunction( "expbranchtree",               new Func_expBranchTree()            );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "fnBlosum62", new Func_blosum62());
@@ -959,8 +988,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_Natural[]2RealPos[]",        new Func__conversion<ModelVector<Natural>, ModelVector<RealPos> >()         );
         addFunction( "_Integer[]2Real[]",           new Func__conversion<ModelVector<Integer>, ModelVector<Real> >()            );
         addFunction( "_RealPos[]2Real[]",           new Func__conversion<ModelVector<RealPos>, ModelVector<Real> >()            );
-        addFunction( "_Probability[]2RealPos[]",    new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()            );
-        addFunction( "_Probability[]2Real[]",       new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()            );
+        addFunction( "_Probability[]2RealPos[]",    new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
+        addFunction( "_Probability[]2Real[]",       new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
         
         
 

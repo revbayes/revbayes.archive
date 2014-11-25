@@ -263,7 +263,7 @@ namespace RevBayesCore {
 			std::vector<double> brlensVec = cladeAges.find(c.toString())->second;
 			std::sort(brlensVec.begin(), brlensVec.end());
             
-			int nbValues = brlensVec.size();
+			size_t nbValues = brlensVec.size();
 			if ((nbValues % 2) == 0)
 			{
 				medianBranchLengths[m] = (brlensVec[nbValues / 2] + brlensVec[(nbValues / 2) - 1]) / 2.0;
@@ -420,7 +420,7 @@ void RevBayesCore::TreeSummary<treeType>::calculateMedianAges(TopologyNode* n, d
 	std::sort(ageVec.begin(), ageVec.end());
 	double medianAge;
     
-	int nbValues = ageVec.size();
+	size_t nbValues = ageVec.size();
 	if ((nbValues % 2) == 0)
 	{
 		medianAge = (ageVec[nbValues / 2] + ageVec[(nbValues / 2) - 1]) / 2.0;

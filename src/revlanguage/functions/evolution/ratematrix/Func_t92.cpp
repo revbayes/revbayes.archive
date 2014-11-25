@@ -1,19 +1,11 @@
-/* 
- * File:   Func_t92.cpp
- * Author: nl
- * 
- * Created on 25 juillet 2014, 20:12
- */
-
 #include "Func_t92.h"
 
-#include "HkyRateMatrixFunction.h"
-#include "RateMatrix_HKY.h"
+#include "T92RateMatrixFunction.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
-#include "RlSimplex.h"
+#include "Probability.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -35,8 +27,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_t92::createFunctio
 {
     
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::HkyRateMatrixFunction* f = new RevBayesCore::HkyRateMatrixFunction( ka, bf );
+    RevBayesCore::TypedDagNode< double >* gc = static_cast<const Probability &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::T92RateMatrixFunction* f = new RevBayesCore::T92RateMatrixFunction( gc, ka );
     
     return f;
 }
@@ -50,8 +42,8 @@ const ArgumentRules& Func_t92::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "kappa"          , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "baseFrequencies", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "kappa" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "gc",     Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }
