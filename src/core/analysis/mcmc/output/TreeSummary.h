@@ -253,6 +253,7 @@ namespace RevBayesCore {
 							break;
 						}
 					}
+					delete finalInputTreeCopy;
 					if (children_found) {
 						// finally reroot the original inputTree
 						finalInputTree.reroot( *(input_nodes[j]) );
