@@ -17,7 +17,7 @@
 
         <description>
             <p>
-                The constant-rate birth-death process specifies a prior probability distribution on time trees. The birth (speciation) and death (extinction)
+                The constant-rate birth-death process specifies a probability distribution on time trees. The birth (speciation) and death (extinction)
                 rates are assumed to be constant over time. Unlike some implementations, cBDP does not constrain the birth rate to be larger than the death
                 rate.
             </p>

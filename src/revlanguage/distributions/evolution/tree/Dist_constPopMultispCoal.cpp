@@ -72,7 +72,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
         // sanity check
         if ( (nNodes-1) != neNode->getValue().size() )
         {
-            throw RbException( "The number of clock rates does not match the number of branches" );
+            throw RbException( "The number of effective population sizes does not match the number of branches." );
         }
         
         d->setNes( neNode );
