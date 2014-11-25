@@ -62,7 +62,7 @@ moves[mi++] = mvNNI(topology, weight=10.0)
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
 for (i in 1:n_branches) {
-  # We use here the exponential distribution with rate 1.0 as the branch length prior
+  # We use here the exponential distribution with rate 10.0 as the branch length prior
   br_lens[i] ~ dnExponential(10.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.

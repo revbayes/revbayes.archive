@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of RevLanguage wrapper of TreeScale.
- *
- * @brief Declaration of RlSlidingMove
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
- */
-
 #ifndef Move_FNPR_H
 #define Move_FNPR_H
 
@@ -27,6 +10,18 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * @brief Rev wrapper class for the FNPR move.
+     *
+     * This class is the Rev wrapper class for the FNPR move,
+     * a move that proposes a new topology based on a subtree-prune
+     * and regraft move with fixed node ages.
+     *
+     *
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @copyright GPL version 3
+     */
     class Move_FNPR : public Move {
         
     public:

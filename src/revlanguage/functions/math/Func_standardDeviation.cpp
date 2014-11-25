@@ -1,4 +1,4 @@
-#include "standardDeviationFunction.h"
+#include "StandardDeviationFunction.h"
 #include "Func_standardDeviation.h"
 #include "ModelVector.h"
 #include "Real.h"

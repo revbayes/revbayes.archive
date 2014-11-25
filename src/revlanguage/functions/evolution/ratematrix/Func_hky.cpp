@@ -1,11 +1,3 @@
-//
-//  Func_hky.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "Func_hky.h"
 #include "HkyRateMatrixFunction.h"
 #include "RateMatrix_HKY.h"

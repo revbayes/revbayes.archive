@@ -291,8 +291,8 @@ void ParallelMcmcmc::synchronizeHeats(void)
 
 void ParallelMcmcmc::updateChainState(size_t j)
 {
-    size_t pid = 0;
 #ifdef RB_MPI
+    size_t pid = 0;
     pid = MPI::COMM_WORLD.Get_rank();
 
     if (pid != 0 || pid != j)

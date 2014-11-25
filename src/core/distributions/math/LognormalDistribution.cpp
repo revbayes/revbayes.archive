@@ -39,7 +39,13 @@ LognormalDistribution* LognormalDistribution::clone( void ) const
 
 double LognormalDistribution::computeLnProbability( void ) 
 {
-    return RbStatistics::Lognormal::lnPdf(mean->getValue(), sd->getValue(), *value);
+    double v = *value;
+    if ( v < 0.0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    return RbStatistics::Lognormal::lnPdf(mean->getValue(), sd->getValue(), v);
 }
 
 

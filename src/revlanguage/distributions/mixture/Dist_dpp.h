@@ -51,9 +51,9 @@ namespace RevLanguage {
         
         
     private:
-        RevPtr<const RevVariable>                          concentration;
-        RevPtr<const RevVariable>                          baseDistribution;
-        RevPtr<const RevVariable>                          numElements;
+        RevPtr<const RevVariable>                       concentration;
+        RevPtr<const RevVariable>                       baseDistribution;
+        RevPtr<const RevVariable>                       numElements;
         
     };
     

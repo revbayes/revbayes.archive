@@ -39,6 +39,8 @@ ExponentialDistribution* ExponentialDistribution::clone( void ) const
 double ExponentialDistribution::computeLnProbability( void ) 
 {
     double v = *value;
+    
+    // check that the value is inside the boundaries
     if ( v < 0.0 )
     {
         return RbConstants::Double::neginf;

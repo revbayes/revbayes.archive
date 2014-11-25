@@ -36,8 +36,10 @@ void F81RateMatrixFunction::update( void ) {
 
 
 
-void F81RateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == baseFrequencies) {
+void F81RateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == baseFrequencies)
+    {
         baseFrequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }

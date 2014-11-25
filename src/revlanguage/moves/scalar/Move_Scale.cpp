@@ -61,9 +61,6 @@ void Move_Scale::constructInternalObject( void )
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    // finally create the internal move object
-//    value = new RevBayesCore::Move_Scale(n, d, t, w);
-    
     RevBayesCore::Proposal *p = new RevBayesCore::ScaleProposal(n,d);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     

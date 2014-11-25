@@ -259,7 +259,7 @@ double Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
         return 0.5;
     }
     
-    if ( once && type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0 )
+    if ( once && type == RealPos::getClassTypeSpec() && dagNode->getValue() >= 0 )
     {
         return 0.3;
     }
@@ -269,7 +269,7 @@ double Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
         return 0.1;
     }
     
-    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 )
+    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 && dagNode->getValue() >= 0)
         return 0.2;
     
     return RevObject::isConvertibleTo( type, once );

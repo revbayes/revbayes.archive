@@ -34,8 +34,18 @@ GammaDistribution* GammaDistribution::clone( void ) const {
 }
 
 
-double GammaDistribution::computeLnProbability( void ) {
-    return RbStatistics::Gamma::lnPdf(shape->getValue(), rate->getValue(), *value);
+double GammaDistribution::computeLnProbability( void )
+{
+    
+    double v = *value;
+    
+    // check that the value is inside the boundaries
+    if ( v < 0.0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    return RbStatistics::Gamma::lnPdf(shape->getValue(), rate->getValue(), v);
 }
 
 

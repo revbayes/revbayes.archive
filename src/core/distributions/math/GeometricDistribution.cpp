@@ -1,6 +1,8 @@
 #include "GeometricDistribution.h"
 #include "DistributionGeometric.h"
 #include "RandomNumberFactory.h"
+#include "RbConstants.h"
+
 
 using namespace RevBayesCore;
 
@@ -32,7 +34,15 @@ GeometricDistribution* GeometricDistribution::clone( void ) const
 
 double GeometricDistribution::computeLnProbability( void ) 
 {
-
+    
+    double v = *value;
+    
+    // check that the value is inside the boundaries
+    if ( v < 0.0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return RbStatistics::Geometric::lnPdf(*value, p->getValue());
 }
 
