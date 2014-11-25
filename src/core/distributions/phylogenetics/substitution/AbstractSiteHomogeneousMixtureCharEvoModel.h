@@ -251,7 +251,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
 		partialLikelihoods[i] = 0.0;
 	}
 	for (size_t i = 0; i < numNodes*numSiteRates*numSites*numChars; i++) {
-		partialLikelihoods[i] = 0.0;
+		marginalLikelihoods[i] = 0.0;
 	}
     
     // flags specifying which model variants we use
@@ -1244,11 +1244,11 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     marginalLikelihoods = new double[numNodes*numSiteRates*numPatterns*numChars];
     
 	// reinitialize likelihood vectors
-	for (size_t i = 0; i < 2*numNodes*numSiteRates*numSites*numChars; i++) {
+	for (size_t i = 0; i < 2*numNodes*numSiteRates*numPatterns*numChars; i++) {
 		partialLikelihoods[i] = 0.0;
 	}
-	for (size_t i = 0; i < numNodes*numSiteRates*numSites*numChars; i++) {
-		partialLikelihoods[i] = 0.0;
+	for (size_t i = 0; i < numNodes*numSiteRates*numPatterns*numChars; i++) {
+		marginalLikelihoods[i] = 0.0;
 	}
 	
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
