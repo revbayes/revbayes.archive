@@ -41,7 +41,7 @@ namespace RevLanguage {
         virtual const RevVariable&          getDefaultVariable(void) const;                                                 //!< Get default argument
         EvaluationType                      getEvaluationType(void) const;                                                  //!< Get the evaluation type
         bool                                hasDefault(void) const;                                                         //!< Does the rule have a default value?
-        virtual double                      isArgumentValid(const RevPtr<const RevVariable> &var, bool once) const;         //!< Is var a valid argument?
+        virtual double                      isArgumentValid(Argument &arg, bool once) const;                                //!< Is var a valid argument?
         virtual bool                        isEllipsis(void) const;                                                         //!< Is this an ellipsis?
     
 
