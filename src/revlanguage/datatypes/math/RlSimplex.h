@@ -46,6 +46,8 @@ namespace RevLanguage {
         void                                        sort(void);                                                         //!< Sort vector
         void                                        unique(void);                                                       //!< Remove consecutive duplicates
         
+        virtual bool                                allowsModificationToCompositeContainer(void) const { return false;} //!< Does an object of this type allow transformation into a composite container?
+
     private:
         
         RevBayesCore::RbVector<double>*             makeNormalizedValue(const RevBayesCore::RbVector<double>& v);                  //!< Help function
