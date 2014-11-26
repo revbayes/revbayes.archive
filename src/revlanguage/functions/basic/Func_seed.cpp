@@ -38,11 +38,9 @@ Func_seed* Func_seed::clone( void ) const
 RevPtr<RevVariable> Func_seed::execute( void )
 {
     
-    std::vector<unsigned int> s;
+    unsigned int s;
     const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
-    s.push_back( (unsigned int) val1.getValue() );
-    const Natural &val2 = static_cast<const Natural &>( args[1].getVariable()->getRevObject() );
-    s.push_back( (unsigned int) val2.getValue() );
+    s = (unsigned int) val1.getValue();
     
     RevBayesCore::RandomNumberGenerator *rng = RevBayesCore::GLOBAL_RNG;
     rng->setSeed( s );
@@ -61,8 +59,7 @@ const ArgumentRules& Func_seed::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "seed1", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "seed2", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "x", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     
