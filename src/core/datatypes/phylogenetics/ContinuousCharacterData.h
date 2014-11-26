@@ -45,7 +45,7 @@ namespace RevBayesCore {
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                            excludeTaxon(size_t i);                                                     //!< Exclude taxon
-        void                                            excludeTaxon(std::string& s);                                               //!< Exclude taxon
+        void                                            excludeTaxon(const std::string& s);                                         //!< Exclude taxon
         const double&                                   getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                     getDatatype(void) const;
         const std::string&                              getFileName(void) const;                                                    //!< Returns the name of the file the data came from
@@ -67,22 +67,20 @@ namespace RevBayesCore {
         bool                                            isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                            isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
         bool                                            isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
-        bool                                            isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
+        bool                                            isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
         void                                            restoreCharacter(size_t i);                                                 //!< Restore character
         void                                            restoreTaxon(size_t i);                                                     //!< Restore taxon
-        void                                            restoreTaxon(std::string& s);                                               //!< Restore taxon
+        void                                            restoreTaxon(const std::string& s);                                         //!< Restore taxon
         void                                            setFileName(const std::string &fn);                                         //!< Set the file name
         void                                            setFilePath(const std::string &fn);                                         //!< Set the file path
         void                                            setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
-        void                                            setTaxonName(std::string& currentName, std::string& newName);               //!< Change the name of a taxon
-        void                                            show(std::ostream &out);                                                //!< Show the entire content
+        void                                            setTaxonName(const std::string& currentName, const std::string& newName);   //!< Change the name of a taxon
+        void                                            show(std::ostream &out);                                                    //!< Show the entire content
 
         
     protected:
         // Utility functions
-        size_t                                          indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
-        //bool                                          isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
-        //size_t                                        numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
+        size_t                                          indexOfTaxonWithName(const std::string& s) const;                                 //!< Get the index of the taxon
         
         // Member variables
         std::set<size_t>                                deletedTaxa;                                                                //!< Set of deleted taxa

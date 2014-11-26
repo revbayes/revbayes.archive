@@ -168,18 +168,18 @@ void BranchRateJumpProcess::swapParameterInternal(const DagNode *oldP, const Dag
     {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
-    
-    if ( oldP == lambda ) 
+    else if ( oldP == lambda )
     {
         lambda = static_cast< const TypedDagNode<double> * >( newP );
     }
-    
-    if ( oldP == instantaneousJumpProbability ) 
+    else if ( oldP == instantaneousJumpProbability )
     {
         instantaneousJumpProbability = static_cast< const TypedDagNode<double> * >( newP );
     }
-    
-    valueDistribution->swapParameter(oldP,newP);
+    else
+    {
+        valueDistribution->swapParameter(oldP,newP);
+    }
     
 }
 

@@ -50,7 +50,7 @@ namespace RevBayesCore {
         virtual MatrixReal                          computeStateFrequencies(void) const = 0;                                    //!< Compute the state frequencies for this character data object
         virtual void                                excludeCharacter(size_t i) = 0;                                             //!< Exclude character
         virtual void                                excludeTaxon(size_t i) = 0;                                                 //!< Exclude taxon
-        virtual void                                excludeTaxon(std::string& s) = 0;                                           //!< Exclude taxon
+        virtual void                                excludeTaxon(const std::string& s) = 0;                                     //!< Exclude taxon
         virtual const DiscreteCharacterState&       getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
         virtual std::string                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual const std::string&                  getFileName(void) const = 0;                                                //!< Returns the name of the file the data came from
@@ -70,10 +70,10 @@ namespace RevBayesCore {
         virtual bool                                isCharacterExcluded(size_t i) const = 0;                                    //!< Is the character excluded
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         virtual bool                                isTaxonExcluded(size_t i) const = 0;                                        //!< Is the taxon excluded
-        virtual bool                                isTaxonExcluded(std::string& s) const = 0;                                  //!< Is the taxon excluded
+        virtual bool                                isTaxonExcluded(const std::string& s) const = 0;                            //!< Is the taxon excluded
         virtual void                                restoreCharacter(size_t i) = 0;                                             //!< Restore character
         virtual void                                restoreTaxon(size_t i) = 0;                                                 //!< Restore taxon
-        virtual void                                restoreTaxon(std::string& s) = 0;                                           //!< Restore taxon
+        virtual void                                restoreTaxon(const std::string& s) = 0;                                     //!< Restore taxon
         virtual void                                setFileName(const std::string &fn) = 0;                                     //!< Set the file name
         virtual void                                setFilePath(const std::string &fn) = 0;                                     //!< Set the file path
         virtual void                                setHomologyEstablished(bool tf) = 0;                                        //!< Set whether the homology of the characters has been established
