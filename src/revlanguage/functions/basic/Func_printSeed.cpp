@@ -30,9 +30,9 @@ RevPtr<RevVariable> Func_printSeed::execute( void ) {
     
     
     RevBayesCore::RandomNumberGenerator *rng = RevBayesCore::GLOBAL_RNG;
-	std::vector<unsigned int> s = rng->getSeed();
+	unsigned int s = rng->getSeed();
 
-	std::cout << "Current RNG Seed = (" << s[0] << ", " << s[1] << ")" << std::endl;
+	std::cout << "Current RNG Seed = " << s << "" << std::endl;
     
     return NULL;
 }
