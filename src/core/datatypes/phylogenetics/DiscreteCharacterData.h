@@ -52,7 +52,7 @@ namespace RevBayesCore {
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
-        void                                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
+        void                                                excludeTaxon(const std::string& s);                                         //!< Exclude taxon
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                         getDatatype(void) const;
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
@@ -76,21 +76,21 @@ namespace RevBayesCore {
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                                isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
         bool                                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
-        bool                                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
+        bool                                                isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
         void                                                restoreCharacter(size_t i);                                                 //!< Restore character
         void                                                restoreTaxon(size_t i);                                                     //!< Restore taxon
-        void                                                restoreTaxon(std::string& s);                                               //!< Restore taxon
+        void                                                restoreTaxon(const std::string& s);                                         //!< Restore taxon
         void                                                setFileName(const std::string &fn);                                         //!< Set the file name
         void                                                setFilePath(const std::string &fn);                                         //!< Set the file name
         void                                                setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
-        void                                                setTaxonName(std::string& currentName, std::string& newName);               //!< Change the name of a taxon
-        void                                                show(std::ostream &out);                                                //!< Show the entire content
+        void                                                setTaxonName(const std::string& currentName, const std::string& newName);   //!< Change the name of a taxon
+        void                                                show(std::ostream &out);                                                    //!< Show the entire content
         void                                                updateNames();                                                              //!< Update the sequence names when individual taxa have changed names
 
     
     protected:
         // Utility functions
-        size_t                                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
+        size_t                                              indexOfTaxonWithName(const std::string& s) const;                           //!< Get the index of the taxon
         bool                                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
         bool                                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
         size_t                                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
@@ -466,7 +466,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::excludeTaxon(size_t i)
  * \param[in]    s    The name of the taxon that will be excluded.
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::excludeTaxon(std::string& s) 
+void RevBayesCore::DiscreteCharacterData<charType>::excludeTaxon(const std::string& s)
 {
     
     for (size_t i = 0; i < getNumberOfTaxa(); i++) 
@@ -890,7 +890,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::includeCharacter(size_t i)
  * \return            The index of the taxon.
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::indexOfTaxonWithName( std::string& s ) const 
+size_t RevBayesCore::DiscreteCharacterData<charType>::indexOfTaxonWithName( const std::string& s ) const
 {
     
     // search through all names
@@ -1011,7 +1011,7 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isTaxonExcluded(size_t i) co
  * \param[in]    s    The name of the taxon in question.
  */
 template<class charType>
-bool RevBayesCore::DiscreteCharacterData<charType>::isTaxonExcluded(std::string& s) const 
+bool RevBayesCore::DiscreteCharacterData<charType>::isTaxonExcluded(const std::string& s) const
 {
     
     size_t i = indexOfTaxonWithName(s);
@@ -1100,7 +1100,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::restoreTaxon(size_t i)
  * \param[in]    s    The name of the taxon in question.
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::restoreTaxon(std::string& s) 
+void RevBayesCore::DiscreteCharacterData<charType>::restoreTaxon(const std::string& s)
 {
     
     size_t i = indexOfTaxonWithName( s );
@@ -1158,7 +1158,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::setHomologyEstablished(bool 
  * \param[in] newName        self explanatory.
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::setTaxonName(std::string& currentName, std::string& newName)
+void RevBayesCore::DiscreteCharacterData<charType>::setTaxonName(const std::string& currentName, const std::string& newName)
 {
     DiscreteTaxonData<charType> t = getTaxonData( currentName );
     t.setTaxonName(newName);
