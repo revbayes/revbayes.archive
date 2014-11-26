@@ -104,6 +104,7 @@ RevPtr<RevVariable> SyntaxVariable::evaluateContent( Environment& env, bool dyna
         if ( theVar->isWorkspaceVariable() )
         {
             theVar = new RevVariable( theVar->getRevObject().clone() );
+            theVar->setWorkspaceVariableState( true );
         }
         
     }

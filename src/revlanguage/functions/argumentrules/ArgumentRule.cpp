@@ -117,13 +117,13 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             else
                 return Argument( theVar, arg.getLabel(), true );
         }
-        else if ( once == false &&
+        else if ( once == true &&
 //                 !theVar->isAssignable() &&
                  theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
                  (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
                  )
         {
-            // Fit by type promotion. For now, we also modify the type of the incoming variable wrapper.
+            // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
             RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
             theVar->replaceRevObject( convertedObject );
             theVar->setRequiredTypeSpec( *it );
@@ -139,26 +139,10 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         }
         else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
         {
-            // Fit by type conversion
-            if ( once )
+            // Fit by type conversion function
+            if ( !once )
             {
-                RevObject*    convertedObject = theVar->getRevObject().convertTo( *it );
-                RevVariable*  convertedVar    = new RevVariable( convertedObject );
-                convertedVar->setRequiredTypeSpec( *it );
-
-                if ( !isEllipsis() )
-                {
-                    return Argument( convertedVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
-                }
-                else
-                {
-                    return Argument( convertedVar, arg.getLabel(), true );
-                }
-                
-            }
-            else
-            {
-                
+            
                 const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
                 const TypeSpec& typeTo   = *it;
                 
@@ -251,36 +235,61 @@ bool ArgumentRule::hasDefault(void) const {
  *
  * @todo See the TODOs for fitArgument(...)
  */
-double ArgumentRule::isArgumentValid(const RevPtr<const RevVariable> &var, bool once) const
+double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
 {
     
-    if ( var == NULL )
+    RevPtr<RevVariable> theVar = arg.getVariable();
+    if ( theVar == NULL )
     {
         return -1;
     }
     
-    if ( evalType == BY_VALUE || var->isWorkspaceVariable() )
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() )
     {
         once = true;
     }
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( var->getRevObject().isType( *it ) )
+        if ( theVar->getRevObject().isType( *it ) )
         {
             return 0.0;
         }
-        else if ( var->getRevObject().isConvertibleTo( *it, once ) != -1 )
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
         {
-            return var->getRevObject().isConvertibleTo( *it, once );
+            return theVar->getRevObject().isConvertibleTo( *it, once );
         }
-        else if ( once == false &&
+        else if ( once == true &&
 //                 !var->isAssignable() &&
-                  var->getRevObject().isConvertibleTo( *it, true ) != -1 &&
-                  (*it).isDerivedOf( var->getRequiredTypeSpec() )
+                  theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
+                  (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
                 )
         {
-            return var->getRevObject().isConvertibleTo( *it, true );
+            return theVar->getRevObject().isConvertibleTo( *it, true );
+        }
+        else
+        {
+            
+            const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
+            const TypeSpec& typeTo   = *it;
+            
+            // create the function name
+            std::string functionName = "_" + typeFrom.getType() + "2" + typeTo.getType();
+            
+            // Package arguments
+            std::vector<Argument> args;
+            Argument theArg = Argument( theVar, "arg" );
+            args.push_back( theVar );
+            
+            Environment& env = Workspace::globalWorkspace();
+            try {
+                // we just want to check if the function exists and can be found
+                env.getFunction(functionName, args, once);
+                return 0.1;
+            } catch (RbException e) {
+                // we do nothing here
+            }
+
         }
         
     }

@@ -168,7 +168,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                 if ( filled[j] )
                     return false;
 
-                double penalty = theRules[j].isArgumentValid( passedArgs[i].getVariable(), once );
+                Argument &arg = const_cast<Argument&>(passedArgs[i]);
+                double penalty = theRules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )
                 {
                     taken[i]          = true;
@@ -232,7 +233,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             return false;
         }
         
-        double penalty = theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once );
+        Argument &arg = const_cast<Argument&>(passedArgs[i]);
+        double penalty = theRules[matchRule].isArgumentValid(arg, once );
         if ( penalty != -1 )
         {
             taken[i]                  = true;
@@ -269,9 +271,9 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             
             if ( filled[j] == false ) 
             {
-                const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
-
-                double penalty = theRules[j].isArgumentValid( argVar, once );
+                
+                Argument &arg = const_cast<Argument&>(passedArgs[i]);
+                double penalty = theRules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )
                 {
                     taken[i]          = true;
@@ -282,6 +284,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     
                     if ( matchScore != NULL) 
                     {
+                        const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
                         double score = computeMatchScore(argVar, theRules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
                         score += penalty*100.0;
@@ -665,9 +668,8 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
             if ( filled[j] == false ) 
             {
-                const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
-                
-                double penalty = theRules[j].isArgumentValid( argVar, once );
+                Argument &arg = const_cast<Argument&>(passedArgs[i]);
+                double penalty = theRules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )
                 {
                     pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
