@@ -165,11 +165,6 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 
     
-    if ( verbose == true )
-    {
-        o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
-    }
-    
     o << "_parents      = ";
     this->printParents( o, 16, 70, verbose );
     o << std::endl;

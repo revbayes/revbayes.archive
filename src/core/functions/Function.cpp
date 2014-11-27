@@ -7,7 +7,6 @@ using namespace RevBayesCore;
 
 
 Function::Function(void)  :
-    dirty( true ),
     parameters()
 {
     
@@ -15,7 +14,6 @@ Function::Function(void)  :
 
 
 Function::Function(const Function &f)  :
-    dirty( f.dirty ),
     parameters( f.parameters )
 {
     
@@ -60,7 +58,6 @@ Function& Function::operator=(const Function &f)
         parameters.clear();
         
         parameters = f.parameters;
-        dirty = true;
         
         for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {
@@ -104,14 +101,10 @@ const std::set<const DagNode*>& Function::getParameters( void ) const {
 
 /**
  * Method stumb that can be overwritten for specialized treatment.
- * Note that it is extremely important NOT to set the dirty flag to
- * false here, because we may have been touched without having been
- * updated.
  */
-void Function::keep( DagNode* affecter ) {
+void Function::keep( DagNode* affecter )
+{
 
-    // restore flags
-//    dirty = false;
 }
 
 
@@ -141,10 +134,11 @@ void Function::removeParameter(const RevBayesCore::DagNode *p)
 
 
 /* Method stub that can be overwritten for specialized treatment. */
-void Function::restore( DagNode *restorer ) {
+void Function::restore( DagNode *restorer )
+{
     
-    // restore flags
-//    dirty = false;
+    // nothing to change here in the base class
+    
 }
 
 /**

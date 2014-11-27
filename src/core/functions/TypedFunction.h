@@ -53,8 +53,6 @@ namespace RevBayesCore {
 
         // pure virtual public methors
         virtual TypedFunction*              clone(void) const = 0;                                                      //!< Clone the function
-        bool                                isDirty(void) const;                                                        //!< Return dirty flag
-        void                                setDirty(bool flag = true);                                                 //!< Set dirty flag
         virtual void                        touch(RevBayesCore::DagNode *toucher );                                     //!< Touch the function (set dirty flag)
         virtual void                        update(void) = 0;                                                           //!< Update the value of the function
     
@@ -125,8 +123,6 @@ RevBayesCore::TypedFunction<valueType>& RevBayesCore::TypedFunction<valueType>::
         delete value;
         value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value );
         
-        // To be on the safe side, set us to dirty even if f is clean
-        dirty = true;
     }
     
     return *this;
@@ -136,35 +132,15 @@ RevBayesCore::TypedFunction<valueType>& RevBayesCore::TypedFunction<valueType>::
 template <class valueType>
 const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const 
 {
-    
-    if ( dirty ) 
-    {
-        const_cast<TypedFunction<valueType>* >( this )->update();
-        this->dirty = false;
-    }
-    
+        
     return *value;
 }
 
 template <class valueType>
 valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) 
 {
-    
-    if ( dirty ) 
-    {
-        update();
-        this->dirty = false;
-    }
-    
+        
     return *value;
-}
-
-
-template <class valueType>
-bool RevBayesCore::TypedFunction<valueType>::isDirty(void) const
-{
-    
-    return dirty;
 }
 
 
@@ -178,17 +154,9 @@ void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicN
 
 
 template <class valueType>
-void RevBayesCore::TypedFunction<valueType>::setDirty(bool flag)
-{
-    dirty = flag;
-}
-
-
-template <class valueType>
 void RevBayesCore::TypedFunction<valueType>::touch( RevBayesCore::DagNode* toucher )
 {
-    
-    this->setDirty( true );
+    // nothing to do here in the base class
 
 }
 
