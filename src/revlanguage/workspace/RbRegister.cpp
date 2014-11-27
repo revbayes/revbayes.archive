@@ -977,7 +977,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_Natural2Real",               new Func__conversion<Natural, Real>()           );
         addFunction( "_Natural2RealPos",            new Func__conversion<Natural, RealPos>()        );
         addFunction( "_Integer2Real",               new Func__conversion<Integer, Real>()           );
-        addFunction( "_Integer2RealPos",            new Func__conversion<Integer, RealPos>()        );
+//        addFunction( "_Integer2RealPos",            new Func__conversion<Integer, RealPos>()        );
         addFunction( "_Probability2RealPos",        new Func__conversion<Probability, RealPos>()    );
         addFunction( "_Probability2Real",           new Func__conversion<Probability, Real>()       );
         addFunction( "_RealPos2Real",               new Func__conversion<RealPos, Real>()           );

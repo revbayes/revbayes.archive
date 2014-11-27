@@ -99,7 +99,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
 
     RevPtr<RevVariable> theVar = arg.getVariable();
-    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() )
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || theVar->getRevObject().isConstant() )
     {
         once = true;
     }
@@ -117,31 +117,26 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             else
                 return Argument( theVar, arg.getLabel(), true );
         }
-        else if ( once == true &&
-//                 !theVar->isAssignable() &&
-                 theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
-                 (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
-                 )
+        else if ( (*it).isDerivedOf( theVar->getRequiredTypeSpec() ) || true )
         {
-            // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
-            RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-            theVar->replaceRevObject( convertedObject );
-            theVar->setRequiredTypeSpec( *it );
-            if ( !isEllipsis() )
+            if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
             {
-                return Argument( theVar, getArgumentLabel(), false );
+                // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
+                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+                theVar->replaceRevObject( convertedObject );
+                theVar->setRequiredTypeSpec( *it );
+                if ( !isEllipsis() )
+                {
+                    return Argument( theVar, getArgumentLabel(), false );
+                }
+                else
+                {
+                    return Argument( theVar, arg.getLabel(), false );
+                }
             }
             else
             {
-                return Argument( theVar, arg.getLabel(), false );
-            }
-            
-        }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
-        {
-            // Fit by type conversion function
-            if ( !once )
-            {
+                // Fit by type conversion function
             
                 const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
                 const TypeSpec& typeTo   = *it;
@@ -155,28 +150,40 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 args.push_back( theVar );
                 
                 Environment& env = Workspace::globalWorkspace();
-                Function* func = env.getFunction(functionName, args, once).clone();
+                
+                try
+                {
+                    Function* func = env.getFunction(functionName, args, once).clone();
 
-                // Allow the function to process the arguments
-                func->processArguments( args, once );
+                    // Allow the function to process the arguments
+                    func->processArguments( args, once );
                 
-                // Set the execution environment of the function
-                func->setExecutionEnviroment( &env );
+                    // Set the execution environment of the function
+                    func->setExecutionEnviroment( &env );
                 
-                // Evaluate the function
-                RevPtr<RevVariable> conversionVar = func->execute();
+                    // Evaluate the function
+                    RevPtr<RevVariable> conversionVar = func->execute();
                 
-                // free the memory
-                delete func;
+                    // free the memory
+                    delete func;
                 
-                conversionVar->setHiddenVariableState( true );
-                conversionVar->setRequiredTypeSpec( *it );
+                    conversionVar->setHiddenVariableState( true );
+                    conversionVar->setRequiredTypeSpec( *it );
                 
-                return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                    return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                
+                }
+                catch (RbException e)
+                {
+                    // we do nothing here
+                }
+
                 
             }
         }
     }
+    
+    std::cerr << "Once = " << (once ? "TRUE" : "FALSE") << std::endl;
     
     throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
                         getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
@@ -244,7 +251,7 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
         return -1;
     }
     
-    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() )
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || theVar->getRevObject().isConstant() )
     {
         once = true;
     }
@@ -259,14 +266,14 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
         {
             return theVar->getRevObject().isConvertibleTo( *it, once );
         }
-        else if ( once == true &&
-//                 !var->isAssignable() &&
-                  theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
-                  (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
-                )
-        {
-            return theVar->getRevObject().isConvertibleTo( *it, true );
-        }
+//        else if ( once == true &&
+////                 !var->isAssignable() &&
+//                  theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
+//                  (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
+//                )
+//        {
+//            return theVar->getRevObject().isConvertibleTo( *it, true );
+//        }
         else
         {
             
@@ -282,11 +289,14 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
             args.push_back( theVar );
             
             Environment& env = Workspace::globalWorkspace();
-            try {
+            try
+            {
                 // we just want to check if the function exists and can be found
                 env.getFunction(functionName, args, once);
                 return 0.1;
-            } catch (RbException e) {
+            }
+            catch (RbException e)
+            {
                 // we do nothing here
             }
 

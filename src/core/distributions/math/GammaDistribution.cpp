@@ -76,6 +76,7 @@ void GammaDistribution::swapParameterInternal(const DagNode *oldP, const DagNode
     {
         shape = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
     if (oldP == rate)
     {
         rate = static_cast<const TypedDagNode<double>* >( newP );
