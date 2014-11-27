@@ -73,7 +73,6 @@ void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 	double& cpv = variable->getValue();
 	
-	numCats->update();
 	int k = numCats->getValue();
 	int nV = numElem;
 	
