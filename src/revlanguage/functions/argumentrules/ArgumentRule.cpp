@@ -123,7 +123,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                  (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
                  )
         {
-            // Fit by type promotion. For now, we also modify the type of the incoming variable wrapper.
+            // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
             RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
             theVar->replaceRevObject( convertedObject );
             theVar->setRequiredTypeSpec( *it );
