@@ -22,12 +22,12 @@ namespace RevBayesCore {
         // TaxonData functions
         ContinuousTaxonData&                    add(const AbstractTaxonData &d);                                    //!< Addition operator used for example in '+=' statements
         ContinuousTaxonData&                    add(const ContinuousTaxonData &d);                                  //!< Addition operator used for example in '+=' statements
-        void                                    addCharacter(const double &newChar );                       //!< Push back a new character
+        void                                    addCharacter(const double &newChar );                               //!< Push back a new character
         const double&                           getCharacter(size_t index) const;                                   //!< Get the character at position index
         double&                                 getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
-        void                                    setTaxonName(std::string tn);                                       //!< Set the taxon name
+        void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
         
     private:

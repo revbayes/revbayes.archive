@@ -171,7 +171,7 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
  *
  * \param[in]    tn    The new name of the taxon.
  */
-void ContinuousTaxonData::setTaxonName(std::string tn) 
+void ContinuousTaxonData::setTaxonName(const std::string &tn)
 {
     
     taxonName = tn;

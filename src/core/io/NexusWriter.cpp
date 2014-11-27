@@ -100,7 +100,7 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     // write initial lines of the character block
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
-    outStream << "Dimensions ntax=" << data.getNumberOfTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
+    outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
     outStream << "Format datatype=" << data.getDatatype() << " ";
     outStream << "missing=? gap=-;" << std::endl;
     outStream << "Matrix" << std::endl;
@@ -109,6 +109,8 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     const std::vector<std::string> &taxonNames = data.getTaxonNames();
     for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it)
     {
+        if ( !data.isTaxonExcluded( *it ) )
+        {
         outStream << *it << "   " << std::endl;
         const ContinuousTaxonData &taxon = data.getTaxonData( *it );
         size_t nChars = taxon.getNumberOfCharacters();
@@ -123,7 +125,8 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
         
         outStream << std::endl;
     }
-    
+}
+
     outStream << ";" << std::endl;
     outStream << "End;" << std::endl;
     outStream << std::endl;

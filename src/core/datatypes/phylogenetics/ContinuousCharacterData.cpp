@@ -224,7 +224,7 @@ void ContinuousCharacterData::excludeTaxon(size_t i)
  *
  * \param[in]    s    The name of the taxon that will be excluded.
  */
-void ContinuousCharacterData::excludeTaxon(std::string& s) 
+void ContinuousCharacterData::excludeTaxon(const std::string& s)
 {
     
     for (size_t i = 0; i < getNumberOfTaxa(); i++) 
@@ -584,7 +584,7 @@ void ContinuousCharacterData::includeCharacter(size_t i)
  *
  * \return            The index of the taxon.
  */
-size_t ContinuousCharacterData::indexOfTaxonWithName( std::string& s ) const 
+size_t ContinuousCharacterData::indexOfTaxonWithName( const std::string& s ) const
 {
     
     // search through all names
@@ -649,7 +649,7 @@ bool ContinuousCharacterData::isTaxonExcluded(size_t i) const
  *
  * \param[in]    s    The name of the taxon in question.
  */
-bool ContinuousCharacterData::isTaxonExcluded(std::string& s) const 
+bool ContinuousCharacterData::isTaxonExcluded(const std::string& s) const
 {
     
     size_t i = indexOfTaxonWithName(s);
@@ -699,7 +699,7 @@ void ContinuousCharacterData::restoreTaxon(size_t i)
  *
  * \param[in]    s    The name of the taxon in question.
  */
-void ContinuousCharacterData::restoreTaxon(std::string& s) 
+void ContinuousCharacterData::restoreTaxon(const std::string& s)
 {
     
     size_t i = indexOfTaxonWithName( s );
@@ -752,7 +752,7 @@ void ContinuousCharacterData::setHomologyEstablished(bool tf)
  * \param[in] currentName    self explanatory.
  * \param[in] newName        self explanatory.
  */
-void ContinuousCharacterData::setTaxonName(std::string& currentName, std::string& newName)
+void ContinuousCharacterData::setTaxonName(const std::string& currentName, const std::string& newName)
 {
     ContinuousTaxonData t = getTaxonData( currentName );
     t.setTaxonName(newName);
