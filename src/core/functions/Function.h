@@ -9,7 +9,7 @@
  * we need to implement functions as objects storable in DAG nodes.
  *
  * Second, all deterministic nodes hold a function. The value of the deterministic node is returned via
- * a call to get value in the function (and potentially delegate to update the value if it is dirty).
+ * a call to get value in the function.
  *
  * Every functions owns it's value and hence this class is templated. Owning the value
  * has the advantage that calls to update can modify the value instead of creating a new object.
@@ -66,9 +66,7 @@ namespace RevBayesCore {
         void                                addParameter(const DagNode* p);                                         //!< add a parameter to the function
         void                                removeParameter(const DagNode* p);                                      //!< remove a parameter from the function
         virtual void                        swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;    //!< Exchange the parameter
-        
-        mutable bool                        dirty;
-        
+                
     private:
         
         std::set<const DagNode*>            parameters;
