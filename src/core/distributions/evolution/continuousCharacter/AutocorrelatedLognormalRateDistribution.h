@@ -46,7 +46,7 @@ namespace RevBayesCore {
         
     protected:
         // Parameter management functions
-        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Swap a parameter
         
     private:
         // helper methods

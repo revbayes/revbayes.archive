@@ -31,7 +31,7 @@ namespace RevBayesCore {
         charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
-        void                                    setTaxonName(std::string tn);                                       //!< Set the taxon name
+        void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
         
     private:
@@ -280,7 +280,7 @@ const std::string& RevBayesCore::DiscreteTaxonData<charType>::getTaxonName(void)
  * \param[in]    tn    The new name of the taxon.
  */
 template<class charType>
-void RevBayesCore::DiscreteTaxonData<charType>::setTaxonName(std::string tn) 
+void RevBayesCore::DiscreteTaxonData<charType>::setTaxonName(const std::string &tn)
 {
     
     taxonName = tn;
