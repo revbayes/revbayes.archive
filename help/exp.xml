@@ -10,9 +10,6 @@
     
         <name>exp</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
         <title>Exponential value of a number.</title>
     
         <description>
