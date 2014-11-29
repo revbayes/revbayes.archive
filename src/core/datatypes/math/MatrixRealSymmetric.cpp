@@ -313,9 +313,11 @@ void MatrixRealSymmetric::executeMethod(const std::string &n, const std::vector<
         const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[1] );
         rv = getPartialCorrel(k->getValue()-1,l->getValue()-1);
     }
-    else    {
+    else
+    {
         throw RbException("A MultivariateRealNodeContainer object does not have a member method called '" + n + "'.");
     }
+    
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetric& x) {
@@ -357,38 +359,5 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetri
     
     return o;
 }
-
-    
-/*
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetric& x) {
-    
-    std::streamsize previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-    
-    o << std::fixed;
-    o << std::setprecision(4);
-    
-    // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.getNumberOfRows(); i++) 
-    {
-        
-        for (size_t j = i+1; j < x.getNumberOfColumns(); ++j) 
-        {
-            o << x[i][j] << '\t';
-        }
-    }
-    for (size_t i=0; i < x.getNumberOfRows(); i++) {
-            o << x[i][i];
-            if (i < x.getNumberOfRows() -1) {
-                o << '\t';
-            }
-    }
-    
-    o.setf(previousFlags);
-    o.precision(previousPrecision);
-    
-    return o;
-}
-*/
 
 
