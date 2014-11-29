@@ -15,7 +15,7 @@ namespace RevLanguage {
     class Func_citation : public Procedure {
         
     public:
-        Func_citation( void );
+        Func_citation(void);                                                                                                //!< Constructor
         
         // Basic utility functions
         Func_citation*                          clone(void) const;                                                          //!< Clone object
