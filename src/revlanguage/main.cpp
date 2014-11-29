@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
             }
             else if (result == 1)
             {
-                commandLine += line;
+                commandLine += ";" + line;
             }
             
         }
