@@ -22,7 +22,7 @@ RbVersion::RbVersion( void ) {
 }
 
 std::string RbVersion::getDate( void ) const {
-    return "2014-11-15";
+    return "2014-11-29";
 }
 
 std::string RbVersion::getVersion( void ) const {

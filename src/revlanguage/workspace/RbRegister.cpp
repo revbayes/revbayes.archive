@@ -250,6 +250,7 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_citation.h"
 #include "Func_contacts.h"
 #include "Func_contributors.h"
 #include "Func_clear.h"
@@ -740,6 +741,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // regular functions
         addFunction( "clear",                    new Func_clear()                    );
+        addFunction( "citation",                 new Func_citation()                 );
         addFunction( "contacts",                 new Func_contacts()                 );
         addFunction( "contributors",             new Func_contributors()             );
         addFunction( "exists",                   new Func_exists()                   );
