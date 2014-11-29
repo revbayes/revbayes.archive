@@ -214,6 +214,7 @@
 #include "Dist_bimodalLnorm.h"
 #include "Dist_bimodalNorm.h"
 #include "Dist_binomial.h"
+#include "Dist_categorical.h"
 #include "Dist_cppNormal.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
@@ -258,9 +259,13 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_citation.h"
+#include "Func_contacts.h"
+#include "Func_contributors.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getwd.h"
+#include "Func_help.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
@@ -677,6 +682,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // bimodal lognormal distribution
         addDistribution( "dnBimodalLnorm",  new Dist_bimodalLnorm() );
         
+        // categorical distribution
+        addDistribution( "dnCat",           new Dist_categorical() );
+        addDistribution( "dnCategorical",   new Dist_categorical() );
+
         // compound Poisson w/ normal kernel
         addDistribution( "dnCppNormal",     new Dist_cppNormal() );
         
@@ -782,8 +791,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // regular functions
         addFunction( "clear",                    new Func_clear()                    );
+        addFunction( "citation",                 new Func_citation()                 );
+        addFunction( "contacts",                 new Func_contacts()                 );
+        addFunction( "contributors",             new Func_contributors()             );
         addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
+        addFunction( "help",                     new Func_help()                     );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
@@ -1127,6 +1140,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         //        addFunction("pbeta", new DistributionFunctionCdf( new Dist_beta() ) );
         //        addFunction("qbeta", new DistributionFunctionQuantile( new Dist_beta() ) );
         addFunction("rbeta", new DistributionFunctionRv<Probability>( new Dist_beta() ) );
+        
+        // categorical distribution
+        addFunction("dcat", new DistributionFunctionPdf<Natural>( new Dist_categorical() ) );
+        addFunction("rcat", new DistributionFunctionRv<Natural>( new Dist_categorical() ) );
         
         // dirichlet distribution
         addFunction("ddirichlet", new DistributionFunctionPdf<Simplex>( new Dist_dirichlet() ) );
