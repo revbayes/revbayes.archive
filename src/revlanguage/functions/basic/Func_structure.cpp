@@ -37,11 +37,17 @@ RevPtr<RevVariable> Func_structure::execute( void )
     o << std::endl;
     if ( verbose == true )
     {
-        o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+        if ( args[0].getVariable()->getName() == "" )
+            o << "_variable     = <unnamed> <" << args[0].getVariable() << ">" << std::endl;
+        else
+            o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
     }
     else
     {
-        o << "_variable     = " << args[0].getVariable()->getName() << std::endl;
+        if ( args[0].getVariable()->getName() == "" )
+            o << "_variable     = <unnamed>" << std::endl;
+        else
+            o << "_variable     = " << args[0].getVariable()->getName() << std::endl;
     }
     if ( args[0].getVariable()->isWorkspaceVariable() && verbose == true )
     {

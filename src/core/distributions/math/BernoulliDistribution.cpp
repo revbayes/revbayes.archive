@@ -41,9 +41,11 @@ double BernoulliDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
+    if ( *value > 1 || *value < 0 )
+        return RbConstants::Double::neginf;
+
     return log( *value == 0 ? ( 1 - p->getValue() ) : p->getValue() );
 }
-
 
 
 void BernoulliDistribution::redrawValue( void ) {

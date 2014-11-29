@@ -257,9 +257,10 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
     if (hits == 1) {
         if (retVal.first->second->checkArguments(args,NULL,once) == false)
         {
-            
             std::ostringstream msg;
-            msg << "Argument mismatch for function call '" << name << "' with arguments (";
+
+            msg << "Argument or label mismatch for function call '" << name << "' with arguments (";
+
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
@@ -269,7 +270,9 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 }
                 std::string type = "NULL";
                 if (it->getVariable() != NULL) type = it->getVariable()->getRevObject().getType();
-                msg << " " << type << " \"" << it->getLabel() << "\"";
+                msg << " " << type;
+                if ( it->getLabel() != "" )
+                    msg << " '" << it->getLabel() << "'";
             }
             msg << " )." << std::endl;
             msg << "Correct usage is:" << std::endl;

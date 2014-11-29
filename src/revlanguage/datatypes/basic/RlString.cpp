@@ -139,6 +139,8 @@ const TypeSpec& RlString::getTypeSpec( void ) const {
 /** Print value */
 void RlString::printValue(std::ostream& o) const {
 
-	dagNode->printValue( o );
+	o << "\"";
+    dagNode->printValue( o );
+    o << "\"";
 }
 
