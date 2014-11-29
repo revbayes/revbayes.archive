@@ -10,14 +10,11 @@
     
         <name>exp</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Exponential value of a number.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The 'exp' function returns the exponential value of a number.
             </p>
         </description>
 
@@ -31,41 +28,32 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The number whose exponential needs to be computed..</description>
             <valueType>Real</valueType>
         </argument>
 
         <returnValue>RealPos, Real, RevObject</returnValue>
 
-        <details>
-            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-            <p>
-            The implementation of this fancy function ... 
-            </p>
-        </details>
-
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             # Let's compute the exponential of a few numbers
+             exp(-1)
+             exp(0)
+             exp(1)
+             exp(10)
+             # log is the exponential's inverse function
+             log(exp(10),base=exp(1))
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
 
-        <author>Your name here</author>
+        <author>Bastien Boussau</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>log</entry>
+            <entry>power</entry>
         </seeAlso>
 
 
