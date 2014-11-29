@@ -145,7 +145,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
                     // set this variable as a hidden variable so that it doesn't show in ls()
                     theElementVar->setHiddenVariableState( true );
                     
-                    theParentVar->addIndexBoundary( int(i) );
+                    theParentVar->addIndex( int(i) );
                 }
             }
             else
@@ -172,7 +172,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
     
     // mark the parent variable as a vector variable
     theParentVar->setVectorVariableState( true );
-    theParentVar->addIndexBoundary( idx );
+    theParentVar->addIndex( idx );
 
 
     if ( !env.existsVariable( identifier ) )

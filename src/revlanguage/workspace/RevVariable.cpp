@@ -23,8 +23,7 @@ RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
     isReferenceVar( false ),
     isVectorVar( false ),
     isWorkspaceVar( false ),
-    min( RbConstants::Integer::max ),
-    max( 0 )
+    elementIndices()
 {
     
 }
@@ -40,8 +39,7 @@ RevVariable::RevVariable(RevObject *v, const std::string &n) :
     isReferenceVar( false ),
     isVectorVar( false ),
     isWorkspaceVar( false ),
-    min( RbConstants::Integer::max ),
-    max( 0 )
+    elementIndices()
 {
     replaceRevObject( v );
 }
@@ -58,8 +56,7 @@ RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n
     isReferenceVar( true ),
     isVectorVar( false ),
     isWorkspaceVar( false ),
-    min( RbConstants::Integer::max ),
-    max( 0 )
+    elementIndices()
 {
     
     referencedVariable = refVar;
@@ -79,8 +76,7 @@ RevVariable::RevVariable(const RevVariable &v) :
     isVectorVar( v.isVectorVar ),
     isWorkspaceVar( v.isWorkspaceVar ),
     referencedVariable( v.referencedVariable ),
-    min( v.min ),
-    max( v.max )
+    elementIndices( v.elementIndices )
 {
     
     if ( v.revObject != NULL )
@@ -122,8 +118,7 @@ RevVariable& RevVariable::operator=(const RevVariable &v)
         isVectorVar         = v.isVectorVar;
         isWorkspaceVar      = v.isWorkspaceVar;
         referencedVariable  = v.referencedVariable;
-        min                 = v.min;
-        max                 = v.max;
+        elementIndices      = v.elementIndices;
         
         if ( isReferenceVar )
         {
@@ -149,19 +144,11 @@ RevVariable& RevVariable::operator=(const RevVariable &v)
 }
 
 
-/** Resize the index boundaries for this vector RevVariable to include this index. */
-void RevVariable::addIndexBoundary(int idx)
+/** Resize the vector to include this index. */
+void RevVariable::addIndex(int idx)
 {
     
-    if ( min > idx )
-    {
-        min = idx;
-    }
-    
-    if ( max < idx )
-    {
-        max = idx;
-    }
+    elementIndices.insert( idx );
     
 }
 
@@ -182,15 +169,9 @@ size_t RevVariable::decrementReferenceCount( void ) const {
 }
 
 
-int RevVariable::getMaxIndex( void ) const
+const std::set<int>& RevVariable::getElementIndices( void ) const
 {
-    return max;
-}
-
-
-int RevVariable::getMinIndex( void ) const
-{
-    return min;
+    return elementIndices;
 }
 
 
