@@ -388,7 +388,7 @@ void RevVariable::setElementVariableState(bool flag)
     isElementVar = flag;
     
     // delegate to setHidden
-    setHiddenVariableState( flag );
+//    setHiddenVariableState( flag );
     
 }
 
