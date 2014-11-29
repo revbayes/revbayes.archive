@@ -108,7 +108,8 @@ RevLanguage::ParserInfo RevLanguage::Parser::breakIntoLines(const std::string& c
         }
 
 
-        if (temp.str().size() > 0) {
+        if (temp.str().size() > 0)
+        {
             lines.push_back(temp.str() + "\n");
         }
     }
