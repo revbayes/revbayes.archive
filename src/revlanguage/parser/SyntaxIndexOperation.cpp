@@ -143,7 +143,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
                     theElementVar  = env.getVariable( elementIdentifier );
                 
                     // set this variable as a hidden variable so that it doesn't show in ls()
-                    theElementVar->setHiddenVariableState( true );
+//                    theElementVar->setHiddenVariableState( true );
                     
                     theParentVar->addIndex( int(i) );
                 }
@@ -187,7 +187,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
     RevPtr<RevVariable> theVar  = env.getVariable( identifier );
     
     
-    // set this variable as an element variable; which is ala by default a hidden variable so that it doesn't show in ls()
+    // set this variable as an element variable; which is by default a hidden variable so that it doesn't show in ls()
     theVar->setElementVariableState( true );
 
     return theVar;
