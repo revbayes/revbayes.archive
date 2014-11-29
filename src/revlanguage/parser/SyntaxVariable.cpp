@@ -1,8 +1,3 @@
-#include <iostream>
-#include <list>
-#include <string>
-#include <sstream>
-
 #include "Argument.h"
 #include "Environment.h"
 #include "Integer.h"
@@ -17,6 +12,12 @@
 #include "RevVariable.h"
 #include "Workspace.h"
 #include "SyntaxVariable.h"
+
+#include <iostream>
+#include <list>
+#include <set>
+#include <string>
+#include <sstream>
 
 using namespace RevLanguage;
 
@@ -67,16 +68,15 @@ RevPtr<RevVariable> SyntaxVariable::evaluateContent( Environment& env, bool dyna
     
     if ( theVar->isVectorVariable() )
     {
-        int min = theVar->getMinIndex();
-        int max = theVar->getMaxIndex();
-        if ( min > max )
+        const std::set<int>& indices = theVar->getElementIndices();
+        if ( indices.empty() )
         {
             throw RbException("Cannot create a vector variable with name '" + identifier + "' because it doesn't have elements.");
         }
         std::vector<Argument> args;
-        for (int i=min; i<=max; ++i)
+        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
         {
-            std::string elementIdentifier = identifier + "[" + i + "]";
+            std::string elementIdentifier = identifier + "[" + *it + "]";
             RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
             // check that the element is not NULL
             if ( elementVar == NULL || elementVar->getRevObject() == RevNullObject::getInstance() )

@@ -6,6 +6,7 @@
 #include "TypeSpec.h"
 
 #include <string>
+#include <set>
 
 namespace RevLanguage {
     
@@ -48,10 +49,9 @@ namespace RevLanguage {
         RevVariable&            operator=(const RevVariable &v);                        //!< Assignment operator
 
         // Regular functions
-        void                    addIndexBoundary(int idx);                              //!< Resize the vector boundaries to include this index.
+        void                    addIndex(int idx);                                      //!< Resize the vector to include this index.
         RevVariable*            clone(void) const;                                      //!< Clone variable
-        int                     getMaxIndex(void) const;                                //!< Get the maximum index for this vector variable.
-        int                     getMinIndex(void) const;                                //!< Get the minimum index for this vector variable.
+        const std::set<int>&    getElementIndices(void) const;                          //!< Get the set of element indices for this vector variable.
         const std::string&      getName(void) const;                                    //!< Get the name of the variable
         RevObject&              getRevObject(void) const;                               //!< Get the value of the variable (non-const to return non-const value)
         const TypeSpec&         getRequiredTypeSpec(void) const;                        //!< Get the required Rev object type spec
@@ -88,8 +88,7 @@ namespace RevLanguage {
         bool                    isReferenceVar;                                         //!< Is this a reference variable?
         bool                    isVectorVar;                                            //!< Is this a vector variable?
         bool                    isWorkspaceVar;                                         //!< Is this a workspace variable?
-        int                     min;                                                    //!< Minimum index of vector.
-        int                     max;                                                    //!< Maximum index of vector.
+        std::set<int>           elementIndices;                                         //!< The indices of the elements if this is a vector variable.
         RevPtr<RevVariable>     referencedVariable;                                     //!< Smart pointer to referenced variable
     };
     

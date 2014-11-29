@@ -166,17 +166,16 @@ void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<RevVariab
     // check if the variable is a vector variable
     if ( theVar->isVectorVariable() == true )
     {
-        int min = theVar->getMinIndex();
-        int max = theVar->getMaxIndex();
-        if ( min > max )
+        const std::set<int>& indices = theVar->getElementIndices();
+        if ( indices.empty() )
         {
             throw RbException("Cannot remove a vector variable with name '" + theVar->getName() + "' because it doesn't have elements.");
         }
         // iterate over all elements
-        for (int i=min; i<=max; ++i)
+        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
         {
             std::ostringstream s;
-            s << theVar->getName() << "[" << i << "]";
+            s << theVar->getName() << "[" << *it << "]";
             std::string elementIdentifier = s.str();
             RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
             
