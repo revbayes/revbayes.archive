@@ -14,12 +14,18 @@
 using namespace RevBayesCore;
 
 
-MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >(1, std::vector<double>(1,0.0) ) ), nRows( 1 ), nCols( 1 ) {
+MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >(1, std::vector<double>(1,0.0) ) ),
+    nRows( 1 ),
+    nCols( 1 )
+{
 
 }
 
 
-MatrixReal::MatrixReal( size_t n, size_t k) : elements( std::vector<std::vector<double> >(n, std::vector<double>(k,0.0) ) ), nRows( n ), nCols( k ) {
+MatrixReal::MatrixReal( size_t n, size_t k) : elements( std::vector<std::vector<double> >(n, std::vector<double>(k,0.0) ) ),
+    nRows( n ),
+    nCols( k )
+{
     
 }
 
@@ -401,6 +407,7 @@ MatrixReal& MatrixReal::operator-=(double b) {
 	for (size_t i=0; i<nRows; i++)
 		for (size_t j=0; j<nCols; j++)
 			elements[i][j] -= b;
+    
 	return *this;
 }
 
@@ -419,6 +426,7 @@ MatrixReal& MatrixReal::operator*=(double b) {
 	for (size_t i=0; i<nRows; i++)
 		for (size_t j=0; j<nCols; j++)
 			elements[i][j] *= b;
+    
 	return *this;
 }
 
@@ -437,6 +445,7 @@ MatrixReal& operator/=(MatrixReal& A, double b) {
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] /= b;
+    
 	return A;
 }
 
@@ -519,9 +528,11 @@ MatrixReal&  MatrixReal::operator+=(const MatrixReal& B) {
 				elements[i][j] += B[i][j];
         }
     }
-    else { 
+    else
+    {
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
     }
+    
 	return *this;
 }
 
@@ -546,9 +557,11 @@ MatrixReal& MatrixReal::operator-=(const MatrixReal& B) {
 				elements[i][j] -= B[i][j];
         }
     }
-    else {
+    else
+    {
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
     }
+    
 	return *this;
 }
 
@@ -585,24 +598,27 @@ MatrixReal& MatrixReal::operator*=(const MatrixReal& B) {
         nRows = C.nRows;
         elements = C.elements;
     }
-    else {
+    else
+    {
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
     }
+    
 	return *this;
 }
 
 
 std::vector<double> MatrixReal::operator*(const std::vector<double> &V) const
 {
-    std::vector<double> E(20, 0.0);
+    std::vector<double> E(nCols, 0.0);
     
-    for (unsigned int i = 0; i < 20; i++)
+    for (unsigned int i = 0; i < nCols; i++)
     {
         for (unsigned int j = 0; j < V.size(); j++)
         {
             E[i] = E[i] + elements[j][i] * V[j];
         }
     }
+    
     return E;
 }
 

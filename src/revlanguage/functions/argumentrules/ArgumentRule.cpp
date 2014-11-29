@@ -117,70 +117,68 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             else
                 return Argument( theVar, arg.getLabel(), true );
         }
-        else if ( (*it).isDerivedOf( theVar->getRequiredTypeSpec() ) || true )
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1  && (*it).isDerivedOf( theVar->getRequiredTypeSpec() ))
         {
-            if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
+            // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
+            RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+            theVar->replaceRevObject( convertedObject );
+            theVar->setRequiredTypeSpec( *it );
+            if ( !isEllipsis() )
             {
-                // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
-                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-                theVar->replaceRevObject( convertedObject );
-                theVar->setRequiredTypeSpec( *it );
-                if ( !isEllipsis() )
-                {
-                    return Argument( theVar, getArgumentLabel(), false );
-                }
-                else
-                {
-                    return Argument( theVar, arg.getLabel(), false );
-                }
+                return Argument( theVar, getArgumentLabel(), false );
             }
             else
             {
-                // Fit by type conversion function
-            
-                const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
-                const TypeSpec& typeTo   = *it;
-                
-                // create the function name
-                std::string functionName = "_" + typeFrom.getType() + "2" + typeTo.getType();
-                
-                // Package arguments
-                std::vector<Argument> args;
-                Argument theArg = Argument( theVar, "arg" );
-                args.push_back( theVar );
-                
-                Environment& env = Workspace::globalWorkspace();
-                
-                try
-                {
-                    Function* func = env.getFunction(functionName, args, once).clone();
-
-                    // Allow the function to process the arguments
-                    func->processArguments( args, once );
-                
-                    // Set the execution environment of the function
-                    func->setExecutionEnviroment( &env );
-                
-                    // Evaluate the function
-                    RevPtr<RevVariable> conversionVar = func->execute();
-                
-                    // free the memory
-                    delete func;
-                
-                    conversionVar->setHiddenVariableState( true );
-                    conversionVar->setRequiredTypeSpec( *it );
-                
-                    return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
-                
-                }
-                catch (RbException e)
-                {
-                    // we do nothing here
-                }
-
-                
+                return Argument( theVar, arg.getLabel(), false );
             }
         }
+        else
+        {
+            // Fit by type conversion function
+            
+            const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
+            const TypeSpec& typeTo   = *it;
+            
+            // create the function name
+            std::string functionName = "_" + typeFrom.getType() + "2" + typeTo.getType();
+                
+            // Package arguments
+            std::vector<Argument> args;
+            Argument theArg = Argument( theVar, "arg" );
+            args.push_back( theVar );
+                
+            Environment& env = Workspace::globalWorkspace();
+            
+            try
+            {
+                Function* func = env.getFunction(functionName, args, once).clone();
+
+                // Allow the function to process the arguments
+                func->processArguments( args, once );
+            
+                // Set the execution environment of the function
+                func->setExecutionEnviroment( &env );
+                
+                // Evaluate the function
+                RevPtr<RevVariable> conversionVar = func->execute();
+                
+                // free the memory
+                delete func;
+                
+                conversionVar->setHiddenVariableState( true );
+                conversionVar->setRequiredTypeSpec( *it );
+                
+                return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                
+            }
+            catch (RbException e)
+            {
+                // we do nothing here
+            }
+
+                
+        }
+
     }
     
     std::cerr << "Once = " << (once ? "TRUE" : "FALSE") << std::endl;
@@ -262,7 +260,7 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
         {
             return 0.0;
         }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 )
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 && (*it).isDerivedOf( theVar->getRequiredTypeSpec() ) )
         {
             return theVar->getRevObject().isConvertibleTo( *it, once );
         }
