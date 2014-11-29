@@ -5,6 +5,9 @@
  * @brief Declaration of the uniform time tree distribution class.
  *
  * @author Fredrik Ronquist
+ * @note   This class does not support the deterministic behavior
+ *         required by time trees with origin time variables, and
+ *         should not be used until this is fixed.
  *
  */
 

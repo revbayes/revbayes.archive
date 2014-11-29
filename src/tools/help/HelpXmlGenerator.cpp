@@ -80,6 +80,7 @@ void writeFunctionBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, s
             {
                 RevBayesCore::DagNode *dag = revObj.getDagNode();
                 dag->printValue(outStream, "");
+                dag->printValue(<#std::ostream &o#>)
             }
             else
             {
