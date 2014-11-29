@@ -1,14 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Func_contributors, which is
- * used to provide the user with information on contributors.
- *
- * @brief Declaration of Func_contributors
- *
- * @author Fredrik Ronquist
- * @license GPL version 3
- */
-
 #ifndef Func_contributors_H
 #define Func_contributors_H
 
@@ -16,6 +5,14 @@
 
 namespace RevLanguage {
     
+    /**
+     * @brief Procedure that provides information on contributors
+     *
+     * This procedure provides information on the history of the project
+     * and contributors up to the summer of 2014.
+     *
+     * @author Fredrik Ronquist
+     */
     class Func_contributors : public Procedure {
         
     public:
@@ -30,7 +27,7 @@ namespace RevLanguage {
         // Func_contributors functions
         const ArgumentRules&                    getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
-        bool                                    throws(void) const { return false; }                                         //!< Function may throw exceptions
+        bool                                    throws(void) const { return false; }                                        //!< Will not throw exceptions
         
         RevPtr<RevVariable>                     execute(void);                                                              //!< Execute function
         

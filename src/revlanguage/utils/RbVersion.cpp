@@ -39,7 +39,7 @@ std::string RbVersion::getHeader( void ) const {
     header += "RevBayes provides an interactive environment for Bayesian\n";
     header += "phylogenetic modeling and inference. It is based on probabi-\n";
     header += "listic graphical model concepts and uses its own interpreted\n";
-    header += "language, Rev. For more info, visit www.RevBayes.com.\n";
+    header += "language, Rev.\n";
     header += "\n";
     header += "RevBayes is free software released under the GPL license,\n";
     header += "version 3. Type 'license()' for details.\n";
@@ -52,7 +52,9 @@ std::string RbVersion::getHeader( void ) const {
     header += "For help on using RevBayes, type 'help()'. To quit RevBayes\n";
     header += "type 'quit()' or 'q()'.\n";
     header += "\n";
-    
+    header += "For more info on the RevBayes project, visit www.RevBayes.com\n";
+    header += "or RevBayes.net\n";
+    header += "\n";
     return header;
     
 }
