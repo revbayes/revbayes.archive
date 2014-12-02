@@ -10,14 +10,11 @@
 
         <name>dnMixture</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Mixture distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The "dnMixture" distribution specifies that a random variable is distributed according to a mixture distribution. 
             </p>
         </description>
     
