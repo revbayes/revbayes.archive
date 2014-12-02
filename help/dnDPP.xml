@@ -140,6 +140,7 @@
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnMixture</entry>
                 <entry>fnDPPConcFromMean</entry>
                 <entry>mvDPPAllocateAuxGibbs</entry>
                 <entry>mvDPPGibbsConcentration</entry>
