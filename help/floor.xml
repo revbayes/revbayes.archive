@@ -41,7 +41,8 @@
              number <- 3.4 
              floor(number)         
              ]]>
-
+		</example>
+		
         <author>Bastien Boussau</author>
 
         <seeAlso>
