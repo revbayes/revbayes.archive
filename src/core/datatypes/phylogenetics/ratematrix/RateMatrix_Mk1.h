@@ -54,8 +54,6 @@ namespace RevBayesCore {
         std::vector<double>                 stationaryFreqs;        //!< Holds the stationary frequencies
 		
         void buildRateMatrix(void);
-        void computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
-        inline void squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
     };
     
 }

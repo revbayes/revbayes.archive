@@ -23,9 +23,7 @@ psi <- treeArray[1]
 
 
 # rate of change
-pr_lambda ~ unif(0.0, 10.0)
-lambda ~ exponential(pr_lambda)
-lambda.setValue(1.0)
+lambda ~ exponential(10.0)
 
 # the number of states
 k <- 3
@@ -37,14 +35,13 @@ Q := mk1(k, lambda)
 root_frequencies := simplex(1,1,1)
 
 
+
 ##############
 # set up moves
 #############
 
 mi <- 0
 moves[mi++] <- mvScale(lambda) 
-moves[mi++] <- mvScale(pr_lambda)
-
 
 ###############
 # create the model
@@ -64,7 +61,7 @@ monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/r
 
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
-mymcmc.run(1000)
+mymcmc.run(10000)
 
 # now summarize ancestral states over the tree
 ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log", separator="	"); 
