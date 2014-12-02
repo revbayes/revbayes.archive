@@ -78,58 +78,24 @@ void RateMatrix_Mk1::buildRateMatrix(void)
 /** Calculate the transition probabilities */
 void RateMatrix_Mk1::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
     
-    //Now the instantaneous rate matrix has been filled up entirely.
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-	
-	// Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003)
-    computeExponentialMatrixByRepeatedSquaring(t, P);
+	// calculate the transition probabilities
+    double bf = 1.0 / numStates;
+    double oneMinusBf = 1.0 - bf;
+    double p_ii = bf + oneMinusBf * exp(-(t * lambda)/oneMinusBf);
+    double p_ij = bf - bf * exp(-(t * lambda)/oneMinusBf);
+	for (size_t i=0; i<numStates; i++) 
+    {
+        P[i][i] = p_ii;
+		for (size_t j=i+1; j<numStates; j++) 
+        {
+            P[i][j] = p_ij;
+            P[j][i] = p_ij;
+        }
+    }
     
     return;
 }
 
-void RateMatrix_Mk1::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-    //Ideally one should dynamically decide how many squarings are necessary. 
-    //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
-    //first, multiply the matrix by the right scalar
-    //2^10 = 1024
-    double tOver2s = t/(1024);
-    for ( size_t i = 0; i < matrixSize; i++ ) {
-        for ( size_t j = 0; j < matrixSize; j++ ) {
-            P[i][j] = (*theRateMatrix)[i][j] * tOver2s; 
-        }
-    }
-    //Add the identity matrix:
-	for ( size_t i = 0; i < matrixSize; i++ ) {
-		P[i][i] += 1;
-	}
-	//Now we can do the multiplications
-	TransitionProbabilityMatrix P2 (matrixSize);
-	squareMatrix (P, P2); //P2 at power 2
-	squareMatrix (P2, P); //P at power 4
-	squareMatrix (P, P2); //P2 at power 8
-	squareMatrix (P2, P); //P at power 16
-	squareMatrix (P, P2); //P2 at power 32
-	squareMatrix (P2, P); //P at power 64
-	squareMatrix (P, P2); //P2 at power 128
-	squareMatrix (P2, P); //P at power 256
-	squareMatrix (P, P2); //P2 at power 512
-	squareMatrix (P2, P); //P at power 1024
-	
-	return;
-}
-
-inline void RateMatrix_Mk1::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
-    //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < matrixSize; i++ ) {
-        for ( size_t j = 0; j < matrixSize; j++ ) {
-            P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < matrixSize; k++ ) {
-                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
-			}
-		}
-	}
-}
 
 
 
