@@ -10,14 +10,11 @@
     
         <name>log</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Logarithm function.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The "log" function computes the logarithm of a number, given a particular base.
             </p>
         </description>
 
@@ -31,49 +28,46 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The number whose logarithm needs to be computed.</description>
             <valueType>RealPos</valueType>
         </argument>
         <argument>
             <label>base</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The base for computing the logarithm.</description>
             <valueType>RealPos</valueType>
         </argument>
 
         <returnValue>Real, RevObject</returnValue>
 
-        <details>
-            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-            <p>
-            The implementation of this fancy function ... 
-            </p>
-        </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             # Let's compute the logarithm of a few numbers, changing the base
+             log(1, base=exp(1))
+             log(1, base=2)
+             log(2, base=2)
+             log(4, base=2)
+             log(8, base=2)
+             log(10, base=10)
+             log(100, base=10)
+             log(100, base=10.5)
+             # Let's see what happens when we go beyond the definition range of log
+             log(-1, base=10)
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
 
-        <author>Your name here</author>
+        <author>Bastien Boussau</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
-        </seeAlso>
+			<entry>ln</entry>
+            <entry>exp</entry>
+            <entry>power</entry>
+                    </seeAlso>
 
 
     </function-help-entry>
