@@ -10,14 +10,13 @@
 
         <name>mvMultivariateRealNodeValTreeTranslation</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>mvMultivariatePhyloProcessTranslation</alias>
 
-        <title>Some title you want to give this function</title>
+        <title>Metropolis-Hastings translation move on the node values of a multivariate process.</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This move function performs a global translation on one random entry of a multivariate process (multivariate quantitative trait) along a phylogeny.
             </p>
         </description>
     
@@ -34,14 +33,14 @@
                 <label>process</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The multivariate quantitative trait process.</description>
                 <valueType>MultivariateRealNodeValTree</valueType>
             </argument>
             <argument>
                 <label>lambda</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The tuning parameter or size of the proposal.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -49,7 +48,7 @@
                 <label>tune</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>This flag specifies if the proposal tuning parameter (lambda) is retuned during the burnin period.</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -57,7 +56,7 @@
                 <label>weight</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The expected number of times this move will be applied per iteration.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -65,40 +64,61 @@
             <returnValue>Move_MultivariateRealNodeValTreeTranslation, Move, WorkspaceObject, RevObject</returnValue>
 
             <details>
-                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This move proposes a random translation to a multivariate real process (which can be seen as representing the joint evolution of multiple and correlated quantitative traits) along a phylogeny. An entry of the multivariate process (i.e. one of the traits whose joint evolution is model by the multivariate process) is chosen at random, and a translation by a random amount is applied uniformly to this trait across all of the nodes of the phylogenetic tree for which the trait is not clamped.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+		# load trait data 
+		contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+		nTraits <- contData.nchar()[1]
+
+		# load tree
+		tree <- readTrees("data/chronoplac40.tree")[1]
+
+		# covariance matrix with free scaling factor kappa
+		kappa ~ dnLogUniform(min=0.001,max=1000)
+		Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+1)
+
+		# bivariate Brownian process along the tree
+		X ~ dnBrownianMultiVariate(tree,sigma=Sigma)
+
+		# clamp process at the tips of the tree to observed trait values
+		for (i in 1:nTraits)	{
+			X.clampAt(contData,i,i)
+		}
+
+		... 
+
+		# set up index for array of moves
+		index <- 1
+
+		# conjugate Gibbs move on covariance matrix
+		moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+
+		# moves on the Brownian process
+		moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+		moves[index++] = mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
                  ]]>
 
             </example>
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                   Lartillot N and Poujol R. 2011. A phylogenetic model for investigating correlated evolution of substitution rates and continuous phenotypic characters. Mol Biol Evol 28:729-744.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Your name here</author>
+            <author>Nicolas Lartillot</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
                 <entry>similar function</entry>
             </seeAlso>
 
-
         </constructor-help-entry>
-    
-    
 
     </move-help-entry>
 

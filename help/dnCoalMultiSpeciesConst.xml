@@ -69,7 +69,7 @@
                  # In this example, we first simulate gene trees given a species tree, and then we compute the probability of the gene trees given the species tree.
 				# Number of species
 				n_species = 4
-				# Number of loci
+				# Number of loci (in this example we just use 1)
 				n_loci = 1 
 				# Number of alleles per species
 				n_alleles = v(1,2,1,1)
@@ -103,7 +103,7 @@
 				# Set the effective population sizes
 				n_branches = speciesTree.nnodes()
 				for (i in 1:n_branches) {
-					Ne[i] ~ dnGamma(shape=0.1,rate=0.1)
+					Ne[i] ~ dnGamma(shape=1.0,rate=1.0)
 				}
 
 				# Simulate gene trees

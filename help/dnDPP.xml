@@ -66,7 +66,7 @@
                 were N is the number of elements distributed under the DPP. 
                 </p>
                 <p>
-                The DPP is an infinite mixture model and take 2 parameters: the concentration parameter (a) and 
+                The DPP is an infinite mixture model and takes 2 parameters: the concentration parameter (a) and 
                 the base distribution (G_0). The concentration parameter influences the number of parameter categories
                 and the base distribution is the prior distribution from which parameter values for each
                 category are drawn. For more information see: Ferguson (1973); Antoniak (1974); Lartillot and Philippe (2004);
@@ -140,6 +140,7 @@
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnMixture</entry>
                 <entry>fnDPPConcFromMean</entry>
                 <entry>mvDPPAllocateAuxGibbs</entry>
                 <entry>mvDPPGibbsConcentration</entry>
