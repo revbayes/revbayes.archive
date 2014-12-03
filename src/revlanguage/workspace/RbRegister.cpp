@@ -533,7 +533,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Moves on matrices of real values */
         addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
-        addTypeWithConstructor("mvCovarianceMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
@@ -593,6 +592,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRealNodeValTreeSliding",    new Move_RealNodeValTreeSliding() );
         addTypeWithConstructor("mvRealNodeValTreeTranslation",    new Move_RealNodeValTreeTranslation() );
         addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
+        addTypeWithConstructor("mvRealPhyloProcessTranslation",    new Move_RealNodeValTreeSliding() );
         addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
         addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
 
