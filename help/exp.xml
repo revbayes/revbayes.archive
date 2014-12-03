@@ -28,7 +28,7 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>The number whose exponential needs to be computed..</description>
+            <description>The number whose exponential needs to be computed.</description>
             <valueType>Real</valueType>
         </argument>
 
@@ -41,7 +41,9 @@
              exp(0)
              exp(1)
              exp(10)
-             # log is the exponential's inverse function
+             # ln is the exponential's inverse function
+             ln(exp(10))
+             # Another way of achieving the same thing:
              log(exp(10),base=exp(1))
              ]]>
 
@@ -52,6 +54,7 @@
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>ln</entry>
             <entry>log</entry>
             <entry>power</entry>
         </seeAlso>

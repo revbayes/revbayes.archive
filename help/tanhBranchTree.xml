@@ -10,14 +10,11 @@
     
         <name>tanhBranchTree</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Branch-wise hyperbolic tangent averages of a real-valued quantitative trait.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This function takes a specific entry of a multivariate quantitative trait and calculates the branch-wise averages of its hyperbolic tangent. The result is a vector of positive real values in (0,1), associated to each branch of the tree: these can be thought of as branch-specific probabilities or frequencies (e.g. branch-specific equilbrium GC-content), explicitly calculated from a model of trait evolution. This method is used for correlating trait and substitution rate evolution along a phylogeny (Lartillot, 2013).
             </p>
         </description>
 
@@ -31,21 +28,21 @@
             <label>tree</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A time-calibrated phylogeny.</description>
             <valueType>TimeTree</valueType>
         </argument>
         <argument>
             <label>process</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A real-values multivariate process of trait evolution.</description>
             <valueType>MultivariateRealNodeValTree</valueType>
         </argument>
         <argument>
             <label>offset</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A real-valued offset (optional argument, generally not used).</description>
             <valueType>Real</valueType>
             <defaultValue>0</defaultValue>
         </argument>
@@ -53,7 +50,7 @@
             <label>traitindex</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>Index specifying which entry of the multivariate process should be used for calculating branch-wise exponential averages.</description>
             <valueType>Integer</valueType>
             <defaultValue>0</defaultValue>
         </argument>
@@ -61,30 +58,92 @@
         <returnValue>Probability[], ModelObject, RevObject</returnValue>
 
         <details>
-            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            This function can be used to model variation among branches of a probability or frequency parameter (such as the equilibrium GC content of the substitution model) as the hyperbolic tangent of a Brownian motion. Here, a multivariate Brownian motion is considered, which allows coupling between trait evolution and variation in substitution patterns among branches.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+		# read the quantitative trait data 
+		contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+
+		# get some useful variables from the data
+		nTraits <- contData.nchar()[1]
+
+		# read the sequence data
+		# the readCharacter function returns a vector of matrices. We just take the first one
+		seqData <- readDiscreteCharacterData("data/plac40_4fold.nex")
+
+		# get some useful variables from the data
+		nTaxa <- seqData.ntaxa()
+		names <- seqData.names()
+		nSites <- seqData.nchar()[1]
+
+		# load tree
+		tree <- readTrees("data/chronoplac40.tree")[1]
+
+		# covariance matrix of dimension 2
+		# first entry will be logit of equilibrium GC
+		# second entry will be log of body mass
+
+		# covariance matrix is inverse Wishart of parameters kappa * Identity and df = nTraits+3 degrees of freedom
+		# where kappa is itself a scaling factor
+
+		kappa ~ dnLogUniform(min=0.001,max=1000)
+		kappa.setValue(0.1)
+
+		Sigma ~ dnInvWishart(dim=3, kappa=kappa, df=4)
+
+		# multivariate Brownian process along the tree
+		X ~ dnBrownianMultiVariate(tree,sigma=Sigma)
+
+		# clamp first entry of the process to second entry of the quantitative trait data (log body mass)
+		X.clampAt(contData,1,2)
+
+		# substitution process
+		# equilibrium frequencies 
+		bf <- v(1,1,1,1)
+		pi ~ dnDirichlet(bf)
+
+		# a strict clock model
+		clockrate ~ dnLogUniform(0.001,1000)
+
+		# second component of the Brownian model gives the *logit* of the equilibrium GC content
+		# thus GC = tanh(X_2(t)), where X is the Brownian motion
+		# tanh is the hyperbolic tangent: tanh(x) = exp(x) / (1 + exp(x))
+		branchGC := tanhBranchTree(tree=tree,process=X,traitindex=2)
+
+		# the transition / transversion ratio
+		tstv ~ dnLogUniform(0.001,1000)
+
+		# each branch has its own substitution matrix, which is a T92 matrix
+		# defined by a transition/transversion ratio and an equilibrium GC
+		# so, we use branchGC, which gives a GC for each branch
+		# we combine it with the global ts/tv ratio
+		branchMatrices := t92GCBranchTree(tree=tree,branchGC=branchGC,tstv=tstv)
+
+		# create the sequence evolution model
+		seq ~ dnPhyloCTMC(tree=tree, Q=branchMatrices, rootFrequencies=pi, branchRates=clockRate, nSites=nSites, type="DNA")
+
+		# condition on sequence alignment
+		seq.clamp(seqData)
+
+		# finally, create model
+		mymodel = model(kappa)
+
+		...
+	     ]]>
 
         </example>
 
         <reference>
             <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+               Lartillot, N. 2013. Interaction between selection and biased gene conversion in mammalian protein-coding sequence evolution revealed by a phylogenetic covariance analysis. Mol Biol Evol, 30:356-368.
             </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
         </reference>
 
-        <author>Your name here</author>
+        <author>Nicolas Lartillot</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->

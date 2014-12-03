@@ -10,14 +10,11 @@
     
         <name>trunc</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Truncate a number</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            'trunc' truncates 'x', dropping any numbers past the decimal point.
             </p>
         </description>
 
@@ -31,7 +28,7 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The value</description>
             <valueType>RealPos</valueType>
         </argument>
 
@@ -40,32 +37,27 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            'trunc' truncates the number 'x' by dropping all digits to the right of the decimal point, rounding 'x' towards zero. For positive values, 'trunc' is equivalent to 'floor'. For negative values, 'trunc' is equivalent to 'ceil'.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+            > trunc(1.2)
+                1.0
+            > trunc(-1.2)
+                -1.0
+            ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Michael Landis</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>ceil</entry>
+            <entry>floor</entry>
+            <entry>round</entry>
         </seeAlso>
 
 

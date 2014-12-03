@@ -10,14 +10,11 @@
     
         <name>exists</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Check whether a variable exists</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            'exists' determines whether the RevBayes workspace contains a variable named 'name'
             </p>
         </description>
 
@@ -31,7 +28,7 @@
             <label>name</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The variable name</description>
             <valueType>String</valueType>
         </argument>
 
@@ -40,32 +37,29 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            'exists' returns 'true' if the workspace contains a variable whose name matches the String 'name' and 'false' otherwise. One use of 'exists' is to add Move and Monitor objects conditional on the variable 'x' existing. The function 'ls' provides a summary for all variable names that 'exists' would evaluate as 'true'.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+            > ## Correct usage: does "x" exist?
+            > x <- 1.0
+            > exists("x")
+                true
+            >
+            > ## Incorrect usage: does "1.0" exist?
+            > exists(x)
+                false
+            ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Michael Landis</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>ls</entry>
         </seeAlso>
 
 
