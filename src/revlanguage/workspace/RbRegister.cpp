@@ -368,6 +368,7 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_consensusTree.h"
 #include "Func_mapTree.h"
+#include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
@@ -1008,21 +1009,22 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Input/output functions (in folder "functions/io") */
 		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
-		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()     );
-        addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
-        addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
-        addFunction( "print",                       new Func_write()                       );
-        addFunction( "readAtlas",                   new Func_readAtlas()                   );
-        addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData() );
-        addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()   );
-        addFunction( "readTaxonData",               new Func_TaxonReader()                 );
-        addFunction( "readTrace",                   new Func_readTrace()                   );
-        addFunction( "readTrees",                   new Func_readTrees()                   );
-        addFunction( "readTreeTrace",               new Func_readTreeTrace()               );
-        addFunction( "source",                      new Func_source()                      );
-        addFunction( "write",                       new Func_write()                       );
-        addFunction( "writeFasta",                  new Func_writeFasta()                  );
-        addFunction( "writeNexus",                  new Func_writeNexus()                  );
+		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
+        addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
+        addFunction( "mapTree",                     new Func_mapTree<TimeTree>()            );
+        addFunction( "module",                      new Func_module()                       );
+        addFunction( "print",                       new Func_write()                        );
+        addFunction( "readAtlas",                   new Func_readAtlas()                    );
+        addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData()  );
+        addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()    );
+        addFunction( "readTaxonData",               new Func_TaxonReader()                  );
+        addFunction( "readTrace",                   new Func_readTrace()                    );
+        addFunction( "readTrees",                   new Func_readTrees()                    );
+        addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
+        addFunction( "source",                      new Func_source()                       );
+        addFunction( "write",                       new Func_write()                        );
+        addFunction( "writeFasta",                  new Func_writeFasta()                   );
+        addFunction( "writeNexus",                  new Func_writeNexus()                   );
 
         
         

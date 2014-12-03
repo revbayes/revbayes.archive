@@ -228,30 +228,30 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             }
         }
         
-        if (nMatches != 1)
+        if (nMatches == 1)
         {
-            return false;
-        }
-        
-        Argument &arg = const_cast<Argument&>(passedArgs[i]);
-        double penalty = theRules[matchRule].isArgumentValid(arg, once );
-        if ( penalty != -1 )
-        {
-            taken[i]                  = true;
-            filled[matchRule]         = true;
             
-            if ( matchScore != NULL) 
+            Argument &arg = const_cast<Argument&>(passedArgs[i]);
+            double penalty = theRules[matchRule].isArgumentValid(arg, once );
+            if ( penalty != -1 )
             {
-                double score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
-                score += abs(int(i)-int(matchRule)) / MAX_ARGS;
-                score += penalty*100.0;
-                matchScore->push_back(score);
+                taken[i]                  = true;
+                filled[matchRule]         = true;
+            
+                if ( matchScore != NULL)
+                {
+                    double score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
+                    score += abs(int(i)-int(matchRule)) / MAX_ARGS;
+                    score += penalty*100.0;
+                    matchScore->push_back(score);
+                }
+            }
+            else
+            {
+                return false;
             }
         }
-        else
-        {
-            return false;
-        }
+    
     }
     
     
@@ -640,15 +640,19 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
             }
         }
 
-        if (nMatches > 1)
-            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
-        else if (nMatches < 1)
-            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
- 
-        pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
-        taken[i]                    = true;
-        filled[matchRule]           = true;
-        passedArgIndex[matchRule]   = static_cast<int>( i );
+//        if (nMatches > 1)
+//            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
+//        else if (nMatches < 1)
+//            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
+
+        if ( nMatches == 1)
+        {
+            pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
+            taken[i]                    = true;
+            filled[matchRule]           = true;
+            passedArgIndex[matchRule]   = static_cast<int>( i );
+        }
+        
     }
 
 
@@ -666,8 +670,12 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         for (size_t j=0; j<nRules; j++) 
         {
 
-            if ( filled[j] == false ) 
+            if ( filled[j] == false &&
+                ( (!theRules[j].isEllipsis() && passedArgs[i].getLabel().size() == 0) ||
+                 (theRules[j].isEllipsis()) )
+                )
             {
+                
                 Argument &arg = const_cast<Argument&>(passedArgs[i]);
                 double penalty = theRules[j].isArgumentValid( arg, once );
                 if ( penalty != -1 )

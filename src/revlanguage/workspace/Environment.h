@@ -35,8 +35,8 @@ namespace RevLanguage {
     class Environment {
         
     public:
-        Environment(void);                                                                                                              //!< Constructor of Environment with NULL parent
-        Environment(Environment* parentFr);                                                                                             //!< Constructor of Environment with parent
+        Environment(const std::string &n);                                                                                                              //!< Constructor of Environment with NULL parent
+        Environment(Environment* parentFr, const std::string &n);                                                                                             //!< Constructor of Environment with parent
         Environment(const Environment& x);                                                                                              //!< Copy Constructor
         virtual ~Environment(void);                                                                                                     //!< Destrcutor
 
@@ -62,6 +62,7 @@ namespace RevLanguage {
         bool                                existsVariable(const std::string& name) const;                                              //!< Does variable exist?
         bool                                existsVariableInFrame(const std::string& name) const;                                       //!< Does variable exist in this frame?
         std::string                         generateUniqueVariableName(void);                                                           //!< Automatically generate a unique variable name
+        Environment*                        getChildEnvironment(const std::string &name);                                               //!< Get child environment with the name
         const Function&                     getFunction(const std::string& name);                                                       //!< Get function reference
         const Function&                     getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const;   //!< Get function reference
         const FunctionTable&                getFunctionTable(void) const;                                                               //!< Get function table (const)
@@ -84,6 +85,9 @@ namespace RevLanguage {
         int                                 numUnnamedVariables;                                                                        //!< Current number of unnamed variables
         Environment*                        parentEnvironment;                                                                          //!< Pointer to enclosing Environment
         VariableTable                       variableTable;                                                                              //!< Variable table
+    
+        std::map<std::string, Environment*> children;
+        std::string                         name; //!< e.g. Mikey!!!
     };
 
 }

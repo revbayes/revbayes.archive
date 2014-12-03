@@ -1,0 +1,34 @@
+################################################################################
+#
+# RevBayes Module: General time reversible substitution rate matrix.
+# 
+#
+# authors: Sebastian Hoehna  and Michael Landis
+#
+################################################################################
+
+
+if ( !exists(moveIndex) ) {
+   moveIndex = 0
+}
+
+
+######################
+# GTR Substitution Model #
+######################
+
+#### specify the GTR substitution model applied uniformly to all sites ###
+er_prior <- v(1,1,1,1,1,1)
+er ~ dnDirichlet(er_prior)
+moves[++moveIndex] = mvSimplexElementScale(er)
+
+
+pi_prior <- v(1,1,1,1) 
+pi ~ dnDirichlet(pi_prior)
+moves[++moveIndex] = mvSimplexElementScale(pi)
+
+
+#### create a deterministic variable for the rate matrix ####
+Q := fnGTR(er,pi) 
+
+
