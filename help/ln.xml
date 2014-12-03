@@ -10,14 +10,11 @@
     
         <name>ln</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Natural logarithm function (with base e).</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The "ln" function computes the natural logarithm of a number.
             </p>
         </description>
 
@@ -31,41 +28,32 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The number whose natural logarithm needs to be computed.</description>
             <valueType>RealPos</valueType>
         </argument>
 
         <returnValue>Real, RevObject</returnValue>
 
-        <details>
-            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-            <p>
-            The implementation of this fancy function ... 
-            </p>
-        </details>
-
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             # Let's compute the natural logarithm of a few numbers
+             ln(1)
+             ln(10)
+             ln(exp(1))
+             # Let's see what happens when we go beyond the definition range of ln
+             ln(-1)
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
 
-        <author>Your name here</author>
+        <author>Bastien Boussau</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>log</entry>
+            <entry>exp</entry>
+            <entry>power</entry>
         </seeAlso>
 
 
