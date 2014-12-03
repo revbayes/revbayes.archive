@@ -1,0 +1,56 @@
+################################################################################
+#
+# RevBayes Module: General time reversible substitution rate matrix.
+# 
+#
+# authors: Sebastian Hoehna  and Michael Landis
+#
+################################################################################
+
+
+
+if ( !exists(moveIndex) ) {
+   moveIndex = 0
+}
+
+if ( !exists(monitorIndex) ) {
+   monitorIndex = 0
+}
+
+
+speciesNames = args[1]
+analysisName = args[2]
+
+
+
+
+########################
+# Unconstrained Tree model #
+########################
+
+#### Specify a uniform prior on the tree topology #### 
+tau ~ dnUniformTopology( speciesNames )
+
+# moves on the tree
+moves[++moveIndex] = mvNNI(tau)
+moves[++moveIndex] = mvSPR(tau)
+
+
+#### Specify a prior and moves on the branch lengths #### 
+# create a random variable for each branch length using a for loop
+for (i in 1:n_branches) {
+  # We use here the exponential distribution with rate 10.0 as the branch length prior
+  branchLengths[i] ~ dnExponential(10.0)
+  
+  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+  moves[++moveIndex] = mvScale(branchLengths[i]) 
+}
+
+TL := sum(br_lens)
+
+# Build the tree by combining the topology with the branch length.
+psi := treeAssembly(tau, branchLengths)
+
+monitors[++monitorIndex] = mnFile(filename="output/"+ analysisName +".trees",printgen=10, separator = TAB, psi)
+
+

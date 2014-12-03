@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Func_source, which is
- * the function used to read commands (source) from a file.
+ * This file contains the implementation of Func_module, which is
+ * the function used to read commands (module) from a file.
  *
- * @brief Implementation of Func_source
+ * @brief Implementation of Func_module
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
@@ -14,12 +14,13 @@
  * @package functions
  * @since Version 1.0, 2009-09-03
  *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
+ * $Id: Func_module.cpp 1485 2012-05-04 16:03:37Z hoehna $
  */
 
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "Func_source.h"
+#include "Ellipsis.h"
+#include "Func_module.h"
 #include "Parser.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -29,33 +30,63 @@
 #include "TypeSpec.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
+#include "WorkspaceVector.h"
 
 #include <fstream>
 
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_source::Func_source( void ) : Procedure() {
+Func_module::Func_module( void ) : Procedure() {
     
 }
 
 
 /** Clone object */
-Func_source* Func_source::clone( void ) const {
+Func_module* Func_module::clone( void ) const {
     
-    return new Func_source( *this );
+    return new Func_module( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_source::execute( void ) {
+RevPtr<RevVariable> Func_module::execute( void ) {
     
     /* Open file */
     std::string fname = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
     std::ifstream inFile( fname.c_str() );
     
+    Environment *execEnv = env;
     
-    bool echo_on = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
+    if ( args[1].getVariable()->getRevObject() != RevNullObject::getInstance() )
+    {
+        std::string ns = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
+    
+         execEnv = env->getChildEnvironment( ns );
+    }
+    
+//    WorkspaceVector<RevObject> *moduleArgs = new WorkspaceVector<RevObject>();
+    for (size_t i = 2; i < args.size(); ++i)
+    {
+//        moduleArgs->push_back( args[i].getVariable()->getRevObject() );
+        if ( args[i].getLabel() != "" )
+        {
+            if ( !execEnv->existsVariable( args[i].getLabel() ) )
+            {
+                execEnv->addVariable(args[i].getLabel(), args[i].getVariable() );
+            }
+            
+        }
+        else
+        {
+            std::cerr << "Empty ellipsis argument label.\n";
+        }
+    }
+//    execEnv->addVariable("args", moduleArgs);
+//    if ( !execEnv->existsVariable("namespace") )
+//    {
+//        execEnv->addVariable("namespace", new RlString(ns) );
+//    }
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + fname + "\"" );
@@ -74,14 +105,6 @@ RevPtr<RevVariable> Func_source::execute( void ) {
         getline( inFile, line );
         lineNumber++;
         
-        if (echo_on) {
-            
-            if ( result == 1 )
-                std::cout << "+ " << line;
-            else
-                std::cout << "> " << line;
-        }
-        
         // If previous result was 1 (append to command), we do this
         if ( result == 1 )
             commandLine += line;
@@ -89,7 +112,7 @@ RevPtr<RevVariable> Func_source::execute( void ) {
             commandLine = line;
         
         // Process the line and record result
-        result = Parser::getParser().processCommand( commandLine, &Workspace::userWorkspace() );
+        result = Parser::getParser().processCommand( commandLine, execEnv );
         if ( result == 2 ) {
             std::ostringstream msg;
             msg << "Problem processing line " << lineNumber << " in file \"" << fname << "\"";
@@ -105,7 +128,7 @@ RevPtr<RevVariable> Func_source::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_source::getArgumentRules( void ) const {
+const ArgumentRules& Func_module::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -113,10 +136,12 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "file"   , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "echo.on", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "namespace", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        
         rulesSet = true;
-    
+        
     }
     
     return argumentRules;
@@ -124,23 +149,23 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_source::getClassType(void) {
+const std::string& Func_module::getClassType(void) {
     
-    static std::string revType = "Func_source";
+    static std::string revType = "Func_module";
     
-	return revType; 
+    return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_source::getClassTypeSpec(void) {
+const TypeSpec& Func_module::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 /** Get type spec */
-const TypeSpec& Func_source::getTypeSpec( void ) const {
+const TypeSpec& Func_module::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -149,7 +174,7 @@ const TypeSpec& Func_source::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_source::getReturnType( void ) const {
+const TypeSpec& Func_module::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     
