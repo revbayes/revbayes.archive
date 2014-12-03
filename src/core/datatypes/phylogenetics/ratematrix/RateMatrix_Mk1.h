@@ -6,13 +6,12 @@
  * k states
  * lambda: rate
  *
+ * @brief Declaration of RateMatrix_Mk1
  *
- * (c) copyright 2009-
- * @date last modified: $date: 2004-07-03 12:20:37 -0800 $
+ * (c) copyright 2014-
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: RateMatrix_Mk1.h  $
  */
 
 

@@ -1,10 +1,15 @@
-/*
- *  RlAncestralStateTrace.h
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the declaration of RevLanguage wrapper of the AncestralStateTrace class.
  *
- *  Created by mucho mass on 10/16/14.
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
+ * @brief Declaration of RlAncestralStateTrace
  *
+ * (c) Copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ *
+ * $Id: RlAncestralStateTrace.h $
  */
 
 

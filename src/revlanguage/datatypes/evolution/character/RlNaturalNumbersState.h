@@ -1,10 +1,16 @@
-/*
- *  RlNaturalNumbersState.h
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the declaration of RlNaturalNumbersState, which is
+ * a RevBayes wrapper around a regular NaturalNumbers character.
  *
- *  Created by Will Freyman on 9/8/14.
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
+ * @brief Declaration of RlNaturalNumbersState
  *
+ * (c) Copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ *
+ * $Id: RlNaturalNumbersState.h $
  */
 
 #ifndef RlNaturalNumbersState_H

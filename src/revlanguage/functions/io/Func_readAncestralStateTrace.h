@@ -1,9 +1,13 @@
-/*
- *  Func_readAncestralStateTrace.h
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the declaration of Func_readAncestralStateTrace.
  *
- *  Created by mucho mass on 10/16/14.
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
+ * @brief Declaration of Func_readAncestralStateTrace
+ *
+ * (c) Copyright 2014- under GPL version 3
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
  *
  */
 

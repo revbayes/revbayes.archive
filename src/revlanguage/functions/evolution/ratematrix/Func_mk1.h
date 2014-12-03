@@ -5,8 +5,7 @@
  *
  * @brief Declaration and implementation of Chromosomes_pomo
  *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
+ * (c) Copyright 2014- under GPL version 3
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0

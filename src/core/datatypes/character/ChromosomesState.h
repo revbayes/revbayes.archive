@@ -1,9 +1,13 @@
-/*
- *  ChromosomesState.h
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the declaration of ChromosomesState, which is
+ * the base class for the chromosome character data type in RevBayes.
  *
- *  Created by Will Freyman on 9/8/14.
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
+ * @brief Declaration of ChromosomesState
+ *
+ * (c) Copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
  *
  */
 

@@ -1,21 +1,14 @@
 /**
  * @file
  * This file contains the declaration of RateMatrix_Chromosomes, which is a
- * class that holds a rate matrix for chromosome number evolution. 
- * Presented in Mayrose et al., 2010. Systematic Biology 59:2
- * Parameters:
- * lambda: chromosome gains
- * delta: losses
- * rho: polyploidizations
+ * class that holds a rate matrix for the chromosome number evolution model. 
  *
- * @brief Declaration of RateMatrix_Chromosomes, a matrix for chromosome number evolution
+ * @brief Declaration of RateMatrix_Chromosomes
  *
- * (c) copyright 2009-
- * @date last modified: $date: 2004-07-03 12:20:37 -0800 $
+ * (c) copyright 2014-
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: RateMatrix_Chromosomes.h  $
  */
 
 

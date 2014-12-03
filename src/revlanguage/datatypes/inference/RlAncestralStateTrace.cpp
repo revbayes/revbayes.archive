@@ -1,10 +1,15 @@
-/*
- *  RlAncestralStateTrace.cpp
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the implementation of the RevLanguage wrapper of the AncestralStateTrace class.
  *
- *  Created by mucho mass on 10/16/14.
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
+ * @brief Implementation of RlAncestralStateTrace
  *
+ * (c) Copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ *
+ * $Id: RlAncestralStateTrace.h $
  */
 
 #include "RlAncestralStateTrace.h"

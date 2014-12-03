@@ -1,3 +1,16 @@
+/**
+ * @file
+ * This file contains the implementation of Func_readAncestralStateTrace.
+ *
+ * @brief Implementation of Func_readAncestralStateTrace
+ *
+ * (c) Copyright 2014- under GPL version 3
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ *
+ */
+
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "Ellipsis.h"

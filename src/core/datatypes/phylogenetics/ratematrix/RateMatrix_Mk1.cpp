@@ -1,8 +1,18 @@
-//
-//  RateMatrix_Mk1.cpp
-//
-// Will Freyman
-//
+/**
+ * @file
+ * This file contains the implementation of RateMatrix_Mk1, which is a
+ * class that holds a rate matrix for the Markov k-state 1 parameter model. 
+ * Parameters:
+ * k states
+ * lambda: rate
+ *
+ * @brief Implementation of RateMatrix_Mk1
+ *
+ * (c) copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ *
+ */
 
 #include "RateMatrix_Mk1.h"
 #include "MatrixReal.h"
