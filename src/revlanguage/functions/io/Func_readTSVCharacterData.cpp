@@ -1,8 +1,14 @@
-/*
- *  Func_readTSVCharacterData.cpp
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the implementation of Func_readTSVCharacterData which
+ * reads in a file with tab-separated character data.
  *
- *  Created by Will Freyman on 9/8/14.
+ * @brief Implementation of Func_readTSVCharacterData
+ *
+ * (c) Copyright 2014- under GPL version 3
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
  *
  */
 

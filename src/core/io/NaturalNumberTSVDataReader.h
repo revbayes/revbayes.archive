@@ -1,10 +1,14 @@
-/*
- *  NaturalNumberTSVDataReader.h
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the declaration of the NaturalNumberTSVDataReader class.
+ * For reading in positive integer character data in tab separated files.
  *
- *  For reading in positive integer character data in tab separated files.
+ * @brief Declaration of the NaturalNumberTSVDataReader.
  *
- *  Created by Will Freyman on 9/8/14.
+ * (c) Copyright 2014- under GPL version 3
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
  */
 
 

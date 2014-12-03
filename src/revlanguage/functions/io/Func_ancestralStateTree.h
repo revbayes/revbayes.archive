@@ -1,10 +1,14 @@
-
 /**
  * @file
- * This file contains the declaration of Func_ancestralStateTree, which finds the maximum-a-posteriori (MAP) ancestral states
- * on the nodes of the input tree.
+ * This file contains the declaration of Func_ancestralStateTree, which finds the maximum-a-posteriori 
+ * (MAP) ancestral states on the nodes of the input tree.
  *
  * @brief Declaration of Func_ancestralStateTree
+ *
+ * (c) Copyright 2014- under GPL version 3
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
  *
  */
 

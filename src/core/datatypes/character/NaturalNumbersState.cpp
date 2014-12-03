@@ -1,9 +1,14 @@
-/*
- *  NaturalNumbersState.cpp
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the implementation of NaturalNumbersState, which is
+ * the base class for character data types that are represented
+ * as natural numbers (such as morphological characters) in RevBayes.
  *
- *  Created by mucho mass on 9/8/14.
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
+ * @brief Implementation of NaturalNumbersState
+ *
+ * (c) Copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
  *
  */
 

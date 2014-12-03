@@ -1,3 +1,17 @@
+/**
+ * @file
+ * This file contains the implementation of the ChromosomesRateMatrixFunction class.
+ * This class is derived from the function class and is used to
+ * create the chromosomes rate matrix.
+ *
+ * @brief Implementation of the ChromosomesRateMatrixFunction.
+ *
+ * (c) Copyright 2014- under GPL version 3
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ */
+
 #include "ChromosomesRateMatrixFunction.h"
 #include "RateMatrix_Chromosomes.h"
 #include "RbException.h"

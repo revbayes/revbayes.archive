@@ -1,14 +1,15 @@
 /**
+ * @file
+ * This file contains the declaration of the Mk1RateMatrixFunction class.
+ * This class is derived from the function class and is used to
+ * create the mk1 rate matrix.
  *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
+ * @brief Declaration of the Mk1RateMatrixFunction.
+ *
+ * (c) Copyright 2014- under GPL version 3
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
- * @since 2012-07-06, version 1.0
- * @interface Function
- *
- * $Id$
  */
 
 

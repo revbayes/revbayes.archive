@@ -1,22 +1,16 @@
 /**
  * @file
- * This file contains the declaration of the chromosomes rate matrix function class.
+ * This file contains the declaration of the ChromosomesRateMatrixFunction class.
  * This class is derived from the function class and is used to
- * compute the rate matrix of a general time reversible (chromosomes) Markov chain.
+ * create the chromosomes rate matrix.
  *
- * @brief Declaration of the chromosomes rate matrix function.
+ * @brief Declaration of the ChromosomesRateMatrixFunction.
  *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
+ * (c) Copyright 2014- under GPL version 3
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
- * @since 2012-07-06, version 1.0
- * @interface Function
- *
- * $Id$
  */
-
 
 
 #ifndef ChromosomesRateMatrixFunction_H

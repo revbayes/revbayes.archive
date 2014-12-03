@@ -1,8 +1,15 @@
-//
-//  RateMatrix_Chromosomes.cpp
-//
-// Will Freyman
-//
+/**
+ * @file
+ * This file contains the implementation of RateMatrix_Chromosomes, which is a
+ * class that holds a rate matrix for the chromosome number evolution model. 
+ *
+ * @brief Implementation of RateMatrix_Chromosomes
+ *
+ * (c) copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ *
+ */
 
 #include "RateMatrix_Chromosomes.h"
 #include "MatrixReal.h"

@@ -19,19 +19,16 @@
 namespace RevBayesCore {
     
     /**
-     * @brief A monitor class that monitors all variables of a model and prints their value into a file.
+     * @brief Declaration and implementation of the AncestralStateMonitor class.
      *
-     * @file
-     * The model monitor is a convenience monitor that simply monitors all variables of a model
-     * instead of a pre-selected set. Thus, one only needs to specify the model and this monitor
-     * extracts all variables that can be monitored.
-     * The values will be printed into a file.
+     * @file 
+	 * Declaration and implementation of the AncestralStateMonitor class which
+	 * monitors the ancestral states of each internal node and
+	 * prints their value into a file.
      *
-     * Note that the copy constructor is necessary because streams need to be handled in a particular way.
-     *
-     * @copyright Copyright 2009-
+     * @copyright Copyright 2014-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2012-06-21, version 1.0
+     * @version 1.0
      *
      */
     template<class characterType, class treeType> 

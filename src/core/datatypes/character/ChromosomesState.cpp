@@ -1,9 +1,13 @@
-/*
- *  ChromosomesState.cpp
- *  revbayes-proj
+/**
+ * @file
+ * This file contains the implementation of ChromosomesState, which is
+ * the base class for the chromosome character data type in RevBayes.
  *
- *  Created by mucho mass on 9/8/14.
- *  Copyright 2014 __MyCompanyName__. All rights reserved.
+ * @brief Implementation of ChromosomesState
+ *
+ * (c) Copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
  *
  */
 

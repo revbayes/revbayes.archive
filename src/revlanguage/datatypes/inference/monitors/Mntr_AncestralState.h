@@ -1,3 +1,17 @@
+/**
+ * @file
+ * This file contains the declaration of the RevLanguage wrapper of the AncestralStateMonitor class.
+ *
+ * @brief Declaration of Mntr_AncestralState
+ *
+ * (c) Copyright 2014-
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ *
+ * $Id: Mntr_AncestralState.h $
+ */
+
 #ifndef Mntr_AncestralState_H
 #define Mntr_AncestralState_H
 
