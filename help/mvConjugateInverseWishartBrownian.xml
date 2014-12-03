@@ -10,19 +10,15 @@
 
         <name>mvConjugateInverseWishartBrownian</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Conjugate Gibbs sampling move for the (inverse-Wishart) covariance matrix of a multivariate Brownian model of trait evolution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This move, described in Lartillot and Poujol, 2011, relies on the conjugate relation between the inverse-Wishart prior and the multivariate normal model to propose a more efficient update of the covariance matrix of a Brownian multivariate model of trait evolution along the phylogeny.
             </p>
         </description>
     
         <constructor-help-entry>
-        
 
             <usage>
                 <![CDATA[
@@ -34,35 +30,35 @@
                 <label>sigma</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The covariance matrix (should be from an inverse-Wishart distribution, of scale matrix kappa*I and df degrees of freedom).</description>
                 <valueType>RealSymmetricMatrix</valueType>
             </argument>
             <argument>
                 <label>process</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The multivariate process of trait evolution (should be a multivariate Brownian process).</description>
                 <valueType>MultivariateRealNodeValTree</valueType>
             </argument>
             <argument>
                 <label>kappa</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The scaling factor of the inverse-Wishart distribution.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>df</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The number of degrees of freedom of the inverse-Wishart distribution.</description>
                 <valueType>Natural</valueType>
             </argument>
             <argument>
                 <label>weight</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The expected number of times this move will be applied per iteration.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -70,30 +66,62 @@
             <returnValue>Move_ConjugateInverseWishartBrownian, Move, WorkspaceObject, RevObject</returnValue>
 
             <details>
-                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This move relies on the specific conjugate relation existing between the inverse-Wishart and the multivariate normal distribution. In the present case, it is more specifically applied to the multivariate Brownian model of trait evolution. The covariance matrix of the Brownian process should be more specifically parameterized as follows: Sigma ~ invWishart(kappa*I, df), i.e. it should have scale matrix proportional to the identity matrix (I), with proportionality factor kappa called the scaling factor; df is the number of degrees of freedom of the inverse-Wishart (see also dnInvWishart). For more details on how this Gibbs sampling strategy works, see Lartillot and Poujol, 2011.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+
+		# load trait data 
+		contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+		nTraits <- contData.nchar()[1]
+
+		# load tree
+		tree <- readTrees("data/chronoplac40.tree")[1]
+
+		# covariance matrix with free scaling factor kappa
+		kappa ~ dnLogUniform(min=0.001,max=1000)
+		Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+1)
+
+		# bivariate Brownian process along the tree
+		X ~ dnBrownianMultiVariate(tree,sigma=Sigma)
+
+		# clamp process at the tips of the tree to observed trait values
+		for (i in 1:nTraits)	{
+			X.clampAt(contData,i,i)
+		}
+
+		... 
+
+		# here is a complete set of moves for kappa, sigma and X:
+
+		# set up index for array of moves
+		index <- 1
+
+		# moves on kappa
+		moves[index++] = mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
+
+		# conjugate Gibbs move on covariance matrix
+		moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+
+		# moves on the Brownian process
+		moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+		moves[index++] = mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
+
+		# this can be combined with other moves, depending on all other aspects of the model...
                  ]]>
 
             </example>
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                Lartillot N and Poujol R. 2011. A phylogenetic model for investigating correlated evolution of substitution rates and continuous phenotypic characters. Mol Biol Evol 28:729-744.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Your name here</author>
+            <author>Nicolas Lartillot</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
@@ -102,8 +130,6 @@
 
 
         </constructor-help-entry>
-    
-    
 
     </move-help-entry>
 

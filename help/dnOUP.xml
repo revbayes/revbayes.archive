@@ -10,14 +10,13 @@
 
         <name>dnOUP</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>dnOrnsteinUhlenbeck</alias>
 
-        <title>Some title you want to give this function</title>
+        <title>The Ornstein-Uhlenbeck model of trait evolution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This is the constructor function for the Ornstein-Uhlenbeck process of quantitative trait evolution along a time-calibrated phylogeny (Lande, 1976, Felsenstein, 1988). 
             </p>
         </description>
     
@@ -34,55 +33,70 @@
                 <label>tree</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>A time-calibrated phylogeny.</description>
                 <valueType>TimeTree</valueType>
             </argument>
             <argument>
                 <label>sigma</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The evolutionary rate parameter (variance per unit of time).</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>mean</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The stationary mean of the process.</description>
                 <valueType>Real</valueType>
             </argument>
             <argument>
                 <label>phi</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The damping coefficient (rate at which the process returns to equilbrium).</description>
                 <valueType>RealPos</valueType>
             </argument>
 
             <returnValue>Dist_ornsteinUhlenbeck, Distribution, RevObject</returnValue>
 
             <details>
-                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The Ornstein-Uhlenbeck process is a simple stationary, Gaussian and Markovian univariate process. It can be seen as a combination of a deterministic force (of strength phi) pulling the trait back toward an equilibrium value (the stationary mean of the process) and a Gaussian white-noise perturbation, constantly and randomly pushing the trait away from its equilibrium. The process has stationary variance given by sigma/(2*phi). The typical time for the process to return to equilbirium is given by 1/phi.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                 # load a tree
+                 trueTree = readTrees("data/chronoplac40.tree")[1]
+
+                 # put a gamma distribution on the evolutionary rate parameter 
+                 sigma ~ dnGamma(shape=1, scale=1)
+
+                 # put a gamma distribution on the damping rate 
+                 phi~ dnGamma(shape=1, scale=1)
+
+                 # put a uniform distribution on the stationary mean
+                 mean ~ dnNormal(mean=0, var=10)
+
+                 # create an Ornstein Uhlenbeck process
+                 X ~ dnOUP(tree=trueTree, sigma=sigma, mean=mean, phi=phi) 
+
+                 # load quantitative trait data
+                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
+
+                 # clamp process to second column of quantitative trait data (log body mass in that case)
+                 X.clampAt(contData,2)
                  ]]>
 
             </example>
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                Lande R, 1976. Natural selection and random genetic drift in phenotypic evolution. Evolution. 30:314-334.
+                Felsenstein J, 1988. Phylogenies and quantitative characters. Ann. Rev. Ecol. Syst. 19:445-471.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
             </reference>
 
             <author>Your name here</author>
