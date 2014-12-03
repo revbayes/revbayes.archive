@@ -176,14 +176,14 @@ mymodel <- model(chromo)
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda, delta, rho)
 monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", printgen=10, separator = "	", phylogeny)
-monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log",printgen=10, separator = "	", branchlengthtree=phylogeny, character=chromo, type="Chromosomes")
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log",printgen=10, separator = "	", tree=phylogeny, character=chromo, type="Chromosomes")
 monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_model.log",printgen=10, separator = "	")
 
 
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
 #mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(50000)
+mymcmc.run(100)
 
 
 # Summarize the results, first get the MAP tree.

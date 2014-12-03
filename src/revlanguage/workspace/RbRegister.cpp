@@ -503,10 +503,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
+		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<TimeTree>());
+		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<BranchLengthTree>());
         addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
         addTypeWithConstructor("mnFile",                new Mntr_File());
         addTypeWithConstructor("mnModel",               new Mntr_Model());
-		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState());
         addTypeWithConstructor("mnScreen",              new Mntr_Screen());
         addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
         addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
