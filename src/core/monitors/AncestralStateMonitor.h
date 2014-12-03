@@ -34,12 +34,12 @@ namespace RevBayesCore {
      * @since 2012-06-21, version 1.0
      *
      */
-    template<class characterType> 
+    template<class characterType, class treeType> 
 	class AncestralStateMonitor : public Monitor {
 	
     public:
         // Constructors and Destructors
-		AncestralStateMonitor(TypedDagNode<Tree> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
+		AncestralStateMonitor(TypedDagNode<treeType> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
 		
         AncestralStateMonitor(const AncestralStateMonitor &m);
         virtual ~AncestralStateMonitor(void);
@@ -71,7 +71,7 @@ namespace RevBayesCore {
         std::string                         filename;                                                           //!< Filename to which we print the values
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
 		bool                                append;                                                             //!< Flag if to append to existing file
-		TypedDagNode<Tree>*					tree;
+		TypedDagNode<treeType>*					tree;
 		RevBayesCore::DagNode*				character;
 		bool                                stochasticNodesOnly;
     };
@@ -91,8 +91,8 @@ using namespace RevBayesCore;
 
 
 /* Constructor */
-template<class characterType>
-AncestralStateMonitor<characterType>::AncestralStateMonitor(TypedDagNode<Tree> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
+template<class characterType, class treeType>
+AncestralStateMonitor<characterType, treeType>::AncestralStateMonitor(TypedDagNode<treeType> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
 outStream(), 
 filename( fname ), 
 separator( del ), 
@@ -108,8 +108,8 @@ stochasticNodesOnly( false )
 /**
  * Copy constructor.
  */
-template<class characterType>
-AncestralStateMonitor<characterType>::AncestralStateMonitor( const AncestralStateMonitor &m) : Monitor( m ),
+template<class characterType, class treeType>
+AncestralStateMonitor<characterType, treeType>::AncestralStateMonitor( const AncestralStateMonitor &m) : Monitor( m ),
 outStream(), 
 filename( m.filename ), 
 separator( m.separator ), 
@@ -129,8 +129,8 @@ stochasticNodesOnly( m.stochasticNodesOnly )
 /**
  * Destructor.
  */
-template<class characterType>
-AncestralStateMonitor<characterType>::~AncestralStateMonitor()
+template<class characterType, class treeType>
+AncestralStateMonitor<characterType, treeType>::~AncestralStateMonitor()
 {
     
     if ( outStream.is_open() ) 
@@ -147,11 +147,11 @@ AncestralStateMonitor<characterType>::~AncestralStateMonitor()
  *
  * \return A new copy of myself 
  */
-template<class characterType>
-AncestralStateMonitor<characterType>* AncestralStateMonitor<characterType>::clone(void) const 
+template<class characterType, class treeType>
+AncestralStateMonitor<characterType, treeType>* AncestralStateMonitor<characterType, treeType>::clone(void) const 
 {
     
-    return new AncestralStateMonitor<characterType>(*this);
+    return new AncestralStateMonitor<characterType, treeType>(*this);
 }
 
 
@@ -159,8 +159,8 @@ AncestralStateMonitor<characterType>* AncestralStateMonitor<characterType>::clon
 /**
  * Close the stream. This means that we are finished with monitoring and we close the filestream.
  */
-template<class characterType>
-void AncestralStateMonitor<characterType>::closeStream() 
+template<class characterType, class treeType>
+void AncestralStateMonitor<characterType, treeType>::closeStream() 
 {
 	
     outStream.close();
@@ -173,8 +173,8 @@ void AncestralStateMonitor<characterType>::closeStream()
  *
  * \param[in]   gen    The current generation.
  */
-template<class characterType>
-void AncestralStateMonitor<characterType>::monitor(unsigned long gen) 
+template<class characterType, class treeType>
+void AncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen) 
 {
     if (gen % printgen == 0) 
     {
@@ -183,13 +183,13 @@ void AncestralStateMonitor<characterType>::monitor(unsigned long gen)
 		
 		// convert 'character' which is DagNode to a StochasticNode
 		// so that we can call character->getDistribution()
-		StochasticNode<GeneralBranchHeterogeneousCharEvoModel<characterType, BranchLengthTree> > *char_stoch 
-		= (StochasticNode<GeneralBranchHeterogeneousCharEvoModel<characterType, BranchLengthTree> >*) character;			
+		StochasticNode<GeneralBranchHeterogeneousCharEvoModel<characterType, treeType> > *char_stoch 
+		= (StochasticNode<GeneralBranchHeterogeneousCharEvoModel<characterType, treeType> >*) character;			
 		
 		// now we get the TypedDistribution and need to cast it  
 		// into an AbstractSiteHomogeneousMixtureCharEvoModel distribution
-		GeneralBranchHeterogeneousCharEvoModel<characterType, BranchLengthTree> *dist
-		= (GeneralBranchHeterogeneousCharEvoModel<characterType, BranchLengthTree>*) &char_stoch->getDistribution();
+		GeneralBranchHeterogeneousCharEvoModel<characterType, treeType> *dist
+		= (GeneralBranchHeterogeneousCharEvoModel<characterType, treeType>*) &char_stoch->getDistribution();
 		
 		// call update for the marginal node likelihoods
 		dist->updateMarginalNodeLikelihoods();
@@ -235,8 +235,8 @@ void AncestralStateMonitor<characterType>::monitor(unsigned long gen)
 /** 
  * Open the AncestralState stream for printing.
  */
-template<class characterType>
-void AncestralStateMonitor<characterType>::openStream(void) 
+template<class characterType, class treeType>
+void AncestralStateMonitor<characterType, treeType>::openStream(void) 
 {
     
     RbFileManager f = RbFileManager(filename);
@@ -257,8 +257,8 @@ void AncestralStateMonitor<characterType>::openStream(void)
 /** 
  * Print header for monitored values 
  */
-template<class characterType>
-void AncestralStateMonitor<characterType>::printHeader() 
+template<class characterType, class treeType>
+void AncestralStateMonitor<characterType, treeType>::printHeader() 
 {
     // print one column for the iteration number
     outStream << "Iteration";
@@ -286,8 +286,8 @@ void AncestralStateMonitor<characterType>::printHeader()
  * Reset the currently monitored DAG nodes by extracting the DAG nodes from the model again 
  * and store this in the set of DAG nodes.
  */
-template<class characterType>
-void AncestralStateMonitor<characterType>::resetDagNodes( void )
+template<class characterType, class treeType>
+void AncestralStateMonitor<characterType, treeType>::resetDagNodes( void )
 {
     
     // for savety we empty our dag nodes
@@ -331,8 +331,8 @@ void AncestralStateMonitor<characterType>::resetDagNodes( void )
  *
  * \param[in]   tf   Flag if to append.
  */
-template<class characterType>
-void AncestralStateMonitor<characterType>::setAppend(bool tf) 
+template<class characterType, class treeType>
+void AncestralStateMonitor<characterType, treeType>::setAppend(bool tf) 
 {
     
     append = tf;

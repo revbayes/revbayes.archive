@@ -122,7 +122,7 @@ mymodel <- model(seq)
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10)
 monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/sequence.trees", printgen=10, separator = "	", phylogeny)
-monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/sequence.log",printgen=10, separator = "	", branchlengthtree=phylogeny, character=seq, type="DNA")
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/sequence.log",printgen=10, separator = "	", tree=phylogeny, character=seq, type="DNA")
 monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/sequence_model.log",printgen=10, separator = "	")
 
 

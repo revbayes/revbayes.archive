@@ -56,7 +56,7 @@ mymodel <- model(Q)
 # create the monitors
 monitors[1] <- screenmonitor(printgen=10, lambda)
 monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", printgen=10, separator = "	", psi)
-monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log",printgen=10, separator = "	", branchlengthtree=psi, character=seq, type="NaturalNumbers")
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log",printgen=10, separator = "	", tree=psi, character=seq, type="NaturalNumbers")
 monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_model.log",printgen=10, separator = "	")
 
 # set up mcmc
