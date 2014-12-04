@@ -8,13 +8,9 @@
 ################################################################################
 
 
-module("modules/UnconstrainedExponentialTree.Rev", speciesNames=data.names(), analysisName=analysisName)
+module("UnconstrainedExponentialTree.Rev", speciesNames=data.names(), analysisName=analysisName)
 
-module("modules/GTR.Rev", namespace="gene1")
-module("modules/PhyloCTMC.Rev", psi=psi, Q=gene1$Q, siteRates=v(1.0), pInv=0.0, branchRates=1.0, data=data)
-
-
-module("modules/GTR.Rev", namespace="gene2")
-module("modules/PhyloCTMC.Rev", psi=psi, Q=gene2$Q, siteRates=v(1.0), pInv=0.0, branchRates=1.0, data=data)
+module("GTR.Rev")
+module("PhyloCTMC.Rev", psi=psi, Q=Q, siteRates=v(1.0), pInv=0.0, branchRates=1.0, data=data)
 
 
