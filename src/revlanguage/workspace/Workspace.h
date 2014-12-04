@@ -93,21 +93,20 @@ namespace RevLanguage {
         
         static Workspace& globalWorkspace(void) //!< Get global workspace
         {
-            static Workspace globalSpace = Workspace();
+            static Workspace globalSpace = Workspace("GlobalWorkspace");
             return globalSpace;
         }
 
         static Workspace& userWorkspace(void) //!< Get user workspace
         {
-            static Workspace userSpace = Workspace(&Workspace::globalWorkspace());
+            static Workspace userSpace = Workspace(&Workspace::globalWorkspace(),"UserWorkspace");
             return userSpace;
         }
         
 
     private:
-                                Workspace(void);                                                            //!< Workspace with NULL parent
-                                Workspace(Workspace* parentSpace);                                          //!< Workspace with parent
-                                Workspace(Environment* parentSpace);                                        //!< Workspace with parent
+                                Workspace(const std::string &n);                                                            //!< Workspace with NULL parent
+                                Workspace(Environment* parentSpace, const std::string &n);                                        //!< Workspace with parent
                                 Workspace(const Workspace& w);                                              //!< Prevent copy
 
         Workspace&              operator=(const Workspace& w);                                              //!< Prevent assignment

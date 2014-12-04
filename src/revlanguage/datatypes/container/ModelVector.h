@@ -102,6 +102,10 @@ ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( new RevBayesCo
     ArgumentRules* uniqueArgRules = new ArgumentRules();
     this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
     
+    ArgumentRules* setValueArgRules = new ArgumentRules();
+    setValueArgRules->push_back( new ArgumentRule("x", getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+
 }
 
 
@@ -123,6 +127,10 @@ ModelVector<rlType>::ModelVector( const valueType &v ) :
     ArgumentRules* uniqueArgRules = new ArgumentRules();
     this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
     
+    ArgumentRules* setValueArgRules = new ArgumentRules();
+    setValueArgRules->push_back( new ArgumentRule("x", getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+    
 }
 
 
@@ -143,6 +151,10 @@ ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
     this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
+    ArgumentRules* setValueArgRules = new ArgumentRules();
+    setValueArgRules->push_back( new ArgumentRule("x", getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
     
 }
 
@@ -275,6 +287,18 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
             throw RbException( "Only constant variables can be made unique." );
         }
         unique();
+        
+        return NULL;
+    }
+    else if ( name == "setValue" )
+    {
+        found = true;
+        
+        // get the observation
+        const valueType &observation = static_cast<const ModelObject<valueType> &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        // set value
+        this->setValue( RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
         
         return NULL;
     }

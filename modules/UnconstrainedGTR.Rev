@@ -1,0 +1,20 @@
+################################################################################
+#
+# RevBayes Module: General time reversible substitution rate matrix.
+# 
+#
+# authors: Sebastian Hoehna  and Michael Landis
+#
+################################################################################
+
+
+module("modules/UnconstrainedExponentialTree.Rev", speciesNames=data.names(), analysisName=analysisName)
+
+module("modules/GTR.Rev", namespace="gene1")
+module("modules/PhyloCTMC.Rev", psi=psi, Q=gene1$Q, siteRates=v(1.0), pInv=0.0, branchRates=1.0, data=data)
+
+
+module("modules/GTR.Rev", namespace="gene2")
+module("modules/PhyloCTMC.Rev", psi=psi, Q=gene2$Q, siteRates=v(1.0), pInv=0.0, branchRates=1.0, data=data)
+
+
