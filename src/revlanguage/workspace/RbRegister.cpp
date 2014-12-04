@@ -76,7 +76,7 @@
 /* Taxon types (in folder "datatypes/evolution") */
 #include "RlTaxon.h"
 
-/* Inference types (in folder "datatypes/inference") */
+/* Inference types (in folder "analysis") */
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
@@ -87,8 +87,9 @@
 
 /// Monitors ///
 
-/* Monitor types (in folder "datatypes/inference/monitors) */
+/* Monitor types (in folder "monitors) */
 #include "RlMonitor.h"
+#include "Mntr_AncestralState.h"
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
@@ -319,6 +320,8 @@
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_wag.h"
+#include "Func_chromosomes.h"
+#include "Func_mk1.h"
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
@@ -366,15 +369,20 @@
 
 
 /* Input/output functions (in folder "functions/io") */
+#include "Func_ancestralStateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_mapTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
+#include "Func_readTSVCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
+#include "Func_readBranchLengthTrees.h"
 #include "Func_readTreeTrace.h"
+#include "Func_readAncestralStateTreeTrace.h"
+#include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
 #include "Func_TaxonReader.h"
 #include "Func_write.h"
@@ -488,6 +496,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
+		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<TimeTree>());
+		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<BranchLengthTree>());
         addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
         addTypeWithConstructor("mnFile",                new Mntr_File());
         addTypeWithConstructor("mnModel",               new Mntr_Model());
@@ -839,6 +849,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "fnBlosum62", new Func_blosum62());
+        addFunction( "fnChromosomes", new Func_chromosomes());
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
         addFunction( "fnF81",      new Func_f81()     );
@@ -847,6 +858,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
         addFunction( "fnJones",    new Func_jones()   );
+		addFunction( "fnMk1",      new Func_mk1()     );
         addFunction( "fnMtMam",    new Func_mtMam()   );
         addFunction( "fnMtRev",    new Func_mtRev()   );
         addFunction( "fnPomo",     new Func_pomo()    );
@@ -1008,19 +1020,25 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
 
         /* Input/output functions (in folder "functions/io") */
+        addFunction( "ancestralStateTree",          new Func_ancestralStateTree<BranchLengthTree>() );
+		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
 		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
 		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()            );
         addFunction( "module",                      new Func_module()                       );
         addFunction( "print",                       new Func_write()                        );
+        addFunction( "readAncestralStateTreeTrace", new Func_readAncestralStateTreeTrace()  );		
+		addFunction( "readAncestralStateTrace",     new Func_readAncestralStateTrace()	    );
         addFunction( "readAtlas",                   new Func_readAtlas()                    );
+		addFunction( "readBranchLengthTrees",       new Func_readBranchLengthTrees()        );
         addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData()  );
         addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()    );
         addFunction( "readTaxonData",               new Func_TaxonReader()                  );
         addFunction( "readTrace",                   new Func_readTrace()                    );
         addFunction( "readTrees",                   new Func_readTrees()                    );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
+		addFunction( "readTSVCharacterData",        new Func_readTSVCharacterData()         );
         addFunction( "source",                      new Func_source()                       );
         addFunction( "write",                       new Func_write()                        );
         addFunction( "writeFasta",                  new Func_writeFasta()                   );

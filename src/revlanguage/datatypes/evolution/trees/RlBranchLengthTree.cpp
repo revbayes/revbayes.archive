@@ -6,6 +6,8 @@
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
+#include "Topology.h"
+#include "RlTopology.h"
 
 #include <sstream>
 
@@ -163,6 +165,10 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
         return NULL;
         
     }
+	else if (name == "topology") {
+        const RevBayesCore::Topology& t = this->dagNode->getValue().getTopology();
+        return new RevVariable( new RevLanguage::Topology( t ) );
+    } 
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args, found );
 }
