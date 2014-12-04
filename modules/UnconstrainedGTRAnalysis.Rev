@@ -21,6 +21,6 @@ monitors[++monitorIndex] = mnScreen(printgen=1000, TL)
 
 mymcmc = mcmc(myModel, monitors, moves)
 
-mymcmc.burnin(generations=5000, tuningInterval=250)
-mymcmc.run(generations=5000)
+#mymcmc.burnin(generations=5000, tuningInterval=250)
+#mymcmc.run(generations=5000)
 

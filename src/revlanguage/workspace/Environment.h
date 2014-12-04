@@ -73,6 +73,7 @@ namespace RevLanguage {
         const RevPtr<RevVariable>&          getVariable(const std::string& name) const;                                                 //!< Get variable (const)
         const VariableTable&                getVariableTable(void) const;                                                               //!< Get the table with the variables (const)
         VariableTable&                      getVariableTable(void);                                                                     //!< Get the table with the variables (non-const)
+        bool                                hasChildEnvironment(const std::string &name);                                               //!< Has a child environment with the name
         bool                                isProcedure(const std::string& fxnName) const;                                              //!< Is 'fxnName' a procedure?
         virtual bool                        isSameOrParentOf(const Environment& otherEnvironment) const;                                //!< Is the Environment same or parent of other Environment?
         void                                setParentEnvironment(Environment* newEnvironment);                                          //!< Set parent Environment

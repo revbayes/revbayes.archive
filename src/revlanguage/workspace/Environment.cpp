@@ -508,6 +508,17 @@ const VariableTable& Environment::getVariableTable(void) const
 }
 
 
+
+bool Environment::hasChildEnvironment(const std::string &name)
+{
+    
+    std::map<std::string, Environment*>::iterator it = children.find(name);
+
+    return it != children.end();
+    
+}
+
+
 /**
  * Is the function with the name 'fxnName' a procedure? Simply ask the
  * function table.
