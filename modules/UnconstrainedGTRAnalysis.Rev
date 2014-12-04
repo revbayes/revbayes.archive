@@ -7,22 +7,19 @@
 #
 ################################################################################
 
-data = args[1]
-analysisName = args[2]
 
-
-if ( !exists(monitorIndex) ) {
+if ( !exists("monitorIndex") ) {
    monitorIndex = 0
 }
 
-module("UnconstrainedGTR.Rev", namespace=namespace, data, analysisName)
+module("modules/UnconstrainedGTR.Rev", data=data, analysisName=analysisName)
 
 myModel = model(Q)
 
 monitors[++monitorIndex] = mnModel(filename="output/" + analysisName +".log",printgen=10, separator = TAB)
 monitors[++monitorIndex] = mnScreen(printgen=1000, TL)
 
-mymcmc = mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(myModel, monitors, moves)
 
 mymcmc.burnin(generations=5000, tuningInterval=250)
 mymcmc.run(generations=5000)

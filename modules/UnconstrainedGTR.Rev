@@ -8,11 +8,13 @@
 ################################################################################
 
 
-data = args[1]
-analysisName = args[2]
+module("modules/UnconstrainedExponentialTree.Rev", speciesNames=data.names(), analysisName=analysisName)
 
-module("GTR.Rev", namespace=namespace)
-module("UnconstrainedExponentialTree.Rev", namespace=namespace, data.names(), analysisName)
-module("PhyloCTMC.Rev", namespace=namespace, psi, Q, 1.0, 0.0, 1.0, data)
+module("modules/GTR.Rev", namespace="gene1")
+module("modules/PhyloCTMC.Rev", psi=psi, Q=gene1$Q, siteRates=v(1.0), pInv=0.0, branchRates=1.0, data=data)
+
+
+module("modules/GTR.Rev", namespace="gene2")
+module("modules/PhyloCTMC.Rev", psi=psi, Q=gene2$Q, siteRates=v(1.0), pInv=0.0, branchRates=1.0, data=data)
 
 
