@@ -149,6 +149,7 @@ namespace RevBayesCore {
         std::vector<size_t>                                                 invariantSiteIndex;
         size_t                                                              numPatterns;
         bool                                                                compressed;
+		std::vector<size_t>                                                 sitePattern;    // an array that keeps track of which pattern is used for each site
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changedNodes;
@@ -222,6 +223,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
     scalingFactors( std::vector<double>(numNodes*2, 1.0) ),
     marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
+	sitePattern( std::vector<size_t>(numSites, 0) ),
     charMatrix(),
     gapMatrix(),
     patternCounts(),
@@ -290,6 +292,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     charMatrix( n.charMatrix ),
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
+	sitePattern( n.sitePattern ),
     numPatterns( n.numPatterns ),
     siteInvariant( n.siteInvariant ),
     invariantSiteIndex( n.invariantSiteIndex ),
@@ -371,8 +374,6 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>* Re
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::compress( void ) 
 {
-    
-//    compressed = false;
     
     charMatrix.clear();
     gapMatrix.clear();
@@ -469,7 +470,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
             {
                 if ( (*it)->isTip() ) 
                 {
-                    AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+					AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
                     CharacterState &c = taxon.getCharacter(siteIndices[site]);
                     pattern += c.getStringValue();
                 }
@@ -484,6 +485,9 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 
                 // obviously this site isn't unique nor the first encounter
                 unique[site] = false;
+				
+				// remember which pattern this site uses
+				sitePattern[site] = index->second;
             }
             else 
             {
@@ -493,6 +497,9 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 // insert this pattern with the corresponding index in the map
                 patterns.insert( std::pair<std::string,size_t>(pattern,numPatterns) );
                 
+				// remember which pattern this site uses
+				sitePattern[site] = numPatterns;
+				
                 // increase the pattern counter
                 numPatterns++;
                 
@@ -908,15 +915,20 @@ std::vector<charType> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<c
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector< charType > ancestralSeq = std::vector<charType>();
 	
-    // TODO: note that this only works currently for each pattern, instead we should simulate per site
-    for ( size_t i = 0; i < numPatterns; ++i )
+    for ( size_t i = 0; i < numSites; ++i )
     {
+		size_t pattern = i;
+		// if the matrix is compressed use the pattern for this site
+		if (compressed) {
+			pattern = sitePattern[i];
+		}
+		
         // create the character
         charType c;
         c.setToFirstState();
 
 		// sum the likelihoods for each character state
-		const std::vector<double> siteMarginals = (*marginals)[i];
+		const std::vector<double> siteMarginals = (*marginals)[pattern];
 		double sumMarginals = 0.0;
 		for (int j = 0; j < siteMarginals.size(); j++) {
 			sumMarginals += siteMarginals[j];

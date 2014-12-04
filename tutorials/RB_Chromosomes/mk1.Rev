@@ -46,7 +46,7 @@ moves[mi++] <- mvScale(lambda)
 ###############
 # create the model
 ###############
-seq ~ phyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies, type="Mk1")
+seq ~ phyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies, type="NaturalNumbers")
 
 # clamp data
 seq.clamp(stateData)
@@ -61,7 +61,7 @@ monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/r
 
 # set up mcmc
 mymcmc <- mcmc(mymodel, monitors, moves)
-mymcmc.run(10000)
+mymcmc.run(1000)
 
 # now summarize ancestral states over the tree
 ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log", separator="	"); 
