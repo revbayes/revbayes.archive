@@ -9,18 +9,13 @@
 
 
 
-if ( !exists(moveIndex) ) {
+if ( !exists("moveIndex") ) {
    moveIndex = 0
 }
 
-if ( !exists(monitorIndex) ) {
+if ( !exists("monitorIndex") ) {
    monitorIndex = 0
 }
-
-
-speciesNames = args[1]
-analysisName = args[2]
-
 
 
 
@@ -29,7 +24,7 @@ analysisName = args[2]
 ########################
 
 #### Specify a uniform prior on the tree topology #### 
-tau ~ dnUniformTopology( speciesNames )
+tau ~ dnUniformTopology( speciesNames.size(), speciesNames )
 
 # moves on the tree
 moves[++moveIndex] = mvNNI(tau)
@@ -38,6 +33,7 @@ moves[++moveIndex] = mvSPR(tau)
 
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
+n_branches = speciesNames.size() * 2 - 3
 for (i in 1:n_branches) {
   # We use here the exponential distribution with rate 10.0 as the branch length prior
   branchLengths[i] ~ dnExponential(10.0)
@@ -46,7 +42,7 @@ for (i in 1:n_branches) {
   moves[++moveIndex] = mvScale(branchLengths[i]) 
 }
 
-TL := sum(br_lens)
+TL := sum(branchLengths)
 
 # Build the tree by combining the topology with the branch length.
 psi := treeAssembly(tau, branchLengths)

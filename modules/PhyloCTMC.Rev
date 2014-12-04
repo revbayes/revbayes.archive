@@ -8,7 +8,7 @@
 ################################################################################
 
 
-if ( !exists(moveIndex) ) {
+if ( !exists("moveIndex") ) {
    moveIndex = 0
 }
 
@@ -20,7 +20,7 @@ if ( !exists(moveIndex) ) {
 
 
 # the sequence evolution model
-seq ~ dnPhyloCTMC(tree=args[1], Q=args[2], siteRates=args[3], pInv=args[4], branchRates=args[5], type=args[6].chartype() )
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, siteRates=siteRates, pInv=pInv, branchRates=branchRates, type=data.chartype() )
 
 # attach the data
 seq.clamp(data)
