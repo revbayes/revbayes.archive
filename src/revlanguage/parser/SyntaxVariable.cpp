@@ -30,6 +30,15 @@ SyntaxVariable::SyntaxVariable( const std::string &n ) : SyntaxElement(),
 }
 
 
+/** Construct from identifier and index */
+SyntaxVariable::SyntaxVariable( const std::string &n, const std::vector<std::string> &ns ) : SyntaxElement(),
+    identifier( n ),
+    namespaces( ns )
+{
+    
+}
+
+
 /** Destructor deletes base variable, expression, and index */
 SyntaxVariable::~SyntaxVariable()
 {
@@ -62,8 +71,23 @@ RevPtr<RevVariable> SyntaxVariable::evaluateContent( Environment& env, bool dyna
     
     RevPtr<RevVariable> theVar;
     
+    Environment *curEnv = &env;
+    for ( std::vector<std::string>::iterator it = namespaces.begin(); it != namespaces.end(); ++it )
+    {
+        if ( curEnv->hasChildEnvironment(*it) )
+        {
+            curEnv = curEnv->getChildEnvironment( *it );
+        }
+        else
+        {
+            throw RbException("There is no namespace called '" + *it + "'.");
+        }
+        
+    }
+    
+    
     // Get variable from the environment (no dynamic version of identifier)
-    theVar = env.getVariable( identifier );
+    theVar = curEnv->getVariable( identifier );
     
     
     if ( theVar->isVectorVariable() )

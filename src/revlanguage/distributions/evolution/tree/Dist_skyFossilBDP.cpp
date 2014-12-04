@@ -154,7 +154,7 @@ const MemberRules& Dist_skyFossilBDP::getParameterRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"     , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"         , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( RevBayesCore::RbVector<double>(0.0) ) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"    , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>( RevBayesCore::RbVector<double>(0.0)) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>( RevBayesCore::RbVector<double>(1.0)) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"    , ModelVector<Probability>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Probability>() ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );

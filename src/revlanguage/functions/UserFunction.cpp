@@ -58,7 +58,7 @@ RevPtr<RevVariable> UserFunction::execute( void )
 RevPtr<RevVariable> UserFunction::executeCode( void )
 {
     // Create new evaluation frame with function base class execution environment as parent
-    Environment* functionFrame = new Environment( getEnvironment() );
+    Environment* functionFrame = new Environment( getEnvironment(), "UserFunctionEnvironment" );
     
     // Add the arguments to our environment
     for ( std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it )

@@ -43,7 +43,7 @@ RevPtr<RevVariable> UserProcedure::execute( void )
     RevPtr<RevVariable> retVar = NULL;
     
     // Create new evaluation frame with function base class execution environment as parent
-    Environment* procedureFrame = new Environment( getEnvironment() );
+    Environment* procedureFrame = new Environment( getEnvironment(), "UserProcedureEnvironment" );
     
     // Add the arguments to our environment as alias variables (modifiable and assignable)
     for (std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it)

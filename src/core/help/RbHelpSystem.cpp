@@ -21,7 +21,7 @@ using namespace RevBayesCore;
 RbHelpSystem::RbHelpSystem()
 {
     
-    initializeHelp("/Users/workshop2014/revbayes/help");
+    initializeHelp("help");
 }
 
 

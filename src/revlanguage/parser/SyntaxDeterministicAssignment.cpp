@@ -62,7 +62,7 @@ void SyntaxDeterministicAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevV
 
 /** Should we execute the rhs dynamically? Yes, because this is a deterministic assingment. */
 bool SyntaxDeterministicAssignment::isDynamic( void )
-{
+{   
     return true;
 }
 
