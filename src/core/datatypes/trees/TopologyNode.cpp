@@ -255,6 +255,25 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
     }
 }
 
+void TopologyNode::addParameter(std::string const &n, const std::vector<std::string*> &p, bool internalOnly)
+{
+    
+    if ( !internalOnly || !isTip()  )
+    {
+        std::stringstream o;
+        o << n << "=" << *p[index];
+        std::string comment = o.str();
+        nodeComments.push_back( comment );
+        
+        newickNeedsRefreshing = true;
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
+            (*it)->addParameter(n, p, internalOnly);
+        }
+    }
+}
+
 
 /* Build newick string */
 std::string TopologyNode::buildNewickString( void )
@@ -390,6 +409,21 @@ void TopologyNode::clearBranchParameters( void )
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
             (*it)->clearBranchParameters();
+        }
+    }
+}
+
+
+void TopologyNode::clearNodeParameters( void )
+{
+    
+    nodeComments.clear();
+    if ( !isTip()  )
+    {
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
+            (*it)->clearNodeParameters();
         }
     }
 }
@@ -662,24 +696,32 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
             return RbConstants::Size_t::nan;
         }
     }
-    
-    if ( myTaxa.size() == yourTaxa.size() )
-    {
+	
+	if ( myTaxa.size() == yourTaxa.size() ) {
+		
+		// this may be the correct node for the clade, but check to see if there
+		// is a child node that contains the clade first
+		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+			
+			if ( (*it)->containsClade(c,true) && !(*it)->isTip() ) 
+				return (*it)->getCladeIndex( c );
+			
+		}
+		
         return index;
-    }
-    else
-    {
-        bool contains = false;
-        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-            contains |= (*it)->containsClade(c,true);
-            if ( contains )
-            {
-                return (*it)->getCladeIndex( c );
-            }
-        }
+		
+    } else {
+		
+		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+			
+			if ( (*it)->containsClade(c,true) ) 
+				return (*it)->getCladeIndex( c );
+			
+		}
+		
         return RbConstants::Size_t::nan;
-    }
+		
+	}
 }
 
 

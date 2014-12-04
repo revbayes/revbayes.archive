@@ -1,0 +1,72 @@
+# by Will Freyman
+#
+# source("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/mk1.Rev")
+#
+
+# This is an example using the Markov k-state 1 parameter model (Mk1) to reconstruct
+# ancestral character states. The one parameter is the rate of change between
+# all k states, so any particular transition is equally probable. 
+
+
+# read the data 
+stateData <- readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/character_data.tsv", type="NaturalNumbers")
+
+# Here we work under a fixed topology, but it is possible to jointly estimate topology and 
+# ancestral state.
+treeArray <- readBranchLengthTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
+psi <- treeArray[1]
+
+
+#######################
+# Mk1 Model
+#######################
+
+
+# rate of change
+lambda ~ exponential(10.0)
+
+# the number of states
+k <- 3
+
+# create rate matrix
+Q := mk1(k, lambda)
+
+# do not assume stationarity
+root_frequencies := simplex(1,1,1)
+
+
+
+##############
+# set up moves
+#############
+
+mi <- 0
+moves[mi++] <- mvScale(lambda) 
+
+###############
+# create the model
+###############
+seq ~ phyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies, type="NaturalNumbers")
+
+# clamp data
+seq.clamp(stateData)
+
+mymodel <- model(Q)
+
+# create the monitors
+monitors[1] <- screenmonitor(printgen=10, lambda)
+monitors[2] <- filemonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", printgen=10, separator = "	", psi)
+monitors[3] <- mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log",printgen=10, separator = "	", tree=psi, ctmc=seq, type="NaturalNumbers")
+monitors[4] <- modelmonitor(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_model.log",printgen=10, separator = "	")
+
+# set up mcmc
+mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc.run(1000)
+
+# now summarize ancestral states over the tree
+ancestral_state_trace <- readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log", separator="	"); 
+ancestral_state_tree_trace <- readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", treetype="non-clock", separator="	"); 
+ancestralStateTree(psi, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_final.tree")
+
+# The tree trace steps were necessary because the ancestralStateTree function does not
+# assume the topology is fixed.
