@@ -37,7 +37,7 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The Jukes and Cantor model (1969) is the simplest substitution model and requires no parameter. It assumes equal transition rates among any two states. It works on alphabets of any size but was initially described by Jukes and Cantor for DNA (4 states). It is fast but makes a number of usually unrealistic assumptions, including equal base frequencies, and equal mutation rates.
+            The Jukes and Cantor model (1969) is the simplest substitution model and requires no parameter. It assumes equal transition rates among any two states. It works on alphabets of any size but was initially described by Jukes and Cantor for DNA (4 states). It is fast but makes a number of usually unrealistic assumptions, including equal base frequencies in the sequences, and equal mutation rates.
             </p>
         </details>
 
@@ -47,11 +47,28 @@
              matrix <- fnJC(numStates=5)
              print(matrix)
              
-             # We are going to simulate over a single branch of length 1.0
+             # We build a tree with 3 leaves
+             n_species <- 3
+             for (i in 1:n_species) {
+        			s_names[i] = "Species_"+i
+			 }
+             speciation ~ dnExponential(10.0)
+			 extinction ~ dnExponential(10.0)
+			 tree_height ~ dnUnif(0,1.0)
+			 speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
              
+             # Let's simulate 30 sites over this tree, starting from a sequence all in the first state.
+             # Root frequencies: all in the first state
+             frequencyFirstState <- 1.0
+             rootFrequencies <- simplex(frequencyFirstState, 0.0, 0.0, 0.0, 0.0)
+             n_sites=30
+             aln ~ dnPhyloCTMC(tree=speciesTree, Q=matrix, rootFrequencies=rootFrequencies, nSites=n_sites, type="Standard")
+			
+			 # Now we can have a look at the sequences in the resulting alignment
+			 aln.show()             
              
-             # We start from a sequence where all sites are the same
-             
+             # And we can compute the log probability of the alignment
+             aln.lnProbability()
              ]]>
 
         </example>
@@ -67,7 +84,10 @@ In Mammalian protein metabolism, Vol. III, pp. 21-132.
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>fnGTR</entry>
+            <entry>fnHKY</entry>
+            <entry>fnF81</entry>
+            <entry>fnPomo</entry>
         </seeAlso>
 
 

@@ -72,7 +72,10 @@
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>fnJC</entry>
+            <entry>fnGTR</entry>
+            <entry>fnF81</entry>
+            <entry>fnPomo</entry>
         </seeAlso>
 
 

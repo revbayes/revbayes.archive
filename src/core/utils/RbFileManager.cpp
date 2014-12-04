@@ -155,12 +155,6 @@ void RbFileManager::createDirectoryForFile( void )
         directoryName += pathSeparator;
     }
     
-//    boost::filesystem::path dir(dir_path);
-//	if(boost::filesystem::create_directory(dir))
-//    {
-//		std::cout << "Success" << "\n";
-//	}
-    
 }
 
 
@@ -216,6 +210,20 @@ const std::string& RbFileManager::getFileName( void ) const
     return fileName;
 }
 
+std::string RbFileManager::getFileNameWithoutExtension( void ) const
+{
+    std::vector<std::string> tokens;
+    StringUtilities::stringSplit(fileName,".",tokens);
+    std::string name = "";
+    
+    for (size_t i = 0; i < tokens.size()-1; ++i)
+    {
+        name += tokens[i];
+    }
+    
+    return name;
+}
+
 
 const std::string& RbFileManager::getFilePath( void ) const
 {
@@ -231,13 +239,7 @@ const std::string& RbFileManager::getFullFileName( void ) const
 
 std::string RbFileManager::getFullFilePath( void ) const
 {
-//    DIR* d = opendir( fullFileName.c_str() );
-//    struct dirent *ent;
-//    while((ent = readdir(d)) != NULL)
-//    {
-//        std::cout << (ent->d_name) << std::endl;
-//    }
-//    std::string tmp = d->d_name;
+
     return RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
 }
 

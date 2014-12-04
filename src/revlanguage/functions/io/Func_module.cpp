@@ -21,6 +21,8 @@
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_module.h"
+#include "Module.h"
+#include "ModuleSystem.h"
 #include "Parser.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -52,9 +54,9 @@ Func_module* Func_module::clone( void ) const {
 /** Execute function */
 RevPtr<RevVariable> Func_module::execute( void ) {
     
-    /* Open file */
-    std::string fname = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-    std::ifstream inFile( fname.c_str() );
+    /* Get the module */
+    std::string moduleName = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+    const Module& mod = ModuleSystem::getModuleSystem().getModule( moduleName );
     
     Environment *execEnv = env;
     
@@ -88,40 +90,38 @@ RevPtr<RevVariable> Func_module::execute( void ) {
 //        execEnv->addVariable("namespace", new RlString(ns) );
 //    }
     
-    if ( !inFile )
-        throw RbException( "Could not open file \"" + fname + "\"" );
-    
     /* Initialize */
-    std::string commandLine;
+    const std::vector<std::string>& commandLines = mod.getCommandLines();
+    std::string command = "";
     int lineNumber = 0;
     int result = 0;     // result from processing of last command
-    RBOUT("Processing file \"" + fname + "\"");
+    RBOUT("Processing module \"" + moduleName + "\"");
     
     /* Command-processing loop */
-    while ( inFile.good() ) {
+    for ( std::vector<std::string>::const_iterator it = commandLines.begin(); it != commandLines.end(); ++it)
+    {
         
-        // Read a line
-        std::string line;
-        getline( inFile, line );
+        // Get a line
+        const std::string& line = *it;
         lineNumber++;
         
         // If previous result was 1 (append to command), we do this
         if ( result == 1 )
-            commandLine += line;
+            command += line;
         else
-            commandLine = line;
+            command = line;
         
         // Process the line and record result
-        result = Parser::getParser().processCommand( commandLine, execEnv );
+        result = Parser::getParser().processCommand( command, execEnv );
         if ( result == 2 ) {
             std::ostringstream msg;
-            msg << "Problem processing line " << lineNumber << " in file \"" << fname << "\"";
+            msg << "Problem processing line " << lineNumber << " in module \"" << moduleName << "\"";
             throw RbException( msg.str() );
         }
     }
     
     /* Return control */
-    RBOUT("Processing of file \"" + fname + "\" completed");
+    RBOUT("Processing of module \"" + moduleName + "\" completed");
     
     return NULL;
 }
