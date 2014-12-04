@@ -38,19 +38,22 @@ UserInterface::UserInterface( void ) :
 }
 
 UserInterface::UserInterface( const UserInterface &u ) :
-processID( u.processID )
+    processID( u.processID )
 {
 }
 
 /** Ask user a yes/no question */
-bool UserInterface::ask(std::string msg) {
+bool UserInterface::ask(std::string msg)
+{
 
     std::string answer, dummy;
     std::cout << RevBayesCore::RbUtils::PAD << (msg + "? (yes/no) ");     // not using RBOUT or output because we do not want a newline
     std::cin >> answer;
     for (size_t i=0; i<answer.size(); i++)
+    {
         answer[i] = char( tolower(answer[i])) ;
-
+    }
+    
     while (answer!="y" && answer!="yes" && answer!="n" && answer!="no") 
     {
         std::getline(std::cin, dummy);
@@ -60,14 +63,22 @@ bool UserInterface::ask(std::string msg) {
 
         std::cin >> answer;
         for (size_t i=0; i<answer.size(); i++)
+        {
             answer[i] = char( tolower(answer[i]) );
+        }
+        
     }
     std::getline(std::cin, dummy);
 
     if (answer[0] == 'y')
+    {
         return true;
+    }
     else
+    {
         return false;
+    }
+    
 }
 
 
@@ -76,7 +87,7 @@ void UserInterface::output(std::string msg) {
 
     if ( processID == 0 )
     {
-    std::cout << StringUtilities::formatStringForScreen( msg, RevBayesCore::RbUtils::PAD, RevBayesCore::RbUtils::PAD, RbSettings::userSettings().getLineWidth() );
+        std::cout << StringUtilities::formatStringForScreen( msg, RevBayesCore::RbUtils::PAD, RevBayesCore::RbUtils::PAD, RbSettings::userSettings().getLineWidth() );
     }
     
 }
@@ -89,9 +100,14 @@ void UserInterface::output(std::string msg, const bool hasPadding)
     if ( processID == 0 )
     {
         if (hasPadding == true)
+        {
             output(msg);
+        }
         else
+        {
             std::cout << msg << std::endl;
+        }
+        
     }
 }
 
