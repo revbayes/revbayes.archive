@@ -47,6 +47,7 @@ namespace RevBayesCore {
         const std::string&      getCurrentDirectory(void) const;                                                                    //!< Returns the default directory for the process 
         std::string             getFileExtension(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFileName(void) const;                                                                            //!< Returns the name of the file (could be empty)
+        std::string             getFileNameWithoutExtension(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFilePath(void) const;                                                                            //!< Returns the name of the path
         const std::string&      getFullFileName(void) const;
         std::string             getFullFilePath(void) const;                                                                            //!< Returns the name of the path

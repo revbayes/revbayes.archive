@@ -132,22 +132,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
         // find position of right most dot
         size_t dotPosition = cmd.rfind(".");
 
-        if ((pi.baseVariable != NULL) || (dotPosition > commandPos)) {
-            // ---------- object defined ------------
-            std::string baseVariable;
-            if (commandPos > 0) {
-                commandPos++;
-            }
-            if (pi.baseVariable == NULL) {
-                baseVariable = cmd.substr(commandPos, dotPosition - commandPos);
-            } else {
-                baseVariable = pi.baseVariable->getName();
-            }
-
-            commandPos = std::max(commandPos, dotPosition) + 1;
-            completions = workspaceUtils.getObjectMembers(baseVariable);
-
-        } else if (pi.functionName != "") {
+        if (pi.functionName != "") {
             // ---------- function defined ------------
             if (pi.argumentLabel != "") { // assigning an argument label                
                 commandPos = cmd.rfind("=") + 1;
