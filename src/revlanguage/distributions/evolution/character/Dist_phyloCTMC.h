@@ -116,7 +116,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     if ( dt == "DNA" ) 
     {
         RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist =
-            new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, false, n);
+            new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -433,7 +433,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 			RevBayesCore::g_MAX_NUM_CHROMOSOMES = nChars;
         }
 
-		RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType>(tau, nChars, false, n);
+		RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::ChromosomesState, typename treeType::valueType>(tau, nChars, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -485,7 +485,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         d = dist;
     }
-	else if ( dt == "Mk1" )
+	else if ( dt == "NaturalNumbers" )
     {
         // we get the number of states from the rates matrix
         size_t nChars = 1;
@@ -502,7 +502,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 			RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         }
 		
-		RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(tau, nChars, false, n);
+		RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(tau, nChars, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
