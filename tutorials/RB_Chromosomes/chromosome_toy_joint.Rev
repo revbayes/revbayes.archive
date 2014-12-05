@@ -1,0 +1,197 @@
+# by Will Freyman
+#
+# source("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/chromosome_toy_joint.Rev")
+#
+
+######################
+# read in the data 
+######################
+
+# this is toy data in which there are clearly 2 polyploidization events and no other events
+chromoData = readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv", type="Chromosomes")
+
+# get DNA sequences
+matK_seq = readDiscreteCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_treebase_aligned.fas")
+
+# read in the starting tree that is consistent with our outgroup constraints
+# this is a ML tree, so should be a pretty good start for the MCMC
+starting_tree <- readBranchLengthTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")[1]
+
+# Get some useful variables from the data. We need these later on.
+n_species = matK_seq.ntaxa()
+n_sites = matK_seq.nchar(1)
+names = matK_seq.names()
+n_branches = 2 * n_species - 3
+
+# get ingroup and outgroup for constraints
+ingroup = ["Aristolochia_serpantaria","Aristolochia_arborea","Aristolochia_wardiana","Aristolochia_californica","Aristolochia_saccata","Aristolochia_mollisima","Aristolochia_tomentosa","Aristolochia_neolongifolia_SETS52","Aristolochia_neolongifolia_SETS96"]
+i = 1
+for (j in 1:names.size()) {
+    found = false
+    for (k in 1:ingroup.size()) {
+        if (ingroup[k] == names[j]) {
+            found = true
+            break
+        }
+        k++
+    }
+    if (!found) {
+        outgroup[i] = names[j]
+        i++
+    }
+    j++
+}
+mi = 0
+clade_ingroup = clade(ingroup)
+clade_outgroup = clade(outgroup)
+constraints = v(clade_ingroup, clade_outgroup)
+
+
+
+
+##############
+# Tree model #
+##############
+
+#### Specify a uniform prior on the tree topology ####
+## we need to constrain the outgroup for ancestral chromosome reconstruction!!
+topology ~ dnUniformTopology(n_species, names, constraints)
+
+# use the starting tree consistent with constraints
+topology.setValue(starting_tree.topology())
+
+# moves on the tree
+moves[mi++] = mvNNI(topology)
+
+#### Specify a prior and moves on the branch lengths ####
+# create a random variable for each branch length using a for loop
+for (i in 1:n_branches) {
+    # We use here the exponential distribution with rate 0.1 as the branch length prior
+    br_lens[i] ~ dnExponential(1.0)
+
+    # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+	moves[mi++] = mvScale(br_lens[i])
+}
+
+TL := sum(br_lens)
+
+# Build the tree by combining the topology with the branch length.
+phylogeny := treeAssembly(topology, br_lens)
+
+
+
+
+######################
+# Substitution Model #
+######################
+
+#### specify the GTR substitution model applied uniformly to all sites ###
+er_prior <- v(1,1,1,1,1,1)
+er ~ dnDirichlet(er_prior)
+moves[mi++] = mvSimplexElementScale(er)
+
+
+pi_prior <- v(1,1,1,1)
+pi ~ dnDirichlet(pi_prior)
+moves[mi++] = mvSimplexElementScale(pi)
+
+
+#### create a deterministic variable for the rate matrix ####
+Q := fnGTR(er,pi)
+
+
+
+
+###################
+# Sequence evolution continuous-time Markov chain (CTMC)
+###################
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, branchRates=1.0, type="DNA")
+
+# attach the sequence data
+seq.clamp(matK_seq)
+
+
+
+
+#######################
+# Chromosome Model
+#######################
+
+# rate of chromosome gains
+pr_lambda ~ dnUnif(0.0, 10.0)
+lambda ~ dnExponential(pr_lambda)
+lambda.setValue(1.0)
+
+# rate of chromosome losses
+pr_delta ~ dnUnif(0.0, 10.0)
+delta ~ dnExponential(pr_delta)
+delta.setValue(1.0)
+
+# rate of polyploidization
+pr_rho ~ dnUnif(0.0, 10.0)
+rho ~ dnExponential(pr_rho)
+rho.setValue(1.0)
+
+# max number of chromosomes
+max_chromo = 26
+
+# create rate matrix
+R := fnChromosomes(max_chromo, lambda, delta, rho)
+
+# do not assume stationarity
+root_frequencies := simplex(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+#root_frequencies := simplex(rep(max_chromo, 1))
+
+# set up moves
+moves[mi++] = mvScale(lambda, tune=true) 
+moves[mi++] = mvScale(delta, tune=true) 
+moves[mi++] = mvScale(rho, tune=true) 
+
+moves[mi++] = mvScale(pr_lambda, tune=true)
+moves[mi++] = mvScale(pr_delta, tune=true)
+moves[mi++] = mvScale(pr_rho, tune=true)
+
+
+
+
+###############
+# Chromosome continuous-time Markov chain (CTMC)
+###############
+chromo ~ dnPhyloCTMC(Q=R, tree=phylogeny, rootFreq=root_frequencies,type="Chromosomes")
+
+# clamp data
+chromo.clamp(chromoData)
+
+
+
+
+##################
+# Finalize the integrated model and set up MCMC
+##################
+
+mymodel = model(chromo)
+
+# create the monitors
+monitors[1] = mnScreen(printgen=10, lambda, delta, rho)
+monitors[2] = mnFile(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", printgen=10, separator = "	", phylogeny)
+monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log",printgen=10, separator = "	", tree=phylogeny, ctmc=chromo, type="Chromosomes")
+monitors[4] = mnModel(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_model.log",printgen=10, separator = "	")
+
+
+# set up mcmc
+mymcmc = mcmc(mymodel, monitors, moves)
+#mymcmc.burnin(generations=1000,tuningInterval=100)
+mymcmc.run(100)
+
+
+# Summarize the results, first get the MAP tree.
+# These steps are necessary because the topology was not fixed.
+treetrace = readTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", treetype="non-clock", separator="	"); 
+map = mapTree(treetrace,"/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_map.tree")
+
+# now summarize ancestral states over the MAP tree
+ancestral_state_trace = readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log", separator="	"); 
+ancestral_state_tree_trace = readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", treetype="non-clock", separator="	"); 
+ancestralStateTree(map, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_final.tree")

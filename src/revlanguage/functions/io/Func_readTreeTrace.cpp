@@ -232,9 +232,7 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             // re-root the tree so that we can compare the the trees
             tau->reroot( outgroup );
             
-            t.addObject( *tau );
-            
-            delete tau;
+            t.addObject( tau );
         }
     }
     
@@ -330,10 +328,7 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             RevBayesCore::BranchLengthTree *blTree = c.convertFromNewick( columns[index] );
             RevBayesCore::TimeTree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
             
-            t.addObject( *tau );
-            
-            delete tau;
-
+            t.addObject( tau );
         }
     }
     

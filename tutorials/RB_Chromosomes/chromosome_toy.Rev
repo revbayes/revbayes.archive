@@ -1,0 +1,85 @@
+# by Will Freyman
+#
+# source("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/chromosome_toy.Rev")
+#
+
+# read the data 
+# this is toy data in which there are clearly 2 polyploidization events and no other events
+chromoData = readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv", type="Chromosomes")
+
+# work under fixed topology with total tree length = 0.2907
+# so we expect lambda and delta to be about 0, and rho to be 6.88 (=2/0.2907)
+treeArray = readBranchLengthTrees("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_tree_lengths.nwk")
+psi <- treeArray[1]
+
+
+#######################
+# Chromosome Model
+#######################
+
+
+# rate of chromosome gains
+pr_lambda ~ dnUnif(0.0, 10.0)
+lambda ~ dnExponential(pr_lambda)
+lambda.setValue(1.0)
+
+# rate of chromosome losses
+pr_delta ~ dnUnif(0.0, 10.0)
+delta ~ dnExponential(pr_delta)
+delta.setValue(1.0)
+
+# rate of polyploidization
+pr_rho ~ dnUnif(0.0, 10.0)
+rho ~ dnExponential(pr_rho)
+rho.setValue(1.0)
+
+# max number of chromosomes
+max_chromo = 26
+
+# create rate matrix
+Q := fnChromosomes(max_chromo, lambda, delta, rho)
+
+# do not assume stationarity
+root_frequencies := simplex(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+#root_frequencies := simplex(rep(max_chromo, 1))
+
+##############
+# set up moves
+#############
+mi = 0
+moves[mi++] = mvScale(lambda, tune=true) 
+moves[mi++] = mvScale(delta, tune=true) 
+moves[mi++] = mvScale(rho, tune=true) 
+
+moves[mi++] = mvScale(pr_lambda, tune=true)
+moves[mi++] = mvScale(pr_delta, tune=true)
+moves[mi++] = mvScale(pr_rho, tune=true)
+
+
+###############
+# create the model
+###############
+seq ~ dnPhyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies,type="Chromosomes")
+
+# clamp data
+seq.clamp(chromoData)
+
+mymodel = model(Q)
+
+# create the monitors
+monitors[1] = mnScreen(printgen=10, lambda, delta, rho)
+monitors[2] = mnFile(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.trees", printgen=10, separator = "	", psi)
+monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.log",printgen=10, separator = "	", tree=psi, ctmc=seq, type="Chromosomes")
+monitors[4] = mnModel(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy_model.log",printgen=10, separator = "	")
+
+# set up mcmc
+#mymcmc = mcmc(mymodel, monitors, moves)
+#mymcmc.run(100)
+
+# now summarize ancestral states over the tree
+ancestral_state_trace = readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.log", separator="	") 
+ancestral_state_tree_trace = readAncestralStateTreeTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.trees", treetype="non-clock", separator="	") 
+ancestralStateTree(psi, ancestral_state_trace, ancestral_state_tree_trace, "/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy_final.tree")
+
+# The tree trace steps were necessary because the ancestralStateTree function does not
+# assume the topology is fixed.

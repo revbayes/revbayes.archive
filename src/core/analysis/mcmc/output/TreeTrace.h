@@ -24,9 +24,9 @@ namespace RevBayesCore {
         // overloaded functions from RbObject
         TreeTrace*                  clone(void) const;                                                          //!< Clone object
         void                        printValue(std::ostream& o) const;                                          //!< Print value for user
-    
-        void                        addObject(const treeType& d);
-        treeType&                   objectAt(size_t index)                         { return values.at(index); }
+		
+        void                        addObject(treeType *d);			
+        treeType*                   objectAt(size_t index)                         { return values.at(index); }			
         void                        removeLastObject();
         void                        removeObjectAtIndex(int index);
         size_t                      size() { return values.size(); }
@@ -38,8 +38,8 @@ namespace RevBayesCore {
         std::string                 getFileName()                                   { return fileName; }
         std::string                 getParameterName()                              { return parmName; }
         int                         getSamples()                                    { return (int)values.size(); }
-        int                         getStepSize()                                   { return stepSize; }
-        std::vector<treeType>&      getValues()                                     { return values; }
+        int                         getStepSize()                                   { return stepSize; }		
+        std::vector<treeType*>      getValues()                                     { return values; }			
         int                         hasConverged()                                  { return converged; }
         int                         hasPassedEssThreshold()                         { return passedEssThreshold; }
         int                         hasPassedGelmanRubinTest()                      { return passedGelmanRubinTest; }
@@ -69,7 +69,7 @@ namespace RevBayesCore {
     
     private:
     
-        std::vector<treeType>   values;                                     //!< the values of this TreeTrace
+        std::vector<treeType*>   values;                                     //!< the values of this TreeTrace
     
         std::string             parmName;
         std::string             fileName;
@@ -101,6 +101,7 @@ namespace RevBayesCore {
 
 template<class treeType>
 RevBayesCore::TreeTrace<treeType>::TreeTrace() {
+	values.clear();
     invalidate();
 }
 
@@ -123,8 +124,7 @@ RevBayesCore::TreeTrace<treeType>::TreeTrace(const TreeTrace& t) {
     passedSemThreshold              = t.passedSemThreshold;
     passedIidBetweenChainsStatistic = t.passedIidBetweenChainsStatistic;
     passedGelmanRubinTest           = t.passedGelmanRubinTest;
-    
-    values                          = t.values;
+    values                          = t.values;	
 }
 
 
@@ -135,9 +135,10 @@ RevBayesCore::TreeTrace<treeType>::~TreeTrace() {
 
 
 template<class treeType>
-void RevBayesCore::TreeTrace<treeType>::addObject(const treeType &t) {
-    values.push_back(t);
-    
+void RevBayesCore::TreeTrace<treeType>::addObject(treeType *t) {	
+	
+	values.push_back(t);
+	
     // invalidate for recalculation of meta data
     invalidate();
 }
