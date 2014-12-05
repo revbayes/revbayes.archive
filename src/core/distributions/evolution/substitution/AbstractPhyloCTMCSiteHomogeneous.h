@@ -793,7 +793,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
     {
         this->value->addTaxonData( taxa[i] );
     }
-    
+        
     // compress the data and initialize internal variables
     this->compress();
     

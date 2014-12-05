@@ -95,7 +95,6 @@ void ModuleSystem::loadModules(const std::string &dir)
         Module m = Module(*it);
         RevBayesCore::RbFileManager tmp = RevBayesCore::RbFileManager( *it );
         std::string name = tmp.getFileNameWithoutExtension();
-        std::cerr << "Adding module with name '" << name << "'\n";
         modules.insert( std::pair<std::string, Module>(name,m) );
     }
     

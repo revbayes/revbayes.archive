@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __revbayes_proj__DistributionCompoundPoissonNormal__
-#define __revbayes_proj__DistributionCompoundPoissonNormal__
+#ifndef DistributionCompoundPoissonNormal_H
+#define DistributionCompoundPoissonNormal_H
 
 namespace RevBayesCore {
     

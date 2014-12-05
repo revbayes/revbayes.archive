@@ -45,7 +45,8 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     std::string commandLine;
     int result = 0;
 
-    for(unsigned int i =0 ; i < sourceFiles.size(); i++){
+    for (unsigned int i =0 ; i < sourceFiles.size(); i++)
+    {
         line = "source(\"" + sourceFiles[i] + "\")";
         std::cout << "> " << line << std::endl;
 
@@ -57,7 +58,8 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
         result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
 
         // We just hope for better input next time
-        if (result == 2) {
+        if (result == 2)
+        {
             result = 0;
         }
     }

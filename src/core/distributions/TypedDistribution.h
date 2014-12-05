@@ -33,7 +33,6 @@
 
 #include "Distribution.h"
 #include "Function.h"
-#include "UnivariateFunction.h"
 
 #include <iostream>
 
@@ -87,7 +86,7 @@ namespace RevBayesCore {
 }
 
 
-#include "Cloneable.h"
+#include "Cloner.h"
 #include "Cloneable.h"
 #include "IsDerivedFrom.h"
 
@@ -103,7 +102,7 @@ RevBayesCore::TypedDistribution<valueType>::TypedDistribution(valueType *v) : Di
 template <class valueType>
 RevBayesCore::TypedDistribution<valueType>::TypedDistribution(const TypedDistribution &d) : Distribution(d), 
     dagNode( NULL ), 
-    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *d.value ) ) 
+    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *d.value ) )
 {
     
 }
