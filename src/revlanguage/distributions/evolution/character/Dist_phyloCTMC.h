@@ -115,7 +115,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     if ( dt == "DNA" ) 
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType> *dist =
-            new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
+            new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType>(tau, false, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

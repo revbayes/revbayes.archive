@@ -68,7 +68,7 @@ mymodel = model(Q)
 
 # create the monitors
 monitors[1] = mnScreen(printgen=10, lambda, delta, rho)
-monitors[2] = mnExtNewick(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.trees", printgen=10, separator = "	", psi)
+monitors[2] = mnFile(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.trees", printgen=10, separator = "	", psi)
 monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.log",printgen=10, separator = "	", tree=psi, ctmc=seq, type="Chromosomes")
 monitors[4] = mnModel(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy_model.log",printgen=10, separator = "	")
 

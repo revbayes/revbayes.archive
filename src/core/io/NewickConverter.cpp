@@ -204,7 +204,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 
                 // read the parameter name
                 std::string paramValue = "";
-                while ( ss.good() && (c = char( ss.peek() ) ) != ']' && c != ',')
+                while ( ss.good() && (c = char( ss.peek() ) ) != ']' && c != ',' && c != ':')
                 {
                     paramValue += char( ss.get() );
                 }
@@ -305,7 +305,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             
             // read the parameter name
             std::string paramValue = "";
-            while ( ss.good() && (c = char( ss.peek() )) != ']' && c != ',') 
+            while ( ss.good() && (c = char( ss.peek() )) != ']' && c != ',' && c != ':') 
             {
                 paramValue += char( ss.get() );
             }

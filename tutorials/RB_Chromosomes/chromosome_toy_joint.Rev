@@ -11,7 +11,7 @@
 chromoData = readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv", type="Chromosomes")
 
 # get DNA sequences
-matK_seq = readCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_treebase_aligned.fas")
+matK_seq = readDiscreteCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_treebase_aligned.fas")
 
 # read in the starting tree that is consistent with our outgroup constraints
 # this is a ML tree, so should be a pretty good start for the MCMC
@@ -175,7 +175,7 @@ mymodel = model(chromo)
 
 # create the monitors
 monitors[1] = mnScreen(printgen=10, lambda, delta, rho)
-monitors[2] = mnExtNewick(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", printgen=10, separator = "	", phylogeny)
+monitors[2] = mnFile(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", printgen=10, separator = "	", phylogeny)
 monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log",printgen=10, separator = "	", tree=phylogeny, ctmc=chromo, type="Chromosomes")
 monitors[4] = mnModel(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_model.log",printgen=10, separator = "	")
 
