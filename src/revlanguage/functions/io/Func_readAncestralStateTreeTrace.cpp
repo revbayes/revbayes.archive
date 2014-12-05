@@ -332,7 +332,7 @@ TreeTrace<TimeTree>* Func_readAncestralStateTreeTrace::readTimeTrees(const std::
             RevBayesCore::TreeTrace<RevBayesCore::TimeTree>& t = data[0];
             
             RevBayesCore::NewickConverter c;
-            RevBayesCore::BranchLengthTree *blTree = c.convertFromNewick( columns[index] );
+            RevBayesCore::BranchLengthTree *blTree = c.convertFromNewickNoReIndexing( columns[index] );
             RevBayesCore::TimeTree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
             
             t.addObject( tau );

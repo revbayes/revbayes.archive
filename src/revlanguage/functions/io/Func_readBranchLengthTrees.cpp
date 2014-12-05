@@ -37,10 +37,9 @@ RevPtr<RevVariable> Func_readBranchLengthTrees::execute( void ) {
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
-    reader.clearWarnings();
     
     ModelVector<BranchLengthTree> *trees = new ModelVector<BranchLengthTree>();
-    std::vector<RevBayesCore::BranchLengthTree*> tmp = *reader.readBranchLengthTrees( fn.getValue() );
+    std::vector<RevBayesCore::BranchLengthTree*> tmp = *(reader.readBranchLengthTrees( fn.getValue() ));
     for (std::vector<RevBayesCore::BranchLengthTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
     {
         trees->push_back( BranchLengthTree(*t) );
