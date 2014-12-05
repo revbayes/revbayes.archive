@@ -4,8 +4,10 @@
  *
  */
 
+#include "ModuleSystem.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"
+#include "RbException.h"
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "RlUserInterface.h"
@@ -20,7 +22,18 @@ RevLanguageMain::RevLanguageMain(void)
 }
 
 
-void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles) {
+void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles)
+{
+    
+    // load the modules
+    try {
+        RevLanguage::ModuleSystem::getModuleSystem().loadModules("modules");
+    }    
+    catch ( RbException e )
+    {
+        std::cerr << e.getMessage() << std::endl;
+    }
+
 
     // Print a nifty message
     RbVersion version = RbVersion();
@@ -28,9 +41,6 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     RevLanguage::UserInterface::userInterface().output("", false);
     
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
-    
-    // Print an extra line to separate prompt from possible output from help call
-    // RevLanguage::UserInterface::userInterface().output("\n");
 
 #if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;
