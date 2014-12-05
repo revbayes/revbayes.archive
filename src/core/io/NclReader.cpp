@@ -6,7 +6,6 @@
 #include "NewickConverter.h"
 #include "NewickTreeReader.h"
 #include "NclReader.h"
-#include "RbErrorStream.h"
 #include "RbFileManager.h"
 #include "RnaState.h"
 #include "StandardState.h"
@@ -16,6 +15,7 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
+#include "RlUserInterface.h"
 
 using namespace RevBayesCore;
 
@@ -1538,23 +1538,23 @@ std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename
     return trees;
 }
 
-std::vector<AdmixtureTree*> NclReader::readAdmixtureTrees(const std::string &treeFileName)
-{
-    std::vector<AdmixtureTree*> adm_trees;
-    std::vector<BranchLengthTree*>* m = readBranchLengthTrees(treeFileName);
-    std::vector<BranchLengthTree*>::iterator it;
-    
-    std::vector<std::string> names;
-    if (m != NULL) {
-        for (std::vector<BranchLengthTree*>::iterator it = m->begin(); it != m->end(); it++) {
-            AdmixtureTree* convertedTree = TreeUtilities::convertToAdmixtureTree( *(*it), names);
-            delete (*it);
-            adm_trees.push_back( convertedTree );
-        }
-    }
-    
-    return adm_trees;
-}
+//std::vector<AdmixtureTree*> NclReader::readAdmixtureTrees(const std::string &treeFileName)
+//{
+//    std::vector<AdmixtureTree*> adm_trees;
+//    std::vector<BranchLengthTree*>* m = readBranchLengthTrees(treeFileName);
+//    std::vector<BranchLengthTree*>::iterator it;
+//    
+//    std::vector<std::string> names;
+//    if (m != NULL) {
+//        for (std::vector<BranchLengthTree*>::iterator it = m->begin(); it != m->end(); it++) {
+//            AdmixtureTree* convertedTree = TreeUtilities::convertToAdmixtureTree( *(*it), names);
+//            delete (*it);
+//            adm_trees.push_back( convertedTree );
+//        }
+//    }
+//    
+//    return adm_trees;
+//}
 
 
 /** Set excluded characters and taxa */

@@ -30,7 +30,6 @@
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "Function.h"
-#include "UserInterface.h"
 #include "Workspace.h"
 
 #include <cassert>

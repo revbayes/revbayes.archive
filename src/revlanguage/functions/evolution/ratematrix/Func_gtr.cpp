@@ -8,7 +8,6 @@
 
 #include "GtrRateMatrixFunction.h"
 #include "Func_gtr.h"
-#include "RateMatrix_GTR.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"

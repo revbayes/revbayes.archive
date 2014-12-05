@@ -1,0 +1,68 @@
+//
+//  MultivariateBrownianProcess.h
+//  revbayes
+//
+//  Created by Nicolas Lartillot on 2014-03-26.
+//  Copyright (c) 2014 revbayes team. All rights reserved.
+//
+
+#ifndef __revbayes__PhyloMultivariateBrownianProcess__
+#define __revbayes__PhyloMultivariateBrownianProcess__
+
+#include <iostream>
+
+
+#include "ModelVector.h"
+#include "MatrixRealSymmetric.h"
+#include "Real.h"
+#include "TimeTree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore {
+    
+    class PhyloMultivariateBrownianProcess : public TypedDistribution< RbVector< RbVector<double> > > {
+        
+    public:
+        // constructor(s)
+        PhyloMultivariateBrownianProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<MatrixRealSymmetric>* insigma);
+        
+        // public member functions
+        PhyloMultivariateBrownianProcess*                       clone(void) const;
+        
+        double                                                  computeLnProbability(void);
+        size_t                                                  getDim() const {return sigma->getValue().getDim();}
+        void                                                    redrawValue(void);        
+        const TimeTree*                                         getTimeTree() const {return &tau->getValue();}
+        
+    protected:
+        // Parameter management functions
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+
+        // special handling of state changes
+        void                                                    keepSpecialization(DagNode* affecter);
+        void                                                    restoreSpecialization(DagNode *restorer);
+        void                                                    touchSpecialization(DagNode *toucher);
+        
+    private:
+        // helper methods
+        void                                                    simulate();
+        double                                                  recursiveLnProb(const TopologyNode& n);
+        void                                                    recursiveSimulate(const TopologyNode& n);
+
+        // special handling of state changes
+        void                                                    flagNodes();        
+        void                                                    corruptAll();
+        void                                                    recursiveCorruptAll(const TopologyNode& n);
+        
+        // private members
+        const TypedDagNode< TimeTree >*                         tau;
+        const TypedDagNode< MatrixRealSymmetric >*              sigma;
+        
+        std::vector<bool>                                       dirtyNodes;
+        std::vector<double>                                     nodeLogProbs;
+    };
+    
+}
+
+#endif /* defined(__revbayes__MultivariateBrownianProcess__) */
