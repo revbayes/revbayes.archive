@@ -64,14 +64,17 @@ RevPtr<RevVariable> Func_readAncestralStateTrace::execute( void ) {
     
 	} else {
 		
-		WorkspaceVector<AncestralStateTrace> *rv = new WorkspaceVector<AncestralStateTrace>();
-		std::vector<RevBayesCore::AncestralStateTrace*> tmp = readAncestralStates(myFileManager.getFullFileName(), sep);
-		for (std::vector<RevBayesCore::AncestralStateTrace*>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
-			rv->push_back( AncestralStateTrace( **it ) );
+		RevBayesCore::RbVector<AncestralStateTrace> traceVector;
+		std::vector<RevBayesCore::AncestralStateTrace*> ancestral_states = readAncestralStates(myFileManager.getFullFileName(), sep);
+		for ( size_t i = 0; i < ancestral_states.size(); i++ )
+		{						
+			traceVector.push_back( AncestralStateTrace( *ancestral_states[i] ) );			
 		}
 		
-		// return the vector of traces, 1 trace for each node
-		return new RevVariable( rv );
+		WorkspaceVector<AncestralStateTrace> *theVector = new WorkspaceVector<AncestralStateTrace>( traceVector );
+		
+		// return a vector of traces, 1 trace for each node
+		return new RevVariable( theVector );
 		
 	}
 }
@@ -197,7 +200,7 @@ std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::re
 				RevBayesCore::AncestralStateTrace *t = data[j-1];
 				std::string anc_state = columns[j];
 				t->addObject( anc_state );
-				
+
 			}
 		}
 	}

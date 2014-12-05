@@ -479,7 +479,7 @@ namespace RevBayesCore {
                             break;
                         }
                     }
-                    
+
                     // get ancestral state vector for this iteration
                     std::vector<std::string> ancestralstate_vector = ancestralstate_trace.getValues();
                     std::string ancestralstate = ancestralstate_vector[i];

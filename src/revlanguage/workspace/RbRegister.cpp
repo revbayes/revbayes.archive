@@ -84,6 +84,7 @@
 #include "RlPathSampler.h"
 #include "RlPowerPosterior.h"
 #include "RlSteppingStoneSampler.h"
+#include "RlAncestralStateTrace.h"
 
 /// Monitors ///
 
@@ -454,7 +455,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
+		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
+		
+		addFunction("v", new Func_workspaceVector<AncestralStateTrace>() );
         
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
         addFunction("v", new Func_workspaceVector<Monitor>() );

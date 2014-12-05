@@ -43,6 +43,8 @@ AncestralStateTrace::AncestralStateTrace(const AncestralStateTrace& m) : Workspa
     
 }
 
+
+
 /** Clone object */
 
 AncestralStateTrace* AncestralStateTrace::clone(void) const {
