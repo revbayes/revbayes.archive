@@ -7,6 +7,7 @@
 #include "ModuleSystem.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"
+#include "RbException.h"
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "RlUserInterface.h"
@@ -25,7 +26,14 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
 {
     
     // load the modules
-    RevLanguage::ModuleSystem::getModuleSystem().loadModules("modules");
+    try {
+        RevLanguage::ModuleSystem::getModuleSystem().loadModules("modules");
+    }    
+    catch ( RbException e )
+    {
+        std::cerr << e.getMessage() << std::endl;
+    }
+
 
     // Print a nifty message
     RbVersion version = RbVersion();
