@@ -1,6 +1,0 @@
-
-
-data <- readDiscreteCharacterData("data/primates.nex")
-"Go Go Go"
- module("modules/UnconstrainedGTRAnalysis.Rev", namespace="GTR_test", data=data, analysisName="primates_GTR_unconstrained")
-

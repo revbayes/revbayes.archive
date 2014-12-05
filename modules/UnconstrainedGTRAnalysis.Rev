@@ -12,7 +12,7 @@ if ( !exists("monitorIndex") ) {
    monitorIndex = 0
 }
 
-module("modules/UnconstrainedGTR.Rev", data=data, analysisName=analysisName)
+module("UnconstrainedGTR", data=data, analysisName=analysisName)
 
 myModel = model(Q)
 
