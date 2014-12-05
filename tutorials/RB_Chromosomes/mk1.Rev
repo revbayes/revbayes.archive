@@ -29,7 +29,7 @@ lambda ~ dnExponential(10.0)
 k = 3
 
 # create rate matrix
-Q := mk1(k, lambda)
+Q := fnMk1(k, lambda)
 
 # do not assume stationarity
 root_frequencies := simplex(1,1,1)
@@ -55,7 +55,7 @@ mymodel = model(Q)
 
 # create the monitors
 monitors[1] = mnScreen(printgen=10, lambda)
-monitors[2] = mnExtNewick(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", printgen=10, separator = "	", psi)
+monitors[2] = mnFile(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.trees", printgen=10, separator = "	", psi)
 monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1.log",printgen=10, separator = "	", tree=psi, ctmc=seq, type="NaturalNumbers")
 monitors[4] = mnModel(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/mk1_model.log",printgen=10, separator = "	")
 

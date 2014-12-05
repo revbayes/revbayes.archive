@@ -299,7 +299,7 @@ std::string TopologyNode::buildNewickString( void )
                 o << "index=" << index;
                 if (nodeComments.size() > 0 || getSpeciesName() != "")
                 {
-                    o << ":";
+                    o << ",";
                 }
             }
             
@@ -307,7 +307,7 @@ std::string TopologyNode::buildNewickString( void )
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << nodeComments[i];
             }
@@ -316,7 +316,7 @@ std::string TopologyNode::buildNewickString( void )
             if (getSpeciesName() != "") {
                 if ( nodeComments.size() > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << "&species=" << getSpeciesName();
             }
@@ -335,7 +335,7 @@ std::string TopologyNode::buildNewickString( void )
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << branchComments[i];
             }
@@ -359,14 +359,14 @@ std::string TopologyNode::buildNewickString( void )
                 o << "index=" << index;
                 if (nodeComments.size() > 0)
                 {
-                    o << ":";
+                    o << ",";
                 }
             }
             for (size_t i = 0; i < nodeComments.size(); ++i)
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << nodeComments[i];
             }
@@ -383,7 +383,7 @@ std::string TopologyNode::buildNewickString( void )
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << branchComments[i];
             }
