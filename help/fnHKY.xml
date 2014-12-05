@@ -10,14 +10,11 @@
     
         <name>fnHKY</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The Hasegawa, Kishino and Yano function to create a rate matrix.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The function fnHKY creates the reversible DNA rate matrix proposed by Hasegawa, Kishino and Yano in 1985.
             </p>
         </description>
 
@@ -31,14 +28,14 @@
             <label>kappa</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The transition/transversion ratio.</description>
             <valueType>RealPos</valueType>
         </argument>
         <argument>
             <label>baseFrequencies</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A simplex giving the equilibrium base frequencies.</description>
             <valueType>Simplex</valueType>
         </argument>
 
@@ -47,7 +44,7 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            The HKY rate matrix is defined by 5 parameters: the transition/transversion ratio kappa, and the 4 equilibrium base frequencies. In total, there are 4 independent parameters because the base frequencies sum to 1.  
             </p>
         </details>
 
@@ -62,10 +59,8 @@
 
         <reference>
             <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                Hasegawa M, Kishino H and Yano T. 1985. Dating of the human-ape splitting by a molecular clock of mitochondrial DNA. Molecular Biology And Evolution, 22(2), 160-174. 
             </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
         </reference>
 
         <author>Your name here</author>
