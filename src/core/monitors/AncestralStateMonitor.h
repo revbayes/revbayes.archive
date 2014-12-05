@@ -56,6 +56,7 @@ namespace RevBayesCore {
         
         // getters and setters
         void                                setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
+		void								swapNode(DagNode *oldN, DagNode *newN);
 		
     private:
         // helper methods
@@ -98,6 +99,9 @@ character( ch ),
 append( false ),
 stochasticNodesOnly( false )
 {
+	
+	nodes.push_back( tree );
+	nodes.push_back( character );
     
 }
 
@@ -334,6 +338,23 @@ void AncestralStateMonitor<characterType, treeType>::setAppend(bool tf)
     
     append = tf;
     
+}
+
+
+
+template<class characterType, class treeType>
+void AncestralStateMonitor<characterType, treeType>::swapNode(DagNode *oldN, DagNode* newN)
+{
+	Monitor::swapNode( oldN, newN );
+	if ( oldN == tree ) 
+	{
+		tree = static_cast< TypedDagNode<treeType> *>( newN );
+	}
+	else if ( oldN == character )
+	{
+		character = newN;
+	}
+	
 }
 
 

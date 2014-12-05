@@ -299,11 +299,9 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     tau( n.tau ), 
     transitionProbMatrices( n.transitionProbMatrices ),
     perNodeSiteLogScalingFactors( n.perNodeSiteLogScalingFactors ),
-//  partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
-	partialLikelihoods( n.partialLikelihoods ),
+    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( n.activeLikelihood ),
-//  marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
-	marginalLikelihoods( n.marginalLikelihoods ),
+    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
     charMatrix( n.charMatrix ),
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
@@ -339,11 +337,11 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     tau->incrementReferenceCount();
     
-//  // copy the partial likelihoods  
-//	memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
-//
-//  // copy the marginal likelihoods
-//  memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));	
+    // copy the partial likelihoods  
+	memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
+
+    // copy the marginal likelihoods
+    memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));	
 	
     activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
@@ -374,8 +372,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::~AbstractPhy
     }
     
     // free the partial likelihoods
-//    delete [] partialLikelihoods;
-//    delete [] marginalLikelihoods;
+    delete [] partialLikelihoods;
+    delete [] marginalLikelihoods;
 }
 
 
@@ -1259,6 +1257,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValu
     // reset the number of sites
     this->numSites = v->getNumberOfIncludedCharacters();
     
+	sitePattern.clear();
+	sitePattern.resize(numSites);
+	
     // now compress the data and resize the likelihood vectors
     this->compress();
 }
