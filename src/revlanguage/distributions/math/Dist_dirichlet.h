@@ -30,7 +30,7 @@ namespace RevLanguage {
         virtual ~Dist_dirichlet();
         
         // Basic utility functions
-        Dist_dirichlet*                          clone(void) const;                                                              //!< Clone the object
+        Dist_dirichlet*                                 clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -47,7 +47,7 @@ namespace RevLanguage {
         
         
     private:
-        RevPtr<const RevVariable>                          alpha;
+        RevPtr<const RevVariable>                       alpha;
         
     };
     
