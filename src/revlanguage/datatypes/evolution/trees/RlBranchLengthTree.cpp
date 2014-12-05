@@ -6,6 +6,8 @@
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
+#include "Topology.h"
+#include "RlTopology.h"
 
 #include <sstream>
 
@@ -26,6 +28,8 @@ BranchLengthTree::BranchLengthTree(void) : ModelObject<RevBayesCore::BranchLengt
     
     methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
 
+	ArgumentRules* topologyArgRules = new ArgumentRules();
+    methods.addFunction("topology", new MemberProcedure(RevLanguage::Topology::getClassTypeSpec(),  topologyArgRules       ) );
     
     
     // member functions
@@ -54,6 +58,8 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : ModelObj
     
     methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
 
+	ArgumentRules* topologyArgRules = new ArgumentRules();
+    methods.addFunction("topology", new MemberProcedure(RevLanguage::Topology::getClassTypeSpec(),  topologyArgRules       ) );
     
     
     // member functions
@@ -82,7 +88,8 @@ BranchLengthTree::BranchLengthTree(const RevBayesCore::BranchLengthTree &t) : Mo
     
     methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
     
-    
+	ArgumentRules* topologyArgRules = new ArgumentRules();
+    methods.addFunction("topology", new MemberProcedure(RevLanguage::Topology::getClassTypeSpec(),  topologyArgRules       ) );
     
     
     // member functions
@@ -111,7 +118,8 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::Bran
     
     methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
 
-    
+	ArgumentRules* topologyArgRules = new ArgumentRules();
+    methods.addFunction("topology", new MemberProcedure(RevLanguage::Topology::getClassTypeSpec(),  topologyArgRules       ) );
     
     
     // member functions
@@ -163,6 +171,11 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
         return NULL;
         
     }
+	else if (name == "topology") {
+		found = true;
+        const RevBayesCore::Topology& t = this->dagNode->getValue().getTopology();
+        return new RevVariable( new RevLanguage::Topology( t ) );
+    } 
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args, found );
 }

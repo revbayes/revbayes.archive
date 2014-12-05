@@ -811,7 +811,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<c
     {
         throw RbException("Ambiguous taxon name.");
     }
-    
+	
     const typename std::map<std::string, DiscreteTaxonData<charType> >::iterator& i = taxonMap.find(tn); 
     
     if (i != taxonMap.end() ) 

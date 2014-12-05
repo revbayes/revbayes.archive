@@ -56,7 +56,9 @@ namespace RevBayesCore {
         // public Tree methods
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                                addNodeParameter(const std::string &n, const std::vector<double> &p, bool io);
+		void                                                addNodeParameter(const std::string &n, const std::vector<std::string*> &p, bool io);
         void                                                clearBranchParameters(void);
+		void                                                clearNodeParameters(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
         std::vector<std::string>                            getTipNames() const;
