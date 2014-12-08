@@ -341,7 +341,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
 	memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
 
     // copy the marginal likelihoods
-    memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
+    memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));	
 	
     activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
@@ -1250,6 +1250,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValu
     // reset the number of sites
     this->numSites = v->getNumberOfIncludedCharacters();
     
+	sitePattern.clear();
+	sitePattern.resize(numSites);
+	
     // now compress the data and resize the likelihood vectors
     this->compress();
 }

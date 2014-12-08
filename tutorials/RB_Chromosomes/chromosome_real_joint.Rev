@@ -37,13 +37,13 @@ for (j in 1:names.size()) {
             found = true
             break
         }
-        k++
+        k += 1
     }
     if (!found) {
         outgroup[i] = names[j]
-        i++
+        i += 1
     }
-    j++
+    j += 1
 }
 mi = 0
 clade_ingroup = clade(ingroup)
