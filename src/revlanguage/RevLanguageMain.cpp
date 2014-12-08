@@ -26,7 +26,8 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
 {
     
     // load the modules
-    try {
+    try
+    {
         RevLanguage::ModuleSystem::getModuleSystem().loadModules("modules");
     }    
     catch ( RbException e )
