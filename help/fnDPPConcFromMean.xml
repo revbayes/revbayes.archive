@@ -52,20 +52,20 @@
 
         <example>
             <![CDATA[
-             ## number of DPP elements
-             N <- 10
-             
-             ## prior mean number of categories
-             k <- 8
-             
-             ## concentration parameter of the DPP
-             a <- fnDPPConcFromMean(k, N)
-             
-             ## G_0 distribution
-             g_0 = dnExponential(1.0)
-             
-             ## DPP distribution constructior
-             rates ~ dnDPP(a, g_0, N)
+	 ## number of DPP elements
+	 N <- 10
+ 
+	 ## prior mean number of categories
+	 k <- 8
+ 
+	 ## concentration parameter of the DPP
+	 a <- fnDPPConcFromMean(k, N)
+ 
+	 ## G_0 distribution
+	 g_0 = dnExponential(1.0)
+ 
+	 ## DPP distribution constructior
+	 rates ~ dnDPP(a, g_0, N)
              ]]>
 
         </example>
