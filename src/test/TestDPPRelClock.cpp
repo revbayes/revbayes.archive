@@ -2,7 +2,6 @@
 #include "BinaryDivision.h"
 #include "BinaryMultiplication.h"
 #include "BinarySubtraction.h"
-#include "BirthRateConstBDStatistic.h"
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "ConstantRateBirthDeathProcess.h"
