@@ -23,7 +23,6 @@
 #include "StringUtilities.h"
 #include "AncestralStateTrace.h"
 #include "TreeUtilities.h"
-#include "UserInterface.h"
 #include "WorkspaceVector.h"
 
 #include <map>

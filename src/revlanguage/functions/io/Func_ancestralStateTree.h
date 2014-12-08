@@ -61,7 +61,6 @@ namespace RevLanguage {
 #include "TreeSummary.h"
 #include "TreeTrace.h"
 #include "AncestralStateTrace.h"
-#include "UserInterface.h"
 #include "WorkspaceVector.h"
 
 #include <map>
