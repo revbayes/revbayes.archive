@@ -531,67 +531,67 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
         
     } // end-for over all mixtures (=rate-categories)
     
-//    if ( nodeIndex % 4 == 0 )
-//    {
-//        // iterate over all mixture categories
-//        for (size_t site = 0; site < this->numPatterns ; ++site)
-//        {
-//        
-//            // the max probability
-//            double max = 0.0;
-//        
-//            // compute the per site probabilities
-//            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-//            {
-//                // get the pointers to the likelihood for this mixture category
-//                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
-//            
-//                double*          p_site_mixture          = p_node + offset;
-//            
-//                for ( size_t i=0; i<4; ++i)
-//                {
-//                    if ( p_site_mixture[i] > max )
-//                    {
-//                        max = p_site_mixture[i];
-//                    }
-//                }
-//            
-//            }
-//        
-//            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
-//
-//            // compute the per site probabilities
-//            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-//            {
-//                // get the pointers to the likelihood for this mixture category
-//                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
-//            
-//                double*          p_site_mixture          = p_node + offset;
-//            
-//                for ( size_t i=0; i<4; ++i)
-//                {
-//                    p_site_mixture[i] /= max;
-//                }
-//            
-//            }
-//        
-//        }
-//    }
-//    else
-//    {
-//        // iterate over all mixture categories
-//        for (size_t site = 0; site < this->numPatterns ; ++site)
-//        {
-//            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
-//        }
-//        
-//    }
-//    
-//
-//# if defined ( AVX_ENABLED )
-//    delete[] tmp_ac;
-//    delete[] tmp_gt;
-//# endif
+    if ( nodeIndex % 4 == 0 )
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->numPatterns ; ++site)
+        {
+
+            // the max probability
+            double max = 0.0;
+
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+            
+                double*          p_site_mixture          = p_node + offset;
+            
+                for ( size_t i=0; i<4; ++i)
+                {
+                    if ( p_site_mixture[i] > max )
+                    {
+                        max = p_site_mixture[i];
+                    }
+                }
+            
+            }
+        
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
+
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+            
+                double*          p_site_mixture          = p_node + offset;
+            
+                for ( size_t i=0; i<4; ++i)
+                {
+                    p_site_mixture[i] /= max;
+                }
+            
+            }
+        
+        }
+    }
+    else
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->numPatterns ; ++site)
+        {
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
+        }
+        
+    }
+    
+
+# if defined ( AVX_ENABLED )
+    delete[] tmp_ac;
+    delete[] tmp_gt;
+# endif
     
 }
 
