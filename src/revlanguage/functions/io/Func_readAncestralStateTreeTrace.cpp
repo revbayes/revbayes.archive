@@ -34,7 +34,6 @@
 #include "StringUtilities.h"
 #include "TreeTrace.h"
 #include "TreeUtilities.h"
-#include "UserInterface.h"
 
 #include <map>
 #include <set>
