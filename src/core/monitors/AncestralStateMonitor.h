@@ -68,8 +68,8 @@ namespace RevBayesCore {
         std::string                         filename;                                                           //!< Filename to which we print the values
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
 		bool                                append;                                                             //!< Flag if to append to existing file
-		TypedDagNode<treeType>*					tree;
-		RevBayesCore::DagNode*				character;
+		TypedDagNode<treeType>*             tree;
+		RevBayesCore::DagNode*              character;
 		bool                                stochasticNodesOnly;
     };
     
@@ -90,13 +90,13 @@ using namespace RevBayesCore;
 /* Constructor */
 template<class characterType, class treeType>
 AncestralStateMonitor<characterType, treeType>::AncestralStateMonitor(TypedDagNode<treeType> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
-outStream(), 
-filename( fname ), 
-separator( del ), 
-tree( t ),
-character( ch ),
-append( false ),
-stochasticNodesOnly( false )
+    outStream(),
+    filename( fname ),
+    separator( del ),
+    append( false ),
+    tree( t ),
+    character( ch ),
+    stochasticNodesOnly( false )
 {
     
 }
@@ -107,13 +107,13 @@ stochasticNodesOnly( false )
  */
 template<class characterType, class treeType>
 AncestralStateMonitor<characterType, treeType>::AncestralStateMonitor( const AncestralStateMonitor &m) : Monitor( m ),
-outStream(), 
-filename( m.filename ), 
-separator( m.separator ), 
-tree( m.tree ), 
-character( m.character ), 
-append( m.append ),
-stochasticNodesOnly( m.stochasticNodesOnly )
+    outStream(),
+    filename( m.filename ),
+    separator( m.separator ),
+    append( m.append ),
+    tree( m.tree ),
+    character( m.character ),
+    stochasticNodesOnly( m.stochasticNodesOnly )
 {
     if (m.outStream.is_open())
     {

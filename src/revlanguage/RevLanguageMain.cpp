@@ -61,9 +61,14 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
 
         // Process the command line
         if (result == 1)
+        {
             commandLine += line;
+        }
         else
+        {
             commandLine = line;
+        }
+        
         result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
 
         // We just hope for better input next time

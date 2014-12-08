@@ -31,10 +31,10 @@ UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std
 }
 
 UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn) : TypedDistribution<Topology>( new Topology() ),
-numTaxa( nTaxa ),
-taxonNames( tn ),
-constraints( std::vector<Clade>() ),
-logTreeTopologyProb( RbConstants::Double::nan )
+    numTaxa( nTaxa ),
+    taxonNames( tn ),
+    constraints( std::vector<Clade>() ),
+    logTreeTopologyProb( RbConstants::Double::nan )
 {
     double lnFact = 0.0;
     for (size_t i = 2; i < numTaxa; i++)
