@@ -10,14 +10,13 @@
 
         <name>mvDPPScaleCatVals</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>A Scaling Move on DPP-distributed RealPos Variables</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This scaling move updates the values associated with each parameter category under the DPP, 
+            when the variables are RealPos type. This move operates on all of the k parameter categories
+            and accepts/rejects within the move, therefore it is always accepted.
             </p>
         </description>
     
@@ -34,14 +33,14 @@
                 <label>x</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The vector of RealPos values distributed under the DPP.</description>
                 <valueType>RealPos[]</valueType>
             </argument>
             <argument>
                 <label>lambda</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The tuning parameter influence the amount of scaling for each category.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -49,7 +48,7 @@
                 <label>weight</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The expected number of times this move will be applied per iteration.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -59,32 +58,80 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This move updates the values assigned to a vector of RealPos variables that are assigned a
+                Dirichlet process prior (DPP). This simple scale move operates by proposing a new value for each
+                of k parameter categories using a multiplier and the prior ratio depends on the base distribution (G_0)
+                of the DPP. It is important to note that this move DOES NOT update the parameter category assignment.
+                Thus, this move must be coupled with the Gibbs move -- mvDPPAllocateAuxGibbs -- re-assign the 
+                data elements to new parameter categories. 
+                </p>
+                <p>
+                See Neal (2000) for descriptions of proposals for DPP-random variables.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+	 ## number of DPP elements
+	 N <- 10
+ 
+	 ## prior mean number of categories
+	 k <- 8
+ 
+	 ## concentration parameter of the DPP
+	 a <- fnDPPConcFromMean(k, N)
+ 
+	 ## G_0 distribution
+	 G_0 = dnExponential(1.0)
+ 
+	 ## DPP distribution constructior
+	 rates ~ dnDPP(a, G_0, N)
+	 
+	 ## Iterator for moves vector
+	 mi = 1
+	 
+	 ## Add mvDPPScaleCatVals to moves vector
+	 moves[mi++] = mvDPPScaleCatVals(rates, 0.05, 3.0)
+
+	 ## Add mvDPPAllocateAuxGibbs to moves vector to update parameter-category assignment
+	 moves[mi++] = mvDPPAllocateAuxGibbs(rates, 4, 3.0)
                  ]]>
 
             </example>
 
             <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
+				<citation>
+					Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Heath TA. 2012. A hierarchical Bayesian model for calibrating estimates of species divergence times. Syst. Biol. 61:793-809.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Huelsenbeck JP, Jain S, Frost SWD, Pond SLK. 2006. A Dirichlet process model for detecting positive selection in protein-coding DNA sequences. Proc Natl Acad Sci U S A. 103:6263–6268.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Huelsenbeck JP, Suchard M. 2007. A nonparametric method for accommodating and testing across-site rate variation. Syst Biol. 56:975–987.
+            	</citation>
+            </reference>
+            <reference>
+				<citation>
+					Neal RM. 2000. Markov chain sampling methods for Dirichlet process mixture models. J Comput Graph Stat. 9:249–265.
+            	</citation>
             </reference>
 
-            <author>Your name here</author>
+            <author>Tracy A. Heath</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>mvDPPScaleCatAllocateAux</entry>
+                <entry>mvDPPAllocateAuxGibbs</entry>
+                <entry>mvScale</entry>
             </seeAlso>
 
 
