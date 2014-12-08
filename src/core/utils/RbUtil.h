@@ -20,13 +20,6 @@
 
 #include "RbContainer.h"
 #include "RbVector.h"
-//#include "Taxon.h"
-//#include "TimeTree.h"
-//#include "BranchLengthTree.h"
-//#include "Trace.h"
-//#include "RateMatrix_GTR.h"
-//#include "RateMatrix_JC.h"
-//#include "ChromosomesState.h"
 
 
 #include <iostream>
@@ -35,14 +28,6 @@
 
 
 namespace RevBayesCore {
-    
-    // Global functions using the class
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<bool>& x);                            //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<double>& x);                          //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<int>& x);                             //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<unsigned int>& x);                    //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::string>& x);                     //!< Overloaded output operator
-
     
     namespace RbUtils {
         
@@ -149,21 +134,6 @@ namespace RevBayesCore {
         };
     }
     
-
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<bool>& x);                            //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<double>& x);                          //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<int>& x);                             //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<unsigned int>& x);                    //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::string>& x);                     //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<Clade>& x);                        //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<Taxon>& x);                        //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<TimeTree>& x);                        //!< Overloaded output operator
-//	std::ostream&                       operator<<(std::ostream& o, const std::vector<BranchLengthTree>& x);                        //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<Trace>& x);                        //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<ChromosomesState>& x);                        //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::vector<double> >& x);                          //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const std::vector<std::vector<int> >& x);                             //!< Overloaded output operator
-    
     std::vector<int>                    operator+(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded addition operator
     std::vector<double>                 operator+(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded addition operator
     std::vector<int>                    operator-(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded subtraction operator
@@ -174,9 +144,6 @@ namespace RevBayesCore {
     std::vector<double>                 operator/(const std::vector<double>& x, const std::vector<int>&    y);              //!< Overloaded division operator
     std::vector<double>                 operator/(const std::vector<int>&    x, const std::vector<double>& y);              //!< Overloaded division operator
     std::vector<double>                 operator/(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded division operator
-
-//    std::ostream&                       operator<<(std::ostream& o, const bool& x);                                         //!< Overloaded output operator
-//    std::ostream&                       operator<<(std::ostream& o, const char& x);                                         //!< Overloaded output operator
 
 }
 

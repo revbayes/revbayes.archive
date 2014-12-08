@@ -222,9 +222,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
     partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
-    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
     marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
-	sitePattern( std::vector<size_t>(numSites, 0) ),
+    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
     charMatrix(),
     gapMatrix(),
     patternCounts(),
@@ -232,6 +231,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     invariantSiteIndex( numSites, 0 ),
     numPatterns( numSites ),
     compressed( c ),
+    sitePattern( std::vector<size_t>(numSites, 0) ),
     changedNodes( std::vector<bool>(numNodes,false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
     usingAmbiguousCharacters( true ),
@@ -298,20 +298,18 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numSiteRates( n.numSiteRates ),
     tau( n.tau ), 
     transitionProbMatrices( n.transitionProbMatrices ),
-    perNodeSiteLogScalingFactors( n.perNodeSiteLogScalingFactors ),
-//  partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
-	partialLikelihoods( n.partialLikelihoods ),
+    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( n.activeLikelihood ),
-//  marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
-	marginalLikelihoods( n.marginalLikelihoods ),
+    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
+    perNodeSiteLogScalingFactors( n.perNodeSiteLogScalingFactors ),
     charMatrix( n.charMatrix ),
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
-	sitePattern( n.sitePattern ),
     siteInvariant( n.siteInvariant ),
     invariantSiteIndex( n.invariantSiteIndex ),
     numPatterns( n.numPatterns ),
     compressed( n.compressed ),
+    sitePattern( n.sitePattern ),
     changedNodes( n.changedNodes ),
     dirtyNodes( n.dirtyNodes ),
     usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
@@ -339,11 +337,11 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     tau->incrementReferenceCount();
     
-//  // copy the partial likelihoods  
-//	memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
-//
-//  // copy the marginal likelihoods
-//  memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));	
+    // copy the partial likelihoods
+	memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
+
+    // copy the marginal likelihoods
+    memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
 	
     activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
@@ -374,17 +372,10 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::~AbstractPhy
     }
     
     // free the partial likelihoods
-//    delete [] partialLikelihoods;
-//    delete [] marginalLikelihoods;
+    delete [] partialLikelihoods;
+    delete [] marginalLikelihoods;
 }
 
-
-template<class charType, class treeType>
-RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>* RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::clone( void ) const 
-{
-    
-    return new AbstractPhyloCTMCSiteHomogeneous<charType, treeType>( *this );
-}
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compress( void ) 

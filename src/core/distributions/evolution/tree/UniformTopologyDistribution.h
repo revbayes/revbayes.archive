@@ -51,8 +51,8 @@ namespace RevBayesCore {
         // members
         size_t                                              numTaxa;
         std::vector<std::string>                            taxonNames;
-        double                                              logTreeTopologyProb;
-        std::vector<Clade>                                  constraints;                                                         //!< Topological constrains.
+        std::vector<Clade>                                  constraints;
+        double                                              logTreeTopologyProb;                                                 //!< Topological constrains.
     };
     
 }

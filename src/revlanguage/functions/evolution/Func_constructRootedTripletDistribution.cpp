@@ -37,7 +37,7 @@ Func_constructRootedTripletDistribution* Func_constructRootedTripletDistribution
 RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >* Func_constructRootedTripletDistribution::createFunction( void ) const
 {
     
-    RevBayesCore::RootedTripletDistributionFunction* f ;
+    RevBayesCore::RootedTripletDistributionFunction* f = NULL;
     
     
     if ( this->args[1].getVariable()->getRequiredTypeSpec().isDerivedOf( ModelVector< RlString >::getClassTypeSpec() ) )
