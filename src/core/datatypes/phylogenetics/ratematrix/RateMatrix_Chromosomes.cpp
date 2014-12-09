@@ -22,10 +22,10 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n ), matrixSize( n ){
-    setLambda(0.0);
-    setRho(0.0);
-    setDelta(0.0);
+RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n+1 ), matrixSize( n+1 ){
+    setLambda(1.0);
+    setRho(1.0);
+    setDelta(1.0);
     updateMatrix();
 }
 
@@ -88,23 +88,23 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
     
     for (size_t i=0; i< matrixSize; i++) {
         for (size_t j=0; j< matrixSize; j++) {
-            if (j == i+1) {
-                (*theRateMatrix)[i][j] = lambda;
-            } else if (j == i-1) {
-                (*theRateMatrix)[i][j] = delta;
-            } else if (j == ((2*i)+1)) {
-                (*theRateMatrix)[i][j] = rho;
-            } else {
-                (*theRateMatrix)[i][j] = 0.0;
-            }
+			(*theRateMatrix)[i][j] = 0.0;
+			if (j != 0 && i != 0) {
+				if (j == i+1) {
+					(*theRateMatrix)[i][j] = lambda;
+				} else if (j == i-1) {
+					(*theRateMatrix)[i][j] = delta;
+				} else if (j == (2*i)) {
+					(*theRateMatrix)[i][j] = rho;
+				} 
+			}
         }
-    }
-    
+    }	
     // set the diagonal values
     setDiagonal();
     
-    // do I need to rescale the rates??
-    //rescaleToAverageRate( 1.0 );
+    // rescale rates
+    rescaleToAverageRate( 1.0 );
 }
 
 

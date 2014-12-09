@@ -120,14 +120,16 @@ NaturalNumbersState* NaturalNumbersState::clone( void ) const {
 }
 
 
-unsigned int NaturalNumbersState::computeState(std::string symbol) const {
+int NaturalNumbersState::computeState(std::string symbol) const {
 	
-	try {
-		return boost::lexical_cast<int>( symbol );
-	} catch( boost::bad_lexical_cast const& ) {
-		throw RbException( "NaturalNumbers state was not valid integer." );
-	}
-    
+	if (symbol == "-" || symbol == "?")
+		return -1;
+	else
+		try {
+			return boost::lexical_cast<int>( symbol );
+		} catch( boost::bad_lexical_cast const& ) {
+			throw RbException( "NaturalNumbers state was not valid integer." );
+		}
 }
 
 
@@ -182,7 +184,11 @@ bool NaturalNumbersState::isAmbiguous( void ) const {
 
 bool NaturalNumbersState::isGapState( void ) const {
     
-	return false;
+	if (state == -1)
+		return true;
+	else
+		return false;
+	
 }
 
 
@@ -190,11 +196,11 @@ void NaturalNumbersState::setGapState(bool tf) {
     
     if ( tf )
     {
-        state = 0x0;
+        state = RevBayesCore::g_MAX_NAT_NUM_STATES + 1;
     }
     else
     {
-        state = 0xF;
+        state = -1;
     }
 }
 
