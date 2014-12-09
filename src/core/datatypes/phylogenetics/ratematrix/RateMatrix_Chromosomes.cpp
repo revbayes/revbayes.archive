@@ -22,17 +22,14 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n+1 ), matrixSize( n+1 ){
+RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n+1 ),
+    matrixSize( n+1 )
+{
     setLambda(1.0);
     setRho(1.0);
     setDelta(1.0);
+    
     updateMatrix();
-}
-
-
-/** Copy constructor */
-RateMatrix_Chromosomes::RateMatrix_Chromosomes(const RateMatrix_Chromosomes& m) : AbstractRateMatrix( m ), matrixSize(m.matrixSize), rho(m.rho), delta(m.delta), lambda(m.lambda), precision(m.precision), stationaryFreqs(m.stationaryFreqs) {
-
 }
 
 
@@ -41,45 +38,8 @@ RateMatrix_Chromosomes::~RateMatrix_Chromosomes(void) {
     
 }
 
-
-RateMatrix_Chromosomes& RateMatrix_Chromosomes::operator=(const RateMatrix_Chromosomes &r) {
-    
-    if (this != &r) {
-        RateMatrix::operator=( r );
-    }
-    
-    return *this;
-}
-
 double RateMatrix_Chromosomes::averageRate(void) const {
     return 1.0;
-}
-
-void RateMatrix_Chromosomes::setLambda( double l ) {
-
-        lambda = l;
-
-        // set flags
-        needsUpdate = true;
-
-}
-
-void RateMatrix_Chromosomes::setRho( double r ) {
-
-        rho = r;
-
-        // set flags
-        needsUpdate = true;
-
-}
-
-void RateMatrix_Chromosomes::setDelta( double d ) {
-
-        delta = d;
-
-        // set flags
-        needsUpdate = true;
-
 }
 
 
@@ -157,15 +117,18 @@ void RateMatrix_Chromosomes::computeExponentialMatrixByRepeatedSquaring(double t
 
 inline void RateMatrix_Chromosomes::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
     //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < matrixSize; i++ ) {
-        for ( size_t j = 0; j < matrixSize; j++ ) {
+    for ( size_t i = 0; i < matrixSize; i++ )
+    {
+        for ( size_t j = 0; j < matrixSize; j++ )
+        {
             P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < matrixSize; k++ ) {
+            for ( size_t k = 0; k < matrixSize; k++ )
+            {
                 P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
-                }
             }
         }
     }
+}
 
 
 
@@ -177,6 +140,33 @@ RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const {
 const std::vector<double>& RateMatrix_Chromosomes::getStationaryFrequencies( void ) const {
     
     return stationaryFreqs;
+}
+
+void RateMatrix_Chromosomes::setLambda( double l ) {
+    
+    lambda = l;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
+
+void RateMatrix_Chromosomes::setRho( double r ) {
+    
+    rho = r;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
+
+void RateMatrix_Chromosomes::setDelta( double d ) {
+    
+    delta = d;
+    
+    // set flags
+    needsUpdate = true;
+    
 }
 
 
