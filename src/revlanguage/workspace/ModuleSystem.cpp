@@ -72,7 +72,7 @@ void ModuleSystem::loadModules(const std::string &dir)
     fMngr.setFilePath( dir );
     if (fMngr.testDirectory() == false)
     {
-        throw RbException("Warning: Cannot find directory containing modules. Modules is unavailable. Path = " + dir);
+        throw RbException("Warning: Cannot find directory containing modules. No modules are available. Path = " + dir);
     }
     
     // get the files contained in the directory
