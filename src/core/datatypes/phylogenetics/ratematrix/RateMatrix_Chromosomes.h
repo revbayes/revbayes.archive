@@ -28,11 +28,7 @@ namespace RevBayesCore {
         
     public:
         RateMatrix_Chromosomes(size_t n);                                                  //!< Construct rate matrix with n states
-        RateMatrix_Chromosomes(const RateMatrix_Chromosomes& m);                                  //!< Copy constructor
         virtual                         ~RateMatrix_Chromosomes(void);                     //!< Destructor
-        
-        // overloaded operators
-        RateMatrix_Chromosomes&                operator=(const RateMatrix_Chromosomes& r);
         
         // RateMatrix functions
         double                          averageRate(void) const;
@@ -49,13 +45,13 @@ namespace RevBayesCore {
         double                          lambda;
         double                          delta;
         double                          rho;
-        size_t matrixSize;                  //!< Number of elements in a row or column of the rate matrix 
-        double precision;                  //!< Precision for exponentiation through repeated squaring
-        std::vector<double>                 stationaryFreqs;        //!< Holds the stationary frequencies
+        size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
+        double                          precision;                          //!< Precision for exponentiation through repeated squaring
+        std::vector<double>             stationaryFreqs;                    //!< Holds the stationary frequencies
 
-        void buildRateMatrix(void);
-        void computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
-        inline void squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
+        void                            buildRateMatrix(void);
+        void                            computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
+        inline void                     squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
     };
     
 }

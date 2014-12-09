@@ -31,26 +31,11 @@ RateMatrix_Mk1::RateMatrix_Mk1(size_t n) : AbstractRateMatrix( n ), matrixSize( 
 }
 
 
-/** Copy constructor */
-RateMatrix_Mk1::RateMatrix_Mk1(const RateMatrix_Mk1& m) : AbstractRateMatrix( m ), matrixSize(m.matrixSize), lambda(m.lambda), precision(m.precision), stationaryFreqs(m.stationaryFreqs) {
-	
-}
-
-
 /** Destructor */
 RateMatrix_Mk1::~RateMatrix_Mk1(void) {
     
 }
 
-
-RateMatrix_Mk1& RateMatrix_Mk1::operator=(const RateMatrix_Mk1 &r) {
-    
-    if (this != &r) {
-        RateMatrix::operator=( r );
-    }
-    
-    return *this;
-}
 
 double RateMatrix_Mk1::averageRate(void) const {
     return 1.0;

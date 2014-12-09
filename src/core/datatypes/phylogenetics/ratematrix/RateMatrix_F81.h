@@ -31,11 +31,7 @@ namespace RevBayesCore {
         
     public:
         RateMatrix_F81(size_t n);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_F81(const RateMatrix_F81& m);                                                                                //!< Copy constructor
         virtual                             ~RateMatrix_F81(void);                                                              //!< Destructor
-        
-        // overloaded operators
-        RateMatrix_F81&                     operator=(const RateMatrix_F81& r);
         
         // RateMatrix functions
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
