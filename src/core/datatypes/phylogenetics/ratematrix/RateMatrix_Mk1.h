@@ -31,11 +31,7 @@ namespace RevBayesCore {
         
     public:
         RateMatrix_Mk1(size_t n);                                                  //!< Construct rate matrix with n states
-        RateMatrix_Mk1(const RateMatrix_Mk1& m);                                  //!< Copy constructor
         virtual                         ~RateMatrix_Mk1(void);                     //!< Destructor
-        
-        // overloaded operators
-        RateMatrix_Mk1&                operator=(const RateMatrix_Mk1& r);
         
         // RateMatrix functions
         double                          averageRate(void) const;

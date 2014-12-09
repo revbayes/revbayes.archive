@@ -50,26 +50,9 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &
 }
 
 
-/** Copy constructor */
-RateMatrix_Pomo::RateMatrix_Pomo(const RateMatrix_Pomo& m) : AbstractRateMatrix( m ), N(m.N), matrixSize(m.matrixSize), mu(m.mu), s(m.s), precision(m.precision), stationaryFreqs(m.stationaryFreqs) {
-
-}
-
-
 /** Destructor */
 RateMatrix_Pomo::~RateMatrix_Pomo(void) {
     
-}
-
-
-RateMatrix_Pomo& RateMatrix_Pomo::operator=(const RateMatrix_Pomo &r) {
-    
-    if (this != &r)
-    {
-        RateMatrix::operator=( r );
-    }
-    
-    return *this;
 }
 
 double RateMatrix_Pomo::averageRate(void) const

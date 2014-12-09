@@ -35,27 +35,9 @@ RateMatrix_F81::RateMatrix_F81(size_t n) : TimeReversibleRateMatrix( n ){
 }
 
 
-/** Copy constructor */
-RateMatrix_F81::RateMatrix_F81(const RateMatrix_F81& m) : TimeReversibleRateMatrix( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_F81::~RateMatrix_F81(void) {
     
-}
-
-
-RateMatrix_F81& RateMatrix_F81::operator=(const RateMatrix_F81 &r) {
-    
-    if (this != &r) 
-    {
-        TimeReversibleRateMatrix::operator=( r );
-        
-    }
-    
-    return *this;
 }
 
 

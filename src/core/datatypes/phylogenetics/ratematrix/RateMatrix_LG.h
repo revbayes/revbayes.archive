@@ -27,7 +27,6 @@ namespace RevBayesCore {
         
     public:
         RateMatrix_LG(void);                                                                                                //!< Construct rate matrix with n states
-        RateMatrix_LG(const RateMatrix_LG& m);                                                                                  //!< Copy constructor
         virtual                            ~RateMatrix_LG(void);                                                               //!< Destructor
         
         // RateMatrix functions

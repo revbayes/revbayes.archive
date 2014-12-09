@@ -146,12 +146,6 @@ RateMatrix_Vt::RateMatrix_Vt( void ) : RateMatrix_Empirical( 20 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_Vt::RateMatrix_Vt(const RateMatrix_Vt& m) : RateMatrix_Empirical( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_Vt::~RateMatrix_Vt(void) {
     

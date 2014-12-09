@@ -22,17 +22,14 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n ), matrixSize( n ){
-    setLambda(0.0);
-    setRho(0.0);
-    setDelta(0.0);
+RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n ),
+    lambda( 0.0 ),
+    delta( 0.0 ),
+    rho( 0.0 ),
+    matrixSize( n )
+{
+
     updateMatrix();
-}
-
-
-/** Copy constructor */
-RateMatrix_Chromosomes::RateMatrix_Chromosomes(const RateMatrix_Chromosomes& m) : AbstractRateMatrix( m ), matrixSize(m.matrixSize), rho(m.rho), delta(m.delta), lambda(m.lambda), precision(m.precision), stationaryFreqs(m.stationaryFreqs) {
-
 }
 
 
@@ -41,45 +38,8 @@ RateMatrix_Chromosomes::~RateMatrix_Chromosomes(void) {
     
 }
 
-
-RateMatrix_Chromosomes& RateMatrix_Chromosomes::operator=(const RateMatrix_Chromosomes &r) {
-    
-    if (this != &r) {
-        RateMatrix::operator=( r );
-    }
-    
-    return *this;
-}
-
 double RateMatrix_Chromosomes::averageRate(void) const {
     return 1.0;
-}
-
-void RateMatrix_Chromosomes::setLambda( double l ) {
-
-        lambda = l;
-
-        // set flags
-        needsUpdate = true;
-
-}
-
-void RateMatrix_Chromosomes::setRho( double r ) {
-
-        rho = r;
-
-        // set flags
-        needsUpdate = true;
-
-}
-
-void RateMatrix_Chromosomes::setDelta( double d ) {
-
-        delta = d;
-
-        // set flags
-        needsUpdate = true;
-
 }
 
 
@@ -169,18 +129,50 @@ inline void RateMatrix_Chromosomes::squareMatrix( TransitionProbabilityMatrix& P
 
 
 
-RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const {
+RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const
+{
     return new RateMatrix_Chromosomes( *this );
 }
 
 
-const std::vector<double>& RateMatrix_Chromosomes::getStationaryFrequencies( void ) const {
+const std::vector<double>& RateMatrix_Chromosomes::getStationaryFrequencies( void ) const
+{
     
     return stationaryFreqs;
 }
 
+void RateMatrix_Chromosomes::setLambda( double l ) {
+    
+    lambda = l;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
 
-void RateMatrix_Chromosomes::updateMatrix( void ) {
+void RateMatrix_Chromosomes::setRho( double r )
+{
+    
+    rho = r;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
+
+void RateMatrix_Chromosomes::setDelta( double d )
+{
+    
+    delta = d;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
+
+
+void RateMatrix_Chromosomes::updateMatrix( void )
+{
     
     if ( needsUpdate )
     {
