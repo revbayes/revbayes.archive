@@ -530,63 +530,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
         } // end-for over all sites (=patterns)
         
     } // end-for over all mixtures (=rate-categories)
-    
-    if ( nodeIndex % 4 == 0 )
-    {
-        // iterate over all mixture categories
-        for (size_t site = 0; site < this->numPatterns ; ++site)
-        {
-
-            // the max probability
-            double max = 0.0;
-
-            // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-            {
-                // get the pointers to the likelihood for this mixture category
-                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
-            
-                double*          p_site_mixture          = p_node + offset;
-            
-                for ( size_t i=0; i<4; ++i)
-                {
-                    if ( p_site_mixture[i] > max )
-                    {
-                        max = p_site_mixture[i];
-                    }
-                }
-            
-            }
-        
-            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
-
-            // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-            {
-                // get the pointers to the likelihood for this mixture category
-                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
-            
-                double*          p_site_mixture          = p_node + offset;
-            
-                for ( size_t i=0; i<4; ++i)
-                {
-                    p_site_mixture[i] /= max;
-                }
-            
-            }
-        
-        }
-    }
-    else
-    {
-        // iterate over all mixture categories
-        for (size_t site = 0; site < this->numPatterns ; ++site)
-        {
-            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
-        }
-        
-    }
-    
 
 # if defined ( AVX_ENABLED )
     delete[] tmp_ac;
@@ -791,7 +734,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
         double*     p_site_mixture      = p_mixture;
         
         // iterate over all sites
-        for (size_t site = 0; site != this->numPatterns; ++site) 
+        for (size_t site = 0; site < this->numPatterns; ++site)
         {
             
             // is this site a gap?
@@ -880,135 +823,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
     } // end-for over all mixture categories
     
 }
-
-
-
-//template<class charType, class treeType>
-//void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::sumPartialLikelihoods( size_t root )
-//{
-//    
-//    // reset the likelihood
-//    this->lnProb = 0.0;
-//    
-//    // get the root frequencies
-//    const std::vector<double> &f                    = this->getRootFrequencies();
-//    
-//    //
-//    //#   if defined ( SSE_ENABLED )
-//    //
-//    //    __m128d f01 = _mm_set_pd(f[0],f[1]);
-//    //    __m128d f23 = _mm_set_pd(f[2],f[3]);
-//    //    double *tmp = new double [2];
-//    //
-//    //#   elif defined ( AVX_ENABLED )
-//    //
-//    //#   else
-//    
-//    double  f0  = f[0];
-//    double  f1  = f[1];
-//    double  f2  = f[2];
-//    double  f3  = f[3];
-//    
-//    //#   endif
-//    
-//    // get the pointers to the partial likelihoods of the left and right subtree
-//    const double* p_node   = this->partialLikelihoods + this->activeLikelihood[root]*this->activeLikelihoodOffset + root*this->nodeOffset;
-//    
-//    // create a vector for the per mixture likelihoods
-//    // we need this vector to sum over the different mixture likelihoods
-//    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
-//    
-//    // get pointers the likelihood
-//    const double*   p_mixture     = p_node;
-//    // iterate over all mixture categories
-//    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-//    {
-//        
-//        // get pointers to the likelihood for this mixture category
-//        const double*   p_site_mixture     = p_mixture;
-//        // iterate over all sites
-//        for (size_t site = 0; site < this->numPatterns; ++site)
-//        {
-//            
-//            //#           if defined (SSE_ENABLED)
-//            //
-//            //            __m128d a01 = _mm_load_pd(p_site_mixture_left);
-//            //            __m128d a23 = _mm_load_pd(p_site_mixture_left+2);
-//            //
-//            //            __m128d b01 = _mm_load_pd(p_site_mixture_right);
-//            //            __m128d b23 = _mm_load_pd(p_site_mixture_right+2);
-//            //
-//            //            __m128d p01 = _mm_mul_pd(a01,b01);
-//            //            __m128d p23 = _mm_mul_pd(a23,b23);
-//            //
-//            //            __m128d pf01 = _mm_mul_pd(p01,f01);
-//            //            __m128d pf23 = _mm_mul_pd(p23,f23);
-//            //
-//            //
-//            //            __m128d sum_0123 = _mm_hadd_pd(pf01,pf23);
-//            //            _mm_store_pd(tmp,sum_0123);
-//            //            per_mixture_Likelihoods[site] += tmp[0] + tmp[1];
-//            //
-//            //#           elif defined( AVX_ENABLED )
-//            //
-//            //
-//            //#           else
-//            
-//            double tmp = p_site_mixture[0] * f0;
-//            tmp += p_site_mixture[1] * f1;
-//            tmp += p_site_mixture[2] * f2;
-//            tmp += p_site_mixture[3] * f3;
-//            
-//            // add the likelihood for this mixture category
-//            per_mixture_Likelihoods[site] += tmp;
-//            
-//            //#           endif
-//            
-//            // increment the pointers to the next site
-//            p_site_mixture+=this->siteOffset;
-//            
-//        } // end-for over all sites (=patterns)
-//        
-//        // increment the pointers to the next mixture category
-//        p_mixture+=this->mixtureOffset;
-//        
-//    } // end-for over all mixtures (=rate categories)
-//    
-//    // sum the log-likelihoods for all sites together
-//    double p_inv = this->pInv->getValue();
-//    double oneMinusPInv = 1.0 - p_inv;
-//    std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
-//    if ( p_inv > 0.0 )
-//    {
-//        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
-//        {
-//            if ( this->siteInvariant[site] )
-//            {
-//                this->lnProb += log( p_inv * f[ this->invariantSiteIndex[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
-//            }
-//            else
-//            {
-//                this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        
-//        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
-//        {
-//            this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
-//        }
-//        
-//        this->lnProb -= log( this->numSiteRates ) * this->numSites;
-//        
-//    }
-//    
-//    //#   if defined (SSE_ENABLED)
-//    //    delete [] tmp;
-//    //#   endif
-//    
-//}
 
 
 #endif
