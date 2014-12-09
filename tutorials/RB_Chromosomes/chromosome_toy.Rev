@@ -5,7 +5,7 @@
 
 # read the data 
 # this is toy data in which there are clearly 2 polyploidization events and no other events
-chromoData = readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv", type="Chromosomes")
+chromoData = readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_toy.tsv", type="NaturalNumbers")
 
 # work under fixed topology with total tree length = 0.2907
 # so we expect lambda and delta to be about 0, and rho to be 6.88 (=2/0.2907)
@@ -59,7 +59,7 @@ moves[mi++] = mvScale(pr_rho, tune=true)
 ###############
 # create the model
 ###############
-seq ~ dnPhyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies,type="Chromosomes")
+seq ~ dnPhyloCTMC(Q=Q, tree=psi, rootFreq=root_frequencies,type="NaturalNumbers")
 
 # clamp data
 seq.clamp(chromoData)
@@ -69,12 +69,12 @@ mymodel = model(Q)
 # create the monitors
 monitors[1] = mnScreen(printgen=10, lambda, delta, rho)
 monitors[2] = mnFile(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.trees", printgen=10, separator = "	", psi)
-monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.log",printgen=10, separator = "	", tree=psi, ctmc=seq, type="Chromosomes")
+monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.log",printgen=10, separator = "	", tree=psi, ctmc=seq, type="NaturalNumbers")
 monitors[4] = mnModel(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy_model.log",printgen=10, separator = "	")
 
 # set up mcmc
-#mymcmc = mcmc(mymodel, monitors, moves)
-#mymcmc.run(100)
+mymcmc = mcmc(mymodel, monitors, moves)
+mymcmc.run(100)
 
 # now summarize ancestral states over the tree
 ancestral_state_trace = readAncestralStateTrace("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosome_toy.log", separator="	") 
