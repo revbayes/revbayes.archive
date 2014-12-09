@@ -3,6 +3,7 @@
  * This file contains the declaration of NaturalNumbersState, which is
  * the base class for character data types that are represented
  * as natural numbers (such as morphological characters) in RevBayes.
+ * Gap states represented as -1
  *
  * @brief Declaration of NaturalNumbersState
  *
@@ -60,9 +61,9 @@ namespace RevBayesCore {
         
         
     private:
-        unsigned int                    computeState(std::string symbol) const;             //!< Compute the internal state value for this character.
+		int                             computeState(std::string symbol) const;             //!< Compute the internal state value for this character.
         
-        unsigned int                    state;
+		int                             state;
         
     };
 	extern size_t						g_MAX_NAT_NUM_STATES;

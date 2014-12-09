@@ -72,7 +72,6 @@ namespace RevLanguage {
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "ChromosomesState.h"
 #include "NaturalNumbersState.h"
 #include "DnaState.h"
 
@@ -106,13 +105,7 @@ void Mntr_AncestralState<treeType>::constructInternalObject( void )
 	std::string							character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
     
 	delete value;
-	if (character == "Chromosomes") {
-		
-		RevBayesCore::AncestralStateMonitor<RevBayesCore::ChromosomesState, typename treeType::valueType> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::ChromosomesState, typename treeType::valueType>(t, ch, (unsigned long)g, fn, sep);
-		m->setAppend( ap );
-		value = m;		
-		
-	} else if (character == "NaturalNumbers") {
+	if (character == "NaturalNumbers") {
 		
 		RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(t, ch, (unsigned long)g, fn, sep);
 		m->setAppend( ap );
@@ -125,7 +118,7 @@ void Mntr_AncestralState<treeType>::constructInternalObject( void )
 		value = m;		
 		
 	} else {
-		throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, DNA, Chromosomes" );
+		throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, DNA" );
 	}
 	
     
