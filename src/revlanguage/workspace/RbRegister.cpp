@@ -271,6 +271,7 @@
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_branchScoreDistance.h"
 #include "Func_clade.h"
+#include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
@@ -335,7 +336,6 @@
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__unot.h"
-#include "Func__rladd.h"
 #include "Func__scalarVectorAdd.h"
 #include "Func__scalarVectorDiv.h"
 #include "Func__scalarVectorMult.h"
@@ -785,6 +785,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "branchScoreDistance",         new Func_branchScoreDistance()      );
         addFunction( "clade",                       new Func_clade()                    );
+        addFunction( "concatenate",                 new Func_concatenate()              );
+        addFunction( "concat",                      new Func_concatenate()              );
         addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
         addFunction( "maximumTree",                 new Func_maximumTree()             );
         addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );

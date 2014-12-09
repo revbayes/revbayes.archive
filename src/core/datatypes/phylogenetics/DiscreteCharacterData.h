@@ -42,13 +42,13 @@ namespace RevBayesCore {
         void                                                clear(void);
         
         // CharacterData functions
-        DiscreteCharacterData&                              add(const DiscreteCharacterData &d);                                        //!< Addition operator used for example in '+=' statements
-        DiscreteCharacterData&                              add(const AbstractCharacterData &d);                                        //!< Addition operator used for example in '+=' statements
-        DiscreteCharacterData&                              add(const AbstractDiscreteCharacterData &d);                                //!< Addition operator used for example in '+=' statements
         void                                                addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                                addTaxonData(const AbstractDiscreteTaxonData &obs);                         //!< Add discrete taxon data
         void                                                addTaxonData(const DiscreteTaxonData<charType> &obs);                       //!< Add taxon data
         MatrixReal                                          computeStateFrequencies(void) const;
+        DiscreteCharacterData&                              concatenate(const DiscreteCharacterData &d);                                //!< Concatenate data matrices
+        DiscreteCharacterData&                              concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
+        DiscreteCharacterData&                              concatenate(const AbstractDiscreteCharacterData &d);                        //!< Concatenate data matrices
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
@@ -60,9 +60,7 @@ namespace RevBayesCore {
         const std::string&                                  getFilePath(void) const;                                                    //!< Returns the name of the file the data came from
         size_t                                              getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
-        size_t                                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
-        size_t                                              getNumberOfIncludedCharacters(size_t idx) const;                            //!< Number of characters for a specific taxon
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                              getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
@@ -168,7 +166,7 @@ bool RevBayesCore::DiscreteCharacterData<charType>::operator<(const DiscreteChar
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::add(const AbstractCharacterData &obsd)
+RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const AbstractCharacterData &obsd)
 {
     
     const DiscreteCharacterData<charType>* rhs = dynamic_cast<const DiscreteCharacterData<charType>* >( &obsd );
@@ -178,7 +176,7 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -188,7 +186,7 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::add(const AbstractDiscreteCharacterData &obsd)
+RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const AbstractDiscreteCharacterData &obsd)
 {
     
     const DiscreteCharacterData<charType>* rhs = dynamic_cast<const DiscreteCharacterData<charType>* >( &obsd );
@@ -198,7 +196,7 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -208,7 +206,7 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::add(const DiscreteCharacterData<charType> &obsd)
+RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const DiscreteCharacterData<charType> &obsd)
 {
     
     size_t sequenceLength = getNumberOfCharacters();
@@ -216,7 +214,7 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
     // check if both have the same number of taxa
     if ( sequenceNames.size() != obsd.getNumberOfTaxa() )
     {
-        throw RbException("Cannot add two character data objects with different number of taxa!");
+        throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
     
     std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
@@ -229,11 +227,11 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
         if ( idx != RbConstants::Size_t::inf)
         {
             used[idx] = true;
-            taxon.add( obsd.getTaxonData( n ) );
+            taxon.concatenate( obsd.getTaxonData( n ) );
         }
         else
         {
-            throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
+            throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
         }
     }
     
@@ -241,7 +239,7 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
     {
         if ( used[i] == false )
         {
-            throw RbException("Cannot add two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
+            throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
         }
     }
     
@@ -605,26 +603,6 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfCharacters(void
 
 
 /** 
- * Get the number of characters in the i-th taxon data object. 
- * This i regardless of whether the character are included or excluded.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters();
-    }
-    
-    return 0;
-}
-
-
-/** 
  * Get the number of characters in taxon data object. 
  * This i regardless of whether the character are included or excluded.
  * For simplicity we assume that all taxon data objects contain the same number
@@ -639,25 +617,6 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharact
     {
         return getTaxonData(0).getNumberOfCharacters() - deletedCharacters.size();
     }
-    return 0;
-}
-
-
-/** 
- * Get the number of included characters in the i-th taxon data object.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters() - deletedCharacters.size();
-    }
-    
     return 0;
 }
 

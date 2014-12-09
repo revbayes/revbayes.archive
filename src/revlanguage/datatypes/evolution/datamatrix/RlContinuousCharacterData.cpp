@@ -87,12 +87,12 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
 }
 
 
-ContinuousCharacterData* ContinuousCharacterData::add(const RevObject &d) const
+ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d) const
 {
     const ContinuousCharacterData* tmp = dynamic_cast<const ContinuousCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return add( *tmp );
+        return concatenate( *tmp );
     }
     else
     {
@@ -102,11 +102,11 @@ ContinuousCharacterData* ContinuousCharacterData::add(const RevObject &d) const
 
 
 
-ContinuousCharacterData* ContinuousCharacterData::add(const ContinuousCharacterData &d) const
+ContinuousCharacterData* ContinuousCharacterData::concatenate(const ContinuousCharacterData &d) const
 {
     ContinuousCharacterData* cloneObj = clone();
     
-    cloneObj->getDagNode()->getValue().add( d.getValue() );
+    cloneObj->getDagNode()->getValue().concatenate( d.getValue() );
     // return the copy
     return cloneObj;
 }
