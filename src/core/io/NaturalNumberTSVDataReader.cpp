@@ -40,7 +40,7 @@ NaturalNumberTSVDataReader::NaturalNumberTSVDataReader(std::string fn, char d) :
 		std::string name = DelimitedDataReader::getChars()[i][0];
 		
 		names.push_back( name );
-		int d = boost::lexical_cast<int>(DelimitedDataReader::getChars()[i][1]);
+		std::string d = boost::lexical_cast<std::string>(DelimitedDataReader::getChars()[i][1]);
 		
 		data.push_back( d );
 		i++;
@@ -53,7 +53,7 @@ std::vector<std::string> NaturalNumberTSVDataReader::getNames(void)
     return names;
 }
 
-std::vector<int> NaturalNumberTSVDataReader::getData(void)
+std::vector<std::string> NaturalNumberTSVDataReader::getData(void)
 {
     return data;
 }

@@ -12,7 +12,7 @@
 # The data was altered because Aristolochia_taliscana and Aristolochia_tentaculata are sisters on 0 length branches,
 # yet are supposed to have chromosome numbers of 6 and 7 respectively. This causes a bug in MonteCarloSampler.cpp "Could not compute lnProb for node seq"
 # therefore both species are set to chromosome number 7. This bug could probably be fixed by setting all 0 branch lengths to 0.000001 or something...
-chromoData = readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_real.tsv", type="Chromosomes")
+chromoData = readTSVCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_chromosomes_real.tsv", type="NaturalNumbers")
 
 # get DNA sequences
 matK_seq = readDiscreteCharacterData("/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/data/matK_treebase_aligned.fas")
@@ -153,7 +153,7 @@ moves[mi++] = mvScale(rho, lambda=1, tune=true, weight=1)
 ###############
 # Chromosome continuous-time Markov chain (CTMC)
 ###############
-chromo ~ dnPhyloCTMC(Q=R, tree=phylogeny, rootFreq=root_frequencies,type="Chromosomes")
+chromo ~ dnPhyloCTMC(Q=R, tree=phylogeny, rootFreq=root_frequencies,type="NaturalNumbers")
 
 # clamp data
 chromo.clamp(chromoData)
@@ -170,7 +170,7 @@ mymodel = model(phylogeny)
 # create the monitors
 monitors[1] = mnScreen(printgen=10, lambda, delta, rho, TL)
 monitors[2] = mnFile(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.trees", printgen=10, separator = "	", phylogeny)
-monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log",printgen=10, separator = "	", tree=phylogeny, ctmc=chromo, type="Chromosomes")
+monitors[3] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint.log",printgen=10, separator = "	", tree=phylogeny, ctmc=chromo, type="NaturalNumbers")
 monitors[4] = mnModel(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_model.log",printgen=10, separator = "	")
 #monitors[5] = mnAncestralState(filename="/Users/mucho/Documents/projects/revbayes/revbayes/tutorials/RB_Chromosomes/output/chromosomes_joint_dna.log",printgen=10, separator = "	", branchlengthtree=phylogeny, character=seq, type="DNA")
 

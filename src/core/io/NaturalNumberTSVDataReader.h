@@ -36,14 +36,14 @@ namespace RevBayesCore {
 		
 		std::string getFilename(void);
 		std::vector<std::string> getNames(void);
-		std::vector<int> getData(void);
+		std::vector<std::string> getData(void);
 		
         
 		
 	protected:	
 		
         std::vector<std::string> names;
-		std::vector<int> data;
+		std::vector<std::string> data;
 		std::string filename;
 		
     };

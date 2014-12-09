@@ -22,14 +22,17 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n ),
-    lambda( 0.0 ),
-    delta( 0.0 ),
-    rho( 0.0 ),
-    matrixSize( n )
-{
-
+RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n+1 ), matrixSize( n+1 ){
+    setLambda(1.0);
+    setRho(1.0);
+    setDelta(1.0);
     updateMatrix();
+}
+
+
+/** Copy constructor */
+RateMatrix_Chromosomes::RateMatrix_Chromosomes(const RateMatrix_Chromosomes& m) : AbstractRateMatrix( m ), matrixSize(m.matrixSize), rho(m.rho), delta(m.delta), lambda(m.lambda), precision(m.precision), stationaryFreqs(m.stationaryFreqs) {
+
 }
 
 
@@ -38,8 +41,45 @@ RateMatrix_Chromosomes::~RateMatrix_Chromosomes(void) {
     
 }
 
+
+RateMatrix_Chromosomes& RateMatrix_Chromosomes::operator=(const RateMatrix_Chromosomes &r) {
+    
+    if (this != &r) {
+        RateMatrix::operator=( r );
+    }
+    
+    return *this;
+}
+
 double RateMatrix_Chromosomes::averageRate(void) const {
     return 1.0;
+}
+
+void RateMatrix_Chromosomes::setLambda( double l ) {
+
+        lambda = l;
+
+        // set flags
+        needsUpdate = true;
+
+}
+
+void RateMatrix_Chromosomes::setRho( double r ) {
+
+        rho = r;
+
+        // set flags
+        needsUpdate = true;
+
+}
+
+void RateMatrix_Chromosomes::setDelta( double d ) {
+
+        delta = d;
+
+        // set flags
+        needsUpdate = true;
+
 }
 
 
@@ -48,23 +88,23 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
     
     for (size_t i=0; i< matrixSize; i++) {
         for (size_t j=0; j< matrixSize; j++) {
-            if (j == i+1) {
-                (*theRateMatrix)[i][j] = lambda;
-            } else if (j == i-1) {
-                (*theRateMatrix)[i][j] = delta;
-            } else if (j == ((2*i)+1)) {
-                (*theRateMatrix)[i][j] = rho;
-            } else {
-                (*theRateMatrix)[i][j] = 0.0;
-            }
+			(*theRateMatrix)[i][j] = 0.0;
+			if (j != 0 && i != 0) {
+				if (j == i+1) {
+					(*theRateMatrix)[i][j] = lambda;
+				} else if (j == i-1) {
+					(*theRateMatrix)[i][j] = delta;
+				} else if (j == (2*i)) {
+					(*theRateMatrix)[i][j] = rho;
+				} 
+			}
         }
-    }
-    
+    }	
     // set the diagonal values
     setDiagonal();
     
-    // do I need to rescale the rates??
-    //rescaleToAverageRate( 1.0 );
+    // rescale rates
+    rescaleToAverageRate( 1.0 );
 }
 
 
@@ -129,50 +169,18 @@ inline void RateMatrix_Chromosomes::squareMatrix( TransitionProbabilityMatrix& P
 
 
 
-RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const
-{
+RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const {
     return new RateMatrix_Chromosomes( *this );
 }
 
 
-const std::vector<double>& RateMatrix_Chromosomes::getStationaryFrequencies( void ) const
-{
+const std::vector<double>& RateMatrix_Chromosomes::getStationaryFrequencies( void ) const {
     
     return stationaryFreqs;
 }
 
-void RateMatrix_Chromosomes::setLambda( double l ) {
-    
-    lambda = l;
-    
-    // set flags
-    needsUpdate = true;
-    
-}
 
-void RateMatrix_Chromosomes::setRho( double r )
-{
-    
-    rho = r;
-    
-    // set flags
-    needsUpdate = true;
-    
-}
-
-void RateMatrix_Chromosomes::setDelta( double d )
-{
-    
-    delta = d;
-    
-    // set flags
-    needsUpdate = true;
-    
-}
-
-
-void RateMatrix_Chromosomes::updateMatrix( void )
-{
+void RateMatrix_Chromosomes::updateMatrix( void ) {
     
     if ( needsUpdate )
     {
