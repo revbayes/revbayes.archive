@@ -38,7 +38,7 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd)
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -48,7 +48,7 @@ ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterDat
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -57,7 +57,7 @@ ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterDat
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd)
 {
     
     // check if both have the same number of taxa
@@ -76,7 +76,7 @@ ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterD
         if ( idx != RbConstants::Size_t::inf)
         {
             used[idx] = true;
-            taxon.add( obsd.getTaxonData( n ) );
+            taxon.concatenate( obsd.getTaxonData( n ) );
 
         }
         else
@@ -336,25 +336,6 @@ size_t ContinuousCharacterData::getNumberOfCharacters(void) const
 
 
 /** 
- * Get the number of characters in the i-th taxon data object. 
- * This i regardless of whether the character are included or excluded.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-size_t ContinuousCharacterData::getNumberOfCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters();
-    }
-    
-    return 0;
-}
-
-
-/** 
  * Get the number of characters in taxon data object. 
  * This i regardless of whether the character are included or excluded.
  * For simplicity we assume that all taxon data objects contain the same number
@@ -368,24 +349,6 @@ size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const {
     {
         return getTaxonData(0).getNumberOfCharacters() - deletedCharacters.size();
     }
-    return 0;
-}
-
-
-/** 
- * Get the number of included characters in the i-th taxon data object.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-size_t ContinuousCharacterData::getNumberOfIncludedCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters() - deletedCharacters.size();
-    }
-    
     return 0;
 }
 
