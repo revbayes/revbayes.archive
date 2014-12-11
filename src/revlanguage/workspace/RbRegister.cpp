@@ -279,7 +279,6 @@
 #include "Func_pomoRootFrequencies.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
-#include "Func_treeHeight.h"
 #include "Func_treeAssembly.h"
 
 
@@ -795,7 +794,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
-        addFunction( "treeHeight",                  new Func_treeHeight()               );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "fnBlosum62", new Func_blosum62());

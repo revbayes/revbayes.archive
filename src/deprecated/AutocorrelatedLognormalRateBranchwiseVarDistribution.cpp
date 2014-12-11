@@ -90,6 +90,7 @@ double AutocorrelatedLognormalRateBranchwiseVarDistribution::computeLnProbabilit
 			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
 			// where mu is the location param of the LN dist (see Kishino & Thorne 2001)
 			double mu = parentRate - (variance * 0.5);
+            
 			double stDev = sqrt(variance);
             lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
         } 
