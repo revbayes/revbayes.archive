@@ -50,7 +50,7 @@ n_parts <- data.size()
 
 # Get the size of each partition
 for (i in 1:n_parts)
-    n_sites[i] <- data[i].nchar(1)
+    n_sites[i] <- data[i].nchar()
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data[1].ntaxa()
