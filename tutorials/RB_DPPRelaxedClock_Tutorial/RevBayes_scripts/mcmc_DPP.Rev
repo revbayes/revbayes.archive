@@ -6,7 +6,7 @@
 D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 
 ### get helpful variables from the data
-n_sites <- D.nchar(1)
+n_sites <- D.nchar()
 
 ### initialize an iterator for the moves vector
 mi = 1
