@@ -51,4 +51,4 @@ tt.summarize()
 mapTree(tt, "output/DPP_bears_mcmc_MAP.tre")
 
 ## quit ##
-#q()
+q()
