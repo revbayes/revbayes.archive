@@ -10,23 +10,19 @@
 
         <name>dnMixture</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Mixture distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The "dnMixture" distribution specifies that a random variable is distributed according to a mixture distribution.
             </p>
         </description>
     
         <constructor-help-entry>
         
-
             <usage>
                 <![CDATA[
-                 dnMixture( RateMatrix[] values, Simplex probabilities )
+                 dnMixture( RateMatrix[]|Real[]|RealPos[]|Natural[]|Integer[]|Probability[] values, Simplex probabilities )
                  ]]> 
             </usage>
         
@@ -34,14 +30,14 @@
                 <label>values</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
-                <valueType>RateMatrix[]</valueType>
+                <description>Mixture components. The vector of values according to which the random variable is distributed.</description>
+                <valueType>RateMatrix[]|Real[]|RealPos[]|Natural[]|Integer[]|Probability[]</valueType>
             </argument>
             <argument>
                 <label>probabilities</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Mixture weights. The probabilities that the random variable is distributed according to each mixture component.</description>
                 <valueType>Simplex</valueType>
             </argument>
 
@@ -50,32 +46,64 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                Let's assume a random variable X is specified as coming from a mixture distribution with mixture components "values" and mixture weights "probabilities". To simulate values for X according to this mixture distribution, we need to follow these steps: (1) with probability probabilities[i] an index i is chosen. (2) Then the value found in values[i] is retrieved. (3) Then this value is assigned to X.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                 # We simulate a variable coming from a mixture distribution.
+                 # Here we use a mixture distribution on 2 normal distributions.
+                 stdev <- 1.0
+                 mean[1] <- 0.0
+                 mean[2] <- 10
+                 #We create the vector of Normal distributions.
+                 values[1] ~ dnNormal(mean[1], stdev)
+                 values[2] ~ dnNormal(mean[2], stdev)
+                 
+                 print(values[1])
+                 print(values[2])
+
+                 #We create a simplex
+                 probaOfFirst ~ dnBeta (1.0, 1.0)
+                 probabilities <- simplex(probaOfFirst, 1.0)
+				 
+				 print(probabilities)
+				 
+                 #Now we can create our mixture distribution:
+                 X ~ dnMixture(values, probabilities)
+                 
+                 # X will take the value values[1] with probability probabilities[1], and the value values[2] with probability probabilities[2].
+                 print (X)
+                 
+                 # We can test that this indeed happens by repeating the drawing of X above with a loop.
+				 # We do 1000 replicates:
+				 nrep<-1000
+				 clear(X)
+				 for (i in 1:nrep) {
+					X[i] ~ dnMixture(values, probabilities)
+				 }
+
+				 # And then counting:
+				 num1 = 0
+				 for (i in 1:nrep) {
+					if (X[i] == values[1] ) {
+						num1 = num1 + 1
+					}
+				 }
+
+				 print ("Proportion of variables drawn with value values[1]: " + (num1/nrep))
+				 print ("Proportion of variables drawn with value values[2]: " + ((nrep-num1)/nrep))
+                 
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Bastien Boussau</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>dnDPP</entry>
             </seeAlso>
 
 

@@ -6,7 +6,7 @@
 #include "SyntaxElement.h"
 
 #include <iostream>
-#include <list>
+#include <vector>
 
 namespace RevLanguage {
     
@@ -30,6 +30,7 @@ namespace RevLanguage {
         
     public:
         SyntaxVariable(const std::string &n);                                                                                       //!< Global variable
+        SyntaxVariable(const std::string &n, const std::vector<std::string> &ns);                                                                                       //!< Global variable
         
         virtual                            ~SyntaxVariable(void);                                                                   //!< Destructor deletes variable, identifier and index
         
@@ -51,7 +52,7 @@ namespace RevLanguage {
     protected:
 
         std::string                         identifier;                                                                             //!< The name of the variable, if identified by name
-        
+        std::vector<std::string>            namespaces;
     };
     
 }

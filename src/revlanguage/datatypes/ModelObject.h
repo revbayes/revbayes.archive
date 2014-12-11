@@ -85,7 +85,7 @@ namespace RevLanguage {
 #include "ConstantNode.h"
 #include "ContinuousCharacterData.h"
 #include "Func__conversion.h"
-#include "IndirectReferenceNode.h"
+#include "IndirectReferenceFunction.h"
 #include "MemberProcedure.h"
 #include "RlConstantNode.h"
 #include "RlDeterministicNode.h"
@@ -323,7 +323,10 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 template <typename rbType>
 RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirectReference(void)
 {
-    IndirectReferenceNode< RevLanguage::ModelObject<rbType> >* newNode = new IndirectReferenceNode< RevLanguage::ModelObject<rbType> >( "", this->getDagNode() );
+//    IndirectReferenceNode< RevLanguage::ModelObject<rbType> >* newNode = new IndirectReferenceNode< RevLanguage::ModelObject<rbType> >( "", this->getDagNode() );
+    
+    RevBayesCore::IndirectReferenceFunction< rbType > *func = new RevBayesCore::IndirectReferenceFunction<rbType>( this->getDagNode() );
+    RevBayesCore::DeterministicNode< rbType >* newNode = new RevBayesCore::DeterministicNode< rbType >( "", func );
     
     RevLanguage::ModelObject< rbType >* newObj = this->clone();
     

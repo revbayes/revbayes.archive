@@ -70,44 +70,44 @@
 
             <example>
                 <![CDATA[
-                ## read in the tree 
-				T <- readTrees("data/bears_dosReis.tre")[1]
+	## read in the tree 
+	T <- readTrees("data/bears_dosReis.tre")[1]
 
-                ### Load the sequence alignment
-				D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
-				
-				### get helpful variables from the data
-				n_sites <- D.nchar(1)
-				n_taxa <- D.ntaxa()
-				n_branches <- 2 * n_taxa - 2
-				names <- D.names()
+	### Load the sequence alignment
+	D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
+	
+	### get helpful variables from the data
+	n_sites <- D.nchar(1)
+	n_taxa <- D.ntaxa()
+	n_branches <- 2 * n_taxa - 2
+	names <- D.names()
 
-				### initialize an iterator for the moves vector
-				mi = 1
+	### initialize an iterator for the moves vector
+	mi = 1
 
-				### Specify Yule (pure birth) tree prior
-				birth_rate <- 0.1
-				root_time ~ dnExponential(0.1, offset=35.0) 
-				timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=1.0, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
-				
-				### set up the base-rate parameter of the ACLN model 
-				base_rate <- 0.01
+	### Specify Yule (pure birth) tree prior
+	birth_rate <- 0.1
+	root_time ~ dnExponential(0.1, offset=35.0) 
+	timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=1.0, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
+	
+	### set up the base-rate parameter of the ACLN model 
+	base_rate <- 0.01
 
-				### set up the variance parameter of the ACLN model 
-				nu <- 0.1
-				
-				### the clock rate at the root of the tree
-				root_rate ~ dnGamma(2.0, 4.0)
+	### set up the variance parameter of the ACLN model 
+	nu <- 0.1
+	
+	### the clock rate at the root of the tree
+	root_rate ~ dnGamma(2.0, 4.0)
 
-				### a vector of the rates at each node
-				### from the ACLN model, which is conditioned on the tree, nu, the root rate, and base rate
-				node_rates ~ dnACLN(timetree, nu, root_rate, base_rate)
-				
-				### the rate at each branch is the average of the rate at each node separated by that branch
-				### a special core function is used to calculate the rate for branch i
-				for(i in 1:n_branches){
-					branch_rates[i] := aveRateOnBranch(node_rates, timetree, root_rate, base_rate, index=i)
-				}
+	### a vector of the rates at each node
+	### from the ACLN model, which is conditioned on the tree, nu, the root rate, and base rate
+	node_rates ~ dnACLN(timetree, nu, root_rate, base_rate)
+	
+	### the rate at each branch is the average of the rate at each node separated by that branch
+	### a special core function is used to calculate the rate for branch i
+	for(i in 1:n_branches){
+		branch_rates[i] := aveRateOnBranch(node_rates, timetree, root_rate, base_rate, index=i)
+	}
                  ]]>
 
             </example>

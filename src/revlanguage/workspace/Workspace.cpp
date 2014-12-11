@@ -40,24 +40,24 @@
 using namespace RevLanguage;
 
 /* Constructor of global workspace */
-Workspace::Workspace() : Environment(), typesInitialized(false) {
+Workspace::Workspace(const std::string &n) : Environment( n ),
+    typesInitialized(false)
+{
 
 }
 
 
 /* Constructor of user workspace */
-Workspace::Workspace(Environment* parentSpace) : Environment(parentSpace), typesInitialized(false) {
+Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environment(parentSpace, n),
+    typesInitialized(false)
+{
     
 }
 
-
 /* Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), typesInitialized(false) {
-
-}
-
-/* Constructor of user workspace */
-Workspace::Workspace(const Workspace& x) : Environment(x), typesInitialized(x.typesInitialized) {
+Workspace::Workspace(const Workspace& x) : Environment(x),
+    typesInitialized(x.typesInitialized)
+{
     
 }
 

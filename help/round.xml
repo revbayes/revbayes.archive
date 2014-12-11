@@ -10,14 +10,11 @@
     
         <name>round</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Round a number</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            'round' rounds the value 'x' to the nearest whole number.
             </p>
         </description>
 
@@ -31,7 +28,7 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The value</description>
             <valueType>RealPos</valueType>
         </argument>
 
@@ -40,32 +37,29 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+                'round' rounds the number 'x' to the nearest whole number. If 'x' is RealPos, 'round(x)' returns a Natural number. If 'x' is Real, 'round(x)' returns an Integer. 
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+            > round(1.499)
+                1
+            > round(1.5)
+                2 
+            > round(1.999)
+                2
+            ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Michael Landis</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>ceil</entry>
+            <entry>floor</entry>
+            <entry>trunc</entry>
         </seeAlso>
 
 

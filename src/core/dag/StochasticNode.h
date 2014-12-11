@@ -426,7 +426,7 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
     
     // draw the value
-    if (!ignoreRedraw)
+    if ( !ignoreRedraw )
         distribution->redrawValue();
     
     // touch this node for probability recalculation

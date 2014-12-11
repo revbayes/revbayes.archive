@@ -10,14 +10,11 @@
 
         <name>dnWishart</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The Wishart distribution.</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This is the constructor of the Wishart distribution. This distribution is defined over positive-definite real symmetric matrices. It can be used as a prior for covariance matrices, although the inverse-Wishart distribution is mathematically more convenient for that purpose (see dnInvWishart).
             </p>
         </description>
     
@@ -34,51 +31,52 @@
                 <label>df</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The number of degrees of freedom (should be at least equal to dim-1).</description>
                 <valueType>Natural</valueType>
             </argument>
             <argument>
                 <label>kappa</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The scaling factor.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>dim</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The order of the matrix.</description>
                 <valueType>Natural</valueType>
             </argument>
 
             <returnValue>Dist_wishart, Distribution, RevObject</returnValue>
 
             <details>
-                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-                <p>
-                The implementation of this fancy function ... 
-                </p>
+            <p>
+            The Wishart distribution is defined over positive-definite real symmetric matrices. Mathematically, it has two parameters: a dim x dim symmetric definite positive real matrix sigma0 (the scale matrix) and an integer df>dim-1 (the number of degrees of freedom). A random draw from a Wishart can be obtained by drawing dim iid multivariate normal random variates and calculating their scatter matrix (sum-of-squares): Sigma = sum_i X_i X_i'.
+            </p>
+            <p>
+            The present implementation of the Wishart distribution only allows for a matrix parameter sigma0 that is equal to a multiple of the identity matrix (entirely specified by a positive real number kappa and the dimension of the matrix dim): Sigma ~ dnWishart(kappa=k, dim=d, df=n).
+            </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                 # a Wishart distribution of parameters k * I_2 and df = 4 degrees of freedom
+                 # where k is itself a scaling factor endowed with a log-uniform distribution:
+                 k ~ dnLogUniform(min=0.001,max=1000)
+                 Sigma ~ dnWishart(dim=2, kappa=k, df=4)
                  ]]>
 
             </example>
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                Wishart, J. (1928). Biometrika 20A (1-2): 32-52.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Your name here</author>
+            <author>Nicolas Lartillot</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->

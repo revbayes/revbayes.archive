@@ -10,14 +10,11 @@
     
         <name>sqrt</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Square root</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            'sqrt' computes the square root of a real positive number, 'x'.
             </p>
         </description>
 
@@ -31,7 +28,7 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The value</description>
             <valueType>RealPos</valueType>
         </argument>
 
@@ -40,32 +37,25 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            'sqrt' computes the square root of the real positive number, 'x', and returns the square-root as a real positive number. 'sqrt(x)' is equivalent to raising 'x' to the power 0.5.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+            > sqrt(2)
+                1.41421
+            > sqrt(2) == 2^0.5
+                true
+            ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Michael Landis</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>power</entry>
         </seeAlso>
 
 
