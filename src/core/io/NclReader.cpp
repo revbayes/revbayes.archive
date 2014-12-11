@@ -725,7 +725,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notDna = true;
+            }
+            
         }
         
         if (notRna == false)
@@ -740,7 +743,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notRna = true;
+            }
+            
         }
         
         if (notAa == false)
@@ -755,7 +761,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notAa = true;
+            }
+            
         }
         
         if (notStd == false)
@@ -770,7 +779,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notStd = true;
+            }
+            
         }
         
         for (size_t j=0; j<5; j++)
@@ -820,17 +832,21 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
     fStrm.open(fn.c_str(), ios::in);
     
     // read the file token-by-token looking for Fasta things
-    int ch = fStrm.get();
-    fStrm.unget();
+    int ch = fStrm.peek();
     std::string word = "";
     std::string seqStr = "";
     int wordNum = 0, lineNum = 0, lastCarotLine = -100;
     int numSequences = 0;
     while (ch != EOF)
     {
-        word = "";
-        fStrm >> word;
+
+        std::getline(fStrm, word);
         
+        // we know that the last character is an escape character
+        if ( word.size() > 0 )
+        {
+            word.erase(word.size()-1);
+        }
         if (wordNum == 0 && word[0] == '>')
         {
             if (lineNum - lastCarotLine > 1)
@@ -839,22 +855,24 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
                 numSequences++;
             }
             else
+            {
                 return false;
+            }
         }
         else if (wordNum == 0 && word[0] == ';')
         {
             // comment
         }
         else if (lineNum > 0 && word[0] != '>' && word[0] != ';')
+        {
             seqStr += word;
+        }
         
         wordNum++;
-        ch = fStrm.get();
-        if (ch == '\n' || ch == '\r' || ch == EOF)
-        {
-            lineNum++;
-            wordNum = 0;
-        }
+        ch = fStrm.peek();
+
+        lineNum++;
+        wordNum = 0;
     }
     
     // close file
@@ -1107,10 +1125,12 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &
     
     // Check that the file exists. It is likely that this has been already checked during the formation of
     // the map that is passed into the function, but it never hurts to be safe...
-    if ( !fileExists(fn.c_str()) ){
+    if ( !fileExists(fn.c_str()) )
+    {
         addWarning("Data file not found");
     }
-    else {
+    else
+    {
         // Extract information on the file format from the value of the key/value pair. Note that we expect the
         // fileFmt string to be in the format file_type|data_type|interleave_type with pipes ('|') separating
         // the format components. It might be better to make an object value in the key/value pair that contains
@@ -1230,11 +1250,21 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
         {
 			// fasta file format
 			if (dataType == "dna")
+            {
 				nexusReader.ReadFilepath(fileName, MultiFormatReader::FASTA_DNA_FORMAT);
-			else if (dataType == "rna")
+            }
+            else if (dataType == "rna")
+            {
 				nexusReader.ReadFilepath(fileName, MultiFormatReader::FASTA_RNA_FORMAT);
-			else if (dataType == "protein")
+            }
+            else if (dataType == "protein")
+            {
 				nexusReader.ReadFilepath(fileName, MultiFormatReader::FASTA_AA_FORMAT);
+            }
+            else
+            {
+                throw RbException("Unknown data type '" + dataType + "' for fasta formatted files.");
+            }
         }
 		else if (fileFormat == "phylip")
         {
