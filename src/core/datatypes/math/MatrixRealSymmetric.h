@@ -53,7 +53,7 @@ namespace RevBayesCore {
 
         
         
-        virtual MatrixRealSymmetric*            clone(void) const;
+        virtual MatrixRealSymmetric*        clone(void) const;
         
         void                                updateMatrix(void);
         //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
