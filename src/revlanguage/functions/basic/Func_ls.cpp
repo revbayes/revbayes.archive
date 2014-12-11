@@ -59,7 +59,7 @@ RevPtr<RevVariable> Func_ls::execute( void ) {
         variables.insert( globalVars.begin(), globalVars.end() );
     }
     
-    const VariableTable& userVars = Workspace::userWorkspace().getVariableTable();
+    const VariableTable& userVars = env->getVariableTable();
     variables.insert( userVars.begin(), userVars.end() );
     
     if ( !variables.empty() )

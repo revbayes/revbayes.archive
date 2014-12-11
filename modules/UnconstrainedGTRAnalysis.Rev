@@ -1,0 +1,26 @@
+################################################################################
+#
+# RevBayes Module: General time reversible substitution rate matrix.
+# 
+#
+# authors: Sebastian Hoehna  and Michael Landis
+#
+################################################################################
+
+
+if ( !exists("monitorIndex") ) {
+   monitorIndex = 0
+}
+
+module("UnconstrainedGTR", data=data, analysisName=analysisName)
+
+myModel = model(Q)
+
+monitors[++monitorIndex] = mnModel(filename="output/" + analysisName +".log",printgen=10, separator = TAB)
+monitors[++monitorIndex] = mnScreen(printgen=1000, TL)
+
+mymcmc = mcmc(myModel, monitors, moves)
+
+#mymcmc.burnin(generations=5000, tuningInterval=250)
+#mymcmc.run(generations=5000)
+

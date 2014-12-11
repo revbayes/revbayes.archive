@@ -101,7 +101,7 @@ ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( new RevBayesCo
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
     this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
-    
+
 }
 
 

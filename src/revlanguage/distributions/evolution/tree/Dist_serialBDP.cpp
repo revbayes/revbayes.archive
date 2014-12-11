@@ -149,7 +149,7 @@ const MemberRules& Dist_serialBDP::getParameterRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"     , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );

@@ -75,11 +75,11 @@ RevPtr<RevVariable> Func_source::execute( void ) {
         lineNumber++;
         
         if (echo_on) {
-
+            
             if ( result == 1 )
-                RBOUT("+ " + line);
+                std::cout << "+ " << line;
             else
-                RBOUT("> " + line);
+                std::cout << "> " << line;
         }
         
         // If previous result was 1 (append to command), we do this

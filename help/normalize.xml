@@ -10,14 +10,11 @@
     
         <name>normalize</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Normalize a vector of values</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            'normalize' scales all vector elements by some constant such that their new average equals 'sum'.
             </p>
         </description>
 
@@ -48,28 +45,22 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            'normalize' computes the mean of 'x', divides all elements in 'x' by that mean, then multiplies by the value 'sum'. This results in the mean of 'normalize(x)' equaling 'sum'.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+            > x <- [1, 1, 3]
+            > y := normalize(x, 4.0)
+            > y
+               [ 2, 4, 6 ]
+
+            ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Michael Landis</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->

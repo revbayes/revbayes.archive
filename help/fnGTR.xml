@@ -10,14 +10,11 @@
     
         <name>fnGTR</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The General Time Reversible function to create a rate matrix.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The function fnGTR creates the most general reversible rate matrix on an  alphabet with an arbitrary number of states.
             </p>
         </description>
 
@@ -31,14 +28,14 @@
             <label>exchangeRates</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A simplex giving the exchange rate parameters. Size 6 for an alphabet of size 4, like DNA.</description>
             <valueType>Simplex</valueType>
         </argument>
         <argument>
             <label>baseFrequencies</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A simplex giving the equilibrium state frequencies. Size the size of the alphabet (4 for DNA).</description>
             <valueType>Simplex</valueType>
         </argument>
 
@@ -47,32 +44,87 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            The General Time Reversible (GTR) model is the most general reversible Markov model possible. More complex models are not reversible (for a discussion of reversibility in models of sequence evolution, see e.g. Jayaswal et al., 2010). All other reversible models can be seed as specific cases of the GTR model. It has been first proposed by Lanave et al. (1984), Tavaré et al. (1986), and Rodriguez et al. (1990), and is sometimes called "REV" (Yang, 1994).
+            </p>
+            <p>
+            It is usually specified thanks to two sets of parameters, exchangeability rates (a simplex with 6 values for alphabets of size 4 like DNA) and equilibrium frequencies (a simplex with 4 values for alphabets of size 4 like DNA). If sequences are evolved for an infinite amount of time using a GTR matrix, their state frequencies will converge to the equilibrium frequencies of the GTR matrix. In total, a GTR matrix for DNA has 8 free parameters: 5 independent exchangeability rates (the sixth one can be obtained from the other ones, because they sum to 1.0), and 3 independent equilibrium frequencies (the frequencies also sum to one).
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             # Let's simulate data using a GTR model on a DNA alphabet.
+             er_prior <- v(1,1,1,1,1,1)
+  			 er ~ dnDirichlet(er_prior)
+
+  			 sf_prior <- v(1,1,1,1)
+  			 sf ~ dnDirichlet(sf_prior)
+
+  			 matrix := fnGTR(er,sf) 
+             print(matrix)
+             
+             # Let's change the matrix so that changes towards "G" are much more frequent than others. To achieve that, we put a high "G" equilibrium frequency.
+             # We create a simplex:
+             GBiasedFrequencies <- simplex(0.01, 0.01, 0.97, 0.01)
+             sf.setValue(GBiasedFrequencies)
+             
+             #What does the matrix look like now?
+             print(matrix)
+             
+             # We build a tree with 3 leaves
+             n_species <- 3
+             for (i in 1:n_species) {
+        			s_names[i] = "Species_"+i
+			 }
+             speciation ~ dnExponential(10.0)
+			 extinction ~ dnExponential(10.0)
+			 tree_height ~ dnUnif(0,1.0)
+			 speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+             
+             # Let's simulate 30 sites over this tree, starting from a sequence completely made of "A"s.
+             # Root frequencies: all "A"s
+             frequencyA <- 1.0
+             rootFrequencies <- simplex(frequencyFirstState, 0.0, 0.0, 0.0)
+             n_sites=30
+             aln ~ dnPhyloCTMC(tree=speciesTree, Q=matrix, rootFrequencies=rootFrequencies, nSites=n_sites, type="DNA")
+			
+			 # Now we can have a look at the sequences in the resulting alignment. If things worked well, we should see traces of a vast increase in "G"s from an ancestral sequence entirely made of "A"s.
+			 aln.show()             
+             
+             # And we can compute the log probability of the alignment
+             aln.lnProbability()
              ]]>
 
         </example>
 
         <reference>
+        	<citation>
+        	Jayaswal V, Jermiin L, Pladian L, Robinson J. 2010. Two Stationary Nonhomogeneous Markov Models of Nucleotide Sequence Evolution, Syst. Biology, 60, 74-86.
+            </citation>  
+            <doi>10.1093/sysbio/syq076</doi>
             <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+            Lanave C, Preparata G, Saccone C and Serio G. 1984. A new method for calculating evolutionary substitution rates. Journal Of Molecular Evolution, 20, 86-93.
+            </citation>  
+            <citation>
+    		Rodriguez F, Oliver JL, Marin A, Medina JR. 1990. The general stochastic model of nucleotide substitution. Journal Of Theoretical Biology, 142(4), 485-501.
+            </citation>     
+            <citation>    
+    		Tavaré S. 1986. Some Probabilistic and Statistical Problems in the Analysis of DNA Sequences. Lect. Math. Life Sci. 17 57-86.
+            </citation>      
+            <citation>
+    		Yang Z. 1994. Estimating the pattern of nucleotide substitution. Journal Of Molecular Evolution, 39(1), 105-111.
             </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
+            
         </reference>
 
-        <author>Your name here</author>
+        <author>Bastien Boussau</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>fnJC</entry>
+            <entry>fnHKY</entry>
+            <entry>fnF81</entry>
+            <entry>fnPomo</entry>
         </seeAlso>
 
 

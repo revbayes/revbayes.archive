@@ -10,20 +10,18 @@
 
         <name>mvRealNodeValTreeSliding</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>mvRealPhyloProcessSliding</alias>
 
-        <title>Some title you want to give this function</title>
+        <title>Simple Metropolis-Hastings move on a univariate real process.</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This move function performs a sliding-move on one random entry of a univariate real process (quantitative trait) along a phylogeny.
             </p>
         </description>
     
         <constructor-help-entry>
         
-
             <usage>
                 <![CDATA[
                  mvRealNodeValTreeSliding( RealNodeValTree process, RealPos lambda = 1, Bool tune = TRUE, RealPos weight = 1 )

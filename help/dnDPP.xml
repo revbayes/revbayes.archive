@@ -39,7 +39,7 @@
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
                 <description>The DPP base distribution. This also gives the Rev type of the stochastic node created with this distribution.</description>
-                <valueType>{Distribution__Real, Distribution__RealPos, Distribution__Natural, Distribution__Integer, Distribution__Probability, or Distribution__Simplex}</valueType>
+                <valueType>Distribution__Any (See details below)</valueType>
             </argument>
             <argument>
                 <label>numElements</label>
@@ -49,7 +49,7 @@
                 <valueType>Natural</valueType>
             </argument>
 
-            <returnValue>Dist_dpp, Distribution__-see types above-[], Distribution, RevObject</returnValue>
+            <returnValue>Dist_dpp, Distribution__Any[], Distribution, RevObject</returnValue>
 
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
@@ -66,7 +66,7 @@
                 were N is the number of elements distributed under the DPP. 
                 </p>
                 <p>
-                The DPP is an infinite mixture model and take 2 parameters: the concentration parameter (a) and 
+                The DPP is an infinite mixture model and takes 2 parameters: the concentration parameter (a) and 
                 the base distribution (G_0). The concentration parameter influences the number of parameter categories
                 and the base distribution is the prior distribution from which parameter values for each
                 category are drawn. For more information see: Ferguson (1973); Antoniak (1974); Lartillot and Philippe (2004);
@@ -77,20 +77,20 @@
 
             <example>
                 <![CDATA[
-             ## number of DPP elements
-             N <- 10
-             
-             ## prior mean number of categories
-             k <- 8
-             
-             ## concentration parameter of the DPP
-             a <- fnDPPConcFromMean(k, N)
-             
-             ## G_0 distribution
-             G_0 = dnExponential(1.0)
-             
-             ## DPP distribution constructior
-             rates ~ dnDPP(a, G_0, N)
+	 ## number of DPP elements
+	 N <- 10
+ 
+	 ## prior mean number of categories
+	 k <- 8
+ 
+	 ## concentration parameter of the DPP
+	 a <- fnDPPConcFromMean(k, N)
+ 
+	 ## G_0 distribution
+	 G_0 = dnExponential(1.0)
+ 
+	 ## DPP distribution constructior
+	 rates ~ dnDPP(a, G_0, N)
                  ]]>
 
             </example>
@@ -140,6 +140,7 @@
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnMixture</entry>
                 <entry>fnDPPConcFromMean</entry>
                 <entry>mvDPPAllocateAuxGibbs</entry>
                 <entry>mvDPPGibbsConcentration</entry>

@@ -10,14 +10,11 @@
     
         <name>power</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Compute nth power</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            'power' raises 'base' to the 'exponent' power
             </p>
         </description>
 
@@ -31,48 +28,41 @@
             <label>base</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
-            <valueType>Real[]</valueType>
+            <description>The exponent's base value(s)</description>
+            <valueType>Real or Real[]</valueType>
         </argument>
         <argument>
             <label>exponent</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The exponent's power</description>
             <valueType>Real</valueType>
         </argument>
 
-        <returnValue>RealPos[], ModelObject, RevObject</returnValue>
+        <returnValue>Real or RealPos[], ModelObject, RevObject</returnValue>
 
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+                'power' returns the value(s) of 'base' raised to the power 'exponent'. If 'base' is a vector, then 'power' is applied element-wise to 'base'. When 'base' is RealPos, all values of 'exponent' are accepted. For negative Real values of 'base', values of 'exponent' that give non-complex powers are valid. In general, 'power(base,exponent)' is equivalent to applying the '^' operator, e.g. 'base^exponent'. 
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+            > power(0.01, 0.5)
+                0.1
+            > power([1,2,3], 2)
+                [ 1, 4, 9 ]
+            ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Michael Landis</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>sqrt</entry>
         </seeAlso>
 
 

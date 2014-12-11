@@ -11,22 +11,26 @@ using namespace RevLanguage;
 
 
 /** Construct environment with NULL parent */
-Environment::Environment(void) :
+Environment::Environment(const std::string &n) :
     functionTable(),
     numUnnamedVariables(0),
     parentEnvironment(NULL),
-    variableTable()
+    variableTable(),
+    children(),
+    name( n )
 {
     
 }
 
 
 /** Construct environment with parent */
-Environment::Environment(Environment* parentEnv) :
+Environment::Environment(Environment* parentEnv, const std::string &n) :
     functionTable(&parentEnv->getFunctionTable()),
     numUnnamedVariables(0),
     parentEnvironment(parentEnv),
-    variableTable()
+    variableTable(),
+    children(),
+    name( n )
 {
     
 }
@@ -37,7 +41,9 @@ Environment::Environment(const Environment &x) :
     functionTable( x.functionTable ),
     numUnnamedVariables( x.numUnnamedVariables ),
     parentEnvironment( x.parentEnvironment ),
-    variableTable( x.variableTable )
+    variableTable( x.variableTable ),
+    children(),
+    name( x.name )
 {
     // Make a deep copy of the variable table by making sure we have clones of the variables
     for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
@@ -54,6 +60,13 @@ Environment::~Environment()
     // Clear the variable table and function table
     clear();
     
+    
+    for (std::map<std::string,Environment*>::iterator it = children.begin(); it != children.end(); ++it)
+    {
+        delete it->second;
+    }
+    
+    children.clear();
 }
 
 
@@ -357,18 +370,22 @@ std::string Environment::generateUniqueVariableName(void)
 }
 
 
-/** Return variable table (const) */
-const VariableTable& Environment::getVariableTable(void) const
+
+Environment* Environment::getChildEnvironment(const std::string &name)
 {
     
-    return variableTable;
-}
-
-
-/** Return variable table */
-VariableTable& Environment::getVariableTable(void) {
+    std::map<std::string, Environment*>::iterator it = children.find(name);
+    if ( it == children.end() )
+    {
+        Environment *env = new Environment(this, name);
+        children.insert( std::pair<std::string, Environment*>(name, env) );
+        return env;
+    }
+    else
+    {
+        return it->second;
+    }
     
-    return variableTable;
 }
 
 
@@ -476,6 +493,32 @@ const RevPtr<RevVariable>& Environment::getVariable(const std::string& name) con
 }
 
 
+/** Return variable table */
+VariableTable& Environment::getVariableTable(void) {
+    
+    return variableTable;
+}
+
+
+/** Return variable table (const) */
+const VariableTable& Environment::getVariableTable(void) const
+{
+    
+    return variableTable;
+}
+
+
+
+bool Environment::hasChildEnvironment(const std::string &name)
+{
+    
+    std::map<std::string, Environment*>::iterator it = children.find(name);
+
+    return it != children.end();
+    
+}
+
+
 /**
  * Is the function with the name 'fxnName' a procedure? Simply ask the
  * function table.
@@ -505,7 +548,7 @@ bool Environment::isSameOrParentOf(const Environment& otherEnvironment) const
         return false;
     }
     
-    return isSameOrParentOf( otherEnvironment.parentEnvironment );
+    return isSameOrParentOf( *otherEnvironment.parentEnvironment );
 }
 
 
