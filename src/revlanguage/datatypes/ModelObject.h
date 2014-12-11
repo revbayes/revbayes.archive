@@ -330,6 +330,12 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
     
     RevLanguage::ModelObject< rbType >* newObj = this->clone();
     
+    const std::set<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
+    while ( !mvs.empty() )
+    {
+        newObj->getDagNode()->removeMove( *mvs.begin() );
+    }
+    
     newObj->setDagNode( newNode );
     
     return newObj;

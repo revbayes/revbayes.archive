@@ -40,12 +40,14 @@ const std::string& Argument::getLabel( void ) const {
 }
 
 
-Argument* Argument::clone( void ) const {
+Argument* Argument::clone( void ) const
+{
     return new Argument( *this );
 }
 
 
-const RevPtr<RevVariable>& Argument::getReferenceVariable(void) const {
+const RevPtr<RevVariable>& Argument::getReferenceVariable(void) const
+{
     if ( isConst ) {
         throw RbException("Illegal attempt to get a non-const reference to a constant variable.");
     }
@@ -53,24 +55,28 @@ const RevPtr<RevVariable>& Argument::getReferenceVariable(void) const {
 }
 
 
-RevPtr<RevVariable>& Argument::getVariable(void) {
+RevPtr<RevVariable>& Argument::getVariable(void)
+{
     return var;
 }
 
 
-RevPtr<const RevVariable> Argument::getVariable(void) const {
+RevPtr<const RevVariable> Argument::getVariable(void) const
+{
     return RevPtr<const RevVariable>( var );
 }
 
 
-bool Argument::isConstant( void ) const {
+bool Argument::isConstant( void ) const
+{
     return isConst;
 }
 
 
 
 /** Complete info about object */
-void Argument::printValue(std::ostream &o) const {
+void Argument::printValue(std::ostream &o) const
+{
     
     o << label << " = ";
     var->printValue(o);
