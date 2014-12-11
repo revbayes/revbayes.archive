@@ -223,6 +223,7 @@
 #include "Dist_unifProbability.h"
 #include "Dist_wishart.h"
 #include "Dist_inverseWishart.h"
+#include "Dist_decomposedInverseWishart.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
@@ -707,7 +708,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // inverse Wishart distribution
         addDistribution( "dnInvWishart",       new Dist_inverseWishart() );
-        
+
+        // and the so-called "decomposed" Inverse Wishart
+        addDistribution( "dnDecomposedInvWishart",       new Dist_decomposedInverseWishart() );
         
         /* Mixture distributions (in folder "distributions/mixture") */
         
