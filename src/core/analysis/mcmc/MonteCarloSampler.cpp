@@ -319,6 +319,8 @@ void MonteCarloSampler::initializeChain( bool priorOnly )
                 std::cerr << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
                 node->printValue(std::cerr);
                 std::cerr << std::endl;
+                
+                break;
             }
             lnProbability += lnProb;
             

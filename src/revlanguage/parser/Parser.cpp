@@ -147,12 +147,15 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
     RevPtr<RevVariable> result = NULL;
 
     //! Execute syntax tree
-    try {
+    try
+    {
 #ifdef DEBUG_PARSER
         printf("Parser getting the semantic value of the syntax tree...\n");
 #endif
         result = root->evaluateContent(env);
-    }    catch (RbException& rbException) {
+    }
+    catch (RbException& rbException)
+    {
 
         std::ostringstream msg;
 
