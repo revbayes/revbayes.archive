@@ -45,7 +45,7 @@ void FastaWriter::writeData(std::string const &fileName, const AbstractDiscreteC
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)
             {
-                if ( data.isCharacterExcluded( i ) )
+                if ( !data.isCharacterExcluded( i ) )
                 {
                     const CharacterState &c = taxon.getCharacter( i );
                     outStream << c.getStringValue();
