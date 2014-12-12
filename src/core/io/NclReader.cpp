@@ -109,6 +109,9 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
             
 			if (m != NULL)
             {
+                
+                
+                
                 m->setFileName( StringUtilities::getLastPathComponent(fileName) );
                 m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
                 
@@ -255,8 +258,11 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of Standard states
-        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tName);
+        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tokens[0]);
         
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
         {
@@ -311,8 +317,11 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of amino acid states
-        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tName);
+        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
@@ -357,8 +366,11 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of Standard states
-        ContinuousTaxonData dataVec = ContinuousTaxonData(tName);
+        ContinuousTaxonData dataVec = ContinuousTaxonData(tokens[0]);
         
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
@@ -412,8 +424,11 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of DNA states
-        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>(tName);
+        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>( tokens[0] );
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -469,8 +484,11 @@ DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnaligne
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of DNA states
-        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>(tName);
+        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
@@ -515,8 +533,11 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of RNA states
-        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tName);
+        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -572,8 +593,11 @@ DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnaligne
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of DNA states
-        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tName);
+        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
@@ -624,9 +648,13 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         //std::cerr << "Reading data for taxon " << tName << " which has index " << origTaxIndex <<"\n";
         // allocate a vector of Standard states
-        DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tName);
+        DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tokens[0]);
 
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
