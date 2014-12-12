@@ -1,0 +1,169 @@
+Get the data
+Execute \verb!RevBayes!
+Run file 1:
+source("RevBayes_scripts/analysis/mcmc_run1_PS0.Rev")
+
+Look at Model file & MCMC file in a text editor:
+Describe the analysis:
+The group, sequence data, model.
+
+This is an analysis of 13 species within the genus \emph{Fagus} (the beeches), based 
+$2576$ sites sampled from one nuclear gene region (ITS) and two chloroplast gene regions
+(rbcL and matK).
+Here we assume a GTR+$\Gamma$ substitution model that is uniformly shared by all sites:
+we refer to this as the `uniform' partition scheme, or PS0 for short.
+
+##########################################################################################
+File/analysis descriptions
+
+[for each analysis, what are the ESS values, what do the traces look like?]
+
+source("RevBayes_scripts/analysis/mcmc_run1_PS0.Rev")
+mymcmc.operatorSummary()
+mcmc_run1_PS0.Rev
+	uniform GTR+I+G
+	single move per cycle
+	large proposal for all parameters
+	no-pre-burnin
+[\verb!RevBayes! output summary diagnostics: really low ESS/really poor mixing]
+[\verb!Tracer! orientation]
+
+source("RevBayes_scripts/analysis/mcmc_run2_PS0.Rev")
+mymcmc.operatorSummary()
+mcmc_run2_PS0.Rev
+	uniform GTR+I+G
+	*multiple moves per cycle
+	large proposal for all parameters
+	flat & low proposal weights
+	no-pre-burnin
+[\verb!RevBayes! & \verb!Tracer! output summary diagnostics: low ESS/poor mixing]
+
+source("RevBayes_scripts/analysis/mcmc_run3_PS0.Rev")
+mymcmc.operatorSummary()
+mcmc_run3_PS0.Rev
+	uniform GTR+I+G
+	multiple moves per cycle
+	*smaller proposals for er
+	flat & low proposal weights
+	no-pre-burnin
+[we change scale of tuning parameter for alpha from 0.1 to 6.0: better ESS/better mixing]
+
+source("RevBayes_scripts/analysis/mcmc_run4_PS0.Rev")
+mymcmc.operatorSummary()
+mcmc_run4_PS0.Rev
+	uniform GTR+I+G
+	multiple moves per cycle
+	flat & low proposal weights
+	*pre-burnin (with scale adjusted from previous)
+[\verb!Tracer!: decent ESS/better mixing, but I & G parameter interaction]
+
+source("RevBayes_scripts/analysis/mcmc_run5_PS0.Rev")
+mcmc_run5_PS0.Rev
+	uniform GTR+I+G
+	multiple moves per cycle
+	*variable proposal weights
+	pre-burnin (with scale adjusted from previous)
+[decent ESS/better mixing, parameter interaction: TL and alpha, long TL]
+
+source("RevBayes_scripts/analysis/mcmc_run6_PS0.Rev")
+mymcmc.operatorSummary()
+mcmc_run6_PS0.Rev
+	uniform GTR+I+G
+	multiple moves per cycle
+	variable proposal weights
+	pre-burnin (with scale adjusted from previous)
+[change branch length prior to ~ dnExponential(20.0) (mean 0.05), TL better but still parameter interaction (TL and alpha), but reasonable TL]
+
+
+source("RevBayes_scripts/analysis/mcmc_run7_1_PS0.Rev")
+mymcmc.operatorSummary()
+mcmc_run7_PS0.Rev
+	uniform GTR+I
+	multiple moves per cycle
+	variable proposal weights
+	pre-burnin (with scale adjusted from previous)
+[change branch length prior back to ~ dnExponential(10.0) (mean 0.1), decent ESS/better mixing, no parameter interaction]
+
+source("RevBayes_scripts/analysis/mcmc_run7_1_prior_PS0.Rev")
+mymcmc.operatorSummary()
+[Now that we seem to be doing a pretty good job with one chain, let's compare it to the prior]
+mcmc_run8_prior_PS0.Rev
+	uniform GTR+I
+	multiple moves per cycle
+	variable proposal weights
+	pre-burnin
+[check for & eliminate weak parameters]
+
+[Now that we seem to be doing a pretty good job with one chain, let's compare multiple independent runs.]
+[Targeting the posterior...]
+source("RevBayes_scripts/analysis/mcmc_run7_2_PS0.Rev")
+source("RevBayes_scripts/analysis/mcmc_run7_3_PS0.Rev")
+source("RevBayes_scripts/analysis/mcmc_run7_4_PS0.Rev")
+[...and the prior...]
+source("RevBayes_scripts/analysis/mcmc_run7_2_prior_PS0.Rev")
+source("RevBayes_scripts/analysis/mcmc_run7_3_prior_PS0.Rev")
+source("RevBayes_scripts/analysis/mcmc_run7_4_prior_PS0.Rev")
+mymcmc.operatorSummary()
+mcmc_run7_PS0.Rev
+	uniform GTR+I
+	multiple moves per cycle
+	variable proposal weights
+	pre-burnin
+[replicate analyses to target posterior probability density: runs appear to have targeted posterior]
+
+
+
+Apply multiple-run diagnostics:
+	PSRF
+	ASDSF
+	comparetrees
+
+	
+	
+	
+	
+
+
+
+
+
+
+
+##########################################################################################
+Get the data
+Execute \verb!RevBayes!
+Run file 1:
+source("RevBayes_scripts/analysis/mcmc_run1_PS0.Rev")
+
+Look at Model file & MCMC file in a text editor:
+Describe the analysis:
+The group, sequence data, model.
+
+This is an analysis of 13 species within the genus \emph{Fagus} (the beeches), based 
+$2576$ sites sampled from one nuclear gene region (ITS) and two chloroplast gene regions
+(rbcL and matK).
+Here we assume a GTR+$\Gamma$ substitution model that is uniformly shared by all sites:
+we refer to this as the `uniform' partition scheme, or PS0 for short.
+
+
+What diagnostics are available from \verb!RevBayes!?
+
+Let's look at the output in \verb!Tracer!:
+  
+
+MCMC diagnosis
+1. Scale of the tuning parameter
+what happens when you increase/decrease the scale of the proposal mechanism?
+
+2. Pre-burnin
+what happens when you do/not use pre-burnin?
+
+3. Proposal weights
+what happens when we change the proposal weights?
+	increase one proposal relative to another
+		or increase weight of a poorly mixing parameter
+	increase the overall proposal weights uniformly
+	force it to propose one move per cycle
+	
+4. Running under the prior
+-suppress tree output

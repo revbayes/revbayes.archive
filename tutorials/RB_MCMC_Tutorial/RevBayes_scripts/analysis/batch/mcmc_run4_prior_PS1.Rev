@@ -1,0 +1,25 @@
+################################################################################
+#
+# RevBayes Exercise: Bayesian inference using MCMC and output analysis
+# 
+# This file: Runs the full MCMC on the 3-gene partition model in model_PS1.Rev
+#
+#
+# authors: Tracy A. Heath, Michael Landis, Sebastian Hoehna and Brian R. Moore
+#
+################################################################################
+
+### Load data file and uniform partition model
+source("RevBayes_scripts/models/model_PS1.Rev")
+
+monitors[1] <- modelmonitor(filename="output/fagus_ps1_prior_run4.log",printgen=50, separator = "	", pi, er, alpha, pinvar, TL)
+monitors[2] <- screenmonitor(printgen=50, alpha, TL, pinvar)
+
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.run(generations=50000, underPrior=true)
+
+
+#q()
+
+

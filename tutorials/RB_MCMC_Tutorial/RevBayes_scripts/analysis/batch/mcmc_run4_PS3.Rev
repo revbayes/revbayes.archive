@@ -1,0 +1,34 @@
+################################################################################
+#
+# RevBayes Exercise: Bayesian inference using MCMC and output analysis
+# 
+# This file: Runs the full MCMC on the 3-gene partition model 
+#               with codon specific substitution models in model_PS3.Rev
+#
+# authors: Tracy A. Heath, Michael Landis, Sebastian Hoehna and Brian R. Moore
+#
+################################################################################
+
+### Load data file and uniform partition model
+source("RevBayes_scripts/models/model_PS3.Rev")
+
+monitors[1] <- modelmonitor(filename="output/fagus_ps3_posterior_run4.log",printgen=50, separator = "	", pi, er, alpha, pinvar, TL)
+monitors[2] <- filemonitor(filename="output/fagus_ps3_posterior_run4.trees",printgen=50, separator = "	", phylogeny)
+monitors[3] <- screenmonitor(printgen=50, alpha, TL, pinvar)
+
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=2000,tuningInterval=100)
+mymcmc.run(generations=50000)
+
+
+# Now, we will analyze the tree output.
+# Let us start by reading in the tree trace
+treetrace <- readTreeTrace("output/fagus_ps3_posterior_run4.trees", treetype="non-clock")
+# and get the summary of the tree trace
+treetrace.summarize()
+
+mapTree(treetrace,"output/fagus_ps3_run4.tree")
+
+#q()
+
