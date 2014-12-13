@@ -241,7 +241,7 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
     {
         std::stringstream o;
         char s[32];
-        std::snprintf(s, sizeof(s), "%f",p[index]);
+        snprintf(s, sizeof(s), "%f",p[index]);
         o << n << "=" << s; //SK
         std::string comment = o.str();
         nodeComments.push_back( comment );
