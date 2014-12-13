@@ -12,16 +12,14 @@ using namespace RevBayesCore;
 
 Monitor::Monitor(unsigned long g) :
     printgen( g ),
-    model( NULL ),
-    numCycles( 0 )
+    model( NULL )
 {
     
 }
 
 Monitor::Monitor(unsigned long g, DagNode *n) :
     printgen( g ),
-    model( NULL ),
-    numCycles( 0 )
+    model( NULL )
 {
     
     nodes.push_back( n );
@@ -32,8 +30,7 @@ Monitor::Monitor(unsigned long g, DagNode *n) :
 
 Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) :
     printgen( g ),
-    model( NULL ),
-    numCycles( 0 )
+    model( NULL )
 {
     
     for (std::set<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
@@ -55,8 +52,7 @@ Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) :
 Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
     printgen( g ),
     nodes( n ),
-    model( NULL ),
-    numCycles( 0 )
+    model( NULL )
 {
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
@@ -74,8 +70,7 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
 
 Monitor::Monitor(const Monitor &m) :
     nodes( m.nodes ),
-    model( m.model ),
-    numCycles( m.numCycles )
+    model( m.model )
 {
     
     // set the print gen
@@ -154,9 +149,6 @@ Monitor& Monitor::operator=(const Monitor &i) {
         // set the printgen
         printgen = i.printgen;
         
-        // set number of cycles
-        numCycles = i.numCycles;
-        
         model = i.model;
     }
     
@@ -231,6 +223,12 @@ void Monitor::swapNode(DagNode *oldN, DagNode *newN)
     
     it = nodes.insert( it, newN );
     nodes.erase( it + 1 );
+}
+
+
+void Monitor::reset(size_t numCycles)
+{
+    // dummy implementation
 }
 
 

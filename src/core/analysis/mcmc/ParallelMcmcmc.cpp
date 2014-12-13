@@ -131,13 +131,13 @@ double ParallelMcmcmc::computeBeta(double d, double s, size_t idx)
 
 void ParallelMcmcmc::burnin(int g, int ti)
 {
-    // Tell monitors how much job we have ahead of us
-    for( size_t i = 0; i < chains.size(); ++i )
-    {
-        RbVector<Monitor>& monitors = chains[i]->getMonitors();
-        for ( size_t j = 0; j < monitors.size(); ++j )
-            monitors[j].setNumCycles( g );
-    }
+//    // Tell monitors how much job we have ahead of us
+//    for( size_t i = 0; i < chains.size(); ++i )
+//    {
+//        RbVector<Monitor>& monitors = chains[i]->getMonitors();
+//        for ( size_t j = 0; j < monitors.size(); ++j )
+//            monitors[j].setNumCycles( g );
+//    }
 }
 
 ParallelMcmcmc* ParallelMcmcmc::clone(void) const
@@ -167,7 +167,9 @@ void ParallelMcmcmc::run(size_t generations)
     {
         RbVector<Monitor>& monitors = chains[ chainsPerProcess[pid][i] ]->getMonitors();
         for ( size_t j = 0; j < monitors.size(); ++j )
-            monitors[j].setNumCycles( generations );
+        {
+            monitors[j].reset( generations );
+        }
     }
     
     // print file header
