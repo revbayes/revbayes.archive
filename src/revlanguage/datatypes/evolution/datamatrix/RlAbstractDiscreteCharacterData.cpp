@@ -19,13 +19,16 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
+    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
     setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     
     
     methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
+    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
 
 }
@@ -46,13 +49,16 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Abst
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
+    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
     setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     
     
     methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
+    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
 
 }
@@ -73,13 +79,16 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
+    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
     setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     
     
     methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
+    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
 
 }
@@ -100,13 +109,16 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Type
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
+    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
     setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     
     
     methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
+    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
 
 }
@@ -214,6 +226,44 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
                     }
                     
                 }
+            }
+        }
+        return NULL;
+    }
+    else if (name == "setNumStatesPartition")
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        RevBayesCore::AbstractDiscreteCharacterData &v = dagNode->getValue();
+        size_t nChars = v.getNumberOfCharacters();
+        size_t nTaxa = v.getNumberOfTaxa();
+        
+        // e.g. data.setNumStatesPartition(2)
+        size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
+        for (size_t i = 0; i < nChars; i++)
+        {
+            int max = 0;
+            for (size_t j = 0; j < nTaxa; j++)
+            {
+                const RevBayesCore::AbstractDiscreteTaxonData& td = v.getTaxonData(j);
+                if (!td.getCharacter(i).isAmbiguous() && !td.getCharacter(i).isGapState())
+                {
+                    int k = td.getCharacter(i).getStateIndex() + 1;
+                    if (k > max)
+                    {
+                        max = k;
+                    }
+                }
+            }
+
+            if (max == n)
+            {
+                v.includeCharacter(i);
+            }
+            else
+            {
+                v.excludeCharacter(i);
             }
         }
         return NULL;
