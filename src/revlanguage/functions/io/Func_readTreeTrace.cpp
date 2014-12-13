@@ -224,14 +224,18 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             RevBayesCore::NewickConverter c;
             RevBayesCore::BranchLengthTree *tau = c.convertFromNewick( columns[index] );
             
-            if ( outgroup == "" )
-            {
-                RevBayesCore::BranchLengthTree& referenceTree = *tau;
-                outgroup = referenceTree.getTipNode(0).getName();
-            }
-            
-            // re-root the tree so that we can compare the the trees
-            tau->reroot( outgroup );
+			// moved the reroot functionality below into 
+			// RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees()
+			// so that tree traces retain their original topology
+			// will freyman 12/12/14
+			
+//            if ( outgroup == "" )
+//            {
+//                RevBayesCore::BranchLengthTree& referenceTree = *tau;
+//                outgroup = referenceTree.getTipNode(0).getName();
+//            }
+//            // re-root the tree so that we can compare the the trees
+//            tau->reroot( outgroup );
             
             t.addObject( tau );
         }
