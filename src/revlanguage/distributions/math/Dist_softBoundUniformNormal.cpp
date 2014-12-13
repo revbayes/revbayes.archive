@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "SoftBoundUniformNormalDistribution.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_SoftBoundUniformNormal.h"
+#include "Dist_softBoundUniformNormal.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
