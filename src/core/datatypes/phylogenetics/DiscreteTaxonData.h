@@ -77,7 +77,9 @@ charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i)
 {
     
     if (i >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[i];
 }
@@ -95,7 +97,9 @@ const charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i) 
 {
     
     if (i >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[i];
 }
@@ -224,7 +228,9 @@ charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t index)
 {
     
     if (index >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[index];
 }
@@ -242,7 +248,9 @@ const charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t i
 {
     
     if (index >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[index];
 }

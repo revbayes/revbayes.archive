@@ -36,7 +36,11 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     waitingTime( true ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
-    headerPrintingInterval( 20 )
+    headerPrintingInterval( 20 ),
+    startTimes(),
+    numCycles( 0 ),
+    currentGen( 0 ),
+    startGen( 0 )
 {
     
 }
@@ -50,7 +54,11 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     waitingTime( true ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
-    headerPrintingInterval( 20 )
+    headerPrintingInterval( 20 ),
+    startTimes(),
+    numCycles( 0 ),
+    currentGen( 0 ),
+    startGen( 0 )
 {
     
 }
@@ -63,7 +71,11 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     waitingTime( true ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
-    headerPrintingInterval( 20 )
+    headerPrintingInterval( 20 ),
+    startTimes(),
+    numCycles( 0 ),
+    currentGen( 0 ),
+    startGen( 0 )
 {
     
 }
@@ -81,9 +93,6 @@ ScreenMonitor* ScreenMonitor::clone(void) const
 /** Monitor value at generation gen */
 void ScreenMonitor::monitor(unsigned long gen)
 {
-    // start timer if gen == 0
-    if ( gen == 0 )
-        startTime = time( NULL );
 
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
@@ -182,14 +191,20 @@ void ScreenMonitor::monitor(unsigned long gen)
         
         if ( waitingTime )
         {
-            if ( gen == 0 )
+
+            if ( (gen-startGen) <= samplingFrequency )
             {
                 std::cout << prefixSeparator << "--:--:--" << suffixSeparator;
             }
             else
             {
-                double progress = double( gen ) / double( numCycles );
-                size_t timeUsed = time(NULL) - startTime;
+                double progress = double( startTimes.size() * samplingFrequency ) / double( startGen + numCycles - gen + startTimes.size() * samplingFrequency );
+                size_t timeUsed = time(NULL) - startTimes.front();
+                if ( startTimes.size() > 20 )
+                {
+                    startTimes.pop();
+                }
+            
                 size_t waitTime = double( timeUsed ) / progress - double( timeUsed );
                 
                 size_t hours   = waitTime / 3600;
@@ -202,12 +217,16 @@ void ScreenMonitor::monitor(unsigned long gen)
                 
                 std::cout << prefixSeparator << ss.str() << suffixSeparator;
             }
+            
+            startTimes.push( time( NULL ) );
         }
         
         std::cout << std::endl;
         std::cout.flush();
         
     }
+    
+    currentGen = gen;
 }
 
 
@@ -291,6 +310,15 @@ void ScreenMonitor::printHeader( void )
     
     std::cout << std::endl;
     
+}
+
+
+void ScreenMonitor::reset(size_t n)
+{
+    startGen = currentGen;
+    numCycles = n;
+    std::queue<time_t> empty;
+    std::swap( startTimes, empty );
 }
 
 

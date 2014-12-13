@@ -733,9 +733,8 @@ void MonteCarloSampler::startMonitors( size_t numCycles ) {
         //monitors[i]->openStream();
         
         // if this chain is active, print the header
-        if (chainActive) // surprised this works properly...
+        if (chainActive)
         {
-            monitors[i].setNumCycles( numCycles );
             monitors[i].openStream();
             monitors[i].printHeader();
             
