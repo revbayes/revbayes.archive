@@ -46,7 +46,6 @@
 #include "SubtreeScale.h"
 #include "TestDPPRelClock.h"
 #include "TimeTree.h"
-#include "TreeHeightStatistic.h"
 #include "TreeScale.h"
 #include "UniformDistribution.h"
 #include "VectorDoubleProductStatistic.h"
