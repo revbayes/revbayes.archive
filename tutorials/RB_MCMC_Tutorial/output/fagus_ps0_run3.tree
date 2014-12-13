@@ -1,0 +1,24 @@
+#NEXUS
+
+	Begin taxa;
+	Dimensions ntax=13;
+	Taxlabels
+		Fagus_crenata1
+		Fagus_crenata2
+		Fagus_engleriana
+		Fagus_grandifolia
+		Fagus_japonica1
+		Fagus_japonica2
+		Fagus_longipetiolata
+		Fagus_lucida1
+		Fagus_lucida2
+		Fagus_mexicana
+		Fagus_orientalis
+		Fagus_sylvatica
+		Trig_excelsa
+		;
+End;
+
+Begin trees;
+tree TREE1 = [&R]((((((((Fagus_lucida1[&index=12]:0.056227,Fagus_lucida2[&index=11]:0.033335)[&index=13,posterior=1]:0.026539,(Fagus_orientalis[&index=10]:0.028960,Fagus_sylvatica[&index=9]:0.051085)[&index=14,posterior=1]:0.022313)[&index=15,posterior=0.908123]:0.020359,Fagus_crenata1[&index=8]:0.037331)[&index=16,posterior=0.832224]:0.016312,(Fagus_grandifolia[&index=7]:0.074383,Fagus_mexicana[&index=6]:0.074870)[&index=17,posterior=1]:0.040706)[&index=18,posterior=0.712383]:0.035793,Fagus_crenata2[&index=5]:0.070532)[&index=19,posterior=0.608522]:0.030694,(Fagus_japonica1[&index=4]:0.090373,Fagus_japonica2[&index=3]:0.077215)[&index=20,posterior=0.966711]:0.022399)[&index=21,posterior=0.475366]:0.015966,Fagus_longipetiolata[&index=2]:0.071036)[&index=22,posterior=0.536618]:0.028696,Fagus_engleriana[&index=1]:0.112834,Trig_excelsa[&index=0]:1.629546)[&index=23,posterior=1]:0.000000;
+End;
