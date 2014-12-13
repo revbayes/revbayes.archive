@@ -204,6 +204,7 @@
 #include "Dist_bdp.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
+#include "Dist_empiricalTree.h"
 #include "Dist_serialBDP.h"
 #include "Dist_skySerialBDP.h"
 #include "Dist_skyFossilBDP.h"
@@ -679,6 +680,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // uniform topology distribution
         addDistribution( "dnUniformTopology",           new Dist_uniformTopology() );
         
+		// empirical tree distributions
+		addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<BranchLengthTree>() );
+        addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<TimeTree>() );
+		
+		
         
         /* Statistical distributions on simple variables (in folder "distributions/math") */
         

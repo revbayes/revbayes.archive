@@ -52,6 +52,7 @@ namespace RevBayesCore {
 		void                                                                    summarizeClades(int burnin = -1);
 		void                                                                    summarizeConditionalClades(int burnin = -1);
 		void                                                                    summarizeTrees(int burnin = -1);
+		std::vector<Sample<std::string> >                                       getTreeSamples();
         
     private:
 		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
@@ -71,6 +72,75 @@ namespace RevBayesCore {
     };
     
     
+	template <>
+	inline void RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees(int b)
+	{
+		
+		std::map<std::string, Sample<std::string> > treeAbsencePresence;
+		
+		if (b == -1)
+		{
+			burnin = trace.size() / 4;
+		}
+		else
+		{
+			burnin = size_t(b);
+		}
+		
+		std::string outgroup = "";
+		for (size_t i = burnin; i < trace.size(); ++i)
+		{
+			BranchLengthTree tree = *trace.objectAt(i);
+			
+			// re-root the tree so that we can compare the the trees
+			if ( outgroup == "" ) 
+				outgroup = tree.getTipNode(0).getName();
+			tree.reroot( outgroup );
+			
+			std::string newick = TreeUtilities::uniqueNewickTopology(tree);
+			
+			const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find(newick);
+			if (entry == treeAbsencePresence.end())
+			{
+				Sample<std::string> treeSample = Sample<std::string>(newick, 0);
+				if (i > burnin)
+				{
+					treeSample.setTrace(std::vector<double>(i - burnin, 0.0));
+				}
+				else
+				{
+					treeSample.setTrace(std::vector<double>());
+				}
+				treeAbsencePresence.insert(std::pair<std::string, Sample<std::string> >(newick, treeSample));
+			}
+			
+			for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+			{
+				
+				if (it->first == newick)
+				{
+					it->second.addObservation(true);
+				}
+				else
+				{
+					it->second.addObservation(false);
+				}
+			}
+		}
+		
+		// collect the samples
+		treeSamples.clear();
+		for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+		{
+			it->second.computeStatistics();
+			treeSamples.push_back(it->second);
+		}
+		
+		// sort the samples by frequency
+		sort(treeSamples.begin(), treeSamples.end());
+	}
+	
+	
     template <>
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
     {
@@ -579,6 +649,7 @@ namespace RevBayesCore {
 
 
 
+#include "Sample.h"
 #include "StringUtilities.h"
 #include "TopologyNode.h"
 
@@ -1015,11 +1086,13 @@ void RevBayesCore::TreeSummary<treeType>::summarizeTrees(int b)
 	{
 		burnin = size_t(b);
 	}
-    
+	
+    std::string outgroup = "";
 	for (size_t i = burnin; i < trace.size(); ++i)
 	{
 		treeType* tree = trace.objectAt(i);
 		std::string newick = TreeUtilities::uniqueNewickTopology(*tree);
+		
 		const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find(newick);
 		if (entry == treeAbsencePresence.end())
 		{
@@ -1315,6 +1388,13 @@ RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsens
 	}
     
 	return(root);
+}
+
+
+template <class treeType>
+std::vector<RevBayesCore::Sample<std::string> > RevBayesCore::TreeSummary<treeType>::getTreeSamples()
+{
+	return treeSamples;
 }
 
 #endif
