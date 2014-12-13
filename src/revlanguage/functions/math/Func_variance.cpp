@@ -1,4 +1,4 @@
-#include "varianceFunction.h"
+#include "VarianceFunction.h"
 #include "Func_variance.h"
 #include "ModelVector.h"
 #include "Real.h"
