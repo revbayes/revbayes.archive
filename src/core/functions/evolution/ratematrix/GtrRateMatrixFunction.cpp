@@ -1,5 +1,4 @@
 #include "GtrRateMatrixFunction.h"
-#include "GtrRateMatrix.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;

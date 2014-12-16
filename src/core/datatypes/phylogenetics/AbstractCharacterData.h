@@ -42,21 +42,18 @@ namespace RevBayesCore {
         virtual void                            clear(void) = 0;
     
         // CharacterData functions
-        virtual AbstractCharacterData&          add(const AbstractCharacterData &d) = 0;                                        //!< Addition operator used for example in '+=' statements
         virtual void                            addTaxonData(const AbstractTaxonData &obs) = 0;                                 //!< Add taxon data
+        virtual AbstractCharacterData&          concatenate(const AbstractCharacterData &d) = 0;                                //!< Concatenate two sequences
         virtual void                            excludeAllCharacters(void) = 0;                                                 //!< Exclude all characters
         virtual void                            excludeCharacter(size_t i) = 0;                                                 //!< Exclude character
         virtual void                            excludeTaxon(size_t i) = 0;                                                     //!< Exclude taxon
         virtual void                            excludeTaxon(const std::string& s) = 0;                                         //!< Exclude taxon
-//        virtual const CharacterState&           getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
         virtual std::string                     getDatatype(void) const = 0;                                                    //!< Return the data type of this character data matrix
         virtual const std::string&              getFileName(void) const = 0;                                                    //!< Returns the name of the file the data came from
         virtual const std::string&              getFilePath(void) const = 0;                                                    //!< Returns the name of the file path
         virtual size_t                          getIndexOfTaxon(const std::string &n) const = 0;                                //!< Get the index of the taxon with name 'n'.
         virtual size_t                          getNumberOfCharacters(void) const = 0;                                          //!< Number of characters
-        virtual size_t                          getNumberOfCharacters(size_t idx) const = 0;                                    //!< Number of characters for a specific taxon
         virtual size_t                          getNumberOfIncludedCharacters(void) const = 0;                                  //!< Number of characters
-        virtual size_t                          getNumberOfIncludedCharacters(size_t idx) const = 0;                            //!< Number of characters for a specific taxon
         virtual size_t                          getNumberOfTaxa(void) const = 0;                                                //!< Number of taxa
         virtual size_t                          getNumberOfIncludedTaxa(void) const = 0;                                        //!< Number of included taxa
         virtual AbstractTaxonData&              getTaxonData(size_t tn) = 0;                                                    //!< Return a reference to a sequence in the character matrix

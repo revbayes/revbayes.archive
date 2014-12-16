@@ -146,12 +146,6 @@ RateMatrix_MtRev24::RateMatrix_MtRev24( void ) : RateMatrix_Empirical( 20 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_MtRev24::RateMatrix_MtRev24(const RateMatrix_MtRev24& m) : RateMatrix_Empirical( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_MtRev24::~RateMatrix_MtRev24(void) {
     

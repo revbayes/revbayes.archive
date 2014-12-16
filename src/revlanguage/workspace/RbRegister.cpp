@@ -28,8 +28,6 @@
 #include <set>
 #include <cstdlib>
 
-#include "Func_dagNodeCount.h"
-
 /* Files including helper classes */
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
@@ -76,7 +74,7 @@
 /* Taxon types (in folder "datatypes/evolution") */
 #include "RlTaxon.h"
 
-/* Inference types (in folder "datatypes/inference") */
+/* Inference types (in folder "analysis") */
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
@@ -84,11 +82,13 @@
 #include "RlPathSampler.h"
 #include "RlPowerPosterior.h"
 #include "RlSteppingStoneSampler.h"
+#include "RlAncestralStateTrace.h"
 
 /// Monitors ///
 
-/* Monitor types (in folder "datatypes/inference/monitors) */
+/* Monitor types (in folder "monitors) */
 #include "RlMonitor.h"
+#include "Mntr_AncestralState.h"
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
@@ -119,9 +119,7 @@
 #include "Move_SimplexSingleElementScale.h"
 
 /* Moves on real valued vectors */
-#include "Move_RLCRateScale.h"
 #include "Move_SingleElementScale.h"
-#include "Move_SwitchRateJump.h"
 #include "Move_VectorSingleElementScale.h"
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorScale.h"
@@ -149,13 +147,6 @@
 
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
-#include "Move_MultivariateRealNodeValTreeTranslation.h"
-#include "Move_MultivariateRealNodeValTreeSliding.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
-#include "Move_RealNodeValTreeSliding.h"
-#include "Move_RealNodeValTreeTranslation.h"
-#include "Move_ScaleSingleACLNRates.h"
-#include "Move_ACLNMixingStep.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -189,14 +180,12 @@
 #include "Dist_phyloCTMCEpoch.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
-#include "Dist_autocorrelatedLnBranchRates.h"
-#include "Dist_branchRateJumpProcess.h"
-#include "Dist_whiteNoise.h"
 
-/* Trait evolution models (in folder "distributions/evolution/tree") */
-#include "Dist_brownian.h"
-#include "Dist_ornsteinUhlenbeck.h"
-#include "Dist_mvtBrownian.h"
+/* Trait evolution models (in folder "distributions/evolution/branchrates") */
+#include "Dist_PhyloBrownian.h"
+#include "Dist_PhyloOrnsteinUhlenbeck.h"
+#include "Dist_PhyloMvtBrownian.h"
+#include "Dist_PhyloWhiteNoise.h"
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
@@ -260,13 +249,9 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
-#include "Func_citation.h"
-#include "Func_contacts.h"
-#include "Func_contributors.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getwd.h"
-#include "Func_help.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
@@ -285,21 +270,16 @@
 
 
 /* Functions related to evolution (in folder "functions/evolution") */
-#include "Func_averageRateOnBranch.h"
 #include "Func_branchScoreDistance.h"
 #include "Func_clade.h"
+#include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
-#include "Func_expBranchTree.h"
-#include "Func_tanhBranchTree.h"
-#include "Func_t92GCBranchTree.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
-#include "Func_phyloRateMultiplier.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
-#include "Func_treeHeight.h"
 #include "Func_treeAssembly.h"
 
 
@@ -320,6 +300,8 @@
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_wag.h"
+#include "Func_chromosomes.h"
+#include "Func_mk1.h"
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
@@ -354,7 +336,6 @@
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__unot.h"
-#include "Func__rladd.h"
 #include "Func__scalarVectorAdd.h"
 #include "Func__scalarVectorDiv.h"
 #include "Func__scalarVectorMult.h"
@@ -367,15 +348,20 @@
 
 
 /* Input/output functions (in folder "functions/io") */
+#include "Func_ancestralStateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_mapTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
+#include "Func_readTSVCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
+#include "Func_readBranchLengthTrees.h"
 #include "Func_readTreeTrace.h"
+#include "Func_readAncestralStateTreeTrace.h"
+#include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
 #include "Func_TaxonReader.h"
 #include "Func_write.h"
@@ -395,7 +381,6 @@
 #include "Func_min.h"
 #include "Func_normalize.h"
 #include "Func_power.h"
-#include "Func_powermix.h"
 #include "Func_powerVector.h"
 #include "Func_round.h"
 #include "Func_simplex.h"
@@ -440,14 +425,15 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
         AddWorkspaceVectorType<Taxon,5>::addTypeToWorkspace( *this, new Taxon() );
         
-        AddWorkspaceVectorType<RealNodeValTree,1>::addTypeToWorkspace( *this, new RealNodeValTree() );
-        
         
         AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
         AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
+		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
+		
+		addFunction("v", new Func_workspaceVector<AncestralStateTrace>() );
         
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
         addFunction("v", new Func_workspaceVector<Monitor>() );
@@ -489,6 +475,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
+		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<TimeTree>());
+		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<BranchLengthTree>());
         addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
         addTypeWithConstructor("mnFile",                new Mntr_File());
         addTypeWithConstructor("mnModel",               new Mntr_Model());
@@ -522,9 +510,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );        
 
         /* Moves on vectors of real values */
-        addTypeWithConstructor("mvRlcRateScale",                new Move_RLCRateScale() );
         addTypeWithConstructor("mvSingleElementScale",          new Move_SingleElementScale() );
-        addTypeWithConstructor("mvSwitchRateJump",              new Move_SwitchRateJump() );
         addTypeWithConstructor("mvVectorScale",                 new Move_VectorScale() );
         addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
         addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
@@ -584,19 +570,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
 
-        /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
-        addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariateRealNodeValTreeTranslation() );
-        addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariateRealNodeValTreeSliding() );
-        addTypeWithConstructor("mvMultivariateRealNodeValTreeTranslation",    new Move_MultivariateRealNodeValTreeTranslation() );
-        addTypeWithConstructor("mvMultivariateRealNodeValTreeSliding",    new Move_MultivariateRealNodeValTreeSliding() );
-        addTypeWithConstructor("mvConjugateInverseWishartBrownian",    new Move_ConjugateInverseWishartBrownian() );
-        addTypeWithConstructor("mvRealNodeValTreeSliding",    new Move_RealNodeValTreeSliding() );
-        addTypeWithConstructor("mvRealNodeValTreeTranslation",    new Move_RealNodeValTreeTranslation() );
-        addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
-        addTypeWithConstructor("mvRealPhyloProcessTranslation",    new Move_RealNodeValTreeSliding() );
-        addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
-        addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
-
         
 
         ///////////////////////////////////////////////////
@@ -607,25 +580,18 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
-        // autocorrelated log-normal branch rates relaxed clock model
-        addDistribution( "dnACLN",                      new Dist_autocorrelatedLnBranchRates() );
-		
-		
-		// branch-rate jump process
-        addDistribution( "dnBranchRateJumpProcess",     new Dist_branchRateJumpProcess() );
-        
         // white noise process
-        addDistribution( "dnWhiteNoise",                new Dist_whiteNoise() );
+        addDistribution( "dnPhyloWhiteNoise",                new Dist_PhyloWhiteNoise() );
         
         /* trait evolution (in folder "distributions/evolution/branchrate") */
 
         // brownian motion
-        addDistribution( "dnBrownian",                  new Dist_brownian() );
-        addDistribution( "dnOUP",                       new Dist_ornsteinUhlenbeck() );
-        addDistribution( "dnOrnsteinUhlenbeck",         new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnPhyloBrownian",                  new Dist_PhyloBrownian() );
+        addDistribution( "dnPhyloOUP",                       new Dist_PhyloOrnsteinUhlenbeck() );
+        addDistribution( "dnPhyloOrnsteinUhlenbeck",         new Dist_PhyloOrnsteinUhlenbeck() );
         
         // multivariate brownian motion
-        addDistribution( "dnBrownianMultiVariate",      new Dist_mvtBrownian() );
+        addDistribution( "dnPhyloBrownianMultiVariate",      new Dist_PhyloMvtBrownian() );
   
         /* Character state evolution processes (in folder "distributions/evolution/character") */
         
@@ -795,12 +761,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // regular functions
         addFunction( "clear",                    new Func_clear()                    );
-        addFunction( "citation",                 new Func_citation()                 );
-        addFunction( "contacts",                 new Func_contacts()                 );
-        addFunction( "contributors",             new Func_contributors()             );
         addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
-        addFunction( "help",                     new Func_help()                     );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
@@ -823,25 +785,22 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "type",                     new Func_type()                     );
         
         /* Evolution-related functions (in folder "functions/evolution") */
-        addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
         addFunction( "branchScoreDistance",         new Func_branchScoreDistance()      );
         addFunction( "clade",                       new Func_clade()                    );
+        addFunction( "concatenate",                 new Func_concatenate()              );
+        addFunction( "concat",                      new Func_concatenate()              );
         addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
         addFunction( "maximumTree",                 new Func_maximumTree()             );
         addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );
-        addFunction( "expBranchTree",               new Func_expBranchTree()            );
-        addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
-        addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
-        addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
         addFunction( "pomoStateConvert",            new Func_pomoStateConverter() );
         addFunction( "pomoRF",                      new Func_pomoRootFrequencies() );
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
-        addFunction( "treeHeight",                  new Func_treeHeight()               );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "fnBlosum62", new Func_blosum62());
+        addFunction( "fnChromosomes", new Func_chromosomes());
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
         addFunction( "fnF81",      new Func_f81()     );
@@ -850,6 +809,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
         addFunction( "fnJones",    new Func_jones()   );
+		addFunction( "fnMk1",      new Func_mk1()     );
         addFunction( "fnMtMam",    new Func_mtMam()   );
         addFunction( "fnMtRev",    new Func_mtRev()   );
         addFunction( "fnPomo",     new Func_pomo()    );
@@ -930,8 +890,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_add",      new Func__scalarVectorAdd<Real        , ModelVector<Real>     , ModelVector<Real>          >(  )   );
         addFunction( "_add",      new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
         
-        addFunction( "_add",      new Func__rladd< AbstractDiscreteCharacterData  , AbstractDiscreteCharacterData , AbstractDiscreteCharacterData >(  )   );
-        
         // division
         addFunction( "_div",      new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
         addFunction( "_div",      new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
@@ -990,14 +948,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_exp",      new Func_powerVector() );
         
         // type conversion
-        addFunction( "_Natural2Integer",            new Func__conversion<Natural, Integer>()        );
+//        addFunction( "_Natural2Integer",            new Func__conversion<Natural, Integer>()        );
         addFunction( "_Natural2Real",               new Func__conversion<Natural, Real>()           );
         addFunction( "_Natural2RealPos",            new Func__conversion<Natural, RealPos>()        );
         addFunction( "_Integer2Real",               new Func__conversion<Integer, Real>()           );
-//        addFunction( "_Integer2RealPos",            new Func__conversion<Integer, RealPos>()        );
-        addFunction( "_Probability2RealPos",        new Func__conversion<Probability, RealPos>()    );
-        addFunction( "_Probability2Real",           new Func__conversion<Probability, Real>()       );
-        addFunction( "_RealPos2Real",               new Func__conversion<RealPos, Real>()           );
+//        addFunction( "_Probability2RealPos",        new Func__conversion<Probability, RealPos>()    );
+//        addFunction( "_Probability2Real",           new Func__conversion<Probability, Real>()       );
+//        addFunction( "_RealPos2Real",               new Func__conversion<RealPos, Real>()           );
         
         
         addFunction( "_Natural[]2Integer[]",        new Func__conversion<ModelVector<Natural>, ModelVector<Integer> >()         );
@@ -1011,27 +968,30 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
 
         /* Input/output functions (in folder "functions/io") */
+        addFunction( "ancestralStateTree",          new Func_ancestralStateTree<BranchLengthTree>() );
+		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
 		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
 		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()            );
         addFunction( "module",                      new Func_module()                       );
         addFunction( "print",                       new Func_write()                        );
+        addFunction( "readAncestralStateTreeTrace", new Func_readAncestralStateTreeTrace()  );		
+		addFunction( "readAncestralStateTrace",     new Func_readAncestralStateTrace()	    );
         addFunction( "readAtlas",                   new Func_readAtlas()                    );
+		addFunction( "readBranchLengthTrees",       new Func_readBranchLengthTrees()        );
         addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData()  );
         addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()    );
         addFunction( "readTaxonData",               new Func_TaxonReader()                  );
         addFunction( "readTrace",                   new Func_readTrace()                    );
         addFunction( "readTrees",                   new Func_readTrees()                    );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
+		addFunction( "readTSVCharacterData",        new Func_readTSVCharacterData()         );
         addFunction( "source",                      new Func_source()                       );
         addFunction( "write",                       new Func_write()                        );
         addFunction( "writeFasta",                  new Func_writeFasta()                   );
         addFunction( "writeNexus",                  new Func_writeNexus()                   );
 
-        
-        
-        addFunction("dagNodeCount", new Func_dagNodeCount());
         
         /* Math functions (in folder "functions/math") */
 		
@@ -1072,9 +1032,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		// power function
         addFunction( "power",       new Func_power() );
         addFunction( "power",       new Func_powerVector() );
-
-        // powermix function (TODO: remove when user functions work)
-        addFunction( "powermix",    new Func_powermix() );
         
 		// round function
         addFunction( "round",       new Func_round<Real,Integer>()  );

@@ -43,10 +43,10 @@ namespace RevBayesCore {
         virtual void                                clear(void) = 0;
         
         // CharacterData functions
-        virtual AbstractDiscreteCharacterData&      add(const AbstractCharacterData &d) = 0;                                    //!< Addition operator used for example in '+=' statements
-        virtual AbstractDiscreteCharacterData&      add(const AbstractDiscreteCharacterData &d) = 0;                            //!< Addition operator used for example in '+=' statements
         virtual void                                addTaxonData(const AbstractTaxonData &obs) = 0;                             //!< Add taxon data
         virtual void                                addTaxonData(const AbstractDiscreteTaxonData &obs) = 0;                     //!< Add taxon data of discrete characters
+        virtual AbstractDiscreteCharacterData&      concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate data matrices
+        virtual AbstractDiscreteCharacterData&      concatenate(const AbstractDiscreteCharacterData &d) = 0;                    //!< Concatenate data matrices
         virtual MatrixReal                          computeStateFrequencies(void) const = 0;                                    //!< Compute the state frequencies for this character data object
         virtual void                                excludeCharacter(size_t i) = 0;                                             //!< Exclude character
         virtual void                                excludeTaxon(size_t i) = 0;                                                 //!< Exclude taxon
@@ -57,7 +57,6 @@ namespace RevBayesCore {
         virtual const std::string&                  getFilePath(void) const = 0;                                                //!< Returns the name of the file path the data came from
         virtual size_t                              getIndexOfTaxon(const std::string &n) const = 0;                            //!< Get the index of the taxon with name 'n'.
         virtual size_t                              getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
-        virtual size_t                              getNumberOfCharacters(size_t idx) const = 0;                                //!< Number of characters for a specific taxon
         virtual size_t                              getNumberOfStates(void) const = 0;                                          //!< Get the number of states for the characters in this matrix
         virtual size_t                              getNumberOfIncludedTaxa(void) const = 0;                                    //!< Number of included taxa
         virtual size_t                              getNumberOfTaxa(void) const = 0;                                            //!< Number of taxa

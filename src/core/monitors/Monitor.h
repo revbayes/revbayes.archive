@@ -54,14 +54,13 @@ namespace RevBayesCore {
         virtual void                                openStream(void);                                                   //!< Open the stream for writing
         virtual void                                printHeader(void);                                                  //!< Print header
         virtual void                                setModel(Model* m);
-
+        virtual void                                reset(size_t numCycles);                                            //!< Reset the monitor for a new start.
 
         // getters and setters
         const std::vector<DagNode *>&               getDagNodes(void) const;                                            //!< Get the nodes vector
         void                                        setDagNodes(const std::set<DagNode *>& args);
         void                                        setDagNodes(const std::vector<DagNode *>& args);
         void                                        setMcmc(Mcmc* m);
-        void                                        setNumCycles(size_t n) { numCycles = n; }                           //!< Set num cycles to monitor
 
     protected:
     
@@ -70,7 +69,6 @@ namespace RevBayesCore {
         Mcmc*                                       mcmc;
         std::vector<DagNode *>                      nodes;
         const Model*                                model;
-        size_t                                      numCycles;                                                          //!< Total number of cycles to monitor
     };
     
     // Global functions using the class

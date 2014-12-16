@@ -337,7 +337,7 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 template <typename rlType>
 double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
-    if ( type.getParentType() == getClassTypeSpec().getParentType() )
+    if ( type.getParentType() == getClassTypeSpec().getParentType() && once == true )
     {
         // We want to convert to another generic model vector
 

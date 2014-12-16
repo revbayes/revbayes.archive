@@ -2,12 +2,10 @@
 #include "BinaryDivision.h"
 #include "BinaryMultiplication.h"
 #include "BinarySubtraction.h"
-#include "BirthRateConstBDStatistic.h"
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "ConstantRateBirthDeathProcess.h"
 #include "ContinuousStochasticNode.h"
-#include "DeathRateConstBDStatistic.h"
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
 #include "DirichletProcessPriorDistribution.h"
@@ -48,7 +46,6 @@
 #include "SubtreeScale.h"
 #include "TestDPPRelClock.h"
 #include "TimeTree.h"
-#include "TreeHeightStatistic.h"
 #include "TreeScale.h"
 #include "UniformDistribution.h"
 #include "VectorDoubleProductStatistic.h"
@@ -109,9 +106,9 @@ bool TestDPPRelClock::run( void ) {
 
 	//   Deterministic nodes
 	//    birthRate = div / (1 - turn)
-	DeterministicNode<double> *birthRate = new DeterministicNode<double>("birth_rate", new BirthRateConstBDStatistic(div, turn));
+	DeterministicNode<double> *birthRate = new DeterministicNode<double>("birth_rate", new BinaryDivision<double,double,double>(div, new DeterministicNode<double>("", new BinarySubtraction<double,double,double>(new ConstantNode<double>("", new double(1.0)), turn))));
 	//    deathRate = (div * turn) / ( 1 - turn)
-	DeterministicNode<double> *deathRate = new DeterministicNode<double>("death_rate", new DeathRateConstBDStatistic(div, turn));
+	DeterministicNode<double> *deathRate = new DeterministicNode<double>("death_rate", new BinaryDivision<double,double,double>( new DeterministicNode<double>("" , new BinaryMultiplication<double,double,double>(div, turn)), new DeterministicNode<double>("", new BinarySubtraction<double,double,double>(new ConstantNode<double>("", new double(1.0)), turn))));
 	// For some datasets with large root ages, if div>1.0 (or so), the probability is NaN
 //	RandomNumberGenerator* rng = GLOBAL_RNG;
 //	div->setValue(rng->uniform01() / 1.5);

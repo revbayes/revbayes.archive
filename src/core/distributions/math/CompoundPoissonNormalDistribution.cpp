@@ -14,9 +14,9 @@
 using namespace RevBayesCore;
 
 CompoundPoissonNormalDistribution::CompoundPoissonNormalDistribution(const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 0.0 ) ),
-rate( r ),
-mu( m ),
-sigma( s )
+    rate( r ),
+    sigma( s ),
+    mu( m )
 {
     
     // add the parameters to our set (in the base class)

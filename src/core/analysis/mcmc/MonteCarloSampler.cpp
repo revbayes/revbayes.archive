@@ -15,7 +15,6 @@
 #include "SingleRandomMoveSchedule.h"
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
-#include "ExtendedNewickAdmixtureTreeMonitor.h"
 
 #include <cmath>
 #include <iomanip>
@@ -320,6 +319,8 @@ void MonteCarloSampler::initializeChain( bool priorOnly )
                 std::cerr << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
                 node->printValue(std::cerr);
                 std::cerr << std::endl;
+                
+                break;
             }
             lnProbability += lnProb;
             
@@ -732,9 +733,8 @@ void MonteCarloSampler::startMonitors( size_t numCycles ) {
         //monitors[i]->openStream();
         
         // if this chain is active, print the header
-        if (chainActive) // surprised this works properly...
+        if (chainActive)
         {
-            monitors[i].setNumCycles( numCycles );
             monitors[i].openStream();
             monitors[i].printHeader();
             

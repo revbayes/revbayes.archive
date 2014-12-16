@@ -38,10 +38,10 @@ namespace RevBayesCore {
         void                                            clear(void);
         
         // CharacterData functions
-        ContinuousCharacterData&                        add(const ContinuousCharacterData &d);                                      //!< Addition operator used for example in '+=' statements
-        ContinuousCharacterData&                        add(const AbstractCharacterData &d);                                        //!< Addition operator used for example in '+=' statements
         void                                            addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                            addTaxonData(const ContinuousTaxonData &obs);                               //!< Add Continuous taxon data
+        ContinuousCharacterData&                        concatenate(const ContinuousCharacterData &d);                              //!< Concatenate data matrices
+        ContinuousCharacterData&                        concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                            excludeTaxon(size_t i);                                                     //!< Exclude taxon
@@ -52,9 +52,7 @@ namespace RevBayesCore {
         const std::string&                              getFilePath(void) const;                                                    //!< Returns the name of the file path the data came from
         size_t                                          getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
-        size_t                                          getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
-        size_t                                          getNumberOfIncludedCharacters(size_t idx) const;                            //!< Number of characters for a specific taxon
         size_t                                          getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                          getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         ContinuousTaxonData&                            getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix

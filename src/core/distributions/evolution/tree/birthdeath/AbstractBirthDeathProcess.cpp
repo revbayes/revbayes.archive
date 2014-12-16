@@ -36,7 +36,7 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     rootAge( ra ),
     numTaxa( tn.size() ),
     taxa( tn ),
-    startsAtRoot(  origin == NULL )
+    startsAtRoot( origin == NULL )
 
 {
     // add the parameters to our set (in the base class)

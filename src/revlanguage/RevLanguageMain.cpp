@@ -26,7 +26,8 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
 {
     
     // load the modules
-    try {
+    try
+    {
         RevLanguage::ModuleSystem::getModuleSystem().loadModules("modules");
     }    
     catch ( RbException e )
@@ -53,19 +54,26 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     std::string commandLine;
     int result = 0;
 
-    for(unsigned int i =0 ; i < sourceFiles.size(); i++){
+    for (unsigned int i =0 ; i < sourceFiles.size(); i++)
+    {
         line = "source(\"" + sourceFiles[i] + "\")";
         std::cout << "> " << line << std::endl;
 
         // Process the command line
         if (result == 1)
+        {
             commandLine += line;
+        }
         else
+        {
             commandLine = line;
+        }
+        
         result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
 
         // We just hope for better input next time
-        if (result == 2) {
+        if (result == 2)
+        {
             result = 0;
         }
     }

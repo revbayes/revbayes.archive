@@ -22,11 +22,7 @@ namespace RevBayesCore {
         
     public:
         RateMatrix_FreeBinary(void);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_FreeBinary(const RateMatrix_FreeBinary& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_FreeBinary(void);                                                              //!< Destructor
-        
-        // overloaded operators
-        RateMatrix_FreeBinary&          operator=(const RateMatrix_FreeBinary& r);
         
         // RateMatrix functions
         double                          averageRate(void) const;

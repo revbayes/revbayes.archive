@@ -20,8 +20,8 @@ namespace RevBayesCore {
         const double&                           operator[](size_t i) const;                                         //!< Const index op
         
         // TaxonData functions
-        ContinuousTaxonData&                    add(const AbstractTaxonData &d);                                    //!< Addition operator used for example in '+=' statements
-        ContinuousTaxonData&                    add(const ContinuousTaxonData &d);                                  //!< Addition operator used for example in '+=' statements
+        ContinuousTaxonData&                    concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
+        ContinuousTaxonData&                    concatenate(const ContinuousTaxonData &d);                          //!< Concatenate sequences
         void                                    addCharacter(const double &newChar );                               //!< Push back a new character
         const double&                           getCharacter(size_t index) const;                                   //!< Get the character at position index
         double&                                 getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
