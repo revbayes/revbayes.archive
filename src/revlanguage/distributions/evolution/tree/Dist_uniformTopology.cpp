@@ -9,6 +9,8 @@
 #include "RlTopology.h"
 #include "StochasticNode.h"
 #include "UniformTopologyDistribution.h"
+#include "Clade.h"
+#include "RlClade.h"
 
 using namespace RevLanguage;
 
@@ -51,9 +53,15 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
     // get the parameters
     int n = static_cast<const Natural &>( numTaxa->getRevObject() ).getDagNode()->getValue();
     const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-    RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
-    
-    return d;
+
+	if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance()) {
+		const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names, c);
+		return d;
+	} else {
+		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
+		return d;
+	}    
 }
 
 
@@ -104,7 +112,8 @@ const MemberRules& Dist_uniformTopology::getParameterRules(void) const
     {
         distUniformTopologyMemberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
         distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        
+        distUniformTopologyMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+		
         rulesSet = true;
     }
     
@@ -147,6 +156,10 @@ void Dist_uniformTopology::setConstParameter(const std::string& name, const RevP
     else if ( name == "names" ) 
     {
         taxonNames = var;
+    }
+	else if ( name == "constraints" ) 
+    {
+        constraints = var;
     }
     else {
         Distribution::setConstParameter(name, var);

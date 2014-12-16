@@ -2,7 +2,7 @@
 #define Dist_bimodalLnorm_H
 
 #include "BimodalLognormalDistribution.h"
-#include "RlContinuousDistribution.h"
+#include "RlPositiveContinuousDistribution.h"
 
 namespace RevLanguage {
     
@@ -19,7 +19,7 @@ namespace RevLanguage {
      * @since 2014-04-09, version 1.0
      *
      */
-    class Dist_bimodalLnorm :  public ContinuousDistribution {
+    class Dist_bimodalLnorm :  public PositiveContinuousDistribution {
         
     public:
         Dist_bimodalLnorm( void );

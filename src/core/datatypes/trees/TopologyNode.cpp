@@ -191,7 +191,7 @@ void TopologyNode::addNodeParameter(std::string const &n, double p)
     
     std::stringstream o;
     char s[32];
-    std::snprintf(s, sizeof(s), "%f",p);
+    snprintf(s, sizeof(s), "%f",p);
     o << n << "=" << s; //SK
     std::string comment = o.str();
     nodeComments.push_back( comment );
@@ -241,8 +241,27 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
     {
         std::stringstream o;
         char s[32];
-        std::snprintf(s, sizeof(s), "%f",p[index]);
+        snprintf(s, sizeof(s), "%f",p[index]);
         o << n << "=" << s; //SK
+        std::string comment = o.str();
+        nodeComments.push_back( comment );
+        
+        newickNeedsRefreshing = true;
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
+            (*it)->addParameter(n, p, internalOnly);
+        }
+    }
+}
+
+void TopologyNode::addParameter(std::string const &n, const std::vector<std::string*> &p, bool internalOnly)
+{
+    
+    if ( !internalOnly || !isTip()  )
+    {
+        std::stringstream o;
+        o << n << "=" << *p[index];
         std::string comment = o.str();
         nodeComments.push_back( comment );
         
@@ -280,7 +299,7 @@ std::string TopologyNode::buildNewickString( void )
                 o << "index=" << index;
                 if (nodeComments.size() > 0 || getSpeciesName() != "")
                 {
-                    o << ":";
+                    o << ",";
                 }
             }
             
@@ -288,7 +307,7 @@ std::string TopologyNode::buildNewickString( void )
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << nodeComments[i];
             }
@@ -297,7 +316,7 @@ std::string TopologyNode::buildNewickString( void )
             if (getSpeciesName() != "") {
                 if ( nodeComments.size() > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << "&species=" << getSpeciesName();
             }
@@ -316,7 +335,7 @@ std::string TopologyNode::buildNewickString( void )
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << branchComments[i];
             }
@@ -340,14 +359,14 @@ std::string TopologyNode::buildNewickString( void )
                 o << "index=" << index;
                 if (nodeComments.size() > 0)
                 {
-                    o << ":";
+                    o << ",";
                 }
             }
             for (size_t i = 0; i < nodeComments.size(); ++i)
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << nodeComments[i];
             }
@@ -364,7 +383,7 @@ std::string TopologyNode::buildNewickString( void )
             {
                 if ( i > 0 )
                 {
-                    o << ":";
+                    o << ",";
                 }
                 o << branchComments[i];
             }
@@ -390,6 +409,21 @@ void TopologyNode::clearBranchParameters( void )
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
             (*it)->clearBranchParameters();
+        }
+    }
+}
+
+
+void TopologyNode::clearNodeParameters( void )
+{
+    
+    nodeComments.clear();
+    if ( !isTip()  )
+    {
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
+            (*it)->clearNodeParameters();
         }
     }
 }
@@ -662,24 +696,32 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
             return RbConstants::Size_t::nan;
         }
     }
-    
-    if ( myTaxa.size() == yourTaxa.size() )
-    {
+	
+	if ( myTaxa.size() == yourTaxa.size() ) {
+		
+		// this may be the correct node for the clade, but check to see if there
+		// is a child node that contains the clade first
+		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+			
+			if ( (*it)->containsClade(c,true) && !(*it)->isTip() ) 
+				return (*it)->getCladeIndex( c );
+			
+		}
+		
         return index;
-    }
-    else
-    {
-        bool contains = false;
-        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-            contains |= (*it)->containsClade(c,true);
-            if ( contains )
-            {
-                return (*it)->getCladeIndex( c );
-            }
-        }
+		
+    } else {
+		
+		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+			
+			if ( (*it)->containsClade(c,true) ) 
+				return (*it)->getCladeIndex( c );
+			
+		}
+		
         return RbConstants::Size_t::nan;
-    }
+		
+	}
 }
 
 

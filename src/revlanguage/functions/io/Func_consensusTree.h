@@ -63,7 +63,6 @@ namespace RevLanguage {
 #include "StringUtilities.h"
 #include "TreeSummary.h"
 #include "TreeTrace.h"
-#include "UserInterface.h"
 
 #include <map>
 #include <set>

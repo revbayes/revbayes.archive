@@ -25,7 +25,7 @@ namespace RevBayesCore {
         virtual                                ~AbstractTaxonData(void) {}
         
         // AbstractTaxonData functions
-        virtual AbstractTaxonData&              add(const AbstractTaxonData &d) = 0;                                //!< Addition operator used for example in '+=' statements
+        virtual AbstractTaxonData&              concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
         virtual size_t                          getNumberOfCharacters(void) const = 0;                              //!< How many characters
         virtual const std::string&              getTaxonName(void) const = 0;                                       //!< Return the name of the character vector
         virtual void                            setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name

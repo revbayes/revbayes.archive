@@ -22,6 +22,7 @@
 
 
 #include <iostream>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,7 @@ namespace RevBayesCore {
         
         // Monitor functions
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
+        void                                reset(size_t numCycles);
         
         // ScreenMonitor functions
         void                                printHeader(void);                                                  //!< Print header
@@ -54,7 +56,11 @@ namespace RevBayesCore {
         std::string                         prefixSeparator;
         std::string                         suffixSeparator;
         size_t                              headerPrintingInterval;
-        time_t                              startTime;
+        std::queue<time_t>                  startTimes;
+        size_t                              numCycles;                                                          //!< Total number of cycles to monitor
+        size_t                              currentGen;
+        size_t                              startGen;
+        
     };
     
 }

@@ -14,8 +14,6 @@
 #include "SingleRandomMoveSchedule.h"
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
-#include "ExtendedNewickAdmixtureTreeMonitor.h"
-#include "AdmixtureBipartitionMonitor.h"
 
 #include <cmath>
 #include <iomanip>
@@ -100,6 +98,12 @@ void Mcmc::run(size_t kIterations)
         monitor(0);
     }
     
+    /* Reset the monitors */
+    for (size_t i=0; i<monitors.size(); i++)
+    {
+        monitors[i].reset( kIterations );
+    }
+    
     // reset the counters for the move schedules
     for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
@@ -159,6 +163,12 @@ void Mcmc::runPriorSampler(size_t kIterations)
         // Monitor
         startMonitors( kIterations );
         monitor(0);
+    }
+    
+    /* Reset the monitors */
+    for (size_t i=0; i<monitors.size(); i++)
+    {
+        monitors[i].reset( kIterations );
     }
     
     // reset the counters for the move schedules

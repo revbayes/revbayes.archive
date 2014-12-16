@@ -125,12 +125,12 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Type
 
 
 
-AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::add(const RevObject &d) const
+AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const RevObject &d) const
 {
     const AbstractDiscreteCharacterData* tmp = dynamic_cast<const AbstractDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return add( *tmp );
+        return concatenate( *tmp );
     }
     else
     {
@@ -140,10 +140,10 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::add(const RevObjec
 
 
 
-AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::add(const AbstractDiscreteCharacterData &d) const
+AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const AbstractDiscreteCharacterData &d) const
 {
     AbstractDiscreteCharacterData* cloneObj = clone();
-    cloneObj->getDagNode()->getValue().add( d.getValue() );
+    cloneObj->getDagNode()->getValue().concatenate( d.getValue() );
     
     // return the copy
     return cloneObj;

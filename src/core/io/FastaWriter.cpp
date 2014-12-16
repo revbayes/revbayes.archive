@@ -34,15 +34,25 @@ void FastaWriter::writeData(std::string const &fileName, const AbstractDiscreteC
     const std::vector<std::string> &taxonNames = data.getTaxonNames();
     for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it) 
     {
-        outStream << ">" << *it << std::endl;
-        const AbstractDiscreteTaxonData &taxon = data.getTaxonData( *it );
-        size_t nChars = taxon.getNumberOfCharacters();
-        for (size_t i = 0; i < nChars; ++i) 
+
+        if ( !data.isTaxonExcluded( *it ) )
         {
-            const CharacterState &c = taxon.getCharacter( i );  
-            outStream << c.getStringValue();
+
+            const AbstractDiscreteTaxonData &taxon = data.getTaxonData( *it );
+
+            outStream << ">" << *it << std::endl;
+
+            size_t nChars = taxon.getNumberOfCharacters();
+            for (size_t i = 0; i < nChars; ++i)
+            {
+                if ( !data.isCharacterExcluded( i ) )
+                {
+                    const CharacterState &c = taxon.getCharacter( i );
+                    outStream << c.getStringValue();
+                }
+            }
+            outStream << std::endl;
         }
-        outStream << std::endl;
     }
     
     // close the stream

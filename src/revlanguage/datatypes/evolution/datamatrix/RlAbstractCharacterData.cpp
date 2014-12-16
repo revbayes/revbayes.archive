@@ -22,7 +22,6 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     MethodTable methods = MethodTable();
     
     ArgumentRules* ncharArgRules               = new ArgumentRules();
-    ArgumentRules* ncharArgRules2              = new ArgumentRules();
     ArgumentRules* namesArgRules               = new ArgumentRules();
     ArgumentRules* ntaxaArgRules               = new ArgumentRules();
     ArgumentRules* excludeallArgRules          = new ArgumentRules();
@@ -39,7 +38,6 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* setTaxonNameArgRules        = new ArgumentRules();
     
     
-    ncharArgRules2->push_back(             new ArgumentRule("taxon_index", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     excludecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     excludecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
     includecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
@@ -53,8 +51,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("nchar",               new MemberProcedure(ModelVector<Natural>::getClassTypeSpec(),  ncharArgRules           ) );
-    methods.addFunction("nchar",               new MemberProcedure(TypeSpec(Natural::getClassTypeSpec() ),    ncharArgRules2          ) );
+    methods.addFunction("nchar",               new MemberProcedure(Natural::getClassTypeSpec(),               ncharArgRules           ) );
     
     methods.addFunction("ntaxa",               new MemberProcedure(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
     methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules        ) );
@@ -182,62 +179,9 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
     {
         found = true;
         
-        // no arguments, return vector of number of chars per taxon
-        if ( args.size() == 0 )
-        {
-            ModelVector<Natural> *numChar = new ModelVector<Natural>();
-            for (size_t i=0; i<charDataObject->getNumberOfTaxa(); i++)
-            {
-                
-                if ( charDataObject->isTaxonExcluded(i) == false )
-                {
-                    
-                    if (charDataObject->isHomologyEstablished() == true)
-                    {
-                        numChar->push_back( int(charDataObject->getNumberOfIncludedCharacters()) );
-                    }
-                    else
-                    {
-                        numChar->push_back( int(charDataObject->getNumberOfIncludedCharacters(i)) );
-                    }
-                    
-                }
-            }
-            return new RevVariable( numChar );
-        }
-        else
-        {
-            const RevObject& argument = args[0].getVariable()->getRevObject();
-        
-            if ( argument.isType( Natural::getClassTypeSpec() ) )
-            {
-                Natural *numChar = NULL;
-                const Natural& n = static_cast<const Natural&>( argument );
-                size_t i = n.getValue() - 1; // index offset
-                
-                size_t numTaxa = charDataObject->getNumberOfTaxa();
-                if (i >= numTaxa)
-                {
-                    std::cout << "Warning: Returned value for taxon_index=1 since taxon_index > num_taxa (" << n.getValue() << " > " << numTaxa << ").\n";
-                    i = 0;
-                }
-
-                if ( charDataObject->isTaxonExcluded(i) == false )
-                {
-                    
-                    if (charDataObject->isHomologyEstablished() == true)
-                    {
-                        numChar = new Natural( charDataObject->getNumberOfIncludedCharacters() );
-                    }
-                    else
-                    {
-                        numChar = new Natural( charDataObject->getNumberOfIncludedCharacters(i) );
-                    }
-                    
-                }
-                return new RevVariable( numChar );
-            }
-        }
+        Natural *numChar = new Natural( charDataObject->getNumberOfIncludedCharacters() );
+ 
+        return new RevVariable( numChar );
     }
     else if (name == "ntaxa") 
     {

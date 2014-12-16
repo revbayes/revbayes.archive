@@ -1,0 +1,56 @@
+pdflatex RB_Manual.tex
+bibtex RB_Basics_Tutorial/RB_Basics_Tutorial_content
+bibtex RB_CTMC_Tutorial/RB_CTMC_Tutorial_content
+bibtex RB_MCMC_Tutorial/RB_MCMC_Tutorial_content
+bibtex RB_BayesFactor_Tutorial/RB_BayesFactor_Tutorial_content
+bibtex RB_RelaxedClock_Tutorial/RB_RelaxedClock_Tutorial_content
+bibtex RB_SimpleDiversification_Tutorial/RB_SimpleDiversification_Tutorial_content
+bibtex RB_GTST_Tutorial/RB_GTST_Tutorial_content
+bibtex RB_Biogeography_Tutorial/RB_Biogeography_Tutorial_content
+bibtex RB_PhyloComparative_Tutorial/RB_PhyloComparative_Tutorial_content
+pdflatex RB_Manual.tex
+pdflatex RB_Manual.tex
+
+echo "test" > /dev/null
+
+rm RB_Manual.aux
+rm RB_Manual.blg
+rm RB_Manual.log
+rm RB_Manual.out
+rm RB_Manual.toc
+
+rm RB_Basics_Tutorial/RB_Basics_Tutorial_content.aux
+rm RB_Basics_Tutorial/RB_Basics_Tutorial_content.bbl
+rm RB_Basics_Tutorial/RB_Basics_Tutorial_content.blg
+
+rm RB_BayesFactor_Tutorial/RB_BayesFactor_Tutorial_content.aux
+rm RB_BayesFactor_Tutorial/RB_BayesFactor_Tutorial_content.bbl
+rm RB_BayesFactor_Tutorial/RB_BayesFactor_Tutorial_content.blg
+
+rm RB_Biogeography_Tutorial/RB_Biogeography_Tutorial_content.aux
+rm RB_Biogeography_Tutorial/RB_Biogeography_Tutorial_content.bbl
+rm RB_Biogeography_Tutorial/RB_Biogeography_Tutorial_content.blg
+
+rm RB_CTMC_Tutorial/RB_CTMC_Tutorial_content.aux
+rm RB_CTMC_Tutorial/RB_CTMC_Tutorial_content.bbl
+rm RB_CTMC_Tutorial/RB_CTMC_Tutorial_content.blg
+
+rm RB_GTST_Tutorial/RB_GTST_Tutorial_content.aux
+rm RB_GTST_Tutorial/RB_GTST_Tutorial_content.bbl
+rm RB_GTST_Tutorial/RB_GTST_Tutorial_content.blg
+
+rm RB_MCMC_Tutorial/RB_MCMC_Tutorial_content.aux
+rm RB_MCMC_Tutorial/RB_MCMC_Tutorial_content.bbl
+rm RB_MCMC_Tutorial/RB_MCMC_Tutorial_content.blg
+
+rm RB_PhyloComparative_Tutorial/RB_PhyloComparative_Tutorial_content.aux
+rm RB_PhyloComparative_Tutorial/RB_PhyloComparative_Tutorial_content.bbl
+rm RB_PhyloComparative_Tutorial/RB_PhyloComparative_Tutorial_content.blg
+
+rm RB_RelaxedClock_Tutorial/RB_RelaxedClock_Tutorial_content.aux
+rm RB_RelaxedClock_Tutorial/RB_RelaxedClock_Tutorial_content.bbl
+rm RB_RelaxedClock_Tutorial/RB_RelaxedClock_Tutorial_content.blg
+
+rm RB_SimpleDiversification_Tutorial/RB_SimpleDiversification_Tutorial_content.aux
+rm RB_SimpleDiversification_Tutorial/RB_SimpleDiversification_Tutorial_content.bbl
+rm RB_SimpleDiversification_Tutorial/RB_SimpleDiversification_Tutorial_content.blg

@@ -25,11 +25,11 @@ data_rbcL <- readDiscreteCharacterData("data/fagus_rbcL.nex")
 data_matK <- readDiscreteCharacterData("data/fagus_matK.nex")
 
 ### Create concatenated data matrix
-data <- data_ITS + data_rbcL + data_matK
+data <- concatenate(data_ITS, data_rbcL, data_matK)
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data.ntaxa()
-n_sites <- data.nchar(1)
+n_sites <- data.nchar()
 names <- data.names()
 n_branches <- 2 * n_species - 3
 

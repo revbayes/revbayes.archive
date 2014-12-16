@@ -6,7 +6,6 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "AdmixtureTree.h"
 #include "BranchLengthTree.h"
 #include "TimeTree.h"
 #include "Topology.h"
@@ -84,65 +83,65 @@ RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t) 
     return tt;
 }
 
-void RevBayesCore::TreeUtilities::constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages) {
-    
-    // set the name
-    tn->setName( n.getName() );
-    
-    // remember the node
-    nodes.push_back( tn );
-    
-    // set the time
-    ages.push_back( n.getAge() );
-    
-    // create children
-    for (size_t i = 0; i < n.getNumberOfChildren(); ++i) {
-        const TopologyNode& child = n.getChild( i );
-        AdmixtureNode* newChild = new AdmixtureNode();
-        
-        // set parent child relationship
-        newChild->setParent( tn );
-        tn->addChild( newChild );
-        
-        // start recursive call
-        constructAdmixtureTreeRecursively(newChild, child, nodes, ages);
-    }
-}
+//void RevBayesCore::TreeUtilities::constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages) {
+//    
+//    // set the name
+//    tn->setName( n.getName() );
+//    
+//    // remember the node
+//    nodes.push_back( tn );
+//    
+//    // set the time
+//    ages.push_back( n.getAge() );
+//    
+//    // create children
+//    for (size_t i = 0; i < n.getNumberOfChildren(); ++i) {
+//        const TopologyNode& child = n.getChild( i );
+//        AdmixtureNode* newChild = new AdmixtureNode();
+//        
+//        // set parent child relationship
+//        newChild->setParent( tn );
+//        tn->addChild( newChild );
+//        
+//        // start recursive call
+//        constructAdmixtureTreeRecursively(newChild, child, nodes, ages);
+//    }
+//}
 
 
-RevBayesCore::AdmixtureTree* RevBayesCore::TreeUtilities::convertToAdmixtureTree(const Tree &t, std::vector<std::string> names) // , std::vector<std::string> names)
-{
-    
-  
-    // create time tree object (topology + times)
-    AdmixtureTree *tt = new AdmixtureTree();
-    
-    // clock trees should always be rooted
-    tt->setRooted(true);
-
-    // get the root of the original tree
-    const TopologyNode& bln = t.getRoot();
-    
-    AdmixtureNode* root = new AdmixtureNode();
-    
-    std::vector<double> ages;
-    std::vector<AdmixtureNode*> nodes;
-    
-    // recursive creation of the tree
-    constructAdmixtureTreeRecursively(root, bln, nodes, ages);
-    
-    // add the root which creates the topology
-    tt->setRoot( root );
-    
-    // set the ages
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        nodes[i]->setAge(ages[i]);
-    }
-    
-    tt->updateTipOrderByNames(names);
-    
-    return tt;
-}
+//RevBayesCore::AdmixtureTree* RevBayesCore::TreeUtilities::convertToAdmixtureTree(const Tree &t, std::vector<std::string> names) // , std::vector<std::string> names)
+//{
+//    
+//  
+//    // create time tree object (topology + times)
+//    AdmixtureTree *tt = new AdmixtureTree();
+//    
+//    // clock trees should always be rooted
+//    tt->setRooted(true);
+//
+//    // get the root of the original tree
+//    const TopologyNode& bln = t.getRoot();
+//    
+//    AdmixtureNode* root = new AdmixtureNode();
+//    
+//    std::vector<double> ages;
+//    std::vector<AdmixtureNode*> nodes;
+//    
+//    // recursive creation of the tree
+//    constructAdmixtureTreeRecursively(root, bln, nodes, ages);
+//    
+//    // add the root which creates the topology
+//    tt->setRoot( root );
+//    
+//    // set the ages
+//    for (size_t i = 0; i < nodes.size(); ++i) {
+//        nodes[i]->setAge(ages[i]);
+//    }
+//    
+//    tt->updateTipOrderByNames(names);
+//    
+//    return tt;
+//}
 
 
 void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor) {

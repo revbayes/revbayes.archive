@@ -38,7 +38,8 @@ namespace RevBayesCore {
         
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r);
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
-        void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
+		void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
+		void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
         void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
         void                                                updateTransitionProbabilities(size_t nodeIdx, double brlen);
 
@@ -201,6 +202,12 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeRootLikelihood( size_t root,
     computeRootLikelihood(root, left, right);
 }
 
+
+template<class charType>
+void RevBayesCore::PhyloCTMCEpoch<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+{
+	computeInternalNodeLikelihood(node, nodeIndex, left, right);
+}
 
 template<class charType>
 void RevBayesCore::PhyloCTMCEpoch<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)

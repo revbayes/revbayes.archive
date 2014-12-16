@@ -24,9 +24,9 @@ namespace RevLanguage {
         typedef RevBayesCore::AbstractDiscreteCharacterData valueType;
         
         // Basic utility functions
-        AbstractDiscreteCharacterData*              add(const RevObject& d) const;                                                          //!< Addition operator used for example in '+=' statements
-        AbstractDiscreteCharacterData*              add(const AbstractDiscreteCharacterData& d) const;                                      //!< Addition operator used for example in '+=' statements
         virtual AbstractDiscreteCharacterData*      clone(void) const;                                                                      //!< Clone object
+        AbstractDiscreteCharacterData*              concatenate(const RevObject& d) const;                                                  //!< Concatenate two sequences
+        AbstractDiscreteCharacterData*              concatenate(const AbstractDiscreteCharacterData& d) const;                              //!< Concatenate two sequences
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object

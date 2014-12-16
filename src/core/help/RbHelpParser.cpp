@@ -5,8 +5,6 @@
 #include "RbHelpMove.h"
 #include "RbHelpParser.h"
 #include "StringUtilities.h"
-#include "XmlDocument.h"
-#include "XmlParser.h"
 
 #include "pugixml.hpp"
 

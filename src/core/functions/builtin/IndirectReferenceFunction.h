@@ -67,8 +67,6 @@ template <typename rbType>
 void RevBayesCore::IndirectReferenceFunction<rbType>::update( void )
 {
     
-//    *(this->value) = argumentNode->getValue();
-    
     delete this->value;
     this->value = Cloner<rbType, IsDerivedFrom<rbType, Cloneable>::Is >::createClone( argumentNode->getValue() );
     

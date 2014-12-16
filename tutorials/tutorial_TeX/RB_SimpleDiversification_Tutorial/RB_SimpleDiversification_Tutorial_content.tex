@@ -74,7 +74,7 @@ In this exercise, this time tree is treated as an ``observation'', and we are es
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{../RB_SimpleDiversification_Tutorial/figures/bears_dosReis.eps}}
+\fbox{\includegraphics[width=3in]{RB_SimpleDiversification_Tutorial/figures/bears_dosReis.eps}}
 \caption{\small The relationships and median speciation times for bears and two outgroups estimated in the analysis by \citet{dosReis2012}.}
 \label{bearTree}
 \end{figure}
@@ -136,7 +136,7 @@ However, the model depends on a second parameter $\rho$ which is the probability
 Therefore, the probabilistic graphical model of the pure-birth process is quite simple, where the observed time tree topology and node ages are conditional on the speciation rate, sampling probability, and root age (Fig.~\ref{yuleGMfig}).
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{../RB_SimpleDiversification_Tutorial/figures/yule_gm.eps}}
+\fbox{\includegraphics[width=3in]{RB_SimpleDiversification_Tutorial/figures/yule_gm.eps}}
 \caption{\small The graphical model representation of the pure-birth (Yule) process.}
 \label{yuleGMfig}
 \end{figure}
@@ -145,7 +145,7 @@ We can add hierarchical structure to this model and account for uncertainty in t
 Ultimately, the pure birth model is just a special case of the birth-death process, where the extinction rate (typically denoted $\mu$) is a constant node with the value 0. 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=4in]{../RB_SimpleDiversification_Tutorial/figures/yule_gm2.eps}}
+\fbox{\includegraphics[width=4in]{RB_SimpleDiversification_Tutorial/figures/yule_gm2.eps}}
 \caption{\small The graphical model representation of the pure-birth (Yule) process, where the speciation rate is treated as a random variable drawn from an exponential distribution with rate parameter $\nu$.}
 \label{yuleGMfig2}
 \end{figure}
@@ -293,7 +293,7 @@ This constant node represents the death rate, \cl{mu}, which we set to \cl{0} wh
 Viewing the model graph is helpful for identifying any problems prior to running MCMC. 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{../RB_SimpleDiversification_Tutorial/figures/m_Yule_bears_GM.eps}}
+\fbox{\includegraphics[width=3in]{RB_SimpleDiversification_Tutorial/figures/m_Yule_bears_GM.eps}}
 \caption{\small The graphical model representation of the pure-birth (Yule) process generated using the DOT language and the \href{http://www.graphviz.org/}{Graphviz} program.}
 \label{yuleGMGVfig}
 \end{figure}
@@ -369,7 +369,7 @@ Importantly, this model assumes that all of the extant descendants of the proces
 Under this model, the parameter $\rho$ accounts for the probability of sampling in the present time, and because it is a probability, this parameter can only take values between 0 and 1. 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{../RB_SimpleDiversification_Tutorial/figures/simple_BD_gm_root.eps}}
+\fbox{\includegraphics[width=3in]{RB_SimpleDiversification_Tutorial/figures/simple_BD_gm_root.eps}}
 \caption{\small The graphical model representation of the birth-death process with uniform sampling and conditioned on the root age.}
 \label{bdrGMFig1}
 \end{figure}
@@ -396,7 +396,7 @@ Note that if $\mu=0$, then $d = \lambda$ in this parameterization.
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{../RB_SimpleDiversification_Tutorial/figures/cBDR_gm.eps}}
+\fbox{\includegraphics[width=3in]{RB_SimpleDiversification_Tutorial/figures/cBDR_gm.eps}}
 \caption{\small The graphical model representation of the birth-death process with uniform sampling parameterized using the diversification and turnover.}
 \label{bdrGMFig2}
 \end{figure}
@@ -519,7 +519,7 @@ mymodel.graph("output/m_BD_bears_GM.dot", bg="LightSteelBlue2")
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=3in]{../RB_SimpleDiversification_Tutorial/figures/m_BD_bears_GM.eps}}
+\fbox{\includegraphics[width=3in]{RB_SimpleDiversification_Tutorial/figures/m_BD_bears_GM.eps}}
 \caption{\small The graphical model representation of the birth-death process.}
 \label{BDGMGVfig}
 \end{figure}
@@ -701,7 +701,7 @@ mymcmc.operatorSummary()
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=4in]{../RB_SimpleDiversification_Tutorial/figures/div_tracer.pdf}}
+\fbox{\includegraphics[width=4in]{RB_SimpleDiversification_Tutorial/figures/div_tracer.pdf}}
 \caption{\small The marginal densities of \cl{birth\_rate} and \cl{death\_rate} estimated under the birth-death model in \RevBayes.}
 \label{tracerMarg}
 \end{figure}
@@ -724,3 +724,7 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \item Tanja Stadler (email: \href{mailto:tanja.stadler@bsse.ethz.ch}{tanja.stadler@bsse.ethz.ch}) \\\vspace{-8mm} 
 \item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
 \end{itemize}
+
+
+\bibliographystyle{mbe}
+\bibliography{bib_tex/master_refs}

@@ -90,7 +90,6 @@ namespace RevBayesCore {
 #include "RbConstants.h"
 #include "RbOptions.h"
 #include "TypedDistribution.h"
-#include "UserInterface.h"
 
 
 template<class valueType>
@@ -427,7 +426,9 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
     
     // draw the value
     if ( !ignoreRedraw )
+    {
         distribution->redrawValue();
+    }
     
     // touch this node for probability recalculation
     this->touch();
@@ -517,14 +518,18 @@ void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::Da
 {
     // We are sure to get into trouble if either one of these is NULL
     if( oldParent == NULL || newParent == NULL )
+    {
         throw RbException( "Attempt to swap NULL distribution parameter of RevBayesCore::StochasticNode" );
+    }
     
     // This throws an error if the oldParent cannot be found
     distribution->swapParameter( oldParent, newParent );
     
     oldParent->removeChild( this );
     if ( oldParent->decrementReferenceCount() == 0 )
+    {
         delete ( oldParent );
+    }
     
     newParent->addChild( this );
     newParent->incrementReferenceCount();

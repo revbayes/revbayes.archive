@@ -104,7 +104,7 @@ RealPos* RealPos::add(const RevLanguage::RealPos &rhs) const
 /** Clone object */
 RealPos* RealPos::clone( void ) const {
 
-	return  new RealPos( *this );
+	return new RealPos( *this );
 }
 
 

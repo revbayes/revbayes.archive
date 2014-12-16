@@ -41,7 +41,7 @@ namespace RevBayesCore {
     class Tree;
     class BranchLengthTree;
     class TimeTree;
-    class AdmixtureTree;
+//    class AdmixtureTree;
     
     class NclReader{
         
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         // stuff for reading trees
         std::vector<BranchLengthTree* >*            readBranchLengthTrees(const std::string &fn);                                   //!< Read trees
         std::vector<TimeTree*>                      readTimeTrees(const std::string &treeFilename);
-        std::vector<AdmixtureTree* >                readAdmixtureTrees(const std::string &treeFileName);
+//        std::vector<AdmixtureTree* >                readAdmixtureTrees(const std::string &treeFileName);
         
     private:
         

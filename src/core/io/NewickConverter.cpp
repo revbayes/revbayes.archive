@@ -1,17 +1,17 @@
-#include "AdmixtureTree.h"
 #include "BranchLengthTree.h"
 #include "NewickConverter.h"
 #include "RbException.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "Tree.h"
+#include <boost/lexical_cast.hpp>
 
 #include <sstream>
 
 using namespace RevBayesCore;
 
 NewickConverter::NewickConverter() {
-    
+
 }
 
 
@@ -31,7 +31,6 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     std::vector<TopologyNode*> nodes;
     std::vector<double> brlens;
     
-    
     // create a string-stream and throw the string into it
     std::stringstream ss (std::stringstream::in | std::stringstream::out);
     ss << n;
@@ -45,7 +44,7 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
         if ( c != ' ')
             trimmed += c;
     }
-    
+	
     // construct the tree starting from the root
     TopologyNode *root = createNode( trimmed, nodes, brlens );
     
@@ -60,6 +59,54 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
         t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
     }
     
+    // return the tree, the caller is responsible for destruction
+    return t;
+}
+
+
+
+// used for reading in tree with existing node indexes we need to keep
+BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string const &n) {
+    
+    // create and allocate the tree object
+    BranchLengthTree *t = new BranchLengthTree();
+    
+    Topology *tau = new Topology();
+    
+    std::vector<TopologyNode*> nodes;
+    std::vector<double> brlens;
+    
+    // create a string-stream and throw the string into it
+    std::stringstream ss (std::stringstream::in | std::stringstream::out);
+    ss << n;
+    
+    // ignore white spaces
+    std::string trimmed = "";
+    char c;
+    while ( ss.good() )
+    {
+        c = char( ss.get() );
+        if ( c != ' ')
+            trimmed += c;
+    }	
+	
+	// construct the tree starting from the root
+    TopologyNode *root = createNode( trimmed, nodes, brlens );
+	
+    // set up the tree keeping the existing indexes
+	tau->setRootNoReIndexing( root );
+	
+	// order the nodes
+	tau->orderNodesByIndex();
+	
+    // connect the topology to the tree
+    t->setTopology( tau, true );
+	
+    // set the branch lengths
+    for (size_t i = 0; i < nodes.size(); ++i) {
+		t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
+    }
+	
     // return the tree, the caller is responsible for destruction
     return t;
 }
@@ -156,18 +203,25 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 
                 // read the parameter name
                 std::string paramValue = "";
-                while ( ss.good() && (c = char( ss.peek() ) ) != ']' && c != ',')
+                while ( ss.good() && (c = char( ss.peek() ) ) != ']' && c != ',' && c != ':')
                 {
                     paramValue += char( ss.get() );
                 }
                 
-                // \todo: Needs implementation
-                if (paramName=="species") {
+				if (paramName=="index") {
+					
+                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+					
+                } else if (paramName=="species") {
+					
+					// \todo: Needs implementation
                     childNode->setSpeciesName(paramValue);
-                }
-                else {
+                
+				} else {
+					
                     childNode->addNodeParameter(paramName, paramValue);
                 }
+				
             } while ( (c = char( ss.peek() ) ) == ',' );
             
             // ignore the final ']'
@@ -250,16 +304,22 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             
             // read the parameter name
             std::string paramValue = "";
-            while ( ss.good() && (c = char( ss.peek() )) != ']' && c != ',') 
+            while ( ss.good() && (c = char( ss.peek() )) != ']' && c != ',' && c != ':') 
             {
                 paramValue += char( ss.get() );
             }
-            
-            // \todo: Needs implementation
-            if (paramName=="species") {
+			
+			if (paramName=="index") {
+				
+				node->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+				
+			} else if (paramName=="species") {
+				
+				// \todo: Needs implementation
                 node->setSpeciesName(paramValue);
-            }
-            else {
+				
+            } else {
+				
                 node->addNodeParameter(paramName, paramValue);
             }
 
@@ -302,33 +362,33 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
 }
 
 
-AdmixtureTree* NewickConverter::getAdmixtureTreeFromNewick(std::string const &n)
-{
-    
-    // create and allocate the tree object
-    AdmixtureTree *t = new AdmixtureTree();
-    
-    std::vector<TopologyNode*> nodes;
-    std::vector<double> brlens;
-    
-    // construct the tree starting from the root
-    //TopologyNode *root = createNode( n, nodes, brlens );
-    
-    // convert to AdmixtureNode*
-    std::vector<AdmixtureNode*> adm_nodes;
-    for (size_t i = 0; i < nodes.size(); i++)
-        adm_nodes.push_back(static_cast<AdmixtureNode*>(nodes[i]));
-    
-    // set up the tree
-    t->setRoot(adm_nodes[adm_nodes.size()-1]);
-    
-    // set the branch lengths
-    //for (size_t i = 0; i < nodes.size(); ++i) {
-    t->setAgesFromBrlens(brlens);
-    ;//t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
-    // }
-    
-    // return the tree, the caller is responsible for destruction
-    return t;
-}
+//AdmixtureTree* NewickConverter::getAdmixtureTreeFromNewick(std::string const &n)
+//{
+//    
+//    // create and allocate the tree object
+//    AdmixtureTree *t = new AdmixtureTree();
+//    
+//    std::vector<TopologyNode*> nodes;
+//    std::vector<double> brlens;
+//    
+//    // construct the tree starting from the root
+//    //TopologyNode *root = createNode( n, nodes, brlens );
+//    
+//    // convert to AdmixtureNode*
+//    std::vector<AdmixtureNode*> adm_nodes;
+//    for (size_t i = 0; i < nodes.size(); i++)
+//        adm_nodes.push_back(static_cast<AdmixtureNode*>(nodes[i]));
+//    
+//    // set up the tree
+//    t->setRoot(adm_nodes[adm_nodes.size()-1]);
+//    
+//    // set the branch lengths
+//    //for (size_t i = 0; i < nodes.size(); ++i) {
+//    t->setAgesFromBrlens(brlens);
+//    ;//t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
+//    // }
+//    
+//    // return the tree, the caller is responsible for destruction
+//    return t;
+//}
 

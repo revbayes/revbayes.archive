@@ -6,7 +6,6 @@
 #include "NewickConverter.h"
 #include "NewickTreeReader.h"
 #include "NclReader.h"
-#include "RbErrorStream.h"
 #include "RbFileManager.h"
 #include "RnaState.h"
 #include "StandardState.h"
@@ -16,6 +15,7 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
+#include "RlUserInterface.h"
 
 using namespace RevBayesCore;
 
@@ -109,6 +109,9 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
             
 			if (m != NULL)
             {
+                
+                
+                
                 m->setFileName( StringUtilities::getLastPathComponent(fileName) );
                 m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
                 
@@ -255,8 +258,11 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of Standard states
-        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tName);
+        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tokens[0]);
         
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
         {
@@ -311,8 +317,11 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of amino acid states
-        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tName);
+        DiscreteTaxonData<AminoAcidState> dataVec = DiscreteTaxonData<AminoAcidState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
@@ -357,8 +366,11 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of Standard states
-        ContinuousTaxonData dataVec = ContinuousTaxonData(tName);
+        ContinuousTaxonData dataVec = ContinuousTaxonData(tokens[0]);
         
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
@@ -412,8 +424,11 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of DNA states
-        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>(tName);
+        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>( tokens[0] );
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -469,8 +484,11 @@ DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnaligne
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of DNA states
-        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>(tName);
+        DiscreteTaxonData<DnaState> dataVec = DiscreteTaxonData<DnaState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
@@ -515,8 +533,11 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of RNA states
-        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tName);
+        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -572,8 +593,11 @@ DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnaligne
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         // allocate a vector of DNA states
-        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tName);
+        DiscreteTaxonData<RnaState> dataVec = DiscreteTaxonData<RnaState>(tokens[0]);
         
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
@@ -624,9 +648,13 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit(tName, "|", tokens);
+        
         //std::cerr << "Reading data for taxon " << tName << " which has index " << origTaxIndex <<"\n";
         // allocate a vector of Standard states
-        DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tName);
+        DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tokens[0]);
 
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -725,7 +753,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notDna = true;
+            }
+            
         }
         
         if (notRna == false)
@@ -740,7 +771,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notRna = true;
+            }
+            
         }
         
         if (notAa == false)
@@ -755,7 +789,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notAa = true;
+            }
+            
         }
         
         if (notStd == false)
@@ -770,7 +807,10 @@ std::string NclReader::intuitDataType(std::string& s) {
                 }
             }
             if (foundState == false)
+            {
                 notStd = true;
+            }
+            
         }
         
         for (size_t j=0; j<5; j++)
@@ -820,17 +860,21 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
     fStrm.open(fn.c_str(), ios::in);
     
     // read the file token-by-token looking for Fasta things
-    int ch = fStrm.get();
-    fStrm.unget();
+    int ch = fStrm.peek();
     std::string word = "";
     std::string seqStr = "";
     int wordNum = 0, lineNum = 0, lastCarotLine = -100;
     int numSequences = 0;
     while (ch != EOF)
     {
-        word = "";
-        fStrm >> word;
+
+        std::getline(fStrm, word);
         
+        // we know that the last character is an escape character
+        if ( word.size() > 0 )
+        {
+            word.erase(word.size()-1);
+        }
         if (wordNum == 0 && word[0] == '>')
         {
             if (lineNum - lastCarotLine > 1)
@@ -839,22 +883,24 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
                 numSequences++;
             }
             else
+            {
                 return false;
+            }
         }
         else if (wordNum == 0 && word[0] == ';')
         {
             // comment
         }
         else if (lineNum > 0 && word[0] != '>' && word[0] != ';')
+        {
             seqStr += word;
+        }
         
         wordNum++;
-        ch = fStrm.get();
-        if (ch == '\n' || ch == '\r' || ch == EOF)
-        {
-            lineNum++;
-            wordNum = 0;
-        }
+        ch = fStrm.peek();
+
+        lineNum++;
+        wordNum = 0;
     }
     
     // close file
@@ -1107,10 +1153,12 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &
     
     // Check that the file exists. It is likely that this has been already checked during the formation of
     // the map that is passed into the function, but it never hurts to be safe...
-    if ( !fileExists(fn.c_str()) ){
+    if ( !fileExists(fn.c_str()) )
+    {
         addWarning("Data file not found");
     }
-    else {
+    else
+    {
         // Extract information on the file format from the value of the key/value pair. Note that we expect the
         // fileFmt string to be in the format file_type|data_type|interleave_type with pipes ('|') separating
         // the format components. It might be better to make an object value in the key/value pair that contains
@@ -1230,11 +1278,21 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
         {
 			// fasta file format
 			if (dataType == "dna")
+            {
 				nexusReader.ReadFilepath(fileName, MultiFormatReader::FASTA_DNA_FORMAT);
-			else if (dataType == "rna")
+            }
+            else if (dataType == "rna")
+            {
 				nexusReader.ReadFilepath(fileName, MultiFormatReader::FASTA_RNA_FORMAT);
-			else if (dataType == "protein")
+            }
+            else if (dataType == "protein")
+            {
 				nexusReader.ReadFilepath(fileName, MultiFormatReader::FASTA_AA_FORMAT);
+            }
+            else
+            {
+                throw RbException("Unknown data type '" + dataType + "' for fasta formatted files.");
+            }
         }
 		else if (fileFormat == "phylip")
         {
@@ -1538,23 +1596,23 @@ std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename
     return trees;
 }
 
-std::vector<AdmixtureTree*> NclReader::readAdmixtureTrees(const std::string &treeFileName)
-{
-    std::vector<AdmixtureTree*> adm_trees;
-    std::vector<BranchLengthTree*>* m = readBranchLengthTrees(treeFileName);
-    std::vector<BranchLengthTree*>::iterator it;
-    
-    std::vector<std::string> names;
-    if (m != NULL) {
-        for (std::vector<BranchLengthTree*>::iterator it = m->begin(); it != m->end(); it++) {
-            AdmixtureTree* convertedTree = TreeUtilities::convertToAdmixtureTree( *(*it), names);
-            delete (*it);
-            adm_trees.push_back( convertedTree );
-        }
-    }
-    
-    return adm_trees;
-}
+//std::vector<AdmixtureTree*> NclReader::readAdmixtureTrees(const std::string &treeFileName)
+//{
+//    std::vector<AdmixtureTree*> adm_trees;
+//    std::vector<BranchLengthTree*>* m = readBranchLengthTrees(treeFileName);
+//    std::vector<BranchLengthTree*>::iterator it;
+//    
+//    std::vector<std::string> names;
+//    if (m != NULL) {
+//        for (std::vector<BranchLengthTree*>::iterator it = m->begin(); it != m->end(); it++) {
+//            AdmixtureTree* convertedTree = TreeUtilities::convertToAdmixtureTree( *(*it), names);
+//            delete (*it);
+//            adm_trees.push_back( convertedTree );
+//        }
+//    }
+//    
+//    return adm_trees;
+//}
 
 
 /** Set excluded characters and taxa */

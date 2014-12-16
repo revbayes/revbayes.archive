@@ -20,7 +20,6 @@
 
 #include "StringUtilities.h"
 #include "TypedDagNode.h"
-#include "UnivariateFunction.h"
 
 namespace RevBayesCore {
     
