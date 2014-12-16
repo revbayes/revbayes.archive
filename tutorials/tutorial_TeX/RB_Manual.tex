@@ -1,5 +1,5 @@
 \documentclass[11pt]{book}
-\input{../preamble}
+\input{preamble}
 
 %\usepackage[square,numbers,sectionbib]{natbib}
 %\usepackage{chapterbib}
@@ -43,53 +43,50 @@ John P. Huelsenbeck
 
 \tableofcontents
 
-\newrefsection
+%\newrefsection
 \chapter{Basic Introcution}
-\input{../RB_Basics_Tutorial/RB_Basics_Tutorial_content}
-\printbibliography
+\include{RB_Basics_Tutorial/RB_Basics_Tutorial_content}
+%\printbibliography
 
-\newrefsection
+%\newrefsection
 \chapter{Continuous Time Markov Model for Discrete Character Evolution}
-\input{../RB_CTMC_Tutorial/RB_CTMC_Tutorial_content}
-\printbibliography[heading=relevref]
+\include{RB_CTMC_Tutorial/RB_CTMC_Tutorial_content}
 
 
-\newrefsection
+%\newrefsection
 \chapter{Markov chain Monte Carlo Algorithms}
-\input{../RB_MCMC_Tutorial/RB_MCMC_Tutorial_content}
+\include{RB_MCMC_Tutorial/RB_MCMC_Tutorial_content}
 
 
-\newrefsection
+%\newrefsection
 \chapter{Model Selection and Bayes Factors}
-\input{../RB_BayesFactor_Tutorial/RB_BayesFactor_Tutorial_content}
+\include{RB_BayesFactor_Tutorial/RB_BayesFactor_Tutorial_content}
 
 
-\newrefsection
+%\newrefsection
 \chapter{Dating and Relaxed Clocks}
-\input{../RB_RelaxedClock_Tutorial/RB_RelaxedClock_Tutorial_content}
+\include{RB_RelaxedClock_Tutorial/RB_RelaxedClock_Tutorial_content}
 
 
-\newrefsection
+%\newrefsection
 \chapter{Simple Diversification Rate Estimation}
-\input{../RB_SimpleDiversification_Tutorial/RB_SimpleDiversification_Tutorial_content}
+\include{RB_SimpleDiversification_Tutorial/RB_SimpleDiversification_Tutorial_content}
 
 
-\newrefsection
+%\newrefsection
 \chapter{Gene tree - Species tree estimation}
-\input{../RB_GTST_Tutorial/RB_GTST_Tutorial_content}
+\include{RB_GTST_Tutorial/RB_GTST_Tutorial_content}
 
 
-\newrefsection
+%\newrefsection
 \chapter{Biogeography}
-\input{../RB_Biogeography_Tutorial/RB_Biogeography_Tutorial_content}
+\include{RB_Biogeography_Tutorial/RB_Biogeography_Tutorial_content}
 
 
-\newrefsection
+%\newrefsection
 \chapter{Phylogenetic Comparative Analyses: Continuous Trait Evolution}
-\input{../RB_PhyloComparative_Tutorial/RB_PhyloComparative_Tutorial_content}
+\include{RB_PhyloComparative_Tutorial/RB_PhyloComparative_Tutorial_content}
 
-
-%\printbibliography[heading=relevref]
 
 
 \end{document}

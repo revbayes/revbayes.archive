@@ -27,7 +27,7 @@ To examine the posterior, we'll use Python scripts, Tracer by Andrew Rambaut, to
 
 \begin{tabular}{ll}
 RevBayes & \url{https://github.com/revbayes/revbayes} \\
-Lab zip file & \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB\_Biogeography\_tutorial/RB\_biogeo\_files.zip}{{\tt https://github.com/revbayes/revbayes/.../RB\_biogeo\_files.zip}} \\
+Lab zip file & \href{https://github.com/revbayes/revbayes/raw/development/tutorials/RB\_Biogeography\_tutorial/RB\_biogeo\_files.zip}{{\tt https://github.com/revbayes/revbayes/.RB\_biogeo\_files.zip}} \\
 Phylowood software & \url{http://mlandis.github.io/phylowood} \\
 Phylowood manual & \url{https://github.com/mlandis/phylowood/wiki} \\
 Tracer & \url{http://tree.bio.ed.ac.uk/software/tracer}
@@ -139,7 +139,7 @@ Unfortunately, since this sort of model scales poorly, DEC models remain the onl
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=5in]{../RB_Biogeography_Tutorial/figures/bg_dec_dag}
+\includegraphics[width=5in]{RB_Biogeography_Tutorial/figures/bg_dec_dag}
 \caption{Graphical model of DEC. The tree plate's topology is fixed by $T$, where each internal node has both an anagenic and cladogenic random variable ($X_i^{\text{an}}$ and $X_i^{\text{cl}}$, resp.) that represents an ancestral species before and after it speciated. Anagenic change is modeled by a continuous time Markov process, where $Q_{DE}$ is the instantaneous rate matrix of area gain and loss, as parameterized by $\lambda$. The geographic distance rate modifier function, $\eta$, takes in the geographical distances and strata as $G$, and the distance power parameter, $\beta$. Cladogenic change is modeled by $P_C$, a Dirichlet-distributed simplex with a flat prior.}
 \end{figure}
 
@@ -738,7 +738,7 @@ Iteration  Posterior  Likelihood    Prior  glr[1]  glr[2]  dp  csf[1]  csf[2]  c
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=3in]{../RB_Biogeography_Tutorial/figures/joint_rgain_posterior}
+\includegraphics[width=3in]{RB_Biogeography_Tutorial/figures/joint_rgain_posterior}
 \caption{Joint-marginal distribution of posterior and area gain rate, $\lambda_1$.}
 \end{figure}
 
@@ -747,7 +747,7 @@ Next, click the Estimates tab then select the three {\tt csf} parameters.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=3in]{../RB_Biogeography_Tutorial/figures/clado_freq_posterior}
+\includegraphics[width=3in]{RB_Biogeography_Tutorial/figures/clado_freq_posterior}
 \caption{Mean values for the cladogenic state frequency simplex, where {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]} correspond to subset sympatry, allopatry, and wide sympatry whose mean posterior values are 0.45, 0.30, and 0.25, respectively.}
 \end{figure}
 
@@ -782,7 +782,7 @@ Open Tracer, select the fields for the posterior probability and the number of g
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=3in]{../RB_Biogeography_Tutorial/figures/joint_ngain_posterior}
+\includegraphics[width=3in]{RB_Biogeography_Tutorial/figures/joint_ngain_posterior}
 \caption{Joint-marginal distribution of posterior and number dispersal events summed over the tree.}
 \end{figure}
 
@@ -921,7 +921,7 @@ Phylowood generates interactive animations to explore biogeographic reconstructi
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=4in]{../RB_Biogeography_Tutorial/figures/phw_mrca}
+\includegraphics[width=4in]{RB_Biogeography_Tutorial/figures/phw_mrca}
 \caption{Phylowood frame showing posterior ancestral range of root node.}
 \end{figure}
 
@@ -935,7 +935,7 @@ The animation will play the timeframe corresponding to the slider.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=4in]{../RB_Biogeography_Tutorial/figures/phw_all}
+\includegraphics[width=4in]{RB_Biogeography_Tutorial/figures/phw_all}
 \caption{Phylowood frame showing distribution of extant taxon ranges.}
 \end{figure}
 
@@ -963,7 +963,7 @@ Phylowood also offers a masking effect that persists until an unmask command is 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=4in]{../RB_Biogeography_Tutorial/figures/phw_br23}
+\includegraphics[width=4in]{RB_Biogeography_Tutorial/figures/phw_br23}
 \caption{Phylowood frame highlighting the posterior range for the most recent common ancestor of {\it P. mauiensis} and {\it P. hawaiiensis}.}
 \end{figure}
 
@@ -972,5 +972,6 @@ In addition, the area of marker sizes is only distributed among unmasked lineage
 
 %\noindent \\ \impmark Visit \texttt{https://github.com/mlandis/phylowood/wiki} to learn more about Phylowood.
 
-%\bibliography{bayes}
+\bibliographystyle{mbe}
+\bibliography{RB_Biogeography_Tutorial/bayes}
 

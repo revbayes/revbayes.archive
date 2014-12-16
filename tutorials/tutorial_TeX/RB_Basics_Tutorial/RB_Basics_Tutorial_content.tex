@@ -1,5 +1,5 @@
 
-\section*{Overview}
+\section{Overview}
 
 \RevBayes~has as its central idea that any statistical model, for example a phylogenetic model, is composed of smaller parts that can be decomposed and put back together in a modular fashion. This comes from considering (phylogenetic) models as \textit{probabilistic graphical models}, which lends flexibility and enhances the capabilities of the program. 
 Users interact with \RevBayes~via an interactive shell.
@@ -8,22 +8,22 @@ Users communicate commands using a language specifically designed for \RevBayes,
 
 This tutorial demonstrates the basic syntactical features of \RevBayes~and \Rev~and shows how to set up and perform an analysis on ``toy'' statistical models for linear regression. 
 This tutorial focuses on explaining probabilistic graphical models and the language \Rev.
-A good reference for probabilistic graphical models for Bayesian phylogenetic inference is given in  \cite{hoehnaGM2014}.
+A good reference for probabilistic graphical models for Bayesian phylogenetic inference is given in \cite{Hohna2014b}.
 The statistical examples are borrowed from a fourth year statistics course taught in the fall term 2011 at Stockholm University.
 
 
 \bigskip
-\subsection*{Probabilistic Graphical Models}
+\subsection{Probabilistic Graphical Models}
 
-\RevBayes~uses \textit{probabilistic graphical models} for model specification, visualization, and implementation \citep{hoehnaGM2014}. 
-Graphical models are frequently used in machine learning and statistics to conceptually represent the conditional dependence structure of complex statistical models with many parameters \citep{Gilks1994,lunn00,Jordan2004,Koller2009,Lunn2009}. 
-The graphical model tool kit allows for flexible model specification and implementation and reduces redundant code. 
+\RevBayes~uses \textit{probabilistic graphical models} for model specification, visualization, and implementation \citep{Hohna2014b}. 
+Graphical models are frequently used in machine learning and statistics to conceptually represent the conditional dependence structure of complex statistical models with many parameters \citep{Gilks1994,Lunn2000,Jordan2004,Koller2009,Lunn2009}. 
+The graphical model frameworkallows for flexible model specification and implementation and reduces redundant code. 
 This framework provides a set of symbols for depicting a \href{http://en.wikipedia.org/wiki/Directed_acyclic_graph}{\textit{directed acyclic graph}} (DAG). 
-\citet{hoehnaGM2014} described the use of probabilistic graphical models for phylogenetics. 
-The different nodes and components of a phylogenetic graphical model are shown in Figure \ref{gmnotation} \citep[Fig. 1 from][]{hoehnaGM2014}. 
+\citet{Hohna2014b} described the use of probabilistic graphical models for phylogenetics. 
+The different nodes and components of a phylogenetic graphical model are shown in Figure \ref{gmnotation} \citep[Fig. 1 from][]{Hohna2014b}. 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=1.8in,angle=0]{../RB_Basics_Tutorial/figures/GM_notation_figure.eps}}
+\fbox{\includegraphics[width=1.8in,angle=0]{RB_Basics_Tutorial/figures/GM_notation_figure.eps}}
 \caption{\small The symbols for a visual representation of a graphical model. 
 a) Solid squares represent constant nodes, which specify fixed-valued variables. 
 b) Stochastic nodes are represented by solid circles. 
@@ -31,7 +31,7 @@ These variables correspond to random variables and may depend on other variables
 c) Deterministic nodes (dotted circles) indicate variables that are determined by a specific function applied to another variable. 
 They can be thought of as variable transformations. 
 d) Observed states are placed in clamped stochastic nodes, represented by gray-shaded circles. e) Replication over a set of variables is indicated by enclosing the replicated nodes in a plate (dashed rectangle). 
-[Partially reproduced from Fig.~1 in \citet{hoehnaGM2014}.]
+[Partially reproduced from Fig.~1 in \citet{Hohna2014b}.]
 }
 \label{gmnotation}
 \end{figure}
@@ -46,13 +46,14 @@ The variable $M$ is a stochastic node with this prior density.
 The standard deviation, $\sigma$, is also a stochastic node with an exponential prior density with rate parameter $\lambda$.
 For any value of $M$ and any value of $\sigma$ we can compute the deterministic variable $\mu$ using the formula $\mu = \ln(M) - \frac{\sigma^2}{2}$. 
 This formula is known from using simple algebra on the equation for the mean of any \href{http://en.wikipedia.org/wiki/Log-normal_distribution}{lognormal distribution}.
-With this model structure, we can then calculate the probability of the data conditional on the model (the likelihood): 
-$\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma)$. Now we can get the posterior probability using Bayes' theorem:
+With this model structure, we can then calculate the probability of the data conditional on the model and parameter values (the likelihood): 
+$\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma)$. 
+Next we can get the posterior probability using Bayes' theorem:
 $$\mathbb{P}(M,\sigma \mid \boldsymbol{x}, \alpha, \beta, \lambda) = \frac{\mathbb{P}(\boldsymbol{x} \mid \mu, \sigma) \mathbb{P}(M \mid \alpha,\beta) \mathbb{P}(\sigma \mid \lambda)}{\mathbb{P}(\boldsymbol{x})}.$$
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=2.5in,angle=0]{../RB_Basics_Tutorial/figures/simple_GM.eps}}
-\caption{\small Graphical model representation of a simple lognormal model. A total of $N$ states of parameter $x$ are observed and occupy a clamped node. 
+\fbox{\includegraphics[width=2.5in,angle=0]{RB_Basics_Tutorial/figures/simple_GM.eps}}
+\caption{\small Graphical model representation of a simple lognormal model. A total of $N$ observations of variable $x$ are observed and occupy a clamped node. 
 This parameter is log-normally distributed with parameters $\mu$ and $\sigma$ (log mean and standard deviation, respectively). 
 The parameter $\mu$ is a deterministic node that is calculated from the stochastic nodes $M$ (the mean of the distribution) and $\sigma$. 
 Dotted arrows indicate deterministic functions and are used to connect deterministic nodes to their parent variables. 
@@ -69,8 +70,10 @@ The stochastic variable $\sigma$ is exponentially distributed with fixed value f
 
 In \RevBayes~models and analyses are specified using an interpreted language called \Rev. 
 \Rev~bears similarities to the compiled language in WinBUGS and the interpreted \R~language. 
-Setting up and executing a statistical analysis in \RevBayes~requires the user to specify all of the parameters of their model and the type of analysis (e.g., an MCMC run). 
+Setting up and executing a statistical analysis in \RevBayes~requires the user to specify all of the parameters of their model and the type of analysis (\EG, an MCMC run). 
 By using an interpreted language, \RevBayes~enables the practitioner to build complex, hierarchical models and to check the current states of variables while building the model. 
+This will be very useful in the beginning.
+Later on you, when you run very complex analyses, you may want to write \Rev-scripts.
 
 Differently to \R~and BUGS, \Rev~is a strongly but implicitly typed language.
 It is implicitly typed, and thus similar to Python, because you do not need to provide the type of a variable (which you need to in languages such as C++ and Java).
@@ -101,7 +104,7 @@ For example, the variance parameter of a normal distribution needs to be a posit
 
 The variables/parameters of a statistical model are created using different operators in \Rev~(Table \ref{operatorTable}). 
 In Figure \ref{revgmexample}, the \Rev~syntax for creating the model in Figure \ref{simpleGM} is provided.
-Because \Rev~is an interpreted language, it is important to consider the order in which you specify your variables (cf. BUGS where the order is not important). 
+Because \Rev~is an interpreted language, it is important to consider the order in which you specify your variables (\CF BUGS where the order is not important). 
 Thus, typically the first variables that are instantiated are \emph{constant variables}. 
 Constant variables require you to assign a fixed value using the \cl{<-} operator. 
 Stochastic variables are initialized using the \cl{\rbdn} operator followed by the constructor function for a distribution. 
@@ -136,12 +139,14 @@ M ~ dnBimodalLnorm(mean_1, mean_2, sd_1, sd_2, weight)
 M ~ dnBimodalLnorm(0.5, 2.0, 1.0, 1.0, 0.5)
 \end{lstlisting}
 \end{snugshade*}}
+Both ways to specify priors are equivalent.
+The only difference is that one code may be more readable than the other.
 
 
 
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=5in,angle=0]{../RB_Basics_Tutorial/figures/simple_GM_rev.eps}}
+\fbox{\includegraphics[width=5in,angle=0]{RB_Basics_Tutorial/figures/simple_GM_rev.eps}}
 \caption{\small Specifying a model with \Rev. 
 The graphical model of the observed parameter $x$ is shown on the left. 
 In this example, $x$ is log-normally distributed with a location parameter of $\mu$ and a standard deviation of $\sigma$, thus $x \sim \mbox{Lognormal}(\mu, \sigma)$. 
@@ -158,12 +163,12 @@ Since we observe values of $x$, we \emph{clamp} this node.
 \end{figure}
 
 Deterministic variables are parameter transformations and initialized using the \cl{:=} operator followed by the function or formula for calculating the value. 
-Previously we create a variable for the expectation of the lognormal distribution.
-Now, if you had an exponentially distributed stochastic variable $\sigma$ , you can create a deterministic variable for the mean $\mu$:
+Previously we created a variable for the expectation of the lognormal distribution.
+Now, if you have an exponentially distributed stochastic variable $\sigma$, you can create a deterministic variable for the mean $\mu$:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 lambda <- 1.0
-sgima ~ dnExponential(lambda)
+sigma ~ dnExponential(lambda)
 mu := ln(M) - (sigma^2)/2.0
 \end{lstlisting}
 \end{snugshade*}}
@@ -1098,8 +1103,7 @@ mymcmc.run(generations=3000)
 %}
 %and added to the plot in green
 %lines(t,m,lwd=4,col="green")
-%An alternative point-estimate of t is the mode, i.e. the curve that maximises the pos-
-%terior probability. In order to nd this you need the stored values of the log-posterior
+%An alternative point-estimate of t is the mode, i.e. the curve that maximises the posterior probability. In order to find this you need the stored values of the log-posterior
 %in lp: we want the index i that gives the largest lp[i]. This is provided in R by
 %i <- which.max(lp)
 %next, plot in red by
@@ -1134,11 +1138,9 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 
 \nocite{rannala96,robert02,Rubinstein1981,Smith1993,yang97b}
 
-\href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics[scale=0.8]{../shared_figures/ccby.eps}} This tutorial was written by Sebastian H\"{o}hna, \href{http://phylo.bio.ku.edu/content/tracy-heath}{Tracy Heath}, and \href{http://michaeljameslandis.com/}{Michael Landis}; licensed under a \href{http://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}. 
+\href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics[scale=0.8]{shared_figures/ccby.eps}} This tutorial was written by Sebastian H\"{o}hna, \href{http://phylo.bio.ku.edu/content/tracy-heath}{Tracy Heath}, and \href{http://michaeljameslandis.com/}{Michael Landis}; licensed under a \href{http://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}. 
 
 
-%\bibliographystyle{plainnat}
-%\bibliography{../bib_tex/master_refs}
+\bibliographystyle{sysbio}
+\bibliography{RB_Basics_Tutorial/refs}
 
-
-\printbibliography[heading=relevref]

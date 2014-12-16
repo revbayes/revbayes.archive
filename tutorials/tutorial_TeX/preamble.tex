@@ -18,9 +18,14 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 
-\usepackage[backend=bibtex,hyperref=true,citestyle=authoryear,bibstyle=authortitle,firstinits=true,terseinits=true,doi=false,url=false,maxbibnames=10,maxcitenames=2]{biblatex}
-\addbibresource{../bib_tex/master_refs.bib}
-\input{../bib_tex/biblatex_macros}
+%\usepackage[backend=bibtex,hyperref=true,citestyle=authoryear,bibstyle=authortitle,firstinits=true,terseinits=true,doi=false,url=false,maxbibnames=10,maxcitenames=2]{biblatex}
+%\addbibresource{../bib_tex/master_refs.bib}
+
+
+\usepackage[sectionbib]{chapterbib}
+\usepackage[sectionbib]{natbib}
+
+%\input{../bib_tex/biblatex_macros}
 
 
 \setlength{\evensidemargin}{0in}
@@ -157,17 +162,35 @@
 
 \newcommand{\mbcl}[1]{\exs{\cl{MrBayes > {#1}}}}
 
-\newcommand{\rbprmt}{RevBayes > } 
+\newcommand{\rbprmt}{ > } 
 \newcommand{\rbcl}[1]{\exs{\cl{\rbprmt{#1}}}}
 \newcommand{\rbout}[1]{\exs{\cl{\textcolor{outputcol}{#1}}}}
 \newcommand{\rbdn}{{\Large \symbol{126}}} % This makes a copy/pasteable tilde
 \newcommand{\rbclml}[1]{\exs{\cl{\ \ \ \ \ \ \ \ \ \ \ {#1}}}}
+
+% Abbreviations
+\newcommand{\IE}{i.e., }
+\newcommand{\EG}{e.g., }
+\newcommand{\CF}{cf. }
 
 % text box settings
 % requires compiling w/ XeLaTeX
 %\newfontfamily\listingsfont[Scale=1.0]{Courier New}
 %\lstset{basicstyle=\listingsfont, columns=texcl}
 %\defaultfontfeatures{Mapping=tex-text}
+
+% Some commands to keep the sysbio.bst from generating weird errors
+\newcommand{\bibAnnoteFile}[1]{%
+\IfFileExists{#1}{\begin{quotation}\noindent\textsc{Key:} #1\\
+\textsc{Annotation:}\ \input{#1}\end{quotation}}{}}
+
+\newcommand{\bibAnnote}[2]{%
+\begin{quotation}\noindent\textsc{Key:} #1\\
+\textsc{Annotation:}\ #2\end{quotation}}
+
+\bibliographystyle{sysbio}
+\bibpunct[; ]{(}{)}{;}{a}{}{;}
+
 
 
 \makeatletter
