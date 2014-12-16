@@ -642,21 +642,21 @@ Putting everything together, we will therefore propose a multivariate Brownian m
 \begin{eqnarray*}
 X_1(t) &=& \ln r(t)
 \\
-X_2(t) &=& \ln \frac{\dnGamma(t)}{1 - \dnGamma(t)}
+X_2(t) &=& \ln \frac{\Gamma(t)}{1 - \Gamma(t)}
 \\
 k=1..K, \quad X_{k+2}(t) &=& \ln C_k(t)
 \end{eqnarray*}
-where $r(t)$ is the instant substitution rate and $\dnGamma(t)$ the instant equilibrium GC composition
+where $r(t)$ is the instant substitution rate and $\gamma(t)$ the instant equilibrium GC composition
 and $C_k(t)$ is the $k$th. quantitative trait.
 Equivalently, we may re-write this as follows:
 \begin{eqnarray*}
 r(t) &=& e^{X_1(t)}
 \\
-\dnGamma(t) &=& \frac{e^{X_2(t)}}{1 + e^{X_2(t)}}
+\gamma(t) &=& \frac{e^{X_2(t)}}{1 + e^{X_2(t)}}
 \\
 \ldots
 \end{eqnarray*}
-In other words, the instant rate of substitution $r(t)$ is the exponential of the first component $X_1(t)$ of the Brownian process (as above), while the instant equilbirium GC $\dnGamma(t)$ is the \emph{hyperbolic tangent} of the second component $X_2(t)$ of the Brownian process.
+In other words, the instant rate of substitution $r(t)$ is the exponential of the first component $X_1(t)$ of the Brownian process (as above), while the instant equilbirium GC $\gamma(t)$ is the \emph{hyperbolic tangent} of the second component $X_2(t)$ of the Brownian process.
 
 There is a slight complication here: in a non-homogeneous model, independently of the rate matrices across branches, we also need to specify the nucleotide frequencies from which the sequence at the root of the tree is sampled. We will call this frequency vector $\pi$, and we will put a Dirichlet prior on $\pi$.
 
@@ -777,7 +777,3 @@ index <- index + 1}
 \end{itemize}
 After running the model, the posterior distribution on Cope's trend parameter can be visualized and quantified, and the empirical support in favor of Cope's rule can be assessed by estimating the posterior probability that this trend parameter is positive.
 
-
-\bibliographystyle{natbib}
-
-\bibliography{allbib}

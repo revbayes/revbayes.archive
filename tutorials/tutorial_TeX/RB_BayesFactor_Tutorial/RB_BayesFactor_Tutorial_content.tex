@@ -70,7 +70,7 @@ Increasingly, mixed-model selection is based on \textit{Bayes factors} \citep[{\
 The analysis pipeline that we will use in this tutorial is depicted in Figure \ref{pipeline}.
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=6.8in,angle=0]{../RB_BayesFactor_Tutorial/figures/pipeline.eps}}
+\fbox{\includegraphics[width=6.8in,angle=0]{RB_BayesFactor_Tutorial/figures/pipeline.eps}}
 \caption{\small The analysis pipeline for Exercise 1. We will explore three partition schemes for the conifer dataset.
 The first model (the `uniform model', $M_0$) assumes that all sites evolved under a common GTR+$\Gamma$ substitution model.
 The second model (the `moderately partitioned' model, $M_1$) invokes two data partitions corresponding to the two gene regions (atpB and rbcL), and assumes each subset of sites evolved under an independent GTR+$\Gamma$ model.
@@ -424,7 +424,7 @@ Without strong prior knowledge about the pattern of relative rates, however, we 
 Notably, all patterns of relative rates have the same probability density under \cl{er\_prior <- v(1,1,1,1,1,1)}.
 \begin{figure}[h!]
 \centering
-\fbox{\includegraphics[width=5in,angle=-90]{../RB_BayesFactor_Tutorial/figures/dirichlet_rates.eps}}
+\fbox{\includegraphics[width=5in,angle=-90]{RB_BayesFactor_Tutorial/figures/dirichlet_rates.eps}}
 \caption{\small Four different examples of Dirichlet priors on exchangeability rates.}
 \label{dirichletFig}
 \end{figure}
@@ -528,7 +528,7 @@ By contrast, when the value of the $\alpha$-shape parameter is $< 1$, the gamma 
 
 \begin{figure}[h]
 \centering
-\fbox{\includegraphics[width=2.5in,angle=-90]{../RB_BayesFactor_Tutorial/figures/asrh_gamma.eps}}
+\fbox{\includegraphics[width=2.5in,angle=-90]{RB_BayesFactor_Tutorial/figures/asrh_gamma.eps}}
 \caption{\small The probability density of mean-one gamma-distributed rates under different shape parameters.}
 \label{asrhGammaFig}
 \end{figure}
@@ -1420,4 +1420,9 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \item Michael Landis (email: \href{mailto:mlandis@berkeley.edu}{mlandis@berkeley.edu}) \\\vspace{-8mm} 
 \item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
 \end{itemize}
+
+
+\bibliographystyle{mbe}
+\bibliography{bib_tex/master_refs}
+
 
