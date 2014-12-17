@@ -199,7 +199,7 @@ void DiversityDependentPureBirthProcess::swapParameterInternal(const DagNode *ol
     else 
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }
