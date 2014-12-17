@@ -1,4 +1,4 @@
-pdflatex RB_Manual.tex
+pdflatex -shell-escape RB_Manual.tex
 bibtex RB_Basics_Tutorial/RB_Basics_Tutorial_content
 bibtex RB_CTMC_Tutorial/RB_CTMC_Tutorial_content
 bibtex RB_MCMC_Tutorial/RB_MCMC_Tutorial_content
@@ -8,8 +8,8 @@ bibtex RB_SimpleDiversification_Tutorial/RB_SimpleDiversification_Tutorial_conte
 bibtex RB_GTST_Tutorial/RB_GTST_Tutorial_content
 bibtex RB_Biogeography_Tutorial/RB_Biogeography_Tutorial_content
 bibtex RB_PhyloComparative_Tutorial/RB_PhyloComparative_Tutorial_content
-pdflatex RB_Manual.tex
-pdflatex RB_Manual.tex
+pdflatex -shell-escape RB_Manual.tex
+pdflatex -shell-escape RB_Manual.tex
 
 echo "test" > /dev/null
 
