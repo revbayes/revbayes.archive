@@ -118,7 +118,6 @@ namespace RevBayesCore {
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
-//        virtual double                                                      sumPartialLikelihoods(size_t nodeIndex) = 0;
 
         // virtual methods that you may want to overwrite
         virtual void                                                        computeMarginalNodeLikelihood(size_t nodeIdx, size_t parentIdx);
@@ -234,7 +233,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numPatterns( numSites ),
     compressed( c ),
     sitePattern( std::vector<size_t>(numSites, 0) ),
-    changedNodes( std::vector<bool>(numNodes,false) ),
+    changedNodes( std::vector<bool>(numNodes, false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
     usingAmbiguousCharacters( true ),
     treatUnknownAsGap( true ),
