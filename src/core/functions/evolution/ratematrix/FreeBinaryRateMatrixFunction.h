@@ -21,7 +21,6 @@ namespace RevBayesCore {
         
     public:
         FreeBinaryRateMatrixFunction(const TypedDagNode< RbVector<double> > *bf);
-        FreeBinaryRateMatrixFunction(const FreeBinaryRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~FreeBinaryRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions

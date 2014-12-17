@@ -21,7 +21,6 @@ namespace RevBayesCore {
         
     public:
         FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, const TypedDagNode< RbVector<double> > *sf);
-        FreeKRateMatrixFunction(const FreeKRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~FreeKRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
