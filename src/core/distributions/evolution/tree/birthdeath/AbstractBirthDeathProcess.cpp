@@ -209,6 +209,17 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
         }
     }
     
+    const std::vector<TopologyNode*>& nodes = value->getNodes();
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        if ( !(*it)->isRoot() )
+        {
+            if ( (*it)->getAge() >= (*it)->getParent().getAge() )
+                return RbConstants::Double::neginf;
+            
+        }
+    }
+    
     
     // what do we condition on?
     // did we condition on survival?
