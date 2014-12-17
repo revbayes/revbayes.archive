@@ -104,7 +104,8 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
         
         double t = (*agesTips)[i];
-        if ( t == 0.0 && r > 0.0 ) 
+//        if ( t == 0.0 && r > 0.0 )
+        if (t < 1e-3 && r > 0.0)
         {
             lnProbTimes += log( 4.0 * r );
         }

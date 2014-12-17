@@ -19,11 +19,6 @@ FreeBinaryRateMatrixFunction::FreeBinaryRateMatrixFunction(const TypedDagNode<Rb
 }
 
 
-FreeBinaryRateMatrixFunction::FreeBinaryRateMatrixFunction(const FreeBinaryRateMatrixFunction &n) : TypedFunction<RateMatrix>( n ), transitionRates( n.transitionRates ) {
-    // no need to add parameters, happens automatically
-}
-
-
 FreeBinaryRateMatrixFunction::~FreeBinaryRateMatrixFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }

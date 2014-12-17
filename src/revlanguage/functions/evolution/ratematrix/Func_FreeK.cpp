@@ -7,6 +7,7 @@
 #include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
+#include "TransitionProbabilityMatrix.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -29,8 +30,8 @@ Func_FreeK* Func_FreeK::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_FreeK::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sf = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr,sf );
     
     return f;
@@ -45,8 +46,8 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const {
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "transitionRates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "stationaryFrequencies", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "transitionRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "stationaryFrequencies", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     
