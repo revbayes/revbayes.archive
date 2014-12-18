@@ -108,7 +108,8 @@ RevBayesCore::TypedDistribution<valueType>::TypedDistribution(const TypedDistrib
 }
 
 template <class valueType>
-RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void ) {
+RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void )
+{
     
     delete value;
     
@@ -117,7 +118,8 @@ RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void ) {
 
 
 template <class valueType>
-RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valueType>::operator=(const TypedDistribution &d) {
+RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valueType>::operator=(const TypedDistribution &d)
+{
     
     if ( this != &d ) 
     {
@@ -134,13 +136,15 @@ RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valu
 
 
 template <class valueType>
-valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) {
+valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void)
+{
     
     return *value;
 }
 
 template <class valueType>
-const valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) const {
+const valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) const
+{
     
     return *value;
 }
@@ -153,24 +157,29 @@ RevBayesCore::StochasticNode<valueType>* RevBayesCore::TypedDistribution<valueTy
 }
 
 template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setStochasticNode( StochasticNode<valueType> *n ) {
+void RevBayesCore::TypedDistribution<valueType>::setStochasticNode( StochasticNode<valueType> *n )
+{
     
     dagNode = n;
 }
 
 template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v ) {
+void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v )
+{
     
     // free memory
     if (value != v)
+    {
         delete value;
+    }
     
     value = v;
     
 }
 
 template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setValue( const valueType &v ) {
+void RevBayesCore::TypedDistribution<valueType>::setValue( const valueType &v )
+{
     
     // free memory
     delete value;
@@ -181,7 +190,8 @@ void RevBayesCore::TypedDistribution<valueType>::setValue( const valueType &v ) 
 
 
 template <class valueType>
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedDistribution<valueType>& f) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedDistribution<valueType>& f)
+{
     
     o << "Distribution()";
     
