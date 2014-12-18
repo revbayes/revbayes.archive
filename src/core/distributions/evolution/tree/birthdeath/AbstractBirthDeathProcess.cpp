@@ -215,8 +215,9 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
         if ( !(*it)->isRoot() )
         {
             if ( (*it)->getAge() >= (*it)->getParent().getAge() )
+            {
                 return RbConstants::Double::neginf;
-            
+            }
         }
     }
     
