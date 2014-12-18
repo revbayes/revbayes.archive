@@ -156,22 +156,29 @@ unsigned long StandardState::getState( void ) const {
 }
 
 size_t indexOfOnBit(size_t bitrep) {
+    
+    // zero-valued bitreps should not exist
     assert(bitrep > 0);
-    assert((bitrep & (bitrep - 1)) == 0); // only one bit can be set...
-    const size_t indices[] = {5, 0, 1, 5, 2, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5}; // 5 is the out-of-range signal
-    size_t u = bitrep & 0xF;
-    size_t i = indices[u];
-    if (i == 5) {
-        size_t offset = 0;
-        while (i == 5) {
-            offset += 4;
-            bitrep >>= 4;
-            u = bitrep & 0xF;
-            i = indices[u];
-        }
-        i += offset;
+
+    // the ambiguous state is the max value for size_t
+    if ( (bitrep & (bitrep -1)) != 0) {
+        size_t max = 0;
+        return max - 1;
     }
-    return i;
+
+    // return the unique flipped-bit index
+    size_t index = 0;
+    bitrep >>= 1;
+    
+    // there are still observed states left
+    while ( bitrep != 0 )
+    {
+        bitrep >>= 1;
+        ++index;
+        
+    }
+    
+    return index;
 }
 size_t setFirstNBitsOn(size_t n) {
     assert(n <= 8*sizeof(size_t));
@@ -217,7 +224,9 @@ bool StandardState::isAmbiguous( void ) const {
 
 
 bool StandardState::isGapState( void ) const {
-    return state == 0x0;
+    size_t max = 0;
+    return state == (max-1);
+//    return state == 0x0;
 }
 
 void StandardState::setMissing() {
@@ -225,11 +234,12 @@ void StandardState::setMissing() {
 }
 
 void StandardState::setGapState(bool tf) {
+    size_t max = 0;
     if ( tf ) {
-        state = 0;
+        state = max - 1;
     }
     else {
-        state = 0;
+        state = max - 1;
         for (size_t i = 0; i < labels.size(); ++i) {
             state <<= 1;
             state |= 1;
