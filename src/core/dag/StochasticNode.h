@@ -326,21 +326,24 @@ valueType& RevBayesCore::StochasticNode<valueType>::getValue( void )
 
 
 template<class valueType>
-const valueType& RevBayesCore::StochasticNode<valueType>::getValue( void ) const {
+const valueType& RevBayesCore::StochasticNode<valueType>::getValue( void ) const
+{
     
     return distribution->getValue();
 }
 
 
 template<class valueType>
-bool RevBayesCore::StochasticNode<valueType>::isClamped( void ) const {
+bool RevBayesCore::StochasticNode<valueType>::isClamped( void ) const
+{
     
     return clamped;
 }
 
 
 template<class valueType>
-bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const {
+bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const
+{
     
     return true;
 }
@@ -473,7 +476,8 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch) {
+void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch)
+{
     // set the value
     distribution->setValue( val );
     
@@ -487,7 +491,8 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forc
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool forceTouch) {
+void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool forceTouch)
+{
     
     // set the value
     distribution->setValue( val );
