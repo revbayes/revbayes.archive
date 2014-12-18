@@ -77,6 +77,7 @@
 /* Inference types (in folder "analysis") */
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
+#include "RLMcmcmc.h"
 #include "RlModel.h"
 #include "RlParallelMcmcmc.h"
 #include "RlPathSampler.h"
@@ -465,6 +466,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
         addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
+        addTypeWithConstructor( "mcmcmc",                 new Mcmcmc()                                  );
         addTypeWithConstructor( "model",                  new Model()                                   );
         addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
         addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
@@ -937,8 +939,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_sub",      new Func__sub< Real                               , Real                  , Real                  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Integer>               , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<Real>     >(  )  );
-        addFunction( "_sub",      new Func__vectorScalarDiv<Integer                 , Integer               , Integer                   >(  )   );
-        addFunction( "_sub",      new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarSub<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarSub<Real                    , Real                  , Real                      >(  )   );
         addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
         addFunction( "_sub",      new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
         
