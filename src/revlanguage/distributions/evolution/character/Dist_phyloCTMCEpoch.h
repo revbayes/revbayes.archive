@@ -83,7 +83,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     // epoch stuff
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* ecr = static_cast<const ModelVector<RealPos> &>( epochRates->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* et = static_cast<const ModelVector<RealPos> &>( epochTimes->getRevObject() ).getDagNode();
-     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* erm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* erm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     

@@ -480,6 +480,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::swapParameterInternal(const DagNode
     }
     else
     {
+        
         RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>::swapParameterInternal(oldP, newP);
     }
 }
@@ -489,7 +490,11 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
 {
     
     // get branch start/end ages
-    const TopologyNode& nd = *(this->tau->getValue().getNodes()[nodeIdx]);
+    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
+    const TopologyNode& nd = *nodes[nodeIdx];
+    if (nd.isRoot())
+        return;
+    
     double t_curr = nd.getParent().getAge();
     double t_end = nd.getAge();
     
