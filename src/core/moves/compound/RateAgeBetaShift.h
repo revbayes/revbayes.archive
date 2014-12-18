@@ -16,6 +16,11 @@ namespace RevBayesCore {
         
     public:
         RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
+        RateAgeBetaShift(const RateAgeBetaShift &m);                                                                                //!< Copy constructor
+        virtual                                ~RateAgeBetaShift(void);                                                             //!< Destructor
+        
+        // overloaded operators
+        RateAgeBetaShift&                       operator=(const RateAgeBetaShift &m);                                               //!< Assignment operator
         
         // Basic utility functions
         RateAgeBetaShift*                       clone(void) const;                                                                  //!< Clone object

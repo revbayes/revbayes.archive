@@ -40,9 +40,15 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmpRates = static_cast<const ModelVector<RealPos> &>( rates->getRevObject() ).getDagNode();
     std::vector< RevBayesCore::StochasticNode<double> *> rates;
     RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *>( tmpRates );
-    const std::set<const RevBayesCore::DagNode* >& pars = dnode->getFunction().getParameters();
 
-    for (std::set<const RevBayesCore::DagNode* >::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    RevBayesCore::VectorFunction<double>* funcVec = dynamic_cast<RevBayesCore::VectorFunction<double>*>( &dnode->getFunction() );
+    if ( funcVec == NULL )
+    {
+        throw RbException("Wrong argument type for the rates vector. We expect a vector of iid elements.");
+    }
+    const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = funcVec->getVectorParameters();
+
+    for (std::vector<const RevBayesCore::TypedDagNode<double>* >::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
         rates.push_back( const_cast<RevBayesCore::StochasticNode<double>* >(static_cast<const RevBayesCore::StochasticNode<double>* >( *it ) ) );
     }
