@@ -16,7 +16,7 @@ namespace RevBayesCore {
     class PhyloCTMCSiteHomogeneous : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
         
     public:
-        PhyloCTMCSiteHomogeneous(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
+        PhyloCTMCSiteHomogeneous(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites, bool amb);
         virtual                                            ~PhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
         
         // public member functions
@@ -53,7 +53,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::PhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, c, nSites )
+RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::PhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, c, nSites, amb )
 {
     
 }

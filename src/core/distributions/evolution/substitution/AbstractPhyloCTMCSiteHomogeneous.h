@@ -69,7 +69,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites);
+        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb );
         AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
         virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
         
@@ -213,7 +213,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template<class charType, class treeType>
-RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb) :
     TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
     numNodes( t->getValue().getNumberOfNodes() ),
     numSites( nSites ),
@@ -236,9 +236,9 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     sitePattern( std::vector<size_t>(numSites, 0) ),
     changedNodes( std::vector<bool>(numNodes,false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
-    usingAmbiguousCharacters( true ),
+    usingAmbiguousCharacters( amb ),
     treatUnknownAsGap( true ),
-    treatAmbiguousAsGaps( true )
+    treatAmbiguousAsGaps( false )
 {
     
     // initialize with default parameters

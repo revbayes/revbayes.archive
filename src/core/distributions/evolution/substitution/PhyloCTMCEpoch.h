@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class PhyloCTMCEpoch : public AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree> {
         
     public:
-        PhyloCTMCEpoch(const TypedDagNode< RevBayesCore::TimeTree > *t, size_t nChars, bool c, size_t nSites);
+        PhyloCTMCEpoch(const TypedDagNode< RevBayesCore::TimeTree > *t, size_t nChars, bool c, size_t nSites, bool amb);
         virtual                                            ~PhyloCTMCEpoch(void);                                                                   //!< Virtual destructor
         
         // public member functions
@@ -72,7 +72,7 @@ namespace RevBayesCore {
 #include <vector>
 
 template<class charType>
-RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBayesCore::TimeTree> *t, size_t nChars, bool c, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>(  t, nChars, 1, c, nSites )
+RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBayesCore::TimeTree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>(  t, nChars, 1, c, nSites, amb )
 {
     epochTimes = new ConstantNode< RbVector< double > >("epochTimes", new RbVector<double>(1, 0.0) );
     epochClockRates = new ConstantNode< RbVector< double > >("epochClockRates", new RbVector<double>(1, 1.0) );
