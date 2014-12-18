@@ -726,20 +726,23 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
 
 
 /** Get child at index i */
-const TopologyNode& TopologyNode::getChild(size_t i) const {
+const TopologyNode& TopologyNode::getChild(size_t i) const
+{
     
     return *children[i];
 }
 
 
 /** Get child at index i */
-TopologyNode& TopologyNode::getChild(size_t i) {
+TopologyNode& TopologyNode::getChild(size_t i)
+{
     
     return *children[i];
 }
 
 
-const std::vector<TopologyNode*>& TopologyNode::getChildren( void ) const {
+const std::vector<TopologyNode*>& TopologyNode::getChildren( void ) const
+{
     return children;
 }
 
