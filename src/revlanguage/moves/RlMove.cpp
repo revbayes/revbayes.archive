@@ -24,7 +24,8 @@ Move::Move(const Move &m) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>( m 
 
 
 /** Get Rev type of object */
-const std::string& Move::getClassType(void) { 
+const std::string& Move::getClassType(void)
+{
     
     static std::string revType = "Move";
     
@@ -32,7 +33,8 @@ const std::string& Move::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move::getClassTypeSpec(void) { 
+const TypeSpec& Move::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Move>::getClassTypeSpec() ) );
     
@@ -42,7 +44,8 @@ const TypeSpec& Move::getClassTypeSpec(void) {
 
 
 /** Return member rules */
-const MemberRules& Move::getParameterRules(void) const {
+const MemberRules& Move::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
