@@ -468,7 +468,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
     // set the global variable if we use ambiguous characters
     usingAmbiguousCharacters = ambiguousCharacters;
 
-    
     std::vector<bool> unique(numSites, true);
     // compress the character matrix if we're asked to
     if ( compressed ) 
