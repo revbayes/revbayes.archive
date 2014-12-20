@@ -17,7 +17,8 @@ int main(int argc, char* argv[])
     int processId = 0;
 #ifdef RB_MPI
     int numProcesses = 0;
-    try {
+    try
+    {
         MPI::Init(argc, argv);
         processId = MPI::COMM_WORLD.Get_rank();
         numProcesses = MPI::COMM_WORLD.Get_size ();

@@ -66,7 +66,7 @@ MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) :
     model( m.model ),
     monitors( m.monitors ),
     moves( m.moves ),
-    schedule(NULL),
+    schedule( NULL ),
     scheduleType( m.scheduleType )
 {
     
@@ -95,7 +95,8 @@ MonteCarloSampler::~MonteCarloSampler(void)
 
 
 /** Run burnin and autotune */
-void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
+void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval)
+{
     
     // Initialize objects needed by chain
     initializeChain();
@@ -184,16 +185,12 @@ size_t MonteCarloSampler::getChainIndex(void)
 }
 
 
-double MonteCarloSampler::getLnPosterior(void)
-{
-    return lnProbability;
-}
-
 double MonteCarloSampler::getModelLnProbability(void)
 {
     const std::vector<DagNode*> &n = model.getDagNodes();
     double pp = 0.0;
-    for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
+    for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
+    {
         //std::cout << (*it)->getName() << "  " << (*it)->getLnProbability() << "\n";
         //(*it)->touch();
         pp += (*it)->getLnProbability();
@@ -205,6 +202,18 @@ double MonteCarloSampler::getModelLnProbability(void)
 RbVector<Monitor>& MonteCarloSampler::getMonitors(void)
 {
     return monitors;
+}
+
+
+RbVector<Move>& MonteCarloSampler::getMoves(void)
+{
+    return moves;
+}
+
+
+const MoveSchedule& MonteCarloSampler::getSchedule(void) const
+{
+    return *schedule;
 }
 
 
@@ -281,29 +290,30 @@ void MonteCarloSampler::initializeChain( bool priorOnly )
     }
     
     
-    // redraw parameters for inactive chains in pMC^3 team
-    if (chainActive == false)
-    {
-        for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
-        {
-         
-            if ( !(*i)->isClamped() && (*i)->isStochastic() )
-            {
-            
-                (*i)->redraw();
-                
-            }
-            else if ( (*i)->isClamped() )
-            {
-                // make sure that the clamped node also recompute their probabilities
-                (*i)->touch();
-            }
-            
-        }
-    }
+//    // redraw parameters for inactive chains in pMC^3 team
+//    if (chainActive == false)
+//    {
+//        for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
+//        {
+//         
+//            if ( !(*i)->isClamped() && (*i)->isStochastic() )
+//            {
+//            
+//                (*i)->redraw();
+//                
+//            }
+//            else if ( (*i)->isClamped() )
+//            {
+//                // make sure that the clamped node also recompute their probabilities
+//                (*i)->touch();
+//            }
+//            
+//        }
+//    }
     
     int numTries    = 0;
     int maxNumTries = 100;
+    double lnProbability = 0.0;
     for ( ; numTries < maxNumTries; numTries ++ )
     {
         lnProbability = 0.0;
@@ -316,9 +326,11 @@ void MonteCarloSampler::initializeChain( bool priorOnly )
             
             if ( !RbMath::isAComputableNumber(lnProb) )
             {
-                std::cerr << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
-                node->printValue(std::cerr);
-                std::cerr << std::endl;
+                std::stringstream ss;
+                ss << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
+                node->printValue( ss );
+                ss << std::endl;
+                RBOUT( ss.str() );
                 
                 break;
             }
@@ -587,16 +599,17 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle)
 }
 
 
-void MonteCarloSampler::printOperatorSummary(void) const {
+void MonteCarloSampler::printOperatorSummary(void) const
+{
     
     
     // printing the moves summary
-    std::cerr << std::endl;
-    std::cerr << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
-    std::cerr << "===============================================================================================================================" << std::endl;
+    std::cout << std::endl;
+    std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
+    std::cout << "===============================================================================================================================" << std::endl;
     for (RbConstIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-        it->printSummary(std::cerr);
+        it->printSummary(std::cout);
     }
     
     std::cout << std::endl;
@@ -730,7 +743,7 @@ void MonteCarloSampler::startMonitors( size_t numCycles ) {
     {
         
         // open filestream for each monitor
-        //monitors[i]->openStream();
+//        monitors[i].openStream();
         
         // if this chain is active, print the header
         if (chainActive)
@@ -740,4 +753,5 @@ void MonteCarloSampler::startMonitors( size_t numCycles ) {
             
         }
     }
+    
 }

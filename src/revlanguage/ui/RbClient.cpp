@@ -20,6 +20,10 @@
 #include <iomanip>
 #include <ctype.h>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 extern "C" {
 #include "linenoise.h"
 }
@@ -54,7 +58,8 @@ WorkspaceUtils workspaceUtils;
 
 StringVector getDefaultCompletions();
 
-std::string getWd() {
+std::string getWd()
+{
     
     RbSettings& s = RbSettings::userSettings();
     const std::string& wd = s.getWorkingDirectory();
@@ -71,19 +76,19 @@ StringVector getFileList(std::string path)
     return v;
 }
 
-StringVector getDefaultCompletions() {
+StringVector getDefaultCompletions()
+{
     StringVector c;
 
-    BOOST_FOREACH(std::string function, workspaceUtils.getFunctions()) {
+    BOOST_FOREACH(std::string function, workspaceUtils.getFunctions())
+    {
         c.push_back(function);
     }
 
-    BOOST_FOREACH(std::string obj, workspaceUtils.getObjects(true)) {
+    BOOST_FOREACH(std::string obj, workspaceUtils.getObjects(true))
+    {
         c.push_back(obj);
     }
-
-    c.push_back("repo_list");
-    c.push_back("repo_get");
 
     return c;
 }
@@ -96,7 +101,8 @@ StringVector getDefaultCompletions() {
  * @param buf
  * @param lc
  */
-void completeOnTab(const char *buf, linenoiseCompletions *lc) {
+void completeOnTab(const char *buf, linenoiseCompletions *lc)
+{
     //bool debug = true;
 
     std::string cmd = buf;
@@ -105,26 +111,31 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
     // parse command
     RevLanguage::ParserInfo pi = RevLanguage::Parser::getParser().checkCommand(cmd, &RevLanguage::Workspace::userWorkspace());
 
-    if (pi.inComment) {
+    if (pi.inComment)
+    {
         // no completions available in comments
         return;
     }
 
     // set completions and position on command line where to start matching completions
     size_t commandPos = 0;
-    if (pi.inQuote) {
+    if (pi.inQuote)
+    {
         // ---------- in quote ------------
         // search for files with portion after the opening quote                
         commandPos = cmd.rfind("\"") + 1;
         completions = getFileList(cmd.substr(commandPos, cmd.size()));
-    } else {
+    }
+    else
+    {
 
         StringVector expressionSeparator;
         expressionSeparator += " ", "%", "~", "=", "&", "|", "+", "-", "*", "/", "^", "!", "=", ",", "<", ">", ")", "[", "]", "{", "}";
 
         // find position of right most expression separator in cmd
 
-        BOOST_FOREACH(std::string s, expressionSeparator) {
+        BOOST_FOREACH(std::string s, expressionSeparator)
+        {
             commandPos = std::max(commandPos, cmd.rfind(s));
         }
 
@@ -132,7 +143,8 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
         // find position of right most dot
         size_t dotPosition = cmd.rfind(".");
 
-        if (pi.functionName != "") {
+        if (pi.functionName != "")
+        {
             // ---------- function defined ------------
             if (pi.argumentLabel != "") { // assigning an argument label                
                 commandPos = cmd.rfind("=") + 1;
@@ -143,9 +155,12 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                 commandPos = std::max(cmd.rfind("("), cmd.rfind(",")) + 1;
                 completions = workspaceUtils.getFunctionParameters(pi.functionName);                
             }
-        } else {
+        }
+        else
+        {
             // ---------- default -----------            
-            if (commandPos > 0) {
+            if (commandPos > 0)
+            {
                 commandPos++;
             }
             completions = getDefaultCompletions();
@@ -154,13 +169,15 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
     }
 
     // discard any extra space in beginning of the string that is used to match against completions
-    while (buf[commandPos] == ' ') {
+    while (buf[commandPos] == ' ')
+    {
         commandPos++;
     }
 
     // match partial command and pass filtered completions to linenoise
     std::string previousCommands;
-    for (int i = 0; i < commandPos; i++) {
+    for (int i = 0; i < commandPos; i++)
+    {
         previousCommands += buf[i];
     }
 
@@ -169,26 +186,32 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
 
     // populate linenoise completions
 
-    BOOST_FOREACH(std::string m, completions) {
-        if (boost::starts_with(m, compMatch)) {
+    BOOST_FOREACH(std::string m, completions)
+    {
+        if (boost::starts_with(m, compMatch))
+        {
             std::string c = previousCommands + m;
             linenoiseAddCompletion(lc, c.c_str());
         }
     }
 
     // debug
-    if (debug) {
+    if (debug)
+    {
         std::cout << "\n\r--------------- available completions --------------";
 
-        BOOST_FOREACH(std::string m, completions) {
+        BOOST_FOREACH(std::string m, completions)
+        {
             std::cout << "\n\r" << m;
         }
 
         std::string baseVariable = "";
-        if (pi.baseVariable != NULL) {
+        if (pi.baseVariable != NULL)
+        {
             baseVariable = pi.baseVariable->getName();
         }
-        if (!pi.inQuote) {
+        if (!pi.inQuote)
+        {
             std::cout << "\n\r------------- buffer info ----------------"
                     << "\n\rmatching against: " << compMatch
                     << "\n\r"
@@ -201,7 +224,8 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc) {
                     << "\n\r" << pi.message
                     << "\n\rlines:";
 
-            BOOST_FOREACH(std::string l, pi.lines) {
+            BOOST_FOREACH(std::string l, pi.lines)
+            {
                 std::cout << "\n\r\t" << l;
             }
         }
@@ -247,14 +271,22 @@ int printFunctionParameters(const char *buf, size_t len, char c) {
  */
 void RbClient::startInterpretor( void )
 {
-
+    
+    size_t pid = 0;
+#ifdef RB_MPI
+    pid = MPI::COMM_WORLD.Get_rank();
+#endif
+    
     /* Set tab completion callback */
     linenoiseSetCompletionCallback(completeOnTab);
 
     /* Load history from file. The history file is just a plain text file
      * where entries are separated by newlines. */
-    linenoiseHistoryLoad("history.txt"); /* Load the history at startup */
-
+    if ( pid == 0 )
+    {
+        linenoiseHistoryLoad("history.txt"); /* Load the history at startup */
+    }
+    
     /* callback for printing function signatures on opening bracket*/
     linenoiseSetCharacterCallback(printFunctionParameters, '(');
 
@@ -262,45 +294,85 @@ void RbClient::startInterpretor( void )
     std::string commandLine;
     std::string cmd;
 
-    while (true) {
+    while (true)
+    {
 
         // set prompt
-        if (result == 0 || result == 2) {
+        if (result == 0 || result == 2)
+        {
             prompt = default_prompt;
-        } else //if (result == 1) 
+        }
+        else //if (result == 1)
         {
             prompt = incomplete_prompt;
         }
 
-        line = linenoise(prompt);
 
         // process command line
-        linenoiseHistoryAdd(line); /* Add to the history. */
-        linenoiseHistorySave("history.txt"); /* Save the history on disk. */
+        if ( pid == 0 )
+        {
+            line = linenoise(prompt);
+            
+            linenoiseHistoryAdd(line);              /* Add to the history. */
+            linenoiseHistorySave("history.txt");    /* Save the history on disk. */
+        
+            cmd = line;
+            boost::trim(cmd);
 
-        cmd = line;
-        boost::trim(cmd);
-
-        if (cmd == "clr" || cmd == "clear") {
-            linenoiseClearScreen();
-        } else if (cmd == "debug=false") {
-            debug = false;
-        } else if (cmd == "debug=true") {
-            debug = true;
-        } else {
-            // interpret Rev statement
-            if (result == 0 || result == 2) {
-                commandLine = cmd;
-            } else //if (result == 1) 
+            if (cmd == "clr" || cmd == "clear")
             {
-                commandLine += cmd;
+                linenoiseClearScreen();
             }
-            result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
+            else if (cmd == "debug=false")
+            {
+                debug = false;
+            }
+            else if (cmd == "debug=true")
+            {
+                debug = true;
+            }
+            else
+            {
+                // interpret Rev statement
+                if (result == 0 || result == 2)
+                {
+                    commandLine = cmd;
+                }
+                else //if (result == 1)
+                {
+                    commandLine += "; " + cmd;
+                }
+            }
+            
         }
+        
+        size_t bsz = commandLine.size();
+#ifdef RB_MPI
+        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
+#endif
+            
+        char * buffer = new char[bsz+1];
+        buffer[bsz] = 0;
+        for (int i = 0; i < bsz; i++)
+            buffer[i] = commandLine[i];
+#ifdef RB_MPI
+        MPI::COMM_WORLD.Bcast(buffer, bsz, MPI_CHAR, 0);
+#endif
+            
+        std::string tmp = std::string( buffer );
+            
+        result = RevLanguage::Parser::getParser().processCommand(tmp, &RevLanguage::Workspace::userWorkspace());
+
 
         /* The typed string is returned as a malloc() allocated string by
          * linenoise, so the user needs to free() it. */
-        free(line);
-
+        
+        if ( pid == 0 )
+        {
+            free(line);
+        }
+        
     }
+    
+    
 }

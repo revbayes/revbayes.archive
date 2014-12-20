@@ -225,7 +225,7 @@ void ParallelMcmcmc::synchronizeValues(void)
     for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
     {
         size_t k = chainsPerProcess[pid][j];
-        results[k] = chains[k]->getLnPosterior();
+        results[k] = chains[k]->getModelLnProbability();
     }
 #ifdef RB_MPI
     MPI::COMM_WORLD.Send(&results, numChains, MPI::DOUBLE, 0, 0);

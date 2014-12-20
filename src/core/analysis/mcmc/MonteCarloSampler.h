@@ -50,9 +50,11 @@ namespace RevBayesCore {
         Mcmc*                                               clone(void) const;
         double                                              getChainHeat(void);
         size_t                                              getChainIndex(void);
-        double                                              getLnPosterior(void);
+//        double                                              getLnPosterior(void);
         double                                              getModelLnProbability(void);
         RbVector<Monitor>&                                  getMonitors(void);
+        RbVector<Move>&                                     getMoves(void);
+        const MoveSchedule&                                 getSchedule(void) const;
         bool                                                isChainActive(void);
         void                                                monitor(unsigned long g);
         virtual unsigned long                               nextCycle(bool advanceCycle);
@@ -78,12 +80,12 @@ namespace RevBayesCore {
         double                                              chainHeat;
         size_t                                              chainIdx;
         unsigned long                                       generation;
-        double                                              lnProbability;
+//        double                                              lnProbability;
         Model                                               model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
-        std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
-        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
+//        std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
+//        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
         MoveSchedule*                                       schedule;
         std::string                                         scheduleType;                                                                           //!< Type of move schedule to be used
         

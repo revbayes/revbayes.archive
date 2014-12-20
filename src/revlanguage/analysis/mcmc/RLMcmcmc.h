@@ -1,16 +1,8 @@
-//
-//  RlParallelMcmcmc.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 3/25/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__RlParallelMcmcmc__
-#define __rb_mlandis__RlParallelMcmcmc__
+#ifndef RlMcmcmc_H
+#define RlMcmcmc_H
 
 
-#include "ParallelMcmcmc.h"
+#include "Mcmcmc.h"
 #include "Mcmc.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
@@ -20,14 +12,27 @@
 
 namespace RevLanguage {
     
-    class ParallelMcmcmc : public WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc> {
+    
+    /**
+     * @brief Rev-wrapper of MCMCMC class.
+     *
+     * This class is the Rev-wrapper for MCMCMC core objetcs. See MCMC.h for more information.
+     *
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Michael Landis and Sebastian Hoehna)
+     * @since Version 1.0, 2014-12-18
+     *
+     */
+    class Mcmcmc : public WorkspaceToCoreWrapperObject<RevBayesCore::Mcmcmc> {
         
     public:
         
-        ParallelMcmcmc(void);                                                                                                               //!< Default constructor
+        Mcmcmc(void);                                                                                                               //!< Default constructor
         
         // Basic utility functions
-        virtual ParallelMcmcmc*                     clone(void) const;                                                                      //!< Clone object
+        virtual Mcmcmc*                             clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
@@ -47,13 +52,11 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   monitors;
         RevPtr<const RevVariable>                   moveSchedule;
         RevPtr<const RevVariable>                   numChains;
-        RevPtr<const RevVariable>                   startHeat;
         RevPtr<const RevVariable>                   deltaHeat;
-        RevPtr<const RevVariable>                   sigmaHeat;
         RevPtr<const RevVariable>                   swapInterval;
         RevPtr<const RevVariable>                   append;
     };
     
 }
 
-#endif /* defined(__rb_mlandis__RlParallelMcmcmc__) */
+#endif /* defined(__rb_mlandis__RlMcmcmc__) */
