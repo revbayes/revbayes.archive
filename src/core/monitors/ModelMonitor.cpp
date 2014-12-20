@@ -35,10 +35,11 @@ ModelMonitor::ModelMonitor( const ModelMonitor &m) : Monitor( m ),
     append( m.append ),
     stochasticNodesOnly( m.stochasticNodesOnly )
 {
-    if (m.outStream.is_open())
-    {
-        openStream();
-    }
+
+//    if (m.outStream.is_open())
+//    {
+//        openStream();
+//    }
     
 }
 
@@ -49,10 +50,10 @@ ModelMonitor::ModelMonitor( const ModelMonitor &m) : Monitor( m ),
 ModelMonitor::~ModelMonitor()
 {
     
-    if ( outStream.is_open() ) 
-    {
-        closeStream();
-    }
+//    if ( outStream.is_open() )
+//    {
+//        closeStream();
+//    }
     
 }
 
@@ -76,8 +77,8 @@ ModelMonitor* ModelMonitor::clone(void) const
  */
 void ModelMonitor::closeStream() 
 {
-
-    outStream.close();
+    
+//    outStream.close();
 
 }
 
@@ -89,6 +90,7 @@ void ModelMonitor::closeStream()
  */
 void ModelMonitor::monitor(unsigned long gen) 
 {
+    outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
     
     if (gen % printgen == 0) 
     {
@@ -161,6 +163,9 @@ void ModelMonitor::monitor(unsigned long gen)
         outStream << std::endl;
         
     }
+    
+    outStream.close();
+    
 }
 
 
@@ -172,7 +177,6 @@ void ModelMonitor::openStream(void)
     
     RbFileManager f = RbFileManager(filename);
     f.createDirectoryForFile();
-    
     // open the stream to the Model
     if ( append )
     {
@@ -183,6 +187,8 @@ void ModelMonitor::openStream(void)
         outStream.open( filename.c_str(), std::fstream::out);    
     }
     
+    outStream.close();
+    
 }
 
 /** 
@@ -190,6 +196,7 @@ void ModelMonitor::openStream(void)
  */
 void ModelMonitor::printHeader() 
 {
+    outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
     
     // print one column for the iteration number
     outStream << "Iteration";
@@ -235,6 +242,9 @@ void ModelMonitor::printHeader()
     }
     
     outStream << std::endl;
+    
+    outStream.close();
+    
 }
 
 

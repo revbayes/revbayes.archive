@@ -37,7 +37,7 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
-    startTimes(),
+    startTime( NULL ),
     numCycles( 0 ),
     currentGen( 0 ),
     startGen( 0 )
@@ -55,7 +55,7 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
-    startTimes(),
+    startTime( NULL ),
     numCycles( 0 ),
     currentGen( 0 ),
     startGen( 0 )
@@ -72,7 +72,7 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
-    startTimes(),
+    startTime( NULL ),
     numCycles( 0 ),
     currentGen( 0 ),
     startGen( 0 )
@@ -198,12 +198,10 @@ void ScreenMonitor::monitor(unsigned long gen)
             }
             else
             {
-                double progress = double( startTimes.size() * samplingFrequency ) / double( startGen + numCycles - gen + startTimes.size() * samplingFrequency );
-                size_t timeUsed = time(NULL) - startTimes.front();
-                if ( startTimes.size() > 20 )
-                {
-                    startTimes.pop();
-                }
+                double done = gen - startGen;
+                double total = numCycles - startGen;
+                double progress = done / total;
+                size_t timeUsed = time(NULL) - startTime;
             
                 size_t waitTime = double( timeUsed ) / progress - double( timeUsed );
                 
@@ -218,7 +216,6 @@ void ScreenMonitor::monitor(unsigned long gen)
                 std::cout << prefixSeparator << ss.str() << suffixSeparator;
             }
             
-            startTimes.push( time( NULL ) );
         }
         
         std::cout << std::endl;
@@ -317,8 +314,7 @@ void ScreenMonitor::reset(size_t n)
 {
     startGen = currentGen;
     numCycles = n;
-    std::queue<time_t> empty;
-    std::swap( startTimes, empty );
+    startTime = time( NULL );
 }
 
 

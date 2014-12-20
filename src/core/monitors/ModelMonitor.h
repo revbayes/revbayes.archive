@@ -4,8 +4,14 @@
 #include "Monitor.h"
 
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
+
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
 
 namespace RevBayesCore {
     
@@ -59,7 +65,11 @@ namespace RevBayesCore {
         void                                resetDagNodes(void);                                                //!< Extract the variable to be monitored again.
         
         // members
+//#ifdef RB_MPI
+//        std::stringstream                   outStream;
+//#else
         std::fstream                        outStream;
+//#endif
         
         // parameters
         std::string                         filename;                                                           //!< Filename to which we print the values
@@ -69,6 +79,11 @@ namespace RevBayesCore {
         bool                                prior;                                                              //!< Flag if to print the prior probability
         bool                                append;                                                             //!< Flag if to append to existing file
         bool                                stochasticNodesOnly;                                                //!< Flag if only stochastic nodes should be printed
+        
+#ifdef RB_MPI
+        MPI_File                            file;
+#endif
+        
     };
     
 }

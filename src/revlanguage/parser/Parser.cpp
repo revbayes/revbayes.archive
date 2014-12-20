@@ -387,9 +387,12 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 
     // Break command into Rev lines
     std::list<std::string> lines;
-    try {
+    try
+    {
         breakIntoLines(command, lines, true);
-    }    catch (RbException& rbException) {
+    }
+    catch (RbException& rbException)
+    {
 
 #ifdef DEBUG_PARSER
         printf("Caught an exception while breaking command buffer into lines\n");
@@ -412,7 +415,8 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
     yycolumn = 1;
 
     // Call Bison code, which calls Flex code, which calls rrinput
-    for (std::list<std::string>::iterator i = lines.begin(); i != lines.end(); i++) {
+    for (std::list<std::string>::iterator i = lines.begin(); i != lines.end(); i++)
+    {
 
         /* prepare globals for call to parser */
         rrcommand.str((*i));
@@ -434,9 +438,12 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 #endif
 
         int result;
-        try {
+        try
+        {
             result = yyparse();
-        }        catch (RbException& rbException) {
+        }
+        catch (RbException& rbException)
+        {
 #ifdef DEBUG_PARSER
             printf("Caught an exception\n");
 #endif
@@ -454,11 +461,15 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
             printf("Abnormal exception during parsing or execution of statement; discarding any remaining command buffer\n");
 #endif
 
-            std::ostringstream msg;
-            rbException.print(msg);
-            msg << std::endl;
-            RBOUT(msg.str());
+//            std::ostringstream msg;
+//            rbException.print(msg);
+//            msg << std::endl;
+//            RBOUT(msg.str());
 
+            
+            rbException.print(std::cerr);
+            std::cerr << std::endl;
+            
             // We exit immediately, discarding any remaining buffer content
             // We return 2 to signal a problem, which the caller may choose to ignore or act upon
             command = "";
@@ -478,19 +489,24 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
         }
 #endif
 
-        if (result == 0) {
+        if (result == 0)
+        {
 
 #ifdef DEBUG_PARSER
             printf("Parser successfully executed statement\n\n");
 #endif
-        } else if (result == 2) {
+        }
+        else if (result == 2)
+        {
 
             // The execute function printed the error message resulting from the exception
             // We exit immediately, discarding any remaining buffer content
             // We return 2 to signal a problem, which the caller may choose to ignore or act upon
             command = "";
             return 2;
-        } else if (foundErrorBeforeEnd == true) {
+        }
+        else if (foundErrorBeforeEnd == true)
+        {
 
 #ifdef DEBUG_PARSER
             printf("Syntax error detected by parser\n");
@@ -499,20 +515,27 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 
             std::ostringstream msg;
             if (yylloc.first_column == yylloc.last_column)
+            {
                 msg << "Syntax error while reading character '" << command[size_t(yylloc.first_column - 1)] << "' at position " << yylloc.first_column << " in command:" << std::endl;
-            else {
+            }
+            else
+            {
                 msg << "Syntax error while reading characters \"";
-                for (int j = yylloc.first_column; j <= yylloc.last_column; ++j) {
+                for (int j = yylloc.first_column; j <= yylloc.last_column; ++j)
+                {
                     msg << command[size_t(j - 1)];
                 }
                 msg << "\" at position " << yylloc.first_column << " to " << yylloc.last_column << " in command:" << std::endl;
+            
             }
             msg << command;
 
             RBOUT(msg.str());
             command = "";
             return 2;
-        } else if (foundNewline == true && foundEOF == false) {
+        }
+        else if (foundNewline == true && foundEOF == false)
+        {
 
 #ifdef DEBUG_PARSER     
             printf("Incomplete statement ending with inappropriate newline; replaced with space\n");
@@ -524,7 +547,8 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 
             std::list<std::string>::iterator j = i;
             j++;
-            if (j == lines.end()) {
+            if (j == lines.end())
+            {
 
                 /* If no more input lines, we need to ask for more */
 #ifdef DEBUG_PARSER
@@ -532,7 +556,9 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 #endif
                 command = temp;
                 return 1;
-            } else {
+            }
+            else
+            {
 
                 /* If more input lines, put temp in front before proceeding */
 #ifdef DEBUG_PARSER
@@ -540,7 +566,9 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 #endif
                 (*j) = temp + (*j);
             }
-        } else if (foundNewline == true && foundEOF == true) {
+        }
+        else if (foundNewline == true && foundEOF == true)
+        {
 
 #ifdef DEBUG_PARSER
             printf("Incomplete statement ending with appropriate newline.\n");
@@ -548,7 +576,8 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 
             std::list<std::string>::iterator j = i;
             j++;
-            if (j == lines.end()) {
+            if (j == lines.end())
+            {
 
                 /* If no more input lines, we need to ask for more */
 #ifdef DEBUG_PARSER

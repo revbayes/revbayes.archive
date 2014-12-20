@@ -1,27 +1,17 @@
-//
-//  RlParallelMcmcmc.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 3/25/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "Mcmc.h"
 #include "Model.h"
 #include "Natural.h"
 #include "OptionRule.h"
-#include "ParallelMcmcmc.h"
+#include "Mcmcmc.h"
 #include "Real.h"
 #include "RevObject.h"
 #include "RbException.h"
-#include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
-#include "RlParallelMcmcmc.h"
+#include "RlMcmcmc.h"
 #include "RlString.h"
 #include "TypeSpec.h"
 #include "WorkspaceVector.h"
@@ -29,9 +19,9 @@
 
 using namespace RevLanguage;
 
-ParallelMcmcmc::ParallelMcmcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::ParallelMcmcmc>()
+Mcmcmc::Mcmcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::Mcmcmc>()
 {
-
+    
     ArgumentRules* runArgRules = new ArgumentRules();
     runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
@@ -43,18 +33,18 @@ ParallelMcmcmc::ParallelMcmcmc() : WorkspaceToCoreWrapperObject<RevBayesCore::Pa
     
     ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
     methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
-
+    
 }
 
 
 /** Clone object */
-ParallelMcmcmc* ParallelMcmcmc::clone(void) const {
+Mcmcmc* Mcmcmc::clone(void) const {
     
-	return new ParallelMcmcmc(*this);
+    return new Mcmcmc(*this);
 }
 
 
-void ParallelMcmcmc::constructInternalObject( void ) {
+void Mcmcmc::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -65,19 +55,17 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     const int                                   nc      = static_cast<const Natural&>( numChains->getRevObject() ).getValue();
     const int                                   si      = static_cast<const Natural&>( swapInterval->getRevObject() ).getValue();
-    const double                                sh      = static_cast<const Real&>( startHeat->getRevObject() ).getValue();
     const double                                delth   = static_cast<const Real&>( deltaHeat->getRevObject() ).getValue();
-    const double                                sigh    = static_cast<const Real&>( sigmaHeat->getRevObject() ).getValue();
     
-    value = new RevBayesCore::ParallelMcmcmc(mdl, mvs, mntr, sched, nc, si, delth, sigh, sh);
+    value = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nc, si, delth);
     
 }
 
 
 /* Map calls to member methods */
-RevPtr<RevVariable> ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> Mcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
-
+    
     
     if (name == "run")
     {
@@ -114,25 +102,25 @@ RevPtr<RevVariable> ParallelMcmcmc::executeMethod(std::string const &name, const
 
 
 /** Get Rev type of object */
-const std::string& ParallelMcmcmc::getClassType(void) {
+const std::string& Mcmcmc::getClassType(void) {
     
-    static std::string revType = "ParallelMcmcmc";
+    static std::string revType = "Mcmcmc";
     
-	return revType;
+    return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ParallelMcmcmc::getClassTypeSpec(void) {
+const TypeSpec& Mcmcmc::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+    return revTypeSpec;
 }
 
 
 
 /** Return member rules (no members) */
-const MemberRules& ParallelMcmcmc::getParameterRules(void) const {
+const MemberRules& Mcmcmc::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -146,8 +134,6 @@ const MemberRules& ParallelMcmcmc::getParameterRules(void) const {
         memberRules.push_back( new ArgumentRule("numChains"    , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
         memberRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)) );
         memberRules.push_back( new ArgumentRule("deltaHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.2) ) );
-        memberRules.push_back( new ArgumentRule("sigmaHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        memberRules.push_back( new ArgumentRule("startHeat"    , Real::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0)) );
         
         std::vector<std::string> options;
         options.push_back( "sequential" );
@@ -164,7 +150,7 @@ const MemberRules& ParallelMcmcmc::getParameterRules(void) const {
 
 
 /** Get type spec */
-const TypeSpec& ParallelMcmcmc::getTypeSpec( void ) const {
+const TypeSpec& Mcmcmc::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -173,14 +159,14 @@ const TypeSpec& ParallelMcmcmc::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void ParallelMcmcmc::printValue(std::ostream &o) const {
+void Mcmcmc::printValue(std::ostream &o) const {
     
-    o << "ParallelMcmcmc";
+    o << "Mcmcmc";
 }
 
 
 /** Set a member variable */
-void ParallelMcmcmc::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Mcmcmc::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "model") {
         model = var;
@@ -200,14 +186,6 @@ void ParallelMcmcmc::setConstParameter(const std::string& name, const RevPtr<con
     else if ( name == "deltaHeat" )
     {
         deltaHeat = var;
-    }
-    else if ( name == "sigmaHeat" )
-    {
-        sigmaHeat = var;
-    }
-    else if ( name == "startHeat" )
-    {
-        startHeat = var;
     }
     else if ( name == "swapInterval" )
     {
