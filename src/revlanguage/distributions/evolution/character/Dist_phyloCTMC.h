@@ -42,6 +42,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                          pInv;
         RevPtr<const RevVariable>                          nSites;
         RevPtr<const RevVariable>                          type;
+        RevPtr<const RevVariable>                          treatAmbiguousAsGap;
+
         
     };
     
@@ -53,6 +55,7 @@ namespace RevLanguage {
 #include "OptionRule.h"
 #include "RateMatrix.h"
 #include "RevNullObject.h"
+#include "RlBoolean.h"
 #include "RlRateMatrix.h"
 #include "RlString.h"
 #include "StandardState.h"
@@ -89,7 +92,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    
+    bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getDagNode();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
     
@@ -114,7 +117,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     if ( dt == "DNA" ) 
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType> *dist =
-            new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
+            new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -170,7 +173,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     } 
     else if ( dt == "RNA" )
     {
-        RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -224,7 +227,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     }
     else if ( dt == "AA" || dt == "Protein" )
     {
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, 20, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, 20, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -293,7 +296,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState, typename treeType::valueType>(tau, nChars, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState, typename treeType::valueType>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -361,7 +364,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -430,7 +433,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
 			RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         }
 		
-		RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(tau, nChars, true, n);
+		RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -552,6 +555,8 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getParame
 		options.push_back( "Mk1" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         
+        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        
         rulesSet = true;
     }
     
@@ -651,6 +656,10 @@ void RevLanguage::Dist_phyloCTMC<treeType>::setConstParameter(const std::string&
     else if ( name == "type" ) 
     {
         type = var;
+    }
+    else if ( name == "treatAmbiguousAsGap" )
+    {
+        treatAmbiguousAsGap = var;
     }
     else
     {

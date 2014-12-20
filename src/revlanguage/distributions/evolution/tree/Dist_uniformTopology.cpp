@@ -51,8 +51,8 @@ Dist_uniformTopology* Dist_uniformTopology::clone( void ) const
 RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribution( void ) const 
 {
     // get the parameters
-    int n = static_cast<const Natural &>( numTaxa->getRevObject() ).getDagNode()->getValue();
     const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    int n = names.size();
 
 	if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance()) {
 		const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
@@ -110,7 +110,6 @@ const MemberRules& Dist_uniformTopology::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        distUniformTopologyMemberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
         distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         distUniformTopologyMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 		
@@ -149,11 +148,7 @@ const TypeSpec& Dist_uniformTopology::getTypeSpec( void ) const
 void Dist_uniformTopology::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
-    if ( name == "nTaxa" ) 
-    {
-        numTaxa = var;
-    }
-    else if ( name == "names" ) 
+    if ( name == "names" ) 
     {
         taxonNames = var;
     }

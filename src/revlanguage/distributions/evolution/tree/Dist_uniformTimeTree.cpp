@@ -74,7 +74,7 @@ const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const {
     {
 
         distUTTDMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distUTTDMemberRules.push_back( new ArgumentRule( "taxonNames", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distUTTDMemberRules.push_back( new ArgumentRule( "names", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
@@ -97,7 +97,7 @@ void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevP
     if ( name == "originTime" ) {
         originTime = var;
     }
-    else if ( name == "taxonNames" ) {
+    else if ( name == "names" ) {
         taxonNames = var;
     }
     else {
