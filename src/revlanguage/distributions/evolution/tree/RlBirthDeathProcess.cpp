@@ -90,7 +90,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
         optionsCondition.push_back( "survival" );
         optionsCondition.push_back( "nTaxa" );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         

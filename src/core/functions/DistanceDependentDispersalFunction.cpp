@@ -22,13 +22,6 @@ DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const Typ
 }
 
 
-DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n) : TypedFunction<GeographyRateModifier>( n ), distancePower(n.distancePower)
-{
-    // no need to add parameters, happens automatically
-    ;
-}
-
-
 DistanceDependentDispersalFunction::~DistanceDependentDispersalFunction( void )
 {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
@@ -46,7 +39,6 @@ void DistanceDependentDispersalFunction::update( void )
 {
     // recompute distances based on distancePower
     double dp = distancePower->getValue();
-    
     
     value->setDistancePower(dp, true);
 }

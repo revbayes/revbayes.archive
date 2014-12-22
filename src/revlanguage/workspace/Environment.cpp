@@ -279,45 +279,14 @@ void Environment::eraseVariable(const std::string& name)
 
 
 /**
- * Erase a variable by its address, which is the value and not the key in the variable
- * map. Assuming that the variable maps are not huge and that we are not doing this kind
- * of operation in performance-critical code, we simply use a linear search of the map
- * to find the variable address here.
+ * Erase a variable by its address. We just delegate the call to erase by name.
  */
-void Environment::eraseVariable(const RevPtr<RevVariable>& var) {
-    
-    VariableTable::iterator it;
-    for ( it=variableTable.begin(); it != variableTable.end(); ++it )
-    {
-        
-        if ( it->second == var )
-        {
-            break;
-        }
-        
-    }
-    
-    if ( it == variableTable.end() )
-    {
-        std::ostringstream msg;
-        msg << "Variable with address '" << var << "' does not exist in frame";
-        throw RbException( msg );
-    }
+void Environment::eraseVariable(const RevPtr<RevVariable>& var)
+{
     
     // Delegate call
-    eraseVariable( it->first );
+    eraseVariable( var->getName() );
 }
-
-
-///**
-// * Execute function to get its value. This will either return a constant value or a deterministic value
-// * depending on the return type of the function.
-// */
-//RevPtr<RevVariable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
-//{
-//    
-//    return functionTable.executeFunction(name, args);
-//}
 
 
 /** Find whether a function name exists (current and enclosing frames) */

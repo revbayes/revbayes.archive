@@ -157,7 +157,8 @@ void RevBayesCore::VectorFunction<valueType>::swapParameterInternal(const DagNod
 
 
 template <class valueType>
-void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher ) {
+void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher )
+{
     
     //delegate to base class
     TypedFunction< RbVector<valueType> >::touch( toucher );
@@ -170,6 +171,7 @@ void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher ) {
             // don't jump out of the loop because we could have the same parameter multiple times for this vector, e.g., v(a,a,b,a)
         }
     }
+    
 }
 
 #endif

@@ -15,7 +15,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_bimodalLnorm::Dist_bimodalLnorm() : ContinuousDistribution() 
+Dist_bimodalLnorm::Dist_bimodalLnorm() : PositiveContinuousDistribution()
 {
     
     setGuiDistributionName("Bimodal LogNormal");
@@ -83,7 +83,7 @@ const std::string& Dist_bimodalLnorm::getClassType(void)
 const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

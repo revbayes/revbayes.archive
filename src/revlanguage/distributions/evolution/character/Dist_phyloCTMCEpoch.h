@@ -44,6 +44,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                          type;
         RevPtr<const RevVariable>                          epochTimes;
         RevPtr<const RevVariable>                          epochRates;
+        RevPtr<const RevVariable>                          treatAmbiguousAsGap;
         
     };
     
@@ -79,11 +80,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<TimeTree&>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
+    bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getDagNode();
     
     // epoch stuff
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* ecr = static_cast<const ModelVector<RealPos> &>( epochRates->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* et = static_cast<const ModelVector<RealPos> &>( epochTimes->getRevObject() ).getDagNode();
-     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* erm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* erm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
@@ -109,7 +111,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     if ( dt == "DNA" )
     {
         RevBayesCore::PhyloCTMCEpoch<RevBayesCore::DnaState> *dist =
-        new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::DnaState>(tau, 4, true, n);
+        new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::DnaState>(tau, 4, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -137,25 +139,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             dist->setClockRate( clockRate );
         }
         
-        // set the rate matrix
-//        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
-//        {
-//            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
-//            
-//            // sanity check
-//            if ( (nNodes-1) != rm->getValue().size() )
-//            {
-//                throw RbException( "The number of substitution matrices does not match the number of branches" );
-//            }
-//            
-//            dist->setRateMatrix( rm );
-//        }
-//        else
-//        {
-//            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-//            dist->setRateMatrix( rm );
-//        }
-        
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
@@ -170,7 +153,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     }
     else if ( dt == "RNA" )
     {
-        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::RnaState> *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::RnaState>(tau, 4, true, n);
+        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::RnaState> *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::RnaState>(tau, 4, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -195,26 +178,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        
-        // set the rate matrix
-//        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
-//        {
-//            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
-//            
-//            // sanity check
-//            if ( (nNodes-1) != rm->getValue().size() )
-//            {
-//                throw RbException( "The number of substitution matrices does not match the number of branches" );
-//            }
-//            
-//            dist->setRateMatrix( rm );
-//        }
-//        else
-//        {
-//            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-//            dist->setRateMatrix( rm );
-//        }
-        
+                
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
@@ -228,7 +192,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     }
     else if ( dt == "AA" || dt == "Protein" )
     {
-        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::AminoAcidState>(tau, 20, true, n);
+        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::AminoAcidState>(tau, 20, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -253,25 +217,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        
-        // set the rate matrix
-//        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
-//        {
-//            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
-//            
-//            // sanity check
-//            if ( (nNodes-1) != rm->getValue().size() )
-//            {
-//                throw RbException( "The number of substitution matrices does not match the number of branches" );
-//            }
-//            
-//            dist->setRateMatrix( rm );
-//        }
-//        else
-//        {
-//            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-//            dist->setRateMatrix( rm );
-//        }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
@@ -301,7 +246,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::PomoState> *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::PomoState>(tau, nChars, true, n);
+        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::PomoState> *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::PomoState>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -326,25 +271,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        
-        // set the rate matrix
-//        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
-//        {
-//            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
-//            
-//            // sanity check
-//            if ( (nNodes-1) != rm->getValue().size() )
-//            {
-//                throw RbException( "The number of substitution matrices does not match the number of branches" );
-//            }
-//            
-//            dist->setRateMatrix( rm );
-//        }
-//        else
-//        {
-//            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-//            dist->setRateMatrix( rm );
-//        }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
@@ -373,7 +299,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::StandardState>  *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::StandardState>(tau, nChars, true, n);
+        RevBayesCore::PhyloCTMCEpoch<RevBayesCore::StandardState>  *dist = new RevBayesCore::PhyloCTMCEpoch<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -398,25 +324,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-        
-        // set the rate matrix
-//        if ( q->getRevObject().isType( ModelVector<RateMatrix>::getClassTypeSpec() ) )
-//        {
-//            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVector<RateMatrix> &>( q->getRevObject() ).getDagNode();
-//            
-//            // sanity check
-//            if ( (nNodes-1) != rm->getValue().size() )
-//            {
-//                throw RbException( "The number of substitution matrices does not match the number of branches" );
-//            }
-//            
-//            dist->setRateMatrix( rm );
-//        }
-//        else
-//        {
-//            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-//            dist->setRateMatrix( rm );
-//        }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
@@ -499,6 +406,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
+        
+        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         rulesSet = true;
     }
@@ -605,6 +514,10 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCEpoch::getTypeSpec( void
     else if ( name == "epochRates" )
     {
         epochRates = var;
+    }
+    else if ( name == "treatAmbiguousAsGap" )
+    {
+        treatAmbiguousAsGap = var;
     }
     else
     {

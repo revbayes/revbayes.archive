@@ -55,13 +55,13 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    RevBayesCore::TypedDagNode<double>* o = NULL;
     if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
     {
         o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
     }
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    RevBayesCore::TypedDagNode<double>* ra = NULL;
     if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
     {
         ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();

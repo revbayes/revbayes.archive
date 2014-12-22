@@ -69,7 +69,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites);
+        AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb );
         AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
         virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
         
@@ -118,7 +118,8 @@ namespace RevBayesCore {
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
-//        virtual double                                                      sumPartialLikelihoods(size_t nodeIndex) = 0;
+        virtual void                                                        computeRootLikelihood( size_t root, size_t left, size_t right) = 0;
+        virtual void                                                        computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle) = 0;
 
         // virtual methods that you may want to overwrite
         virtual void                                                        computeMarginalNodeLikelihood(size_t nodeIdx, size_t parentIdx);
@@ -194,6 +195,7 @@ namespace RevBayesCore {
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
         void                                                                scale(size_t i, size_t l, size_t r);
+        void                                                                scale(size_t i, size_t l, size_t r, size_t m);
         void                                                                simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
         double                                                              sumRootLikelihood( void );
     
@@ -213,7 +215,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template<class charType, class treeType>
-RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) :
+RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb) :
     TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
     numNodes( t->getValue().getNumberOfNodes() ),
     numSites( nSites ),
@@ -234,11 +236,11 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numPatterns( numSites ),
     compressed( c ),
     sitePattern( std::vector<size_t>(numSites, 0) ),
-    changedNodes( std::vector<bool>(numNodes,false) ),
+    changedNodes( std::vector<bool>(numNodes, false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
-    usingAmbiguousCharacters( true ),
+    usingAmbiguousCharacters( amb ),
     treatUnknownAsGap( true ),
-    treatAmbiguousAsGaps( true )
+    treatAmbiguousAsGaps( false )
 {
     
     // initialize with default parameters
@@ -466,7 +468,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
     // set the global variable if we use ambiguous characters
     usingAmbiguousCharacters = ambiguousCharacters;
 
-    
     std::vector<bool> unique(numSites, true);
     // compress the character matrix if we're asked to
     if ( compressed ) 
@@ -609,12 +610,42 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compu
     // only necessary if the root is actually dirty
     if ( dirtyNodes[rootIndex] ) 
     {
-        
-        // fill the partial likelihoods vector for the root by a recursive call
-        fillLikelihoodVector( root, rootIndex );
-        
-        // compute the root marginals
-        computeMarginalRootLikelihood();
+                
+        // start by filling the likelihood vector for the children of the root
+        if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex );
+            scale(rootIndex, leftIndex, rightIndex);
+            
+        }
+        else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            const TopologyNode &middle = root.getChild(2);
+            size_t middleIndex = middle.getIndex();
+            fillLikelihoodVector( middle, middleIndex );
+            
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
+            scale(rootIndex, leftIndex, rightIndex, middleIndex);
+            
+        }
+        else
+        {
+            throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
+        }
+
         
         // sum the partials up
         this->lnProb = sumRootLikelihood();
@@ -767,38 +798,47 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, t
 		// sum the likelihoods for each character state
 		const std::vector<double> siteMarginals = (*marginals)[pattern];
 		double sumMarginals = 0.0;
-		for (int j = 0; j < siteMarginals.size(); j++) {
+		for (int j = 0; j < siteMarginals.size(); j++)
+        {
 			sumMarginals += siteMarginals[j];
 		}
 		
 		double u = rng->uniform01();
-		if (sumMarginals == 0.0) {
+		if (sumMarginals == 0.0)
+        {
 			
 			// randomly draw state if all states have 0 probability
 			c.setState((size_t)(u*c.getNumberOfStates()));
 			
-		} else {
+		}
+        else
+        {
 			
 			// the marginals don't add up to 1, so rescale u
 			u *= sumMarginals;
 			
 			// draw the character state
 			size_t stateIndex = 0;
-			while ( true ) {
+			while ( true )
+            {
 				
 				u -= siteMarginals[stateIndex];
 				
-				if ( u > 0.0 ) {
+				if ( u > 0.0 )
+                {
 					
 					c++;
 					stateIndex++;
 					
-					if ( stateIndex == c.getNumberOfStates() ) {
+					if ( stateIndex == c.getNumberOfStates() )
+                    {
 						stateIndex = 0;
 						c.setToFirstState();
 					}
 					
-				} else {
+				}
+                else
+                {
 					break;
 				}
 			}		
@@ -834,46 +874,21 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fillLik
         else 
         {
             // this is an internal node
-            
-            // start by filling the likelihood vector for the children of the root
-            if ( node.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
-            {
-                const TopologyNode &left = node.getChild(0);
-                size_t leftIndex = left.getIndex();
-                fillLikelihoodVector( left, leftIndex );
-                const TopologyNode &right = node.getChild(1);
-                size_t rightIndex = right.getIndex();
-                fillLikelihoodVector( right, rightIndex );
+            const TopologyNode &left = node.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = node.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
                 
-                // now compute the likelihoods of this internal node
-                computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
+            // now compute the likelihoods of this internal node
+            computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
                 
-                // rescale likelihood vector
-                scale(nodeIndex,leftIndex,rightIndex);
-            }
-            else if ( node.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
-            {
-                const TopologyNode &left = node.getChild(0);
-                size_t leftIndex = left.getIndex();
-                fillLikelihoodVector( left, leftIndex );
-                const TopologyNode &right = node.getChild(1);
-                size_t rightIndex = right.getIndex();
-                fillLikelihoodVector( right, rightIndex );
-                const TopologyNode &middle = node.getChild(2);
-                size_t middleIndex = middle.getIndex();
-                fillLikelihoodVector( middle, middleIndex );
-                
-                // now compute the likelihoods of this internal node
-                computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex,middleIndex);
-                
-            }
-            else
-            {
-                throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
-            }
-
-            
+            // rescale likelihood vector
+            scale(nodeIndex,leftIndex,rightIndex);
+        
         }
+        
     }
 }
 
@@ -945,7 +960,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
         dirtyNodes[index] = true;
         
         // if we previously haven't touched this node, then we need to change the active likelihood pointer
-        if ( !changedNodes[index] ) 
+        if ( changedNodes[index] == false )
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
             changedNodes[index] = true;
@@ -1154,7 +1169,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
                 
                 double*          p_site_mixture          = p_node + offset;
                 
-                for ( size_t i=0; i<4; ++i)
+                for ( size_t i=0; i<this->numChars; ++i)
                 {
                     if ( p_site_mixture[i] > max )
                     {
@@ -1175,7 +1190,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
                 
                 double*          p_site_mixture          = p_node + offset;
                 
-                for ( size_t i=0; i<4; ++i)
+                for ( size_t i=0; i<this->numChars; ++i)
                 {
                     p_site_mixture[i] /= max;
                 }
@@ -1190,6 +1205,71 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
         for (size_t site = 0; site < this->numPatterns ; ++site)
         {
             this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
+        }
+        
+    }
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( size_t nodeIndex, size_t left, size_t right, size_t middle )
+{
+    
+    double* p_node   = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    
+    if ( useScaling == true && nodeIndex % 4 == 0 )
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->numPatterns ; ++site)
+        {
+            
+            // the max probability
+            double max = 0.0;
+            
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+                
+                double*          p_site_mixture          = p_node + offset;
+                
+                for ( size_t i=0; i<this->numChars; ++i)
+                {
+                    if ( p_site_mixture[i] > max )
+                    {
+                        max = p_site_mixture[i];
+                    }
+                }
+                
+            }
+            
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] + + this->perNodeSiteLogScalingFactors[this->activeLikelihood[middle]][middle][site] - log(max);
+            
+            
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+                
+                double*          p_site_mixture          = p_node + offset;
+                
+                for ( size_t i=0; i<this->numChars; ++i)
+                {
+                    p_site_mixture[i] /= max;
+                }
+                
+            }
+            
+        }
+    }
+    else if ( useScaling == true )
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->numPatterns ; ++site)
+        {
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[middle]][middle][site];
         }
         
     }
@@ -1567,16 +1647,9 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::sumRo
     
     // get the index of the root node
     size_t nodeIndex = root.getIndex();
-    
-    std::vector<size_t> childIndex;
-    const std::vector<TopologyNode*>& children = root.getChildren();
-    for (size_t i = 0; i < children.size(); ++i)
-    {
-        childIndex.push_back( children[i]->getIndex() );
-    }
-    
+        
     // get the pointers to the partial likelihoods of the left and right subtree
-    double*   p_node  = this->marginalLikelihoods + nodeIndex*this->nodeOffset;
+    double*   p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex] * this->activeLikelihoodOffset  + nodeIndex*this->nodeOffset;
     
     // create a vector for the per mixture likelihoods
     // we need this vector to sum over the different mixture likelihoods
@@ -1854,6 +1927,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateT
     {
         branchTime = this->homogeneousClockRate->getValue() * brlen;
     }
+    
     
     // and finally compute the per site rate transition probability matrix
     if ( this->rateVariationAcrossSites == true )
