@@ -40,9 +40,13 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     char c;
     while ( ss.good() )
     {
-        c = char( ss.get() );
-        if ( c != ' ')
-            trimmed += c;
+        // check for EOF
+        int c_int = ss.get();
+        if (c_int != EOF) {
+            c = char( c_int );
+            if ( c != ' ')
+                trimmed += c;
+        }
     }
 	
     // construct the tree starting from the root
@@ -85,9 +89,13 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
     char c;
     while ( ss.good() )
     {
-        c = char( ss.get() );
-        if ( c != ' ')
-            trimmed += c;
+        // check for EOF
+        int c_int = ss.get();
+        if (c_int != EOF) {
+            c = char( c_int );
+            if ( c != ' ')
+                trimmed += c;
+        }
     }	
 	
 	// construct the tree starting from the root
@@ -266,9 +274,9 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     // remove closing parenthesis
     ss.ignore();
     
-    // read the optional label
+    // read the optional label, checking for EOF = '\377'
     std::string lbl = "";
-    while ( ss.good() && (c = char( ss.peek() )) != ':' && c != ';' && c != ',' && c != '[')
+    while ( ss.good() && (c = char( ss.peek() )) != ':' && c != ';' && c != ',' && c != '[' && c != '\377')
     {
         lbl += char( ss.get() );
     }
