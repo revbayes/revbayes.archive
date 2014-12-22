@@ -551,8 +551,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getParame
         options.push_back( "Pomo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
-        options.push_back( "Chromosomes" );
-		options.push_back( "Mk1" );
+        options.push_back( "NaturalNumbers" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         
         distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
