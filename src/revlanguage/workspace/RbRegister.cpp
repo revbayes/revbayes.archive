@@ -149,6 +149,7 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+#include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "Move_NarrowExchange.h"
@@ -547,6 +548,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+		addTypeWithConstructor("mvEmpiricalTree",           new Move_EmpiricalTree<BranchLengthTree>() );
+		addTypeWithConstructor("mvEmpiricalTree",           new Move_EmpiricalTree<TimeTree>() );
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
         addTypeWithConstructor("mvGPR",                     new Move_GibbsPruneAndRegraft() );
         addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );

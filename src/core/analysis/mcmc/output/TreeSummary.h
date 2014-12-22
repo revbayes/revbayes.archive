@@ -618,19 +618,25 @@ namespace RevBayesCore {
                 
                 posteriors.push_back(total_node_pp);
                 
-                std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
-                if (state2_pp > 0.0001) {
-                    final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
-                }
-                if (state3_pp > 0.0001) {
-                    final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
-                }
-                other_pp = total_node_pp - (state1_pp+state2_pp+state3_pp);
-                if (other_pp > 0.0001) {
-                    final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
-                } 
+                std::string final_state = "{";
+				bool states = false;
+				if (state1_pp > 0.0001) {
+					final_state += state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
+					states = true;
+                    if (state2_pp > 0.0001) {
+                        final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
+						if (state3_pp > 0.0001) {
+							final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
+							if (other_pp > 0.0001) {
+								final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
+							} 
+						}
+                    }
+				}
                 if (1.0-total_node_pp > 0.0001) {
-                    final_state += ",node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+					if (states)
+						final_state += ",";
+                    final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
                 } 
                 final_state += "}";
                 
@@ -817,21 +823,27 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
             
             posteriors.push_back(total_node_pp);
             
-            std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
-            if (state2_pp > 0.0001) {
-                final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
-            }
-            if (state3_pp > 0.0001) {
-                final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
-            }
-            other_pp = total_node_pp - (state1_pp+state2_pp+state3_pp);
-            if (other_pp > 0.0001) {
-                final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
-            } 
-            if (1.0-total_node_pp > 0.0001) {
-                final_state += ",node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
-            } 
-            final_state += "}";
+			std::string final_state = "{";
+			bool states = false;
+			if (state1_pp > 0.0001) {
+				final_state += state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
+				states = true;
+				if (state2_pp > 0.0001) {
+					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
+					if (state3_pp > 0.0001) {
+						final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
+						if (other_pp > 0.0001) {
+							final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
+						} 
+					}
+				}
+			}
+			if (1.0-total_node_pp > 0.0001) {
+				if (states)
+					final_state += ",";
+				final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+			} 
+			final_state += "}";
             
             // make parameter string for this node
             std::string *s = new std::string(final_state);
