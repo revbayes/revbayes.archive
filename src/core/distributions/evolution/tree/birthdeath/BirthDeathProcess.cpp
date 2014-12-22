@@ -20,6 +20,7 @@ using namespace RevBayesCore;
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
  * \param[in]    o         Origin or time of the process.
+ * \param[in]    ra        Age or the root (=time of the process).
  * \param[in]    r         Sampling probability of a species at present.
  * \param[in]    ss        The sampling strategy (uniform/diversified).
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)

@@ -36,7 +36,7 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     rootAge( ra ),
     numTaxa( tn.size() ),
     taxa( tn ),
-    startsAtRoot(  origin == NULL )
+    startsAtRoot( origin == NULL )
 
 {
     // add the parameters to our set (in the base class)
@@ -203,6 +203,18 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
         for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
         {
             if ( ra < (*it)->getAge() )
+            {
+                return RbConstants::Double::neginf;
+            }
+        }
+    }
+    
+    const std::vector<TopologyNode*>& nodes = value->getNodes();
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        if ( !(*it)->isRoot() )
+        {
+            if ( (*it)->getAge() >= (*it)->getParent().getAge() )
             {
                 return RbConstants::Double::neginf;
             }

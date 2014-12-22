@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class PhyloCTMCEpoch : public AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree> {
         
     public:
-        PhyloCTMCEpoch(const TypedDagNode< RevBayesCore::TimeTree > *t, size_t nChars, bool c, size_t nSites);
+        PhyloCTMCEpoch(const TypedDagNode< RevBayesCore::TimeTree > *t, size_t nChars, bool c, size_t nSites, bool amb);
         virtual                                            ~PhyloCTMCEpoch(void);                                                                   //!< Virtual destructor
         
         // public member functions
@@ -72,7 +72,7 @@ namespace RevBayesCore {
 #include <vector>
 
 template<class charType>
-RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBayesCore::TimeTree> *t, size_t nChars, bool c, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>(  t, nChars, 1, c, nSites )
+RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBayesCore::TimeTree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>(  t, nChars, 1, c, nSites, amb )
 {
     epochTimes = new ConstantNode< RbVector< double > >("epochTimes", new RbVector<double>(1, 0.0) );
     epochClockRates = new ConstantNode< RbVector< double > >("epochClockRates", new RbVector<double>(1, 1.0) );
@@ -107,23 +107,22 @@ template<class charType>
 void RevBayesCore::PhyloCTMCEpoch<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
     
-    // reset the likelihood
-    this->lnProb = 0.0;
-    
     // get the root frequencies
     const std::vector<double> &f                    = this->getRootFrequencies();
     std::vector<double>::const_iterator f_end       = f.end();
     std::vector<double>::const_iterator f_begin     = f.begin();
     
     // get the pointers to the partial likelihoods of the left and right subtree
-    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
-    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
+    double* p        = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
+    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]  * this->activeLikelihoodOffset + left  * this->nodeOffset;
+    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right] * this->activeLikelihoodOffset + right * this->nodeOffset;
     
     // create a vector for the per mixture likelihoods
     // we need this vector to sum over the different mixture likelihoods
     std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
     
     // get pointers the likelihood for both subtrees
+    double*   p_mixture          = p;
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     // iterate over all mixture categories
@@ -131,67 +130,38 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeRootLikelihood( size_t root,
     {
         
         // get pointers to the likelihood for this mixture category
+        double*   p_site_mixture          = p_mixture;
         const double*   p_site_mixture_left     = p_mixture_left;
         const double*   p_site_mixture_right    = p_mixture_right;
         // iterate over all sites
         for (size_t site = 0; site < this->numPatterns; ++site)
         {
-            // temporary variable storing the likelihood
-            double tmp = 0.0;
             // get the pointer to the stationary frequencies
             std::vector<double>::const_iterator f_j             = f_begin;
             // get the pointers to the likelihoods for this site and mixture category
+            double* p_site_j        = p_site_mixture;
             const double* p_site_left_j   = p_site_mixture_left;
             const double* p_site_right_j  = p_site_mixture_right;
             // iterate over all starting states
             for (; f_j != f_end; ++f_j)
             {
                 // add the probability of starting from this state
-                tmp += *p_site_left_j * *p_site_right_j * *f_j;
+                *p_site_j = *p_site_left_j * *p_site_right_j * *f_j;
                 
                 // increment pointers
-                ++p_site_left_j; ++p_site_right_j;
+                ++p_site_j; ++p_site_left_j; ++p_site_right_j;
             }
-            // add the likelihood for this mixture category
-            per_mixture_Likelihoods[site] += tmp;
             
             // increment the pointers to the next site
-            p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset;
+            p_site_mixture+=this->siteOffset; p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset;
             
         } // end-for over all sites (=patterns)
         
         // increment the pointers to the next mixture category
-        p_mixture_left+=this->mixtureOffset; p_mixture_right+=this->mixtureOffset;
+        p_mixture+=this->mixtureOffset; p_mixture_left+=this->mixtureOffset; p_mixture_right+=this->mixtureOffset;
         
     } // end-for over all mixtures (=rate categories)
     
-    // sum the log-likelihoods for all sites together
-    double p_inv = this->pInv->getValue();
-    double oneMinusPInv = 1.0 - p_inv;
-    std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
-    if ( p_inv > 0.0 )
-    {
-        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
-        {
-            if ( this->siteInvariant[site] )
-            {
-                this->lnProb += log( p_inv * f[ this->invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
-            }
-            else
-            {
-                this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
-            }
-        }
-    }
-    else
-    {
-        
-        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
-        {
-            this->lnProb += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
-        }
-        
-    }
     
 }
 
@@ -238,6 +208,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeInternalNodeLikelihood(const
             
             // get the pointers for this mixture category and this site
             const double*       tp_a    = tp_begin;
+
             // iterate over the possible starting states
             for (size_t c1 = 0; c1 < this->numChars; ++c1)
             {
@@ -480,6 +451,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::swapParameterInternal(const DagNode
     }
     else
     {
+        
         RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>::swapParameterInternal(oldP, newP);
     }
 }
@@ -489,7 +461,11 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
 {
     
     // get branch start/end ages
-    const TopologyNode& nd = *(this->tau->getValue().getNodes()[nodeIdx]);
+    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
+    const TopologyNode& nd = *nodes[nodeIdx];
+    if (nd.isRoot())
+        return;
+    
     double t_curr = nd.getParent().getAge();
     double t_end = nd.getAge();
     

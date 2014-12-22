@@ -99,7 +99,7 @@ void RateMatrix_FreeK::fillRateMatrix( void )
         // diagonal
         m[i][i] = -sum;
     }
-    
+    std::cout << m << "\n";
     // set flags
     needsUpdate = true;
 }
@@ -243,16 +243,12 @@ void RateMatrix_FreeK::updateMatrix( void ) {
     
     if ( needsUpdate )
     {
-        // compute the off-diagonal values
-//        computeOffDiagonal();
-        
-        // set the diagonal values
-//        setDiagonal();
-        
-        // rescale
-//        rescaleToAverageRate( 1.0 );
+        // assign all rate matrix elements
         fillRateMatrix();
-        
+
+        // rescale
+        rescaleToAverageRate( 1.0 );
+
         // now update the eigensystem
         updateEigenSystem();
         
