@@ -83,8 +83,10 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType
     
     const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
     const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+	int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
+
     RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
-    typename treeType::valueType* tree = summary.map();
+    typename treeType::valueType* tree = summary.map(burnin);
     
     if ( filename != "" ) {        
         
@@ -119,6 +121,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
         
         argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace<treeType>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rulesSet = true;
     }
     
