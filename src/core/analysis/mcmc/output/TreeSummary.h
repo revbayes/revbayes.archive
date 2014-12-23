@@ -52,7 +52,6 @@ namespace RevBayesCore {
 		void                                                                    summarizeClades(int burnin = -1);
 		void                                                                    summarizeConditionalClades(int burnin = -1);
 		void                                                                    summarizeTrees(int burnin = -1);
-		std::vector<Sample<std::string> >                                       getTreeSamples();
         
     private:
 		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
@@ -61,6 +60,7 @@ namespace RevBayesCore {
         Sample<std::string>&                                                    findCladeSample(const std::string &n);
 		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
 		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff, double burnin);
+		void                                                                    setBurnin(int b);
         
 		size_t                                                                  burnin;
         TreeTrace<treeType>                                                     trace;
@@ -75,17 +75,9 @@ namespace RevBayesCore {
 	template <>
 	inline void RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees(int b)
 	{
-		
 		std::map<std::string, Sample<std::string> > treeAbsencePresence;
 		
-		if (b == -1)
-		{
-			burnin = trace.size() / 4;
-		}
-		else
-		{
-			burnin = size_t(b);
-		}
+		setBurnin(b);
 		
 		std::string outgroup = "";
 		for (size_t i = burnin; i < trace.size(); ++i)
@@ -144,7 +136,13 @@ namespace RevBayesCore {
     template <>
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
     {
-        
+		setBurnin(b);
+		
+        std::stringstream ss;
+		ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+		RBOUT(ss.str());
+		
+		RBOUT("Calculating clade and tree frequencies...\n");
         summarizeConditionalClades( b );
 		summarizeTrees( b );
         
@@ -172,7 +170,8 @@ namespace RevBayesCore {
                 }
             }
         }
-        
+		
+        RBOUT("Calculating mean branch lengths...\n");
         std::vector<double> meanBranchLengths;
         for (std::vector<std::vector<double> >::iterator it = branchLengths.begin(); it != branchLengths.end(); ++it)
         {
@@ -195,14 +194,22 @@ namespace RevBayesCore {
         }
         
         bestTree->addNodeParameter("posterior",pp,true);
-        
+		
+        RBOUT("Done.\n");
+		
         return bestTree;
     }
     
     template <>
     inline TimeTree* TreeSummary<TimeTree>::map( int b )
     {
-        
+		setBurnin(b);
+		
+        std::stringstream ss;
+		ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+		RBOUT(ss.str());
+		
+		RBOUT("Calculating clade and tree frequencies...\n");
         summarizeConditionalClades( b );
 		summarizeTrees( b );
         
@@ -225,6 +232,7 @@ namespace RevBayesCore {
         TimeTree* bestTimeTree = TreeUtilities::convertTree( *bestTree );
         size_t numTaxa = bestTree->getNumberOfTips();
         
+		RBOUT("Calculating mean node ages...\n");
         const std::vector<TopologyNode*> &nodes = bestTimeTree->getNodes();
         for (size_t i = numTaxa; i < nodes.size(); ++i)
         {
@@ -287,7 +295,9 @@ namespace RevBayesCore {
                 }
             }
         }
-        
+		
+        RBOUT("Done.\n");
+		
         return bestTimeTree;
     }
     
@@ -295,15 +305,8 @@ namespace RevBayesCore {
 	template <>  //consensus tree function for BranchLengthTree
 	inline BranchLengthTree* TreeSummary<BranchLengthTree>::conTree(double cutoff, int b) {
         
-		//make sure burnin is proper
-		if (b == -1)
-		{
-			burnin = trace.size() / 4;
-		}
-		else
-		{
-			burnin = (size_t)(b);
-		}
+		setBurnin(b);
+		
 		std::stringstream ss;
 		ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
 		RBOUT(ss.str());
@@ -368,15 +371,8 @@ namespace RevBayesCore {
 	template <>  //consensus tree function for TimeTree
 	inline TimeTree* TreeSummary<TimeTree>::conTree(double cutoff, int b) {
         
-		//make sure burnin is proper
-		if (b == -1)
-		{
-			burnin = trace.size() / 4;
-		}
-		else
-		{
-			burnin = (size_t)(b);
-		}
+		setBurnin(b);
+		
 		std::stringstream ss;
 		ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
 		RBOUT(ss.str());
@@ -464,17 +460,18 @@ namespace RevBayesCore {
     {   
         // this method calculates the MAP ancestral character states for the nodes on the input_tree 
         
-        if (b == -1) {
-            burnin = trace.size() / 4;
-        }
-        else {
-            burnin = size_t( b );
-        }
+		setBurnin(b);
+		
+        std::stringstream ss;
+		ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
+		RBOUT(ss.str());
         
         BranchLengthTree &finalInputTree = const_cast<BranchLengthTree&>(inputTree);
         std::vector<TopologyNode*> input_nodes = finalInputTree.getNodes();
         bool root_found = false;
         
+		RBOUT("Calculating ancestral state posteriors...\n");
+		
         // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
         std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
         std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
@@ -530,7 +527,7 @@ namespace RevBayesCore {
                     throw RbException("The input tree topology does not match the rooting constraints found in the AncestralStateTreeTrace.");
                 }
             }
-            
+			
             // loop through all nodes in inputTree
             for (size_t j = 0; j < input_nodes.size(); j++)
             {
@@ -648,6 +645,9 @@ namespace RevBayesCore {
         finalInputTree.clearNodeParameters();
         finalInputTree.addNodeParameter("posterior",posteriors,true);
         finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+		
+		RBOUT("Done.\n");
+		
         return &finalInputTree;
     }
 
@@ -714,17 +714,17 @@ void RevBayesCore::TreeSummary<treeType>::calculateMedianAges(TopologyNode* n, d
 template <class treeType>
 treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b )
 {   
-    
-    if (b == -1) {
-        burnin = trace.size() / 4;
-    }
-    else {
-        burnin = size_t( b );
-    }
+    setBurnin(b);
+	
+	std::stringstream ss;
+	ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
+	RBOUT(ss.str());
     
     treeType &finalInputTree = const_cast<treeType&>(inputTree);
     const std::vector<TopologyNode*> &input_nodes = finalInputTree.getNodes();
     
+	RBOUT("Calculating ancestral state posteriors...\n");
+	
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
     std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
@@ -853,6 +853,9 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
     finalInputTree.clearNodeParameters();
     finalInputTree.addNodeParameter("posterior",posteriors,true);
     finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+	
+	RBOUT("Done.\n");
+	
     return &finalInputTree;
 }
 
@@ -900,15 +903,7 @@ RevBayesCore::Sample<std::string>& RevBayesCore::TreeSummary<treeType>::findClad
 template <class treeType>
 void RevBayesCore::TreeSummary<treeType>::summarizeClades(int b)
 {
-	if (b == -1)
-	{
-		burnin = trace.size() / 4;
-	}
-	else
-	{
-		burnin = size_t(b);
-	}
-    
+	setBurnin(b);
     
 	for (size_t i = burnin; i < trace.size(); ++i)
 	{
@@ -975,14 +970,7 @@ void RevBayesCore::TreeSummary<treeType>::summarizeConditionalClades( int b )
 {
     std::map<std::string, Sample<std::string> > cladeAbsencePresence;
     
-    if (b == -1)
-    {
-        burnin = trace.size() / 4;
-    }
-    else
-    {
-        burnin = size_t( b );
-    }
+	setBurnin(b);
     
     for (size_t i = burnin; i < trace.size(); ++i)
     {
@@ -1090,14 +1078,7 @@ void RevBayesCore::TreeSummary<treeType>::summarizeTrees(int b)
     
 	std::map<std::string, Sample<std::string> > treeAbsencePresence;
     
-	if (b == -1)
-	{
-		burnin = trace.size() / 4;
-	}
-	else
-	{
-		burnin = size_t(b);
-	}
+	setBurnin(b);
 	
     std::string outgroup = "";
 	for (size_t i = burnin; i < trace.size(); ++i)
@@ -1404,9 +1385,21 @@ RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsens
 
 
 template <class treeType>
-std::vector<RevBayesCore::Sample<std::string> > RevBayesCore::TreeSummary<treeType>::getTreeSamples()
+void RevBayesCore::TreeSummary<treeType>::setBurnin(int b)
 {
-	return treeSamples;
+	// make sure burnin is proper
+	if ( b >= static_cast<int>(trace.size()) ) 
+	{
+		throw RbException("Burnin size is too large for the trace.");
+	} 
+	else if (b == -1)
+	{
+		burnin = trace.size() / 4;
+	}
+	else
+	{
+		burnin = size_t(b);
+	}
 }
 
 #endif

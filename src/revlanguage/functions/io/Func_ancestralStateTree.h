@@ -99,8 +99,10 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_ancestralStateTr
     // make a new tree summary object
 	RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
 	
+	int burnin = static_cast<const Integer &>(args[4].getVariable()->getRevObject()).getValue();
+	
 	// get the tree with ancestral states 
-	typename treeType::valueType* tree = summary.ancestralStateTree(it.getValue(), ancestralstate_traces, -1);
+	typename treeType::valueType* tree = summary.ancestralStateTree(it.getValue(), ancestralstate_traces, burnin);
 	
 	// return the tree
     if ( filename != "" ) {        
@@ -137,6 +139,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ancestralStateTree<treeType>
 		argumentRules.push_back( new ArgumentRule( "ancestralstatetrace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace<treeType>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rulesSet = true;
     }
     
