@@ -352,6 +352,7 @@
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
+#include "Func_annotateHPDAges.h"
 #include "Func_consensusTree.h"
 #include "Func_mapTree.h"
 #include "Func_module.h"
@@ -981,6 +982,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( "ancestralStateTree",          new Func_ancestralStateTree<BranchLengthTree>() );
 		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
+		addFunction( "annotateHPDAges",             new Func_annotateHPDAges<TimeTree>()    );
 		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
 		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );

@@ -44,9 +44,10 @@ namespace RevBayesCore {
         
         TreeSummary(const TreeTrace<treeType> &t);
         
-        treeType*                                                               map(int burnin=-1);
+        treeType*                                                               map(int burnin = -1);
 		treeType*																conTree(double cutoff, int burnin = -1);
-        treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin=-1);
+        treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin = -1);
+		treeType*                                                               annotateHPDAges(const treeType &inputTree, double hpd = 0.95, int b = -1 );
         void                                                                    printTreeSummary(std::ostream& o);
         void                                                                    printCladeSummary(void);
 		void                                                                    summarizeClades(int burnin = -1);
@@ -661,6 +662,7 @@ namespace RevBayesCore {
 
 #include <iomanip>
 #include <vector>
+#include <limits>
 
 template <class treeType>
 RevBayesCore::TreeSummary<treeType>::TreeSummary( const TreeTrace<treeType> &t) :
@@ -1381,6 +1383,68 @@ RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsens
 	}
     
 	return(root);
+}
+
+
+template <class treeType>
+treeType* RevBayesCore::TreeSummary<treeType>::annotateHPDAges(const treeType &inputTree, double hpd, int b )
+{   
+    setBurnin(b);
+	
+	std::stringstream ss;
+	ss << "Compiling " << hpd * 100 << "% HPD node ages from " << trace.size() << " total trees in tree trace, using a burnin of " << burnin << " trees.\n";
+	RBOUT(ss.str());
+    
+	RBOUT("Calculating clade frequencies...\n");
+	
+	summarizeClades(b);
+	
+    treeType &finalTree = const_cast<treeType&>(inputTree);
+    const std::vector<TopologyNode*> &nodes = finalTree.getNodes();
+    std::vector<std::string*> node_intervals(nodes.size());
+	
+	RBOUT("Calculating node age intervals...\n");
+	
+	for (size_t i = 0; i < nodes.size(); i++)
+	{
+		// first get all the node ages for this node and sort them
+		std::vector<std::string> taxa;
+		nodes[i]->getTaxaStringVector(taxa);
+		Clade c(taxa, 0.0); // clade age not used here
+		std::vector<double> branch_lengths = cladeAges.find(c.toString())->second;
+		std::sort(branch_lengths.begin(), branch_lengths.end());
+		
+		size_t total_branch_lengths = branch_lengths.size();
+		double min_range = std::numeric_limits<double>::max();
+		
+		int interval_start = 0;
+		int interval_size = (int)(hpd * (double)total_branch_lengths);
+		
+		// find the smallest interval that contains x% of the samples
+		for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++) {
+			double temp_lower = branch_lengths[j];
+			double temp_upper = branch_lengths[j + interval_size - 1];
+			double temp_range = abs(temp_upper - temp_lower);
+			if (temp_range < min_range) {
+				min_range = temp_range;
+				interval_start = j;
+			}
+		}
+		double lower = branch_lengths[interval_start];
+		double upper = branch_lengths[interval_start + interval_size - 1];
+		
+		// make node age annotation
+		node_intervals[i] = new std::string("{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
+		                        + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}");
+	}	
+	
+	std::string label = "height_" + boost::lexical_cast<std::string>( (int)(hpd * 100) ) + "%_HPD";
+    finalTree.addNodeParameter(label, node_intervals, true);
+	
+	RBOUT("Done.\n");
+	
+    return &finalTree;
+	
 }
 
 
