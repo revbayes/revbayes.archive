@@ -170,6 +170,7 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval)
     {
         std::cout << std::endl;
     }
+    
 }
 
 
@@ -212,6 +213,12 @@ RbVector<Move>& MonteCarloSampler::getMoves(void)
 
 
 const MoveSchedule& MonteCarloSampler::getSchedule(void) const
+{
+    return *schedule;
+}
+
+
+MoveSchedule& MonteCarloSampler::getSchedule(void)
 {
     return *schedule;
 }

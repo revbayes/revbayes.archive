@@ -44,12 +44,13 @@ namespace RevBayesCore {
         void                                                swapRandomChains(void);
         void                                                synchronizeValues(void);
         void                                                synchronizeHeats(void);
+        void                                                tune(void);
         void                                                updateChainState(size_t j);
         double                                              computeBeta(double d, size_t i);                                        // incremental temperature schedule
         
         size_t                                              numChains;
         size_t                                              numProcesses;
-        std::vector<size_t>                                 chainIdxByHeat;
+        std::vector<size_t>                                 heatRanks;
         std::vector<std::vector<size_t> >                   chainsPerProcess;
         std::vector<size_t>                                 processPerChain;
         std::vector<Mcmc*>                                  chains;
