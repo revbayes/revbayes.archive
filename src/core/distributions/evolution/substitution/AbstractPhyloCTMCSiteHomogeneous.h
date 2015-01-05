@@ -1891,8 +1891,9 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateMarginalNodeLikelihoods( void )
 {
 
-    // the root marginal likelihood has already been computed, so now start the recursive call down the tree
-    
+    // calculate the root marginal likelihood, then start the recursive call down the tree
+    this->computeMarginalRootLikelihood();
+	
     // update the marginal likelihoods by a recursive downpass
     this->recursiveMarginalLikelihoodComputation( tau->getValue().getRoot().getIndex() );
     

@@ -44,9 +44,10 @@ namespace RevBayesCore {
         
         TreeSummary(const TreeTrace<treeType> &t);
         
-        treeType*                                                               map(int burnin=-1);
+        treeType*                                                               map(int burnin = -1);
 		treeType*																conTree(double cutoff, int burnin = -1);
-        treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin=-1);
+        treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin = -1);
+		treeType*                                                               annotateHPDAges(const treeType &inputTree, double hpd = 0.95, int b = -1 );
         void                                                                    printTreeSummary(std::ostream& o);
         void                                                                    printCladeSummary(void);
 		void                                                                    summarizeClades(int burnin = -1);
@@ -60,6 +61,7 @@ namespace RevBayesCore {
         Sample<std::string>&                                                    findCladeSample(const std::string &n);
 		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
 		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff, double burnin);
+		void                                                                    setBurnin(int b);
         
 		size_t                                                                  burnin;
         TreeTrace<treeType>                                                     trace;
@@ -71,10 +73,77 @@ namespace RevBayesCore {
     };
     
     
+	template <>
+	inline void RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees(int b)
+	{
+		std::map<std::string, Sample<std::string> > treeAbsencePresence;
+		
+		setBurnin(b);
+		
+		std::string outgroup = "";
+		for (size_t i = burnin; i < trace.size(); ++i)
+		{
+			BranchLengthTree tree = *trace.objectAt(i);
+			
+			// re-root the tree so that we can compare the the trees
+			if ( outgroup == "" ) 
+				outgroup = tree.getTipNode(0).getName();
+			tree.reroot( outgroup );
+			
+			std::string newick = TreeUtilities::uniqueNewickTopology(tree);
+			
+			const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find(newick);
+			if (entry == treeAbsencePresence.end())
+			{
+				Sample<std::string> treeSample = Sample<std::string>(newick, 0);
+				if (i > burnin)
+				{
+					treeSample.setTrace(std::vector<double>(i - burnin, 0.0));
+				}
+				else
+				{
+					treeSample.setTrace(std::vector<double>());
+				}
+				treeAbsencePresence.insert(std::pair<std::string, Sample<std::string> >(newick, treeSample));
+			}
+			
+			for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+			{
+				
+				if (it->first == newick)
+				{
+					it->second.addObservation(true);
+				}
+				else
+				{
+					it->second.addObservation(false);
+				}
+			}
+		}
+		
+		// collect the samples
+		treeSamples.clear();
+		for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+		{
+			it->second.computeStatistics();
+			treeSamples.push_back(it->second);
+		}
+		
+		// sort the samples by frequency
+		sort(treeSamples.begin(), treeSamples.end());
+	}
+	
+	
     template <>
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b )
     {
-        
+		setBurnin(b);
+		
+        std::stringstream ss;
+		ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+		RBOUT(ss.str());
+		
+		RBOUT("Calculating clade and tree frequencies...\n");
         summarizeConditionalClades( b );
 		summarizeTrees( b );
         
@@ -102,7 +171,8 @@ namespace RevBayesCore {
                 }
             }
         }
-        
+		
+        RBOUT("Calculating mean branch lengths...\n");
         std::vector<double> meanBranchLengths;
         for (std::vector<std::vector<double> >::iterator it = branchLengths.begin(); it != branchLengths.end(); ++it)
         {
@@ -125,14 +195,22 @@ namespace RevBayesCore {
         }
         
         bestTree->addNodeParameter("posterior",pp,true);
-        
+		
+        RBOUT("Done.\n");
+		
         return bestTree;
     }
     
     template <>
     inline TimeTree* TreeSummary<TimeTree>::map( int b )
     {
-        
+		setBurnin(b);
+		
+        std::stringstream ss;
+		ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
+		RBOUT(ss.str());
+		
+		RBOUT("Calculating clade and tree frequencies...\n");
         summarizeConditionalClades( b );
 		summarizeTrees( b );
         
@@ -155,6 +233,7 @@ namespace RevBayesCore {
         TimeTree* bestTimeTree = TreeUtilities::convertTree( *bestTree );
         size_t numTaxa = bestTree->getNumberOfTips();
         
+		RBOUT("Calculating mean node ages...\n");
         const std::vector<TopologyNode*> &nodes = bestTimeTree->getNodes();
         for (size_t i = numTaxa; i < nodes.size(); ++i)
         {
@@ -217,7 +296,9 @@ namespace RevBayesCore {
                 }
             }
         }
-        
+		
+        RBOUT("Done.\n");
+		
         return bestTimeTree;
     }
     
@@ -225,15 +306,8 @@ namespace RevBayesCore {
 	template <>  //consensus tree function for BranchLengthTree
 	inline BranchLengthTree* TreeSummary<BranchLengthTree>::conTree(double cutoff, int b) {
         
-		//make sure burnin is proper
-		if (b == -1)
-		{
-			burnin = trace.size() / 4;
-		}
-		else
-		{
-			burnin = (size_t)(b);
-		}
+		setBurnin(b);
+		
 		std::stringstream ss;
 		ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
 		RBOUT(ss.str());
@@ -298,15 +372,8 @@ namespace RevBayesCore {
 	template <>  //consensus tree function for TimeTree
 	inline TimeTree* TreeSummary<TimeTree>::conTree(double cutoff, int b) {
         
-		//make sure burnin is proper
-		if (b == -1)
-		{
-			burnin = trace.size() / 4;
-		}
-		else
-		{
-			burnin = (size_t)(b);
-		}
+		setBurnin(b);
+		
 		std::stringstream ss;
 		ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
 		RBOUT(ss.str());
@@ -394,17 +461,18 @@ namespace RevBayesCore {
     {   
         // this method calculates the MAP ancestral character states for the nodes on the input_tree 
         
-        if (b == -1) {
-            burnin = trace.size() / 4;
-        }
-        else {
-            burnin = size_t( b );
-        }
+		setBurnin(b);
+		
+        std::stringstream ss;
+		ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
+		RBOUT(ss.str());
         
         BranchLengthTree &finalInputTree = const_cast<BranchLengthTree&>(inputTree);
         std::vector<TopologyNode*> input_nodes = finalInputTree.getNodes();
         bool root_found = false;
         
+		RBOUT("Calculating ancestral state posteriors...\n");
+		
         // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
         std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
         std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
@@ -460,7 +528,7 @@ namespace RevBayesCore {
                     throw RbException("The input tree topology does not match the rooting constraints found in the AncestralStateTreeTrace.");
                 }
             }
-            
+			
             // loop through all nodes in inputTree
             for (size_t j = 0; j < input_nodes.size(); j++)
             {
@@ -548,19 +616,25 @@ namespace RevBayesCore {
                 
                 posteriors.push_back(total_node_pp);
                 
-                std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
-                if (state2_pp > 0.0001) {
-                    final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
-                }
-                if (state3_pp > 0.0001) {
-                    final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
-                }
-                other_pp = total_node_pp - (state1_pp+state2_pp+state3_pp);
-                if (other_pp > 0.0001) {
-                    final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
-                } 
+                std::string final_state = "{";
+				bool states = false;
+				if (state1_pp > 0.0001) {
+					final_state += state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
+					states = true;
+                    if (state2_pp > 0.0001) {
+                        final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
+						if (state3_pp > 0.0001) {
+							final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
+							if (other_pp > 0.0001) {
+								final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
+							} 
+						}
+                    }
+				}
                 if (1.0-total_node_pp > 0.0001) {
-                    final_state += ",node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+					if (states)
+						final_state += ",";
+                    final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
                 } 
                 final_state += "}";
                 
@@ -572,6 +646,9 @@ namespace RevBayesCore {
         finalInputTree.clearNodeParameters();
         finalInputTree.addNodeParameter("posterior",posteriors,true);
         finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+		
+		RBOUT("Done.\n");
+		
         return &finalInputTree;
     }
 
@@ -579,11 +656,13 @@ namespace RevBayesCore {
 
 
 
+#include "Sample.h"
 #include "StringUtilities.h"
 #include "TopologyNode.h"
 
 #include <iomanip>
 #include <vector>
+#include <limits>
 
 template <class treeType>
 RevBayesCore::TreeSummary<treeType>::TreeSummary( const TreeTrace<treeType> &t) :
@@ -637,17 +716,17 @@ void RevBayesCore::TreeSummary<treeType>::calculateMedianAges(TopologyNode* n, d
 template <class treeType>
 treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b )
 {   
-    
-    if (b == -1) {
-        burnin = trace.size() / 4;
-    }
-    else {
-        burnin = size_t( b );
-    }
+    setBurnin(b);
+	
+	std::stringstream ss;
+	ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
+	RBOUT(ss.str());
     
     treeType &finalInputTree = const_cast<treeType&>(inputTree);
     const std::vector<TopologyNode*> &input_nodes = finalInputTree.getNodes();
     
+	RBOUT("Calculating ancestral state posteriors...\n");
+	
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
     std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
@@ -746,21 +825,27 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
             
             posteriors.push_back(total_node_pp);
             
-            std::string final_state = "{" + state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
-            if (state2_pp > 0.0001) {
-                final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
-            }
-            if (state3_pp > 0.0001) {
-                final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
-            }
-            other_pp = total_node_pp - (state1_pp+state2_pp+state3_pp);
-            if (other_pp > 0.0001) {
-                final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
-            } 
-            if (1.0-total_node_pp > 0.0001) {
-                final_state += ",node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
-            } 
-            final_state += "}";
+			std::string final_state = "{";
+			bool states = false;
+			if (state1_pp > 0.0001) {
+				final_state += state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
+				states = true;
+				if (state2_pp > 0.0001) {
+					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
+					if (state3_pp > 0.0001) {
+						final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
+						if (other_pp > 0.0001) {
+							final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
+						} 
+					}
+				}
+			}
+			if (1.0-total_node_pp > 0.0001) {
+				if (states)
+					final_state += ",";
+				final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+			} 
+			final_state += "}";
             
             // make parameter string for this node
             std::string *s = new std::string(final_state);
@@ -770,6 +855,9 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
     finalInputTree.clearNodeParameters();
     finalInputTree.addNodeParameter("posterior",posteriors,true);
     finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+	
+	RBOUT("Done.\n");
+	
     return &finalInputTree;
 }
 
@@ -817,15 +905,7 @@ RevBayesCore::Sample<std::string>& RevBayesCore::TreeSummary<treeType>::findClad
 template <class treeType>
 void RevBayesCore::TreeSummary<treeType>::summarizeClades(int b)
 {
-	if (b == -1)
-	{
-		burnin = trace.size() / 4;
-	}
-	else
-	{
-		burnin = size_t(b);
-	}
-    
+	setBurnin(b);
     
 	for (size_t i = burnin; i < trace.size(); ++i)
 	{
@@ -892,14 +972,7 @@ void RevBayesCore::TreeSummary<treeType>::summarizeConditionalClades( int b )
 {
     std::map<std::string, Sample<std::string> > cladeAbsencePresence;
     
-    if (b == -1)
-    {
-        burnin = trace.size() / 4;
-    }
-    else
-    {
-        burnin = size_t( b );
-    }
+	setBurnin(b);
     
     for (size_t i = burnin; i < trace.size(); ++i)
     {
@@ -1007,19 +1080,14 @@ void RevBayesCore::TreeSummary<treeType>::summarizeTrees(int b)
     
 	std::map<std::string, Sample<std::string> > treeAbsencePresence;
     
-	if (b == -1)
-	{
-		burnin = trace.size() / 4;
-	}
-	else
-	{
-		burnin = size_t(b);
-	}
-    
+	setBurnin(b);
+	
+    std::string outgroup = "";
 	for (size_t i = burnin; i < trace.size(); ++i)
 	{
 		treeType* tree = trace.objectAt(i);
 		std::string newick = TreeUtilities::uniqueNewickTopology(*tree);
+		
 		const std::map<std::string, Sample<std::string> >::iterator& entry = treeAbsencePresence.find(newick);
 		if (entry == treeAbsencePresence.end())
 		{
@@ -1315,6 +1383,87 @@ RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsens
 	}
     
 	return(root);
+}
+
+
+template <class treeType>
+treeType* RevBayesCore::TreeSummary<treeType>::annotateHPDAges(const treeType &inputTree, double hpd, int b )
+{   
+    setBurnin(b);
+	
+	std::stringstream ss;
+	ss << "Compiling " << hpd * 100 << "% HPD node ages from " << trace.size() << " total trees in tree trace, using a burnin of " << burnin << " trees.\n";
+	RBOUT(ss.str());
+    
+	RBOUT("Calculating clade frequencies...\n");
+	
+	summarizeClades(b);
+	
+    treeType &finalTree = const_cast<treeType&>(inputTree);
+    const std::vector<TopologyNode*> &nodes = finalTree.getNodes();
+    std::vector<std::string*> node_intervals(nodes.size());
+	
+	RBOUT("Calculating node age intervals...\n");
+	
+	for (size_t i = 0; i < nodes.size(); i++)
+	{
+		// first get all the node ages for this node and sort them
+		std::vector<std::string> taxa;
+		nodes[i]->getTaxaStringVector(taxa);
+		Clade c(taxa, 0.0); // clade age not used here
+		std::vector<double> branch_lengths = cladeAges.find(c.toString())->second;
+		std::sort(branch_lengths.begin(), branch_lengths.end());
+		
+		size_t total_branch_lengths = branch_lengths.size();
+		double min_range = std::numeric_limits<double>::max();
+		
+		int interval_start = 0;
+		int interval_size = (int)(hpd * (double)total_branch_lengths);
+		
+		// find the smallest interval that contains x% of the samples
+		for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++) {
+			double temp_lower = branch_lengths[j];
+			double temp_upper = branch_lengths[j + interval_size - 1];
+			double temp_range = abs(temp_upper - temp_lower);
+			if (temp_range < min_range) {
+				min_range = temp_range;
+				interval_start = j;
+			}
+		}
+		double lower = branch_lengths[interval_start];
+		double upper = branch_lengths[interval_start + interval_size - 1];
+		
+		// make node age annotation
+		node_intervals[i] = new std::string("{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
+		                        + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}");
+	}	
+	
+	std::string label = "height_" + boost::lexical_cast<std::string>( (int)(hpd * 100) ) + "%_HPD";
+    finalTree.addNodeParameter(label, node_intervals, true);
+	
+	RBOUT("Done.\n");
+	
+    return &finalTree;
+	
+}
+
+
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::setBurnin(int b)
+{
+	// make sure burnin is proper
+	if ( b >= static_cast<int>(trace.size()) ) 
+	{
+		throw RbException("Burnin size is too large for the trace.");
+	} 
+	else if (b == -1)
+	{
+		burnin = trace.size() / 4;
+	}
+	else
+	{
+		burnin = size_t(b);
+	}
 }
 
 #endif
