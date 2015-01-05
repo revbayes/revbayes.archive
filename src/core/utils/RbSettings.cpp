@@ -88,9 +88,9 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     
-    lineWidth = 100;             // the default line width
+    lineWidth = 100;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
-    printNodeIndex = true;     // print node indices of tree nodes as comments
+    printNodeIndex = true;      // print node indices of tree nodes as comments
 
     // initialize the current directory to be the directory the binary is sitting in
     char cwd[MAX_DIR_PATH+1];

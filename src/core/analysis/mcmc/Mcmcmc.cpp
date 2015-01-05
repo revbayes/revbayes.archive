@@ -57,7 +57,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monit
     for (size_t i = 0, j = 0; i < numChains; i++, j++)
     {
         // all chains know heat-order and chain-processor schedules
-        chainIdxByHeat.push_back(i);
+        heatRanks.push_back(i);
         if (j >= numProcesses)
         {
             j = j % numProcesses;
@@ -101,7 +101,7 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m)
     numChains           = m.numChains;
     numProcesses        = m.numProcesses;
     
-    chainIdxByHeat      = m.chainIdxByHeat;
+    heatRanks           = m.heatRanks;
     swapInterval        = m.swapInterval;
     activeChainIndex    = m.activeChainIndex;
     processActive       = m.processActive;
@@ -154,16 +154,155 @@ double Mcmcmc::computeBeta(double d, size_t idx)
     return 1.0 / (1.0+delta*idx);
 }
 
-void Mcmcmc::burnin(int g, int ti)
+
+
+void Mcmcmc::burnin(int generations, int tuningInterval)
 {
-    //    // Tell monitors how much job we have ahead of us
-    //    for( size_t i = 0; i < chains.size(); ++i )
-    //    {
-    //        RbVector<Monitor>& monitors = chains[i]->getMonitors();
-    //        for ( size_t j = 0; j < monitors.size(); ++j )
-    //            monitors[j].setNumCycles( g );
-    //    }
-    throw RbException("No burnin in MC^3");
+    
+    numAttemptedSwaps = 0;
+    numAcceptedSwaps = 0;
+    
+    size_t pid = 0;
+#ifdef RB_MPI
+    pid = MPI::COMM_WORLD.Get_rank();
+#endif
+    
+    // reset the counters for the move schedules
+    double movesPerIteration = 0.0;
+    if ( chainsPerProcess[pid].size() > 0 )
+    {
+        RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
+        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+        {
+            movesPerIteration += it->getUpdateWeight();
+        }
+    }
+    
+    // Let user know what we are doing
+    std::stringstream ss;
+    ss << "\nRunning MCMC burnin simulation for " << generations << " iterations";
+    RBOUT( ss.str() );
+    
+    
+    if ( chainsPerProcess[pid].size() > 0 )
+    {
+        RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
+        if ( scheduleType == "single" )
+        {
+            std::stringstream stream;
+            stream << "The simulator uses " << moves.size() << " different moves, with a single move picked randomly per iteration" << std::endl;
+            RBOUT( stream.str() );
+        }
+        else if ( scheduleType == "random" )
+        {
+            std::stringstream stream;
+            stream << "The simulator uses " << moves.size() << " different moves in a random move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+            RBOUT( stream.str() );
+        }
+        else if ( scheduleType == "sequential" )
+        {
+            std::stringstream stream;
+            stream << "The simulator uses " << moves.size() << " different moves in a sequential move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+            RBOUT( stream.str() );
+        }
+    }
+    
+    // Print progress bar (68 characters wide)
+    if ( processActive == true )
+    {
+        std::cout << std::endl;
+        std::cout << "Progress:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
+    
+    // reset the counters for the move schedules
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        RbVector<Move>& moves = chains[ chainsPerProcess[pid][i] ]->getMoves();
+        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+        {
+            it->resetCounters();
+        }
+    }
+    
+    // Run the chain
+    size_t numStars = 0;
+    for (size_t k=1; k<=generations; k++)
+    {
+        if ( processActive == true )
+        {
+            size_t progress = 68 * (double) k / (double) generations;
+            if ( progress > numStars )
+            {
+                for ( ;  numStars < progress; ++numStars )
+                {
+                    std::cout << "*";
+                }
+                std::cout.flush();
+            }
+        }
+        
+        // run each chain for this process
+        for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
+        {
+            // get chain index from job vector
+            size_t chainIdx = chainsPerProcess[pid][j];
+        
+            chains[chainIdx]->nextCycle(false);
+        
+            // check for autotuning
+            if ( k % tuningInterval == 0 && k != generations )
+            {
+                chains[chainIdx]->getSchedule().tune();
+            }
+        }
+        
+        if ( k % swapInterval == 0 )
+        {
+
+#ifdef RB_MPI
+            // wait until all chains complete
+            MPI::COMM_WORLD.Barrier();
+#endif
+            
+            // perform chain swap
+            swapChains();
+        }
+
+        
+        // check for autotuning
+        if ( k % tuningInterval == 0 && k != generations && false )
+        {
+            if ( processActive == true )
+            {
+                tune();
+                
+                // recompute the heats
+                for (size_t i = 0; i < numChains; i++)
+                {
+                    chainHeats[i] = computeBeta(delta, heatRanks[i] );
+                    
+                    // update the chains accross processes
+                    // this is necessary because only process 0 does the swap
+                    // all the other processes need to be told that there was a swap
+                    updateChainState(i);
+
+                }
+                numAttemptedSwaps = 0;
+                numAcceptedSwaps = 0;
+
+            }
+        }
+        
+    }
+    
+    if ( processActive == true )
+    {
+        std::cout << std::endl;
+        std::cout << "Delta = " << delta << std::endl;
+    }
+
 }
 
 Mcmcmc* Mcmcmc::clone(void) const
@@ -187,6 +326,10 @@ void Mcmcmc::run(size_t kIterations)
     pid = MPI::COMM_WORLD.Get_rank();
 #endif
     
+    // reset our counters
+    numAttemptedSwaps = 0;
+    numAcceptedSwaps = 0;
+    
     /* Let user know what we are doing */
     if ( generation == 0 )
     {
@@ -201,48 +344,33 @@ void Mcmcmc::run(size_t kIterations)
         RBOUT( ss.str() );
     }
     
-    if ( scheduleType == "single" )
+    if ( chainsPerProcess[pid].size() > 0 )
     {
-        std::stringstream ss;
-        if ( chainsPerProcess[pid].size() > 0 )
+        RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
+        if ( scheduleType == "single" )
         {
-            RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
+            std::stringstream ss;
             ss << "The simulator uses " << moves.size() << " different moves, with a single move picked randomly per iteration" << std::endl;
+            RBOUT( ss.str() );
         }
-        else
+        else if ( scheduleType == "random" )
         {
-            ss << " ";
-        }
-        RBOUT( ss.str() );
-    }
-    else if ( scheduleType == "random" )
-    {
-        std::stringstream ss;
-        if ( chainsPerProcess[pid].size() > 0 )
-        {
-            RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
+            std::stringstream ss;
             ss << "The simulator uses " << moves.size() << " different moves in a random move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+            RBOUT( ss.str() );
         }
-        else
+        else if ( scheduleType == "sequential" )
         {
-            ss << " ";
-        }
-        RBOUT( ss.str() );
-    }
-    else if ( scheduleType == "sequential" )
-    {
-        std::stringstream ss;
-        if ( chainsPerProcess[pid].size() > 0 )
-        {
-            RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
+            std::stringstream ss;
             ss << "The simulator uses " << moves.size() << " different moves in a sequential move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+            RBOUT( ss.str() );
         }
-        else
-        {
-            ss << " ";
-        }
-        RBOUT( ss.str() );
     }
+    
+#ifdef RB_MPI
+    // wait until all chains complete
+    MPI::COMM_WORLD.Barrier();
+#endif
     
     if ( generation == 0 )
     {
@@ -413,49 +541,6 @@ void Mcmcmc::synchronizeHeats(void)
     
 }
 
-void Mcmcmc::updateChainState(size_t j)
-{
-    
-    size_t pid = 0;
-    
-#ifdef RB_MPI
-    pid = MPI::COMM_WORLD.Get_rank();
-    
-    // update heat
-    if (processActive == true)
-    {
-        MPI::COMM_WORLD.Send(&chainHeats[j], 1, MPI::DOUBLE, processPerChain[j], 0);
-    }
-    if (pid == processPerChain[j])
-    {
-        MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, 0, 0);
-    }
-#endif
-    
-    if (pid == processPerChain[j])
-    {
-        chains[j]->setChainHeat(chainHeats[j]);
-    }
-    // update active state
-    bool tf = activeChainIndex == j;
-    
-#ifdef RB_MPI
-    if (processActive == true)
-    {
-        MPI::COMM_WORLD.Send(&tf, 1, MPI::BOOL, processPerChain[j], 0);
-    }
-    if (pid == processPerChain[j])
-    {
-        MPI::COMM_WORLD.Recv(&tf, 1, MPI::BOOL, 0, 0);
-    }
-#endif
-    
-    if (pid == processPerChain[j])
-    {
-        chains[j]->setChainActive(tf);
-    }
-    
-}
 
 // MJL: allow swapChains to take a swap function -- e.g. pairwise swap for 1..n-1
 void Mcmcmc::swapChains(void)
@@ -500,8 +585,8 @@ void Mcmcmc::swapNeighborChains(void)
         {
             ++numAttemptedSwaps;
             
-            j = chainIdxByHeat[i-1];
-            k = chainIdxByHeat[i];
+            j = heatRanks[i-1];
+            k = heatRanks[i];
             
             // compute exchange ratio
             double bj = chainHeats[j];
@@ -538,8 +623,8 @@ void Mcmcmc::swapNeighborChains(void)
             {
                 
                 //size_t tmpIdx = j;
-                chainIdxByHeat[i-1] = k;
-                chainIdxByHeat[i] = j;
+                heatRanks[i-1] = k;
+                heatRanks[i] = j;
                 
                 // swap active chain
                 if (activeChainIndex == j)
@@ -638,6 +723,9 @@ void Mcmcmc::swapRandomChains(void)
             
             chainHeats[j] = bk;
             chainHeats[k] = bj;
+            size_t tmp = heatRanks[j];
+            heatRanks[j] = heatRanks[k];
+            heatRanks[k] = tmp;
 
             ++numAcceptedSwaps;
         }
@@ -650,14 +738,80 @@ void Mcmcmc::swapRandomChains(void)
     MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, 0);
 #endif
     
-//    if ( accept == true )
-//    {
-        // update the chains accross processes
-        // this is necessary because only process 0 does the swap
-        // all the other processes need to be told that there was a swap
-        updateChainState(j);
-        updateChainState(k);
-        
-//    }
+    // update the chains accross processes
+    // this is necessary because only process 0 does the swap
+    // all the other processes need to be told that there was a swap
+    updateChainState(j);
+    updateChainState(k);
     
 }
+
+
+void Mcmcmc::tune( void )
+{
+    
+    double rate = numAcceptedSwaps / double(numAttemptedSwaps);
+    
+    if ( rate > 0.44 )
+    {
+        delta *= (1.0 + ((rate-0.44)/0.56) );
+    }
+    else
+    {
+        delta /= (2.0 - rate/0.44 );
+    }
+    
+}
+
+
+void Mcmcmc::updateChainState(size_t j)
+{
+    
+    size_t pid = 0;
+    
+#ifdef RB_MPI
+    pid = MPI::COMM_WORLD.Get_rank();
+    
+    // update heat
+    if (processActive == true)
+    {
+        MPI::COMM_WORLD.Send(&chainHeats[j], 1, MPI::DOUBLE, processPerChain[j], 0);
+    }
+    if (pid == processPerChain[j])
+    {
+        MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, 0, 0);
+    }
+#endif
+    
+    if (pid == processPerChain[j])
+    {
+        chains[j]->setChainHeat(chainHeats[j]);
+    }
+    // update active state
+    bool tf = activeChainIndex == j;
+    
+#ifdef RB_MPI
+    if (processActive == true)
+    {
+        MPI::COMM_WORLD.Send(&tf, 1, MPI::BOOL, processPerChain[j], 0);
+    }
+    if (pid == processPerChain[j])
+    {
+        MPI::COMM_WORLD.Recv(&tf, 1, MPI::BOOL, 0, 0);
+    }
+#endif
+    
+    if (pid == processPerChain[j])
+    {
+        chains[j]->setChainActive(tf);
+    }
+    
+//    size_t rank = heatRanks[j];
+//#ifdef RB_MPI
+//    MPI::COMM_WORLD.Bcast(&rank, 1, MPI::DOUBLE, 0);
+//#endif
+//    heatRanks[j] = rank;
+    
+    
+}
+

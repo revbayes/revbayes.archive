@@ -54,6 +54,7 @@ namespace RevBayesCore {
         double                                              getModelLnProbability(void);
         RbVector<Monitor>&                                  getMonitors(void);
         RbVector<Move>&                                     getMoves(void);
+        MoveSchedule&                                       getSchedule(void);
         const MoveSchedule&                                 getSchedule(void) const;
         bool                                                isChainActive(void);
         void                                                monitor(unsigned long g);
