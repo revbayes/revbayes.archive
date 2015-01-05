@@ -99,7 +99,7 @@ void RateMatrix_FreeK::fillRateMatrix( void )
         // diagonal
         m[i][i] = -sum;
     }
-    std::cout << m << "\n";
+
     // set flags
     needsUpdate = true;
 }
