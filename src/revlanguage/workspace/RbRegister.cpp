@@ -149,6 +149,7 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+#include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "Move_NarrowExchange.h"
@@ -191,6 +192,7 @@
 #include "Dist_bdp.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
+#include "Dist_empiricalTree.h"
 #include "Dist_serialBDP.h"
 #include "Dist_skySerialBDP.h"
 #include "Dist_skyFossilBDP.h"
@@ -350,6 +352,7 @@
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
+#include "Func_annotateHPDAges.h"
 #include "Func_consensusTree.h"
 #include "Func_mapTree.h"
 #include "Func_module.h"
@@ -547,6 +550,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+		addTypeWithConstructor("mvEmpiricalTree",           new Move_EmpiricalTree<BranchLengthTree>() );
+		addTypeWithConstructor("mvEmpiricalTree",           new Move_EmpiricalTree<TimeTree>() );
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
         addTypeWithConstructor("mvGPR",                     new Move_GibbsPruneAndRegraft() );
         addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
@@ -633,6 +638,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // uniform topology distribution
         addDistribution( "dnUniformTopology",           new Dist_uniformTopology() );
         
+		// empirical tree distributions
+		addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<BranchLengthTree>() );
+        addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<TimeTree>() );
+		
+		
         
         /* Statistical distributions on simple variables (in folder "distributions/math") */
         
@@ -972,6 +982,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( "ancestralStateTree",          new Func_ancestralStateTree<BranchLengthTree>() );
 		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
+		addFunction( "annotateHPDAges",             new Func_annotateHPDAges<TimeTree>()    );
 		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
 		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
