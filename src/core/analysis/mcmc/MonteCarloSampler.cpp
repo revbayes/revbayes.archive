@@ -743,7 +743,8 @@ void MonteCarloSampler::setScheduleType(const std::string &s)
 }
 
 
-void MonteCarloSampler::startMonitors( size_t numCycles ) {
+void MonteCarloSampler::startMonitors( size_t numCycles )
+{
     
     /* Open the output file and print headers */
     for (size_t i=0; i<monitors.size(); i++)
@@ -751,6 +752,10 @@ void MonteCarloSampler::startMonitors( size_t numCycles ) {
         
         // open filestream for each monitor
 //        monitors[i].openStream();
+        
+        // reset the monitor
+        monitors[i].reset( numCycles );
+        
         
         // if this chain is active, print the header
         if (chainActive)
