@@ -168,7 +168,8 @@ const std::set<DagNode*>& RateAgeBetaShift::getDagNodes( void ) const
 
 
 
-const std::string& RateAgeBetaShift::getMoveName( void ) const {
+const std::string& RateAgeBetaShift::getMoveName( void ) const
+{
     
     static std::string name = "RateAgeBetaShift";
     
@@ -349,7 +350,8 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
 }
 
 
-void RateAgeBetaShift::printSummary(std::ostream &o) const {
+void RateAgeBetaShift::printSummary(std::ostream &o) const
+{
     o << "delta = " << delta;
 }
 
