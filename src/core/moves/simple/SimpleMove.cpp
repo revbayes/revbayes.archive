@@ -74,7 +74,8 @@ double SimpleMove::performMove( double &probRatio ) {
 }
 
 
-void SimpleMove::rejectMove( void ) {
+void SimpleMove::rejectMove( void )
+{
     
     changed = false;
     

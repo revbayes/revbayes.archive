@@ -189,10 +189,14 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     tree->getAffectedNodes( affected );
     
     double oldLnLike = 0.0;
-    for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+    bool checkLikelihoodShortcuts = rng->uniform01() < 0.001;
+    if ( checkLikelihoodShortcuts == true )
     {
-        (*it)->touch();
-        oldLnLike += (*it)->getLnProbability();
+        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        {
+            (*it)->touch();
+            oldLnLike += (*it)->getLnProbability();
+        }
     }
     
     // pick a random node which is not the root and neithor the direct descendant of the root
@@ -244,6 +248,9 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     // set the age
     tau.setAge( nodeIdx, my_new_age );
     
+    // touch the tree so that the likelihoods are getting stored
+    tree->touch();
+    
     // get the probability ratio of the tree
     double treeProbRatio = tree->getLnProbabilityRatio();
     
@@ -275,19 +282,23 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
         
     }
     
-    double lnProbRatio = 0;
-    double newLnLike = 0;
-    for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+    if ( checkLikelihoodShortcuts == true )
     {
+        double lnProbRatio = 0;
+        double newLnLike = 0;
+        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        {
 
-        double tmp = (*it)->getLnProbabilityRatio();
-        lnProbRatio += tmp;
-        newLnLike += (*it)->getLnProbability();
-    }
+            double tmp = (*it)->getLnProbabilityRatio();
+            lnProbRatio += tmp;
+            newLnLike += (*it)->getLnProbability();
+        }
     
-    if ( fabs(lnProbRatio) > 1E-8 )
-    {
-        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
+        if ( fabs(lnProbRatio) > 1E-8 )
+        {
+            throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
+        }
+        
     }
     
     double hastingsRatio = backward - forward;
@@ -352,7 +363,75 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
 
 void RateAgeBetaShift::printSummary(std::ostream &o) const
 {
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the name
+    const std::string &n = getMoveName();
+    size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
+    o << n;
+    for (size_t i = 0; i < spaces; ++i) {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the DagNode name
+    const std::string &dn_name = (*nodes.begin())->getName();
+    spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
+    o << dn_name;
+    for (size_t i = 0; i < spaces; ++i) {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the weight
+    int w_length = 4 - (int)log10(weight);
+    for (int i = 0; i < w_length; ++i) {
+        o << " ";
+    }
+    o << weight;
+    o << " ";
+    
+    // print the number of tries
+    int t_length = 9 - (int)log10(numTried);
+    for (int i = 0; i < t_length; ++i) {
+        o << " ";
+    }
+    o << numTried;
+    o << " ";
+    
+    // print the number of accepted
+    int a_length = 9;
+    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    
+    for (int i = 0; i < a_length; ++i) {
+        o << " ";
+    }
+    o << numAccepted;
+    o << " ";
+    
+    // print the acceptance ratio
+    double ratio = numAccepted / (double)numTried;
+    if (numTried == 0) ratio = 0;
+    int r_length = 5;
+    
+    for (int i = 0; i < r_length; ++i) {
+        o << " ";
+    }
+    o << ratio;
+    o << " ";
+    
+//    proposal->printParameterSummary( o );
     o << "delta = " << delta;
+    
+    o << std::endl;
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
 }
 
 
@@ -378,6 +457,15 @@ void RateAgeBetaShift::reject( void )
     }
 #endif
     
+}
+
+/**
+ * Reset the move counters. Here we only reset the counter for the number of accepted moves.
+ *
+ */
+void RateAgeBetaShift::resetMoveCounters( void )
+{
+    numAccepted = 0;
 }
 
 

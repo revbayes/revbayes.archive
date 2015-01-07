@@ -31,6 +31,7 @@ namespace RevBayesCore {
         
     protected:
         void                                    performMove(double heat, bool raiseLikelihoodOnly);                                 //!< Perform move
+        void                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
         void                                    tune(void);
         
     private:
