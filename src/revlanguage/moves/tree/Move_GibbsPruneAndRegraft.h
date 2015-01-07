@@ -1,7 +1,6 @@
 #ifndef Move_GibbsPruneAndRegraft_H
 #define Move_GibbsPruneAndRegraft_H
 
-#include "FixedNodeheightPruneRegraft.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

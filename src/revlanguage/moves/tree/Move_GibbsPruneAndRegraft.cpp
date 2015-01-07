@@ -1,5 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "GibbsPruneAndRegraft.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -31,7 +32,7 @@ void Move_GibbsPruneAndRegraft::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::FixedNodeheightPruneRegraft(t, w);
+    value = new RevBayesCore::GibbsPruneAndRegraft(t, w);
 }
 
 
