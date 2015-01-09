@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+    <?xml version="1.0"?>
 <?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
 
 <revbayes-help
@@ -10,7 +10,9 @@
 
         <name>dnBernoulli</name>
 
-        <alias>dBernoulli</alias>
+        <alias>dbernoulli</alias>
+        <alias>pbernoulli</alias>
+        <alias>qbernoulli</alias>
 
         <title>Bernoulli Distribution</title>
 
@@ -26,12 +28,16 @@
 
             <usage>
                 <![CDATA[
-                 dnBernoulli( Probability p )
+                    dnBernoulli( Probability prob )
+                    dbernoulli( Natural x, Probability prob )
+                    pbernoulli( Natural q, Probability prob )
+                    qbernoulli( Probability p, Probability prob )
+                    rbernoulli( Natural n, Probability prob )
                  ]]> 
             </usage>
         
             <argument>
-                <label>p</label>
+                <label>prob</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
                 <description>The probability of success on the single trial.</description>
