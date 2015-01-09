@@ -53,7 +53,6 @@ namespace RevLanguage {
         const Function&                         getFirstFunction(const std::string& name) const;                                            //!< Get first function with given name
         const Function&                         getFunction(const std::string& name) const;                                                 //!< Get function, throw an error if overloaded
         const Function&                         getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const;   //!< Get function
-        std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                               //!< Get a copy of function table
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                     //!< Are formals unique?
         bool                                    isProcedure(const std::string& fxnName) const;                                              //!< Is 'fxnName' a procedure?
         void                                    replaceFunction(const std::string &name, Function* func);                                   //!< Replace existing function

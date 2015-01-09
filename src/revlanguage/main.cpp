@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "RbClient.h"
+#include "RevClient.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"
 #include "Workspace.h"

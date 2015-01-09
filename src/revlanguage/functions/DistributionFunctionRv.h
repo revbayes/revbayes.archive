@@ -58,6 +58,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
 #include "DistributionFunctionRv.h"
+#include "Natural.h"
 #include "ProbabilityDensityFunction.h"
 #include "Real.h"
 #include "RevObject.h"
@@ -67,7 +68,9 @@ namespace RevLanguage {
 
 /** Constructor */
 template <class valueType>
-RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv( TypedDistribution<valueType> *d ) : Procedure(), templateObject( d ) {
+RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv( TypedDistribution<valueType> *d ) : Procedure(),
+    templateObject( d )
+{
     
     argRules.push_back( new ArgumentRule("n", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)));
     const ArgumentRules &memberRules = templateObject->getParameterRules();
