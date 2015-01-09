@@ -1,24 +1,12 @@
-
-#include <iterator>
-
-#include "RbClient.h"
+#include "FunctionTable.h"
 #include "RbFileManager.h"
+#include "RevClient.h"
+#include "RlFunction.h"
 #include "Parser.h"
 #include "Workspace.h"
-#include "WorkspaceUtils.h"
 #include "TerminalFormatter.h"
 #include "RbSettings.h"
 
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <cstring>
-#include <cstdlib>
-#include <typeinfo> 
-#include <sstream>
-#include <iomanip>
-#include <ctype.h>
 
 #ifdef RB_MPI
 #include <mpi.h>
@@ -30,67 +18,84 @@ extern "C" {
 
 #include "lineeditUtils.h"
 
+
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/predicate.hpp> 
+#include <boost/algorithm/string/predicate.hpp>
 #include "boost/algorithm/string_regex.hpp"
-#include "RevLanguageMain.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/assign/std/vector.hpp>
-#include <boost/range/algorithm/count.hpp>
 
-using namespace boost::assign; // bring 'operator+=()' into scope
+//#define ctrl(C) ((C) - '@')
 
-#define ctrl(C) ((C) - '@')
-typedef std::vector<std::string> StringVector;
-
-bool debug = false;
-
-const char* nl = (char*) "\n\r";
 const char* default_prompt = (char*) "> ";
 const char* incomplete_prompt = (char*) "+ ";
-const char* esc_prompt = (char*) "? > ";
 const char* prompt = default_prompt;
-char *line;
 
+using namespace RevLanguage;
 
-WorkspaceUtils workspaceUtils;
-
-StringVector getDefaultCompletions();
-
-std::string getWd()
+std::vector<std::string> getFileList(const std::string &path)
 {
+    std::vector<std::string> v;
     
     RbSettings& s = RbSettings::userSettings();
     const std::string& wd = s.getWorkingDirectory();
-    return wd;
-}
-
-StringVector getFileList(std::string path)
-{
-    StringVector v;
     
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(getWd(), path);
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(wd, path);
     fm.setStringWithNamesOfFilesInDirectory( v );
     
     return v;
 }
 
-StringVector getDefaultCompletions()
+
+
+std::vector<std::string> getDefaultCompletions( void )
 {
-    StringVector c;
+    std::set<std::string> c;
 
-    BOOST_FOREACH(std::string function, workspaceUtils.getFunctions())
+    const FunctionTable& ft = Workspace::userWorkspace().getFunctionTable();
+    
+    for (std::multimap<std::string, Function*>::const_iterator it = ft.begin(); it != ft.end(); ++it)
     {
-        c.push_back(function);
+        c.insert(it->first);
+    }
+    
+    VariableTable v = Workspace::userWorkspace().getVariableTable();
+    
+    for (VariableTable::iterator it = v.begin(); it != v.end(); ++it)
+    {
+        c.insert(it->first);
+    }
+    
+    
+    v = RevLanguage::Workspace::globalWorkspace().getVariableTable();
+        
+    for (VariableTable::iterator it = v.begin(); it != v.end(); ++it)
+    {
+        c.insert(it->first);
     }
 
-    BOOST_FOREACH(std::string obj, workspaceUtils.getObjects(true))
+    const TypeTable& t_user = RevLanguage::Workspace::userWorkspace().getTypeTable();
+    
+    for (TypeTable::const_iterator it = t_user.begin(); it != t_user.end(); ++it)
     {
-        c.push_back(obj);
+        c.insert(it->first);
+    }
+    
+    const TypeTable& t_global = RevLanguage::Workspace::globalWorkspace().getTypeTable();
+    
+    for (TypeTable::const_iterator it = t_global.begin(); it != t_global.end(); ++it)
+    {
+        c.insert(it->first);
+    }
+    
+    std::vector<std::string> vec;
+    for (std::set<std::string>::iterator it = c.begin(); it != c.end(); ++it)
+    {
+        vec.push_back( *it );
     }
 
-    return c;
+    return vec;
 }
 
 /**
@@ -106,7 +111,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
     //bool debug = true;
 
     std::string cmd = buf;
-    StringVector completions;
+    std::vector<std::string> completions;
 
     // parse command
     RevLanguage::ParserInfo pi = RevLanguage::Parser::getParser().checkCommand(cmd, &RevLanguage::Workspace::userWorkspace());
@@ -129,8 +134,29 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
     else
     {
 
-        StringVector expressionSeparator;
-        expressionSeparator += " ", "%", "~", "=", "&", "|", "+", "-", "*", "/", "^", "!", "=", ",", "<", ">", ")", "[", "]", "{", "}";
+        std::vector<std::string> expressionSeparator;
+        
+        expressionSeparator.push_back(" ");
+        expressionSeparator.push_back("%");
+        expressionSeparator.push_back("~");
+        expressionSeparator.push_back("=");
+        expressionSeparator.push_back("&");
+        expressionSeparator.push_back("|");
+        expressionSeparator.push_back("+");
+        expressionSeparator.push_back("-");
+        expressionSeparator.push_back("*");
+        expressionSeparator.push_back("/");
+        expressionSeparator.push_back("^");
+        expressionSeparator.push_back("!");
+        expressionSeparator.push_back("=");
+        expressionSeparator.push_back(",");
+        expressionSeparator.push_back("<");
+        expressionSeparator.push_back(">");
+        expressionSeparator.push_back(")");
+        expressionSeparator.push_back("[");
+        expressionSeparator.push_back("]");
+        expressionSeparator.push_back("{");
+        expressionSeparator.push_back("}");
 
         // find position of right most expression separator in cmd
 
@@ -146,14 +172,27 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
         if (pi.functionName != "")
         {
             // ---------- function defined ------------
-            if (pi.argumentLabel != "") { // assigning an argument label                
+            if (pi.argumentLabel != "") // assigning an argument label
+            {
                 commandPos = cmd.rfind("=") + 1;
                 // not sure exactly what should be here... setting completions to everything
                 completions = getDefaultCompletions();
 
-            } else { // break on either '(' or ','              
+            }
+            else // break on either '(' or ','
+            {
                 commandPos = std::max(cmd.rfind("("), cmd.rfind(",")) + 1;
-                completions = workspaceUtils.getFunctionParameters(pi.functionName);                
+                
+                std::vector<Function *> v = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.functionName);
+                
+                for (std::vector<Function *>::iterator it = v.begin(); it != v.end(); it++)
+                {
+                    const RevLanguage::ArgumentRules& argRules = (*it)->getArgumentRules();
+                    for (size_t i = 0; i < argRules.size(); i++)
+                    {
+                        completions.push_back(argRules[i].getArgumentLabel());
+                    }
+                }
             }
         }
         else
@@ -194,42 +233,7 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
             linenoiseAddCompletion(lc, c.c_str());
         }
     }
-
-    // debug
-    if (debug)
-    {
-        std::cout << "\n\r--------------- available completions --------------";
-
-        BOOST_FOREACH(std::string m, completions)
-        {
-            std::cout << "\n\r" << m;
-        }
-
-        std::string baseVariable = "";
-        if (pi.baseVariable != NULL)
-        {
-            baseVariable = pi.baseVariable->getName();
-        }
-        if (!pi.inQuote)
-        {
-            std::cout << "\n\r------------- buffer info ----------------"
-                    << "\n\rmatching against: " << compMatch
-                    << "\n\r"
-                    << "\n\rinComment: " << pi.inComment
-                    << "\n\rinQuote: " << pi.inQuote
-                    << "\n\rresult: " << pi.result
-                    << "\n\rfunctionName: " << pi.functionName
-                    << "\n\rbaseVariable: " << baseVariable
-                    << "\n\rargumentLabel: " << pi.argumentLabel
-                    << "\n\r" << pi.message
-                    << "\n\rlines:";
-
-            BOOST_FOREACH(std::string l, pi.lines)
-            {
-                std::cout << "\n\r\t" << l;
-            }
-        }
-    }
+    
 }
 
 /**
@@ -239,21 +243,32 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
  * @param c
  * @return 
  */
-int printFunctionParameters(const char *buf, size_t len, char c) {
+int printFunctionParameters(const char *buf, size_t len, char c)
+{
     std::string cmd = buf;
     RevLanguage::ParserInfo pi = RevLanguage::Parser::getParser().checkCommand(cmd, &RevLanguage::Workspace::userWorkspace());
-    if (workspaceUtils.isFunction(pi.functionName)) {
+    if ( Workspace::globalWorkspace().existsFunction(pi.functionName) )
+    {
 
-        BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, workspaceUtils.getFunctionSignatures(pi.functionName)) {
-            std::cout << "\n\r" + sign.returnType + " " + sign.name + " (";
+        std::vector<Function *> functions = Workspace::globalWorkspace().getFunctionTable().findFunctions(pi.functionName);
+        
+        for (std::vector<Function *>::iterator it = functions.begin(); it != functions.end(); ++it)
+        {
+            Function *f = *it;
+            std::cout << "\n\r" + f->getReturnType().getType() + " " + pi.functionName + " (";
 
-            for (size_t i = 0; i < sign.arguments.size(); i++) {
-                std::cout << sign.arguments[i];
-                if (i < sign.arguments.size() - 1) {
+            const RevLanguage::ArgumentRules& argRules = (*it)->getArgumentRules();
+            for (size_t i = 0; i < argRules.size(); i++)
+            {
+                std::cout << argRules[i].getArgumentLabel();
+                if (i < argRules.size() - 1) {
                     std::cout << ", ";
                 }
             }
+
         }
+        
+        
         std::cout << ")\n\r";
         linenoiceSetCursorPos(0);
         std::cout << prompt << buf;
@@ -265,11 +280,8 @@ int printFunctionParameters(const char *buf, size_t len, char c) {
 /**
  * Main application loop.
  * 
- * @param help
- * @param options
- * @param configuration
  */
-void RbClient::startInterpretor( void )
+void RevClient::startInterpretor( void )
 {
     
     size_t pid = 0;
@@ -278,7 +290,7 @@ void RbClient::startInterpretor( void )
 #endif
     
     /* Set tab completion callback */
-    linenoiseSetCompletionCallback(completeOnTab);
+    linenoiseSetCompletionCallback( completeOnTab );
 
     /* Load history from file. The history file is just a plain text file
      * where entries are separated by newlines. */
@@ -296,7 +308,9 @@ void RbClient::startInterpretor( void )
 
     while (true)
     {
-
+        
+        char *line;
+        
         // set prompt
         if (result == 0 || result == 2)
         {
@@ -322,14 +336,6 @@ void RbClient::startInterpretor( void )
             if (cmd == "clr" || cmd == "clear")
             {
                 linenoiseClearScreen();
-            }
-            else if (cmd == "debug=false")
-            {
-                debug = false;
-            }
-            else if (cmd == "debug=true")
-            {
-                debug = true;
             }
             else
             {

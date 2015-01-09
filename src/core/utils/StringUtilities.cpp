@@ -397,6 +397,19 @@ void StringUtilities::toLower(std::string& str)
 }
 
 
+/** Utility function for converting string to all lower case */
+std::string& StringUtilities::firstCharToUpper(std::string& str)
+{
+    
+    if ( str.size() > 0)
+    {
+        str[0] = char( toupper(str[0]) );
+    }
+    
+    return str;
+}
+
+
 /** Global operator for appending double to std::string */
 std::string operator+( const std::string& A, double B ) {
     

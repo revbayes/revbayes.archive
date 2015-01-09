@@ -413,25 +413,6 @@ const Function& FunctionTable::getFunction(const std::string& name, const std::v
 }
 
 
-/** Get a copy of the function table, including either the functions in the frame or in the entire environment */
-std::multimap<std::string, Function*> FunctionTable::getTableCopy(bool env) const
-{
-    std::multimap<std::string, Function*> tableCopy = *this;
-
-    // TODO: Do not insert hidden (overridden) functions from parent table
-    if (env == true && parentTable != NULL)
-    {
-        std::multimap<std::string, Function*> parentTableCopy = parentTable->getTableCopy(true);
-        std::multimap<std::string, Function*>::iterator it;
-        
-        for (it=parentTableCopy.begin(); it!=parentTableCopy.end(); it++)
-            tableCopy.insert( (*it) );
-    }
-    
-    return tableCopy;
-}
-
-
 /** Check if two formals are unique */
 bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const
 {
@@ -533,20 +514,10 @@ bool FunctionTable::isProcedure(const std::string& name) const
 
 
 /** Print function table for user in pretty format */
-void FunctionTable::printValue(std::ostream& o, bool env) const {
+void FunctionTable::printValue(std::ostream& o, bool env) const
+{
     
-    std::multimap<std::string, Function*> printTable;
-    
-    // We get a single table for frame or environment, sorted appropriately
-    printTable = getTableCopy( env );
-
-    // Do not print anything if table is empty
-    if (printTable.size() == 0)
-    {
-        return;
-    }
-    
-    for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
+    for (std::multimap<std::string, Function *>::const_iterator i=begin(); i!=end(); i++)
     {
         std::ostringstream s("");
 
@@ -556,6 +527,13 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
         
         o << StringUtilities::oneLiner( s.str(), 70 ) << std::endl;
     }
+    
+    // Print the parent table too
+    if ( parentTable != NULL )
+    {
+        parentTable->printValue(o , env );
+    }
+    
 }
 
 
