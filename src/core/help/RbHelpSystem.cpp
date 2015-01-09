@@ -3,6 +3,7 @@
 #include "RbHelpSystem.h"
 #include "RbHelpParser.h"
 #include "RbHelpRenderer.h"
+#include "RbSettings.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 
@@ -21,7 +22,7 @@ using namespace RevBayesCore;
 RbHelpSystem::RbHelpSystem()
 {
     
-    initializeHelp("help");
+    initializeHelp( RbSettings::userSettings().getHelpDir() );
 }
 
 
@@ -146,8 +147,6 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
-    //pathToHelpDir = fMngr.getCurrentDirectory();
-    
     
     fMngr.setFilePath(helpDir);
     if (fMngr.testDirectory() == false)
@@ -168,7 +167,8 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); ++it)
     {
         RevBayesCore::RbFileManager tmpFM = RevBayesCore::RbFileManager( *it );
-        if ( tmpFM.getFileExtension() == ext) {
+        if ( tmpFM.getFileExtension() == ext)
+        {
             fileNames.push_back( *it );
         }
     }
