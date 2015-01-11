@@ -356,6 +356,18 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
 }
 
 
+void StringUtilities::replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr)
+{
+    size_t pos = 0;
+    while((pos = str.find(oldStr, pos)) != std::string::npos)
+    {
+        str.replace(pos, oldStr.length(), newStr);
+        pos += newStr.length();
+    }
+    
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
 {

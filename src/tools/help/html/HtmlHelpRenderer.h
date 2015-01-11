@@ -25,6 +25,9 @@ public:
     std::string                 renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool applyTemplate);
     
     void                        setTypeTemplate(const std::string &t);
+    void                        setDistributionTemplate(const std::string &t);
+    void                        setMonitorTemplate(const std::string &t);
+    void                        setMoveTemplate(const std::string &t);
     void                        setFunctionTemplate(const std::string &t);
 
         
@@ -37,6 +40,9 @@ private:
     std::string                 tag(const std::string &s, const std::string &t, const std::string &clazz = "");
 
     
+    std::string                 distributionTemplate;
+    std::string                 monitorTemplate;
+    std::string                 moveTemplate;
     std::string                 typeTemplate;
     std::string                 functionTemplate;
     

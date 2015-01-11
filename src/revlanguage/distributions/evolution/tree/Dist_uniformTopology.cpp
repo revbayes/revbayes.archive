@@ -52,13 +52,16 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 {
     // get the parameters
     const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-    int n = names.size();
+    size_t n = names.size();
 
-	if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance()) {
+	if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance())
+    {
 		const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
 		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names, c);
 		return d;
-	} else {
+	}
+    else
+    {
 		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
 		return d;
 	}    

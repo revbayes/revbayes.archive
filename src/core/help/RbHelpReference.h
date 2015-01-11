@@ -19,6 +19,7 @@ namespace RevBayesCore {
      *
      */
     class RbHelpReference {
+        
     public:
         RbHelpReference() {}
         
