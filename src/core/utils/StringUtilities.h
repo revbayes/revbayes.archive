@@ -34,6 +34,7 @@ namespace StringUtilities {
     bool                        isFormattingChar(char c) ;
     bool                        isNumber(const std::string& s);                                                     //!< Checks if a RlString is a number
     std::string                 oneLiner(const std::string& input, size_t maxLen);                                  //!< Get a one-liner of specified length
+    void                        replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr);
     void                        stringSplit(const std::string &str, const std::string &delim, std::vector<std::string>& results); //!< Split a string into pieces
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
     

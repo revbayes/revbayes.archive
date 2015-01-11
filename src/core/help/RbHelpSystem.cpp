@@ -92,6 +92,13 @@ const std::set<std::string>& RbHelpSystem::getFunctionEntries( void ) const
 }
 
 
+const std::set<std::string>& RbHelpSystem::getTypeEntries( void ) const
+{
+    // return a constant reference to the internal value
+    return helpTypeNames;
+}
+
+
 /** Retrieve the help entry */
 const RbHelpEntry& RbHelpSystem::getHelp(const std::string &qs)
 {

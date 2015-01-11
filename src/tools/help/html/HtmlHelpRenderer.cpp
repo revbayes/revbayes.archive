@@ -2,10 +2,10 @@
 #include "RbHelpArgument.h"
 #include "RbHelpFunction.h"
 #include "RbHelpReference.h"
+#include "StringUtilities.h"
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string_regex.hpp>
 
 
 
@@ -54,6 +54,7 @@ std::string HtmlHelpRenderer::pEntries(const std::vector<std::string> &pList, bo
 
 std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool applyTemplate)
 {
+    std::string ft = functionTemplate;
     if (!applyTemplate)
     {
         return renderFunctionHelp(functionHelp);
@@ -61,11 +62,11 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     std::string title = functionHelp.getTitle();
     std::string name = functionHelp.getName();
     
-    std::string tmp = boost::regex_replace(functionTemplate, boost::regex("#title#"), title);
-    tmp = boost::regex_replace(tmp, boost::regex("#name#"), name);
-    tmp = boost::regex_replace(tmp, boost::regex("#content#"), renderFunctionHelp(functionHelp));
+    StringUtilities::replaceSubstring(ft, "#title#", title);
+    StringUtilities::replaceSubstring(ft, "#name#", name);
+    StringUtilities::replaceSubstring(ft, "#content#", renderFunctionHelp(functionHelp));
     
-    return tmp;
+    return ft;
 }
 
 std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp)
@@ -103,7 +104,7 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
             
             result.append(arg.getDescription()).append(br).append(br);
             
-            result.append(tag("Argument type: ", "span", "argument")).append(arg.getArgumentType()).append(br);
+            result.append(tag("Argument type: ", "span", "argument")).append(arg.getArgumentPassingMethod()).append(br);
             result.append(tag("Value type: ", "span", "argument")).append(arg.getValueType()).append(br);
             
             if (arg.getOptions().size() > 0)
@@ -180,17 +181,19 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
 std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typeHelp, bool applyTemplate)
 {
     
-    if (!applyTemplate) {
+    if (!applyTemplate)
+    {
         return renderTypeHelp(typeHelp);
     }
     std::string title = typeHelp.getTitle();
     std::string name = typeHelp.getName();
     
-    std::string tmp = boost::regex_replace(typeTemplate, boost::regex("#title#"), title);
-    tmp = boost::regex_replace(tmp, boost::regex("#name#"), name);
-    tmp = boost::regex_replace(tmp, boost::regex("#content#"), renderTypeHelp(typeHelp));
+    std::string tt = typeTemplate;
+    StringUtilities::replaceSubstring(tt, "#title#", title);
+    StringUtilities::replaceSubstring(tt, "#name#", name);
+    StringUtilities::replaceSubstring(tt, "#content#", renderTypeHelp(typeHelp));
     
-    return tmp;
+    return tt;
 }
 
 std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typeHelp)
@@ -209,16 +212,34 @@ std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typ
     // description
     result.append(h2Entry("Description", pEntries(typeHelp.getDescription())));
     
+    // constructors
+    if (typeHelp.getConstructors().size() > 0)
+    {
+        result.append(tag("Constructors", "h2"));
+        result.append(divIndent());
+        
+        BOOST_FOREACH(RevBayesCore::RbHelpFunction mm, typeHelp.getConstructors())
+        {
+            
+            result.append(renderFunctionHelp(mm));
+        }
+        
+        result.append(divIndent(false));
+    }
     
-//    // method members
-//    if (typeHelp.getMethodMembers().size() > 0) {
-//        result.append(tag("Member methods", "h2"));
-//        result.append(divIndent());
-//        
-//        BOOST_FOREACH(MethodMemberHelpEntry mm, typeHelp.getMethodMembers()) {
-//            result.append(tag(mm.GetMethodName(), "b"));
+    // method members
+    if (typeHelp.getMethods().size() > 0)
+    {
+        result.append(tag("Methods", "h2"));
+        result.append(divIndent());
+
+        BOOST_FOREACH(RevBayesCore::RbHelpFunction mm, typeHelp.getMethods())
+        {
+            
+            result.append(renderFunctionHelp(mm));
+//            result.append(tag(mm.getName(), "b"));
 //            result.append(divIndent());
-//            result.append(mm.GetDescription()).append(br).append(br);
+//            result.append(mm.getDescription()).append(br).append(br);
 //            result.append(tag("Usage: ", "span", "argument")).append(mm.GetUsage()).append(br);
 //            result.append(tag("Method type :", "span", "argument")).append(mm.GetMethodType()).append(br);
 //            
@@ -246,23 +267,56 @@ std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typ
 //            
 //            result.append(tag("Return value: ", "span", "argument")).append(mm.GetReturnValue()).append(br);
 //            result.append(divIndent(false)).append(br);
-//        }
-//        result.append(divIndent(false));
-//    }
+        }
+        result.append(divIndent(false));
+    }
     
     // details
-    if (typeHelp.getDetails().size() > 0) {
+    if (typeHelp.getDetails().size() > 0)
+    {
         result.append(h2Entry("Details", pEntries(typeHelp.getDetails())));
     }
     
     // author
     result.append(h2Entry("Author", typeHelp.getAuthor()));
     
-//    // citation
-//    if (typeHelp.getReferences().size() > 0) {
-//        result.append(h2Entry("Citation", pEntries(typeHelp.getReferences())));
-//    }
+    // citation
+    if (typeHelp.getReferences().size() > 0)
+    {
+        result.append(tag("Reference", "h2"));
+        result.append("<p class=\"indent\">");
+        
+        BOOST_FOREACH(RevBayesCore::RbHelpReference ref, typeHelp.getReferences())
+        {
+            result.append(ref.getCitation()).append(br);
+            result.append(ref.getUrl()).append(br);
+            result.append(ref.getDoi()).append(br);
+        }
+        result.append("</p>").append(br);
+    }
+    
     return result;
+}
+
+
+void HtmlHelpRenderer::setDistributionTemplate(const std::string &t)
+{
+    // replace the internal value by this new value
+    distributionTemplate = t;
+}
+
+
+void HtmlHelpRenderer::setMonitorTemplate(const std::string &t)
+{
+    // replace the internal value by this new value
+    monitorTemplate = t;
+}
+
+
+void HtmlHelpRenderer::setMoveTemplate(const std::string &t)
+{
+    // replace the internal value by this new value
+    moveTemplate = t;
 }
 
 
