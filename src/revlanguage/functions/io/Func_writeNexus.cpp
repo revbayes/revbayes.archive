@@ -42,12 +42,15 @@ RevPtr<RevVariable> Func_writeNexus::execute( void )
     RevBayesCore::NexusWriter fw( fn.getValue() );
     fw.openStream();
 
-    if ( this->args[1].getVariable()->getRequiredTypeSpec().isDerivedOf( AbstractDiscreteCharacterData::getClassTypeSpec() ) )
+    
+//    const AbstractCharacterData& ac = static_cast<const AbstractCharacterData&>( args[1].getVariable()->getRevObject() );
+
+    if ( this->args[1].getVariable()->getRevObject().getTypeSpec().isDerivedOf( AbstractDiscreteCharacterData::getClassTypeSpec() ) )
     {
         const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
         fw.writeNexusBlock( data );
     }
-    else if ( this->args[1].getVariable()->getRequiredTypeSpec().isDerivedOf( ContinuousCharacterData::getClassTypeSpec() ) )
+    else if ( this->args[1].getVariable()->getRevObject().getTypeSpec().isDerivedOf( ContinuousCharacterData::getClassTypeSpec() ) )
     {
         const RevBayesCore::ContinuousCharacterData &data = static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
         fw.writeNexusBlock( data );
