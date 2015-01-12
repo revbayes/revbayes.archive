@@ -40,9 +40,15 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmpRates = static_cast<const ModelVector<RealPos> &>( rates->getRevObject() ).getDagNode();
     std::vector< RevBayesCore::StochasticNode<double> *> rates;
     RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *>( tmpRates );
-    const std::set<const RevBayesCore::DagNode* >& pars = dnode->getFunction().getParameters();
 
-    for (std::set<const RevBayesCore::DagNode* >::const_iterator it = pars.begin(); it != pars.end(); ++it)
+    RevBayesCore::VectorFunction<double>* funcVec = dynamic_cast<RevBayesCore::VectorFunction<double>*>( &dnode->getFunction() );
+    if ( funcVec == NULL )
+    {
+        throw RbException("Wrong argument type for the rates vector. We expect a vector of iid elements.");
+    }
+    const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = funcVec->getVectorParameters();
+
+    for (std::vector<const RevBayesCore::TypedDagNode<double>* >::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
         rates.push_back( const_cast<RevBayesCore::StochasticNode<double>* >(static_cast<const RevBayesCore::StochasticNode<double>* >( *it ) ) );
     }
@@ -72,25 +78,25 @@ const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Move_RateAgeBetaShift::getParameterRules(void) const {
     
-    static MemberRules nniMemberRules;
+    static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
         
-        nniMemberRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nniMemberRules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nniMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        nniMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        nniMemberRules.insert( nniMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return nniMemberRules;
+    return moveMemberRules;
 }
 
 /** Get type spec */

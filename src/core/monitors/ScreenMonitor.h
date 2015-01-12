@@ -56,7 +56,7 @@ namespace RevBayesCore {
         std::string                         prefixSeparator;
         std::string                         suffixSeparator;
         size_t                              headerPrintingInterval;
-        std::queue<time_t>                  startTimes;
+        time_t                              startTime;
         size_t                              numCycles;                                                          //!< Total number of cycles to monitor
         size_t                              currentGen;
         size_t                              startGen;

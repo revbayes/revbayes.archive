@@ -8,20 +8,24 @@
 
 using namespace RevBayesCore;
 
-GibbsPruneAndRegraft::GibbsPruneAndRegraft(StochasticNode<TimeTree> *v, double w) : SimpleMove( v, w), variable( v ) {
+GibbsPruneAndRegraft::GibbsPruneAndRegraft(StochasticNode<TimeTree> *v, double w) : SimpleMove( v, w),
+    variable( v )
+{
     
 }
 
 
 
 /* Clone object */
-GibbsPruneAndRegraft* GibbsPruneAndRegraft::clone( void ) const {
+GibbsPruneAndRegraft* GibbsPruneAndRegraft::clone( void ) const
+{
     
     return new GibbsPruneAndRegraft( *this );
 }
 
 
-void GibbsPruneAndRegraft::findNewBrothers(std::vector<TopologyNode *> &b, TopologyNode &p, TopologyNode *n) {
+void GibbsPruneAndRegraft::findNewBrothers(std::vector<TopologyNode *> &b, TopologyNode &p, TopologyNode *n)
+{
     
     // security check that I'm not a tip
     if (!n->isTip() && &p != n) 
@@ -63,6 +67,8 @@ const std::string& GibbsPruneAndRegraft::getMoveName( void ) const
 /** Perform the move */
 double GibbsPruneAndRegraft::performSimpleMove( void ) 
 {
+    // reset flags
+    failed = false;
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -101,6 +107,14 @@ double GibbsPruneAndRegraft::performSimpleMove( void )
     // collect the possible reattachement points
     std::vector<TopologyNode*> new_brothers;
     findNewBrothers(new_brothers, *parent, &tau.getRoot());
+    
+    // we only need to propose a new tree if there are any other re-attachement points
+    if ( new_brothers.size() < 1)
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
     std::vector<double> weights = std::vector<double>(new_brothers.size(), 0.0);
     double sumOfWeights = 0.0;
     for (size_t i = 0; i<new_brothers.size(); ++i) 
@@ -131,16 +145,20 @@ double GibbsPruneAndRegraft::performSimpleMove( void )
         variable->restore();
     }
     
-    if (sumOfWeights <= 1E-100) {
+    if (sumOfWeights <= 1E-100)
+    {
         // hack
         // the proposals have such a small likelihood that they can be neglected
 //        throw new OperatorFailedException("Couldn't find another proposal with a decent likelihood.");
+        failed = true;
+        
         return 0.0;
     }
     
     double ran = rng->uniform01() * sumOfWeights;
     size_t index = 0;
-    while (ran > 0.0) {
+    while (ran > 0.0)
+    {
         ran -= weights[index];
         index++;
     }
@@ -185,27 +203,30 @@ TopologyNode* GibbsPruneAndRegraft::pruneAndRegraft(TopologyNode *brother, Topol
 }
 
 
-void GibbsPruneAndRegraft::rejectSimpleMove( void ) {
+void GibbsPruneAndRegraft::rejectSimpleMove( void )
+{
+    // only undo if we actually proposed something
+    if ( failed == false )
+    {
+        // undo the proposal
+        TopologyNode& parent = storedNewBrother->getParent();
+        TopologyNode& newGrandparent = parent.getParent();
+        TopologyNode& grandparent = storedBrother->getParent();
     
-    // undo the proposal
-    TopologyNode& parent = storedNewBrother->getParent();
-    TopologyNode& newGrandparent = parent.getParent();
-    TopologyNode& grandparent = storedBrother->getParent();
+        // prune
+        newGrandparent.removeChild( &parent );
+        parent.removeChild( storedNewBrother );
+        newGrandparent.addChild( storedNewBrother );
+        storedNewBrother->setParent( &newGrandparent );
+        
+        // regraft
+        grandparent.removeChild( storedBrother );
+        parent.addChild( storedBrother );
+        storedBrother->setParent( &parent );
+        grandparent.addChild( &parent );
+        parent.setParent( &grandparent );
     
-    // prune
-    newGrandparent.removeChild( &parent );
-    parent.removeChild( storedNewBrother );
-    newGrandparent.addChild( storedNewBrother );
-    storedNewBrother->setParent( &newGrandparent );
-    
-    
-    // regraft
-    grandparent.removeChild( storedBrother );
-    parent.addChild( storedBrother );
-    storedBrother->setParent( &parent );
-    grandparent.addChild( &parent );
-    parent.setParent( &grandparent );
-    
+    }
     
 }
 

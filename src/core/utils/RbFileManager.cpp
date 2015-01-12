@@ -159,6 +159,34 @@ void RbFileManager::createDirectoryForFile( void )
 
 
 
+
+/**
+ * Portable code to get full path to user home directory.
+ *
+ * @param path
+ * @return full path to user home directory
+ */
+std::string RbFileManager::expandUserDir(std::string path)
+{
+    if ( !path.empty() && path[0] == '~')
+    {
+        char const* home = getenv("HOME");
+        
+        if (home or ((home = getenv("USERPROFILE")))) {
+            path.replace(0, 1, home);
+        }
+    }
+    else
+    {
+        char const *hdrive = getenv("HOMEDRIVE"), *hpath = getenv("HOMEPATH");
+        path.replace(0, 1, std::string(hdrive) + hpath);
+    }
+    
+    return path;
+}
+
+
+
 /** Format the error exception string for problems specifying the file/path name */
 void RbFileManager::formatError(std::string& errorStr) 
 {

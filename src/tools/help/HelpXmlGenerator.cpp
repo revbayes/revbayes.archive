@@ -1,5 +1,3 @@
-#include "HelpXmlGenerator.h"
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstructorFunction.h"

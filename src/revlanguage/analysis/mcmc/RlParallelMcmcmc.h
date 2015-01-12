@@ -36,22 +36,22 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
         // Member method inits
-        virtual RevPtr<RevVariable>                    executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     protected:
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
         
-        RevPtr<const RevVariable>                      model;
-        RevPtr<const RevVariable>                      moves;
-        RevPtr<const RevVariable>                      monitors;
-        RevPtr<const RevVariable>                      moveSchedule;
-        RevPtr<const RevVariable>                      numChains;
-        RevPtr<const RevVariable>                      startHeat;
-        RevPtr<const RevVariable>                      deltaHeat;
-        RevPtr<const RevVariable>                      sigmaHeat;
-        RevPtr<const RevVariable>                      swapInterval;
-        RevPtr<const RevVariable>                      append;
+        RevPtr<const RevVariable>                   model;
+        RevPtr<const RevVariable>                   moves;
+        RevPtr<const RevVariable>                   monitors;
+        RevPtr<const RevVariable>                   moveSchedule;
+        RevPtr<const RevVariable>                   numChains;
+        RevPtr<const RevVariable>                   startHeat;
+        RevPtr<const RevVariable>                   deltaHeat;
+        RevPtr<const RevVariable>                   sigmaHeat;
+        RevPtr<const RevVariable>                   swapInterval;
+        RevPtr<const RevVariable>                   append;
     };
     
 }

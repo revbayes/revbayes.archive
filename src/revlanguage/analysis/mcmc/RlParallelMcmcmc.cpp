@@ -58,11 +58,6 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-#ifndef RB_MPI
-    throw RbException("You must #define RB_MPI to use ParallelMcmcmc");
-    return;
-#endif
-    
     // now allocate a new MCMC object
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
     const RevBayesCore::RbVector<RevBayesCore::Move>&    mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();

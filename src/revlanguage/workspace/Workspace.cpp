@@ -76,7 +76,8 @@ Workspace& Workspace::operator=(const Workspace& x) {
 
 
 /* Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
+bool Workspace::addDistribution(const std::string& name, Distribution *dist)
+{
 
 #ifdef DEBUG_WORKSPACE
     printf("Adding distribution %s to workspace\n", name.c_str());
