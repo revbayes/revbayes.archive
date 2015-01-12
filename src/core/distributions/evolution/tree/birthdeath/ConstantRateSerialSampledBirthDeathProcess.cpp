@@ -206,24 +206,38 @@ double ConstantRateSerialSampledBirthDeathProcess::q( double t ) const
  */
 std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(size_t n, double origin) const
 {
+
+    // incorrect placeholder for constant BDP
+    // previous simSpeciations did not generate trees with defined likelihoods
     
-//    // Get the rng
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    
-//    // get the parameters
-//    double birth = lambda->getValue();
-//    double death = mu->getValue();
-//    double p     = psi->getValue();
-//    double r     = rho->getValue();
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
+    // get the parameters
+    double birth = lambda->getValue();
+    double death = mu->getValue();
+    double p     = psi->getValue();
+    double r     = rho->getValue();
     
-    std::vector<double> *times = new std::vector<double>(n,0.0);
-    for (size_t i = 0; i < n; i++ )
+    std::vector<double>* times = new std::vector<double>(n, 0.0);
+    
+    for (size_t i = 0; i < n; ++i)
     {
-        // draw the times
-        times->push_back( n );
+        double u = rng->uniform01();
+        
+        // get the parameters
+        double sp = birth*r;
+        double ex = death - birth*(1.0-r);
+        double div = sp - ex;
+        
+        double t = 1.0/div * log((sp - ex * exp((-div)*origin) - ex * (1.0 - exp((-div) * origin)) * u )/(sp - ex * exp((-div) * origin) - sp * (1.0 - exp(( -div ) * origin)) * u ) );
+        
+        (*times)[i] = t;
     }
-	
+    
+    // finally sort the times
+    std::sort(times->begin(), times->end());
+    
     return times;
 }
 
