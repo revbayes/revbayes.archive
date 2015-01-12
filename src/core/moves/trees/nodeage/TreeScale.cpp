@@ -79,7 +79,7 @@ double TreeScale::performCompoundMove( void )
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double lnHastingsratio = log( scalingFactor ) * tau.getNumberOfInteriorNodes();
     
     return lnHastingsratio;
 }
