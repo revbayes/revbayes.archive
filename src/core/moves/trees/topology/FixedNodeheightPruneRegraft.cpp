@@ -60,8 +60,9 @@ const std::string& FixedNodeheightPruneRegraft::getMoveName( void ) const {
 
 
 /** Perform the move */
-double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
-    
+double FixedNodeheightPruneRegraft::performSimpleMove( void )
+{
+    // reset flags
     failed = false;
     
     // Get random number generator    
@@ -81,7 +82,8 @@ double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
     TopologyNode& grandparent   = parent->getParent();
     TopologyNode& brother       = parent->getChild( 0 );
     // check if we got the correct child
-    if ( &brother == node ) {
+    if ( &brother == node )
+    {
         brother = parent->getChild( 1 );
     }
     
@@ -89,7 +91,9 @@ double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
     std::vector<TopologyNode*> new_brothers;
     findNewBrothers(new_brothers, *parent, &tau.getRoot());
     
-    if ( new_brothers.size() < 1) {
+    // we only need to propose a new tree if there are any other re-attachement points
+    if ( new_brothers.size() < 1)
+    {
         failed = true;
         return RbConstants::Double::neginf;
     }

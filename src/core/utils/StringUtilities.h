@@ -22,6 +22,7 @@
 namespace StringUtilities {
     
     void                        fillWithSpaces(std::string &s, int l, bool left);                                   //!< Fill up the string with spaces either left aligned or right aligned
+    std::string&                firstCharToUpper(std::string& str);                                                 //!< Convert string's first character to upper case
     std::string                 formatStringForScreen(  const std::string  &s,
                                                         const std::string  &firstLinePad,
                                                         const std::string  &hangingPad,
@@ -33,6 +34,7 @@ namespace StringUtilities {
     bool                        isFormattingChar(char c) ;
     bool                        isNumber(const std::string& s);                                                     //!< Checks if a RlString is a number
     std::string                 oneLiner(const std::string& input, size_t maxLen);                                  //!< Get a one-liner of specified length
+    void                        replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr);
     void                        stringSplit(const std::string &str, const std::string &delim, std::vector<std::string>& results); //!< Split a string into pieces
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
     

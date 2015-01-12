@@ -169,8 +169,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeRootLike
         // iterate over all sites
         for (size_t site = 0; site < this->numPatterns; ++site)
         {
-            // temporary variable storing the likelihood
-            double tmp = 0.0;
+            
             // get the pointer to the stationary frequencies
             std::vector<double>::const_iterator f_j = f_begin;
             // get the pointers to the likelihoods for this site and mixture category

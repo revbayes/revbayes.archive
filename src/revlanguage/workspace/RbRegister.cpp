@@ -29,6 +29,7 @@
 #include <cstdlib>
 
 /* Files including helper classes */
+#include "AddDistribution.h"
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
@@ -77,6 +78,7 @@
 /* Inference types (in folder "analysis") */
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
+#include "RLMcmcmc.h"
 #include "RlModel.h"
 #include "RlParallelMcmcmc.h"
 #include "RlPathSampler.h"
@@ -264,6 +266,7 @@
 #include "Func_rep.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
+#include "Func_setOption.h"
 #include "Func_setwd.h"
 #include "Func_structure.h"
 #include "Func_system.h"
@@ -400,6 +403,8 @@
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
 #include "Func_discretizeGamma.h"
+#include "Func_discretizeDistribution.h"
+#include "Func_discretizePositiveDistribution.h"
 #include "Func_dppConcFromMean.h"
 #include "Func_dppMeanFromConc.h"
 #include "Func_fnNormalizedQuantile.h"
@@ -468,6 +473,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
         addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
+        addTypeWithConstructor( "mcmcmc",                 new Mcmcmc()                                  );
         addTypeWithConstructor( "model",                  new Model()                                   );
         addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
         addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
@@ -611,7 +617,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
-        addDistribution( "dnBDP",                       new Dist_bdp() );
+//        addDistribution( "dnBDP",                       new Dist_bdp() );
+        AddDistribution<TimeTree>("BDP", new Dist_bdp());
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
         
@@ -789,6 +796,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "seq",                      new Func_seq<Real>()                );
+        addFunction( "setOption",                new Func_setOption()                );
         addFunction( "setwd",                    new Func_setwd()                    );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
@@ -947,8 +955,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_sub",      new Func__sub< Real                               , Real                  , Real                  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Integer>               , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<Real>     >(  )  );
-        addFunction( "_sub",      new Func__vectorScalarDiv<Integer                 , Integer               , Integer                   >(  )   );
-        addFunction( "_sub",      new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarSub<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarSub<Real                    , Real                  , Real                      >(  )   );
         addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
         addFunction( "_sub",      new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
         
@@ -1093,8 +1101,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<RealPos>()    );
         
+        addFunction( "fnDiscretizeDistribution", new Func_discretizeDistribution( )         );
+        addFunction( "fnDiscretizeDistribution", new Func_discretizePositiveDistribution( ) );
+        
         // return a discretized gamma distribution (for gamma-dist rates)
-        addFunction( "fnDiscretizeGamma",             new Func_discretizeGamma( )   );
+        addFunction( "fnDiscretizeGamma",      new Func_discretizeGamma( )   );
 
         addFunction( "fnVarCovar",             new Func_varianceCovarianceMatrix( )   );
         

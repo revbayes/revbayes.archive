@@ -84,10 +84,11 @@ FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ),
     chainIdx    = f.chainIdx;
     chainHeat   = f.chainHeat;
     
-    if (f.outStream.is_open())
-    {
-        openStream();
-    }
+//    if (f.outStream.is_open())
+//    {
+//        openStream();
+//    }
+    
 }
 
 
@@ -101,14 +102,16 @@ FileMonitor* FileMonitor::clone(void) const
 
 void FileMonitor::closeStream()
 {
-    outStream.close();
+//    outStream.close();
 }
 
 
 /** Monitor value at generation gen */
 void FileMonitor::monitor(unsigned long gen)
 {
-
+    
+    outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+    
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     
@@ -191,6 +194,9 @@ void FileMonitor::monitor(unsigned long gen)
         outStream << std::endl;
     
     }
+    
+    outStream.close();
+    
 }
 
 
@@ -210,11 +216,17 @@ void FileMonitor::openStream(void)
     {
         outStream.open( filename.c_str(), std::fstream::out);
     }
+    
+    outStream.close();
+    
 }
 
 /** Print header for monitored values */
-void FileMonitor::printHeader() {
-  
+void FileMonitor::printHeader()
+{
+ 
+    outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+    
     // print one column for the iteration number
     outStream << "Iteration";
     
@@ -271,6 +283,9 @@ void FileMonitor::printHeader() {
     }
     
     outStream << std::endl;
+    
+    outStream.close();
+    
 }
 
 

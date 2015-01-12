@@ -8,6 +8,7 @@
 #include "RevLanguageMain.h"
 #include "Parser.h"
 #include "RbException.h"
+#include "RbFileManager.h"
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "RlUserInterface.h"
@@ -28,7 +29,7 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     // load the modules
     try
     {
-        RevLanguage::ModuleSystem::getModuleSystem().loadModules("modules");
+        RevLanguage::ModuleSystem::getModuleSystem().loadModules( RbSettings::userSettings().getModuleDir() );
     }    
     catch ( RbException e )
     {

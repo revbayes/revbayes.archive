@@ -66,7 +66,6 @@ void ModuleSystem::loadModules(const std::string &dir)
     
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
-    //pathToHelpDir = fMngr.getCurrentDirectory();
     
     
     fMngr.setFilePath( dir );

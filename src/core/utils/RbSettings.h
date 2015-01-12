@@ -34,13 +34,18 @@ class RbSettings {
     
     
         // Access functions
+        const std::string&          getHelpDir(void) const;                             //!< Retrieve the help directory name
+        const std::string&          getModuleDir(void) const;                           //!< Retrieve the module directory name
         size_t                      getLineWidth(void) const;                           //!< Retrieve the line width that will be used for the screen width when printing
         bool                        getPrintNodeIndex(void) const;                      //!< Retrieve the flag whether we should print node indices
         double                      getTolerance(void) const;                           //!< Retrieve the tolerance for comparing doubles
         const std::string&          getWorkingDirectory(void) const;                    //!< Retrieve the current working directory
     
         // setters
+        void                        setHelpDir(const std::string &hd);                  //!< Set the help directory name
+        void                        setModuleDir(const std::string &md);                //!< Set the module directory name
         void                        setLineWidth(size_t w);                             //!< Set the line width that will be used for the screen width when printing
+        void                        setOption(const std::string &k, const std::string &v, bool write);  //!< Set the key value pair.
         void                        setPrintNodeIndex(bool tf);                         //!< Set the flag whether we should print node indices
         void                        setTolerance(double t);                             //!< Set the tolerance for comparing double
         void                        setWorkingDirectory(const std::string &wd);         //!< Set the current working directory
@@ -48,13 +53,16 @@ class RbSettings {
     private:
                                     RbSettings(void);                                   //!< Default constructor
                                     RbSettings(const RbSettings& s) {}                  //!< Prevent copy
-                                    RbSettings(std::string& defaultFileName);           //!< Constructor taking a default file name
                                    ~RbSettings(void) {}                                 //!< Delete function table
-        RbSettings&                 operator=(const RbSettings& s);                     //! Prevent assignment
+        RbSettings&                 operator=(const RbSettings& s);                     //!< Prevent assignment
 
 
+        void                        writeUserSettings(void);                            //!< Write the current settings into a file.
+    
 		// Variables that have user settings
         size_t                      lineWidth;
+        std::string                 helpDir;
+        std::string                 moduleDir;
         double                      tolerance;                                          //!< Tolerance for comparison of doubles
         bool                        printNodeIndex;                                     //!< Should the node index of a tree be printed as a comment?
         std::string                 workingDirectory;
