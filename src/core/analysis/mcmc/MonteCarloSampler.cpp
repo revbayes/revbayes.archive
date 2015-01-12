@@ -175,14 +175,20 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval)
 
 
 
-double MonteCarloSampler::getChainHeat(void)
+double MonteCarloSampler::getChainHeat(void) const
 {
     return chainHeat;
 }
 
-size_t MonteCarloSampler::getChainIndex(void)
+size_t MonteCarloSampler::getChainIndex(void) const
 {
     return chainIdx;
+}
+
+
+size_t MonteCarloSampler::getCurrentGeneration( void ) const
+{
+    return generation;
 }
 
 
@@ -221,6 +227,12 @@ const MoveSchedule& MonteCarloSampler::getSchedule(void) const
 MoveSchedule& MonteCarloSampler::getSchedule(void)
 {
     return *schedule;
+}
+
+
+const std::string& MonteCarloSampler::getScheduleType( void ) const
+{
+    return scheduleType;
 }
 
 
@@ -743,6 +755,32 @@ void MonteCarloSampler::setScheduleType(const std::string &s)
 }
 
 
+void MonteCarloSampler::startMonitors( void )
+{
+    
+    /* Open the output file and print headers */
+    for (size_t i=0; i<monitors.size(); i++)
+    {
+        
+        // open filestream for each monitor
+        //        monitors[i].openStream();
+        
+        // reset the monitor
+//        monitors[i].reset( numCycles );
+        
+        
+        // if this chain is active, print the header
+        if (chainActive)
+        {
+            monitors[i].openStream();
+            monitors[i].printHeader();
+            
+        }
+    }
+    
+}
+
+
 void MonteCarloSampler::startMonitors( size_t numCycles )
 {
     
@@ -767,3 +805,16 @@ void MonteCarloSampler::startMonitors( size_t numCycles )
     }
     
 }
+
+
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const MonteCarloSampler& x)
+{
+    o << "MonteCarloSampler";
+    
+    return o;
+}
+
+
+
