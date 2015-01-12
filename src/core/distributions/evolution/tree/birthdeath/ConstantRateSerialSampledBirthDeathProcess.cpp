@@ -77,6 +77,8 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     double ra = value->getRoot().getAge();
     double presentTime = 0.0;
     
+    size_t numInitialLineages = 1;
+    
     // test that the time of the process is larger or equal to the present time
     if ( startsAtRoot == false )
     {
@@ -87,6 +89,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     else
     {
         presentTime = ra;
+        numInitialLineages = 2;
     }
     
     // retrieved the speciation times
@@ -116,7 +119,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         
     }
     
-    for (size_t i = 0; i < numTaxa-1; ++i) 
+    for (size_t i = 0; i < numTaxa-numInitialLineages; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -129,7 +132,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         lnProbTimes += log( q(t+timeSinceLastSample) * birth );
     }
     
-    lnProbTimes += log( q( presentTime ) );
+    lnProbTimes += numInitialLineages * log( q( presentTime ) );
     
     delete agesInternalNodes;
     delete agesTips;
