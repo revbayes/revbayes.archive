@@ -33,7 +33,7 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    waitingTime( true ),
+    waitingTime( false ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
@@ -51,7 +51,7 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    waitingTime( true ),
+    waitingTime( false ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
@@ -68,7 +68,7 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    waitingTime( true ),
+    waitingTime( false ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
@@ -315,6 +315,7 @@ void ScreenMonitor::reset(size_t n)
     startGen = currentGen;
     numCycles = n;
     startTime = time( NULL );
+    waitingTime = true;
 }
 
 
