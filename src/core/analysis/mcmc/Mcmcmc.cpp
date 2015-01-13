@@ -16,7 +16,8 @@
 
 using namespace RevBayesCore;
 
-Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT, size_t nc, size_t si, double dt) : Cloneable( ),
+Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT, size_t nc, size_t si, double dt) : MonteCarloSampler( ),
+    pid(0),
     numChains(nc),
     scheduleType(sT),
     currentGeneration(0),
@@ -30,7 +31,6 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monit
 {
     
     // initialize np, nc, pid
-    size_t pid = 0;
     numProcesses = 1;
     
 #ifdef RB_MPI
@@ -92,7 +92,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monit
 Mcmcmc::Mcmcmc(const Mcmcmc &m)
 {
     
-    size_t pid = 0;
+    pid = 0;
 #ifdef RB_MPI
     pid = MPI::COMM_WORLD.Get_rank();
 #endif
@@ -155,159 +155,80 @@ double Mcmcmc::computeBeta(double d, size_t idx)
 }
 
 
-
-void Mcmcmc::burnin(int generations, int tuningInterval)
-{
-    
-    numAttemptedSwaps = 0;
-    numAcceptedSwaps = 0;
-    
-    size_t pid = 0;
-#ifdef RB_MPI
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    // reset the counters for the move schedules
-    double movesPerIteration = 0.0;
-    if ( chainsPerProcess[pid].size() > 0 )
-    {
-        RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
-        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
-        {
-            movesPerIteration += it->getUpdateWeight();
-        }
-    }
-    
-    // Let user know what we are doing
-    std::stringstream ss;
-    ss << "\nRunning MCMC burnin simulation for " << generations << " iterations";
-    RBOUT( ss.str() );
-    
-    
-    if ( chainsPerProcess[pid].size() > 0 )
-    {
-        RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
-        if ( scheduleType == "single" )
-        {
-            std::stringstream stream;
-            stream << "The simulator uses " << moves.size() << " different moves, with a single move picked randomly per iteration" << std::endl;
-            RBOUT( stream.str() );
-        }
-        else if ( scheduleType == "random" )
-        {
-            std::stringstream stream;
-            stream << "The simulator uses " << moves.size() << " different moves in a random move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-            RBOUT( stream.str() );
-        }
-        else if ( scheduleType == "sequential" )
-        {
-            std::stringstream stream;
-            stream << "The simulator uses " << moves.size() << " different moves in a sequential move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-            RBOUT( stream.str() );
-        }
-    }
-    
-    // Print progress bar (68 characters wide)
-    if ( processActive == true )
-    {
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
-    }
-    
-    // reset the counters for the move schedules
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-        RbVector<Move>& moves = chains[ chainsPerProcess[pid][i] ]->getMoves();
-        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
-        {
-            it->resetCounters();
-        }
-    }
-    
-    // Run the chain
-    size_t numStars = 0;
-    for (size_t k=1; k<=generations; k++)
-    {
-        if ( processActive == true )
-        {
-            size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > numStars )
-            {
-                for ( ;  numStars < progress; ++numStars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-            }
-        }
-        
-        // run each chain for this process
-        for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
-        {
-            // get chain index from job vector
-            size_t chainIdx = chainsPerProcess[pid][j];
-        
-            chains[chainIdx]->nextCycle(false);
-        
-            // check for autotuning
-            if ( k % tuningInterval == 0 && k != generations )
-            {
-                chains[chainIdx]->getSchedule().tune();
-            }
-        }
-        
-        if ( k % swapInterval == 0 )
-        {
-
-#ifdef RB_MPI
-            // wait until all chains complete
-            MPI::COMM_WORLD.Barrier();
-#endif
-            
-            // perform chain swap
-            swapChains();
-        }
-
-        
-        // check for autotuning
-        if ( k % tuningInterval == 0 && k != generations && false )
-        {
-            if ( processActive == true )
-            {
-                tune();
-                
-                // recompute the heats
-                for (size_t i = 0; i < numChains; i++)
-                {
-                    chainHeats[i] = computeBeta(delta, heatRanks[i] );
-                    
-                    // update the chains accross processes
-                    // this is necessary because only process 0 does the swap
-                    // all the other processes need to be told that there was a swap
-                    updateChainState(i);
-
-                }
-                numAttemptedSwaps = 0;
-                numAcceptedSwaps = 0;
-
-            }
-        }
-        
-    }
-    
-    if ( processActive == true )
-    {
-        std::cout << std::endl;
-        std::cout << "Delta = " << delta << std::endl;
-    }
-
-}
-
 Mcmcmc* Mcmcmc::clone(void) const
 {
     return new Mcmcmc(*this);
+}
+
+
+std::string Mcmcmc::getStrategyDescription( void ) const
+{
+    std::string description = "";
+    std::stringstream stream;
+    stream << "The MCMCMC simulator runs 1 cold chain and " << (numChains-1) << " heated chains.\n";
+    stream << chains[ chainsPerProcess[pid][0] ]->getStrategyDescription();
+    description = stream.str();
+    
+    return description;
+}
+
+
+void Mcmcmc::initializeSampler( bool priorOnly )
+{
+    
+    // initialize each chain
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->initializeSampler( priorOnly );
+    }
+    
+}
+
+
+void Mcmcmc::monitor(unsigned long g)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        if (chains[ chainsPerProcess[pid][i] ]->isChainActive() )
+        {
+            chains[ chainsPerProcess[pid][i] ]->monitor(g);
+        }
+    }
+    
+}
+
+void Mcmcmc::nextCycle(bool advanceCycle)
+{
+    
+    // run each chain for this process
+    for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
+    {
+        // get chain index from job vector
+        size_t chainIdx = chainsPerProcess[pid][j];
+        
+        // advance chain j by a single cycle
+        chains[chainIdx]->nextCycle( advanceCycle );
+        
+    } // loop over chains for this process
+    
+    if ( advanceCycle == true )
+    {
+        // advance gen counter
+        ++currentGeneration;
+    }
+    
+    if ( currentGeneration % swapInterval == 0 )
+    {
+#ifdef RB_MPI
+        // wait until all chains complete
+        MPI::COMM_WORLD.Barrier();
+#endif
+        
+        // perform chain swap
+        swapChains();
+    }
+    
 }
 
 void Mcmcmc::printOperatorSummary(void) const
@@ -318,7 +239,59 @@ void Mcmcmc::printOperatorSummary(void) const
     }
 }
 
-void Mcmcmc::run(size_t kIterations)
+
+void Mcmcmc::reset( void )
+{
+    
+    // reset counters
+    numAcceptedSwaps = 0;
+    numAttemptedSwaps = 0;
+    
+//    /* Reset the monitors */
+//    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+//    {
+//        RbVector<Monitor>& monitors = chains[ chainsPerProcess[pid][i] ]->getMonitors();
+//        for (size_t i=0; i<monitors.size(); i++)
+//        {
+//            monitors[i].reset();
+//        }
+//    }
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->reset();
+    }
+
+    
+}
+
+
+void Mcmcmc::setReplicateIndex(size_t index)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->setReplicateIndex(index);
+    }
+}
+
+
+
+void Mcmcmc::startMonitors( void )
+{
+    
+    // Monitor
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        
+        chains[ chainsPerProcess[pid][i] ]->startMonitors();
+        
+    }
+    
+}
+
+
+void Mcmcmc::startMonitors(size_t numCycles)
 {
     
     size_t pid = 0;
@@ -326,132 +299,22 @@ void Mcmcmc::run(size_t kIterations)
     pid = MPI::COMM_WORLD.Get_rank();
 #endif
     
-    // reset our counters
-    numAttemptedSwaps = 0;
-    numAcceptedSwaps = 0;
-    
-    /* Let user know what we are doing */
-    if ( generation == 0 )
-    {
-        std::stringstream ss;
-        ss << "\nRunning MCMC simulation for " << kIterations << " iterations";
-        RBOUT( ss.str() );
-    }
-    else
-    {
-        std::stringstream ss;
-        ss << "Appending " << kIterations << " iterations to previous MCMC simulation of " << generation << " iterations";
-        RBOUT( ss.str() );
-    }
-    
-    if ( chainsPerProcess[pid].size() > 0 )
-    {
-        RbVector<Move>& moves = chains[ chainsPerProcess[pid][0] ]->getMoves();
-        if ( scheduleType == "single" )
-        {
-            std::stringstream ss;
-            ss << "The simulator uses " << moves.size() << " different moves, with a single move picked randomly per iteration" << std::endl;
-            RBOUT( ss.str() );
-        }
-        else if ( scheduleType == "random" )
-        {
-            std::stringstream ss;
-            ss << "The simulator uses " << moves.size() << " different moves in a random move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-            RBOUT( ss.str() );
-        }
-        else if ( scheduleType == "sequential" )
-        {
-            std::stringstream ss;
-            ss << "The simulator uses " << moves.size() << " different moves in a sequential move schedule with " << chains[ chainsPerProcess[pid][0] ]->getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-            RBOUT( ss.str() );
-        }
-    }
-    
-#ifdef RB_MPI
-    // wait until all chains complete
-    MPI::COMM_WORLD.Barrier();
-#endif
-    
-    if ( generation == 0 )
-    {
-        // Monitor
-        for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-        {
-            
-            chains[ chainsPerProcess[pid][i] ]->startMonitors( kIterations );
-            
-            // monitor chain activeIndex only
-            if (chains[ chainsPerProcess[pid][i] ]->isChainActive() )
-            {
-                chains[ chainsPerProcess[pid][i] ]->monitor(0);
-            }
-            
-        }
-        
-    }
-    
-    /* Reset the monitors */
+    // Monitor
     for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
     {
-        RbVector<Monitor>& monitors = chains[ chainsPerProcess[pid][i] ]->getMonitors();
-        for (size_t i=0; i<monitors.size(); i++)
+        
+        chains[ chainsPerProcess[pid][i] ]->startMonitors( numCycles );
+        
+        // monitor chain activeIndex only
+        if (chains[ chainsPerProcess[pid][i] ]->isChainActive() )
         {
-            monitors[i].reset( kIterations );
+            chains[ chainsPerProcess[pid][i] ]->monitor(0);
         }
+        
     }
-    
-    // reset the counters for the move schedules
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-        RbVector<Move>& moves = chains[ chainsPerProcess[pid][i] ]->getMoves();
-        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
-        {
-            it->resetCounters();
-        }
-    }
-    
-    // run chain
-    for (size_t i = 1; i <= kIterations; i += swapInterval)
-    {
-        // run each chain for this process
-        for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
-        {
-            // get chain index from job vector
-            size_t chainIdx = chainsPerProcess[pid][j];
-            
-            // Advance cycles in blocks of size swapInterval
-            for (size_t k = 0; k < swapInterval && (i+k) <= kIterations; k++)
-            {
-                // advance chain j by a single cycle
-                chains[chainIdx]->nextCycle(true);
-                
-                // monitor chain activeIndex only
-                if (chains[chainIdx]->isChainActive() )
-                {
-                    chains[chainIdx]->monitor(i+k);
-                }
-                
-            } // loop over iterations for this swap interval
-            
-        } // loop over chains for this process
-        
-#ifdef RB_MPI
-        // wait until all chains complete
-        MPI::COMM_WORLD.Barrier();
-#endif
-        
-        // advance gen counter
-        currentGeneration += swapInterval;
-        
-        // perform chain swap
-        
-        swapChains();
-        
-    } // loop over generations
-    
-    generation += kIterations;
     
 }
+
 
 void Mcmcmc::synchronizeValues(void)
 {

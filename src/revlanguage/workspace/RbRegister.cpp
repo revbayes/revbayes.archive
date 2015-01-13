@@ -77,14 +77,15 @@
 
 /* Inference types (in folder "analysis") */
 #include "RlBurninEstimationConvergenceAssessment.h"
-#include "RlMcmc.h"
-#include "RLMcmcmc.h"
 #include "RlModel.h"
-#include "RlParallelMcmcmc.h"
 #include "RlPathSampler.h"
 #include "RlPowerPosterior.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlAncestralStateTrace.h"
+
+/// Stopping Rules ///
+#include "RlMaxIterationStoppingRule.h"
+#include "RlMaxTimeStoppingRule.h"
 
 /// Monitors ///
 
@@ -314,6 +315,9 @@
 #include "Func_biogeo_grm.h"
 
 /* Inference functions (in folder "functions/inference") */
+#include "Func_Mcmc.h"
+#include "Func_Mcmcmc.h"
+
 
 /* Internal functions (in folder ("functions/internal") */
 
@@ -450,6 +454,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         //        AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
         addFunction("v", new Func_workspaceVector<Move>() );
         
+        addFunction("v", new Func_workspaceVector<StoppingRule>() );
+        
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         
         /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
@@ -472,14 +478,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
-        addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
-        addTypeWithConstructor( "mcmcmc",                 new Mcmcmc()                                  );
         addTypeWithConstructor( "model",                  new Model()                                   );
-        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
         addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
-        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()                          );
         addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
 
+        /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
+        addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
+        addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
+        
 
         ////////////////////////////////////////////////////////////////////////////////
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
@@ -1081,6 +1087,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // mean function
         addFunction( "var",       new Func_variance()  );
+
+        
+        
+        /* Statistics functions (in folder "functions/statistics") */
+        
+        // MCMC constructor function
+        addFunction( "mcmc",   new Func_Mcmc() );
+        
+        // MCMCMC constructor function
+        addFunction( "mcmcmc",   new Func_Mcmcmc() );
 
         
  		/* Statistics functions (in folder "functions/statistics") */

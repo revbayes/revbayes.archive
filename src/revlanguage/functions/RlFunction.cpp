@@ -700,7 +700,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         /* Final test if we found a match */
         if ( !taken[i] )
         {
-            throw RbException("Superfluous argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' passed to function '" + getType() + "'.");
+            throw RbException("Superfluous argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' and name '" + passedArgs[i].getLabel() + "' passed to function '" + getType() + "'.");
         }
     }
 

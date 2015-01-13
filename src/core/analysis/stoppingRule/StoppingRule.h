@@ -4,6 +4,7 @@
 #include "Cloneable.h"
 
 #include <vector>
+#include <iostream>
 
 namespace RevBayesCore {
     
@@ -22,12 +23,15 @@ namespace RevBayesCore {
     class StoppingRule : public Cloneable {
         
     public:
-        virtual                                            ~StoppingRule(void) {}                                         //!< Virtual destructor
+        virtual                                            ~StoppingRule(void) {}                                       //!< Virtual destructor
         
         
         // public methods
+        virtual bool                                        checkAtIteration(size_t g) const = 0;                       //!< Should we check for convergence at the given iteration?
         virtual StoppingRule*                               clone(void) const = 0;                                      //!< Clone function. This is similar to the copy constructor but useful in inheritance.
-        virtual bool                                        stop(void) = 0;                                             //!< Should we stop now?
+        virtual bool                                        isConvergenceRule(void) const = 0;                          //!< Is this a convergence rule or a theshold rule?
+        virtual void                                        runStarted(void) = 0;                                       //!< The run just started. Here we can set any flags like the timer.
+        virtual bool                                        stop(size_t g) = 0;                                         //!< Should we stop now?
         
     protected:
         StoppingRule() {}
@@ -36,8 +40,8 @@ namespace RevBayesCore {
     };
     
     // Global functions using the class
-//    std::ostream&                       operator<<(std::ostream& o, const StoppingRule& x);                             //!< Overloaded output operator
-    
+    //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const StoppingRule& x);
 }
 
 #endif

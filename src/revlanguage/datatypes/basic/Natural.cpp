@@ -211,7 +211,8 @@ const std::string& Natural::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Natural::getClassTypeSpec(void) { 
+const TypeSpec& Natural::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Integer::getClassTypeSpec() ) );
     
@@ -220,7 +221,8 @@ const TypeSpec& Natural::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& Natural::getTypeSpec( void ) const {
+const TypeSpec& Natural::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

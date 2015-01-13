@@ -37,8 +37,6 @@ namespace RevLanguage {
         virtual                                        ~Function(void);                                                                     //!< Destructor
                                                         Function(const Function &x);                                                        //!< Copy constuctor
 
-        virtual void bogusFoo() = 0;
-        
         // Basic utility functions you have to override
         virtual Function*                               clone(void) const = 0;                                                              //!< Clone object
         static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
