@@ -20,13 +20,15 @@ Mntr_File::Mntr_File(void) : Monitor() {
 
 
 /** Clone object */
-Mntr_File* Mntr_File::clone(void) const {
+Mntr_File* Mntr_File::clone(void) const
+{
     
 	return new Mntr_File(*this);
 }
 
 
-void Mntr_File::constructInternalObject( void ) {
+void Mntr_File::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -39,7 +41,8 @@ void Mntr_File::constructInternalObject( void ) {
     sort( vars.begin(), vars.end() );
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
     std::vector<RevBayesCore::DagNode *> n;
-    for (std::vector<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    for (std::vector<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
+    {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
         n.push_back( node );
     }
@@ -47,10 +50,8 @@ void Mntr_File::constructInternalObject( void ) {
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
     bool app = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
-    bool ci = static_cast<const RlBoolean &>( chainIdx->getRevObject() ).getValue();
-    bool ch = static_cast<const RlBoolean &>( chainHeat->getRevObject() ).getValue();
     
-    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, ci, ch);
+    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app);
 }
 
 
@@ -89,8 +90,6 @@ const MemberRules& Mntr_File::getParameterRules(void) const {
         filemonitorMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("append"    , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("chainIdx"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("chainHeat" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
@@ -116,37 +115,40 @@ void Mntr_File::printValue(std::ostream &o) const {
 /** Set a member variable */
 void Mntr_File::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "" ) {
+    if ( name == "" )
+    {
         vars.push_back( var );
     }
-    else if ( name == "filename" ) {
+    else if ( name == "filename" )
+    {
         filename = var;
     }
-    else if ( name == "separator" ) {
+    else if ( name == "separator" )
+    {
         separator = var;
     }
-    else if ( name == "printgen" ) {
+    else if ( name == "printgen" )
+    {
         printgen = var;
     }
-    else if ( name == "prior" ) {
+    else if ( name == "prior" )
+    {
         prior = var;
     }
-    else if ( name == "posterior" ) {
+    else if ( name == "posterior" )
+    {
         posterior = var;
     }
-    else if ( name == "likelihood" ) {
+    else if ( name == "likelihood" )
+    {
         likelihood = var;
     }
-    else if (name == "chainIdx") {
-        chainIdx = var;
-    }
-    else if (name == "chainHeat") {
-        chainHeat = var;
-    }
-    else if (name == "append") {
+    else if (name == "append")
+    {
         append = var;
     }
-    else {
+    else
+    {
         RevObject::setConstParameter(name, var);
     }
 }

@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_quit, which is
- * the function used to quit RevBayes.
- *
- * @brief Implementation of Func_quit
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2012-09-07
- *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_ls.h"
@@ -32,20 +13,23 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_ls::Func_ls( void ) : Procedure() {
+Func_ls::Func_ls( void ) : Procedure()
+{
     
 }
 
 
 /** Clone object */
-Func_ls* Func_ls::clone( void ) const {
+Func_ls* Func_ls::clone( void ) const
+{
     
     return new Func_ls( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_ls::execute( void ) {
+RevPtr<RevVariable> Func_ls::execute( void )
+{
     
     bool printAll = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
     

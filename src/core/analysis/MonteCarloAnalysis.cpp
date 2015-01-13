@@ -9,7 +9,7 @@ using namespace RevBayesCore;
  *
  * \param[in]    m    The monte carlo sampler.
  */
-MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloSampler &m, size_t r) : Cloneable(),
+MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneable(),
     replicates( r )
 {
     
@@ -21,11 +21,30 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloSampler &m, size_t r) : C
         // create replicate Monte Carlo samplers
         for (size_t i = 1; i < replicates; ++i)
         {
-            runs.push_back( m );
+            runs.push_back( m->clone() );
+        }
+        
+        for (size_t i = 0; i < replicates; ++i)
+        {
+            runs[i]->setReplicateIndex( i+1 );
         }
     }
     
 }
+
+
+MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &m) : Cloneable(),
+replicates( m.replicates )
+{
+    
+    // create replicate Monte Carlo samplers
+    for (size_t i=0; i < replicates; ++i)
+    {
+        runs.push_back( m.runs[i]->clone() );
+    }
+    
+}
+
 
 
 
@@ -35,9 +54,80 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloSampler &m, size_t r) : C
 MonteCarloAnalysis::~MonteCarloAnalysis(void)
 {
     
-    // all the magic happens in the RbVector class.
+    // free the runs
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        MonteCarloSampler *sampler = runs[i];
+        delete sampler;
+    }
+    
     
 }
+
+
+/** Run burnin and autotune */
+void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
+{
+    
+    // Initialize objects needed by chain
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->initializeSampler();
+    }
+    
+    
+    // reset the counters for the move schedules
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->reset();
+    }
+    
+    // Let user know what we are doing
+    std::stringstream ss;
+    ss << "\n";
+    ss << "Running burn-in phase of Monte Carlo sampler for " << generations << " iterations.\n";
+    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+    ss << runs[0]->getStrategyDescription();
+    RBOUT( ss.str() );
+        
+    // Print progress bar (68 characters wide)
+    std::cout << std::endl;
+    std::cout << "Progress:" << std::endl;
+    std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+    std::cout.flush();
+    
+    
+    // Run the chain
+    size_t numStars = 0;
+    for (size_t k=1; k<=generations; k++)
+    {
+        size_t progress = 68 * (double) k / (double) generations;
+        if ( progress > numStars )
+        {
+            for ( ;  numStars < progress; ++numStars )
+                std::cout << "*";
+            std::cout.flush();
+        }
+        
+        for (size_t i=0; i<replicates; ++i)
+        {
+
+            runs[i]->nextCycle(false);
+        
+            // check for autotuning
+            if ( k % tuningInterval == 0 && k != generations )
+            {
+            
+                runs[i]->tune();
+            }
+        }
+        
+    }
+    
+    std::cout << std::endl;
+    
+}
+
 
 
 MonteCarloAnalysis* MonteCarloAnalysis::clone( void ) const
@@ -47,48 +137,39 @@ MonteCarloAnalysis* MonteCarloAnalysis::clone( void ) const
 }
 
 
-void MonteCarloAnalysis::run(void)
+/**
+ * Print out a summary of the current performance.
+ */
+void MonteCarloAnalysis::printPerformanceSummary( void ) const
+{
+    runs[0]->printOperatorSummary();
+}
+
+
+void MonteCarloAnalysis::run( RbVector<StoppingRule> rules )
 {
     /* Let user know what we are doing */
-    if ( runs[0].getCurrentGeneration() == 0 )
+    std::stringstream ss;
+    if ( runs[0]->getCurrentGeneration() == 0 )
     {
-        std::stringstream ss;
-        ss << "\nRunning MCMC simulation";
-        RBOUT( ss.str() );
+        ss << "\n";
+        ss << "Running MCMC simulation\n";
     }
     else
     {
-        std::stringstream ss;
-        ss << "Appending to previous MCMC simulation of " << runs[0].getCurrentGeneration() << " iterations";
-        RBOUT( ss.str() );
+        ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
     }
+    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+    ss << runs[0]->getStrategyDescription();
+    RBOUT( ss.str() );
     
-    if ( runs[0].getScheduleType() == "single" )
-    {
-        std::stringstream ss;
-        ss << "The simulator uses " << runs[0].getMoves().size() << " different moves, with a single move picked randomly per iteration" << std::endl;
-        RBOUT( ss.str() );
-    }
-    else if ( runs[0].getScheduleType() == "random" )
-    {
-        std::stringstream ss;
-        ss << "The simulator uses " << runs[0].getMoves().size() << " different moves in a random move schedule with " << runs[0].getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-        RBOUT( ss.str() );
-    }
-    else if ( runs[0].getScheduleType() == "sequential" )
-    {
-        std::stringstream ss;
-        ss << "The simulator uses " << runs[0].getMoves().size() << " different moves in a sequential move schedule with " << runs[0].getSchedule().getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-        RBOUT( ss.str() );
-    }
-    
-    if ( runs[0].getCurrentGeneration() == 0 )
+    if ( runs[0]->getCurrentGeneration() == 0 )
     {
         // Monitor
         for (size_t i=0; i<replicates; ++i)
         {
-            runs[i].startMonitors();
-            runs[i].monitor(0);
+            runs[i]->startMonitors();
+            runs[i]->monitor(0);
         }
     }
     
@@ -104,30 +185,55 @@ void MonteCarloAnalysis::run(void)
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
     {
-        RbVector<Move> &moves = runs[i].getMoves();
-        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
-        {
-            it->resetCounters();
-        }
+        runs[i]->reset();
     }
+    
+    // reset the stopping rules
+    for (size_t i=0; i<rules.size(); ++i)
+    {
+        rules[i].runStarted();
+    }
+
     
     // Run the chain
     bool finished = false;
-    size_t gen = runs[0].getCurrentGeneration();
+    bool converged = false;
+    size_t gen = runs[0]->getCurrentGeneration();
     do {
         ++gen;
         for (size_t i=0; i<replicates; ++i)
         {
-            runs[i].nextCycle(true);
+            runs[i]->nextCycle(true);
             
             // Monitor
-            runs[i].monitor(gen);
+            runs[i]->monitor(gen);
             
         }
         
+        converged = true;
+        size_t numConvergenceRules = 0;
         // do the stopping test
+        for (size_t i=0; i<rules.size(); ++i)
+        {
+            
+            if ( rules[i].isConvergenceRule() )
+            {
+                converged &= rules[i].checkAtIteration(gen) && rules[i].stop( gen );
+                ++numConvergenceRules;
+            }
+            else
+            {
+                if ( rules[i].checkAtIteration(gen) && rules[i].stop( gen ) )
+                {
+                    finished = true;
+                    break;
+                }
+            }
+            
+        }
+        converged &= numConvergenceRules > 0;
         
-    } while ( finished == false );
+    } while ( finished == false && converged == false);
     
     
     

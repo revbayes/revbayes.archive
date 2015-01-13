@@ -28,8 +28,11 @@ namespace RevBayesCore {
         
         
         // public methods
-        virtual MaxIterationStoppingRule*                   clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
-        bool                                                stop(void);                                                 //!< Should we stop now?
+        bool                                                checkAtIteration(size_t g) const;                           //!< Should we check for convergence at the given iteration?
+        MaxIterationStoppingRule*                           clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
+        bool                                                isConvergenceRule(void) const;                              //!< No, this is a threshold rule.
+        void                                                runStarted(void);                                           //!< The run just started. Here we do not need to do anything.
+        bool                                                stop(size_t g);                                             //!< Should we stop now?
         
     private:
         size_t                                              maxGenerations;

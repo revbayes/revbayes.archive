@@ -36,13 +36,6 @@ PriorMonitor::PriorMonitor(DagNode *n, int g) : Monitor(g,n), values(0,0.0)
 
 
 /* Constructor */
-PriorMonitor::PriorMonitor(const std::set<DagNode *> &n, int g) : Monitor(g,n), values(0,0.0)
-{
-    
-}
-
-
-/* Constructor */
 PriorMonitor::PriorMonitor(const std::vector<DagNode *> &n, int g) : Monitor(g,n), values(0,0.0)
 {
     

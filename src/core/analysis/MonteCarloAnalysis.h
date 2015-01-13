@@ -4,6 +4,7 @@
 #include "Cloneable.h"
 #include "MonteCarloSampler.h"
 #include "RbVector.h"
+#include "StoppingRule.h"
 
 #include <vector>
 
@@ -24,19 +25,21 @@ namespace RevBayesCore {
     class MonteCarloAnalysis : public Cloneable {
         
     public:
-        MonteCarloAnalysis(const MonteCarloSampler &m, size_t r);
+        MonteCarloAnalysis(MonteCarloSampler *m, size_t r);
+        MonteCarloAnalysis(const MonteCarloAnalysis &m);
         virtual                                            ~MonteCarloAnalysis(void);                                   //!< Virtual destructor
         
         
         // public methods
         MonteCarloAnalysis*                                 clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                burnin(size_t g, size_t ti);
-        void                                                run(void);
+        void                                                printPerformanceSummary(void) const;
+        void                                                run(RbVector<StoppingRule> r);
         void                                                runPriorSampler(size_t g);
 
     protected:
         
-        RbVector<MonteCarloSampler>                         runs;
+        std::vector<MonteCarloSampler*>                     runs;
         size_t                                              replicates;
         
     };

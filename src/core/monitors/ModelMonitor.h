@@ -1,10 +1,8 @@
 #ifndef ModelMonitor_H
 #define ModelMonitor_H
 
-#include "Monitor.h"
+#include "AbstractFileMonitor.h"
 
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -31,12 +29,11 @@ namespace RevBayesCore {
      * @since 2012-06-21, version 1.0
      *
      */
-    class ModelMonitor : public Monitor {
+    class ModelMonitor : public AbstractFileMonitor {
         
     public:
         // Constructors and Destructors
         ModelMonitor(unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
-        ModelMonitor(const ModelMonitor &m);
         virtual ~ModelMonitor(void);
         
         
@@ -44,20 +41,8 @@ namespace RevBayesCore {
         // basic methods
         ModelMonitor*                       clone(void) const;                                                  //!< Clone the object
         
-        // Monitor functions
-        void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
-        
-        // ModelMonitor functions
-        void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                openStream(void);                                                   //!< Open the stream for writing
-        void                                printHeader(void);                                                  //!< Print header
-        
         // getters and setters
-        void                                setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
-        void                                setModel(Model *m);                                                 //!< Set the model for which the monitor should print values
-        void                                setPrintLikelihood(bool tf);                                        //!< Set flag whether to print the likelihood
-        void                                setPrintPosterior(bool tf);                                         //!< Set flag whether to print the posterior probability
-        void                                setPrintPrior(bool tf);                                             //!< Set flag whether to print the prior probability
+        void                                setModel(Model* m);
         void                                setStochasticNodesOnly(bool tf);                                    //!< Set if only stochastic nodes should be monitored
     
     private:
@@ -65,25 +50,8 @@ namespace RevBayesCore {
         void                                resetDagNodes(void);                                                //!< Extract the variable to be monitored again.
         
         // members
-//#ifdef RB_MPI
-//        std::stringstream                   outStream;
-//#else
-        std::fstream                        outStream;
-//#endif
-        
-        // parameters
-        std::string                         filename;                                                           //!< Filename to which we print the values
-        std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
-        bool                                posterior;                                                          //!< Flag if to print the posterior probability
-        bool                                likelihood;                                                         //!< Flag if to print the likelihood
-        bool                                prior;                                                              //!< Flag if to print the prior probability
-        bool                                append;                                                             //!< Flag if to append to existing file
         bool                                stochasticNodesOnly;                                                //!< Flag if only stochastic nodes should be printed
-        
-#ifdef RB_MPI
-        MPI_File                            file;
-#endif
-        
+                
     };
     
 }

@@ -10,8 +10,6 @@ namespace RevLanguage {
     public:
         virtual                                         ~Procedure(void);                                                                   //!< Destructor
         
-        void bogusFoo() {}
-        
         virtual RevPtr<RevVariable>                     execute(void) = 0;                                                                  //!< Create a random variable from this distribution
         
         // Basic utility functions you have to override
