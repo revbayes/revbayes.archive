@@ -529,7 +529,7 @@ void FunctionTable::printValue(std::ostream& o, bool env) const
     }
     
     // Print the parent table too
-    if ( parentTable != NULL )
+    if ( parentTable != NULL && env == true )
     {
         parentTable->printValue(o , env );
     }
