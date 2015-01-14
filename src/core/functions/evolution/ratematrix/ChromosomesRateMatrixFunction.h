@@ -27,16 +27,16 @@ namespace RevBayesCore {
     class ChromosomesRateMatrixFunction : public TypedFunction<RateMatrix> {
 
     public:
-        ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r);
+        ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l);
         
-        virtual                                            ~ChromosomesRateMatrixFunction(void);                                                    //!< Virtual destructor
+        virtual                                     ~ChromosomesRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        ChromosomesRateMatrixFunction*                              clone(void) const;                                                              //!< Create an independent clone
-        void                                                update(void);
+        ChromosomesRateMatrixFunction*              clone(void) const;                                                              //!< Create an independent clone
+        void                                        update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
+        void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
     private:
         
@@ -46,6 +46,9 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                 lambda;
         const TypedDagNode<double>*                 delta;
         const TypedDagNode<double>*                 rho;
+        const TypedDagNode<double>*                 mu;
+        const TypedDagNode<double>*                 lambda_l;
+        const TypedDagNode<double>*                 delta_l;
 
     };
     
