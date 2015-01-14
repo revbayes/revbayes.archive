@@ -28,6 +28,9 @@ RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n
     setLambda(1.0);
     setRho(1.0);
     setDelta(1.0);
+    setMu(1.0);
+    setLambda_l(1.0);
+    setDelta_l(1.0);
     
     updateMatrix();
 }
@@ -51,12 +54,16 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
 			(*theRateMatrix)[i][j] = 0.0;
 			if (j != 0 && i != 0) {
 				if (j == i+1) {
-					(*theRateMatrix)[i][j] = lambda;
+					(*theRateMatrix)[i][j] = lambda + (lambda_l * (i-1) );
 				} else if (j == i-1) {
-					(*theRateMatrix)[i][j] = delta;
+					(*theRateMatrix)[i][j] = delta + (delta_l * (i-1) );
 				} else if (j == (2*i)) {
 					(*theRateMatrix)[i][j] = rho;
-				} 
+                } else if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) ) {
+                    (*theRateMatrix)[i][j] = mu;
+                } else if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) ) {
+                    (*theRateMatrix)[i][j] = mu;
+                }
 			}
         }
     }	
@@ -72,7 +79,6 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
 
 /** Calculate the transition probabilities */
 void RateMatrix_Chromosomes::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
-   // std::cout << "In calculateTransitionProbabilities: "<< t <<std::endl;
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
@@ -163,6 +169,33 @@ void RateMatrix_Chromosomes::setRho( double r ) {
 void RateMatrix_Chromosomes::setDelta( double d ) {
     
     delta = d;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
+
+void RateMatrix_Chromosomes::setMu( double m ) {
+    
+    mu = m;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
+
+void RateMatrix_Chromosomes::setLambda_l( double l ) {
+    
+    lambda_l = l;
+    
+    // set flags
+    needsUpdate = true;
+    
+}
+
+void RateMatrix_Chromosomes::setDelta_l( double d ) {
+    
+    delta_l = d;
     
     // set flags
     needsUpdate = true;
