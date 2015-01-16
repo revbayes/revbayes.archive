@@ -16,11 +16,18 @@
 
 using namespace RevBayesCore;
 
-TreeScale::TreeScale(StochasticNode<TimeTree> *t, double d, bool tu, double w) : SimpleMove( t, w, tu),
+TreeScale::TreeScale(StochasticNode<TimeTree> *t, StochasticNode<double> *r, double d, bool tu, double w) : CompoundMove( std::vector<DagNode*>(), w, tu),
     tree( t ),
+    rootAge( r ),
     delta( d )
 {
-        
+    
+    nodes.insert( tree );
+    if ( rootAge != NULL )
+    {
+        nodes.insert( rootAge );
+    }
+    
 }
 
 
@@ -43,7 +50,7 @@ const std::string& TreeScale::getMoveName( void ) const
 
 
 /** Perform the move */
-double TreeScale::performSimpleMove( void )
+double TreeScale::performCompoundMove( void )
 {
     
     // Get random number generator    
@@ -66,8 +73,10 @@ double TreeScale::performSimpleMove( void )
     // rescale the subtrees
     TreeUtilities::rescaleSubtree(&tau, &node, scalingFactor );
     
-    // rescale root age
-    tau.setAge( node.getIndex(), my_age * scalingFactor );
+    if ( rootAge != NULL )
+    {
+        rootAge->setValue( my_age * scalingFactor );
+    }
     
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor ) * tau.getNumberOfInteriorNodes();
@@ -84,7 +93,7 @@ void TreeScale::printParameterSummary(std::ostream &o) const
 }
 
 
-void TreeScale::rejectSimpleMove( void )
+void TreeScale::rejectCompoundMove( void )
 {
     
     TimeTree& tau = tree->getValue();
@@ -94,8 +103,10 @@ void TreeScale::rejectSimpleMove( void )
     // undo the proposal
     TreeUtilities::rescaleSubtree(&tau, &node, storedAge / node.getAge() );
     
-    // undo root age
-    tau.setAge( node.getIndex(), storedAge );
+    if ( rootAge != NULL )
+    {
+        rootAge->setValue( storedAge );
+    }
     
     
 #ifdef ASSERTIONS_TREE
@@ -111,9 +122,16 @@ void TreeScale::rejectSimpleMove( void )
 void TreeScale::swapNode(DagNode *oldN, DagNode *newN)
 {
     // call the parent method
-    SimpleMove::swapNode(oldN, newN);
+    CompoundMove::swapNode(oldN, newN);
     
-    tree = static_cast<StochasticNode<TimeTree>* >(newN);
+    if ( oldN == tree )
+    {
+        tree = static_cast<StochasticNode<TimeTree>* >(newN);
+    }
+    else if ( oldN == rootAge )
+    {
+        rootAge = static_cast<StochasticNode<double>* >(newN);
+    }
     
 }
 
