@@ -36,20 +36,15 @@ namespace RevBayesCore {
 	
     public:
         // Constructors and Destructors
-		AncestralStateMonitor(TypedDagNode<treeType> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
+		AncestralStateMonitor(TypedDagNode<treeType> *t, DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
 		
         AncestralStateMonitor(const AncestralStateMonitor &m);
         virtual ~AncestralStateMonitor(void);
         
-        
-        
-        // basic methods
         AncestralStateMonitor*              clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
-        
-        // AncestralStateMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing
         void                                openStream(void);                                                   //!< Open the stream for writing
         void                                printHeader(void);                                                  //!< Print header
@@ -59,8 +54,6 @@ namespace RevBayesCore {
 		void								swapNode(DagNode *oldN, DagNode *newN);
 		
     private:
-        // helper methods
-        void                                resetDagNodes(void);                                                //!< Extract the variable to be monitored again.
         
         // members
         std::fstream                        outStream;
@@ -70,7 +63,7 @@ namespace RevBayesCore {
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
 		bool                                append;                                                             //!< Flag if to append to existing file
 		TypedDagNode<treeType>*             tree;
-		RevBayesCore::DagNode*              character;
+		DagNode*                            ctmc;
 		bool                                stochasticNodesOnly;
     };
     
@@ -90,19 +83,22 @@ using namespace RevBayesCore;
 
 /* Constructor */
 template<class characterType, class treeType>
-AncestralStateMonitor<characterType, treeType>::AncestralStateMonitor(TypedDagNode<treeType> *t, RevBayesCore::DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
+AncestralStateMonitor<characterType, treeType>::AncestralStateMonitor(TypedDagNode<treeType> *t, DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
     outStream(),
     filename( fname ),
     separator( del ),
     append( false ),
     tree( t ),
-    character( ch ),
+    ctmc( ch ),
     stochasticNodesOnly( false )
 {
 	
 	nodes.push_back( tree );
-	nodes.push_back( character );
+	nodes.push_back( ctmc );
     
+    // tell the nodes that we have a reference to it (avoids deletion)
+    tree->incrementReferenceCount();
+    ctmc->incrementReferenceCount();
 }
 
 
@@ -116,7 +112,7 @@ AncestralStateMonitor<characterType, treeType>::AncestralStateMonitor( const Anc
     separator( m.separator ),
     append( m.append ),
     tree( m.tree ),
-    character( m.character ),
+    ctmc( m.ctmc ),
     stochasticNodesOnly( m.stochasticNodesOnly )
 {
     if (m.outStream.is_open())
@@ -182,17 +178,13 @@ void AncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen)
         // print the iteration number first
         outStream << gen;
 		
-		// convert 'character' which is DagNode to a StochasticNode
-		// so that we can call character->getDistribution()
-		StochasticNode<PhyloCTMCSiteHomogeneous<characterType, treeType> > *char_stoch 
-		    = (StochasticNode<PhyloCTMCSiteHomogeneous<characterType, treeType> >*) character;			
+		// convert 'ctmc' from a DagNode to a StochasticNode so that we can call ctmc->getDistribution()
+		StochasticNode<PhyloCTMCSiteHomogeneous<characterType, treeType> > *char_stoch = (StochasticNode<PhyloCTMCSiteHomogeneous<characterType, treeType> >*) ctmc;
 		
-		// now we get the TypedDistribution and need to cast it  
-		// into an AbstractSiteHomogeneousMixtureCharEvoModel distribution
-		PhyloCTMCSiteHomogeneous<characterType, treeType> *dist
-		    = (PhyloCTMCSiteHomogeneous<characterType, treeType>*) &char_stoch->getDistribution();
+		// now  get the TypedDistribution and cast it as an AbstractSiteHomogeneousMixtureCharEvoModel distribution
+		PhyloCTMCSiteHomogeneous<characterType, treeType> *dist = (PhyloCTMCSiteHomogeneous<characterType, treeType>*) &char_stoch->getDistribution();
 		
-		// call update for the marginal node likelihoods
+		// update the marginal node likelihoods
 		dist->updateMarginalNodeLikelihoods();
         
 		std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
@@ -201,9 +193,8 @@ void AncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen)
 		for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
 		{		
 			
-			// we need to print values for all internal nodes.
-			// We assume that tip nodes always precede
-			// internal nodes.
+			// we need to print values for all internal nodes
+			// we assume that tip nodes always precede internal nodes
 			TopologyNode* the_node = nodes[i];
 			
 			if ( !the_node->isTip() ) {
@@ -214,7 +205,6 @@ void AncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen)
 				// for each node print
 				// site1,site2,site3
 				
-				// TODO: make this function a template so as to accept other CharacterState objects
 				std::vector<characterType> ancestralStates = dist->drawAncestralStatesForNode( *the_node );
 				
 				// print out ancestral states....
@@ -255,6 +245,7 @@ void AncestralStateMonitor<characterType, treeType>::openStream(void)
     
 }
 
+
 /** 
  * Print header for monitored values 
  */
@@ -284,50 +275,6 @@ void AncestralStateMonitor<characterType, treeType>::printHeader()
 
 
 /**
- * Reset the currently monitored DAG nodes by extracting the DAG nodes from the model again 
- * and store this in the set of DAG nodes.
- */
-template<class characterType, class treeType>
-void AncestralStateMonitor<characterType, treeType>::resetDagNodes( void )
-{
-    
-    // for savety we empty our dag nodes
-    nodes.clear();
-    
-    if ( model != NULL )
-    {
-        // we only want to have each nodes once
-        // this should by default happen by here we check again
-        std::set<std::string> varNames;
-        
-        const std::vector<DagNode*> &n = model->getDagNodes();
-        for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
-        {
-            
-            // only simple numeric variable can be monitored (i.e. only integer and real numbers)
-            if ( (*it)->isSimpleNumeric() && !(*it)->isClamped())
-            {
-				if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" && !(*it)->isHidden() ) || ( (*it)->isStochastic() && !(*it)->isClamped() && (*it)->isHidden() == false ) )
-                {
-                    if ( varNames.find( (*it)->getName() ) == varNames.end() )
-                    {
-                        nodes.push_back( *it );
-                        varNames.insert( (*it)->getName() );
-                    }
-                    else
-                    {
-                        std::cerr << "Trying to add variable with name '" << (*it)->getName() << "' twice." << std::endl;
-                    }
-                }
-            }
-			
-        }
-    }
-    
-}
-
-
-/**
  * Set flag about whether to append to an existing file. 
  *
  * \param[in]   tf   Flag if to append.
@@ -341,19 +288,20 @@ void AncestralStateMonitor<characterType, treeType>::setAppend(bool tf)
 }
 
 
-
 template<class characterType, class treeType>
 void AncestralStateMonitor<characterType, treeType>::swapNode(DagNode *oldN, DagNode* newN)
 {
-	Monitor::swapNode( oldN, newN );
+	
 	if ( oldN == tree ) 
 	{
 		tree = static_cast< TypedDagNode<treeType> *>( newN );
 	}
-	else if ( oldN == character )
+	else if ( oldN == ctmc )
 	{
-		character = newN;
+		ctmc = newN;
 	}
+
+    Monitor::swapNode( oldN, newN );
 	
 }
 
