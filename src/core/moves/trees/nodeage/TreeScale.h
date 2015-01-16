@@ -21,16 +21,17 @@
 #include <set>
 #include <string>
 
-#include "CompoundMove.h"
+#include "SimpleMove.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
 
 namespace RevBayesCore {
     
-    class TreeScale : public CompoundMove {
-        
+//    class TreeScale : public CompoundMove {
+    class TreeScale : public SimpleMove {
+    
     public:
-        TreeScale( StochasticNode<TimeTree> *t, StochasticNode<double> *r, double d, bool tuning, double w);                                                          //!<  constructor
+        TreeScale( StochasticNode<TimeTree> *t, double d, bool tuning, double w);                                                          //!<  constructor
         
         // Basic utility functions
         TreeScale*                      clone(void) const;                                                                  //!< Clone object
@@ -38,16 +39,16 @@ namespace RevBayesCore {
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-        double                          performCompoundMove(void);                                                            //!< Perform move
+        double                          performSimpleMove(void);                                                            //!< Perform move
         void                            printParameterSummary(std::ostream &o) const;
-        void                            rejectCompoundMove(void);
+        void                            rejectSimpleMove(void);
         void                            tune(void);
+        
         
     private:   
         
         // member variables
         StochasticNode<TimeTree>*       tree;
-        StochasticNode<double>*         rootAge;
         
         // parameters
         double                          delta;

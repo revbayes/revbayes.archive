@@ -40,16 +40,16 @@ void Move_TreeScale::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     
-    RevBayesCore::StochasticNode<double> *ra = NULL;
-    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
-    {
-        RevBayesCore::TypedDagNode<double> *tmp = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
-        ra = static_cast<RevBayesCore::StochasticNode<double> *>( tmp );
-    }
+//    RevBayesCore::StochasticNode<double> *ra = NULL;
+//    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
+//    {
+//        RevBayesCore::TypedDagNode<double> *tmp = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+//        ra = static_cast<RevBayesCore::StochasticNode<double> *>( tmp );
+//    }
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double l = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     bool tune = static_cast<const RlBoolean &>( tuning->getRevObject() ).getValue();
-    value = new RevBayesCore::TreeScale(t, ra, l, tune, w);
+    value = new RevBayesCore::TreeScale(t, l, tune, w);
 }
 
 
@@ -81,7 +81,7 @@ const MemberRules& Move_TreeScale::getParameterRules(void) const
     if ( !rulesSet )
     {
         moveMemberRules.push_back( new ArgumentRule( "tree"   , TimeTree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+//        moveMemberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
         moveMemberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
         moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
@@ -131,10 +131,10 @@ void Move_TreeScale::setConstParameter(const std::string& name, const RevPtr<con
     {
         tree = var;
     }
-    else if ( name == "rootAge" )
-    {
-        rootAge = var;
-    }
+//    else if ( name == "rootAge" )
+//    {
+//        rootAge = var;
+//    }
     else if ( name == "delta" )
     {
         delta = var;
