@@ -118,7 +118,7 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
 {
     
     bool updateAll = true;
-    if ( this->dagNode != NULL )
+    if ( this->dagNode != NULL && !false )
     {
         const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
         if ( indices.size() > 0 )

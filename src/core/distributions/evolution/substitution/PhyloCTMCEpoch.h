@@ -106,6 +106,7 @@ RevBayesCore::PhyloCTMCEpoch<charType>* RevBayesCore::PhyloCTMCEpoch<charType>::
 template<class charType>
 void RevBayesCore::PhyloCTMCEpoch<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
+//    std::cout << "( rates " << epochRateMatrices->getValue()[0][1][3] << " " << epochRateMatrices->getValue()[0][1][4] << " )\n";
     
     // get the root frequencies
     const std::vector<double> &f                    = this->getRootFrequencies();
@@ -490,6 +491,10 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         double dt = t_curr - t_next;
 
         // first, get the rate matrix for this branch
+        if (nodeIdx == 99) {
+            
+            true;
+        }
         const RateMatrix *rm;
         rm = &epochRateMatrices->getValue()[epochIdx];
         
@@ -531,6 +536,11 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
     }
     
     this->transitionProbMatrices[0] = TransitionProbabilityMatrix(tp);
+    if (nodeIdx==99) {
+        
+        std::cout << tp << "\n";
+        true;
+    }
     
 }
 

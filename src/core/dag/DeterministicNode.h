@@ -268,7 +268,7 @@ template<class valueType>
 const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) const
 {
     
-    if ( needsUpdate )
+    if ( needsUpdate || !true )
     {
         const_cast<TypedFunction<valueType> *>(function)->update();
         needsUpdate = false;
