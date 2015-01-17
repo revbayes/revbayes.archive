@@ -40,13 +40,6 @@ RateMatrix& RateMatrix::assign(const Assignable &m)
     }
 }
 
-
-RateMatrix& RateMatrix::assign(const RateMatrix &m)
-{
-    return operator=(m);
-}
-
-
 size_t RateMatrix::getNumberOfStates( void ) const
 {
     return numStates;

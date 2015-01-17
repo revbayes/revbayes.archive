@@ -87,10 +87,6 @@ double ScaleProposal::doProposal( void )
     double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
     val *= scalingFactor;
     
-    if (variable->getName() == "clock_bg") {
-//        std::cout << "clock_bg: " << storedValue << " -> " << val << "\n";
-        true;
-    }
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor );
     

@@ -212,10 +212,6 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // that will set the flags for recomputation
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        if ((*it)->getName() == "b") {
-            
-            true;
-        }
         (*it)->touch();
     }
     
@@ -225,7 +221,6 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        std::cout << "        nodes " << (*it)->getName() << " " << (*it)->getLnProbabilityRatio() << " " << (*it)->getLnProbability() << "\n";
         if ( (*it)->isClamped() )
         {
             lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
@@ -239,19 +234,13 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
-        double p1 = (*it)->getLnProbabilityRatio();
-        double p2 = (*it)->getLnProbability();
-        std::cout << "affectedNodes " << (*it)->getName() << " " << p1 << " " << p2 << "\n";
-
         if ( (*it)->isClamped() )
         {
-//            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-            lnLikelihoodRatio += p1;
+            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
         }
         else
         {
-//            lnPriorRatio += (*it)->getLnProbabilityRatio();
-            lnPriorRatio += p1;
+            lnPriorRatio += (*it)->getLnProbabilityRatio();
         }
     }
     
@@ -281,15 +270,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-    
-        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-        {
-            if ((*it)->getName() == "clock_bg") {
-                std::cout << lnAcceptanceRatio << " = " << lnPosteriorRatio << " + " << lnHastingsRatio << "\n";
-                true;
-            }
-        }
-        
+
         if (lnAcceptanceRatio >= 0.0)
         {
             numAccepted++;
@@ -440,7 +421,7 @@ void MetropolisHastingsMove::resetMoveCounters( void )
  * Swap the current variable for a new one.
  *
  * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new RevVariable.
+ * \param[in]     newN     The new variable.
  */
 void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN) 
 {

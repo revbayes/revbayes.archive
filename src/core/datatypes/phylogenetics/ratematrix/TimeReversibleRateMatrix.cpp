@@ -6,6 +6,7 @@
 //  Copyright 2013 __MyCompanyName__. All rights reserved.
 //
 
+#include "RbException.h"
 #include "TimeReversibleRateMatrix.h"
 
 using namespace RevBayesCore;
@@ -24,13 +25,19 @@ TimeReversibleRateMatrix::~TimeReversibleRateMatrix(void)
     // nothing to do
 }
 
-
-TimeReversibleRateMatrix& TimeReversibleRateMatrix::assign(const TimeReversibleRateMatrix &m)
+TimeReversibleRateMatrix& TimeReversibleRateMatrix::assign(const Assignable &m)
 {
-    return operator=(m);
+    
+    const TimeReversibleRateMatrix *rm = dynamic_cast<const TimeReversibleRateMatrix*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
-
-
 
 /** Calculate the average rate for the rate matrix */
 double TimeReversibleRateMatrix::averageRate(void) const
