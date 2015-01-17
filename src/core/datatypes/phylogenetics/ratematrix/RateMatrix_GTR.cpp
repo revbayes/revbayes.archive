@@ -83,6 +83,12 @@ RateMatrix_GTR& RateMatrix_GTR::operator=(const RateMatrix_GTR &r)
 }
 
 
+RateMatrix_GTR& RateMatrix_GTR::assign(const RateMatrix_GTR &m)
+{
+    return operator=(m);
+}
+
+
 
 /** Do precalculations on eigenvectors */
 void RateMatrix_GTR::calculateCijk(void)

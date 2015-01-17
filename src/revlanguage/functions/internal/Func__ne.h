@@ -31,14 +31,14 @@ namespace RevLanguage {
         Func__ne();
         
         // Basic utility functions
-        Func__ne*                               clone(void) const;                                          //!< Clone the object
-        static const std::string&               getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&                  getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&                         getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func__ne*                                   clone(void) const;                                          //!< Clone the object
+        static const std::string&                   getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        RevBayesCore::TypedFunction<bool>*      createFunction(void) const;                                 //!< Create a function object
-        const ArgumentRules&                    getArgumentRules(void) const;                               //!< Get argument rules
+        RevBayesCore::TypedFunction<unsigned int>*  createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -70,7 +70,7 @@ RevLanguage::Func__ne<leftValType,rightValType>* RevLanguage::Func__ne<leftValTy
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename leftValType, typename rightValType>
-RevBayesCore::TypedFunction<bool>* RevLanguage::Func__ne<leftValType,rightValType>::createFunction( void ) const
+RevBayesCore::TypedFunction<unsigned int>* RevLanguage::Func__ne<leftValType,rightValType>::createFunction( void ) const
 {
     
     const RevBayesCore::TypedDagNode<typename leftValType::valueType>* leftVal = static_cast<const leftValType &>( args[0].getVariable()->getRevObject() ).getDagNode();

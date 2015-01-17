@@ -29,11 +29,10 @@
 
 namespace RevBayesCore {
     
-    class LogicalUnotFunction : public TypedFunction<bool> {
+    class LogicalUnotFunction : public TypedFunction<unsigned int> {
         
     public:
-        LogicalUnotFunction(const TypedDagNode<bool> * l);
-        LogicalUnotFunction(const LogicalUnotFunction &n);                                                                                        //!< Copy constructor
+        LogicalUnotFunction(const TypedDagNode<unsigned int> * l);
         virtual                                            ~LogicalUnotFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -46,7 +45,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<bool>*                           left;
+        const TypedDagNode<unsigned int>*                   left;
         
     };
     

@@ -29,11 +29,10 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class NotEqualFunction : public TypedFunction<bool> {
+    class NotEqualFunction : public TypedFunction<unsigned int> {
         
     public:
         NotEqualFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
-        NotEqualFunction(const NotEqualFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~NotEqualFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -54,7 +53,10 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::NotEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::NotEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+    left( l ),
+    right( r )
+{
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
@@ -64,15 +66,8 @@ RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::NotEqualFunction(c
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::NotEqualFunction(const NotEqualFunction<leftValueType,rightValueType> &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
-    // no need to add parameters, happens automatically
-    
-    update();
-}
-
-
-template <class leftValueType, class rightValueType>
-RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::~NotEqualFunction( void ) {
+RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::~NotEqualFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 

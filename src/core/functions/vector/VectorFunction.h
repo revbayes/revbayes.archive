@@ -56,6 +56,11 @@ namespace RevBayesCore {
     
 }
 
+
+#include "Assign.h"
+#include "Assignable.h"
+
+
 template <class valueType>
 RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args) : TypedFunction< RbVector<valueType> >( new RbVector<valueType>() ),
     vectorParams( args )
@@ -126,7 +131,8 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
             updateAll = false;
             for (std::set<size_t>::const_iterator it = indices.begin(); it != indices.end(); ++it)
             {
-                (*this->value)[*it] = vectorParams[*it]->getValue();
+                Assign<valueType, IsDerivedFrom<valueType, Assignable>::Is >::doAssign( (*this->value)[*it], vectorParams[*it]->getValue() );
+//                (*this->value)[*it] = vectorParams[*it]->getValue();
             }
             
         }

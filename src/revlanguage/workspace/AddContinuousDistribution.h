@@ -1,7 +1,9 @@
-#ifndef AddDistribution_h
-#define AddDistribution_h
+#ifndef AddContinuousDistribution_h
+#define AddContinuousDistribution_h
 
+#include "DistributionFunctionCdf.h"
 #include "DistributionFunctionPdf.h"
+#include "DistributionFunctionQuantileContinuous.h"
 #include "DistributionFunctionRv.h"
 #include "RlTypedDistribution.h"
 #include "StringUtilities.h"
@@ -13,13 +15,15 @@
  * @return
  */
 template <typename T>
-void AddDistribution(std::string name, RevLanguage::TypedDistribution<T> *dist)
+void AddContinuousDistribution(std::string name, RevLanguage::TypedDistribution<T> *dist)
 {
-
+    
     RevLanguage::Workspace::globalWorkspace().addDistribution("dn"+StringUtilities::firstCharToUpper(name), dist );
     RevLanguage::Workspace::globalWorkspace().addFunction("d"+name, new DistributionFunctionPdf<T>( dist->clone() ) );
+//    RevLanguage::Workspace::globalWorkspace().addFunction("p"+name, new DistributionFunctionCdf( dist->clone() ) );
+//    RevLanguage::Workspace::globalWorkspace().addFunction("q"+name, new DistributionFunctionQuantile<T>( dist->clone() ) );
     RevLanguage::Workspace::globalWorkspace().addFunction("r"+name, new DistributionFunctionRv<T>( dist->clone() ) );
-
+    
 }
 
 
