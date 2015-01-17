@@ -18,12 +18,15 @@
 
 using namespace RevBayesCore;
 
-ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r) : TypedFunction<RateMatrix>( new RateMatrix_Chromosomes(n->getValue()) ), lambda( l ), delta( d ), rho( r ) {
+ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l) : TypedFunction<RateMatrix>( new RateMatrix_Chromosomes(n->getValue()) ), lambda( l ), delta( d ), rho( r ), mu( m ), lambda_l( l_l ), delta_l( d_l ) {
 
     addParameter( lambda );
     addParameter( delta );
     addParameter( rho );
-
+    addParameter( lambda_l );
+    addParameter( delta_l );
+    addParameter( mu );
+    
     update();
 }
 
@@ -44,10 +47,16 @@ void ChromosomesRateMatrixFunction::update( void ) {
     double la = lambda->getValue();
     double de = delta->getValue();
     double rh = rho->getValue();
+    double la_l = lambda_l->getValue();
+    double de_l = delta_l->getValue();
+    double m = mu->getValue();
 
     static_cast< RateMatrix_Chromosomes* >(value)->setLambda( la );
     static_cast< RateMatrix_Chromosomes* >(value)->setDelta( de );
     static_cast< RateMatrix_Chromosomes* >(value)->setRho( rh );
+    static_cast< RateMatrix_Chromosomes* >(value)->setMu( m );
+    static_cast< RateMatrix_Chromosomes* >(value)->setLambda_l( la_l );
+    static_cast< RateMatrix_Chromosomes* >(value)->setDelta_l( de_l );
 
     static_cast< RateMatrix_Chromosomes* >(value)->updateMatrix();
     
@@ -65,6 +74,14 @@ void ChromosomesRateMatrixFunction::swapParameterInternal(const DagNode *oldP, c
     }
     else if (oldP == rho) {
         rho = static_cast<const TypedDagNode<double>* >( newP );
+    } else if (oldP == mu) {
+        mu = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == delta_l) {
+        delta_l = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == lambda_l) {
+        lambda_l = static_cast<const TypedDagNode<double>* >( newP );
     }
     
 }
