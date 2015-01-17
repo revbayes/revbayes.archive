@@ -1,4 +1,5 @@
 #include "RateMatrix.h"
+#include "RbException.h"
 #include "RbMathMatrix.h"
 
 #include <fstream>
@@ -26,13 +27,35 @@ RateMatrix::~RateMatrix(void)
 }
 
 
-size_t RateMatrix::getNumberOfStates( void ) const {
+RateMatrix& RateMatrix::assign(const Assignable &m)
+{
+    const RateMatrix *rm = dynamic_cast<const RateMatrix*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+}
+
+
+RateMatrix& RateMatrix::assign(const RateMatrix &m)
+{
+    return operator=(m);
+}
+
+
+size_t RateMatrix::getNumberOfStates( void ) const
+{
     return numStates;
 }
 
 
 
-size_t RateMatrix::size( void ) const {
+size_t RateMatrix::size( void ) const
+{
     return numStates;
 }
 

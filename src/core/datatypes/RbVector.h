@@ -120,7 +120,7 @@ namespace RevBayesCore {
     }
     
     template <>
-    inline void RbVector<bool>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
+    inline void RbVector<unsigned int>::printElement(std::ostream& o, size_t idx, std::string sep, int l, bool left) const
     {
         std::stringstream ss;
         ss << this->operator[](idx);

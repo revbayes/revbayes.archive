@@ -68,7 +68,7 @@ namespace RevBayesCore {
     inline bool                                  TypedDagNode<RbVector<double> >::isSimpleNumeric(void) const { return true; }
 
     template<>
-    inline void                                  TypedDagNode<bool>::printValue(std::ostream &o, int l, bool left) const {
+    inline void                                  TypedDagNode<unsigned int>::printValue(std::ostream &o, int l, bool left) const {
                                                         std::stringstream ss;
                                                         if ( this->getValue() == true ) ss << "TRUE"; else ss << "FALSE";
                                                         std::string s = ss.str();
@@ -110,7 +110,7 @@ namespace RevBayesCore {
     
     
     template<>
-    inline void TypedDagNode<bool>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    inline void TypedDagNode<unsigned int>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
     {
         
         std::stringstream ss;
