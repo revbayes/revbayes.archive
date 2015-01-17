@@ -309,7 +309,7 @@
 #include "Func_vt.h"
 #include "Func_wag.h"
 #include "Func_chromosomes.h"
-#include "Func_mk1.h"
+
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
@@ -837,7 +837,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
         addFunction( "fnJones",    new Func_jones()   );
-		addFunction( "fnMk1",      new Func_mk1()     );
         addFunction( "fnMtMam",    new Func_mtMam()   );
         addFunction( "fnMtRev",    new Func_mtRev()   );
         addFunction( "fnPomo",     new Func_pomo()    );

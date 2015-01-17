@@ -86,7 +86,7 @@ double CompoundMove::performMove( double &probRatio ) {
             DagNode* theAffectedNode = *i;
             
             // do not double-count the prob ratio for any elt in both theNodes and affectedNodes
-            //if ( find(theNodes.begin(), theNodes.end(), *i) == theNodes.end() )
+            if ( find(nodes.begin(), nodes.end(), *i) == nodes.end() )
             {
                 //std::cout << "  " << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() <<  " " << theAffectedNode->getLnProbability() << "\n";
                 probRatio += theAffectedNode->getLnProbabilityRatio();

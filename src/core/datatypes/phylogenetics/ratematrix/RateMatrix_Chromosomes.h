@@ -39,12 +39,18 @@ namespace RevBayesCore {
         void                            setLambda(double l);
         void                            setDelta(double d);
         void                            setRho(double r);
+        void                            setMu(double m);
+        void                            setLambda_l(double l);
+        void                            setDelta_l(double d);
         
         
     private:
         double                          lambda;
         double                          delta;
         double                          rho;
+        double                          mu;
+        double                          lambda_l;
+        double                          delta_l;
         size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
         double                          precision;                          //!< Precision for exponentiation through repeated squaring
         std::vector<double>             stationaryFreqs;                    //!< Holds the stationary frequencies
