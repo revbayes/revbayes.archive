@@ -83,9 +83,18 @@ RateMatrix_GTR& RateMatrix_GTR::operator=(const RateMatrix_GTR &r)
 }
 
 
-RateMatrix_GTR& RateMatrix_GTR::assign(const RateMatrix_GTR &m)
+RateMatrix_GTR& RateMatrix_GTR::assign(const Assignable &m)
 {
-    return operator=(m);
+    
+    const RateMatrix_GTR *rm = dynamic_cast<const RateMatrix_GTR*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 

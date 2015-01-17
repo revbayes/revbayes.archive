@@ -73,7 +73,8 @@ void RootedTripletDistributionFunction::update( void )
         rtd->setTrees( ttrees->getValue() );
     else if (bltrees)
         rtd->setTrees( bltrees->getValue() );
-    rtd->setRecordBranchLengths(recordBranchLengths->getValue());
+    // TODO: Bastien, this does not compile (Michael/Sebastian)
+    //rtd->setRecordBranchLengths(recordBranchLengths->getValue());
     rtd->extractTriplets(  );
     value = rtd->clone();
 }

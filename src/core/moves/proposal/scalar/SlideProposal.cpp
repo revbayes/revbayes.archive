@@ -107,8 +107,6 @@ double SlideProposal::doProposal( void )
     
     val = newVal;
     
-    std::cout << "slide: " << storedValue << " -> " << newVal << "\n";
-    
     // this is a symmetric proposal so the hasting ratio is 0.0
     return 0.0;
 }

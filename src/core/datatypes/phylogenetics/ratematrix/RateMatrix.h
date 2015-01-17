@@ -42,7 +42,6 @@ namespace RevBayesCore {
         virtual void                        updateMatrix(void) = 0;                                                                     //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
 
         virtual RateMatrix&                 assign(const Assignable &m);
-        virtual RateMatrix&                 assign(const RateMatrix &m);
 
         // public methods
         size_t                              getNumberOfStates(void) const;                                                              //!< Return the number of states
