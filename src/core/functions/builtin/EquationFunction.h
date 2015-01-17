@@ -29,7 +29,7 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class EquationFunction : public TypedFunction<bool> {
+    class EquationFunction : public TypedFunction<unsigned int> {
         
     public:
         EquationFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
@@ -54,7 +54,10 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+    left( l ),
+    right( r )
+{
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
@@ -64,7 +67,7 @@ RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(c
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(const EquationFunction<leftValueType,rightValueType> &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
+RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(const EquationFunction<leftValueType,rightValueType> &n) : TypedFunction<unsigned int>( n ), left( n.left ), right( n.right ) {
     // no need to add parameters, happens automatically
     
     update();

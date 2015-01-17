@@ -25,6 +25,12 @@ TimeReversibleRateMatrix::~TimeReversibleRateMatrix(void)
 }
 
 
+TimeReversibleRateMatrix& TimeReversibleRateMatrix::assign(const TimeReversibleRateMatrix &m)
+{
+    return operator=(m);
+}
+
+
 
 /** Calculate the average rate for the rate matrix */
 double TimeReversibleRateMatrix::averageRate(void) const

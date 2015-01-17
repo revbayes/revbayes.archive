@@ -29,10 +29,10 @@ Func__unot* Func__unot::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction<bool>* Func__unot::createFunction( void ) const
+RevBayesCore::TypedFunction<unsigned int>* Func__unot::createFunction( void ) const
 {
     
-    const RevBayesCore::TypedDagNode<bool>* val = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<unsigned int>* val = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::LogicalUnotFunction *func = new RevBayesCore::LogicalUnotFunction( val );
     
@@ -41,7 +41,8 @@ RevBayesCore::TypedFunction<bool>* Func__unot::createFunction( void ) const
 
 
 /** Get argument rules */
-const ArgumentRules& Func__unot::getArgumentRules( void ) const {
+const ArgumentRules& Func__unot::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -57,7 +58,8 @@ const ArgumentRules& Func__unot::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func__unot::getClassType(void) { 
+const std::string& Func__unot::getClassType(void)
+{
     
     static std::string revType = "Func__unot";
     
