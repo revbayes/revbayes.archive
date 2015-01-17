@@ -27,11 +27,12 @@
 
 namespace RevLanguage {
 
-class RlBoolean : public ModelObject<bool> {
+class RlBoolean : public ModelObject<unsigned int> {
 
     public:
         RlBoolean(void);                                                                                        //!< Default constructor
-        RlBoolean(RevBayesCore::TypedDagNode<bool> *v);                                                         //!< Constructor from DAG node
+        RlBoolean(RevBayesCore::TypedDagNode<unsigned int> *v);                                                         //!< Constructor from DAG node
+        RlBoolean(unsigned int v);                                                                                      //!< Construct from bool
         RlBoolean(bool v);                                                                                      //!< Construct from bool
 
         // Operators

@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnNormal</name>
+
+        <alias>dnNorm</alias>
+        <alias>dNorm</alias>
+        <alias>dNormal</alias>
+        <alias>pNorm</alias>
+        <alias>pNormal</alias>
+        <alias>rNorm</alias>
+        <alias>rNormal</alias>
+
+        <title>The normal (gaussian) distribution</title>
+
+        <description>
+            <p>
+            Normal (gaussian) distribution with mean equal to ‘mean’ and standard deviation equal to ‘sd’.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 dnNormal( Real mean = 0, RealPos sd = 1 )
+                 dnNorm( Real mean = 0, RealPos sd = 1 )
+                 dnormal(Real x, Real mean, RealPos sd, Bool log)
+                 dnorm(Real x, Real mean, RealPos sd, Bool log)
+                 pnormal(Real x, Real mean, RealPos sd)
+                 pnorm(Real x, Real mean, RealPos sd, Bool log)
+                 qnormal(Probability p, Real mean, RealPos sd)
+                 qnorm(Probability p, Real mean, RealPos sd)
+                 rnormal(Natural n, Real mean, RealPos sd)
+                 rnorm(Natural n, Real mean, RealPos sd)
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>mean</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The mean of the normal distribution</description>
+                <valueType>Real</valueType>
+                <defaultValue>0</defaultValue>
+            </argument>
+            <argument>
+                <label>sd</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The standard deviation.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>1</defaultValue>
+            </argument>
+            <argument>
+                <label>x</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>An observation.</description>
+                <valueType>Real</valueType>
+            </argument>
+            <argument>
+                <label>p</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The probability of the quantile.</description>
+                <valueType>Probability</valueType>
+            </argument>
+            <argument>
+                <label>n</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Number of random draws.</description>
+                <valueType>Natural</valueType>
+            </argument>
+
+            <returnValue>Dist_norm, ContinuousDistribution, Distribution__Real, Distribution, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                ‘dnorm’ gives the density, ‘pnorm’ gives the distribution function, ‘qnorm’ gives the quantile function, 
+                and ‘rNormal’ generates random deviates. The length of the result is determined by ‘n’ for ‘rnorm’.
+                </p>
+                <p>
+                The normal distribution has density
+                
+                   f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))     
+                   
+                where mu is the mean of the distribution and sigma the standard deviation.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 # we simulate some oversations
+                 x <- rnorm(n=10,mean=5,sd=10)
+                 # let's see what the minum is (you could do the max too)
+                 min(x)
+                 # let's also see what the mean and the variance are
+                 mean(x)
+                 var(x)
+                 sd(x)
+                 # the probability density of the smalles value
+                 dNormal
+                 # we can compute the probability density of the simulated variables
+                 trueTree <- readTrees("data/primates.tree")[1]
+                 ...
+                 ]]>
+
+            </example>
+
+<!--
+            <reference>
+                <citation>
+                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                </citation>
+                <url>An optional URL to the paper</url>
+                <doi>An optional DOI to the paper</doi>
+            </reference>
+-->
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnExponential</entry>
+                <entry>dnLognormal</entry>
+                <entry>dnGamma</entry>
+                <entry>dnUniform</entry>
+            </seeAlso>
+
+        </constructor-help-entry>
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

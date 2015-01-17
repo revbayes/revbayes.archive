@@ -29,6 +29,7 @@
 #include <cstdlib>
 
 /* Files including helper classes */
+#include "AddContinuousDistribution.h"
 #include "AddDistribution.h"
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
@@ -710,8 +711,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnLognormal",     new Dist_lnormOffsetPositive() );
         
         // normal distribution
-        addDistribution( "dnNorm",          new Dist_norm() );
-        addDistribution( "dnNormal",        new Dist_norm() );
+        AddContinuousDistribution<Real>("Normal", new Dist_norm());
+//        addDistribution( "dnNorm",          new Dist_norm() );
+//        addDistribution( "dnNormal",        new Dist_norm() );
         
         // LogUniform distribution   
         addDistribution( "dnLogUniform",    new Dist_logUniform() );

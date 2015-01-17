@@ -38,6 +38,7 @@ namespace RevBayesCore {
         RateMatrix_GTR&                     operator=(const RateMatrix_GTR& r);
         
         // RateMatrix functions
+        RateMatrix_GTR&                     assign(const RateMatrix_GTR &m);
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMatrix_GTR*                     clone(void) const;
         void                                updateMatrix(void);
