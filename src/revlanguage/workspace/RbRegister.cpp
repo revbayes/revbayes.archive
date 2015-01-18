@@ -183,6 +183,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCEpoch.h"
+#include "Dist_phyloCTMCClado.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -620,6 +621,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado() );
                 
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
