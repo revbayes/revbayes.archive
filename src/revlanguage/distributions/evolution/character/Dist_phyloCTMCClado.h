@@ -4,10 +4,10 @@
 #include "AbstractDiscreteCharacterData.h"
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
-#include "TimeTree.h"
 
 namespace RevLanguage {
     
+    template <class treeType>
     class Dist_phyloCTMCClado :  public TypedDistribution< AbstractDiscreteCharacterData > {
         
     public:
@@ -59,35 +59,34 @@ namespace RevLanguage {
 #include "StandardState.h"
 #include "PomoState.h"
 
-RevLanguage::Dist_phyloCTMCClado::Dist_phyloCTMCClado() : TypedDistribution< AbstractDiscreteCharacterData >() {
+template <class treeType>
+RevLanguage::Dist_phyloCTMCClado<treeType>::Dist_phyloCTMCClado() : TypedDistribution< AbstractDiscreteCharacterData >() {
     
 }
 
-RevLanguage::Dist_phyloCTMCClado::~Dist_phyloCTMCClado() {
+template <class treeType>
+RevLanguage::Dist_phyloCTMCClado<treeType>::~Dist_phyloCTMCClado() {
     
 }
 
 
-RevLanguage::Dist_phyloCTMCClado* RevLanguage::Dist_phyloCTMCClado::clone( void ) const {
+template <class treeType>
+RevLanguage::Dist_phyloCTMCClado<treeType>* RevLanguage::Dist_phyloCTMCClado<treeType>::clone( void ) const {
     
     return new Dist_phyloCTMCClado(*this);
 }
 
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* RevLanguage::Dist_phyloCTMCClado::createDistribution( void ) const
+template <class treeType>
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* RevLanguage::Dist_phyloCTMCClado<treeType>::createDistribution( void ) const
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<TimeTree&>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getDagNode();
     
-    // clado stuff
-//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* ecr = static_cast<const ModelVector<RealPos> &>( epochRates->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RbVector< double > > >* ct = static_cast<const ModelVector<ModelVector<RealPos> > &>( cladoTimes->getRevObject() ).getDagNode();
-    
     size_t nNodes = tau->getValue().getNumberOfNodes();
-    
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* siteRatesNode = NULL;
     if ( siteRates != NULL && siteRates->getRevObject() != RevNullObject::getInstance() )
@@ -299,7 +298,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+        RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -376,14 +375,18 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
 
 
 
-/* Get Rev type of object */const std::string& RevLanguage::Dist_phyloCTMCClado::getClassType(void) {
+/* Get Rev type of object */
+template <class treeType>
+const std::string& RevLanguage::Dist_phyloCTMCClado<treeType>::getClassType(void) {
     
     static std::string revType = "Dist_phyloCTMCClado";
     
 	return revType;
 }
 
-/* Get class type spec describing type of object */const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCClado::getClassTypeSpec(void) {
+/* Get class type spec describing type of object */
+template <class treeType>
+const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCClado<treeType>::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -393,7 +396,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
 
 
 
-/** Return member rules (no members) */const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCClado::getParameterRules(void) const {
+/** Return member rules (no members) */
+template <class treeType>
+const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCClado<treeType>::getParameterRules(void) const {
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -401,7 +406,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     if ( !rulesSet )
     {
         // epoch model requires time tree
-        distMemberRules.push_back( new ArgumentRule( "tree"           , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"           , treeType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         // epoch model requires vector of Q
         std::vector<TypeSpec> rateMatrixTypes;
@@ -452,7 +457,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     return distMemberRules;
 }
 
-const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCClado::getTypeSpec( void ) const
+template <class treeType>
+const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCClado<treeType>::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -461,10 +467,12 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCClado::getTypeSpec( void
 }
 
 
-/** Print value for user */void RevLanguage::Dist_phyloCTMCClado::printValue(std::ostream& o) const
+/** Print value for user */
+template <class treeType>
+void RevLanguage::Dist_phyloCTMCClado<treeType>::printValue(std::ostream& o) const
 {
     
-    o << "Character-State-Evolution-Along-Tree Process(tree=";
+    o << "Character-State-Evolution-Along-Tree-With-Cladogenesis Process(tree=";
     if ( tree != NULL ) {
         o << tree->getName();
     } else {
@@ -506,7 +514,9 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMCClado::getTypeSpec( void
 }
 
 
-/** Set a member variable */void RevLanguage::Dist_phyloCTMCClado::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+/** Set a member variable */
+template <class treeType>
+void RevLanguage::Dist_phyloCTMCClado<treeType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )

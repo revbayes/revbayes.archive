@@ -621,8 +621,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
-        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado() );
-                
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<TimeTree>() );
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<BranchLengthTree>() );
+        
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
