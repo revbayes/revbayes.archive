@@ -132,7 +132,6 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
             for (std::set<size_t>::const_iterator it = indices.begin(); it != indices.end(); ++it)
             {
                 Assign<valueType, IsDerivedFrom<valueType, Assignable>::Is >::doAssign( (*this->value)[*it], vectorParams[*it]->getValue() );
-//                (*this->value)[*it] = vectorParams[*it]->getValue();
             }
             
         }

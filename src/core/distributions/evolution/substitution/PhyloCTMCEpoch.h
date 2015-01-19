@@ -451,7 +451,6 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::swapParameterInternal(const DagNode
     }
     else
     {
-        
         RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>::swapParameterInternal(oldP, newP);
     }
 }

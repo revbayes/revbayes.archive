@@ -21,7 +21,7 @@ namespace RevBayesCore {
         virtual void                        updateMatrix(void) = 0;                                                                     //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
 
         // public methods
-        virtual TimeReversibleRateMatrix&   assign(const TimeReversibleRateMatrix &m);
+        virtual TimeReversibleRateMatrix&   assign(const Assignable &m);
         double                              averageRate(void) const;                                                                    //!< Calculate the average rate
         void                                computeOffDiagonal(void);
         const std::vector<double>&          getExchangeabilityRates(void) const;
