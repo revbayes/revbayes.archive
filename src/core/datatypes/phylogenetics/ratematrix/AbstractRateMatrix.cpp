@@ -46,11 +46,11 @@ AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
     
     if (this != &r)
     {
+        // delegate to parent class
+        RateMatrix::operator=( r );
         
         delete theRateMatrix;
         
-        // delegate to parent class
-        RateMatrix::operator=( r );
         
         theRateMatrix       = new MatrixReal( *r.theRateMatrix );
         needsUpdate         = true;

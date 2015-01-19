@@ -17,15 +17,6 @@ SimplexFromVectorFunction::SimplexFromVectorFunction( const TypedDagNode< RbVect
 }
 
 
-/** Copy constructor. Note that parameter pointers are copied automatically. */
-SimplexFromVectorFunction::SimplexFromVectorFunction( const SimplexFromVectorFunction& f ) :
-    TypedFunction< RbVector<double> >( f ),
-    realPosVector( f.realPosVector )
-{
-    update();
-}
-
-
 /**
  * Destructor. Reference decrement and destruction of parameters is delegated to
  * the deterministic node, so there is nothing to do here.
