@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     
 # else
     
-    RbClient c;
+    RevClient c;
     c.startInterpretor();
     
 #endif
