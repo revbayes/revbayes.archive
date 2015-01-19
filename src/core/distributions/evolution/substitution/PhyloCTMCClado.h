@@ -77,7 +77,7 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const TypedDagN
     useSampledCladogenesis(false),
     branchHeterogeneousCladogenesis(false)
 {
-    homogeneousCladogenesisMatrix            = new ConstantNode< MatrixReal >( "cladogenesisMatrix", new MatrixReal( MatrixReal( nChars, 2*nChars, 1.0 ) ) );
+    homogeneousCladogenesisMatrix            = new ConstantNode< MatrixReal >( "cladogenesisMatrix", new MatrixReal( MatrixReal( nChars, nChars*nChars, 1.0 ) ) );
     heterogeneousCladogenesisMatrices        = NULL;
     cladogenesisTimes                        = NULL;
     
@@ -189,6 +189,14 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
     
+    // get cladogenesis values
+    const MatrixReal& cp = ( branchHeterogeneousCladogenesis
+                             ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
+                             : homogeneousCladogenesisMatrix->getValue() );
+    
+    // compute the transition probability matrix
+    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
     const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
@@ -205,41 +213,55 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
         double*          p_site_mixture          = p_node + offset;
         const double*    p_site_mixture_left     = p_left + offset;
         const double*    p_site_mixture_right    = p_right + offset;
+        
         // compute the per site probabilities
         for (size_t site = 0; site < this->numPatterns ; ++site)
         {
-            
-            // get the pointers for this mixture category and this site
-            const double*       tp_a    = tp_begin;
-            
-            // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1)
+            // start state at older end of branch
+            for (size_t c0 = 0; c0 < this->numChars; ++c0)
             {
-                // temporary variable
-                double sum = 0.0;
+                // get the pointers for this mixture category and this site
+                const double*       tp_a    = tp_begin;
                 
-                // iterate over all possible terminal states
-                for (size_t c2 = 0; c2 < this->numChars; ++c2 )
+                // variable to marginalizing over ana+clado events
+                double sum_ana = 0.0;
+            
+                // first compute clado probs at younger end of branch
+                for (size_t c1 = 0; c1 < this->numChars; ++c1)
                 {
-                    sum += p_site_mixture_left[c2] * p_site_mixture_right[c2] * tp_a[c2];
+                    // variable to marginalize over clado events
+                    double sum_clado = 0.0;
                     
-                } // end-for over all distination character
+                    // iterate over all possible terminal states for left branch
+                    for (size_t c2 = 0; c2 < this->numChars; ++c2 )
+                    {
+                        // iterate over all possible terminal states for right branch
+                        for (size_t c3 = 0; c3 < this->numChars; ++c3 )
+                        {
+                            size_t c4 = this->numChars * c3 + c2;
+                            sum_clado += p_site_mixture_left[c2] * cp[c1][c4] * p_site_mixture_right[c3] * cp[c1][c4];
+                        }
+                    }
+
+                    // iterate over all possible states at young end before anagenesis
+                    sum_ana += sum_clado * tp_a[c0];
+                }
                 
                 // store the likelihood for this starting state
-                p_site_mixture[c1] = sum;
+                p_site_mixture[c0] = sum_ana;
                 
                 // increment the pointers to the next starting state
                 tp_a+=this->numChars;
-                
-            } // end-for over all initial characters
+            }
             
             // increment the pointers to the next site
-            p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset; p_site_mixture+=this->siteOffset;
+            p_site_mixture_left  += this->siteOffset;
+            p_site_mixture_right += this->siteOffset;
+            p_site_mixture       += this->siteOffset;
             
         } // end-for over all sites (=patterns)
         
     } // end-for over all mixtures (=rate-categories)
-    
 }
 
 
@@ -515,34 +537,6 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::updateTransitionProbabili
     {
         RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateTransitionProbabilities(nodeIdx, brlen);
     }
-    
-
-//    // second, get the clock rate for the branch
-//    double branchTime;
-//    if ( this->branchHeterogeneousClockRates == true )
-//    {
-//        branchTime = this->heterogeneousClockRates->getValue()[nodeIdx] * brlen;
-//    }
-//    else
-//    {
-//        branchTime = this->homogeneousClockRate->getValue() * brlen;
-//    }
-//    
-//    
-//    // and finally compute the per site rate transition probability matrix
-//    if ( this->rateVariationAcrossSites == true )
-//    {
-//        const std::vector<double> &r = this->siteRates->getValue();
-//        for (size_t i = 0; i < this->numSiteRates; ++i)
-//        {
-//            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
-//        }
-//    }
-//    else
-//    {
-//        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
-//    }
-    
 }
 
 
