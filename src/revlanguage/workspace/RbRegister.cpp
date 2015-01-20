@@ -317,6 +317,10 @@
 #include "Func_biogeo_de.h"
 #include "Func_biogeo_grm.h"
 
+
+/* Cladogeneic state prob function */
+#include "Func_cladoProbs.h"
+
 /* Inference functions (in folder "functions/inference") */
 #include "Func_Mcmc.h"
 #include "Func_Mcmcmc.h"
@@ -852,6 +856,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
         addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
         addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
+        
+        /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
+        addFunction( "fnCladoProbs", new Func_cladoProbs() );
 
     
         /* Inference functions (in folder "functions/inference") */
