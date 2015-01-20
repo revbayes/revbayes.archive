@@ -12,12 +12,13 @@
 using namespace RevBayesCore;
 
 CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns):
-    TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 1.0) ),
+    TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     eventProbs( ep ),
     eventRates( er ),
     numCharacters(nc),
     numStates(2),
-    numIntStates(pow(numStates,nc))
+    numIntStates(pow(numStates,nc)),
+    numEventTypes( ep->getValue().size() )
 {
     // add the lambda parameter as a parent
     addParameter( eventProbs );
@@ -121,22 +122,16 @@ void CladogenicStateFunction::buildEventMap( void ) {
     int allopatricEvent = 0;
     int sympatricEvent = 1;
     
-    eventMap.resize(numIntStates);
-    for (size_t i = 0; i < numIntStates; i++)
-    {
-        eventMap[i].resize(numIntStates);
-        for (size_t j = 0; j < numIntStates; j++)
-        {
-            eventMap[i][j].resize(numIntStates);
-        }
-    }
-
+    eventMapCounts.resize(numIntStates, std::vector<unsigned>(numEventTypes, 0));
+    
     // get L,R states per A state
+    std::vector<unsigned> idx(3);
     for (size_t i = 0; i < numIntStates; i++) {
         
+        idx[0] = i;
         
-        std::cout << "State " << i << "\n";
-        std::cout << "Bits  " << bitsToString(bits[i]) << "\n";
+//        std::cout << "State " << i << "\n";
+//        std::cout << "Bits  " << bitsToString(bits[i]) << "\n";
         
         // get on bits for A
         const std::vector<unsigned>& ba = bits[i];
@@ -157,7 +152,10 @@ void CladogenicStateFunction::buildEventMap( void ) {
             br = std::vector<unsigned>(numCharacters, 0);
             br[ on[j] ] = 1;
             unsigned sr = bitsToState(br);
-            eventMap[i][i][sr].push_back( sympatricEvent );
+            idx[1] = i;
+            idx[2] = sr;
+            eventMap[ idx ] = sympatricEvent;
+            eventMapCounts[ i ][ sympatricEvent ] += 1;
             
 //            std::cout << "A: " << bitsToString(bits[i]) << "\n";
 //            std::cout << "L: " << bitsToString(bits[i]) << "\n";
@@ -165,7 +163,6 @@ void CladogenicStateFunction::buildEventMap( void ) {
             
             br[ on[j] ] = 0;
         }
-        
         
         if (sumBits(ba) > 1)
         {
@@ -177,7 +174,10 @@ void CladogenicStateFunction::buildEventMap( void ) {
     
                 bl[ on[j] ] = 1;
                 unsigned sl = bitsToState(bl);
-                eventMap[i][sl][i].push_back( sympatricEvent );
+                idx[1] = sl;
+                idx[2] = i;
+                eventMap[ idx ] = sympatricEvent;
+                eventMapCounts[ i ][ sympatricEvent ] += 1;
                 
 //                std::cout << "A: " << bitsToString(bits[i]) << "\n";
 //                std::cout << "L: " << bitsToString(bl) << "\n";
@@ -206,12 +206,31 @@ void CladogenicStateFunction::buildEventMap( void ) {
             
             unsigned sl = bitsToState(bl);
             unsigned sr = bitsToState(br);
+            idx[1] = sl;
+            idx[2] = sr;
             
-            eventMap[i][sl][sr].push_back( allopatricEvent );
+            eventMap[ idx ] = allopatricEvent;
+            eventMapCounts[ i ][ allopatricEvent ] += 1;
             
 //            std::cout << "\n";
         }
     }
+    
+//    for (size_t i = 0; i < numIntStates; i++)
+//    {
+//        for (size_t j = 0; j < numIntStates; j++)
+//        {
+//            for (size_t k = 0; k < numIntStates; k++)
+//            {
+//                std::cout << i << " " << j << " " << k << " : ";
+//                for (size_t l = 0; l < eventMap[i][j][k].size(); l++)
+//                {
+//                    std::cout << eventMap[i][j][k][l];
+//                }
+//                std::cout << "\n";
+//            }
+//        }
+//    }
 }
 
 CladogenicStateFunction* CladogenicStateFunction::clone( void ) const
@@ -227,19 +246,37 @@ void CladogenicStateFunction::update( void )
     // get the information from the arguments for reading the file
     const std::vector<double>& ep = eventProbs->getValue();
     const std::vector<double>& er = eventRates->getValue();
-//    
-//    for (size_t i = 0; i < numStates; i++)
+    
+    std::vector<double> z( numIntStates, 0.0 );
+    for (size_t i = 0; i < numIntStates; i++)
+    {
+        for (size_t j = 0; j < numEventTypes; j++)
+        {
+            z[i] = eventMapCounts[i][j] * ep[j];
+        }
+    }
+    
+    std::map<std::vector<unsigned>, unsigned>::iterator it;
+    for (it = eventMap.begin(); it != eventMap.end(); it++)
+    {
+        const std::vector<unsigned>& idx = it->first;
+        
+        double v = ep[ it->second ] / z[ idx[0] ];
+        
+        (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
+        
+    }
+    
+//    for (size_t i = 0; i < numIntStates; i++)
 //    {
-//        
-//        for (size_t j = 0; j < numStates; j++)
+//        for (size_t j = 0; j < numIntStates; j++)
 //        {
-//            for (size_t k = 0; k < numStates; k++)
+//            for (size_t k = 0; k < numIntStates; k++)
 //            {
-//                
+//                std::cout << bitsToString(bits[i]) << " " << bitsToString(bits[j]) << " " << bitsToString(bits[k]) << " : " << (*value)[i][numIntStates*j + k] << "\n";
 //            }
 //        }
 //    }
-    
     
 //    // set the base frequencies
 //    static_cast< RateMatrix_GTR* >(value)->setStationaryFrequencies( f );

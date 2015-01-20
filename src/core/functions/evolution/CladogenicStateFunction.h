@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include <vector>
+#include <map>
 
 namespace RevBayesCore {
     
@@ -42,6 +43,7 @@ namespace RevBayesCore {
         std::vector<unsigned>                           bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base );
         void                                            bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum);
         unsigned                                        sumBits(const std::vector<unsigned>& b);
+        void                                            updateProbs(void);
         
         // members
         const TypedDagNode< RbVector<double> >*         eventProbs;
@@ -49,8 +51,11 @@ namespace RevBayesCore {
         unsigned                                        numCharacters;
         unsigned                                        numStates;
         unsigned                                        numIntStates;
+        unsigned                                        numEventTypes;
         std::vector<std::vector<unsigned> >             bits;
-        std::vector<std::vector<std::vector<std::vector<unsigned> > > > eventMap;
+        std::map< std::vector<unsigned>, unsigned >     eventMap;
+        std::vector< std::vector<unsigned> >            eventMapCounts;
+        std::vector<double>                             eventMapNormalize;
         
     };
     
