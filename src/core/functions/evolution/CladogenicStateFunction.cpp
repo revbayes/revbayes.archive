@@ -238,7 +238,10 @@ CladogenicStateFunction* CladogenicStateFunction::clone( void ) const
     return new CladogenicStateFunction( *this );
 }
 
-
+const std::map< std::vector<unsigned>, unsigned >&  CladogenicStateFunction::getEventMap(void) const
+{
+    return eventMap;
+}
 
 void CladogenicStateFunction::update( void )
 {

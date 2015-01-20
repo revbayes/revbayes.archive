@@ -29,6 +29,7 @@ namespace RevBayesCore {
         
         // public member functions
         CladogenicStateFunction*                            clone(void) const;                                                              //!< Create an independent clone
+        const std::map< std::vector<unsigned>, unsigned >&  getEventMap(void) const;
         void                                                update(void);
         
     protected:
@@ -54,6 +55,7 @@ namespace RevBayesCore {
         unsigned                                        numEventTypes;
         std::vector<std::vector<unsigned> >             bits;
         std::map< std::vector<unsigned>, unsigned >     eventMap;
+//        std::map< unsigned, std::map< std::vector<unsigned>, unsigned> > eventMap;
         std::vector< std::vector<unsigned> >            eventMapCounts;
         std::vector<double>                             eventMapNormalize;
         
