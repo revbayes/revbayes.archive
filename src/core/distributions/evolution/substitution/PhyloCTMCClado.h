@@ -60,6 +60,7 @@ namespace RevBayesCore {
 
 
 #include "ConstantNode.h"
+#include "CladogenicStateFunction.h"
 #include "DiscreteCharacterState.h"
 #include "RateMatrix_JC.h"
 #include "RandomNumberFactory.h"
@@ -69,6 +70,7 @@ namespace RevBayesCore {
 
 #include <cmath>
 #include <cstring>
+#include <map>
 #include <vector>
 
 template<class charType, class treeType>
@@ -190,10 +192,17 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
     
     // get cladogenesis values
+//    const MatrixReal& cp = ( branchHeterogeneousCladogenesis
+//                             ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
+//                             : homogeneousCladogenesisMatrix->getValue() );
     const MatrixReal& cp = ( branchHeterogeneousCladogenesis
-                             ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
-                             : homogeneousCladogenesisMatrix->getValue() );
+                            ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
+                            : homogeneousCladogenesisMatrix->getValue() );
     
+    const TypedFunction<MatrixReal>* tf = &static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix )->getFunction();
+    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( tf );
+    std::map<std::vector<unsigned>, unsigned> eventMap = csf->getEventMap();
+
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
     
@@ -226,6 +235,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
                 // variable to marginalizing over ana+clado events
                 double sum_ana = 0.0;
             
+                /*
                 // first compute clado probs at younger end of branch
                 for (size_t c1 = 0; c1 < this->numChars; ++c1)
                 {
@@ -243,6 +253,51 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
                         }
                     }
 
+                    // iterate over all possible states at young end before anagenesis
+                    sum_ana += sum_clado * tp_a[c0];
+                }
+                */
+                
+                // first compute clado probs at younger end of branch
+                std::map<std::vector<unsigned>, unsigned>::iterator it;
+                size_t old_c1 = 0;
+                double sum_clado = 0.0;
+                for ( it = eventMap.begin(); it != eventMap.end(); ++it)
+                {
+                    // sparse elements from map
+                    const std::vector<unsigned>& idx = it->first;
+                    const size_t c1 = idx[1];
+                    const size_t c2 = idx[2];
+                    const size_t c3 = idx[3];
+                    const size_t c4 = this->numChars * c3 + c2;
+                 
+                    if (c1 != old_c1)
+                    {
+                        sum_ana += sum_clado * tp_a[c0];
+                        sum_clado = 0.0;
+                    }
+                    
+                    sum_clado += p_site_mixture_left[c2] * cp[c1][c4] * p_site_mixture_right[c3] * cp[c1][c4];
+                    
+                    old_c1 = c1;
+                }
+                
+                for (size_t c1 = 0; c1 < this->numChars; ++c1)
+                {
+                    // variable to marginalize over clado events
+                    double sum_clado = 0.0;
+                    
+                    // iterate over all possible terminal states for left branch
+                    for (size_t c2 = 0; c2 < this->numChars; ++c2 )
+                    {
+                        // iterate over all possible terminal states for right branch
+                        for (size_t c3 = 0; c3 < this->numChars; ++c3 )
+                        {
+                            size_t c4 = this->numChars * c3 + c2;
+
+                        }
+                    }
+                    
                     // iterate over all possible states at young end before anagenesis
                     sum_ana += sum_clado * tp_a[c0];
                 }
