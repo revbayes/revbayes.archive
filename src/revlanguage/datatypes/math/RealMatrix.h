@@ -26,10 +26,11 @@ namespace RevLanguage {
     class RealMatrix : public ModelObject<RevBayesCore::MatrixReal>  {
         
     public:
-        
+                           
         RealMatrix(void);                                                                                       //!< Default constructor
+        RealMatrix(const RevBayesCore::MatrixReal& m);
+        RealMatrix(RevBayesCore::MatrixReal* m);
         RealMatrix(RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> *mat);                                  //!< Construct from DAG node
-        RealMatrix(const RealMatrix& from);                                                                     //!< Copy constructor
         
         
         // the value type definition
