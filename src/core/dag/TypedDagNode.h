@@ -148,13 +148,15 @@ namespace RevBayesCore {
 
 
 template<class valueType>
-RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagNode( n ) {
+RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagNode( n )
+{
     
 }
 
 
 template<class valueType>
-RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void ) {
+RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void )
+{
 }
 
 

@@ -29,20 +29,23 @@ namespace RevBayesCore {
     public:
         Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1);
         Mcmcmc(const Mcmcmc &m);
-        virtual                                ~Mcmcmc(void);                                                          //!< Virtual destructor
+        virtual                                ~Mcmcmc(void);                                       //!< Virtual destructor
         
         // public methods
         Mcmcmc*                                 clone(void) const;
-        std::string                             getStrategyDescription(void) const;                                                 //!< Get the discription of the strategy used for this sampler.
-        void                                    initializeSampler(bool priorOnly=false);                                            //!< Initialize objects for mcmc sampling
+        double                                  getModelLnProbability(void);
+        std::string                             getStrategyDescription(void) const;                 //!< Get the discription of the strategy used for this sampler.
+        void                                    initializeSampler(bool priorOnly=false);            //!< Initialize objects for mcmc sampling
         void                                    monitor(unsigned long g);
         void                                    nextCycle(bool advanceCycle);
         void                                    printOperatorSummary(void) const;
-        void                                    reset(void);                                                                        //!< Reset the sampler for a new run.
-        void                                    setReplicateIndex(size_t i);                                                        //!< Set the index for this replication.
-        void                                    startMonitors(void);                                                                //!< Start the monitors
-        void                                    startMonitors(size_t numCycles);                                                    //!< Start the monitors
-        void                                    tune(void);                                                                         //!< Tune the sampler and its moves.
+        void                                    reset(void);                                        //!< Reset the sampler for a new run.
+        void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
+        void                                    setReplicateIndex(size_t i);                        //!< Set the index for this replication.
+        void                                    setStoneIndex(size_t i);                            //!< Set the index for this replication.
+        void                                    startMonitors(void);                                //!< Start the monitors
+        void                                    startMonitors(size_t numCycles);                    //!< Start the monitors
+        void                                    tune(void);                                         //!< Tune the sampler and its moves.
         
     private:
         void                                    initialize(void);
@@ -52,7 +55,7 @@ namespace RevBayesCore {
         void                                    synchronizeValues(void);
         void                                    synchronizeHeats(void);
         void                                    updateChainState(size_t j);
-        double                                  computeBeta(double d, size_t i);                                        // incremental temperature schedule
+        double                                  computeBeta(double d, size_t i);                    // incremental temperature schedule
         
         size_t                                  pid;
         size_t                                  numChains;

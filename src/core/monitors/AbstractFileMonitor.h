@@ -43,6 +43,7 @@ namespace RevBayesCore {
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         void                                printHeader(void);                                                  //!< Print header
         void                                setReplicateIndex(size_t idx);
+        void                                setStoneIndex(size_t idx);
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing

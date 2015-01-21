@@ -132,7 +132,8 @@ void MoveOld::performGibbs(void)
 
 
 
-void MoveOld::performGibbsMove(void) {
+void MoveOld::performGibbsMove(void)
+{
     // dummy method
 }
 

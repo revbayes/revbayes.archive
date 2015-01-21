@@ -11,6 +11,7 @@ using namespace RevBayesCore;
 AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
     outStream(),
     filename( fname ),
+    replicateIndex( 0 ),
     separator( del ),
     posterior( pp ),
     prior( pr ),
@@ -24,8 +25,8 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
 AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
     outStream(),
     filename( fname ),
-    replicateIndex( 0 ),
     workingFileName( fname ),
+    replicateIndex( 0 ),
     separator( del ),
     posterior( pp ),
     prior( pr ),
@@ -161,7 +162,7 @@ void AbstractFileMonitor::monitor(unsigned long gen)
 void AbstractFileMonitor::openStream(void)
 {
     
-    RbFileManager f = RbFileManager(filename);
+    RbFileManager f = RbFileManager(workingFileName);
     f.createDirectoryForFile();
     
     // open the stream to the file
@@ -316,6 +317,24 @@ void AbstractFileMonitor::setReplicateIndex(size_t idx)
     {
         RbFileManager fm = RbFileManager(filename);
         workingFileName = fm.getFileNameWithoutExtension() + "_run_" + idx + "." + fm.getFileExtension();
+    }
+    
+}
+/**
+ * Set the replicate index.
+ * If the index is larger than 0, then we add it to the filename.
+ */
+void AbstractFileMonitor::setStoneIndex(size_t idx)
+{
+    
+    // store the index for possible later uses
+    replicateIndex = idx;
+    
+    // compute the working filename
+    if ( replicateIndex > 0 )
+    {
+        RbFileManager fm = RbFileManager(filename);
+        workingFileName = fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
     }
     
 }
