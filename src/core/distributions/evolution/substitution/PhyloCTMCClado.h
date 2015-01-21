@@ -79,7 +79,17 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const TypedDagN
     useSampledCladogenesis(false),
     branchHeterogeneousCladogenesis(false)
 {
-    homogeneousCladogenesisMatrix            = new ConstantNode< MatrixReal >( "cladogenesisMatrix", new MatrixReal( MatrixReal( nChars, nChars*nChars, 1.0 ) ) );
+//    unsigned numStatesPerChar = RevBayesCore::g_MAX_NAT_NUM_STATES;
+    unsigned numReducedChar = (unsigned)( log( nChars ) / log( 2 ) );
+    
+    homogeneousCladogenesisMatrix            = new DeterministicNode< MatrixReal >(
+                                                   "cladogenesisMatrix",
+                                                   new CladogenicStateFunction( new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
+                                                                                new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
+                                                                                numReducedChar,
+                                                                                2)
+                                               );
+//                                                                                   MatrixReal( MatrixReal( nChars, nChars*nChars, 1.0 ) ) );
     heterogeneousCladogenesisMatrices        = NULL;
     cladogenesisTimes                        = NULL;
     
@@ -199,8 +209,13 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
                             ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
                             : homogeneousCladogenesisMatrix->getValue() );
     
-    const TypedFunction<MatrixReal>* tf = &static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix )->getFunction();
-    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( tf );
+    
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    
+    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
+    
     std::map<std::vector<unsigned>, unsigned> eventMap = csf->getEventMap();
 
     // compute the transition probability matrix
@@ -258,6 +273,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
                 }
                 */
                 
+                /**/
                 // first compute clado probs at younger end of branch
                 std::map<std::vector<unsigned>, unsigned>::iterator it;
                 size_t old_c1 = 0;
@@ -281,26 +297,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
                     
                     old_c1 = c1;
                 }
-                
-                for (size_t c1 = 0; c1 < this->numChars; ++c1)
-                {
-                    // variable to marginalize over clado events
-                    double sum_clado = 0.0;
-                    
-                    // iterate over all possible terminal states for left branch
-                    for (size_t c2 = 0; c2 < this->numChars; ++c2 )
-                    {
-                        // iterate over all possible terminal states for right branch
-                        for (size_t c3 = 0; c3 < this->numChars; ++c3 )
-                        {
-                            size_t c4 = this->numChars * c3 + c2;
-
-                        }
-                    }
-                    
-                    // iterate over all possible states at young end before anagenesis
-                    sum_ana += sum_clado * tp_a[c0];
-                }
+                /**/
                 
                 // store the likelihood for this starting state
                 p_site_mixture[c0] = sum_ana;

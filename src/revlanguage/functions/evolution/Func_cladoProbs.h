@@ -24,14 +24,14 @@ namespace RevLanguage {
         Func_cladoProbs( void );
         
         // Basic utility functions
-        Func_cladoProbs*                                                       clone(void) const;                                                              //!< Clone the object
-        static const std::string&                                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_cladoProbs*                                                clone(void) const;                                      //!< Clone the object
+        static const std::string&                                       getClassType(void);                                     //!< Get Rev type
+        static const TypeSpec&                                          getClassTypeSpec(void);                                 //!< Get class type spec
+        const TypeSpec&                                                 getTypeSpec(void) const;                                //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::MatrixReal>*         createFunction(void) const;                                                     //!< Create internal function object
-        const ArgumentRules&                                            getArgumentRules(void) const;                                                   //!< Get argument rules
+        RevBayesCore::TypedFunction< RevBayesCore::MatrixReal>*         createFunction(void) const;                             //!< Create internal function object
+        const ArgumentRules&                                            getArgumentRules(void) const;                           //!< Get argument rules
         
     };
     
