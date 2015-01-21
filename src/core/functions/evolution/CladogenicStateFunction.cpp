@@ -250,6 +250,7 @@ void CladogenicStateFunction::update( void )
     const std::vector<double>& ep = eventProbs->getValue();
     const std::vector<double>& er = eventRates->getValue();
     
+    // normalize tx probs
     std::vector<double> z( numIntStates, 0.0 );
     for (size_t i = 0; i < numIntStates; i++)
     {
@@ -269,25 +270,6 @@ void CladogenicStateFunction::update( void )
         (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
         
     }
-    
-//    for (size_t i = 0; i < numIntStates; i++)
-//    {
-//        for (size_t j = 0; j < numIntStates; j++)
-//        {
-//            for (size_t k = 0; k < numIntStates; k++)
-//            {
-//                std::cout << bitsToString(bits[i]) << " " << bitsToString(bits[j]) << " " << bitsToString(bits[k]) << " : " << (*value)[i][numIntStates*j + k] << "\n";
-//            }
-//        }
-//    }
-    
-//    // set the base frequencies
-//    static_cast< RateMatrix_GTR* >(value)->setStationaryFrequencies( f );
-//    static_cast< RateMatrix_GTR* >(value)->setExchangeabilityRates( r );
-//    
-//    
-//    value->updateMatrix();
-    
 }
 
 

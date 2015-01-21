@@ -58,6 +58,7 @@ namespace RevLanguage {
 #include "RlString.h"
 #include "StandardState.h"
 #include "PomoState.h"
+#include "NaturalNumbersState.h"
 
 template <class treeType>
 RevLanguage::Dist_phyloCTMCClado<treeType>::Dist_phyloCTMCClado() : TypedDistribution< AbstractDiscreteCharacterData >() {
@@ -282,7 +283,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
 //        d = dist;
 //    }
 //    else
-    if ( dt == "Standard" )
+    if ( dt == "NaturalNumber" )
     {
         // we get the number of states from the rates matrix
         // set the rate matrix
@@ -297,8 +298,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
             RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue().getNumberOfStates();
         }
+        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         
-        RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n, ambig);
+        RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -344,7 +346,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         
         // set the clado probs
-        if ( q->getRevObject().isType( ModelVector<RealMatrix>::getClassTypeSpec() ) )
+        if ( cladoProbs->getRevObject().isType( ModelVector<RealMatrix>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<RealMatrix> &>( cladoProbs->getRevObject() ).getDagNode();
             
@@ -410,6 +412,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCClado<treeType>::getP
         
         // epoch model requires vector of Q
         std::vector<TypeSpec> rateMatrixTypes;
+        rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateMatrix>::getClassTypeSpec() );
         distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
@@ -428,10 +431,6 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCClado<treeType>::getP
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
-        // epoch rates
-        distMemberRules.push_back( new ArgumentRule( "cladoTimes"    , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>(std::vector<double>(1, 1.0)) ) );
-        
-        
         
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
         distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
@@ -447,7 +446,8 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCClado<treeType>::getP
         options.push_back( "Pomo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
+        options.push_back( "NaturalNumber" );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumber"), options ) );
         
         distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
@@ -558,10 +558,6 @@ void RevLanguage::Dist_phyloCTMCClado<treeType>::setConstParameter(const std::st
     else if ( name == "type" )
     {
         type = var;
-    }
-    else if ( name == "cladoTimes" )
-    {
-        cladoTimes = var;
     }
     else if ( name == "treatAmbiguousAsGap" )
     {
