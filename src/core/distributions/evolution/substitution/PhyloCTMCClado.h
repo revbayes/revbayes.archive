@@ -82,8 +82,7 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const TypedDagN
 //    unsigned numStatesPerChar = RevBayesCore::g_MAX_NAT_NUM_STATES;
     unsigned numReducedChar = (unsigned)( log( nChars ) / log( 2 ) );
     
-    homogeneousCladogenesisMatrix            = new DeterministicNode< MatrixReal >(
-                                                   "cladogenesisMatrix",
+    homogeneousCladogenesisMatrix            = new DeterministicNode< MatrixReal >( "cladogenesisMatrix",
                                                    new CladogenicStateFunction( new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
                                                                                 new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
                                                                                 numReducedChar,
@@ -216,7 +215,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
     
     const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
     
-    std::map<std::vector<unsigned>, unsigned> eventMap = csf->getEventMap();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
 
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
@@ -275,25 +274,31 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
                 
                 /**/
                 // first compute clado probs at younger end of branch
-                std::map<std::vector<unsigned>, unsigned>::iterator it;
+                std::map<std::vector<unsigned>, double>::iterator it;
                 size_t old_c1 = 0;
                 double sum_clado = 0.0;
-                for ( it = eventMap.begin(); it != eventMap.end(); ++it)
+                for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
                 {
                     // sparse elements from map
                     const std::vector<unsigned>& idx = it->first;
-                    const size_t c1 = idx[1];
-                    const size_t c2 = idx[2];
-                    const size_t c3 = idx[3];
-                    const size_t c4 = this->numChars * c3 + c2;
+                    const size_t c1 = idx[0];
+                    const size_t c2 = idx[1];
+                    const size_t c3 = idx[2];
+//                    const size_t c4 = this->numChars * c3 + c2;
                  
                     if (c1 != old_c1)
                     {
-                        sum_ana += sum_clado * tp_a[c0];
+                        sum_ana += sum_clado * tp_a[c1];
                         sum_clado = 0.0;
                     }
-                    
-                    sum_clado += p_site_mixture_left[c2] * cp[c1][c4] * p_site_mixture_right[c3] * cp[c1][c4];
+
+//                    sum_clado += p_site_mixture_left[c2] * p_site_mixture_right[c3] * cp[c1][c4];
+                    const double pl = p_site_mixture_left[c2];
+                    const double pr = p_site_mixture_right[c3];
+                    const double pcl = it->second;
+//                    sum_clado += p_site_mixture_left[c2] * p_site_mixture_right[c3] * it->second;
+                    sum_clado += pl * pr * pcl;
+                    std::cout << nodeIndex << " " << c0 << " " << c1 << " ?= " << old_c1 << " " << c2 << " " << c3 << " | " << pl << " " << pr << " " << pcl << " " << sum_clado << "\n";
                     
                     old_c1 = c1;
                 }
@@ -567,7 +572,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::updateTransitionProbabili
             TransitionProbabilityMatrix tp(this->numChars);
             
             // go from present to past
-            for (size_t i = times.size() - 1; i >= 0; --i)
+            for (int i = times.size() - 1; i >= 0; --i)
             {
                 dt = (times[i] - t) * brlen;
                 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateTransitionProbabilities(nodeIdx, dt);
