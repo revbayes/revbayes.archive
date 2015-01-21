@@ -14,6 +14,7 @@ using namespace RevBayesCore;
  */
 DagNode::DagNode( const std::string &n ) :
     children(),
+    elementVar( false ),
     hidden( false ),
     monitors(),
     moves(),
@@ -39,6 +40,7 @@ DagNode::DagNode( const std::string &n ) :
  */
 DagNode::DagNode( const DagNode &n ) : 
     children(),
+    elementVar( n.elementVar ),
     hidden( n.hidden ),
     monitors( n.monitors ),
     moves( n.moves ),
@@ -112,6 +114,8 @@ DagNode& DagNode::operator=(const DagNode &d)
     if ( &d != this )
     {
         name            = d.name;
+        elementVar      = d.elementVar;
+        hidden          = d.hidden;
         priorOnly       = d.priorOnly;
         touchedElements = d.touchedElements;
     }
@@ -469,6 +473,12 @@ bool DagNode::isConstant( void ) const
 {
     
     return false;
+}
+
+bool DagNode::isElementVariable( void ) const
+{
+    
+    return elementVar;
 }
 
 bool DagNode::isHidden( void ) const
@@ -839,6 +849,12 @@ void DagNode::restoreAffected(void)
         (*i)->restoreMe( this );
     }
     
+}
+
+
+void DagNode::setElementVariable(bool tf)
+{
+    elementVar = tf;
 }
 
 
