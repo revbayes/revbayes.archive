@@ -29,6 +29,7 @@ namespace RevBayesCore {
         MonteCarloAnalysis(const MonteCarloAnalysis &m);
         virtual                                            ~MonteCarloAnalysis(void);                                   //!< Virtual destructor
         
+        MonteCarloAnalysis&                                 operator=(const MonteCarloAnalysis &a);
         
         // public methods
         MonteCarloAnalysis*                                 clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.

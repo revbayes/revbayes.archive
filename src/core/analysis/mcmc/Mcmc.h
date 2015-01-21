@@ -31,7 +31,8 @@ namespace RevBayesCore {
         
         // public methods
         Mcmc*                                               clone(void) const;
-        double                                              getChainHeat(void) const;                                                               //!< Get the heat for this chain
+        double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
+        double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
         double                                              getModelLnProbability(void);
         RbVector<Monitor>&                                  getMonitors(void);
@@ -49,9 +50,12 @@ namespace RevBayesCore {
 //        virtual void                                        runPriorSampler(size_t g);
         void                                                reset(void);                                                                            //!< Reset the sampler and set all the counters back to 0.
         void                                                setChainActive(bool tf);
-        void                                                setChainHeat(double v);                                                                 //!< Set the heating temparature of the chain
+        void                                                setChainLikelihoodHeat(double v);                                                       //!< Set the heating temparature of the likelihood of the chain
+        void                                                setChainPosteriorHeat(double v);                                                        //!< Set the heating temparature of the posterior of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
+        void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setReplicateIndex(size_t idx);                                                          //!< Set the index of this replicate.
+        void                                                setStoneIndex(size_t idx);                                                              //!< Set the index of this replicate.
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(void);                                                                    //!< Start the monitors
         void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
@@ -66,7 +70,8 @@ namespace RevBayesCore {
 
         
         bool                                                chainActive;
-        double                                              chainHeat;
+        double                                              chainPosteriorHeat;
+        double                                              chainLikelihoodHeat;
         size_t                                              chainIdx;
         Model                                               model;
         RbVector<Monitor>                                   monitors;

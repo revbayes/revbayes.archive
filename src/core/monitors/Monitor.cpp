@@ -190,6 +190,16 @@ void Monitor::setReplicateIndex(size_t idx)
 }
 
 
+/**
+ * This is the dummy method for the setting of the stone index.
+ * Overwrite this method if necessary.
+ */
+void Monitor::setStoneIndex(size_t idx)
+{
+    // nothing to do here
+}
+
+
 void Monitor::swapNode(DagNode *oldN, DagNode *newN) 
 {
     // error catching

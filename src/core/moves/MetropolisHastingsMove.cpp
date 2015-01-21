@@ -202,7 +202,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly )
+void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 {
     // Propose a new value
     proposal->prepareProposal();
@@ -246,16 +246,10 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     
     // exponentiate with the chain heat
     double lnPosteriorRatio;
-    if ( raiseLikelihoodOnly )
-    {
-        lnPosteriorRatio = heat * lnLikelihoodRatio + lnPriorRatio;
-    }
-    else
-    {
-        lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
-    }
+    lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
 	
-	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) {
+	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) )
+    {
 		
             proposal->undoProposal();
             
