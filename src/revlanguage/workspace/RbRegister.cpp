@@ -160,6 +160,7 @@
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
 #include "Move_NodeTimeSlideUniform.h"
+#include "Move_NodeTimeSlideBeta.h"
 #include "Move_OriginTimeSlide.h"
 #include "Move_RateAgeBetaShift.h"
 #include "Move_RootTimeSlide.h"
@@ -183,6 +184,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCEpoch.h"
+#include "Dist_phyloCTMCClado.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -314,6 +316,10 @@
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
 #include "Func_biogeo_grm.h"
+
+
+/* Cladogeneic state prob function */
+#include "Func_cladoProbs.h"
 
 /* Inference functions (in folder "functions/inference") */
 #include "Func_Mcmc.h"
@@ -573,6 +579,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
+        addTypeWithConstructor("mvNodeTimeSlideBeta",       new Move_NodeTimeSlideBeta() );
         addTypeWithConstructor("mvOriginTimeSlide",         new Move_OriginTimeSlide() );
         addTypeWithConstructor("mvRateAgeBetaShift",        new Move_RateAgeBetaShift() );
         addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
@@ -620,7 +627,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
-                
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<TimeTree>() );
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<BranchLengthTree>() );
+        
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
@@ -847,6 +856,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
         addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
         addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
+        
+        /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
+        addFunction( "fnCladoProbs", new Func_cladoProbs() );
 
     
         /* Inference functions (in folder "functions/inference") */
