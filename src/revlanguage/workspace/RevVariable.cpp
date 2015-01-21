@@ -387,9 +387,18 @@ void RevVariable::setElementVariableState(bool flag)
     
     isElementVar = flag;
     
-    // delegate to setHidden
-//    setHiddenVariableState( flag );
-    
+    try {
+        
+        if ( revObject != NULL && revObject->getDagNode() != NULL )
+        {
+            revObject->getDagNode()->setElementVariable( flag );
+        }
+        
+    }
+    catch (RbException e)
+    {
+        // do nothing
+    }
 }
 
 

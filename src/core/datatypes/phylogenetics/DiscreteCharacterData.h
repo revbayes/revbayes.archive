@@ -55,12 +55,14 @@ namespace RevBayesCore {
         void                                                excludeTaxon(const std::string& s);                                         //!< Exclude taxon
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                         getDatatype(void) const;
+        std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
         const std::string&                                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                                  getFilePath(void) const;                                                    //!< Returns the name of the file the data came from
         size_t                                              getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
+        size_t                                              getNumberOfInvariantSites(void) const;                                      //!< Number of invariant sites
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                              getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
@@ -522,6 +524,7 @@ std::string RevBayesCore::DiscreteCharacterData<charType>::getDatatype(void) con
     return dt;
 }
 
+
 /**
  * Get the set of excluded character indices.
  *
@@ -532,6 +535,44 @@ const std::set<size_t>& RevBayesCore::DiscreteCharacterData<charType>::getExclud
 {
     
     return deletedCharacters;
+}
+
+
+/**
+ * Get the set of excluded character indices.
+ *
+ * \return    The excluded character indices.
+ */
+template<class charType>
+std::vector<double> RevBayesCore::DiscreteCharacterData<charType>::getEmpiricalBaseFrequencies(void) const
+{
+    size_t nStates = this->getTaxonData(0)[0].getNumberOfStates();
+    std::vector<double> ebf = std::vector<double>(nStates, 0.0);
+    double total = 0.0;
+    size_t nt = this->getNumberOfTaxa();
+    for (size_t i=0; i<nt; i++)
+    {
+        
+        const AbstractDiscreteTaxonData& taxonData = this->getTaxonData(i);
+        size_t nc = taxonData.getNumberOfCharacters();
+        for (size_t j=0; j<nc; j++)
+        {
+            const DiscreteCharacterState& o = taxonData[j];
+            if ( o.isAmbiguous() == false )
+            {
+                ++total;
+                ++ebf[o.getStateIndex()];
+            }
+        }
+    }
+    
+    for (size_t i=0; i<nStates; ++i)
+    {
+        ebf[i] /= total;
+    }
+
+    
+    return ebf;
 }
 
 
@@ -671,6 +712,42 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedTaxa(vo
     }
     return 0;
     
+}
+
+
+/**
+ * Get the set of excluded character indices.
+ *
+ * \return    The excluded character indices.
+ */
+template<class charType>
+size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfInvariantSites(void) const
+{
+    size_t invSites = 0;
+    size_t nt = this->getNumberOfTaxa();
+
+    const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(0);
+    size_t nc = firstTaxonData.getNumberOfCharacters();
+    for (size_t j=0; j<nc; j++)
+    {
+        const DiscreteCharacterState& a = firstTaxonData[j];
+        bool invariant = true;
+        for (size_t i=1; i<nt; i++)
+        {
+            const AbstractDiscreteTaxonData& secondTaxonData = this->getTaxonData(i);
+            const DiscreteCharacterState& b = secondTaxonData[j];
+
+            invariant &= (a == b);
+        }
+        
+        if (invariant)
+        {
+            ++invSites;
+        }
+
+    }
+    
+    return invSites;
 }
 
 

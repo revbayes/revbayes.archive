@@ -85,10 +85,10 @@ namespace RevBayesCore {
 		{
 			BranchLengthTree tree = *trace.objectAt(i);
 			
-			// re-root the tree so that we can compare the the trees
-			if ( outgroup == "" ) 
-				outgroup = tree.getTipNode(0).getName();
-			tree.reroot( outgroup );
+//			// re-root the tree so that we can compare the the trees
+//			if ( outgroup == "" ) 
+//				outgroup = tree.getTipNode(0).getName();
+//			tree.reroot( outgroup );
 			
 			std::string newick = TreeUtilities::uniqueNewickTopology(tree);
 			
@@ -150,6 +150,7 @@ namespace RevBayesCore {
         std::string bestNewick = treeSamples.rbegin()->getValue();
         NewickConverter converter;
         BranchLengthTree* bestTree = converter.convertFromNewick( bestNewick );
+//        bestTree->reroot(trace.objectAt(burnin)->getTipNode(0).getName());
         
         const std::vector<TopologyNode*> &nodes = bestTree->getNodes();
         std::vector<double> pp(nodes.size(),0.0);
@@ -162,6 +163,10 @@ namespace RevBayesCore {
             const TopologyNode& root = tree->getRoot();
             for (size_t j = 0; j < nodes.size(); ++j)
             {
+                if ( j == 41 )
+                {
+//                    std::cerr << "Missing node:\n" << nodes[j]->computePlainNewick() << std::endl;
+                }
                 if ( root.containsClade(nodes[j], true) )
                 {
                     size_t cladeIndex = root.getCladeIndex( nodes[j] );
