@@ -11,6 +11,7 @@
 
 #include "ConstantNode.h"
 #include "Integer.h"
+#include "MatrixReal.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "Probability.h"
@@ -25,19 +26,26 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-RealMatrix::RealMatrix(void) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(1,1,0) ) {
+RealMatrix::RealMatrix(void) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(1,1,0) )
+{
+
 }
 
+RealMatrix::RealMatrix(const RevBayesCore::MatrixReal& from) : ModelObject<RevBayesCore::MatrixReal>( from.clone() )
+{
 
-/* Construct from double */
-RealMatrix::RealMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal( mat->getValue() ) ) {
 }
 
-
-/* Copy Construct */
-RealMatrix::RealMatrix(const RealMatrix& from) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(from.getValue()) ) {
+RealMatrix::RealMatrix(RevBayesCore::MatrixReal* m) : ModelObject<RevBayesCore::MatrixReal>( m )
+{
     
 }
+
+RealMatrix::RealMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : ModelObject<RevBayesCore::MatrixReal>( mat )
+{
+    
+}
+
 
 /** Clone object */
 RealMatrix* RealMatrix::clone(void) const {
