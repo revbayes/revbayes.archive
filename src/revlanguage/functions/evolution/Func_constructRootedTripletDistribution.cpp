@@ -64,8 +64,9 @@ RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >* Func_con
 
     if ( this->args[2].getVariable()->getRequiredTypeSpec().isDerivedOf( RlBoolean::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< bool >* t = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
-        f ->setRecordBranchLengths( t );
+        RevBayesCore::TypedDagNode< unsigned int >* t = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+        // TODO: Bastien, this isn't working (Sebastian)
+//        f->setRecordBranchLengths( t );
     }
 
     

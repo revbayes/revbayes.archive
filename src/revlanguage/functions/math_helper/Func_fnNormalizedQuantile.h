@@ -89,7 +89,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_fnNormalized
     double binWidth = 1.0 / ((double)nc);
     double binMid = binWidth * 0.5;
     std::vector<const RevBayesCore::TypedDagNode<double> *> gRates = std::vector<const RevBayesCore::TypedDagNode<double>* >();
-    for(int i=1; i<=nc; i++){
+    for(int i=1; i<=nc; i++)
+    {
         RevBayesCore::ConstantNode<double> *quant = new RevBayesCore::ConstantNode<double>("", new double((double)i * binWidth - binMid));
         RevBayesCore::DeterministicNode<double> *tmp = new RevBayesCore::DeterministicNode<double>("", new RevBayesCore::QuantileFunction(quant,  dist));
 		gRates.push_back( tmp );

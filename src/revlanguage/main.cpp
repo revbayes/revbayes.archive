@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "RbClient.h"
+#include "RevClient.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"
 #include "Workspace.h"
@@ -17,7 +17,8 @@ int main(int argc, char* argv[])
     int processId = 0;
 #ifdef RB_MPI
     int numProcesses = 0;
-    try {
+    try
+    {
         MPI::Init(argc, argv);
         processId = MPI::COMM_WORLD.Get_rank();
         numProcesses = MPI::COMM_WORLD.Get_size ();
@@ -103,7 +104,7 @@ int main(int argc, char* argv[])
     
 #   else
     
-    RbClient c;
+    RevClient c;
     c.startInterpretor();
     
 #   endif

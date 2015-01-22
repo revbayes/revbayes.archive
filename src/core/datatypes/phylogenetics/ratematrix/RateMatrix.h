@@ -1,6 +1,7 @@
 #ifndef RateMatrix_H
 #define RateMatrix_H
 
+#include "Assignable.h"
 #include "Cloneable.h"
 #include "MatrixReal.h"
 #include <vector>
@@ -11,7 +12,7 @@ namespace RevBayesCore {
     class TransitionProbabilityMatrix;
 
 
-    class RateMatrix : public Cloneable {
+    class RateMatrix : public Cloneable, public Assignable {
 
     public:
         virtual                            ~RateMatrix(void);                                                                           //!< Destructor
@@ -40,6 +41,7 @@ namespace RevBayesCore {
         virtual void                        setDiagonal(void) = 0;                                                                      //!< Set the diagonal such that each row sums to zero
         virtual void                        updateMatrix(void) = 0;                                                                     //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
 
+        virtual RateMatrix&                 assign(const Assignable &m);
 
         // public methods
         size_t                              getNumberOfStates(void) const;                                                              //!< Return the number of states

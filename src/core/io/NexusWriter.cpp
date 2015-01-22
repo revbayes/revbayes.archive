@@ -70,7 +70,7 @@ void NexusWriter::writeNexusBlock(const AbstractDiscreteCharacterData &data)
         
         if ( !data.isTaxonExcluded( *it ) )
         {
-            outStream << *it << "   " << std::endl;
+            outStream << *it << "   ";
             const AbstractDiscreteTaxonData &taxon = data.getTaxonData( *it );
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)

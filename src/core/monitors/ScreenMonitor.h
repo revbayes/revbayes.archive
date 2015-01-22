@@ -33,7 +33,6 @@ namespace RevBayesCore {
     public:
         // Constructors and Destructors
         ScreenMonitor(DagNode *n, int g, bool pp=true, bool l=true, bool pr=true);                                                                //!< Constructor with single DAG node
-        ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp=true, bool l=true, bool pr=true);                                              //!< Constructor with set of DAG node
         ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp=true, bool l=true, bool pr=true);                                              //!< Constructor with vector of DAG node
         
         // basic methods
@@ -42,6 +41,7 @@ namespace RevBayesCore {
         // Monitor functions
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         void                                reset(size_t numCycles);
+        void                                setReplicateIndex(size_t idx);
         
         // ScreenMonitor functions
         void                                printHeader(void);                                                  //!< Print header
@@ -56,10 +56,12 @@ namespace RevBayesCore {
         std::string                         prefixSeparator;
         std::string                         suffixSeparator;
         size_t                              headerPrintingInterval;
-        std::queue<time_t>                  startTimes;
+        time_t                              startTime;
         size_t                              numCycles;                                                          //!< Total number of cycles to monitor
         size_t                              currentGen;
         size_t                              startGen;
+        size_t                              replicateIndex;
+        bool                                enabled;
         
     };
     

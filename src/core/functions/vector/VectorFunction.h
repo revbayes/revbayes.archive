@@ -1,4 +1,4 @@
-/**
+    /**
  * @file
  * This file contains the declaration of the deterministic variable class for Vectors.
  * This class is derived from the deterministic node and each instance will represent a deterministic variable
@@ -38,6 +38,7 @@ namespace RevBayesCore {
         
         // public member functions
         VectorFunction*                                     clone(void) const;                                                          //!< Create an independent clone
+        const std::vector<const TypedDagNode<valueType>* >& getVectorParameters(void) const;
         void                                                keep(DagNode* affecter);
         void                                                restore(DagNode *restorer);   
         void                                                touch(DagNode *toucher );
@@ -54,6 +55,11 @@ namespace RevBayesCore {
     };
     
 }
+
+
+#include "Assign.h"
+#include "Assignable.h"
+
 
 template <class valueType>
 RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args) : TypedFunction< RbVector<valueType> >( new RbVector<valueType>() ),
@@ -83,6 +89,13 @@ template <class valueType>
 RevBayesCore::VectorFunction<valueType>* RevBayesCore::VectorFunction<valueType>::clone( void ) const
 {
     return new VectorFunction<valueType>( *this );
+}
+
+
+template <class valueType>
+const std::vector<const RevBayesCore::TypedDagNode<valueType>* >& RevBayesCore::VectorFunction<valueType>::getVectorParameters( void ) const
+{
+    return vectorParams;
 }
 
 template <class valueType>
@@ -118,7 +131,7 @@ void RevBayesCore::VectorFunction<valueType>::update( void )
             updateAll = false;
             for (std::set<size_t>::const_iterator it = indices.begin(); it != indices.end(); ++it)
             {
-                (*this->value)[*it] = vectorParams[*it]->getValue();
+                Assign<valueType, IsDerivedFrom<valueType, Assignable>::Is >::doAssign( (*this->value)[*it], vectorParams[*it]->getValue() );
             }
             
         }
@@ -151,6 +164,7 @@ void RevBayesCore::VectorFunction<valueType>::swapParameterInternal(const DagNod
             vectorParams[i] = static_cast<const TypedDagNode<valueType>* >( newP );
             // don't jump out of the loop because we could have the same parameter multiple times for this vector, e.g., v(a,a,b,a)
         }
+        
     }
     
 }

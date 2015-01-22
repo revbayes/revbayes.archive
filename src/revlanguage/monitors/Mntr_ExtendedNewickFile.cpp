@@ -17,19 +17,22 @@
 
 using namespace RevLanguage;
 
-Mntr_ExtendedNewickFile::Mntr_ExtendedNewickFile(void) : Monitor() {
+Mntr_ExtendedNewickFile::Mntr_ExtendedNewickFile(void) : Monitor()
+{
     
 }
 
 
 /** Clone object */
-Mntr_ExtendedNewickFile* Mntr_ExtendedNewickFile::clone(void) const {
+Mntr_ExtendedNewickFile* Mntr_ExtendedNewickFile::clone(void) const
+{
     
 	return new Mntr_ExtendedNewickFile(*this);
 }
 
 
-void Mntr_ExtendedNewickFile::constructInternalObject( void ) {
+void Mntr_ExtendedNewickFile::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     

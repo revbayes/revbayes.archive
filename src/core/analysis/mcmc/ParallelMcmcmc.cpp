@@ -56,7 +56,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const RbVector<Move> &moves, cons
             Mcmc* oneChain = new Mcmc(m, moves, mons);
             oneChain->setScheduleType( scheduleType );
             oneChain->setChainActive( a );
-            oneChain->setChainHeat( b );
+            oneChain->setChainPosteriorHeat( b );
             oneChain->setChainIndex(i);
             oneChain->startMonitors(0);
             chains[i] = oneChain;
@@ -225,7 +225,7 @@ void ParallelMcmcmc::synchronizeValues(void)
     for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
     {
         size_t k = chainsPerProcess[pid][j];
-        results[k] = chains[k]->getLnPosterior();
+        results[k] = chains[k]->getModelLnProbability();
     }
 #ifdef RB_MPI
     MPI::COMM_WORLD.Send(&results, numChains, MPI::DOUBLE, 0, 0);
@@ -265,7 +265,7 @@ void ParallelMcmcmc::synchronizeHeats(void)
     for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
     {
         size_t k = chainsPerProcess[pid][j];
-        heats[k] = chains[k]->getChainHeat();
+        heats[k] = chains[k]->getChainPosteriorHeat();
     }
 #ifdef RB_MPI
     MPI::COMM_WORLD.Send(&heats, numChains, MPI::DOUBLE, 0, 0);

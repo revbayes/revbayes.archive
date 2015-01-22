@@ -32,7 +32,6 @@ namespace RevBayesCore {
     public:
         // Constructors and Destructors
         PriorMonitor(DagNode *n, int g);                                                                //!< Constructor with single DAG node
-        PriorMonitor(const std::set<DagNode *> &n, int g);                                              //!< Constructor with set of DAG node
         PriorMonitor(const std::vector<DagNode *> &n, int g);                                           //!< Constructor with vector of DAG node
         PriorMonitor(const PriorMonitor &p);                                                            //!< Copy constructor
 

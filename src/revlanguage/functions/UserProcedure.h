@@ -28,8 +28,7 @@ namespace RevLanguage {
     public:
         UserProcedure(UserFunctionDef* def);                                                //!< Standard constructor
         virtual                                     ~UserProcedure() {}                     //!< Virtual destructor
-        void bogusFoo() {}
-
+        
         // Basic utility functions
         UserProcedure*                              clone(void) const;                      //!< Clone the object
         static const std::string&                   getClassType(void);                     //!< Get type (static)

@@ -18,13 +18,15 @@
 #ifndef MatrixReal_H
 #define MatrixReal_H
 
+#include "Cloneable.h"
+
 #include <cstddef>
 #include <iostream>
 #include <vector>
 
 namespace RevBayesCore {
     
-    class MatrixReal {
+    class MatrixReal : public Cloneable {
         
     public:
         MatrixReal(void);                       //!< Default constructor required by revlanguage use of this class
@@ -62,6 +64,7 @@ namespace RevBayesCore {
         
         // utility funcions
         void                                    clear(void);
+        MatrixReal*                             clone(void) const;
         size_t                                  getNumberOfColumns(void) const;
         size_t                                  getNumberOfRows(void) const;
         size_t                                  size(void) const;

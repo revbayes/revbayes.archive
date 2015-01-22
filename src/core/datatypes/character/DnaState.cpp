@@ -210,18 +210,21 @@ unsigned int DnaState::getNumberObservedStates(void) const  {
 }
 
 
-size_t DnaState::getNumberOfStates( void ) const {
+size_t DnaState::getNumberOfStates( void ) const
+{
     
     return 4;
 }
 
 
-unsigned long DnaState::getState( void ) const {
+unsigned long DnaState::getState( void ) const
+{
     
     return (unsigned long)state;
 }
 
-size_t DnaState::getStateIndex( void ) const {
+size_t DnaState::getStateIndex( void ) const
+{
     
     return stateIndex;
 }

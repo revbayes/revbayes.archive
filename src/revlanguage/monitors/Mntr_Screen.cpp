@@ -34,11 +34,11 @@ void Mntr_Screen::constructInternalObject( void )
     // now allocate space for a new Mntr_Screen object
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     
-    std::set<RevBayesCore::DagNode *> n;
+    std::vector<RevBayesCore::DagNode *> n;
     for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
     {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
-        n.insert( node );
+        n.push_back( node );
     }
     
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();

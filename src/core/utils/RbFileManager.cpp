@@ -36,7 +36,7 @@ RbFileManager::RbFileManager( void )
 
     // make certain the current file/path information is empty
 	setFileName("");
-	setFilePath("");
+	setFilePath(".");
     
     fullFileName = filePath;
     if ( fullFileName != "")
@@ -155,6 +155,34 @@ void RbFileManager::createDirectoryForFile( void )
         directoryName += pathSeparator;
     }
     
+}
+
+
+
+
+/**
+ * Portable code to get full path to user home directory.
+ *
+ * @param path
+ * @return full path to user home directory
+ */
+std::string RbFileManager::expandUserDir(std::string path)
+{
+    if ( !path.empty() && path[0] == '~')
+    {
+        char const* home = getenv("HOME");
+        
+        if (home or ((home = getenv("USERPROFILE")))) {
+            path.replace(0, 1, home);
+        }
+    }
+    else
+    {
+        char const *hdrive = getenv("HOMEDRIVE"), *hpath = getenv("HOMEPATH");
+        path.replace(0, 1, std::string(hdrive) + hpath);
+    }
+    
+    return path;
 }
 
 
@@ -489,6 +517,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
      path/file information is empty. */
 	if ( s.length() == 0 )
     {
+        filePath = ".";
 		return false;
     }
     
@@ -502,7 +531,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
          must have only the file name, and the
          file should be in our current directory. */
 		fileName = s;
-		filePath = "";
+		filePath = ".";
     }
 	else if ( location == s.length() - 1 )
     {
@@ -512,7 +541,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
          is not valid, otherwise it would have tested as 
          being present (above). */
 		fileName = "";
-		filePath = "";
+		filePath = ".";
 		return false;
     }
 	else

@@ -29,6 +29,8 @@
 #include <cstdlib>
 
 /* Files including helper classes */
+#include "AddContinuousDistribution.h"
+#include "AddDistribution.h"
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
@@ -76,13 +78,15 @@
 
 /* Inference types (in folder "analysis") */
 #include "RlBurninEstimationConvergenceAssessment.h"
-#include "RlMcmc.h"
 #include "RlModel.h"
-#include "RlParallelMcmcmc.h"
 #include "RlPathSampler.h"
-#include "RlPowerPosterior.h"
+#include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlAncestralStateTrace.h"
+
+/// Stopping Rules ///
+#include "RlMaxIterationStoppingRule.h"
+#include "RlMaxTimeStoppingRule.h"
 
 /// Monitors ///
 
@@ -156,6 +160,7 @@
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
 #include "Move_NodeTimeSlideUniform.h"
+#include "Move_NodeTimeSlideBeta.h"
 #include "Move_OriginTimeSlide.h"
 #include "Move_RateAgeBetaShift.h"
 #include "Move_RootTimeSlide.h"
@@ -179,6 +184,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCEpoch.h"
+#include "Dist_phyloCTMCClado.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -264,6 +270,7 @@
 #include "Func_rep.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
+#include "Func_setOption.h"
 #include "Func_setwd.h"
 #include "Func_structure.h"
 #include "Func_system.h"
@@ -304,13 +311,20 @@
 #include "Func_vt.h"
 #include "Func_wag.h"
 #include "Func_chromosomes.h"
-#include "Func_mk1.h"
+
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
 #include "Func_biogeo_de.h"
 #include "Func_biogeo_grm.h"
 
+
+/* Cladogeneic state prob function */
+#include "Func_cladoProbs.h"
+
 /* Inference functions (in folder "functions/inference") */
+#include "Func_Mcmc.h"
+#include "Func_Mcmcmc.h"
+
 
 /* Internal functions (in folder ("functions/internal") */
 
@@ -400,6 +414,8 @@
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
 #include "Func_discretizeGamma.h"
+#include "Func_discretizeDistribution.h"
+#include "Func_discretizePositiveDistribution.h"
 #include "Func_dppConcFromMean.h"
 #include "Func_dppMeanFromConc.h"
 #include "Func_fnNormalizedQuantile.h"
@@ -445,6 +461,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         //        AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
         addFunction("v", new Func_workspaceVector<Move>() );
         
+        addFunction("v", new Func_workspaceVector<StoppingRule>() );
+        
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         
         /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
@@ -467,13 +485,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
-        addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
         addTypeWithConstructor( "model",                  new Model()                                   );
-        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
         addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
-        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()                          );
         addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
 
+        /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
+        addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
+        addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
+        
 
         ////////////////////////////////////////////////////////////////////////////////
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
@@ -560,6 +579,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
+        addTypeWithConstructor("mvNodeTimeSlideBeta",       new Move_NodeTimeSlideBeta() );
         addTypeWithConstructor("mvOriginTimeSlide",         new Move_OriginTimeSlide() );
         addTypeWithConstructor("mvRateAgeBetaShift",        new Move_RateAgeBetaShift() );
         addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
@@ -607,11 +627,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
-                
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<TimeTree>() );
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<BranchLengthTree>() );
+        
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
-        addDistribution( "dnBDP",                       new Dist_bdp() );
+//        addDistribution( "dnBDP",                       new Dist_bdp() );
+        AddDistribution<TimeTree>("BDP", new Dist_bdp());
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
         
@@ -697,8 +720,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnLognormal",     new Dist_lnormOffsetPositive() );
         
         // normal distribution
-        addDistribution( "dnNorm",          new Dist_norm() );
-        addDistribution( "dnNormal",        new Dist_norm() );
+        AddContinuousDistribution<Real>("Normal", new Dist_norm());
+//        addDistribution( "dnNorm",          new Dist_norm() );
+//        addDistribution( "dnNormal",        new Dist_norm() );
         
         // LogUniform distribution   
         addDistribution( "dnLogUniform",    new Dist_logUniform() );
@@ -789,6 +813,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "seq",                      new Func_seq<Real>()                );
+        addFunction( "setOption",                new Func_setOption()                );
         addFunction( "setwd",                    new Func_setwd()                    );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
@@ -821,7 +846,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
         addFunction( "fnJones",    new Func_jones()   );
-		addFunction( "fnMk1",      new Func_mk1()     );
         addFunction( "fnMtMam",    new Func_mtMam()   );
         addFunction( "fnMtRev",    new Func_mtRev()   );
         addFunction( "fnPomo",     new Func_pomo()    );
@@ -832,6 +856,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
         addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
         addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
+        
+        /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
+        addFunction( "fnCladoProbs", new Func_cladoProbs() );
 
     
         /* Inference functions (in folder "functions/inference") */
@@ -947,8 +974,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_sub",      new Func__sub< Real                               , Real                  , Real                  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Integer>               , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
         addFunction( "_sub",      new Func__sub< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<Real>     >(  )  );
-        addFunction( "_sub",      new Func__vectorScalarDiv<Integer                 , Integer               , Integer                   >(  )   );
-        addFunction( "_sub",      new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarSub<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( "_sub",      new Func__vectorScalarSub<Real                    , Real                  , Real                      >(  )   );
         addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
         addFunction( "_sub",      new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
         
@@ -1075,6 +1102,19 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "var",       new Func_variance()  );
 
         
+        
+        /* Statistics functions (in folder "functions/statistics") */
+        
+        // MCMC constructor function
+        addFunction( "mcmc",   new Func_Mcmc() );
+        
+        // MCMCMC constructor function
+        addFunction( "mcmcmc",   new Func_Mcmcmc() );
+        
+        // power-posterior constructor function
+        addTypeWithConstructor( "powerPosterior",  new PowerPosteriorAnalysis() );
+
+        
  		/* Statistics functions (in folder "functions/statistics") */
 		
 		// some helper statistics for the DPP distribution
@@ -1093,8 +1133,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<RealPos>()    );
         
+        addFunction( "fnDiscretizeDistribution", new Func_discretizeDistribution( )         );
+        addFunction( "fnDiscretizeDistribution", new Func_discretizePositiveDistribution( ) );
+        
         // return a discretized gamma distribution (for gamma-dist rates)
-        addFunction( "fnDiscretizeGamma",             new Func_discretizeGamma( )   );
+        addFunction( "fnDiscretizeGamma",      new Func_discretizeGamma( )   );
 
         addFunction( "fnVarCovar",             new Func_varianceCovarianceMatrix( )   );
         

@@ -181,16 +181,23 @@ void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
         parameters.insert( newP );
         swapParameterInternal( oldP, newP );
         
+//        std::cerr << "Swapping '" + oldP->getName() + "':\t\t" << oldP << " <-> " << newP << std::endl;
+        
         // increment and decrement the reference counts
         newP->incrementReferenceCount();
         if ( oldP->decrementReferenceCount() == 0 )
         {
-            throw RbException("Memory leak in Function. Please report this bug to Sebastian.");
+            throw RbException("Memory leak in distribution. Please report this bug to Sebastian.");
         }
     }
     else
     {
-        throw RbException("Could not find the Distribution parameter to be swapped: " + oldP->getName());
+        for (std::set<const DagNode*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+        {
+            std::cerr << (*it)->getName() << " <" << (*it) << ">" << std::endl;
+        }
+        
+        throw RbException("Could not find the distribution parameter to be swapped: " + oldP->getName());
     }
     
 }

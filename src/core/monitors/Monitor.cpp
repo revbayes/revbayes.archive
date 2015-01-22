@@ -28,26 +28,6 @@ Monitor::Monitor(unsigned long g, DagNode *n) :
     n->incrementReferenceCount();
 }
 
-Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) :
-    printgen( g ),
-    model( NULL )
-{
-    
-    for (std::set<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
-    {
-        DagNode *theNode = *it;
-        
-        // push it to our vector
-        nodes.push_back( theNode );
-        
-        // add myself to the set of monitors
-        theNode->addMonitor( this );
-        
-        // tell the node that we have a reference to it (avoids deletion)
-        theNode->incrementReferenceCount();
-    }
-    
-}
 
 Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
     printgen( g ),
@@ -197,6 +177,26 @@ void Monitor::setModel(Model *m)
 void Monitor::setMcmc(Mcmc *m)
 {
     mcmc = m;
+}
+
+
+/**
+ * This is the dummy method for the setting of the replicate index.
+ * Overwrite this method if necessary.
+ */
+void Monitor::setReplicateIndex(size_t idx)
+{
+    // nothing to do here
+}
+
+
+/**
+ * This is the dummy method for the setting of the stone index.
+ * Overwrite this method if necessary.
+ */
+void Monitor::setStoneIndex(size_t idx)
+{
+    // nothing to do here
 }
 
 

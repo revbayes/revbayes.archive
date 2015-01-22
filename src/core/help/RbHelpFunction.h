@@ -3,7 +3,6 @@
 
 #include "RbHelpArgument.h"
 #include "RbHelpEntry.h"
-#include "RbHelpReference.h"
 
 #include <string>
 #include <vector>
@@ -29,21 +28,13 @@ namespace RevBayesCore {
         
         // getter
         const std::vector<RbHelpArgument>&          getArguments(void) const;
-        const std::string&                          getAuthor(void) const;
-        const std::vector<std::string>&             getDetails(void) const;
         const std::string&                          getExample(void) const;
-        const std::vector<RbHelpReference>&         getReferences(void) const;
         const std::string&                          getReturnType(void) const;
-        const std::vector<std::string>&             getSeeAlso(void) const;
         const std::string&                          getUsage(void) const;
 
         // setters
         void                                        setArguments(const std::vector<RbHelpArgument> &a);
-        void                                        setAuthor(const std::string &a);
-        void                                        setDetails(const std::vector<std::string> &d);
         void                                        setExample(const std::string &e);
-        void                                        setSeeAlso(const std::vector<std::string> &s);
-        void                                        setReferences(const std::vector<RbHelpReference> &r);
         void                                        setReturnType(const std::string &r);
         void                                        setUsage(const std::string &u);
         

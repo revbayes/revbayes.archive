@@ -39,6 +39,7 @@ namespace RevLanguage {
         RevPtr<RevVariable>                 evaluateLHSContent(Environment& env, const std::string& varType);                       //!< Get semantic lhs value
         RevPtr<RevVariable>                 evaluateContent(Environment& env, bool dynamic=false);                                  //!< Get semantic value
         SyntaxElement*                      getBaseVariable(void);                                                                  //!< Get the base variable for this expression
+        void                                updateVariable(Environment& env, const std::string &n);                                 //!< Update the composite variables
         
     protected:
         SyntaxElement*                      index;                                                                                  //!< Vector of int indices to variable element

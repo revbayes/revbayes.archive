@@ -36,7 +36,6 @@ namespace RevBayesCore {
         // Constructors and Destructors
         Monitor(unsigned long printgen);                                                                                          //!< Default Constructor
         Monitor(unsigned long printgen, DagNode *n);                                                                              //!< Default Constructor
-        Monitor(unsigned long printgen, const std::set<DagNode *> &n);                                                            //!< Default Constructor
         Monitor(unsigned long printgen, const std::vector<DagNode *> &n);                                                         //!< Default Constructor
         Monitor(const Monitor &x);                                                                                      //!< Copy Constructor
         virtual ~Monitor(void);                                                                                         //!< Destructor
@@ -54,6 +53,8 @@ namespace RevBayesCore {
         virtual void                                openStream(void);                                                   //!< Open the stream for writing
         virtual void                                printHeader(void);                                                  //!< Print header
         virtual void                                setModel(Model* m);
+        virtual void                                setReplicateIndex(size_t idx);                                      //!< Set the index of the replicate here.
+        virtual void                                setStoneIndex(size_t idx);                                          //!< Set the index of the stone here.
         virtual void                                reset(size_t numCycles);                                            //!< Reset the monitor for a new start.
 
         // getters and setters
