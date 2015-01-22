@@ -36,7 +36,7 @@ RbFileManager::RbFileManager( void )
 
     // make certain the current file/path information is empty
 	setFileName("");
-	setFilePath("");
+	setFilePath(".");
     
     fullFileName = filePath;
     if ( fullFileName != "")
@@ -517,6 +517,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
      path/file information is empty. */
 	if ( s.length() == 0 )
     {
+        filePath = ".";
 		return false;
     }
     
@@ -530,7 +531,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
          must have only the file name, and the
          file should be in our current directory. */
 		fileName = s;
-		filePath = "";
+		filePath = ".";
     }
 	else if ( location == s.length() - 1 )
     {
@@ -540,7 +541,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
          is not valid, otherwise it would have tested as 
          being present (above). */
 		fileName = "";
-		filePath = "";
+		filePath = ".";
 		return false;
     }
 	else

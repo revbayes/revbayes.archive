@@ -118,33 +118,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
     }
     else if ( theParentVar->getRevObject() == RevNullObject::getInstance() )
     {
-//        const std::set<int>& indices = theParentVar->getElementIndices();
-//        if ( indices.empty() )
-//        {
-//            throw RbException("Cannot create a vector variable with name '" + identifier + "' because it doesn't have elements.");
-//        }
-//        std::vector<Argument> args;
-//        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
-//        {
-//            std::string elementIdentifier = identifier + "[" + *it + "]";
-//            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
-//            // check that the element is not NULL
-//            if ( elementVar == NULL || elementVar->getRevObject() == RevNullObject::getInstance() )
-//            {
-//                throw RbException("Cannot create vector variable with name '" + identifier + "' because element with name '" + elementIdentifier + "' is NULL." );
-//            }
-//            args.push_back( Argument( elementVar ) );
-//        }
-//        Function* func = Workspace::userWorkspace().getFunction("v",args,false).clone();
-//        func->processArguments(args,false);
-//        
-//        // Evaluate the function (call the static evaluation function)
-//        RevPtr<RevVariable> funcReturnValue = func->execute();
-//        
-//        // free the memory of our copy
-//        delete func;
-//        
-//        theParentVar->replaceRevObject( funcReturnValue->getRevObject().clone() );
+
     }
     else
     {

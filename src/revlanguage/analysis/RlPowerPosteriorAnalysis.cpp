@@ -154,7 +154,7 @@ const MemberRules& PowerPosteriorAnalysis::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("powers"     , ModelVector<RealPos>::getClassTypeSpec()    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("cats"       , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
         memberRules.push_back( new ArgumentRule("alpha"      , RealPos::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.3) ) );
-        memberRules.push_back( new ArgumentRule("sample_freq", Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
+        memberRules.push_back( new ArgumentRule("sampleFreq" , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
 
         rulesSet = true;
     }
@@ -213,7 +213,7 @@ void PowerPosteriorAnalysis::setConstParameter(const std::string& name, const Re
     {
         alphaVal = var;
     }
-    else if ( name == "sample_freq")
+    else if ( name == "sampleFreq")
     {
         sampFreq = var;
     }
