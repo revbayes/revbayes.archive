@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 {
     
     int processId = 0;
-#   ifdef RB_MPI
+#ifdef RB_MPI
     int numProcesses = 0;
     try {
         MPI::Init(argc, argv);
