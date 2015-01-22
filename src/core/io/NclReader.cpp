@@ -377,7 +377,14 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
         {
             double contObs ;
             const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
-            contObs = x[0];
+            if ( x.size() > 0 )
+            {
+                contObs = x[0];
+            }
+            else
+            {
+                contObs = RbConstants::Double::nan;
+            }
             dataVec.addCharacter( contObs );
         }
         
