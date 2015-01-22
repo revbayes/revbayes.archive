@@ -112,9 +112,13 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
     RevPtr<RevVariable> theParentVar = baseVariable->evaluateLHSContent(env, varType);
     
     // first we need to check if the parent variable is a deterministic vector
-    if ( theParentVar->isVectorVariable() || theParentVar->getRevObject() == RevNullObject::getInstance() )
+    if ( theParentVar->isVectorVariable() )
     {
         // everything is fine and we can add this element
+    }
+    else if ( theParentVar->getRevObject() == RevNullObject::getInstance() )
+    {
+
     }
     else
     {
@@ -143,7 +147,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateLHSContent( Environment& env, 
                     theElementVar  = env.getVariable( elementIdentifier );
                 
                     // set this variable as a hidden variable so that it doesn't show in ls()
-//                    theElementVar->setHiddenVariableState( true );
+                    theElementVar->setElementVariableState( true );
                     
                     theParentVar->addIndex( int(i) );
                 }
@@ -314,6 +318,63 @@ void SyntaxIndexOperation::printValue(std::ostream& o) const {
     }
 
     o << std::endl;
+
+}
+
+
+/**
+ * Update the variable.
+ * We need to refresh the composite variables so that the relationships are properly set.
+ */
+void SyntaxIndexOperation::updateVariable( Environment& env, const std::string &n )
+{
+    
+    std::string varName = n;
+    size_t pos = varName.find_last_of('[');
+    if ( pos != std::string::npos)
+    {
+        std::string parentName = varName.substr(0,pos);
+        
+        if ( env.existsVariable(parentName) )
+        {
+            RevPtr<RevVariable> &parentVariable = env.getVariable(parentName);
+            
+            const std::set<int>& indices = parentVariable->getElementIndices();
+            if ( indices.empty() )
+            {
+                throw RbException("Cannot create a vector variable with name '" + parentName + "' because it doesn't have elements.");
+            }
+            std::vector<Argument> args;
+            for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
+            {
+                std::string elementIdentifier = parentName + "[" + *it + "]";
+                RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
+                // check that the element is not NULL
+                if ( elementVar == NULL || elementVar->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException("Cannot create vector variable with name '" + parentName + "' because element with name '" + elementIdentifier + "' is NULL." );
+                }
+                args.push_back( Argument( elementVar ) );
+            }
+            Function* func = Workspace::userWorkspace().getFunction("v",args,false).clone();
+            func->processArguments(args,false);
+            
+            // Evaluate the function (call the static evaluation function)
+            RevPtr<RevVariable> funcReturnValue = func->execute();
+            
+            // free the memory of our copy
+            delete func;
+            
+            parentVariable->replaceRevObject( funcReturnValue->getRevObject().clone() );
+            
+            SyntaxIndexOperation *parentExpression = dynamic_cast< SyntaxIndexOperation *>( baseVariable );
+            if ( parentExpression != NULL )
+            {
+                parentExpression->updateVariable(env, parentName);
+            }
+        }
+    }
+    
 
 }
 

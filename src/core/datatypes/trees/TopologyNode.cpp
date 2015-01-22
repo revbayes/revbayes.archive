@@ -837,7 +837,8 @@ size_t TopologyNode::getNumberOfNodesInSubtree( bool countTips ) const
     
 }
 
-TopologyNode& TopologyNode::getParent(void) {
+TopologyNode& TopologyNode::getParent(void)
+{
     
     return *parent;
     

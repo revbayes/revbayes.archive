@@ -119,7 +119,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     delete times;
     
-    return lnProbTimes + logTreeTopologyProb;
+    return lnProbTimes;
     
 }
 

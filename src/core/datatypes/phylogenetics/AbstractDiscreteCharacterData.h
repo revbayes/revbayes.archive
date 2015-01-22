@@ -53,12 +53,14 @@ namespace RevBayesCore {
         virtual void                                excludeTaxon(const std::string& s) = 0;                                     //!< Exclude taxon
         virtual const DiscreteCharacterState&       getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
         virtual std::string                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
+        virtual std::vector<double>                 getEmpiricalBaseFrequencies(void) const = 0;                                //!< Compute the empirical base frequencies
         virtual const std::string&                  getFileName(void) const = 0;                                                //!< Returns the name of the file the data came from
         virtual const std::string&                  getFilePath(void) const = 0;                                                //!< Returns the name of the file path the data came from
         virtual size_t                              getIndexOfTaxon(const std::string &n) const = 0;                            //!< Get the index of the taxon with name 'n'.
         virtual size_t                              getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
         virtual size_t                              getNumberOfStates(void) const = 0;                                          //!< Get the number of states for the characters in this matrix
         virtual size_t                              getNumberOfIncludedTaxa(void) const = 0;                                    //!< Number of included taxa
+        virtual size_t                              getNumberOfInvariantSites(void) const = 0;                                  //!< Number of invariant sites
         virtual size_t                              getNumberOfTaxa(void) const = 0;                                            //!< Number of taxa
         virtual AbstractDiscreteTaxonData&          getTaxonData(size_t tn) = 0;                                                //!< Return a reference to a sequence in the character matrix
         virtual const AbstractDiscreteTaxonData&    getTaxonData(size_t tn) const = 0;                                          //!< Return a reference to a sequence in the character matrix

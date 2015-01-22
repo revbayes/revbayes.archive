@@ -85,10 +85,10 @@ namespace RevBayesCore {
 		{
 			BranchLengthTree tree = *trace.objectAt(i);
 			
-			// re-root the tree so that we can compare the the trees
-			if ( outgroup == "" ) 
-				outgroup = tree.getTipNode(0).getName();
-			tree.reroot( outgroup );
+//			// re-root the tree so that we can compare the the trees
+//			if ( outgroup == "" ) 
+//				outgroup = tree.getTipNode(0).getName();
+//			tree.reroot( outgroup );
 			
 			std::string newick = TreeUtilities::uniqueNewickTopology(tree);
 			
@@ -150,6 +150,7 @@ namespace RevBayesCore {
         std::string bestNewick = treeSamples.rbegin()->getValue();
         NewickConverter converter;
         BranchLengthTree* bestTree = converter.convertFromNewick( bestNewick );
+//        bestTree->reroot(trace.objectAt(burnin)->getTipNode(0).getName());
         
         const std::vector<TopologyNode*> &nodes = bestTree->getNodes();
         std::vector<double> pp(nodes.size(),0.0);
@@ -162,6 +163,10 @@ namespace RevBayesCore {
             const TopologyNode& root = tree->getRoot();
             for (size_t j = 0; j < nodes.size(); ++j)
             {
+                if ( j == 41 )
+                {
+//                    std::cerr << "Missing node:\n" << nodes[j]->computePlainNewick() << std::endl;
+                }
                 if ( root.containsClade(nodes[j], true) )
                 {
                     size_t cladeIndex = root.getCladeIndex( nodes[j] );
@@ -467,19 +472,20 @@ namespace RevBayesCore {
 		ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
 		RBOUT(ss.str());
         
-        BranchLengthTree &finalInputTree = const_cast<BranchLengthTree&>(inputTree);
-        std::vector<TopologyNode*> input_nodes = finalInputTree.getNodes();
-        bool root_found = false;
-        
 		RBOUT("Calculating ancestral state posteriors...\n");
+        
+        // allocate memory for the new tree
+        BranchLengthTree* finalInputTree = new BranchLengthTree(inputTree);
 		
         // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
+        std::vector<TopologyNode*> input_nodes = finalInputTree->getNodes();
         std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
         std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
         
         double weight = 1.0 / (trace.size()-burnin);
         
         // loop through all trees in tree trace
+        bool root_found = false;
         for (size_t i = burnin; i < trace.size(); i++)
         {
             BranchLengthTree *sample_tree = trace.objectAt( i );
@@ -492,7 +498,7 @@ namespace RevBayesCore {
                 for (size_t j = 0; j < input_nodes.size(); j++) {
                     
                     // reroot a copy of the inputTree until we find the sample_root node
-                    BranchLengthTree* finalInputTreeCopy = new BranchLengthTree(finalInputTree);
+                    BranchLengthTree* finalInputTreeCopy = new BranchLengthTree(*finalInputTree);
                     std::vector<TopologyNode*> input_nodes_copy = finalInputTreeCopy->getNodes();
                     finalInputTreeCopy->reroot( *(input_nodes_copy[j]) );
                     
@@ -518,8 +524,8 @@ namespace RevBayesCore {
                     delete finalInputTreeCopy;
                     if (children_found) {
                         // finally reroot the original inputTree
-                        finalInputTree.reroot( *(input_nodes[j]) );
-                        input_nodes = finalInputTree.getNodes();
+                        finalInputTree->reroot( *(input_nodes[j]) );
+                        input_nodes = finalInputTree->getNodes();
                         root_found = true;
                         break;
                     }
@@ -537,7 +543,7 @@ namespace RevBayesCore {
                     // if the inputTree node is also in the sample tree
                     // we get the ancestral character state from the ancestral state trace
                     size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] ); 
-                    size_t inputCladeIndex = finalInputTree.getRoot().getCladeIndex( input_nodes[j] );
+                    size_t inputCladeIndex = finalInputTree->getRoot().getCladeIndex( input_nodes[j] );
                     
                     // get AncestralStateTrace for this node
                     AncestralStateTrace ancestralstate_trace;
@@ -643,13 +649,13 @@ namespace RevBayesCore {
                 best_states.push_back(s);
             }
         }
-        finalInputTree.clearNodeParameters();
-        finalInputTree.addNodeParameter("posterior",posteriors,true);
-        finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+        finalInputTree->clearNodeParameters();
+        //finalInputTree.addNodeParameter("posterior",posteriors,true);
+        finalInputTree->addNodeParameter("ancestralstates",best_states,true);
 		
 		RBOUT("Done.\n");
-		
-        return &finalInputTree;
+        
+        return finalInputTree;
     }
 
 } //end namespace RevBayesCore
@@ -721,13 +727,14 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
 	std::stringstream ss;
 	ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
 	RBOUT(ss.str());
-    
-    treeType &finalInputTree = const_cast<treeType&>(inputTree);
-    const std::vector<TopologyNode*> &input_nodes = finalInputTree.getNodes();
-    
+
 	RBOUT("Calculating ancestral state posteriors...\n");
+    
+    // allocate memory for the new tree
+    treeType* finalInputTree = new treeType(inputTree);
 	
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
+    const std::vector<TopologyNode*> &input_nodes = finalInputTree->getNodes();
     std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
     std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
     
@@ -852,13 +859,13 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
             best_states.push_back(s);
         }
     }
-    finalInputTree.clearNodeParameters();
-    finalInputTree.addNodeParameter("posterior",posteriors,true);
-    finalInputTree.addNodeParameter("ancestralstates",best_states,true);
+    finalInputTree->clearNodeParameters();
+    //finalInputTree.addNodeParameter("posterior",posteriors,true);
+    finalInputTree->addNodeParameter("ancestralstates",best_states,true);
 	
 	RBOUT("Done.\n");
 	
-    return &finalInputTree;
+    return finalInputTree;
 }
 
 template <class treeType>

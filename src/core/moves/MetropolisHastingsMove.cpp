@@ -202,7 +202,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly )
+void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 {
     // Propose a new value
     proposal->prepareProposal();
@@ -246,16 +246,10 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     
     // exponentiate with the chain heat
     double lnPosteriorRatio;
-    if ( raiseLikelihoodOnly )
-    {
-        lnPosteriorRatio = heat * lnLikelihoodRatio + lnPriorRatio;
-    }
-    else
-    {
-        lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
-    }
+    lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
 	
-	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) {
+	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) )
+    {
 		
             proposal->undoProposal();
             
@@ -270,7 +264,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-    
+
         if (lnAcceptanceRatio >= 0.0)
         {
             numAccepted++;
@@ -421,7 +415,7 @@ void MetropolisHastingsMove::resetMoveCounters( void )
  * Swap the current variable for a new one.
  *
  * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new RevVariable.
+ * \param[in]     newN     The new variable.
  */
 void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN) 
 {

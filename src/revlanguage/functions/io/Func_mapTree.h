@@ -36,7 +36,7 @@ namespace RevLanguage {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RevPtr<RevVariable>                execute(void);                                                          //!< Execute function
+        RevPtr<RevVariable>             execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
         

@@ -19,6 +19,7 @@
 #include "RbSettings.h"
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "StringUtilities.h"
 
 #include <iostream>
 #include <string>
@@ -36,22 +37,24 @@
 
 /** Default constructor: The default settings are first read, and 
  * then potentially overwritten by values contained in a file.  */
-RbSettings::RbSettings(void) {
+RbSettings::RbSettings(void)
+{
 
 	initializeUserSettings();
-	
-    // read a file containing the user's alternate default values
 }
 
 
-/** Constructor that takes a file containing the user settings. The
- * default settings are first read, and then potentially overwritten by
- * values contained in a file. */
-RbSettings::RbSettings(std::string& defaultFileName) {
+const std::string& RbSettings::getHelpDir( void ) const
+{
+    
+    return helpDir;
+}
 
-	initializeUserSettings();
-	
-    // read the 'defaultFileName' file containing the user's alternate default values
+
+const std::string& RbSettings::getModuleDir( void ) const
+{
+    
+    return moduleDir;
 }
 
 
@@ -88,9 +91,37 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     
-    lineWidth = 100;             // the default line width
-    tolerance = 10E-10;         // set default value for tolerance comparing doubles
-    printNodeIndex = true;     // print node indices of tree nodes as comments
+    std::string userDir = RevBayesCore::RbFileManager::expandUserDir("~");
+    
+    // read the ini file
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
+    if ( fm.isFile() )
+    {
+        std::ifstream readStream;
+        fm.openFile( readStream );
+        std::string readLine = "";
+        while (std::getline(readStream,readLine))
+        {
+            std::vector<std::string> tokens;
+            StringUtilities::stringSplit(readLine, "=", tokens);
+            
+            setOption(tokens[0], tokens[1], false);
+            
+        }
+        
+        fm.closeFile(readStream);
+    }
+    else
+    {
+
+        helpDir   = "help";         // the default help directory
+        moduleDir = "modules";      // the default module directory
+        lineWidth = 100;            // the default line width
+        tolerance = 10E-10;         // set default value for tolerance comparing doubles
+        printNodeIndex = true;      // print node indices of tree nodes as comments
+
+    }
+    
 
     // initialize the current directory to be the directory the binary is sitting in
     char cwd[MAX_DIR_PATH+1];
@@ -115,6 +146,43 @@ void RbSettings::initializeUserSettings(void)
     {
         workingDirectory = "";
     }
+    
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
+
+void RbSettings::setHelpDir(const std::string &hd)
+{
+    
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(hd);
+    
+    if ( !fm.isDirectory() )
+    {
+        throw RbException("Cannot set the help directory to '" + hd + "'.");
+    }
+    
+    helpDir = fm.getFullFilePath();
+    
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
+
+void RbSettings::setModuleDir(const std::string &md)
+{
+    
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(md);
+    
+    if ( !fm.isDirectory() )
+    {
+        throw RbException("Cannot set the help directory to '" + md + "'.");
+    }
+    
+    moduleDir = fm.getFullFilePath();
+    
+    // save the current settings for the future.
+    writeUserSettings();
 }
 
 
@@ -122,6 +190,47 @@ void RbSettings::setLineWidth(size_t w)
 {
     // replace the internal value with this new value
     lineWidth = w;
+    
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
+
+void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
+{
+    
+    if ( key == "helpdir" )
+    {
+        helpDir = value;
+    }
+    else if ( key == "moduledir" )
+    {
+        moduleDir = value;
+    }
+    else if ( key == "printNodeIndex" )
+    {
+        printNodeIndex = value == "TRUE";
+    }
+    else if ( key == "tolerance" )
+    {
+        std::string::size_type sz;     // alias of size_t
+        tolerance = std::stod (value,&sz);
+    }
+    else if ( key == "linewidth" )
+    {
+        std::string::size_type sz;     // alias of size_t
+        lineWidth = std::stoi (value,&sz);
+    }
+    else
+    {
+        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+    }
+    
+    if ( write == true )
+    {
+        writeUserSettings();
+    }
+    
 }
 
 
@@ -136,6 +245,9 @@ void RbSettings::setTolerance(double t)
 {
     // replace the internal value with this new value
     tolerance = t;
+    
+    // save the current settings for the future.
+    writeUserSettings();
 }
 
 
@@ -151,4 +263,25 @@ void RbSettings::setWorkingDirectory(const std::string &wd)
     
     workingDirectory = fm.getFullFilePath();
     
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
+
+void RbSettings::writeUserSettings( void )
+{
+    std::string userDir = RevBayesCore::RbFileManager::expandUserDir("~");
+    
+    // open the ini file
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
+
+    std::ofstream writeStream;
+    fm.openFile( writeStream );
+    writeStream << "helpdir=" << helpDir << std::endl;
+    writeStream << "moduledir=" << moduleDir << std::endl;
+    writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
+    writeStream << "tolerance=" << tolerance << std::endl;
+    writeStream << "linewidth=" << lineWidth << std::endl;
+    fm.closeFile( writeStream );
+
 }

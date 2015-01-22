@@ -92,6 +92,9 @@ void MatrixReal::clear( void ) {
     elements.clear();
 }
 
+MatrixReal* MatrixReal::clone(void) const {
+     return new MatrixReal( *this );
+}
 
 
 size_t MatrixReal::getNumberOfColumns( void ) const {

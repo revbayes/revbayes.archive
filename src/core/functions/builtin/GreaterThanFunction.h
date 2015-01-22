@@ -29,15 +29,14 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class GreaterThanFunction : public TypedFunction<bool> {
+    class GreaterThanFunction : public TypedFunction<unsigned int> {
         
     public:
         GreaterThanFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
-        GreaterThanFunction(const GreaterThanFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~GreaterThanFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
-        GreaterThanFunction*                                   clone(void) const;                                                          //!< Create an independent clone
+        GreaterThanFunction*                                clone(void) const;                                                          //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -54,18 +53,10 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::GreaterThanFunction<leftValueType,rightValueType>::GreaterThanFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+RevBayesCore::GreaterThanFunction<leftValueType,rightValueType>::GreaterThanFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ), left( l ), right( r ) {
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
-    
-    update();
-}
-
-
-template <class leftValueType, class rightValueType>
-RevBayesCore::GreaterThanFunction<leftValueType,rightValueType>::GreaterThanFunction(const GreaterThanFunction<leftValueType,rightValueType> &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
-    // no need to add parameters, happens automatically
     
     update();
 }

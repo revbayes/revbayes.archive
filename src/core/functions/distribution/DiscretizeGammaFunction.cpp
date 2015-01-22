@@ -19,16 +19,6 @@ RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const TypedDagNod
 }
 
 
-RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const DiscretizeGammaFunction &dgf) : TypedFunction< RbVector<double> >( dgf ),
-    shape( dgf.shape ),
-    rate( dgf.rate ),
-    numCats(dgf.numCats),
-    median(dgf.median)
-{
-    
-}
-
-
 
 RevBayesCore::DiscretizeGammaFunction* RevBayesCore::DiscretizeGammaFunction::clone( void ) const
 {

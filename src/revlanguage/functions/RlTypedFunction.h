@@ -34,8 +34,6 @@ namespace RevLanguage {
         virtual                                         ~TypedFunction(void);                                                               //!< Destructor
         TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                        //!< Copy constuctor
         
-        void bogusFoo() {}
-        
         virtual RevPtr<RevVariable>                        execute(void);                                                                      //!< Create a random variable from this distribution
         virtual const TypeSpec&                         getReturnType(void) const;                                                          //!< Get type of return value
         

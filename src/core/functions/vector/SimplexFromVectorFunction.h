@@ -19,8 +19,7 @@ namespace RevBayesCore {
         
     public:
         SimplexFromVectorFunction(const TypedDagNode< RbVector<double> >* vec);                                              //!< Basic constructor
-        SimplexFromVectorFunction(const SimplexFromVectorFunction &n);                                                          //!< Copy constructor
-
+        
         virtual                                         ~SimplexFromVectorFunction(void);                                       //!< Virtual destructor for derived classes
         
         // public member functions

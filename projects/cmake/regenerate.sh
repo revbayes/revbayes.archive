@@ -8,6 +8,7 @@ echo $HERE
 boost="true"
 mavericks="false"
 win="false"
+mpi="false"
 
 
 # parse command line arguments
@@ -25,6 +26,7 @@ Command line options are:
 -boost      <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
 -mavericks  <true|false>    : set to true if you are building on a OS X - Mavericks system. Defaults to false.
 -win        <true|false>    : set to true if you are building on a Windows system. Defaults to false.
+-mpi        <true|false>    : set to true if you want to build the MPI version. Defaults to false.
 '
 exit
 fi
@@ -91,7 +93,7 @@ else
 if [ "$mavericks" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -msse -msse2 -msse3 -stdlib=libstdc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -msse -msse2 -msse3 -stdlib=libc++")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -Wall")
 '  >> "$HERE/CMakeLists.txt"
 
@@ -103,11 +105,24 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread -std=c++11")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 fi
 fi
+
+if [ "$mpi" = "true" ]
+then
+echo '
+add_definitions(-DRB_MPI)
+# Require MPI for this project:
+find_package(MPI REQUIRED)
+include_directories(${MPI_INCLUDE_PATH})
+set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
+set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
+'  >> "$HERE/CMakeLists.txt"
+fi
+
 
 echo '
 # Add extra CMake libraries into ./CMake
@@ -155,17 +170,23 @@ add_subdirectory(revlanguage)
 
 ############# executables #################
 # basic rev-bayes binary
-add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
-
-# extended rev-bayes binary
-' >> "$HERE/CMakeLists.txt"
-
-
-echo '
-
-
 ' >> $HERE/CMakeLists.txt
+
+if [ "$mpi" = "true" ]
+then
+echo '
+add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+
+target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
+' >> $HERE/CMakeLists.txt
+else
+echo '
+add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+
+target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+' >> $HERE/CMakeLists.txt
+fi
+
 
 echo
 

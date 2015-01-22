@@ -66,15 +66,18 @@ RevLanguage::RevPtr<ptrType>::RevPtr(const RevPtr<ptrType>& src) : mPtr( NULL )
 }
 
 template <typename ptrType>
-RevLanguage::RevPtr<ptrType>::~RevPtr(void) {
+RevLanguage::RevPtr<ptrType>::~RevPtr(void)
+{
     
     finalizePointer();
 }
 
 template <typename ptrType>
-RevLanguage::RevPtr<ptrType>& RevLanguage::RevPtr<ptrType>::operator=(const RevPtr<ptrType>& rhs) {
+RevLanguage::RevPtr<ptrType>& RevLanguage::RevPtr<ptrType>::operator=(const RevPtr<ptrType>& rhs)
+{
     
-    if (this == &rhs) {
+    if (this == &rhs)
+    {
         return (*this);
     }
     finalizePointer();
@@ -92,7 +95,8 @@ void RevLanguage::RevPtr<ptrType>::initializePointer(ptrType* inPtr) {
 }
 
 template <typename ptrType>
-void RevLanguage::RevPtr<ptrType>::finalizePointer(void) {
+void RevLanguage::RevPtr<ptrType>::finalizePointer(void)
+{
     
     if ( decrementCountForAddress(mPtr) ) { 
         delete mPtr;
@@ -100,13 +104,15 @@ void RevLanguage::RevPtr<ptrType>::finalizePointer(void) {
 }
 
 template <typename ptrType>
-ptrType* RevLanguage::RevPtr<ptrType>::operator->(void) const {
+ptrType* RevLanguage::RevPtr<ptrType>::operator->(void) const
+{
     
     return (mPtr);
 }
 
 template <typename ptrType>
-ptrType& RevLanguage::RevPtr<ptrType>::operator*(void) const {
+ptrType& RevLanguage::RevPtr<ptrType>::operator*(void) const
+{
     
     if ( mPtr == NULL ) {
         std::cerr << "Major BUG: Dereferencing NULL pointer!!!" << std::endl;

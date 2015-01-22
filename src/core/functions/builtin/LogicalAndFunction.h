@@ -29,11 +29,10 @@
 
 namespace RevBayesCore {
     
-    class LogicalAndFunction : public TypedFunction<bool> {
+    class LogicalAndFunction : public TypedFunction<unsigned int> {
         
     public:
-        LogicalAndFunction(const TypedDagNode<bool> * l, const TypedDagNode<bool> *r);
-        LogicalAndFunction(const LogicalAndFunction &n);                                                                                        //!< Copy constructor
+        LogicalAndFunction(const TypedDagNode<unsigned int> * l, const TypedDagNode<unsigned int> *r);
         virtual                                            ~LogicalAndFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -46,8 +45,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<bool>*                           left;
-        const TypedDagNode<bool>*                           right;
+        const TypedDagNode<unsigned int>*                   left;
+        const TypedDagNode<unsigned int>*                   right;
         
     };
     

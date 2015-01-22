@@ -87,7 +87,7 @@ RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dy
         
         if ( theSlot->isElementVariable() )
         {
-            static_cast< SyntaxIndexOperation *>( lhsExpression )->getBaseVariable()->evaluateContent( env, false );
+            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, theSlot->getName() );
         }
     }
     catch (RbException e)
