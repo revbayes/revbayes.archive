@@ -65,14 +65,15 @@ void ModelMonitor::resetDagNodes( void )
             {
                 if ( (!stochasticNodesOnly && !theNode->isConstant() && theNode->getName() != "" && !theNode->isHidden() && !theNode->isElementVariable() ) || ( theNode->isStochastic() && !theNode->isClamped() && theNode->isHidden() == false  && theNode->isElementVariable() == false ) )
                 {
-                    if ( varNames.find( theNode->getName() ) == varNames.end() )
+                    const std::string &name = theNode->getName();
+                    if ( varNames.find( name ) == varNames.end() )
                     {
                         nodes.push_back( theNode );
-                        varNames.insert( theNode->getName() );
+                        varNames.insert( name );
                     }
                     else
                     {
-                        std::cerr << "Trying to add variable with name '" << theNode->getName() << "' twice." << std::endl;
+                        std::cerr << "Trying to add variable with name '" << name << "' twice." << std::endl;
                     }
                 }
             }
