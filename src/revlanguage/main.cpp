@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 {
     
     int processId = 0;
-#ifdef RB_MPI
+#   ifdef RB_MPI
     int numProcesses = 0;
     try {
         MPI::Init(argc, argv);
@@ -26,8 +26,7 @@ int main(int argc, char* argv[])
     {
         return -1;
     }
-
-#endif
+#   endif
     
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;
@@ -40,7 +39,7 @@ int main(int argc, char* argv[])
     RevLanguageMain rl = RevLanguageMain();
     rl.startRevLanguageEnvironment(sourceFiles);
     
-#ifdef RB_XCODE
+#   ifdef RB_XCODE
     /* Declare things we need */
     int result = 0;
     std::string commandLine = "";
@@ -66,9 +65,9 @@ int main(int argc, char* argv[])
             if (!retStream)
             {
                 
-#ifdef RB_MPI
+#           ifdef RB_MPI
                 MPI::Finalize();
-#endif
+#           endif
                 exit(0);
             }
             
@@ -84,17 +83,17 @@ int main(int argc, char* argv[])
         }
         
         size_t bsz = commandLine.size();
-#ifdef RB_MPI
+#       ifdef RB_MPI
         MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
-#endif
+#       endif
         
         char * buffer = new char[bsz+1];
         buffer[bsz] = 0;
         for (int i = 0; i < bsz; i++)
             buffer[i] = commandLine[i];
-#ifdef RB_MPI
+#       ifdef RB_MPI
         MPI::COMM_WORLD.Bcast(buffer, bsz, MPI_CHAR, 0);
-#endif
+#       endif
         
         std::string tmp = std::string( buffer );
 
@@ -102,16 +101,16 @@ int main(int argc, char* argv[])
         
     }
     
-# else
+#   else
     
     RbClient c;
     c.startInterpretor();
     
-#endif
+#   endif
 
-#ifdef RB_MPI
+#   ifdef RB_MPI
     MPI::Finalize();
-#endif
+#   endif
     
     return 0;
 
