@@ -316,7 +316,7 @@ void AbstractFileMonitor::setReplicateIndex(size_t idx)
     if ( replicateIndex > 0 )
     {
         RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFileNameWithoutExtension() + "_run_" + idx + "." + fm.getFileExtension();
+        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_run_" + idx + "." + fm.getFileExtension();
     }
     
 }
@@ -334,7 +334,7 @@ void AbstractFileMonitor::setStoneIndex(size_t idx)
     if ( replicateIndex > 0 )
     {
         RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
+        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
     }
     
 }

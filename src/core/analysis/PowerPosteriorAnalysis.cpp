@@ -133,7 +133,7 @@ PowerPosteriorAnalysis* PowerPosteriorAnalysis::clone( void ) const
 
 void PowerPosteriorAnalysis::runAll(size_t gen)
 {
-    
+    std::cout << std::endl;
     std::cout << "Running power posterior analysis ..." << std::endl;
     
     /* Run the chain */
@@ -156,19 +156,19 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     RbFileManager fm = RbFileManager(filename);
     std::string stoneFileName = fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
 
-    RbFileManager f = RbFileManager(stoneFileName);
+    RbFileManager f = RbFileManager(fm.getFilePath(), stoneFileName);
     f.createDirectoryForFile();
     
     std::fstream outStream;
-    outStream.open( stoneFileName.c_str(), std::fstream::out);
+    outStream.open( f.getFullFileName().c_str(), std::fstream::out);
     outStream << "state\t" << "power\t" << "likelihood" << std::endl;
     
-    if ( sampler->getCurrentGeneration() == 0 )
-    {
-        // Monitor
-        sampler->startMonitors();
-        sampler->monitor(0);
-    }
+    // reset the counters for the move schedules
+    sampler->reset();
+    
+//    if ( sampler->getCurrentGeneration() == 0 )
+//    {
+//    }
     
     /* Reset the monitors */
     //    for (size_t i=0; i<replicates; ++i)
@@ -178,9 +178,6 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     //            runs[i].getMonitors()[j].reset( kIterations);
     //        }
     //    }
-    
-    // reset the counters for the move schedules
-    sampler->reset();
     
     // reset the stopping rules
 //    for (size_t i=0; i<rules.size(); ++i)
@@ -207,7 +204,12 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     // set the power of this sampler
     sampler->setLikelihoodHeat( powers[idx] );
     sampler->setStoneIndex( idx );
-        
+    
+    
+    // Monitor
+    sampler->startMonitors();
+    sampler->monitor(0);
+    
     for (size_t k=1; k<=gen; k++)
     {
             
@@ -218,6 +220,9 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
         }
             
         sampler->nextCycle( true );
+
+        // Monitor
+        sampler->monitor(k);
         
         // sample the likelihood
         if ( k > burnin && k % sampleFreq == 0 )
@@ -255,7 +260,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
 
         // read the i-th stone
         std::ifstream inStream;
-        inStream.open( filename.c_str(), std::fstream::in);
+        inStream.open( stoneFileName.c_str(), std::fstream::in);
         if (inStream.is_open())
         {
             bool header = true;
@@ -279,8 +284,6 @@ void PowerPosteriorAnalysis::summarizeStones( void )
         {
             std::cerr << "Problem reading stone " << idx+1 << " from file " << stoneFileName << "." << std::endl;
         }
-
-        outStream << "state\t" << "power\t" << "likelihood" << std::endl;
 
     }
 
