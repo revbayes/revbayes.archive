@@ -63,8 +63,6 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
     methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
-    methods.addFunction("removeTaxon",         new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
-    methods.addFunction("removeTaxon",         new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
     methods.addFunction("setTaxonName",        new MemberProcedure(RlUtils::Void,        setTaxonNameArgRules       ) );
     
     // Add method for call "size" as a function
@@ -199,7 +197,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return new RevVariable( new Natural(n) );
     }
-    else if (name == "removeTaxa" || name == "removeTaxon" )
+    else if (name == "removeTaxa" )
     {
         found = true;
         

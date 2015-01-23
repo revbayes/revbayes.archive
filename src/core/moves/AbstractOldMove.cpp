@@ -25,12 +25,12 @@ AbstractOldMove::~AbstractOldMove()
 }
 
 
-void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly )
+void AbstractOldMove::perform( double lHeat, double pHeat )
 {
     
     if ( isGibbs() )
     {
-        if ( raiseLikelihoodOnly || heat < 1.0 )
+        if ( lHeat < 1.0 || pHeat < 1.0 )
         {
             throw RbException("Cannot perform Gibbs move because the likelihood is perturbed for this Monte Carlo sampler.");
         }
@@ -48,42 +48,40 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly )
         
         double lnPriorRatio = 0.0;
         double lnLikelihoodRatio = lnProbabilityRatio;
-        if ( raiseLikelihoodOnly )
+
+        lnLikelihoodRatio = 0.0;
+        const std::set<DagNode*> &nodes = getDagNodes();
+        std::set<DagNode*> affectedNodes;
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
         {
-            lnLikelihoodRatio = 0.0;
-            const std::set<DagNode*> &nodes = getDagNodes();
-            std::set<DagNode*> affectedNodes;
-            for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-            {
-                (*it)->getAffectedNodes( affectedNodes );
-            }
-            // compute the probability of the current value for each node
-            for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-            {
-                lnPriorRatio += (*it)->getLnProbabilityRatio();
-            }
+            (*it)->getAffectedNodes( affectedNodes );
+        }
+        // compute the probability of the current value for each node
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            lnPriorRatio += (*it)->getLnProbabilityRatio();
+        }
             
-            // then we recompute the probability for all the affected nodes
-            for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+        // then we recompute the probability for all the affected nodes
+        for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+        {
+            if ( (*it)->isClamped() )
             {
-                if ( (*it)->isClamped() )
-                {
                     
-                    lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+                lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
                     
-                }
-                else
-                {
+            }
+            else
+            {
                     
-                    lnPriorRatio += (*it)->getLnProbabilityRatio();
+                lnPriorRatio += (*it)->getLnProbabilityRatio();
                 
-                }
             }
         }
         
         
         // Calculate acceptance ratio
-        double lnR = heat * lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio;
+        double lnR = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio) + lnHastingsRatio;
 	
 		if ( !RbMath::isAComputableNumber(lnR) )
         {

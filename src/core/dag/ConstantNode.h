@@ -77,7 +77,8 @@ RevBayesCore::ConstantNode<valueType>::ConstantNode(const ConstantNode<valueType
 }
 
 template<class valueType>
-RevBayesCore::ConstantNode<valueType>::~ConstantNode( void ) {
+RevBayesCore::ConstantNode<valueType>::~ConstantNode( void )
+{
     
     // we own the value so we need to delete it here
     delete value;
@@ -154,28 +155,32 @@ double RevBayesCore::ConstantNode<valueType>::getLnProbability( void ) {
 
 
 template<class valueType>
-double RevBayesCore::ConstantNode<valueType>::getLnProbabilityRatio( void ) {
+double RevBayesCore::ConstantNode<valueType>::getLnProbabilityRatio( void )
+{
     
     return 0.0;
 }
 
 
 template<class valueType>
-valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) {
+valueType& RevBayesCore::ConstantNode<valueType>::getValue( void )
+{
     
     return *value;
 }
 
 
 template<class valueType>
-const valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) const {
+const valueType& RevBayesCore::ConstantNode<valueType>::getValue( void ) const
+{
     
     return *value;
 }
 
 
 template<class valueType>
-bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const {
+bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const
+{
     
     return true;
 }
@@ -212,19 +217,22 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, 
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::redraw( void ) {
+void RevBayesCore::ConstantNode<valueType>::redraw( void )
+{
     // nothing to do
 }
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode *restorer ) {
+void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode *restorer )
+{
     // nothing to do
 }
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v) {
+void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v)
+{
     
     *value = v;
     this->touch();
@@ -233,7 +241,8 @@ void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v) {
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode *toucher ) {
+void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode *toucher )
+{
     // nothing to do
 }
 

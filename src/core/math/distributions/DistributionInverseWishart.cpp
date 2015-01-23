@@ -88,7 +88,8 @@ double RbStatistics::InverseWishart::lnPdf(const MatrixRealSymmetric &sigma0, si
  * \return Returns a vector containing the InverseWishart random variable.
  * \throws Does not throw an error.
  */
-MatrixRealSymmetric RbStatistics::InverseWishart::rv(const MatrixRealSymmetric &sigma0, size_t df, RandomNumberGenerator& rng) {
+MatrixRealSymmetric RbStatistics::InverseWishart::rv(const MatrixRealSymmetric &sigma0, size_t df, RandomNumberGenerator& rng)
+{
 
     sigma0.update();
     
@@ -97,10 +98,13 @@ MatrixRealSymmetric RbStatistics::InverseWishart::rv(const MatrixRealSymmetric &
     MatrixRealSymmetric z(dim);
     std::vector<double> tmp(dim);
     
-    for (size_t k=0; k<df; k++)   {
+    for (size_t k=0; k<df; k++)
+    {
         sigma0.drawNormalSamplePrecision(tmp);
-        for (size_t i=0; i<dim; i++)   {
-            for (size_t j=0; j<dim; j++)   {
+        for (size_t i=0; i<dim; i++)
+        {
+            for (size_t j=0; j<dim; j++)
+            {
                 z[i][j] += tmp[i] * tmp[j];
             }
         }

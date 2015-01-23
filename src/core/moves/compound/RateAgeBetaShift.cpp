@@ -178,7 +178,7 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
+void RateAgeBetaShift::performMove( double lHeat, double pHeat )
 {
     
     // Get random number generator
@@ -302,7 +302,7 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     }
     
     double hastingsRatio = backward - forward;
-    double lnAcceptanceRatio = treeProbRatio + ratesProbRatio + hastingsRatio;
+    double lnAcceptanceRatio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
     
     if (lnAcceptanceRatio >= 0.0)
     {

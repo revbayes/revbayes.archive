@@ -2,6 +2,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RlUserInterface.h"
+#include "RbConstants.h"
 #include "RbException.h"
 
 #include <iostream>
@@ -77,7 +78,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monit
             Mcmc* oneChain = new Mcmc(m, moves, mons);
             oneChain->setScheduleType( scheduleType );
             oneChain->setChainActive( i == 0 );
-            oneChain->setChainHeat( b );
+            oneChain->setChainPosteriorHeat( b );
             oneChain->setChainIndex( i );
             chains[i] = oneChain;
         }
@@ -143,10 +144,12 @@ Mcmcmc::~Mcmcmc(void)
     
 }
 
+
 void Mcmcmc::initialize(void)
 {
     
 }
+
 
 double Mcmcmc::computeBeta(double d, size_t idx)
 {
@@ -160,6 +163,21 @@ Mcmcmc* Mcmcmc::clone(void) const
     return new Mcmcmc(*this);
 }
 
+
+double Mcmcmc::getModelLnProbability( void )
+{
+    synchronizeValues();
+    
+    for (size_t i=0; i<chains.size(); i++)
+    {
+        if ( chainHeats[i] == 1.0 )
+        {
+            return chainValues[i];
+        }
+    }
+    
+    return RbConstants::Double::neginf;
+}
 
 std::string Mcmcmc::getStrategyDescription( void ) const
 {
@@ -266,12 +284,39 @@ void Mcmcmc::reset( void )
 }
 
 
+/**
+ * Set the heat of the likelihood of the current chain.
+ * This heat is used in posterior posterior MCMC algorithms to
+ * heat the likelihood
+ * The heat is passed to the moves for the accept-reject mechanism.
+ */
+void Mcmcmc::setLikelihoodHeat(double h)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->setLikelihoodHeat( h );
+    }
+    
+}
+
+
 void Mcmcmc::setReplicateIndex(size_t index)
 {
     
     for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
     {
         chains[ chainsPerProcess[pid][i] ]->setReplicateIndex(index);
+    }
+}
+
+
+void Mcmcmc::setStoneIndex(size_t index)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->setStoneIndex(index);
     }
 }
 
@@ -373,7 +418,7 @@ void Mcmcmc::synchronizeHeats(void)
     for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
     {
         size_t k = chainsPerProcess[pid][j];
-        heats[k] = chains[k]->getChainHeat();
+        heats[k] = chains[k]->getChainPosteriorHeat();
     }
     
     
@@ -648,7 +693,7 @@ void Mcmcmc::updateChainState(size_t j)
     
     if (pid == processPerChain[j])
     {
-        chains[j]->setChainHeat(chainHeats[j]);
+        chains[j]->setChainPosteriorHeat(chainHeats[j]);
     }
     // update active state
     bool tf = activeChainIndex == j;

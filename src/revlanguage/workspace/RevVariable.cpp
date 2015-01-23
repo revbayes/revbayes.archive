@@ -154,14 +154,16 @@ void RevVariable::addIndex(int idx)
 
 
 /* Clone RevVariable and RevVariable */
-RevVariable* RevVariable::clone( void ) const {
+RevVariable* RevVariable::clone( void ) const
+{
     
     return new RevVariable( *this );
 }
 
 
 /* Decrement the reference count. */
-size_t RevVariable::decrementReferenceCount( void ) const {
+size_t RevVariable::decrementReferenceCount( void ) const
+{
     
     refCount--;
     
@@ -175,7 +177,8 @@ const std::set<int>& RevVariable::getElementIndices( void ) const
 }
 
 
-const std::string& RevVariable::getName( void ) const {
+const std::string& RevVariable::getName( void ) const
+{
     
     return name;
 }
@@ -360,6 +363,7 @@ void RevVariable::replaceRevObject( RevObject *newValue )
         if ( revObject != NULL && revObject->isModelObject() == true && revObject->getDagNode() != NULL )
         {
             revObject->getDagNode()->setHidden( isHiddenVar );
+            revObject->getDagNode()->setElementVariable( isElementVar );
         }
     }
     catch (RbException e)
@@ -387,9 +391,18 @@ void RevVariable::setElementVariableState(bool flag)
     
     isElementVar = flag;
     
-    // delegate to setHidden
-//    setHiddenVariableState( flag );
-    
+    try {
+        
+        if ( revObject != NULL && revObject->getDagNode() != NULL )
+        {
+            revObject->getDagNode()->setElementVariable( flag );
+        }
+        
+    }
+    catch (RbException e)
+    {
+        // do nothing
+    }
 }
 
 

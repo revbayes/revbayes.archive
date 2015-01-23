@@ -22,9 +22,9 @@ namespace RevBayesCore {
     class MatrixRealSymmetric : public MatrixReal, public MemberObject<double> {
         
     public:
-                                            MatrixRealSymmetric(void);                                              //!< Default constructor required by revlanguae use
+//                                            MatrixRealSymmetric(void);                                              //!< Default constructor required by revlanguae use
                                             MatrixRealSymmetric(size_t n);                                          //!< Construct rate matrix with n states
-                                            MatrixRealSymmetric(const MatrixRealSymmetric& m);                          //!< Copy constructor
+//                                            MatrixRealSymmetric(const MatrixRealSymmetric& m);                          //!< Copy constructor
                                             MatrixRealSymmetric(const MatrixReal& m);                          //!< Copy constructor
         
         virtual                            ~MatrixRealSymmetric(void) {}                                            //!< Destructor
@@ -58,7 +58,7 @@ namespace RevBayesCore {
         void                                updateMatrix(void);
         //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
-        const MatrixReal&                   getInverse(void) const;
+        MatrixRealSymmetric                 getInverse(void) const;
         
         void                                drawNormalSamplePrecision(std::vector<double>& v) const;
         void                                drawNormalSampleCovariance(std::vector<double>& v) const;

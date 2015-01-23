@@ -151,8 +151,8 @@ struct interval
 class slice_function: public interval
 {
   StochasticNode<double>* variable;
-  double heat;
-  bool raiseLikelihoodOnly;
+  double lHeat;
+  double pHeat;
   std::set<DagNode*> affectedNodes;
   int num_evals;
 
@@ -178,11 +178,7 @@ public:
     }
 
     // 3. exponentiate with the chain heat
-    double lnPosterior;
-    if ( raiseLikelihoodOnly )
-        lnPosterior = heat * lnLikelihood + lnPrior;
-    else
-        lnPosterior = heat * (lnLikelihood + lnPrior);
+    double lnPosterior = pHeat * (lHeat * lnLikelihood + lnPrior);
 
     return lnPosterior;
   }
@@ -212,10 +208,10 @@ public:
     return variable->getValue();
   }
 
-  slice_function(StochasticNode<double> *n, double h, bool r, bool pos_only=false)
+  slice_function(StochasticNode<double> *n, double l, double p, bool pos_only=false)
     :variable(n),
-     heat(h),
-     raiseLikelihoodOnly(r),
+     lHeat(l),
+     pHeat(p),
      num_evals(0)
   {
     variable->getAffectedNodes( affectedNodes );
@@ -336,9 +332,9 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 }
 
 
-void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
+void SliceSamplingMove::performMove( double lHeat, double pHeat )
 {
-  slice_function g(variable, heat, raiseLikelihoodOnly, false);
+  slice_function g(variable, lHeat, pHeat);
 
   double x1 = g.current_value();
 
@@ -353,6 +349,7 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
     double predicted_window = 4.0*total_movement/numTried;
     window = 0.95*window + 0.05*predicted_window;
   }
+    
 }
 
 
