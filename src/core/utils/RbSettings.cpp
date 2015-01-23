@@ -213,13 +213,15 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else if ( key == "tolerance" )
     {
-        std::string::size_type sz;     // alias of size_t
-        tolerance = std::stod (value,&sz);
+        //std::string::size_type sz;     // alias of size_t
+        //tolerance = std::stod (value,&sz);
+        tolerance = (double)atof(value.c_str());
     }
     else if ( key == "linewidth" )
     {
-        std::string::size_type sz;     // alias of size_t
-        lineWidth = std::stoi (value,&sz);
+        //std::string::size_type sz;     // alias of size_t
+        //lineWidth = std::stoi (value,&sz);
+        lineWidth = atoi(value.c_str());
     }
     else
     {

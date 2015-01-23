@@ -229,7 +229,8 @@ const std::string& RevLanguage::ModelObject<rbType>::getClassType(void) {
 
 /** Get class type spec describing type of object */
 template <typename rbType>
-const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
@@ -239,17 +240,21 @@ const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(
 
 
 template <typename rbType>
-RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
+RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const
+{
     
     return dagNode;
 }
 
 
 template <typename rbType>
-const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
+const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const
+{
     
     if ( dagNode == NULL )
+    {
         throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
+    }
     
     return dagNode->getValue();
 }
@@ -282,22 +287,23 @@ bool RevLanguage::ModelObject<rbType>::isAssignable( void ) const
 
 
 template <typename rbType>
-bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
+bool RevLanguage::ModelObject<rbType>::isConstant( void ) const
+{
     
     return dagNode->isConstant();
 }
 
 
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
+void RevLanguage::ModelObject<rbType>::makeConstantValue( void )
+{
     
     if ( dagNode == NULL )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
     }
-    else
+    else if ( isConstant() == false )
     {
-        // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<rbType>* newNode = new ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
         dagNode->replace(newNode);
         
@@ -421,11 +427,11 @@ void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
 
 
 /**
- * Set dag node. We also accommodate the possibility of setting the DAG node
- * to null.
+ * Set dag node. We also accommodate the possibility of setting the DAG node to null.
  */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
+void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode)
+{
     
     // Take care of the old value node
     if ( dagNode != NULL )

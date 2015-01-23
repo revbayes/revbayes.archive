@@ -105,7 +105,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread -std=c++11")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 fi

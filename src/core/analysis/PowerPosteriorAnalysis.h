@@ -2,11 +2,11 @@
 #define PowerPosteriorAnalysis_H
 
 #include "Cloneable.h"
-#include "Model.h"
-#include "Move.h"
 #include "RbVector.h"
 
 namespace RevBayesCore {
+    
+    class MonteCarloSampler;
     
     /**
      * @brief Power posterior analysis class.
@@ -24,13 +24,18 @@ namespace RevBayesCore {
     class PowerPosteriorAnalysis : public Cloneable {
         
     public:
-        PowerPosteriorAnalysis(const Model& m, const RbVector<Move> &moves, const std::string &fn);
-        virtual                                            ~PowerPosteriorAnalysis(void);                                                          //!< Virtual destructor
+        PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn);
+        PowerPosteriorAnalysis(const PowerPosteriorAnalysis &a);
+        virtual                                            ~PowerPosteriorAnalysis(void);                               //!< Virtual destructor
+        
+        PowerPosteriorAnalysis&                             operator=(const PowerPosteriorAnalysis &a);
         
         // public methods
         PowerPosteriorAnalysis*                             clone(void) const;
-        void                                                run(size_t g);
-        
+        void                                                burnin(size_t g, size_t ti);
+        void                                                runAll(size_t g);
+        void                                                runStone(size_t idx, size_t g);
+        void                                                summarizeStones(void);
         void                                                setPowers(const std::vector<double> &p);
         void                                                setSampleFreq(size_t sf);
         
@@ -38,14 +43,15 @@ namespace RevBayesCore {
         
         // members
         std::string                                         filename;
-        unsigned long                                       generation;
-        Model                                               model;
-        RbVector<Monitor>                                   monitors;
-        RbVector<Move>                                      moves;
+//        unsigned long                                       generation;
+//        Model                                               model;
+//        RbVector<Monitor>                                   monitors;
+//        RbVector<Move>                                      moves;
+        MonteCarloSampler*                                  sampler;
         std::vector<double>                                 powers;
         size_t                                              sampleFreq;
 //        MoveSchedule*                                       schedule;
-//        std::string                                         scheduleType;                                                                           //!< Type of move schedule to be used
+//        std::string                                         scheduleType;                                         //!< Type of move schedule to be used
         
     };
     

@@ -54,6 +54,7 @@ namespace RevBayesCore {
         virtual void                                printHeader(void);                                                  //!< Print header
         virtual void                                setModel(Model* m);
         virtual void                                setReplicateIndex(size_t idx);                                      //!< Set the index of the replicate here.
+        virtual void                                setStoneIndex(size_t idx);                                          //!< Set the index of the stone here.
         virtual void                                reset(size_t numCycles);                                            //!< Reset the monitor for a new start.
 
         // getters and setters

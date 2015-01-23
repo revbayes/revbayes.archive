@@ -65,6 +65,36 @@ MonteCarloAnalysis::~MonteCarloAnalysis(void)
 }
 
 
+/**
+ * Overloaded assignment operator.
+ * We need to keep track of the MonteCarloSamplers
+ */
+MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &m)
+{
+    
+    if ( this != &m )
+    {
+        
+        // free the runs
+        for (size_t i = 0; i < replicates; ++i)
+        {
+            MonteCarloSampler *sampler = runs[i];
+            delete sampler;
+        }
+        
+        replicates = m.replicates;
+        // create replicate Monte Carlo samplers
+        for (size_t i=0; i < replicates; ++i)
+        {
+            runs.push_back( m.runs[i]->clone() );
+        }
+
+    }
+    
+    return *this;
+}
+
+
 /** Run burnin and autotune */
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
 {

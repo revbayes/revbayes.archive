@@ -20,53 +20,81 @@
 
 using namespace RevBayesCore;
 
-MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal(1,1,0.0), eigensystem(this), eigenflag(false), inverse(1,1,0.0) {
+//MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal(1,1,0.0),
+//    eigensystem(this),
+//    eigenflag(false),
+//    inverse(1,1,0.0)
+//{
+//    
+//}
+
+MatrixRealSymmetric::MatrixRealSymmetric(size_t n) : MatrixReal(n,n,0),
+    eigensystem(this),
+    eigenflag(false),
+    inverse(n,n,0)
+{
+    
 }
 
-MatrixRealSymmetric::MatrixRealSymmetric(size_t n) : MatrixReal(n,n,0), eigensystem(this), eigenflag(false), inverse(n,n,0) {
-}
+//MatrixRealSymmetric::MatrixRealSymmetric(const MatrixRealSymmetric& from) : MatrixReal(from),
+//    eigensystem(this),
+//    eigenflag(false),
+//    inverse(from.inverse)
+//{
+//    
+//}
 
-MatrixRealSymmetric::MatrixRealSymmetric(const MatrixRealSymmetric& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.inverse) {
-}
-
-MatrixRealSymmetric::MatrixRealSymmetric(const MatrixReal& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.getNumberOfColumns(), from.getNumberOfColumns(), 0) {
-    if (getNumberOfRows() != getNumberOfColumns())    {
+MatrixRealSymmetric::MatrixRealSymmetric(const MatrixReal& from) : MatrixReal(from),
+    eigensystem(this),
+    eigenflag(false),
+    inverse(from.getNumberOfColumns(), from.getNumberOfColumns(), 0)
+{
+   
+    if (getNumberOfRows() != getNumberOfColumns())
+    {
         std::cerr << "error in MatrixRealSymmetric: copy constructor from a non-square matrix\n";
         throw(NULL);
     }
 }
 
 
-MatrixRealSymmetric*  MatrixRealSymmetric::clone(void) const    {
+MatrixRealSymmetric*  MatrixRealSymmetric::clone(void) const
+{
         return new MatrixRealSymmetric(*this);
 }
 
 
-size_t MatrixRealSymmetric::getDim() const  {
+size_t MatrixRealSymmetric::getDim() const
+{
     
     return getNumberOfColumns();
 }
 
-bool MatrixRealSymmetric::isNull() const  {
+bool MatrixRealSymmetric::isNull() const
+{
     
     return ((getDim() == 1) && ((*this)[0][0] == 0));
 }
 
 
-double MatrixRealSymmetric::getLogDet()  const {
+double MatrixRealSymmetric::getLogDet() const
+{
     
     update();
     
     const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
     
     double tot = 0;
-    for (size_t i=0; i<getDim(); i++)   {
+    for (size_t i=0; i<getDim(); i++)
+    {
         tot += log(eigenval[i]);
     }
-    if (std::isnan(tot))    {
+    if (std::isnan(tot))
+    {
         std::cerr << "in MatrixRealSymmetric::getLogDet(): nan\n";
         std::cerr << "eigen values:\n";
-        for (size_t i=0; i<getDim(); i++)   {
+        for (size_t i=0; i<getDim(); i++)
+        {
             std::cerr << eigenval[i] << '\n';
         }
         throw(NULL);    
@@ -74,28 +102,33 @@ double MatrixRealSymmetric::getLogDet()  const {
     return tot;
 }
 
-const MatrixReal& MatrixRealSymmetric::getInverse() const   {
+MatrixRealSymmetric MatrixRealSymmetric::getInverse() const
+{
     
     update();
+    
     return inverse;
     
 }
 
-bool MatrixRealSymmetric::isPositive()  const {
+bool MatrixRealSymmetric::isPositive()  const
+{
     
     update();
     
     const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
     
     bool pos = true;
-    for (size_t i=0; i<getDim(); i++)   {
+    for (size_t i=0; i<getDim(); i++)
+    {
         pos &= (eigenval[i] > 0);
     }
     
     return pos;
 }
 
-void MatrixRealSymmetric::drawNormalSamplePrecision(std::vector<double>& v)  const {
+void MatrixRealSymmetric::drawNormalSamplePrecision(std::vector<double>& v)  const
+{
     
     update();
     
@@ -107,7 +140,8 @@ void MatrixRealSymmetric::drawNormalSamplePrecision(std::vector<double>& v)  con
     
     // draw the normal variate in eigen basis
     std::vector<double> w(getDim());
-    for (size_t i=0; i<getDim(); i++)  {
+    for (size_t i=0; i<getDim(); i++)
+    {
        w[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(eigen[i]), *rng);
     }
     
@@ -115,9 +149,11 @@ void MatrixRealSymmetric::drawNormalSamplePrecision(std::vector<double>& v)  con
     const MatrixReal& eigenvect = eigensystem.getEigenvectors();
     
     // change basis
-    for (size_t i=0; i<getDim(); i++)  {
+    for (size_t i=0; i<getDim(); i++)
+    {
         double tmp = 0;
-        for (size_t j=0; j<getDim(); j++)  {
+        for (size_t j=0; j<getDim(); j++)
+        {
             tmp += eigenvect[i][j] * w[j];
         }
         v[i] = tmp;
@@ -125,7 +161,8 @@ void MatrixRealSymmetric::drawNormalSamplePrecision(std::vector<double>& v)  con
     
 }
 
-void MatrixRealSymmetric::drawNormalSampleCovariance(std::vector<double>& v)  const {
+void MatrixRealSymmetric::drawNormalSampleCovariance(std::vector<double>& v)  const
+{
     
     update();
     
@@ -137,7 +174,8 @@ void MatrixRealSymmetric::drawNormalSampleCovariance(std::vector<double>& v)  co
     
     // draw the normal variate in eigen basis
     std::vector<double> w(getDim());
-    for (size_t i=0; i<getDim(); i++)  {
+    for (size_t i=0; i<getDim(); i++)
+    {
         w[i] = RbStatistics::Normal::rv(0, sqrt(eigen[i]), *rng);
     }
     
@@ -145,9 +183,11 @@ void MatrixRealSymmetric::drawNormalSampleCovariance(std::vector<double>& v)  co
     const MatrixReal& eigenvect = eigensystem.getEigenvectors();
     
     // change basis
-    for (size_t i=0; i<getDim(); i++)  {
+    for (size_t i=0; i<getDim(); i++)
+    {
         double tmp = 0;
-        for (size_t j=0; j<getDim(); j++)  {
+        for (size_t j=0; j<getDim(); j++)
+        {
             tmp += eigenvect[i][j] * w[j];
         }
         v[i] = tmp;
@@ -155,29 +195,37 @@ void MatrixRealSymmetric::drawNormalSampleCovariance(std::vector<double>& v)  co
     
 }
 
-void MatrixRealSymmetric::touch(void)   {
+void MatrixRealSymmetric::touch(void)
+{
+    
     eigenflag = false;
 }
 
-void MatrixRealSymmetric::update()  const {
+void MatrixRealSymmetric::update()  const
+{
 
     // just for debugging (checking that eigen systm is indeed updated when it says it is))
     /*
-    if (eigenflag)  {
+    if (eigenflag)  
+     {
 
         MatrixReal tmp(getDim(), getDim(), 0);
         MatrixReal tmp2(getDim(), getDim(), 0);
         const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
-        for (size_t i = 0; i < getDim(); i++) {
+        for (size_t i = 0; i < getDim(); i++) 
+        {
             tmp[i][i] = eigenval[i];
         }
 
         tmp *= eigensystem.getInverseEigenvectors();
         tmp2 = eigensystem.getEigenvectors() * tmp;
         
-        for (size_t i = 0; i < getDim(); i++) {
-            for (size_t j = 0; j < getDim(); j++) {
-                if (fabs(tmp2[i][j] - (*this)[i][j])>1e-6)  {
+        for (size_t i = 0; i < getDim(); i++) 
+        {
+            for (size_t j = 0; j < getDim(); j++) 
+            {
+                if (fabs(tmp2[i][j] - (*this)[i][j])>1e-6)  
+                {
                     std::cerr << "error: diag not correctly set up\n";
                     std::cerr << i << '\t' << j << '\t' << tmp[i][j] << '\n';
                     exit(1);
@@ -188,9 +236,11 @@ void MatrixRealSymmetric::update()  const {
         
     }
     */
-    if (! eigenflag)    {
+    if (! eigenflag)
+    {
                 
-        try {
+        try
+        {
 
             // why is that necessary ???
             eigensystem.setRateMatrixPtr(this);
@@ -207,14 +257,16 @@ void MatrixRealSymmetric::update()  const {
                 }
             }
             */
-
+            
+            
             const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
             
             MatrixReal tmp(getDim(), getDim(), 0);
-            for (size_t i = 0; i < getDim(); i++) {
+            for (size_t i = 0; i < getDim(); i++)
+            {
                 tmp[i][i] = 1.0 / eigenval[i];
             }
-
+            
             tmp *= eigensystem.getInverseEigenvectors();
             inverse = eigensystem.getEigenvectors() * tmp;
 
@@ -222,67 +274,79 @@ void MatrixRealSymmetric::update()  const {
            
         }
         
-        catch(...)  {
-            
-            std::cerr << "in MatrixRealSymmetric: eigen update failed\n";
-            std::cerr << *this << '\n';
-            throw(NULL);
+        catch(...)
+        {
+            throw RbException("MatrixRealSymmetric: eigen update failed");
         }
 
     }
 }
 
-double MatrixRealSymmetric::getCovariance(size_t k, size_t l)  const {
+double MatrixRealSymmetric::getCovariance(size_t k, size_t l)  const
+{
 
-    if (k>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    if (k>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
-    if (l>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    
+    if (l>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
+    
     return (*this)[k][l];
 }
 
-double MatrixRealSymmetric::getPrecision(size_t k, size_t l)  const {
+double MatrixRealSymmetric::getPrecision(size_t k, size_t l)  const
+{
 
-    if (k>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    if (k>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
-    if (l>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    
+    if (l>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
+    
     update();
+    
     return inverse[k][l];
 }
 
-double MatrixRealSymmetric::getCorrel(size_t k, size_t l)  const {
+double MatrixRealSymmetric::getCorrel(size_t k, size_t l)  const
+{
 
-    if (k>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    if (k>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
-    if (l>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    
+    if (l>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
+    
     return (*this)[k][l] / sqrt((*this)[k][k] * (*this)[l][l]);
 }
 
-double MatrixRealSymmetric::getPartialCorrel(size_t k, size_t l)  const {
+double MatrixRealSymmetric::getPartialCorrel(size_t k, size_t l)  const
+{
 
-    if (k>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    if (k>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
-    if (l>getDim())  {
-        std::cerr << "index out of range\n";
-        throw(0);
+    
+    if (l>getDim())
+    {
+        throw RbException("Index out of range in symmetric real matrix.");
     }
+    
     update();
+    
     return - inverse[k][l] / sqrt(inverse[k][k] * inverse[l][l]);
 }
 

@@ -50,7 +50,8 @@ const std::string& BetaSimplexMove::getMoveName( void ) const {
 
 
 /** Perform the move */
-double BetaSimplexMove::performSimpleMove( void ) {
+double BetaSimplexMove::performSimpleMove( void )
+{
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -72,7 +73,8 @@ double BetaSimplexMove::performSimpleMove( void ) {
     
     // and calculate the Dirichlet parameters for the (imagined) reverse move
     double alphaReverse = newVal * alpha;
-    if (alphaForward < 1E-10) {
+    if (alphaForward < 1E-10)
+    {
         // very low proposal probability which will hopefully result into a rejected proposal
         return -1E10;
     }

@@ -80,7 +80,7 @@
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlModel.h"
 #include "RlPathSampler.h"
-#include "RlPowerPosterior.h"
+#include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlAncestralStateTrace.h"
 
@@ -1110,6 +1110,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // MCMCMC constructor function
         addFunction( "mcmcmc",   new Func_Mcmcmc() );
+        
+        // power-posterior constructor function
+        addTypeWithConstructor( "powerPosterior",  new PowerPosteriorAnalysis() );
 
         
  		/* Statistics functions (in folder "functions/statistics") */

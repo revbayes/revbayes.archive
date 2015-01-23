@@ -206,7 +206,8 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
     }
 
     // Print result if the root is not an assign expression
-    if (!root->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance()) {
+    if (!root->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance())
+    {
         std::ostringstream msg;
         result->getRevObject().printValue(msg);
         RBOUT(msg.str());
@@ -223,8 +224,10 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 }
 
 /** Execute base variable expression to get the corresponding base variable */
-void RevLanguage::Parser::executeBaseVariable(void) {
-    if (baseVariableExpr != NULL) {
+void RevLanguage::Parser::executeBaseVariable(void)
+{
+    if (baseVariableExpr != NULL)
+    {
         baseVariable = baseVariableExpr->evaluateContent(Workspace::userWorkspace());
     }
 }

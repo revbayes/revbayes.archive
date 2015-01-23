@@ -30,7 +30,7 @@ namespace RevBayesCore {
         void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         
     protected:
-        void                                    performMove(double heat, bool raiseLikelihoodOnly);                                 //!< Perform move
+        void                                    performMove(double lHeat, double pHeat);                                 //!< Perform move
         void                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
         void                                    tune(void);
         

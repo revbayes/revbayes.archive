@@ -6,6 +6,7 @@
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlDiscreteTaxonData.h"
+#include "RlSimplex.h"
 
 
 using namespace RevLanguage;
@@ -17,6 +18,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
+    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
+    ArgumentRules* invSitesArgRules            = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
@@ -30,6 +33,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
+    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
 }
 
@@ -47,6 +52,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Abst
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
+    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
+    ArgumentRules* invSitesArgRules            = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
@@ -60,6 +67,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Abst
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
+    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
 }
 
@@ -77,6 +86,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
+    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
+    ArgumentRules* invSitesArgRules            = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
@@ -90,6 +101,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
+    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
 }
 
@@ -107,6 +120,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Type
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
+    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
+    ArgumentRules* invSitesArgRules            = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
@@ -120,6 +135,8 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Type
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
+    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
 }
 
@@ -249,7 +266,7 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
                 const RevBayesCore::AbstractDiscreteTaxonData& td = v.getTaxonData(j);
                 if (!td.getCharacter(i).isAmbiguous() && !td.getCharacter(i).isGapState())
                 {
-                    int k = td.getCharacter(i).getStateIndex() + 1;
+                    int k = int(td.getCharacter(i).getStateIndex()) + 1;
                     if (k > max)
                     {
                         max = k;
@@ -275,6 +292,22 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
         bool ih = this->dagNode->getValue().isHomologyEstablished();
         
         return new RevVariable( new RlBoolean(ih) );
+    }
+    else if (name == "getEmpiricalBaseFrequencies")
+    {
+        found = true;
+        
+        std::vector<double> ebf = this->dagNode->getValue().getEmpiricalBaseFrequencies();
+        
+        return new RevVariable( new Simplex(ebf) );
+    }
+    else if (name == "getNumInvariantSites")
+    {
+        found = true;
+        
+        size_t n = this->dagNode->getValue().getNumberOfInvariantSites();
+        
+        return new RevVariable( new Natural(n) );
     }
     
     return ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::executeMethod( name, args, found );
