@@ -79,7 +79,7 @@ namespace RevBayesCore {
     
         // non-virtual
         double                                                              computeLnProbability(void);
-		std::vector<charType>												drawAncestralStatesForNode(const TopologyNode &n);
+		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
         void																updateMarginalNodeLikelihoods(void);
         void                                                                setValue(AbstractDiscreteCharacterData *v);                                                 //!< Set the current value, e.g. attach an observation (clamp)
@@ -197,7 +197,7 @@ namespace RevBayesCore {
         void                                                                scale(size_t i, size_t l, size_t r);
         void                                                                scale(size_t i, size_t l, size_t r, size_t m);
         void                                                                simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
-        double                                                              sumRootLikelihood( void );
+        virtual double                                                      sumRootLikelihood( void );
     
     };
     

@@ -269,12 +269,12 @@ void CladogenicStateFunction::update( void )
         const std::vector<unsigned>& idx = it->first;
         double v = ep[ it->second ] / z[ idx[0] ];
         
-        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " " <<  v << "\n";
+//        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " " <<  v << "\n";
         (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
         eventMapProbs[ idx ] = v;
         
     }
-    std::cout << "----\n";
+//    std::cout << "----\n";
 }
 
 
