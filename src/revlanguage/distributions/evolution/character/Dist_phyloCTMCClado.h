@@ -283,7 +283,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
 //        d = dist;
 //    }
 //    else
-    if ( dt == "NaturalNumber" )
+    if ( dt == "NaturalNumbers" )
     {
         // we get the number of states from the rates matrix
         // set the rate matrix
@@ -446,8 +446,8 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCClado<treeType>::getP
         options.push_back( "Pomo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
-        options.push_back( "NaturalNumber" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumber"), options ) );
+        options.push_back( "NaturalNumbers" );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options ) );
         
         distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
