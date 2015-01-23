@@ -82,7 +82,9 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
             bool prior = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
             if ( prior == true )
             {
-                value->runPriorSampler( gen );
+                RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules;
+                rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
+                value->runPriorSampler( rules );
             }
             else
             {

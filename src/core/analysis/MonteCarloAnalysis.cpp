@@ -241,68 +241,101 @@ void MonteCarloAnalysis::run( RbVector<StoppingRule> rules )
 
 
 
-void MonteCarloAnalysis::runPriorSampler(size_t kIterations)
+void MonteCarloAnalysis::runPriorSampler( RbVector<StoppingRule> rules )
 {
     
-//    /* Let user know what we are doing */
-//    if ( generation == 0 )
-//    {
-//        std::cout << "Running prior simulation for " << kIterations << " iterations" << std::endl;
-//    }
-//    else
-//    {
-//        std::cout << "Appending " << kIterations << " iterations to previous simulation of " << generation << " iterations" << std::endl;
-//    }
-//    
-//    if ( scheduleType == "single" )
-//    {
-//        std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
-//        std::cout << "single move picked randomly per iteration" << std::endl;
-//    }
-//    else if ( scheduleType == "random" )
-//    {
-//        std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
-//        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-//    }
-//    else if ( scheduleType == "sequential" )
-//    {
-//        std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
-//        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
-//    }
-//    
-//    // Initialize objects used in run
-//    initializeChain( true );
-//    initializeMonitors();
-//    
-//    if ( generation == 0 )
-//    {
-//        // Monitor
-//        startMonitors( kIterations );
-//        monitor(0);
-//    }
-//    
-//    /* Reset the monitors */
-//    for (size_t i=0; i<monitors.size(); i++)
-//    {
-//        monitors[i].reset( kIterations );
-//    }
-//    
-//    // reset the counters for the move schedules
-//    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
-//    {
-//        it->resetCounters();
-//    }
-//    
-//    // Run the chain
-//    for (int k=1; k<=kIterations; k++)
-//    {
-//        nextCycle(true);
-//        
-//        // Monitor
-//        monitor(generation);
-//        
-//    }
+    /* Let user know what we are doing */
+    std::stringstream ss;
+    if ( runs[0]->getCurrentGeneration() == 0 )
+    {
+        ss << "\n";
+        ss << "Running prior MCMC simulation\n";
+    }
+    else
+    {
+        ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
+    }
+    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+    ss << runs[0]->getStrategyDescription();
+    RBOUT( ss.str() );
     
+    // Initialize objects needed by chain
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->initializeSampler(true);
+    }
+    
+    if ( runs[0]->getCurrentGeneration() == 0 )
+    {
+        // Monitor
+        for (size_t i=0; i<replicates; ++i)
+        {
+            runs[i]->startMonitors();
+            runs[i]->monitor(0);
+        }
+    }
+    
+    /* Reset the monitors */
+    //    for (size_t i=0; i<replicates; ++i)
+    //    {
+    //        for (size_t j=0; i<runs[i].getMonitors().size(); i++)
+    //        {
+    //            runs[i].getMonitors()[j].reset( kIterations);
+    //        }
+    //    }
+    
+    // reset the counters for the move schedules
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->reset();
+    }
+    
+    // reset the stopping rules
+    for (size_t i=0; i<rules.size(); ++i)
+    {
+        rules[i].runStarted();
+    }
+    
+    
+    // Run the chain
+    bool finished = false;
+    bool converged = false;
+    size_t gen = runs[0]->getCurrentGeneration();
+    do {
+        ++gen;
+        for (size_t i=0; i<replicates; ++i)
+        {
+            runs[i]->nextCycle(true);
+            
+            // Monitor
+            runs[i]->monitor(gen);
+            
+        }
+        
+        converged = true;
+        size_t numConvergenceRules = 0;
+        // do the stopping test
+        for (size_t i=0; i<rules.size(); ++i)
+        {
+            
+            if ( rules[i].isConvergenceRule() )
+            {
+                converged &= rules[i].checkAtIteration(gen) && rules[i].stop( gen );
+                ++numConvergenceRules;
+            }
+            else
+            {
+                if ( rules[i].checkAtIteration(gen) && rules[i].stop( gen ) )
+                {
+                    finished = true;
+                    break;
+                }
+            }
+            
+        }
+        converged &= numConvergenceRules > 0;
+        
+    } while ( finished == false && converged == false);
     
 }
 
