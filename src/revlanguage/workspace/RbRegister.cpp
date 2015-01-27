@@ -772,7 +772,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
+        //addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
         // aliases
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RealPos>() );
@@ -780,7 +780,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
+        //addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
