@@ -51,7 +51,8 @@ double PhyloBrownianProcess::recursiveLnProb( const TopologyNode& from ) {
     size_t index = from.getIndex();
     double val = (*value)[index];
 
-    if (! from.isRoot()) {
+    if (! from.isRoot())
+    {
         
         // x ~ normal(x_up, sigma^2 * branchLength)
         
@@ -64,7 +65,8 @@ double PhyloBrownianProcess::recursiveLnProb( const TopologyNode& from ) {
     // propagate forward
     size_t numChildren = from.getNumberOfChildren();
     
-    for (size_t i = 0; i < numChildren; ++i) {
+    for (size_t i = 0; i < numChildren; ++i)
+    {
         lnProb += recursiveLnProb(from.getChild(i));
     }
     
