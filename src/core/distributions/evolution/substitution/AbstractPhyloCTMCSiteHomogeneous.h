@@ -591,7 +591,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
     }
     
     // finally we resize the partial likelihood vectors to the new pattern counts
-    this->resizeLikelihoodVectors();
+    resizeLikelihoodVectors();
     
 }
 
