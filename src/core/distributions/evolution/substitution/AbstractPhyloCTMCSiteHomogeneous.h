@@ -196,7 +196,7 @@ namespace RevBayesCore {
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
         void                                                                scale(size_t i, size_t l, size_t r);
         void                                                                scale(size_t i, size_t l, size_t r, size_t m);
-        void                                                                simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
+        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
         virtual double                                                      sumRootLikelihood( void );
     
     };
