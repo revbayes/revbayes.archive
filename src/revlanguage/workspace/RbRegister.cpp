@@ -190,6 +190,7 @@
 
 /* Trait evolution models (in folder "distributions/evolution/branchrates") */
 #include "Dist_PhyloBrownian.h"
+#include "Dist_PhyloBrownianREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloMvtBrownian.h"
 #include "Dist_PhyloWhiteNoise.h"
@@ -613,6 +614,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         // brownian motion
         addDistribution( "dnPhyloBrownian",                  new Dist_PhyloBrownian() );
+        addDistribution( "dnPhyloBrownianREML",              new Dist_PhyloBrownianREML<TimeTree>() );
         addDistribution( "dnPhyloOUP",                       new Dist_PhyloOrnsteinUhlenbeck() );
         addDistribution( "dnPhyloOrnsteinUhlenbeck",         new Dist_PhyloOrnsteinUhlenbeck() );
         

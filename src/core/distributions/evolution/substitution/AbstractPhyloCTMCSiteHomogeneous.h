@@ -436,7 +436,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
         {
             if ( (*it)->isTip() ) 
             {
-                // \todo modify this so that the distribution is actually defined on discrete character data
                 AbstractDiscreteTaxonData& taxon = value->getTaxonData( (*it)->getName() );
                 DiscreteCharacterState &c = taxon.getCharacter(siteIndices[site]);
                 
