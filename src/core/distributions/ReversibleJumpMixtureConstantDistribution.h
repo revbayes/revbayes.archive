@@ -38,6 +38,7 @@ namespace RevBayesCore {
         size_t                                              getCurrentIndex(void) const;
         size_t                                              getNumberOfCategories(void) const;
         void                                                redrawValue(void);
+        void                                                redrawValueByIndex(int i);
         void                                                setCurrentIndex(size_t i);
         void                                                setValue(const mixtureType &v);
         
@@ -49,7 +50,7 @@ namespace RevBayesCore {
         
     private:
         // helper methods
-        const mixtureType&                                  simulate();
+        mixtureType*                                        simulate();
         
         // private members
         const TypedDagNode< mixtureType >*                  constValue;
@@ -86,7 +87,8 @@ RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::Reversible
         this->addParameter( *it );
     }
     
-    *this->value = simulate();
+    delete this->value;
+    this->value = simulate();
 }
 
 
@@ -178,22 +180,21 @@ size_t RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::get
 
 
 template <class mixtureType>
-const mixtureType& RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::simulate()
+mixtureType* RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::simulate()
 {
-    
     RandomNumberGenerator *rng = GLOBAL_RNG;
     double u = rng->uniform01();
     
     if ( u < probability->getValue() )
     {
         index = 0;
-        return constValue->getValue();
+        return new mixtureType( constValue->getValue() );
     }
     else
     {
         index = 1;
         baseDistribution->redrawValue();
-        return baseDistribution->getValue();
+        return new mixtureType( baseDistribution->getValue() );
     }
     
 }
@@ -203,8 +204,28 @@ template <class mixtureType>
 void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::redrawValue( void )
 {
     
-    *(this->value) = simulate();
+    delete this->value;
+    this->value = simulate();
     
+}
+
+
+template <class mixtureType>
+void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::redrawValueByIndex( int i )
+{
+    delete this->value;
+    
+    if (i == 0)
+    {
+        index = 0;
+        this->value = new mixtureType( constValue->getValue() );
+    }
+    else
+    {
+        index = 1;
+        baseDistribution->redrawValue();
+        this->value = new mixtureType( baseDistribution->getValue() );
+    }
 }
 
 
@@ -228,9 +249,10 @@ void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::swapP
     {
         probability = static_cast<const TypedDagNode< double >* >( newP );
     }
-    
-    
-    baseDistribution->swapParameter(oldP,newP);
+    else
+    {
+        baseDistribution->swapParameter(oldP,newP);
+    }
 }
 
 
@@ -238,7 +260,18 @@ template <class mixtureType>
 void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::setValue(mixtureType const &v)
 {
     
-    throw RbException("Cannot set the value of a reversible jump mixture distribution because we don't know which distribution the value should come from.");
+    delete this->value;
+    
+    if (index == 0)
+    {
+        this->value = new mixtureType( constValue->getValue() );
+    }
+    else
+    {
+        baseDistribution->setValue( v );
+        this->value = new mixtureType( v );
+    }
+    //throw RbException("Cannot set the value of a reversible jump mixture distribution because we don't know which distribution the value should come from.");
 }
 
 #endif

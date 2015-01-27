@@ -307,12 +307,12 @@ void ParallelMcmcmc::updateChainState(size_t j)
         if (pid == 0)
         {
             MPI::COMM_WORLD.Send(&chainHeats[j], 1, MPI::DOUBLE, processPerChain[j], 0);
-            chains[j]->setChainHeat(chainHeats[j]);
+            chains[j]->setChainPosteriorHeat(chainHeats[j]);
         }
         if (pid == processPerChain[j])
         {
             MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, 0, 0);
-            chains[j]->setChainHeat(chainHeats[j]);
+            chains[j]->setChainPosteriorHeat(chainHeats[j]);
         }
 
         // update active state
@@ -320,7 +320,7 @@ void ParallelMcmcmc::updateChainState(size_t j)
         if (pid == 0)
         {
             MPI::COMM_WORLD.Send(&tf, 1, MPI::BOOL, processPerChain[j], 0);
-            chains[j]->setChainHeat(chainHeats[j]);
+            chains[j]->setChainPosteriorHeat(chainHeats[j]);
         }
         if (pid == processPerChain[j])
         {
