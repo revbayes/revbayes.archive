@@ -658,6 +658,9 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::computeMarginalNodeLikelihood( size_t nodeIndex, size_t parentNodeIndex )
 {	
     
+    // compute the transition probability matrix
+    this->updateTransitionProbabilities( nodeIndex, this->tau->getValue().getBranchLength(nodeIndex) );
+    
     // get the pointers to the partial likelihoods and the marginal likelihoods
     const double*   p_node                  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     double*         p_node_marginal         = this->marginalLikelihoods + nodeIndex*this->nodeOffset;
@@ -670,6 +673,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compute
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
+        // the transition probability matrix for this mixture category
+        const double*    tp_begin                = this->transitionProbMatrices[mixture].theMatrix;
         
         // get pointers to the likelihood for this mixture category
         const double*   p_site_mixture                  = p_mixture;
@@ -681,15 +686,27 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compute
             // get the pointers to the likelihoods for this site and mixture category
             const double*   p_site_j                    = p_site_mixture;
             double*         p_site_marginal_j           = p_site_mixture_marginal;
-            const double*   p_parent_site_marginal_j    = p_parent_site_mixture_marginal;
-            // iterate over all starting states
+            // iterate over all end states
             for (size_t j=0; j<numChars; ++j)
             {
-                // add the probability of starting from this state
-                *p_site_marginal_j += *p_site_j * *p_parent_site_marginal_j;
+                const double*   p_parent_site_marginal_k    = p_parent_site_mixture_marginal;
+                *p_site_marginal_j = 0.0;
+
+                // iterator over all start states
+                for (size_t k=0; k<numChars; ++k)
+                {
+                    // transition probability for k->j
+                    const double tp_kj = *p_parent_site_marginal_k * tp_begin[ k * numChars + j ];
+
+                    // add the probability of starting from this state
+                    *p_site_marginal_j += *p_site_j * tp_kj;
+                    
+                    // next parent state
+                    ++p_parent_site_marginal_k;
+                }
 				
                 // increment pointers
-                ++p_site_j; ++p_site_marginal_j; ++p_parent_site_marginal_j;
+                ++p_site_j; ++p_site_marginal_j;
             }
             
             // increment the pointers to the next site
