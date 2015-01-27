@@ -36,7 +36,7 @@ namespace RevBayesCore {
         void                                                burnin(size_t g, size_t ti);
         void                                                printPerformanceSummary(void) const;
         void                                                run(RbVector<StoppingRule> r);
-        void                                                runPriorSampler(size_t g);
+        void                                                runPriorSampler(RbVector<StoppingRule> r);
 
     protected:
         
