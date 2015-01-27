@@ -38,6 +38,8 @@ namespace RevBayesCore {
         
     protected:
         
+        virtual void                                        resizeLikelihoodVectors(void);
+        
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r);
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
 		void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
@@ -115,11 +117,11 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const TypedDagN
     
     
     // initialize liklihood vectors to 0.0
-	for (size_t i = 0; i < 2*this->numNodes*this->numSiteRates*this->numSites*this->numChars; i++)
+	for (size_t i = 0; i < 2*this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars; i++)
     {
 		cladoPartialLikelihoods[i] = 0.0;
 	}
-	for (size_t i = 0; i < this->numNodes*this->numSiteRates*this->numSites*this->numChars; i++)
+	for (size_t i = 0; i < this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars; i++)
     {
 		cladoMarginalLikelihoods[i] = 0.0;
 	}
@@ -152,10 +154,10 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const PhyloCTMC
     cladogenesisTimes                   = n.cladogenesisTimes;
         
     // copy the partial likelihoods
-	memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*sizeof(double));
+	memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
     
     // copy the marginal likelihoods
-    memcpy(cladoMarginalLikelihoods, n.cladoMarginalLikelihoods, this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*sizeof(double));
+    memcpy(cladoMarginalLikelihoods, n.cladoMarginalLikelihoods, this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
 	
     cladoActiveLikelihoodOffset      =  this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoNodeOffset                  =                 this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
@@ -631,6 +633,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeTipLikelihood(cons
     
 }
 
+
 /**
  * Draw a vector of ancestral states from the marginal distribution (non-conditional of the other ancestral states).
  * Here we assume that the marginal likelihoods have been updated.
@@ -716,6 +719,36 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType, treeType>::drawAnce
     delete marginals;
     
 	return ancestralSeq;
+}
+
+template<class charType, class treeType>
+void RevBayesCore::PhyloCTMCClado<charType, treeType>::resizeLikelihoodVectors( void )
+{
+    // call base resize
+    RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeLikelihoodVectors();
+    
+    // we resize the partial likelihood vectors to the new dimensions
+    delete [] cladoPartialLikelihoods;
+    delete [] cladoMarginalLikelihoods;
+    
+    size_t n = this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
+    cladoPartialLikelihoods = new double[2*n];
+    cladoMarginalLikelihoods = new double[n];
+    
+	// reinitialize likelihood vectors
+	for (size_t i = 0; i < n; i++) {
+		cladoPartialLikelihoods[i] = 0.0;
+	}
+	for (size_t i = 0; i < n; i++) {
+		cladoMarginalLikelihoods[i] = 0.0;
+	}
+	
+    // set the offsets for easier iteration through the likelihood vector
+    cladoActiveLikelihoodOffset      =  this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
+    cladoNodeOffset                  =                 this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
+    cladoMixtureOffset               =                                    this->numPatterns*this->numChars*this->numChars;
+    cladoSiteOffset                  =                                                      this->numChars*this->numChars;
+
 }
 
 
