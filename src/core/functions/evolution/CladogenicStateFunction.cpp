@@ -154,8 +154,9 @@ void CladogenicStateFunction::buildEventMap( void ) {
             unsigned sr = bitsToState(br);
             idx[1] = i;
             idx[2] = sr;
-            eventMap[ idx ] = sympatricEvent;
+            eventMapTypes[ idx ] = sympatricEvent;
             eventMapCounts[ i ][ sympatricEvent ] += 1;
+            eventMapProbs[ idx ] = 0.0;
             
 //            std::cout << "A: " << bitsToString(bits[i]) << "\n";
 //            std::cout << "L: " << bitsToString(bits[i]) << "\n";
@@ -176,8 +177,9 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 unsigned sl = bitsToState(bl);
                 idx[1] = sl;
                 idx[2] = i;
-                eventMap[ idx ] = sympatricEvent;
+                eventMapTypes[ idx ] = sympatricEvent;
                 eventMapCounts[ i ][ sympatricEvent ] += 1;
+                eventMapProbs[ idx ] = 0.0;
                 
 //                std::cout << "A: " << bitsToString(bits[i]) << "\n";
 //                std::cout << "L: " << bitsToString(bl) << "\n";
@@ -209,8 +211,9 @@ void CladogenicStateFunction::buildEventMap( void ) {
             idx[1] = sl;
             idx[2] = sr;
             
-            eventMap[ idx ] = allopatricEvent;
+            eventMapTypes[ idx ] = allopatricEvent;
             eventMapCounts[ i ][ allopatricEvent ] += 1;
+            eventMapProbs[ idx ] = 0.0;
             
 //            std::cout << "\n";
         }
@@ -238,9 +241,9 @@ CladogenicStateFunction* CladogenicStateFunction::clone( void ) const
     return new CladogenicStateFunction( *this );
 }
 
-const std::map< std::vector<unsigned>, unsigned >&  CladogenicStateFunction::getEventMap(void) const
+const std::map< std::vector<unsigned>, double >&  CladogenicStateFunction::getEventMapProbs(void) const
 {
-    return eventMap;
+    return eventMapProbs;
 }
 
 void CladogenicStateFunction::update( void )
@@ -256,20 +259,22 @@ void CladogenicStateFunction::update( void )
     {
         for (size_t j = 0; j < numEventTypes; j++)
         {
-            z[i] = eventMapCounts[i][j] * ep[j];
+            z[i] += eventMapCounts[i][j] * ep[j];
         }
     }
     
     std::map<std::vector<unsigned>, unsigned>::iterator it;
-    for (it = eventMap.begin(); it != eventMap.end(); it++)
+    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
     {
         const std::vector<unsigned>& idx = it->first;
-        
         double v = ep[ it->second ] / z[ idx[0] ];
         
+//        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " " <<  v << "\n";
         (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
+        eventMapProbs[ idx ] = v;
         
     }
+//    std::cout << "----\n";
 }
 
 
