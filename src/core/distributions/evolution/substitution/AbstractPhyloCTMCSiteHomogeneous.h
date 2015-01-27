@@ -99,7 +99,7 @@ namespace RevBayesCore {
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         void                                                                rescale(size_t nodeIndex);
-        void                                                                resizeLikelihoodVectors(void);
+        virtual void                                                        resizeLikelihoodVectors(void);
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         virtual const std::vector<double>&                                  getRootFrequencies(void) const;
@@ -1075,7 +1075,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
     }
         
     // compress the data and initialize internal variables
-    this->compress();
+    compress();
     
     for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
     {
