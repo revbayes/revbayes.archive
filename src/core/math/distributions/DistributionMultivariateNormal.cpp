@@ -47,9 +47,12 @@ double RbStatistics::MultivariateNormal::pdfCovariance(const std::vector<double>
  */
 double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, const std::vector<double> &z) {
     
+//    std::cerr << sigma << std::endl;
+    
     sigma.update();
     
-    const MatrixReal& omega = sigma.getInverse();
+    const MatrixReal& tmp = sigma.getInverse();
+    MatrixRealSymmetric omega = MatrixRealSymmetric(tmp);
   
     size_t dim = z.size();
     
@@ -62,7 +65,8 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
         s2 += (z[i] - mu[i]) * tmp;
     }
     
-    double lnProb = - 0.5 * log(sigma.getLogDet()) - 0.5 * s2;
+    double lnProb2 = - 0.5 * log(sigma.getLogDet()) - 0.5 * s2;
+    double lnProb = 0.5 * log(omega.getLogDet()) - 0.5 * s2;
     
     return lnProb;
 }    

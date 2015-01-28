@@ -101,6 +101,8 @@ RevBayesCore::AbstractPhyloBrownianProcess<treeType>::AbstractPhyloBrownianProce
     this->addParameter( homogeneousSiteRate );
     this->addParameter( heterogeneousSiteRates );
     
+    // now we need to reset the value
+    this->redrawValue();
 }
 
 

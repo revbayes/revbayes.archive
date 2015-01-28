@@ -20,24 +20,28 @@ MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNod
 }
 
 
-MultivariateNormalDistribution::~MultivariateNormalDistribution( void ) {
+MultivariateNormalDistribution::~MultivariateNormalDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) const {
+MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) const
+{
     return new MultivariateNormalDistribution( *this );
 }
 
 
-double MultivariateNormalDistribution::computeLnProbability( void ) {
+double MultivariateNormalDistribution::computeLnProbability( void )
+{
     
     return RbStatistics::MultivariateNormal::lnPdfPrecision(mean->getValue(), precision->getValue(), *value);
 }
 
 
-void MultivariateNormalDistribution::redrawValue( void ) {
+void MultivariateNormalDistribution::redrawValue( void )
+{
     
     precision->getValue().drawNormalSamplePrecision(getValue());
 }
