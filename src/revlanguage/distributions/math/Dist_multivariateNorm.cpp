@@ -102,8 +102,8 @@ const MemberRules& Dist_multivariateNorm::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        distNormMemberRules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distNormMemberRules.push_back( new ArgumentRule( "mean", ModelVector<Real>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
     
         rulesSet = true;
     }
@@ -129,7 +129,7 @@ const TypeSpec& Dist_multivariateNorm::getTypeSpec( void ) const
 /** Print value for user */
 void Dist_multivariateNorm::printValue(std::ostream& o) const {
     
-    o << " norm(mean=";
+    o << " MVNorm(mean=";
     if ( mean != NULL ) {
         o << mean->getName();
     } else {
