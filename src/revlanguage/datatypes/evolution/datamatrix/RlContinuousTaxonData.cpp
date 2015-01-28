@@ -4,6 +4,7 @@
 #include "Real.h"
 #include "RlBoolean.h"
 #include "RlContinuousTaxonData.h"
+#include "RlString.h"
 
 using namespace RevLanguage;
 
@@ -14,7 +15,7 @@ ContinuousTaxonData::ContinuousTaxonData(void) : ModelObject< RevBayesCore::Cont
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     this->methods.addFunction("[]",  new MemberProcedure( Real::getClassTypeSpec(), squareBracketArgRules) );
-    
+
 }
 
 
@@ -44,7 +45,7 @@ RevPtr<RevLanguage::RevVariable> ContinuousTaxonData::executeMethod(std::string 
         
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
-        
+    
         if (this->dagNode->getValue().size() < (size_t)(index.getValue()) )
         {
             throw RbException("Index out of bounds in []");
@@ -52,6 +53,7 @@ RevPtr<RevLanguage::RevVariable> ContinuousTaxonData::executeMethod(std::string 
         
         RevObject* element = new Real( this->dagNode->getValue().getCharacter( size_t(index.getValue()) - 1) );
         return new RevVariable( element );
+            
     }
     
     return ModelObject< RevBayesCore::ContinuousTaxonData >::executeMethod( name, args, found );
