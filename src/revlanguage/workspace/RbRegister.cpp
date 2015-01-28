@@ -226,6 +226,7 @@
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
 #include "Dist_logUniform.h"
+#include "Dist_multivariateNorm.h"
 #include "Dist_norm.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_unif.h"
@@ -722,6 +723,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnLognormal",     new Dist_lnorm() );
         addDistribution( "dnLognormal",     new Dist_lnormOffset() );
         addDistribution( "dnLognormal",     new Dist_lnormOffsetPositive() );
+        
+        // normal distribution
+        addDistribution("dnMultivariateNormal", new Dist_multivariateNorm());
+        addDistribution("dnMVNormal",           new Dist_multivariateNorm());
         
         // normal distribution
         AddContinuousDistribution<Real>("Normal", new Dist_norm());
