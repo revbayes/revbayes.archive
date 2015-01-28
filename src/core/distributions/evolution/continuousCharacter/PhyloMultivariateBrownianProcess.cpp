@@ -169,19 +169,23 @@ void PhyloMultivariateBrownianProcess::swapParameterInternal( const DagNode *old
     }
 }
 
-void PhyloMultivariateBrownianProcess::corruptAll() {
+void PhyloMultivariateBrownianProcess::corruptAll()
+{
     recursiveCorruptAll(tau->getValue().getRoot());
 }
 
-void PhyloMultivariateBrownianProcess::recursiveCorruptAll(const TopologyNode& from)    {
+void PhyloMultivariateBrownianProcess::recursiveCorruptAll(const TopologyNode& from)
+{
     
     dirtyNodes[from.getIndex()] = true;
-    for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
+    for (size_t i = 0; i < from.getNumberOfChildren(); ++i)
+    {
         recursiveCorruptAll(from.getChild(i));
     }    
 }
 
-void PhyloMultivariateBrownianProcess::flagNodes() {
+void PhyloMultivariateBrownianProcess::flagNodes()
+{
 
     // the value at some of the nodes has changed
     // flag them as well as their immediate children

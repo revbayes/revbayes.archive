@@ -34,7 +34,11 @@ MatrixReal::MatrixReal( size_t n, size_t k, double v) : elements( std::vector<st
 
 }
 
-MatrixReal::MatrixReal( const MatrixReal &m ) : elements( m.elements ), nRows( m.nRows ), nCols( m.nCols ) {
+MatrixReal::MatrixReal( const MatrixReal &m ) :
+    elements( m.elements ),
+    nRows( m.nRows ),
+    nCols( m.nCols )
+{
     
 }
 
@@ -220,7 +224,8 @@ MatrixReal MatrixReal::operator-(double b) const {
  * @param b Scalar
  * @return A * b
  */
-MatrixReal MatrixReal::operator*(double b) const {
+MatrixReal MatrixReal::operator*(double b) const
+{
     
 	MatrixReal B = *this;
     B *= b;
@@ -424,11 +429,16 @@ MatrixReal& MatrixReal::operator-=(double b) {
  * @param b Scalar
  * @return A *= b
  */
-MatrixReal& MatrixReal::operator*=(double b) {
+MatrixReal& MatrixReal::operator*=(double b)
+{
     
 	for (size_t i=0; i<nRows; i++)
+    {
 		for (size_t j=0; j<nCols; j++)
+        {
 			elements[i][j] *= b;
+        }
+    }
     
 	return *this;
 }

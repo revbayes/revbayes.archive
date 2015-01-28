@@ -244,14 +244,14 @@ void RevBayesCore::PhyloBrownianProcessREML<treeType>::recursiveComputeLnProbabi
         size_t rightIndex = right.getIndex();
         recursiveComputeLnProbability( right, rightIndex );
         
-        std::vector<double> &p_node  = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
-        std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[leftIndex]][leftIndex];
-        std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[rightIndex]][rightIndex];
+              std::vector<double> &p_node  = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
+        const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[leftIndex]][leftIndex];
+        const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[rightIndex]][rightIndex];
 
         // get the per node and site contrasts
-        std::vector<double> &mu_node  = this->contrasts[this->activeLikelihood[nodeIndex]][nodeIndex];
-        std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[leftIndex]][leftIndex];
-        std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[rightIndex]][rightIndex];
+              std::vector<double> &mu_node  = this->contrasts[this->activeLikelihood[nodeIndex]][nodeIndex];
+        const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[leftIndex]][leftIndex];
+        const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[rightIndex]][rightIndex];
 
         // get the propagated uncertainties
         double delta_left  = this->contrastUncertainty[this->activeLikelihood[leftIndex]][leftIndex];
@@ -269,6 +269,7 @@ void RevBayesCore::PhyloBrownianProcessREML<treeType>::recursiveComputeLnProbabi
         this->contrastUncertainty[this->activeLikelihood[nodeIndex]][nodeIndex] = (t_left*t_right) / (t_left+t_right);
         
         double stdev = sqrt(t_left+t_right);
+//        double stdev = t_left+t_right;
         for (int i=0; i<this->numSites; i++)
         {
             
@@ -281,7 +282,7 @@ void RevBayesCore::PhyloBrownianProcessREML<treeType>::recursiveComputeLnProbabi
             double contrast = mu_left[i] - mu_right[i];
             
             // compute the probability for the contrasts at this node
-            double lnl_node = RbStatistics::Normal::lnPdf(contrast, standDev, 0);
+            double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
             
             // sum up the probabilities of the contrasts
             p_node[i] = lnl_node + p_left[i] + p_right[i];
