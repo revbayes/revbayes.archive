@@ -84,13 +84,15 @@ namespace RevBayesCore {
         void                                    resize(size_t r, size_t c);
         
     protected:
+        // helper methods
+        void                                    update(void) const;
         
         // members
         std::vector<std::vector<double> >       elements;
         size_t                                  nRows;
         size_t                                  nCols;
         mutable EigenSystem*                    eigensystem;
-        mutable bool                            needsUpdate;
+        mutable bool                            eigenNeedsUpdate;
         
     };
     
