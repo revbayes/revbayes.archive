@@ -37,7 +37,7 @@ RevBayesCore::MultivariateNormalDistribution* Dist_multivariateNorm::createDistr
 
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* S = static_cast<const RealSymmetricMatrix &>( sd->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* S = static_cast<const RealSymmetricMatrix &>( sd->getRevObject() ).getDagNode();
     RevBayesCore::MultivariateNormalDistribution*   d = new RevBayesCore::MultivariateNormalDistribution(m, S);
     
     return d;

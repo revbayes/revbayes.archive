@@ -32,7 +32,7 @@ namespace RevLanguage {
      * @since 2014-11-21, version 1.0
      *
      */
-    class Dist_decomposedInverseWishart :  public TypedDistribution<RealSymmetricMatrix> {
+    class Dist_decomposedInverseWishart :  public TypedDistribution<MatrixReal> {
         
     public:
                                                             Dist_decomposedInverseWishart(void);

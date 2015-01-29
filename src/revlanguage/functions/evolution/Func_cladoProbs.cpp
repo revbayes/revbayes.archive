@@ -11,14 +11,14 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
-#include "RealMatrix.h"
+#include "MatrixReal.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_cladoProbs::Func_cladoProbs( void ) : TypedFunction<RealMatrix>( ) {
+Func_cladoProbs::Func_cladoProbs( void ) : TypedFunction<MatrixReal>( ) {
     
 }
 

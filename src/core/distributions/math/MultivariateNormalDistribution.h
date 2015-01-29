@@ -25,7 +25,7 @@
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
-#include "MatrixRealSymmetric.h"
+#include "MatrixReal.h"
 
 #include <vector>
 
@@ -34,7 +34,7 @@ namespace RevBayesCore {
     class MultivariateNormalDistribution : public TypedDistribution< RbVector<double> > {
         
     public:
-        MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *inmean, const TypedDagNode<MatrixRealSymmetric>* inprec);
+        MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *inmean, const TypedDagNode<MatrixReal>* inprec);
         virtual                                            ~MultivariateNormalDistribution(void);                                                //!< Virtual destructor
         
         
@@ -53,7 +53,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< RbVector<double> >*             mean;
-        const TypedDagNode< MatrixRealSymmetric  >*         precision;
+        const TypedDagNode< MatrixReal  >*         precision;
 
     };
     

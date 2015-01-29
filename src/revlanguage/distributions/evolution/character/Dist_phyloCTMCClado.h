@@ -346,9 +346,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         
         // set the clado probs
-        if ( cladoProbs->getRevObject().isType( ModelVector<RealMatrix>::getClassTypeSpec() ) )
+        if ( cladoProbs->getRevObject().isType( ModelVector<MatrixReal>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<RealMatrix> &>( cladoProbs->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<MatrixReal> &>( cladoProbs->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != cp->getValue().size() )
@@ -360,7 +360,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         }
         else
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const RealMatrix &>( cladoProbs->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoProbs->getRevObject() ).getDagNode();
             dist->setCladogenesisMatrix( cp );
         }
         
@@ -418,8 +418,8 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMCClado<treeType>::getP
 
         // clado model accepts a single or vector of cladogenesis probs
         std::vector<TypeSpec> cladoMtxTypes;
-        cladoMtxTypes.push_back( RealMatrix::getClassTypeSpec() );
-        cladoMtxTypes.push_back( ModelVector<RealMatrix>::getClassTypeSpec() );
+        cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
+        cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
         distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         // optional argument for the root frequencies

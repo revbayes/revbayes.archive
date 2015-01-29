@@ -170,7 +170,7 @@
 #include "Move_WeightedNodeTimeSlide.h"
 
 /* Math types (in folder "datatypes/math") */
-#include "RealMatrix.h"
+#include "MatrixReal.h"
 #include "RealSymmetricMatrix.h"
 #include "RlRateMap.h"
 #include "RlRateMatrix.h"
@@ -482,7 +482,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Add math types (in folder "datatypes/math") */
         addType( new RateMap()              );
-        addType( new RealMatrix()           );
+        addType( new MatrixReal()           );
 
 
 

@@ -1,5 +1,5 @@
 //
-//  MatrixRealSymmetricSimpleMove.cpp
+//  MatrixRealSimpleMove.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-28.
@@ -19,7 +19,7 @@
 using namespace RevBayesCore;
 
 
-MatrixRealSymmetricMove::MatrixRealSymmetricMove(StochasticNode<MatrixRealSymmetric > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
+MatrixRealSymmetricMove::MatrixRealSymmetricMove(StochasticNode<MatrixReal > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
     
 }
 
@@ -32,21 +32,22 @@ MatrixRealSymmetricMove* MatrixRealSymmetricMove::clone( void ) const {
 
 
 
-const std::string& MatrixRealSymmetricMove::getMoveName( void ) const {
+const std::string& MatrixRealSymmetricMove::getMoveName( void ) const
+{
     static std::string name = "MatrixRealSymmetricMove";
     
     return name;
 }
 
 
-double MatrixRealSymmetricMove::performSimpleMove( void ) {
+double MatrixRealSymmetricMove::performSimpleMove( void )
+{
     
     // Get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    MatrixRealSymmetric& mymat = variable->getValue();
+    MatrixReal& mymat = variable->getValue();
     storedValue = mymat;
-    mymat.touch();
     
     size_t dim = mymat.getDim();
     size_t indexa = size_t( rng->uniform01() * dim );
@@ -56,46 +57,51 @@ double MatrixRealSymmetricMove::performSimpleMove( void ) {
     double m = lambda * (u - 0.5);
     mymat[indexa][indexb] += m;
     mymat[indexb][indexa] = mymat[indexa][indexb];
-    
-    mymat.update();
         
     return 0;   
 }
 
-void MatrixRealSymmetricMove::acceptSimpleMove()   {
+void MatrixRealSymmetricMove::acceptSimpleMove()
+{
 
     variable->clearTouchedElementIndices();
     
 }
 
-void MatrixRealSymmetricMove::printParameterSummary(std::ostream &o) const {
+void MatrixRealSymmetricMove::printParameterSummary(std::ostream &o) const
+{
     o << "lambda = " << lambda;
 }
 
 
-void MatrixRealSymmetricMove::rejectSimpleMove( void ) {
+void MatrixRealSymmetricMove::rejectSimpleMove( void )
+{
  
     variable->getValue() = storedValue;
-    variable->getValue().touch();
     variable->clearTouchedElementIndices();
 }
 
-void MatrixRealSymmetricMove::swapNode(DagNode *oldN, DagNode *newN) {
+void MatrixRealSymmetricMove::swapNode(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<MatrixRealSymmetric >* >( newN );
+    variable = static_cast<StochasticNode<MatrixReal >* >( newN );
 }
 
 
-void MatrixRealSymmetricMove::tune( void ) {
+void MatrixRealSymmetricMove::tune( void )
+{
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.44 ) {
+    if ( rate > 0.44 )
+    {
         lambda = size_t( round( lambda*(1.0 + ((rate-0.44)/0.56) ) ) );
     }
-    else {
+    else
+    {
         lambda /= size_t( round( lambda/(2.0 - rate/0.44 ) ) );
     }
+    
 }
 

@@ -26,7 +26,7 @@
 
 namespace RevLanguage {
     
-    class Func_varianceCovarianceMatrix : public TypedFunction<RealSymmetricMatrix> {
+    class Func_varianceCovarianceMatrix : public TypedFunction<MatrixReal> {
         
     public:
         Func_varianceCovarianceMatrix( void );
@@ -38,7 +38,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;      //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::MatrixRealSymmetric>* createFunction(void) const;  //!< Create internal function object
+        RevBayesCore::TypedFunction< RevBayesCore::MatrixReal>*         createFunction(void) const;  //!< Create internal function object
         const ArgumentRules&                                            getArgumentRules(void) const; //!< Get argument rules
         
     };

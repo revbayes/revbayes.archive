@@ -6,7 +6,9 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
+#include "EigenSystem.h"
 #include "MatrixReal.h"
+#include "RbException.h"
 
 #include <cstring>
 #include <iomanip>
@@ -14,11 +16,19 @@
 using namespace RevBayesCore;
 
 
-MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >(1, std::vector<double>(1,0.0) ) ),
-    nRows( 1 ),
-    nCols( 1 )
+MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >() ),
+    nRows( 0 ),
+    nCols( 0 )
 {
 
+}
+
+
+MatrixReal::MatrixReal( size_t n ) : elements( std::vector<std::vector<double> >(n, std::vector<double>(n,0.0) ) ),
+    nRows( n ),
+    nCols( n )
+{
+    
 }
 
 
@@ -43,14 +53,17 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
 }
 
 
-MatrixReal::~MatrixReal( void ) {
+MatrixReal::~MatrixReal( void )
+{
     
 }
 
 
-MatrixReal& MatrixReal::operator=(const MatrixReal &m) {
+MatrixReal& MatrixReal::operator=(const MatrixReal &m)
+{
     
-    if ( this != &m ) {
+    if ( this != &m )
+    {
         
         nCols = m.nCols;
         nRows = m.nRows;
@@ -61,64 +74,180 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m) {
 }
 
 
-std::vector<double>& MatrixReal::operator[]( size_t index ) {
+std::vector<double>& MatrixReal::operator[]( size_t index )
+{
     return elements[index];
 }
 
 
 
-const std::vector<double>& MatrixReal::operator[]( size_t index ) const {
+const std::vector<double>& MatrixReal::operator[]( size_t index ) const
+{
     return elements[index];
 }
 
 
-std::vector<std::vector<double> >::const_iterator MatrixReal::begin( void ) const {
+std::vector<std::vector<double> >::const_iterator MatrixReal::begin( void ) const
+{
     return elements.begin();
 }
 
 
-std::vector<std::vector<double> >::iterator MatrixReal::begin( void ) {
+std::vector<std::vector<double> >::iterator MatrixReal::begin( void )
+{
     return elements.begin();
 }
 
 
-std::vector<std::vector<double> >::const_iterator MatrixReal::end( void ) const {
+std::vector<std::vector<double> >::const_iterator MatrixReal::end( void ) const
+{
     return elements.end();
 }
 
 
-std::vector<std::vector<double> >::iterator MatrixReal::end( void ) {
+std::vector<std::vector<double> >::iterator MatrixReal::end( void )
+{
     return elements.end();
 }
 
 
-void MatrixReal::clear( void ) {
+void MatrixReal::clear( void )
+{
     elements.clear();
 }
 
-MatrixReal* MatrixReal::clone(void) const {
+
+MatrixReal MatrixReal::computeInverse( void ) const
+{
+    
+//    // why is that necessary ???
+//    eigensystem.setRateMatrixPtr(this);
+    
+    if ( needsUpdate == true )
+    {
+        eigensystem->update();
+        needsUpdate = false;
+    }
+    
+    /*
+    if (check)  
+    {
+        for (size_t i=0; i<getDim(); i++)   
+        {
+            if (std::fabs(eigenval[i] - bkeigenval[i]) > 1e-6)   
+            {
+                std::cerr << "error: diag flag up but eigen vals not correct\n";
+                exit(1);
+            }
+        }
+    }
+    */
+    
+    
+    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+    
+    MatrixReal tmp(getDim(), getDim(), 0);
+    for (size_t i = 0; i < getDim(); i++)
+    {
+        tmp[i][i] = 1.0 / eigenval[i];
+    }
+    
+    tmp *= eigensystem->getInverseEigenvectors();
+    MatrixReal inverse = eigensystem->getEigenvectors() * tmp;
+
+    return inverse;
+
+}
+
+MatrixReal* MatrixReal::clone(void) const
+{
      return new MatrixReal( *this );
 }
 
 
-size_t MatrixReal::getNumberOfColumns( void ) const {
+size_t MatrixReal::getDim( void ) const
+{
+    // we assume that this is a square matrix
+    return nRows;
+}
+
+
+EigenSystem& MatrixReal::getEigenSystem( void )
+{
+    return *eigensystem;
+}
+
+
+const EigenSystem& MatrixReal::getEigenSystem( void ) const
+{
+    return *eigensystem;
+}
+
+
+double MatrixReal::getLogDet() const
+{
+
+//    update();
+
+    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+
+    double tot = 0;
+    for (size_t i=0; i<nRows; i++)
+    {
+        tot += log(eigenval[i]);
+    }
+    if (std::isnan(tot))
+    {
+        std::cerr << "in MatrixReal::getLogDet(): nan\n";
+        std::cerr << "eigen values:\n";
+        for (size_t i=0; i<nRows; i++)
+        {
+            std::cerr << eigenval[i] << '\n';
+        }
+        RbException("Problem when computing log-determinant.");
+    }
+    
+    return tot;
+}
+
+
+size_t MatrixReal::getNumberOfColumns( void ) const
+{
     return nCols;
 }
 
 
 
-size_t MatrixReal::getNumberOfRows( void ) const {
+size_t MatrixReal::getNumberOfRows( void ) const
+{
     return nRows;
 }
 
 
+bool MatrixReal::isPositive()  const
+{
 
-size_t MatrixReal::size( void ) const {
+//    update();
+
+    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+
+    bool pos = true;
+    for (size_t i=0; i<getDim(); i++)
+    {
+        pos &= (eigenval[i] > 0);
+    }
+
+    return pos;
+}
+
+size_t MatrixReal::size( void ) const
+{
     return nRows*nCols;
 }
 
 
-void MatrixReal::resize(size_t r, size_t c) {
+void MatrixReal::resize(size_t r, size_t c)
+{
     
     elements = std::vector<std::vector<double> >(r, std::vector<double>(c,0.0) );
     

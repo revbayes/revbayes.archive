@@ -26,54 +26,57 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(1) )
+RealSymmetricMatrix::RealSymmetricMatrix(void) : MatrixReal()
 {
     
-    ArgumentRules* covArgRules = new ArgumentRules();
-    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    this->methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    
-    this->methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    ArgumentRules* covArgRules = new ArgumentRules();
+//    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+//    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+//    this->methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    
+//    this->methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    
+//    this->methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    
+//    this->methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
 
 }
 
 
 /* Construct from double */
-RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> * mat ) : ModelObject<RevBayesCore::MatrixRealSymmetric>( mat )
+RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : MatrixReal( mat )
 {
     
-    ArgumentRules* covArgRules = new ArgumentRules();
-    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    
-    methods.addFunction("covariance",           new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    methods.addFunction("precision",            new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    methods.addFunction("correlation",          new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
-    methods.addFunction("partialCorrelation",   new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    ArgumentRules* covArgRules = new ArgumentRules();
+//    covArgRules->push_back(new ArgumentRule("i", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+//    covArgRules->push_back(new ArgumentRule("j", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+//    
+//    methods.addFunction("covariance",           new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    methods.addFunction("precision",            new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    methods.addFunction("correlation",          new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+//    methods.addFunction("partialCorrelation",   new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
 
 }
 
 
 /** Clone object */
-RealSymmetricMatrix* RealSymmetricMatrix::clone(void) const {
+RealSymmetricMatrix* RealSymmetricMatrix::clone(void) const
+{
     
 	return new RealSymmetricMatrix(*this);
 }
 
 
 /** Convert to type. The caller manages the returned object. */
-RevObject* RealSymmetricMatrix::convertTo( const TypeSpec& type ) const {
+RevObject* RealSymmetricMatrix::convertTo( const TypeSpec& type ) const
+{
     
     return RevObject::convertTo( type );
 }
 
 /** Get Rev type of object */
-const std::string& RealSymmetricMatrix::getClassType(void) {
+const std::string& RealSymmetricMatrix::getClassType(void)
+{
     
     static std::string revType = "RealSymmetricMatrix";
     
@@ -81,7 +84,8 @@ const std::string& RealSymmetricMatrix::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& RealSymmetricMatrix::getClassTypeSpec(void) {
+const TypeSpec& RealSymmetricMatrix::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -89,7 +93,8 @@ const TypeSpec& RealSymmetricMatrix::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
+const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -98,7 +103,8 @@ const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void RealSymmetricMatrix::printValue(std::ostream &o) const {
+void RealSymmetricMatrix::printValue(std::ostream &o) const
+{
     
     long previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
