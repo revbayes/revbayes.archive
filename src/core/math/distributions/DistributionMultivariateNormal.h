@@ -29,12 +29,12 @@ namespace RevBayesCore {
             // parameterization in terms of the covariance matrix sigma
             double                      pdfCovariance(const std::vector<double>& mu, const MatrixReal& sigma, const std::vector<double>& z, double scale=1.0);      /*!< MultivariateNormal(a[]) probability density */
             double                      lnPdfCovariance(const std::vector<double>& mu, const MatrixReal& sigma, const std::vector<double>& z, double scale=1.0);    /*!< MultivariateNormal(a[]) log_e probability density */
-            std::vector<double>         rvCovariance(const std::vector<double>& mu, const MatrixReal& sigma, RandomNumberGenerator& rng);                           /*!< MultivariateNormal(a[]) random variable */
+            std::vector<double>         rvCovariance(const std::vector<double>& mu, const MatrixReal& sigma, RandomNumberGenerator& rng, double scale=1.0);         /*!< MultivariateNormal(a[]) random variable */
 
             // parameterization in terms of the precision matrix (i.e. inverse covariance matrix) omega
             double                      pdfPrecision(const std::vector<double>& mu, const MatrixReal& omega, const std::vector<double>& z, double scale=1.0);       /*!< MultivariateNormal(a[]) probability density */
             double                      lnPdfPrecision(const std::vector<double>& mu, const MatrixReal& omega, const std::vector<double>& z, double scale=1.0);     /*!< MultivariateNormal(a[]) log_e probability density */
-            std::vector<double>         rvPrecision(const std::vector<double>& mu, const MatrixReal& omega, RandomNumberGenerator& rng);                            /*!< MultivariateNormal(a[]) random variable */
+            std::vector<double>         rvPrecision(const std::vector<double>& mu, const MatrixReal& omega, RandomNumberGenerator& rng, double scale=1.0);          /*!< MultivariateNormal(a[]) random variable */
         }
     }
 }

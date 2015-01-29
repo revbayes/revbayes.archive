@@ -5,11 +5,12 @@
 
 using namespace RevBayesCore;
 
-MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *m, const TypedDagNode<MatrixReal>* cov, const TypedDagNode<MatrixReal>* prec) :
+MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *m, const TypedDagNode<MatrixReal>* cov, const TypedDagNode<MatrixReal>* prec, const TypedDagNode<double>* sc) :
     TypedDistribution< RbVector<double> >( new RbVector<double>() ),
     mean( m ),
     covariance( cov ),
-    precision( prec)
+    precision( prec),
+    scale( sc )
 {
     // make sure that only either the covariance or the precision matrix are set
     if ( covariance == NULL && precision == NULL )
@@ -27,6 +28,7 @@ MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNod
     addParameter( mean );
     addParameter( covariance );
     addParameter( precision );
+    addParameter( scale );
     
     redrawValue();
 }
@@ -50,11 +52,11 @@ double MultivariateNormalDistribution::computeLnProbability( void )
     
     if ( covariance != NULL )
     {
-        return RbStatistics::MultivariateNormal::lnPdfCovariance(mean->getValue(), covariance->getValue(), *value);
+        return RbStatistics::MultivariateNormal::lnPdfCovariance(mean->getValue(), covariance->getValue(), *value, scale->getValue() );
     }
     else
     {
-        return RbStatistics::MultivariateNormal::lnPdfPrecision(mean->getValue(), precision->getValue(), *value);
+        return RbStatistics::MultivariateNormal::lnPdfPrecision(mean->getValue(), precision->getValue(), *value, scale->getValue() );
     }
 }
 
@@ -66,11 +68,11 @@ void MultivariateNormalDistribution::redrawValue( void )
 
     if ( covariance != NULL )
     {
-        *value = RbStatistics::MultivariateNormal::rvCovariance( mean->getValue(), covariance->getValue(), *rng);
+        *value = RbStatistics::MultivariateNormal::rvCovariance( mean->getValue(), covariance->getValue(), *rng, scale->getValue() );
     }
     else
     {
-        *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), covariance->getValue(), *rng);
+        *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), covariance->getValue(), *rng, scale->getValue() );
     }
 
     
