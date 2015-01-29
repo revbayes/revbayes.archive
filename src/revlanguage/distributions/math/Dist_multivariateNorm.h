@@ -48,6 +48,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       mean;
         RevPtr<const RevVariable>                       covariance;
         RevPtr<const RevVariable>                       precision;
+        RevPtr<const RevVariable>                       scale;
         
     };
     
