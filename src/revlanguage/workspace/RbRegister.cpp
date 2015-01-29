@@ -393,6 +393,7 @@
 /* Math functions (in folder "functions/math") */
 #include "Func_abs.h"
 #include "Func_ceil.h"
+#include "Func_diagonalMatrix.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
 #include "Func_ln.h"
@@ -1052,6 +1053,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "ceil",        new Func_ceil<RealPos,Natural>()  );
         addFunction( "ceiling",     new Func_ceil<Real,Integer>()  );
         addFunction( "ceiling",     new Func_ceil<RealPos,Natural>()  );
+        
+        // diagonal matrix
+        addFunction("diag",         new Func_diagonalMatrix() );
         
         // exponential function
         addFunction( "exp",         new Func_exp() );
