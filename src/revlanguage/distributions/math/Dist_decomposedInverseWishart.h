@@ -1,17 +1,10 @@
-/* 
- * File:   Dist_InverseWishart.h
- * Author: nl
- *
- * Created on 15 juillet 2014, 10:31
- */
-
 #ifndef Dist_decomposedInverseWishart_H
 #define	Dist_decomposedInverseWishart_H
 
 
 #include <iostream>
 
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "RlTypedDistribution.h"
 #include "DecomposedInverseWishartDistribution.h"
 

@@ -69,28 +69,30 @@ double PhyloMultivariateBrownianProcess::recursiveLnProb( const TopologyNode& fr
     size_t index = from.getIndex();
     std::vector<double> val = (*value)[index];
     
-    if (! from.isRoot()) {
+    if (! from.isRoot())
+    {
         
 //        if (1)  {
-        if (dirtyNodes[index])  {
+        if (dirtyNodes[index])
+        {
 
             // x ~ normal(x_up, sigma^2 * branchLength)
 
             size_t upindex = from.getParent().getIndex();
             std::vector<double> upval = (*value)[upindex];
 
-            MatrixReal* om = sigma->getValue().computeInverse();
+            MatrixReal om = sigma->getValue().computeInverse();
 
             double s2 = 0;
-            for (size_t i = 0; i < getDim(); i++) {
+            for (size_t i = 0; i < getDim(); i++)
+            {
                 double tmp = 0;
-                for (size_t j = 0; j < getDim(); j++) {
-                    tmp += (*om)[i][j] * (val[j] - upval[j]);
+                for (size_t j = 0; j < getDim(); j++)
+                {
+                    tmp += om[i][j] * (val[j] - upval[j]);
                 }
                 s2 += (val[i] - upval[i]) * tmp;
             }
-            
-            delete om;
 
             double logprob = 0;
             logprob -= 0.5 * s2 / from.getBranchLength();

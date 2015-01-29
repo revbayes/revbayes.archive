@@ -18,7 +18,7 @@
 #ifndef Func_varianceCovarianceMatrix_H
 #define Func_varianceCovarianceMatrix_H
 
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "RlTypedFunction.h"
 
 #include <map>

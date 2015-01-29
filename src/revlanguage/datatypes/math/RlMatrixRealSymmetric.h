@@ -1,5 +1,5 @@
-#ifndef RLRealSymmetricMatrix_H
-#define RLRealSymmetricMatrix_H
+#ifndef RLMatrixRealSymmetric_H
+#define RLMatrixRealSymmetric_H
 
 #include <iostream>
 
@@ -15,16 +15,17 @@
 
 namespace RevLanguage {
     
-    class RealSymmetricMatrix : public MatrixReal  {
+    class MatrixRealSymmetric : public MatrixReal  {
         
     public:
         
-        RealSymmetricMatrix(void);
-        RealSymmetricMatrix(RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> *mat);                                                            //!< Construct from DAG node
+        MatrixRealSymmetric(void);
+        MatrixRealSymmetric(RevBayesCore::MatrixReal* m);
+        MatrixRealSymmetric(RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> *mat);                                                            //!< Construct from DAG node
         
         
         // the value type definition
-        virtual RealSymmetricMatrix*    clone(void) const;                                                      //!< Clone object
+        virtual MatrixRealSymmetric*    clone(void) const;                                                      //!< Clone object
         virtual RevObject*              convertTo(const TypeSpec& type) const;                                  //!< Convert to type
 //        void                            constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
@@ -37,4 +38,4 @@ namespace RevLanguage {
 
 }
 
-#endif /* defined(__revbayes__RealSymmetricMatrix__) */
+#endif /* defined(__revbayes__MatrixRealSymmetric__) */
