@@ -36,12 +36,12 @@ using namespace RevBayesCore;
 
 /** Constructor from real matrix */
 EigenSystem::EigenSystem(const MatrixReal* m) : 
-eigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ), 
-inverseEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
-complexEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
-complexInverseEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
-realEigenvalues( m->getNumberOfRows() ),
-imaginaryEigenvalues( m->getNumberOfRows() )
+    eigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
+    inverseEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
+    complexEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
+    complexInverseEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
+    realEigenvalues( m->getNumberOfRows() ),
+    imaginaryEigenvalues( m->getNumberOfRows() )
 {
     
     // set the pointer to the rate matrix for this system of eigen values and vectors
