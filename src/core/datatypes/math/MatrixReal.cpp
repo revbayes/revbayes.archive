@@ -219,28 +219,41 @@ const EigenSystem& MatrixReal::getEigenSystem( void ) const
 
 double MatrixReal::getLogDet() const
 {
-    // update the eigensystem if necessary
-    update();
-
-    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
-
-    double tot = 0;
-    for (size_t i=0; i<nRows; i++)
+    
+    if ( isDiagonal() == true )
     {
-        tot += log(eigenval[i]);
+        double logDet = 0;
+        for (int i = 0; i < nRows; ++i)
+        {
+            logDet += log(elements[i][i]);
+        }
+        return logDet;
     }
-    if (std::isnan(tot))
+    else
     {
-        std::cerr << "in MatrixReal::getLogDet(): nan\n";
-        std::cerr << "eigen values:\n";
+        // update the eigensystem if necessary
+        update();
+
+        const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+
+        double tot = 0;
         for (size_t i=0; i<nRows; i++)
         {
-            std::cerr << eigenval[i] << '\n';
+            tot += log(eigenval[i]);
         }
-        RbException("Problem when computing log-determinant.");
+        if (std::isnan(tot))
+        {
+            std::cerr << "in MatrixReal::getLogDet(): nan\n";
+            std::cerr << "eigen values:\n";
+            for (size_t i=0; i<nRows; i++)
+            {
+                std::cerr << eigenval[i] << '\n';
+            }
+            RbException("Problem when computing log-determinant.");
+        }
+        return tot;
     }
     
-    return tot;
 }
 
 
@@ -325,7 +338,30 @@ size_t MatrixReal::getNumberOfRows( void ) const
 //}
 
 
-bool MatrixReal::isPositive()  const
+
+bool MatrixReal::isDiagonal(void) const
+{
+    if ( !isSquareMatrix() )
+    {
+        return false;
+    }
+    
+    for (int i = 0; i < nRows; ++i)
+    {
+        for (int j = i + 1; j < nCols; ++j)
+        {
+            if (elements[i][j] != 0.0 || elements[j][i] != 0.0)
+            {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+
+bool MatrixReal::isPositive( void )  const
 {
 
     update();
@@ -339,6 +375,12 @@ bool MatrixReal::isPositive()  const
     }
 
     return pos;
+}
+
+
+bool MatrixReal::isSquareMatrix( void ) const
+{
+    return nRows == nCols;
 }
 
 
@@ -376,7 +418,7 @@ void MatrixReal::update( void ) const
 
             eigensystem->update();
 
-            eigenNeedsUpdate = true;
+            eigenNeedsUpdate = false;
 
         }
 

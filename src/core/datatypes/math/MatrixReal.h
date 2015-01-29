@@ -77,6 +77,7 @@ namespace RevBayesCore {
         double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
         size_t                                  getNumberOfRows(void) const;
+        bool                                    isDiagonal(void) const;
         bool                                    isPositive() const;
         bool                                    isSquareMatrix(void) const;
         bool                                    isSymmetric(void) const;
