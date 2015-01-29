@@ -19,7 +19,7 @@ using namespace RevBayesCore;
 MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >() ),
     nRows( 0 ),
     nCols( 0 ),
-    eigensystem( new EigenSystem(this) ),
+    eigensystem( NULL ),
     eigenNeedsUpdate( true )
 {
 
@@ -29,7 +29,7 @@ MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >() )
 MatrixReal::MatrixReal( size_t n ) : elements( std::vector<std::vector<double> >(n, std::vector<double>(n,0.0) ) ),
     nRows( n ),
     nCols( n ),
-    eigensystem( new EigenSystem(this) ),
+    eigensystem( NULL ),
     eigenNeedsUpdate( true )
 {
     
@@ -39,7 +39,7 @@ MatrixReal::MatrixReal( size_t n ) : elements( std::vector<std::vector<double> >
 MatrixReal::MatrixReal( size_t n, size_t k) : elements( std::vector<std::vector<double> >(n, std::vector<double>(k,0.0) ) ),
     nRows( n ),
     nCols( k ),
-    eigensystem( new EigenSystem(this) ),
+    eigensystem( NULL ),
     eigenNeedsUpdate( true )
 {
     
@@ -50,7 +50,7 @@ MatrixReal::MatrixReal( size_t n, size_t k, double v) :
     elements( std::vector<std::vector<double> >(n, std::vector<double>(k,v) ) ),
     nRows( n ),
     nCols( k ),
-    eigensystem( new EigenSystem(this) ),
+    eigensystem( NULL ),
     eigenNeedsUpdate( true )
 {
 
@@ -60,7 +60,7 @@ MatrixReal::MatrixReal( const MatrixReal &m ) :
     elements( m.elements ),
     nRows( m.nRows ),
     nCols( m.nCols ),
-    eigensystem( new EigenSystem(this) ),
+    eigensystem( NULL ),
     eigenNeedsUpdate( true )
 {
     
@@ -362,6 +362,11 @@ size_t MatrixReal::size( void ) const
 
 void MatrixReal::update( void ) const
 {
+    
+    if ( eigensystem == NULL )
+    {
+        eigensystem = new EigenSystem(this);
+    }
 
     if ( eigenNeedsUpdate == true )
     {
