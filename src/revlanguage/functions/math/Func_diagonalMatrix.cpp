@@ -23,7 +23,11 @@ RevPtr<RevVariable> Func_diagonalMatrix::execute( void )
 {
     
     int n = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-    RevBayesCore::MatrixReal *m = new RevBayesCore::MatrixReal(n, n, 1.0);
+    RevBayesCore::MatrixReal *m = new RevBayesCore::MatrixReal(n, n, 0.0);
+    for (size_t i = 0; i < n; ++i)
+    {
+        (*m)[i][i] = 1.0;
+    }
     
     return new RevVariable( new MatrixRealSymmetric( m ) );
 }
