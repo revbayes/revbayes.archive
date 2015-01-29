@@ -37,8 +37,27 @@ RevBayesCore::MultivariateNormalDistribution* Dist_multivariateNorm::createDistr
 
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* S = static_cast<const MatrixRealSymmetric &>( sd->getRevObject() ).getDagNode();
-    RevBayesCore::MultivariateNormalDistribution*   d = new RevBayesCore::MultivariateNormalDistribution(m, S);
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cov = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* pre = NULL;
+    
+    if ( covariance->getRevObject() != RevNullObject::getInstance() && precision->getRevObject() != RevNullObject::getInstance() )
+    {
+        throw RbException("You can only provide a covariance matrix OR a precision matrix");
+    }
+    else if ( covariance->getRevObject() != RevNullObject::getInstance() )
+    {
+        cov = static_cast<const MatrixRealSymmetric &>( covariance->getRevObject() ).getDagNode();
+    }
+    else if ( precision->getRevObject() != RevNullObject::getInstance() )
+    {
+        pre = static_cast<const MatrixRealSymmetric &>( precision->getRevObject() ).getDagNode();
+    }
+    else
+    {
+        throw RbException("You need to provide a covariance matrix OR a precision matrix");
+    }
+    
+    RevBayesCore::MultivariateNormalDistribution* d = new RevBayesCore::MultivariateNormalDistribution(m, cov, pre);
     
     return d;
 }
@@ -102,9 +121,10 @@ const MemberRules& Dist_multivariateNorm::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        distNormMemberRules.push_back( new ArgumentRule( "mean", ModelVector<Real>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd"  , MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
-    
+        distNormMemberRules.push_back( new ArgumentRule( "mean"      , ModelVector<Real>::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
+        distNormMemberRules.push_back( new ArgumentRule( "covariance", MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distNormMemberRules.push_back( new ArgumentRule( "precision" , MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        
         rulesSet = true;
     }
     
@@ -127,7 +147,8 @@ const TypeSpec& Dist_multivariateNorm::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_multivariateNorm::printValue(std::ostream& o) const {
+void Dist_multivariateNorm::printValue(std::ostream& o) const
+{
     
     o << " MVNorm(mean=";
     if ( mean != NULL ) {
@@ -135,10 +156,22 @@ void Dist_multivariateNorm::printValue(std::ostream& o) const {
     } else {
         o << "?";
     }
-    o << ", sd=";
-    if ( sd != NULL ) {
-        o << sd->getName();
-    } else {
+    o << ", covariance=";
+    if ( covariance != NULL )
+    {
+        o << covariance->getName();
+    }
+    else
+    {
+        o << "?";
+    }
+    o << ", precision=";
+    if ( precision != NULL )
+    {
+        o << precision->getName();
+    }
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -162,9 +195,13 @@ void Dist_multivariateNorm::setConstParameter(const std::string& name, const Rev
     {
         mean = var;
     }
-    else if ( name == "sd" ) 
+    else if ( name == "covariance" )
     {
-        sd = var;
+        covariance = var;
+    }
+    else if ( name == "precision" )
+    {
+        precision = var;
     }
     else 
     {
