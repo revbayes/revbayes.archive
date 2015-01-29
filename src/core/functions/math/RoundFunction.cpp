@@ -1,17 +1,10 @@
-//
-//  Add.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/13/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "RoundFunction.h"
 #include <cmath>
 
 using namespace RevBayesCore;
 
-RoundFunction::RoundFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ), a( x ) 
+RoundFunction::RoundFunction(const TypedDagNode<double> *x) : TypedFunction<int>( new int(0) ),
+    a( x )
 {
     
     addParameter( x );

@@ -6,7 +6,7 @@
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 
 using namespace RevLanguage;
 
@@ -37,7 +37,7 @@ RevBayesCore::MultivariateNormalDistribution* Dist_multivariateNorm::createDistr
 
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* S = static_cast<const RealSymmetricMatrix &>( sd->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* S = static_cast<const MatrixRealSymmetric &>( sd->getRevObject() ).getDagNode();
     RevBayesCore::MultivariateNormalDistribution*   d = new RevBayesCore::MultivariateNormalDistribution(m, S);
     
     return d;
@@ -103,7 +103,7 @@ const MemberRules& Dist_multivariateNorm::getParameterRules(void) const
     if ( !rulesSet ) 
     {
         distNormMemberRules.push_back( new ArgumentRule( "mean", ModelVector<Real>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd"  , MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
     
         rulesSet = true;
     }

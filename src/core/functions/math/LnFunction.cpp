@@ -1,11 +1,3 @@
-//
-//  Add.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/13/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "LnFunction.h"
 #include <cmath>
 
@@ -19,7 +11,8 @@ LnFunction::LnFunction(const TypedDagNode<double> *x) : ContinuousFunction( new 
 }
 
 
-LnFunction* LnFunction::clone( void ) const {
+LnFunction* LnFunction::clone( void ) const
+{
     return new LnFunction(*this);
 }
 
@@ -32,7 +25,9 @@ void LnFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
     }
 }
 
-void LnFunction::update( void ) {
+
+void LnFunction::update( void )
+{
     *value = log( a->getValue() );
 }
 

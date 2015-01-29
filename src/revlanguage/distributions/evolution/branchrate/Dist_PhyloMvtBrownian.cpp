@@ -15,7 +15,7 @@
 #include "PhyloMultivariateBrownianProcess.h"
 #include "MatrixReal.h"
 #include "Real.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
@@ -35,7 +35,7 @@ RevBayesCore::PhyloMultivariateBrownianProcess* Dist_PhyloMvtBrownian::createDis
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sig  = static_cast<const RealSymmetricMatrix&>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sig  = static_cast<const MatrixRealSymmetric&>( sigma->getRevObject() ).getDagNode();
 //    RevBayesCore::TypedDagNode< RbVector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
     
 //    RevBayesCore::PhyloMultivariateBrownianProcess* process    = new RevBayesCore::PhyloMultivariateBrownianProcess( tau, om, r );
@@ -76,7 +76,7 @@ const MemberRules& Dist_PhyloMvtBrownian::getParameterRules(void) const
     {
         
         dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()           , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dist.push_back( new ArgumentRule( "sigma", RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "sigma", MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
 //        dist.push_back( new ArgumentRule( "rootval", true, Vector<Real>::getClassTypeSpec() ) );
         rulesSet = true;
     }

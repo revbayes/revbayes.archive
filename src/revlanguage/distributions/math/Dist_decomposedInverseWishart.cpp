@@ -3,7 +3,7 @@
 #include "Natural.h"
 #include "RealPos.h"
 #include "ModelVector.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "StochasticNode.h"
 #include "InverseWishartDistribution.h"
 
@@ -31,7 +31,7 @@ Dist_decomposedInverseWishart* Dist_decomposedInverseWishart::clone(void) const
 RevBayesCore::DecomposedInverseWishartDistribution* Dist_decomposedInverseWishart::createDistribution(void) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sg = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sg = static_cast<const MatrixRealSymmetric &>( sigma->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* dv = static_cast<const ModelVector<RealPos> &>( diagonal->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int>* deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
@@ -80,7 +80,7 @@ const MemberRules& Dist_decomposedInverseWishart::getParameterRules(void) const 
     static bool rulesSet = false;
     if ( !rulesSet )
         {
-        distMemberRules.push_back( new ArgumentRule( "sigma"   , RealSymmetricMatrix::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealSymmetricMatrix()  ) );
+        distMemberRules.push_back( new ArgumentRule( "sigma"   , MatrixRealSymmetric::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new MatrixRealSymmetric()  ) );
         distMemberRules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>()  ) );
         distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
         distMemberRules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0) ) );

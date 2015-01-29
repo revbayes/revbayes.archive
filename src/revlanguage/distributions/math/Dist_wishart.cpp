@@ -2,13 +2,13 @@
 #include "Dist_wishart.h"
 #include "Natural.h"
 #include "RealPos.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "StochasticNode.h"
 #include "WishartDistribution.h"
 
 using namespace RevLanguage;
 
-Dist_wishart::Dist_wishart() : TypedDistribution<RealSymmetricMatrix>()
+Dist_wishart::Dist_wishart() : TypedDistribution<MatrixRealSymmetric>()
 {
     
 }
@@ -35,7 +35,7 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
     RevBayesCore::TypedDagNode<double>* ka = NULL;
     /*
     if (omega != NULL)  {
-        om = static_cast<const RealSymmetricMatrix &>( omega->getRevObject() ).getDagNode();
+        om = static_cast<const MatrixRealSymmetric &>( omega->getRevObject() ).getDagNode();
     }
      */
     if (kappa != NULL)  {
@@ -100,7 +100,7 @@ const MemberRules& Dist_wishart::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-//        distExpMemberRules.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+//        distExpMemberRules.push_back( new ArgumentRule( "omega", true, MatrixRealSymmetric::getClassTypeSpec() ) );
         distMemberRules.push_back( new ArgumentRule( "df"   , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         distMemberRules.push_back( new ArgumentRule( "kappa", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         distMemberRules.push_back( new ArgumentRule( "dim"  , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );

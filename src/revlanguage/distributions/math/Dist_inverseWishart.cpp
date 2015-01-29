@@ -3,24 +3,27 @@
 #include "Natural.h"
 #include "RealPos.h"
 #include "ModelVector.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "StochasticNode.h"
 #include "InverseWishartDistribution.h"
 
 using namespace RevLanguage;
 
-Dist_inverseWishart::Dist_inverseWishart() : TypedDistribution<RealSymmetricMatrix>() {
+Dist_inverseWishart::Dist_inverseWishart() : TypedDistribution<MatrixRealSymmetric>()
+{
     
 }
 
 
-Dist_inverseWishart::~Dist_inverseWishart() {
+Dist_inverseWishart::~Dist_inverseWishart()
+{
     
 }
 
 
 
-Dist_inverseWishart* Dist_inverseWishart::clone( void ) const {
+Dist_inverseWishart* Dist_inverseWishart::clone( void ) const
+{
     return new Dist_inverseWishart(*this);
 }
 
@@ -36,7 +39,7 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
     
     if ( sigma->getRevObject() != RevNullObject::getInstance() )
         {
-        sg = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
+        sg = static_cast<const MatrixRealSymmetric &>( sigma->getRevObject() ).getDagNode();
         }
     
     if ( diagonal->getRevObject() != RevNullObject::getInstance() )
@@ -109,7 +112,7 @@ const MemberRules& Dist_inverseWishart::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "sigma"   , RealSymmetricMatrix::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        distMemberRules.push_back( new ArgumentRule( "sigma"   , MatrixRealSymmetric::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
         distMemberRules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
         distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         distMemberRules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );

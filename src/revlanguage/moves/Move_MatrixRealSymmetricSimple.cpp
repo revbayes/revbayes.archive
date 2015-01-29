@@ -1,12 +1,12 @@
 //
-//  Move_RealSymmetricMatrixSimple.cpp
+//  Move_MatrixRealSymmetricSimple.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-28.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "Move_RealSymmetricMatrixSimple.h"
+#include "Move_MatrixRealSymmetricSimple.h"
 
 
 #include "ArgumentRule.h"
@@ -20,25 +20,25 @@
 #include "RlBoolean.h"
 #include "MatrixReal.h"
 #include "MatrixRealSymmetricSimpleMove.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Move_RealSymmetricMatrixSimple::Move_RealSymmetricMatrixSimple() : Move() {
+Move_MatrixRealSymmetricSimple::Move_MatrixRealSymmetricSimple() : Move() {
     
 }
 
 /** Clone object */
-Move_RealSymmetricMatrixSimple* Move_RealSymmetricMatrixSimple::clone(void) const {
+Move_MatrixRealSymmetricSimple* Move_MatrixRealSymmetricSimple::clone(void) const {
     
-	return new Move_RealSymmetricMatrixSimple(*this);
+	return new Move_MatrixRealSymmetricSimple(*this);
 }
 
 
-void Move_RealSymmetricMatrixSimple::constructInternalObject( void )
+void Move_MatrixRealSymmetricSimple::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -46,7 +46,7 @@ void Move_RealSymmetricMatrixSimple::constructInternalObject( void )
     // now allocate a new wishart simple move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* tmp = static_cast<const RealSymmetricMatrix &>( mat->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* tmp = static_cast<const MatrixRealSymmetric &>( mat->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::MatrixRealSymmetricMove(matrix, l, t, w);
@@ -55,7 +55,7 @@ void Move_RealSymmetricMatrixSimple::constructInternalObject( void )
 
 
 /** Get class name of object */
-const std::string& Move_RealSymmetricMatrixSimple::getClassType(void)
+const std::string& Move_MatrixRealSymmetricSimple::getClassType(void)
 {
     
     static std::string revClassType = "Move_MatrixRealSymmetricMove";
@@ -64,7 +64,7 @@ const std::string& Move_RealSymmetricMatrixSimple::getClassType(void)
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_RealSymmetricMatrixSimple::getClassTypeSpec(void)
+const TypeSpec& Move_MatrixRealSymmetricSimple::getClassTypeSpec(void)
 {
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -75,7 +75,7 @@ const TypeSpec& Move_RealSymmetricMatrixSimple::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_RealSymmetricMatrixSimple::getParameterRules(void) const
+const MemberRules& Move_MatrixRealSymmetricSimple::getParameterRules(void) const
 {
     
     static MemberRules moveMemberRules;
@@ -84,7 +84,7 @@ const MemberRules& Move_RealSymmetricMatrixSimple::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()            , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(1.0) ) );
         moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
@@ -99,7 +99,7 @@ const MemberRules& Move_RealSymmetricMatrixSimple::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_RealSymmetricMatrixSimple::getTypeSpec( void ) const
+const TypeSpec& Move_MatrixRealSymmetricSimple::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -109,10 +109,10 @@ const TypeSpec& Move_RealSymmetricMatrixSimple::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_RealSymmetricMatrixSimple::printValue(std::ostream &o) const
+void Move_MatrixRealSymmetricSimple::printValue(std::ostream &o) const
 {
     
-    o << "Move_RealSymmetricMatrixSimple(";
+    o << "Move_MatrixRealSymmetricSimple(";
     if (mat != NULL)
     {
         o << mat->getName();
@@ -126,7 +126,7 @@ void Move_RealSymmetricMatrixSimple::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_RealSymmetricMatrixSimple::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_MatrixRealSymmetricSimple::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         mat = var;

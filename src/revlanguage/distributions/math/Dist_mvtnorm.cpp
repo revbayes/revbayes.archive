@@ -5,32 +5,36 @@
 #include "MultivariateNormalDistribution.h"
 #include "Real.h"
 #include "StochasticNode.h"
-#include "MatrixReal.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixReal.h"
+#include "RlMatrixRealSymmetric.h"
 
 using namespace RevLanguage;
 
-Dist_mvtnorm::Dist_mvtnorm() : TypedDistribution<ModelVector<Real> >() {
+Dist_mvtnorm::Dist_mvtnorm() : TypedDistribution< ModelVector<Real> >()
+{
     
 }
 
 
-Dist_mvtnorm::~Dist_mvtnorm() {
+Dist_mvtnorm::~Dist_mvtnorm()
+{
     
 }
 
 
 
-Dist_mvtnorm* Dist_mvtnorm::clone( void ) const {
+Dist_mvtnorm* Dist_mvtnorm::clone( void ) const
+{
     return new Dist_mvtnorm(*this);
 }
 
 
-RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( void ) const {
+RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( void ) const
+{
 
     // get the parameters
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* p = static_cast<const RealSymmetricMatrix &>( precision->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* p = static_cast<const MatrixRealSymmetric &>( precision->getRevObject() ).getDagNode();
     RevBayesCore::MultivariateNormalDistribution* d     = new RevBayesCore::MultivariateNormalDistribution( m,p );
     
     return d;
@@ -39,7 +43,8 @@ RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( 
 
 
 /* Get Rev type of object */
-const std::string& Dist_mvtnorm::getClassType(void) {
+const std::string& Dist_mvtnorm::getClassType(void)
+{
     
     static std::string revType = "Dist_mvtnorm";
     
@@ -47,7 +52,8 @@ const std::string& Dist_mvtnorm::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void) {
+const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -58,7 +64,8 @@ const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_mvtnorm::getParameterRules(void) const {
+const MemberRules& Dist_mvtnorm::getParameterRules(void) const
+{
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -67,7 +74,7 @@ const MemberRules& Dist_mvtnorm::getParameterRules(void) const {
     {
         
         distMemberRules.push_back( new ArgumentRule( "mean"     , ModelVector<Real>::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "precision", RealSymmetricMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "precision", MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }
@@ -85,18 +92,25 @@ const TypeSpec& Dist_mvtnorm::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_mvtnorm::printValue(std::ostream& o) const {
+void Dist_mvtnorm::printValue(std::ostream& o) const
+{
     
     o << " MultivariateNormal(mean=";
-    if ( mean != NULL ) {
+    if ( mean != NULL )
+    {
         o << mean->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ",";
-    if ( precision != NULL ) {
+    if ( precision != NULL )
+    {
         o << precision->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -104,7 +118,8 @@ void Dist_mvtnorm::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_mvtnorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_mvtnorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "mean" ) 
     {
