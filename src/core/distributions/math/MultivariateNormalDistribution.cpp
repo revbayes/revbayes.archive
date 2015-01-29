@@ -1,19 +1,31 @@
 #include "MultivariateNormalDistribution.h"
 #include "DistributionMultivariateNormal.h"
-
 #include "RandomNumberFactory.h"
+#include "RbException.h"
 
 using namespace RevBayesCore;
 
-MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *inmean, const TypedDagNode<MatrixReal>* inprec) :
+MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *m, const TypedDagNode<MatrixReal>* cov, const TypedDagNode<MatrixReal>* prec) :
     TypedDistribution< RbVector<double> >( new RbVector<double>() ),
-    mean( inmean ),
-    precision(inprec)
+    mean( m ),
+    covariance( cov ),
+    precision( prec)
 {
+    // make sure that only either the covariance or the precision matrix are set
+    if ( covariance == NULL && precision == NULL )
+    {
+        throw RbException("You need to provide a covariance matrix OR a precision matrix");
+    }
+    else if ( covariance != NULL && precision != NULL )
+    {
+        throw RbException("You can only provide a covariance matrix OR a precision matrix");
+    }
+    
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( mean );
+    addParameter( covariance );
     addParameter( precision );
     
     redrawValue();
@@ -36,7 +48,14 @@ MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) co
 double MultivariateNormalDistribution::computeLnProbability( void )
 {
     
-    return RbStatistics::MultivariateNormal::lnPdfPrecision(mean->getValue(), precision->getValue(), *value);
+    if ( covariance != NULL )
+    {
+        return RbStatistics::MultivariateNormal::lnPdfCovariance(mean->getValue(), covariance->getValue(), *value);
+    }
+    else
+    {
+        return RbStatistics::MultivariateNormal::lnPdfPrecision(mean->getValue(), precision->getValue(), *value);
+    }
 }
 
 
@@ -44,8 +63,17 @@ void MultivariateNormalDistribution::redrawValue( void )
 {
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
-    *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), precision->getValue(), *rng);
 
+    if ( covariance != NULL )
+    {
+        *value = RbStatistics::MultivariateNormal::rvCovariance( mean->getValue(), covariance->getValue(), *rng);
+    }
+    else
+    {
+        *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), covariance->getValue(), *rng);
+    }
+
+    
 }
 
 /** Swap a parameter of the distribution */
@@ -55,6 +83,10 @@ void MultivariateNormalDistribution::swapParameterInternal(const DagNode *oldP, 
     if (oldP == mean)
     {
         mean = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    if (oldP == covariance)
+    {
+        covariance = static_cast<const TypedDagNode<MatrixReal >* >( newP );
     }
     if (oldP == precision)
     {

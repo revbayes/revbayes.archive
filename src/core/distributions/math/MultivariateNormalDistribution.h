@@ -34,7 +34,7 @@ namespace RevBayesCore {
     class MultivariateNormalDistribution : public TypedDistribution< RbVector<double> > {
         
     public:
-        MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *inmean, const TypedDagNode<MatrixReal>* inprec);
+        MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *m, const TypedDagNode<MatrixReal>* cov, const TypedDagNode<MatrixReal>* prec);
         virtual                                            ~MultivariateNormalDistribution(void);                                                //!< Virtual destructor
         
         
@@ -53,7 +53,8 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< RbVector<double> >*             mean;
-        const TypedDagNode< MatrixReal  >*         precision;
+        const TypedDagNode< MatrixReal >*                   covariance;
+        const TypedDagNode< MatrixReal >*                   precision;
 
     };
     
