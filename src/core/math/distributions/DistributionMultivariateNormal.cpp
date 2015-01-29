@@ -10,8 +10,10 @@
 #include "DistributionMultivariateNormal.h"
 #include "DistributionNormal.h"
 #include "EigenSystem.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
+#include "RbMathLogic.h"
 #include "RbStatisticsHelper.h"
 
 #include <cmath>
@@ -54,23 +56,27 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
 //    sigma.update();
     
     MatrixReal omega = sigma.computeInverse();
+    
+    return lnPdfPrecision(mu, omega, z);
   
-    size_t dim = z.size();
-    
-    double s2 = 0;
-    for (size_t i=0; i<dim; i++)   {
-        double tmp = 0;
-        for (size_t j=0; j<dim; j++)   {
-            tmp += omega[i][j] * (z[j] - mu[j]);
-        }
-        s2 += (z[i] - mu[i]) * tmp;
-    }
-    
-    double lnProb2 = - 0.5 * log(sigma.getLogDet()) - 0.5 * s2;
-    double lnProb = 0.5 * log(omega.getLogDet()) - 0.5 * s2;
-    
-    return lnProb;
-}    
+//    size_t dim = z.size();
+//
+//    double s2 = 0;
+//    for (size_t i=0; i<dim; i++)
+//    {
+//        double tmp = 0;
+//        for (size_t j=0; j<dim; j++)
+//        {
+//            tmp += omega[i][j] * (z[j] - mu[j]);
+//        }
+//        s2 += (z[i] - mu[i]) * tmp;
+//    }
+//    
+//    double lnProb2 = - 0.5 * sigma.getLogDet() - 0.5 * s2;
+//    double lnProb = 0.5 * omega.getLogDet() - 0.5 * s2;
+//    
+//    return lnProb;
+}
 
 /*!
  * This function generates a MultivariateNormal-distributed random variable.
@@ -151,27 +157,65 @@ double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>&
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double>& mu, const MatrixReal& omega, const std::vector<double> &z)
+double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double>& mu, const MatrixReal& omega, const std::vector<double> &x)
 {
+    double logNormalize = -0.5 * log( RbConstants::TwoPI );
     
-//    omega.update();
-    
-    size_t dim = z.size();
-    
-    double s2 = 0;
-    for (size_t i=0; i<dim; i++)
+    double logDet = omega.getLogDet();
+    if ( !RbMath::isAComputableNumber(logDet) )
     {
-        double tmp = 0;
-        for (size_t j=0; j<dim; j++)
-        {
-            tmp += omega[i][j] * (z[j] - mu[j]);
-        }
-        s2 += (z[i] - mu[i]) * tmp;
+        return logDet;
     }
     
-    double lnProb = 0.5 * log(omega.getLogDet()) - 0.5 * s2;
+    size_t dim = x.size();
+    std::vector<double> delta = std::vector<double>(dim,0.0);
+    std::vector<double> tmp   = std::vector<double>(dim,0.0);
+    
+    for (int i = 0; i < dim; i++)
+    {
+        delta[i] = x[i] - mu[i];
+    }
+    
+    for (int i = 0; i < dim; i++)
+    {
+        for (int j = 0; j < dim; j++)
+        {
+            tmp[i] += delta[j] * omega[j][i];
+        }
+    }
+    
+    double SSE = 0;
+    
+    for (int i = 0; i < dim; i++)
+    {
+        SSE += tmp[i] * delta[i];
+    }
+    
+    double lnProb2 = dim * logNormalize + 0.5 * (logDet - dim - SSE);   // There was an error here.
+    double lnProb =  dim * logNormalize + 0.5 * (logDet - SSE);
+    // Variance = (scale * Precision^{-1})
     
     return lnProb;
+    
+    
+//    omega.update();
+//    
+//    size_t dim = z.size();
+//    
+//    double s2 = 0;
+//    for (size_t i=0; i<dim; i++)
+//    {
+//        double tmp = 0;
+//        for (size_t j=0; j<dim; j++)
+//        {
+//            tmp += omega[i][j] * (z[j] - mu[j]);
+//        }
+//        s2 += (z[i] - mu[i]) * tmp;
+//    }
+//    
+//    double lnProb = 0.5 * log(omega.getLogDet()) - 0.5 * s2;
+//    
+//    return lnProb;
 }
 
 
