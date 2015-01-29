@@ -6,14 +6,15 @@
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "DistributionMultivariateNormal.h"
 
-
-#include <cmath>
 #include "DistributionMultivariateNormal.h"
+#include "DistributionNormal.h"
+#include "EigenSystem.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
 #include "RbStatisticsHelper.h"
+
+#include <cmath>
 
 using namespace RevBayesCore;
 
@@ -28,7 +29,7 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::MultivariateNormal::pdfCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::pdfCovariance(const std::vector<double>& mu, const MatrixReal& sigma, const std::vector<double> &z) {
 	
     return exp(lnPdfCovariance(mu,sigma,z));
 }
@@ -45,14 +46,14 @@ double RbStatistics::MultivariateNormal::pdfCovariance(const std::vector<double>
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<double>& mu, const MatrixReal& sigma, const std::vector<double> &z)
+{
     
 //    std::cerr << sigma << std::endl;
     
-    sigma.update();
+//    sigma.update();
     
-    const MatrixReal& tmp = sigma.getInverse();
-    MatrixRealSymmetric omega = MatrixRealSymmetric(tmp);
+    MatrixReal omega = sigma.computeInverse();
   
     size_t dim = z.size();
     
@@ -82,16 +83,44 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
  * \throws Does not throw an error.
  */
 
-std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, RandomNumberGenerator& rng) {
+std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::vector<double>& mu, const MatrixReal& sigma, RandomNumberGenerator& rng) {
         
-    // actual work done inside MatrixRealSymmetric class
+    // actual work done inside MatrixReal class
     // (more convenient: private members of sigma, e.g. eigenvalues and eigenvectors, are used here)
-    sigma.update();
-    size_t dim = sigma.getDim();
-    std::vector<double> z(dim);
-    sigma.drawNormalSampleCovariance(z);
+//    sigma.update();
     
-    return z;
+    size_t dim = sigma.getDim();
+    const EigenSystem& eigensystem = sigma.getEigenSystem();
+    std::vector<double> v(dim);
+//    sigma.drawNormalSampleCovariance(z);
+    
+    
+    // get the eigenvalues of the *precision* matrix
+    const std::vector<double>& eigen = eigensystem.getRealEigenvalues();
+    
+    // draw the normal variate in eigen basis
+    std::vector<double> w(dim);
+    for (size_t i=0; i<dim; i++)
+    {
+        w[i] = RbStatistics::Normal::rv(0, sqrt(eigen[i]), rng);
+    }
+    
+    // get the eigenvector
+    const MatrixReal& eigenvect = eigensystem.getEigenvectors();
+    
+    // change basis
+    for (size_t i=0; i<dim; i++)
+    {
+        double tmp = 0;
+        for (size_t j=0; j<dim; j++)
+        {
+            tmp += eigenvect[i][j] * w[j];
+        }
+        v[i] = tmp;
+    }
+
+    
+    return v;
 }
 
 /*!
@@ -105,7 +134,7 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>& mu, const MatrixReal& omega, const std::vector<double> &z) {
 	
     return exp(lnPdfPrecision(mu,omega,z));
 }
@@ -122,16 +151,19 @@ double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>&
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double>& mu, const MatrixReal& omega, const std::vector<double> &z)
+{
     
-    omega.update();
+//    omega.update();
     
     size_t dim = z.size();
     
     double s2 = 0;
-    for (size_t i=0; i<dim; i++)   {
+    for (size_t i=0; i<dim; i++)
+    {
         double tmp = 0;
-        for (size_t j=0; j<dim; j++)   {
+        for (size_t j=0; j<dim; j++)
+        {
             tmp += omega[i][j] * (z[j] - mu[j]);
         }
         s2 += (z[i] - mu[i]) * tmp;
@@ -153,15 +185,41 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
  * \return Returns a vector containing the MultivariateNormal random variable.
  * \throws Does not throw an error.
  */
-std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, RandomNumberGenerator& rng) {
+std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vector<double>& mu, const MatrixReal& omega, RandomNumberGenerator& rng) {
     
-    // actual work done inside MatrixRealSymmetric class
+    // actual work done inside MatrixReal class
     // (more convenient: private members of omega, e.g. eigenvalues and eigenvectors, are used here)
 
-    omega.update();
+//    omega.update();
     size_t dim = omega.getDim();
-    std::vector<double> z(dim);
-    omega.drawNormalSamplePrecision(z);
+    std::vector<double> v(dim);
     
-    return z;
+    const EigenSystem &eigensystem = omega.getEigenSystem();
+    
+    // get the eigenvalues of the *precision* matrix
+    const std::vector<double>& eigen = eigensystem.getRealEigenvalues();
+    
+    // draw the normal variate in eigen basis
+    std::vector<double> w(dim);
+    for (size_t i=0; i<dim; i++)
+    {
+        w[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(eigen[i]), rng);
+    }
+    
+    // get the eigenvector
+    const MatrixReal& eigenvect = eigensystem.getEigenvectors();
+    
+    // change basis
+    for (size_t i=0; i<dim; i++)
+    {
+        double tmp = 0;
+        for (size_t j=0; j<dim; j++)
+        {
+            tmp += eigenvect[i][j] * w[j];
+        }
+        v[i] = tmp;
+    }
+
+    
+    return v;
 }

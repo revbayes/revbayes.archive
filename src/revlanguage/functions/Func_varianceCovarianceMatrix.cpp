@@ -6,7 +6,7 @@
 //
 
 #include "Func_varianceCovarianceMatrix.h"
-#include "MatrixRealSymmetric.h"
+#include "MatrixReal.h"
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -18,7 +18,8 @@ using namespace RevLanguage;
 
 
 /** default constructor */
-Func_varianceCovarianceMatrix::Func_varianceCovarianceMatrix(void) : TypedFunction<RealSymmetricMatrix>() {
+Func_varianceCovarianceMatrix::Func_varianceCovarianceMatrix(void) : TypedFunction<MatrixReal>()
+{
     
 }
 
@@ -30,7 +31,7 @@ Func_varianceCovarianceMatrix* Func_varianceCovarianceMatrix::clone(void) const 
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::MatrixRealSymmetric >* Func_varianceCovarianceMatrix::createFunction(void) const {
+RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_varianceCovarianceMatrix::createFunction(void) const {
 
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sd = static_cast<const ModelVector<RealPos>& >( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ce = static_cast<const ModelVector<Real>& >( this->args[1].getVariable()->getRevObject() ).getDagNode();

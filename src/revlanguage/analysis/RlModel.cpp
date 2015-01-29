@@ -71,7 +71,8 @@ RevPtr<RevVariable> Model::executeMethod(std::string const &name, const std::vec
 }
 
 /** Get Rev type of object */
-const std::string& Model::getClassType(void) { 
+const std::string& Model::getClassType(void)
+{
     
     static std::string revType = "Model";
     
@@ -79,7 +80,8 @@ const std::string& Model::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Model::getClassTypeSpec(void) { 
+const TypeSpec& Model::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
@@ -89,7 +91,8 @@ const TypeSpec& Model::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Model::getParameterRules(void) const {
+const MemberRules& Model::getParameterRules(void) const
+{
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;

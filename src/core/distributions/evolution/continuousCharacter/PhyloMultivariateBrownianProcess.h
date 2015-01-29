@@ -13,7 +13,7 @@
 
 
 #include "ModelVector.h"
-#include "MatrixRealSymmetric.h"
+#include "MatrixReal.h"
 #include "Real.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
@@ -25,7 +25,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        PhyloMultivariateBrownianProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<MatrixRealSymmetric>* insigma);
+        PhyloMultivariateBrownianProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<MatrixReal>* insigma);
         
         // public member functions
         PhyloMultivariateBrownianProcess*                       clone(void) const;
@@ -57,7 +57,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< MatrixRealSymmetric >*              sigma;
+        const TypedDagNode< MatrixReal >*                       sigma;
         
         std::vector<bool>                                       dirtyNodes;
         std::vector<double>                                     nodeLogProbs;

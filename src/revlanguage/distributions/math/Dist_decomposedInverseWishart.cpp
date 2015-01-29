@@ -9,17 +9,20 @@
 
 using namespace RevLanguage;
 
-Dist_decomposedInverseWishart::Dist_decomposedInverseWishart(void) : TypedDistribution<RealSymmetricMatrix>() {
+Dist_decomposedInverseWishart::Dist_decomposedInverseWishart(void) : TypedDistribution<MatrixReal>()
+{
     
 }
 
 
-Dist_decomposedInverseWishart::~Dist_decomposedInverseWishart(void) {
+Dist_decomposedInverseWishart::~Dist_decomposedInverseWishart(void)
+{
     
 }
 
 
-Dist_decomposedInverseWishart* Dist_decomposedInverseWishart::clone(void) const {
+Dist_decomposedInverseWishart* Dist_decomposedInverseWishart::clone(void) const
+{
 
     return new Dist_decomposedInverseWishart(*this);
 }
@@ -28,14 +31,14 @@ Dist_decomposedInverseWishart* Dist_decomposedInverseWishart::clone(void) const 
 RevBayesCore::DecomposedInverseWishartDistribution* Dist_decomposedInverseWishart::createDistribution(void) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* sg = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sg = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* dv = static_cast<const ModelVector<RealPos> &>( diagonal->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int>* deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
     RevBayesCore::TypedDagNode<int>* dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
     
     RevBayesCore::DecomposedInverseWishartDistribution* w =  0;
-    if (! sg->getValue().isNull())
+    if ( sg->getValue().getDim() == 0 )
         {
         // parameter is sigma
         w = new RevBayesCore::DecomposedInverseWishartDistribution( sg, deg );

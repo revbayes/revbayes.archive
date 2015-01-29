@@ -8,26 +8,30 @@
 
 using namespace RevLanguage;
 
-Dist_wishart::Dist_wishart() : TypedDistribution<RealSymmetricMatrix>() {
+Dist_wishart::Dist_wishart() : TypedDistribution<RealSymmetricMatrix>()
+{
     
 }
 
 
-Dist_wishart::~Dist_wishart() {
+Dist_wishart::~Dist_wishart()
+{
     
 }
 
 
 
-Dist_wishart* Dist_wishart::clone( void ) const {
+Dist_wishart* Dist_wishart::clone( void ) const
+{
     return new Dist_wishart(*this);
 }
 
 
-RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) const {
+RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) const
+{
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* om = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* om = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
     /*
     if (omega != NULL)  {
@@ -48,11 +52,14 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
     }
     RevBayesCore::WishartDistribution* w    =  0;
     
-    if (om) {
+    if (om != NULL )
+    {
             w = new RevBayesCore::WishartDistribution( om, deg );
     }
-    else{
-        if (! dm || ! ka)   {
+    else
+    {
+        if (dm == NULL || ka == NULL)
+        {
             throw RbException("error in Dist_wishart: should specify arguments");
         }
         w = new RevBayesCore::WishartDistribution( dm, ka, deg );
@@ -63,7 +70,8 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
 
 
 /* Get Rev type of object */
-const std::string& Dist_wishart::getClassType(void) {
+const std::string& Dist_wishart::getClassType(void)
+{
     
     static std::string revType = "Dist_wishart";
     
@@ -71,7 +79,8 @@ const std::string& Dist_wishart::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_wishart::getClassTypeSpec(void) {
+const TypeSpec& Dist_wishart::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -82,12 +91,14 @@ const TypeSpec& Dist_wishart::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_wishart::getParameterRules(void) const {
+const MemberRules& Dist_wishart::getParameterRules(void) const
+{
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
 //        distExpMemberRules.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
         distMemberRules.push_back( new ArgumentRule( "df"   , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );

@@ -28,7 +28,7 @@ Dist_inverseWishart* Dist_inverseWishart::clone( void ) const {
 RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* sg = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sg = NULL;
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* dv = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
     RevBayesCore::TypedDagNode<int>* deg = NULL;
@@ -61,7 +61,7 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
     
     RevBayesCore::InverseWishartDistribution* w =  NULL;
 
-    if ( sg != NULL && !sg->getValue().isNull() )
+    if ( sg != NULL && sg->getValue().getDim() != 0 )
         {
         // parameter is sigma
         w = new RevBayesCore::InverseWishartDistribution( sg, deg );

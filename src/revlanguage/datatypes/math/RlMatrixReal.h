@@ -1,5 +1,5 @@
-#ifndef RLRealSymmetricMatrix_H
-#define RLRealSymmetricMatrix_H
+#ifndef RlMatrixReal_H
+#define RlMatrixReal_H
 
 #include <iostream>
 
@@ -8,24 +8,25 @@
 #include <iostream>
 #include <vector>
 
+#include "MatrixReal.h"
 #include "ModelObject.h"
-#include "RlMatrixReal.h"
 #include "TypedDagNode.h"
 
 
 namespace RevLanguage {
     
-    class RealSymmetricMatrix : public MatrixReal  {
+    class MatrixReal : public ModelObject<RevBayesCore::MatrixReal>  {
         
     public:
-        
-        RealSymmetricMatrix(void);
-        RealSymmetricMatrix(RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> *mat);                                                            //!< Construct from DAG node
+                           
+        MatrixReal(void);                                                                                       //!< Default constructor
+        MatrixReal(const RevBayesCore::MatrixReal& m);
+        MatrixReal(RevBayesCore::MatrixReal* m);
+        MatrixReal(RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> *mat);                                  //!< Construct from DAG node
         
         
         // the value type definition
-        virtual RealSymmetricMatrix*    clone(void) const;                                                      //!< Clone object
-        virtual RevObject*              convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        virtual MatrixReal*             clone(void) const;                                                      //!< Clone object
 //        void                            constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -37,4 +38,4 @@ namespace RevLanguage {
 
 }
 
-#endif /* defined(__revbayes__RealSymmetricMatrix__) */
+#endif /* defined(__revbayes__MatrixReal__) */

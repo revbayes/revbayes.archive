@@ -26,10 +26,13 @@
 
 namespace RevBayesCore {
     
+    class EigenSystem;
+    
     class MatrixReal : public Cloneable {
         
     public:
         MatrixReal(void);                       //!< Default constructor required by revlanguage use of this class
+        MatrixReal(size_t n);
         MatrixReal(size_t n, size_t k);
         MatrixReal(size_t n, size_t k, double v);
         MatrixReal(const MatrixReal& m);
@@ -62,18 +65,33 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >::const_iterator       end(void) const;
         std::vector<std::vector<double> >::iterator             end(void);
         
+        
+        
         // utility funcions
         void                                    clear(void);
         MatrixReal*                             clone(void) const;
+        MatrixReal                              computeInverse(void) const;
+        size_t                                  getDim() const;
+        EigenSystem&                            getEigenSystem(void);
+        const EigenSystem&                      getEigenSystem(void) const ;
+        double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
         size_t                                  getNumberOfRows(void) const;
+        bool                                    isPositive() const;
+        bool                                    isSquareMatrix(void) const;
+        bool                                    isSymmetric(void) const;
         size_t                                  size(void) const;
         void                                    resize(size_t r, size_t c);
         
     protected:
+        
+        // members
         std::vector<std::vector<double> >       elements;
         size_t                                  nRows;
         size_t                                  nCols;
+        mutable EigenSystem*                    eigensystem;
+        mutable bool                            needsUpdate;
+        
     };
     
     // Global functions using the class

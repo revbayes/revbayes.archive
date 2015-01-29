@@ -3,7 +3,10 @@
 
 using namespace RevBayesCore;
 
-VarianceCovarianceFunction::VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *sd, const TypedDagNode< RbVector<double> > *ce) : TypedFunction<MatrixRealSymmetric>( new MatrixRealSymmetric(sd->getValue().size()) ), standardDeviations( sd ), correlationCoefficients( ce ) {
+VarianceCovarianceFunction::VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *sd, const TypedDagNode< RbVector<double> > *ce) : TypedFunction<MatrixReal>( new MatrixReal(sd->getValue().size()) ),
+    standardDeviations( sd ),
+    correlationCoefficients( ce )
+{
 
     // check dimensions here
     // add the lambda parameter as a parent

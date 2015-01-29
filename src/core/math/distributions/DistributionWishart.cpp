@@ -6,16 +6,19 @@
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "DistributionWishart.h"
 
 
 #include <cmath>
+#include "DistributionMultivariateNormal.h"
 #include "DistributionWishart.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
 #include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
+
 
 using namespace RevBayesCore;
 
@@ -30,7 +33,7 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::Wishart::pdf(const MatrixRealSymmetric &omega0, size_t df, const MatrixRealSymmetric &z) {
+double RbStatistics::Wishart::pdf(const MatrixReal &omega0, size_t df, const MatrixReal &z) {
 	
     return exp(lnPdf(omega0,df,z));
 }
@@ -48,12 +51,14 @@ double RbStatistics::Wishart::pdf(const MatrixRealSymmetric &omega0, size_t df, 
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Wishart::lnPdf(const MatrixRealSymmetric &omega0, size_t df, const MatrixRealSymmetric &z) {
+double RbStatistics::Wishart::lnPdf(const MatrixReal &omega0, size_t df, const MatrixReal &z)
+{
     
-    omega0.update();
-    z.update();
-     
-    if (! z.isPositive())    {
+//    omega0.update();
+//    z.update();
+    
+    if (! z.isPositive() )
+    {
          return RbConstants::Double::neginf;
     }
     
@@ -63,10 +68,12 @@ double RbStatistics::Wishart::lnPdf(const MatrixRealSymmetric &omega0, size_t df
     
     double trace = 0;
     
-    const MatrixReal& inv = omega0.getInverse();
+    MatrixReal inv = omega0.computeInverse();
     
-    for (size_t i=0; i<omega0.getDim(); i++)   {
-        for (size_t j=0; j<omega0.getDim(); j++)   {
+    for (size_t i=0; i<omega0.getDim(); i++)
+    {
+        for (size_t j=0; j<omega0.getDim(); j++)
+        {
             trace += inv[i][j] * z[j][i];
         }
     }
@@ -89,18 +96,22 @@ double RbStatistics::Wishart::lnPdf(const MatrixRealSymmetric &omega0, size_t df
  * \return Returns a vector containing the Wishart random variable.
  * \throws Does not throw an error.
  */
-MatrixRealSymmetric RbStatistics::Wishart::rv(const MatrixRealSymmetric &omega0, size_t df, RandomNumberGenerator& rng) {
+MatrixReal RbStatistics::Wishart::rv(const MatrixReal &omega0, size_t df, RandomNumberGenerator& rng)
+{
 
-    omega0.update();
+//    omega0.update();
     
     size_t dim = omega0.getDim();
-    MatrixRealSymmetric z(dim);
-    std::vector<double> tmp(dim);
+    MatrixReal z(dim);
+    std::vector<double> mean = std::vector<double>(dim,0.0);
     
-    for (size_t k=0; k<df; k++)   {
-        omega0.drawNormalSampleCovariance(tmp);
-        for (size_t i=0; i<dim; i++)   {
-            for (size_t j=0; j<dim; j++)   {
+    for (size_t k=0; k<df; k++)
+    {
+        std::vector<double> tmp = RbStatistics::MultivariateNormal::rvCovariance(mean, omega0, rng);
+        for (size_t i=0; i<dim; i++)
+        {
+            for (size_t j=0; j<dim; j++)
+            {
                 z[i][j] += tmp[i] * tmp[j];
             }
         }
@@ -121,7 +132,7 @@ MatrixRealSymmetric RbStatistics::Wishart::rv(const MatrixRealSymmetric &omega0,
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::Wishart::pdf(double kappa, size_t df, const MatrixRealSymmetric &z) {
+double RbStatistics::Wishart::pdf(double kappa, size_t df, const MatrixReal &z) {
 	
     return exp(lnPdf(kappa,df,z));
 }
@@ -143,13 +154,14 @@ double RbStatistics::Wishart::pdf(double kappa, size_t df, const MatrixRealSymme
 // this log density is only up to a normalization factor that *does* depend on df
 // df is therefore assumed to be constant throughout
 
-double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixRealSymmetric &z) {
+double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixReal &z) {
 
     
-    z.update();
+//    z.update();
     size_t dim = z.getDim();
     
-    if (! z.isPositive())    {
+    if ( !z.isPositive() )
+    {
         return RbConstants::Double::neginf;
     }
     
@@ -159,7 +171,8 @@ double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixRealSym
     
     double trace = 0;
     
-    for (size_t i=0; i<dim; i++)   {
+    for (size_t i=0; i<dim; i++)
+    {
         trace += z[i][i];
     }
     trace /= kappa;
@@ -180,20 +193,25 @@ double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixRealSym
  * \return Returns a vector containing the Wishart random variable.
  * \throws Does not throw an error.
  */
-MatrixRealSymmetric RbStatistics::Wishart::rv(double kappa, size_t dim, size_t df, RandomNumberGenerator& rng) {
+MatrixReal RbStatistics::Wishart::rv(double kappa, size_t dim, size_t df, RandomNumberGenerator& rng)
+{
         
-    MatrixRealSymmetric z(dim);
+    MatrixReal z(dim);
     std::vector<double> tmp(dim);
 
     double sk = sqrt(kappa);
-    for (size_t k=0; k<df; k++)   {
+    for (size_t k=0; k<df; k++)
+    {
         
-        for (size_t i=0; i<dim; i++)  {
+        for (size_t i=0; i<dim; i++)
+        {
             tmp[i] = RbStatistics::Normal::rv(0, sk, rng);
         }
 
-        for (size_t i=0; i<dim; i++)   {
-            for (size_t j=0; j<dim; j++)   {
+        for (size_t i=0; i<dim; i++)
+        {
+            for (size_t j=0; j<dim; j++)
+            {
                 z[i][j] += tmp[i] * tmp[j];
             }
         }

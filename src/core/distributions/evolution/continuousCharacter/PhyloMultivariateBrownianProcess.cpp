@@ -11,6 +11,7 @@
 
 #include "ConstantNode.h"
 #include "DistributionNormal.h"
+#include "DistributionMultivariateNormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -23,7 +24,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-PhyloMultivariateBrownianProcess::PhyloMultivariateBrownianProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< MatrixRealSymmetric >* insigma) : TypedDistribution< RbVector< RbVector<double> > >( new RbVector< RbVector<double> >(0,insigma->getValue().getDim())),
+PhyloMultivariateBrownianProcess::PhyloMultivariateBrownianProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< MatrixReal >* insigma) : TypedDistribution< RbVector< RbVector<double> > >( new RbVector< RbVector<double> >(0,insigma->getValue().getDim())),
     tau( intau ),
     sigma( insigma ),
     dirtyNodes(intau->getValue().getNumberOfNodes(),true),
@@ -78,16 +79,18 @@ double PhyloMultivariateBrownianProcess::recursiveLnProb( const TopologyNode& fr
             size_t upindex = from.getParent().getIndex();
             std::vector<double> upval = (*value)[upindex];
 
-            const MatrixReal& om = sigma->getValue().getInverse();
+            MatrixReal* om = sigma->getValue().computeInverse();
 
             double s2 = 0;
             for (size_t i = 0; i < getDim(); i++) {
                 double tmp = 0;
                 for (size_t j = 0; j < getDim(); j++) {
-                    tmp += om[i][j] * (val[j] - upval[j]);
+                    tmp += (*om)[i][j] * (val[j] - upval[j]);
                 }
                 s2 += (val[i] - upval[i]) * tmp;
             }
+            
+            delete om;
 
             double logprob = 0;
             logprob -= 0.5 * s2 / from.getBranchLength();
@@ -136,8 +139,12 @@ void PhyloMultivariateBrownianProcess::recursiveSimulate(const TopologyNode& fro
         // x ~ normal(x_up, sigma^2 * branchLength)
 
         std::vector<double>& val = (*value)[index];
-                
-        sigma->getValue().drawNormalSampleCovariance((*value)[index]);
+        
+        
+        RandomNumberGenerator *rng = GLOBAL_RNG;
+        
+        val = RbStatistics::MultivariateNormal::rvCovariance( std::vector<double>(val.size(), 0.0), sigma->getValue(), *rng);
+//        sigma->getValue().drawNormalSampleCovariance((*value)[index]);
 
         size_t upindex = from.getParent().getIndex();
         std::vector<double>& upval = (*value)[upindex];
@@ -165,7 +172,7 @@ void PhyloMultivariateBrownianProcess::swapParameterInternal( const DagNode *old
     }
     
     if ( oldP == sigma ) {
-        sigma = static_cast< const TypedDagNode<MatrixRealSymmetric> * >( newP );
+        sigma = static_cast< const TypedDagNode<MatrixReal> * >( newP );
     }
 }
 

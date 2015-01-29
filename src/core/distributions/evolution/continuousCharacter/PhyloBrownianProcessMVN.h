@@ -2,7 +2,7 @@
 #define PhyloBrownianProcessMVN_H
 
 #include "AbstractPhyloBrownianProcess.h"
-#include "MatrixRealSymmetric.h"
+#include "MatrixReal.h"
 
 #include <vector>
 
@@ -301,7 +301,7 @@ double RevBayesCore::PhyloBrownianProcessMVN<treeType>::sumRootLikelihood( void 
         
         double sigma = this->computeSiteRate(site);
         MatrixReal tmp = phylogeneticCovarianceMatrix * (sigma*sigma);
-        MatrixRealSymmetric cov = MatrixRealSymmetric( tmp );
+        MatrixReal cov = MatrixReal( tmp );
         sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, cov, obs[site]);
     }
     

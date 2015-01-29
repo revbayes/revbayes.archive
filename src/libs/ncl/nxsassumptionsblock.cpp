@@ -1406,7 +1406,7 @@ void NxsAssumptionsBlock::HandleUserType(NxsToken& token)
 				cstreeform = true;
 			else if (token.Equals("NOTOKENS"))
 				GenerateNxsException(token, "NOTOKENS-style UserType are not supported");
-			else if (token.Equals("REALMATRIX"))
+			else if (token.Equals("MatrixReal"))
 				floatMat = true;
 			else if (token.Equals(";"))
 				{
@@ -1424,7 +1424,7 @@ void NxsAssumptionsBlock::HandleUserType(NxsToken& token)
 			}
 		token.GetNextToken();
 		}
-	if (token.Equals("STEPMATRIX") || token.Equals("REALMATRIX"))
+	if (token.Equals("STEPMATRIX") || token.Equals("MatrixReal"))
 		{
 		errormsg  << "UserType qualifier "<< token.GetTokenReference() << " should occur in parentheses ("<< token.GetTokenReference() <<") ";
 		nexusReader->NexusWarnToken(errormsg, NxsReader::DEPRECATED_WARNING, token);
