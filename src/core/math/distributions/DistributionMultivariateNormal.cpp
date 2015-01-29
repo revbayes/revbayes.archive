@@ -147,7 +147,7 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
     }
     
     size_t dim = x.size();
-    std::vector<double> tmp   = std::vector<double>(dim,0.0);
+    std::vector<double> tmp = std::vector<double>(dim,0.0);
     
     double s2 = 0;
     for (size_t i=0; i<dim; i++)

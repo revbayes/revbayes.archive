@@ -34,10 +34,10 @@ namespace RevBayesCore {
         
     protected:
         // virtual methods that may be overwritten, but then the derived class should call this methods
-//        virtual void                                                        keepSpecialization(DagNode* affecter);
+        virtual void                                                        keepSpecialization(DagNode* affecter);
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         void                                                                resetValue( void );
-//        virtual void                                                        restoreSpecialization(DagNode *restorer);
+        virtual void                                                        restoreSpecialization(DagNode *restorer);
         double                                                              sumRootLikelihood(void);
         virtual void                                                        touchSpecialization(DagNode *toucher);
        
@@ -53,7 +53,12 @@ namespace RevBayesCore {
         
         size_t                                                              numTips;
         std::vector<std::vector<double> >                                   obs;
-        MatrixReal                                                          phylogeneticCovarianceMatrix;
+        MatrixReal*                                                         phylogeneticCovarianceMatrix;
+        MatrixReal*                                                         storedPhylogeneticCovarianceMatrix;
+        MatrixReal                                                          inversePhylogeneticCovarianceMatrix;
+        bool                                                                changedCovariance;
+        bool                                                                needsCovarianceRecomputation;
+        bool                                                                needsScaleRecomputation;
     };
     
 }
@@ -78,7 +83,12 @@ RevBayesCore::PhyloBrownianProcessMVN<treeType>::PhyloBrownianProcessMVN(const T
     heterogeneousRootState( hetRS ),
     numTips( t->getValue().getNumberOfTips() ),
     obs( std::vector<std::vector<double> >(this->numSites, std::vector<double>(numTips, 0.0) ) ),
-    phylogeneticCovarianceMatrix( numTips, numTips )
+    phylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
+    storedPhylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
+    inversePhylogeneticCovarianceMatrix( numTips, numTips ),
+    changedCovariance(false),
+    needsCovarianceRecomputation( true ),
+    needsScaleRecomputation( true )
 {
     
     this->addParameter( homogeneousRootState );
@@ -119,9 +129,15 @@ double RevBayesCore::PhyloBrownianProcessMVN<treeType>::computeLnProbability( vo
     // we start with the root and then traverse down the tree
     size_t rootIndex = root.getIndex();
     
-    phylogeneticCovarianceMatrix = MatrixReal(numTips, numTips);
-    recursiveComputeCovarianceMatrix(phylogeneticCovarianceMatrix, root, rootIndex);
-        
+    if ( needsCovarianceRecomputation == true )
+    {
+        // perhaps there is a more efficient way to reset the matrix to 0.
+        phylogeneticCovarianceMatrix = new MatrixReal(numTips, numTips);
+        recursiveComputeCovarianceMatrix(*phylogeneticCovarianceMatrix, root, rootIndex);
+        needsCovarianceRecomputation = false;
+        inversePhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix->computeInverse();
+    }
+    
     // sum the partials up
     this->lnProb = sumRootLikelihood();
     
@@ -145,6 +161,19 @@ double RevBayesCore::PhyloBrownianProcessMVN<treeType>::computeRootState(size_t 
     }
     
     return rootState;
+}
+
+
+
+
+template<class treeType>
+void RevBayesCore::PhyloBrownianProcessMVN<treeType>::keepSpecialization( DagNode* affecter )
+{
+    
+    // reset the flags
+    changedCovariance = false;
+    needsCovarianceRecomputation = false;
+    
 }
 
 
@@ -188,7 +217,10 @@ void RevBayesCore::PhyloBrownianProcessMVN<treeType>::resetValue( void )
     }
     
     
-//    // finally we set all the flags for recomputation
+    // finally we set all the flags for recomputation
+    needsCovarianceRecomputation = true;
+    needsScaleRecomputation = true;
+    
 //    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
 //    {
 //        (*it) = true;
@@ -262,11 +294,22 @@ std::set<size_t> RevBayesCore::PhyloBrownianProcessMVN<treeType>::recursiveCompu
 
 
 
-//template<class treeType>
-//void RevBayesCore::PhyloBrownianProcessMVN<treeType>::restoreSpecialization( DagNode* affecter )
-//{
-//    
-//    // reset the flags
+template<class treeType>
+void RevBayesCore::PhyloBrownianProcessMVN<treeType>::restoreSpecialization( DagNode* affecter )
+{
+    
+    // reset the flags
+    if ( changedCovariance == true )
+    {
+        changedCovariance = false;
+        needsCovarianceRecomputation = false;
+        
+        MatrixReal *tmp = phylogeneticCovarianceMatrix;
+        phylogeneticCovarianceMatrix = storedPhylogeneticCovarianceMatrix;
+        storedPhylogeneticCovarianceMatrix = tmp;
+        
+    }
+    
 //    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
 //    {
 //        (*it) = false;
@@ -286,7 +329,7 @@ std::set<size_t> RevBayesCore::PhyloBrownianProcessMVN<treeType>::recursiveCompu
 //        changedNodes[index] = false;
 //    }
 //    
-//}
+}
 
 
 template<class treeType>
@@ -300,9 +343,8 @@ double RevBayesCore::PhyloBrownianProcessMVN<treeType>::sumRootLikelihood( void 
         std::vector<double> m = std::vector<double>(numTips, computeRootState(site) );
         
         double sigma = this->computeSiteRate(site);
-        MatrixReal tmp = phylogeneticCovarianceMatrix * (sigma*sigma);
-        MatrixReal cov = MatrixReal( tmp );
-        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, cov, obs[site]);
+//        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, *phylogeneticCovarianceMatrix, obs[site], sigma*sigma);
+        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfPrecision(m, inversePhylogeneticCovarianceMatrix, obs[site], sigma*sigma);
     }
     
     return sumPartialProbs;
@@ -326,9 +368,36 @@ void RevBayesCore::PhyloBrownianProcessMVN<treeType>::touchSpecialization( DagNo
         
         
     }
+    else if ( affecter == this->homogeneousClockRate )
+    {
+        needsCovarianceRecomputation = true;
+        if ( changedCovariance == false )
+        {
+            MatrixReal *tmp = phylogeneticCovarianceMatrix;
+            phylogeneticCovarianceMatrix = storedPhylogeneticCovarianceMatrix;
+            storedPhylogeneticCovarianceMatrix = tmp;
+        }
+        changedCovariance = true;
+        
+    }
     else if ( affecter == this->heterogeneousClockRates )
     {
+        needsCovarianceRecomputation = true;
+        if ( changedCovariance == false )
+        {
+            storedPhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix;
+        }
+        changedCovariance = true;
         
+    }
+    else if ( affecter == this->tau )
+    {
+        needsCovarianceRecomputation = true;
+        if ( changedCovariance == false )
+        {
+            storedPhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix;
+        }
+        changedCovariance = true;
         
     }
     else if ( affecter != this->tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
