@@ -1,6 +1,7 @@
 #include "MultivariateNormalDistribution.h"
 #include "DistributionMultivariateNormal.h"
 #include "RandomNumberFactory.h"
+#include "RbConstants.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
@@ -10,7 +11,9 @@ MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNod
     mean( m ),
     covariance( cov ),
     precision( prec),
-    scale( sc )
+    scale( sc ),
+    observed(mean->getValue().size(),false),
+    observations(mean->getValue().size(),0.0)
 {
     // make sure that only either the covariance or the precision matrix are set
     if ( covariance == NULL && precision == NULL )
@@ -47,8 +50,25 @@ MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) co
 }
 
 
+void MultivariateNormalDistribution::clampAt(size_t i, double v)
+{
+    observations[i] = v;
+    observed[i] = true;
+}
+
+
 double MultivariateNormalDistribution::computeLnProbability( void )
 {
+    size_t dim = observed.size();
+    bool matchesObservations = true;
+    for (size_t i = 0; i < dim; ++i)
+    {
+        matchesObservations &= ( !observed[i] || (*value)[i] == observations[i]);
+    }
+    if ( matchesObservations == false )
+    {
+        return RbConstants::Double::neginf;
+    }
     
     if ( covariance != NULL )
     {
@@ -74,7 +94,15 @@ void MultivariateNormalDistribution::redrawValue( void )
     {
         *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), covariance->getValue(), *rng, scale->getValue() );
     }
-
+    
+    size_t dim = observed.size();
+    for (size_t i = 0; i < dim; ++i)
+    {
+        if (observed[i] == true )
+        {
+            (*value)[i] = observations[i];
+        }
+    }
     
 }
 
