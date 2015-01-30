@@ -19,13 +19,20 @@
 using namespace RevBayesCore;
 
 
-MatrixRealSymmetricMove::MatrixRealSymmetricMove(StochasticNode<MatrixReal > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
+MatrixRealSymmetricMove::MatrixRealSymmetricMove(StochasticNode<MatrixReal > *v, double l, bool t, double w) : SimpleMove( v, w, t ),
+    variable(v),
+    lambda( l ),
+    storedValue( 0.0 ),
+    stored_i( 0 ),
+    stored_j( 0 )
+{
     
 }
 
 
 /** Clone object */
-MatrixRealSymmetricMove* MatrixRealSymmetricMove::clone( void ) const {
+MatrixRealSymmetricMove* MatrixRealSymmetricMove::clone( void ) const
+{
     
     return new MatrixRealSymmetricMove( *this );
 }
@@ -47,11 +54,14 @@ double MatrixRealSymmetricMove::performSimpleMove( void )
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     MatrixReal& mymat = variable->getValue();
-    storedValue = mymat;
     
     size_t dim = mymat.getDim();
     size_t indexa = size_t( rng->uniform01() * dim );
     size_t indexb = size_t( rng->uniform01() * dim );
+    
+    stored_i = indexa;
+    stored_j = indexb;
+    storedValue = mymat[stored_i][stored_j];
 
     double u = rng->uniform01();
     double m = lambda * (u - 0.5);
@@ -77,7 +87,7 @@ void MatrixRealSymmetricMove::printParameterSummary(std::ostream &o) const
 void MatrixRealSymmetricMove::rejectSimpleMove( void )
 {
  
-    variable->getValue() = storedValue;
+    variable->getValue()[stored_i][stored_j] = storedValue;
     variable->clearTouchedElementIndices();
 }
 

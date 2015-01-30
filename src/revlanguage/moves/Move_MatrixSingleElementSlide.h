@@ -24,7 +24,7 @@ namespace RevLanguage {
         Move_MatrixSingleElementSlide(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Move_MatrixSingleElementSlide*     clone(void) const;                                                      //!< Clone object
+        virtual Move_MatrixSingleElementSlide*      clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -36,10 +36,10 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                      v;
-        RevPtr<const RevVariable>                      lambda;
-        RevPtr<const RevVariable>                      weight;
-        RevPtr<const RevVariable>                      tune;
+        RevPtr<const RevVariable>                   v;
+        RevPtr<const RevVariable>                   lambda;
+        RevPtr<const RevVariable>                   weight;
+        RevPtr<const RevVariable>                   tune;
         
     };
     

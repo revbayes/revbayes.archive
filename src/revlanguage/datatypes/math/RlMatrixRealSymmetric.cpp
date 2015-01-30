@@ -92,7 +92,7 @@ const std::string& MatrixRealSymmetric::getClassType(void)
 const TypeSpec& MatrixRealSymmetric::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( MatrixReal::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }

@@ -41,7 +41,7 @@ namespace RevBayesCore {
         // public member functions
         MultivariateNormalDistribution*                     clone(void) const;
         
- 
+        void                                                clampAt(size_t i, double v);
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
 
@@ -57,6 +57,9 @@ namespace RevBayesCore {
         const TypedDagNode< MatrixReal >*                   precision;
         const TypedDagNode< double >*                       scale;
 
+        std::vector<bool>                                   observed;
+        std::vector<double>                                 observations;
+        
     };
     
 }
