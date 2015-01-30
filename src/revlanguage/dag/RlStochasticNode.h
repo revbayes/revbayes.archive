@@ -60,6 +60,14 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, Re
     ArgumentRules* unclampArgRules = new ArgumentRules();
     this->methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
     
+    // add the distribution member methods
+    RevMemberObject* mo = dynamic_cast<RevMemberObject*>( rlDistribution );
+    if ( mo != NULL)
+    {
+        const MethodTable &distMethods = mo->getMethods();
+        methods.insertInheritedMethods( distMethods );
+    }
+    
 }
 
 
@@ -94,6 +102,36 @@ RevLanguage::StochasticNode<valueType>* RevLanguage::StochasticNode<valueType>::
 template <typename valueType>
 RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    
+    // execute the distribution member methods
+    RevMemberObject* mo = dynamic_cast<RevMemberObject*>( rlDistribution );
+    if ( mo != NULL)
+    {
+        RevPtr<RevVariable> retVal = mo->executeMethod(name, args, found);
+        
+        if ( found == true )
+        {
+            return retVal;
+        }
+    }
+    
+    std::vector<RevBayesCore::DagNode*> distArgs;
+    for (size_t i = 0; i < args.size(); ++i)
+    {
+        try
+        {
+            distArgs.push_back( args[i].getVariable()->getRevObject().getDagNode() );
+        } catch ( ... )
+        {
+            // nothing to throw, just keep going
+        }
+    }
+    this->distribution->executeProcedure(name, distArgs, found);
+    if ( found == true )
+    {
+        return NULL;
+    }
+
     
     if (name == "clamp")
     {

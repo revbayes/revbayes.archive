@@ -41,13 +41,14 @@ namespace RevBayesCore {
         // public member functions
         MultivariateNormalDistribution*                     clone(void) const;
         
+        virtual void                                        executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
         void                                                clampAt(size_t i, double v);
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
 
     protected:
         // Parameter management functions
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                    //!< Swap a parameter
         
     private:
         

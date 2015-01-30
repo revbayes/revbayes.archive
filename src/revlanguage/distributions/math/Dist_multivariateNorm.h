@@ -33,6 +33,10 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
+        
+//        // Member method functions
+//        virtual RevPtr<RevVariable>                     executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
+//        virtual const MethodTable&                      getMethods(void) const;                                                                     //!< Get member methods
 
     
         // Distribution functions you have to override
