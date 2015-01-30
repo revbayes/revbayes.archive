@@ -2,6 +2,8 @@
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
 #include "Dist_multivariateNorm.h"
+#include "DistributionMemberFunction.h"
+#include "MemberProcedure.h"
 #include "MultivariateNormalDistribution.h"
 #include "ModelVector.h"
 #include "Real.h"
@@ -16,9 +18,17 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_multivariateNorm::Dist_multivariateNorm(void) : TypedDistribution<ModelVector<RevLanguage::Real> >()
+Dist_multivariateNorm::Dist_multivariateNorm(void) : TypedDistribution<ModelVector<Real> >()
 {
+
     
+    // member functions
+    ArgumentRules* clampAtArgRules = new ArgumentRules();
+    clampAtArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampAtArgRules->push_back( new ArgumentRule( "value", Real::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+//    methods.addFunction("clampAt", new DistributionMemberFunction<TimeTree,RealPos>(this, clampAtArgRules   ) );
+    methods.addFunction("clampAt", new MemberProcedure( RlUtils::Void, clampAtArgRules ) );
+
 }
 
 
@@ -76,9 +86,8 @@ Dist_multivariateNorm* Dist_multivariateNorm::clone( void ) const
     return new Dist_multivariateNorm(*this);
 }
 
-
 /**
- * Get Rev type of object 
+ * Get Rev type of object
  *
  * \return The class' name.
  */
