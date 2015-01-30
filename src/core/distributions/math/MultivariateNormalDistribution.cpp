@@ -92,7 +92,7 @@ void MultivariateNormalDistribution::redrawValue( void )
     }
     else
     {
-        *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), covariance->getValue(), *rng, scale->getValue() );
+        *value = RbStatistics::MultivariateNormal::rvPrecision( mean->getValue(), precision->getValue(), *rng, scale->getValue() );
     }
     
     size_t dim = observed.size();
