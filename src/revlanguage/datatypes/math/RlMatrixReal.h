@@ -47,9 +47,6 @@ namespace RevLanguage {
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
-
-        // Member object functions
-        virtual RevPtr<RevVariable>     executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
  
     };
 

@@ -8,7 +8,7 @@
 
 
 
-#include "MatrixRealSymmetricSimpleMove.h"
+#include "MatrixRealSymmetricSlideMove.h"
 #include "DistributionWishart.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -19,7 +19,7 @@
 using namespace RevBayesCore;
 
 
-MatrixRealSymmetricMove::MatrixRealSymmetricMove(StochasticNode<MatrixReal > *v, double l, bool t, double w) : SimpleMove( v, w, t ),
+MatrixRealSymmetricSlideMove::MatrixRealSymmetricSlideMove(StochasticNode<MatrixReal > *v, double l, bool t, double w) : SimpleMove( v, w, t ),
     variable(v),
     lambda( l ),
     storedValue( 0.0 ),
@@ -31,23 +31,23 @@ MatrixRealSymmetricMove::MatrixRealSymmetricMove(StochasticNode<MatrixReal > *v,
 
 
 /** Clone object */
-MatrixRealSymmetricMove* MatrixRealSymmetricMove::clone( void ) const
+MatrixRealSymmetricSlideMove* MatrixRealSymmetricSlideMove::clone( void ) const
 {
     
-    return new MatrixRealSymmetricMove( *this );
+    return new MatrixRealSymmetricSlideMove( *this );
 }
 
 
 
-const std::string& MatrixRealSymmetricMove::getMoveName( void ) const
+const std::string& MatrixRealSymmetricSlideMove::getMoveName( void ) const
 {
-    static std::string name = "MatrixRealSymmetricMove";
+    static std::string name = "MatrixRealSymmetricSlideMove";
     
     return name;
 }
 
 
-double MatrixRealSymmetricMove::performSimpleMove( void )
+double MatrixRealSymmetricSlideMove::performSimpleMove( void )
 {
     
     // Get random number generator
@@ -71,27 +71,27 @@ double MatrixRealSymmetricMove::performSimpleMove( void )
     return 0;   
 }
 
-void MatrixRealSymmetricMove::acceptSimpleMove()
+void MatrixRealSymmetricSlideMove::acceptSimpleMove()
 {
 
     variable->clearTouchedElementIndices();
     
 }
 
-void MatrixRealSymmetricMove::printParameterSummary(std::ostream &o) const
+void MatrixRealSymmetricSlideMove::printParameterSummary(std::ostream &o) const
 {
     o << "lambda = " << lambda;
 }
 
 
-void MatrixRealSymmetricMove::rejectSimpleMove( void )
+void MatrixRealSymmetricSlideMove::rejectSimpleMove( void )
 {
  
     variable->getValue()[stored_i][stored_j] = storedValue;
     variable->clearTouchedElementIndices();
 }
 
-void MatrixRealSymmetricMove::swapNode(DagNode *oldN, DagNode *newN)
+void MatrixRealSymmetricSlideMove::swapNode(DagNode *oldN, DagNode *newN)
 {
     // call the parent method
     
@@ -100,7 +100,7 @@ void MatrixRealSymmetricMove::swapNode(DagNode *oldN, DagNode *newN)
 }
 
 
-void MatrixRealSymmetricMove::tune( void )
+void MatrixRealSymmetricSlideMove::tune( void )
 {
     double rate = numAccepted / double(numTried);
     

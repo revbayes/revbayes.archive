@@ -33,13 +33,13 @@ namespace RevBayesCore {
      * @copyright GPL version 3
      *
      */
-    class MatrixRealSymmetricMove : public SimpleMove {
+    class MatrixRealSymmetricSlideMove : public SimpleMove {
         
     public:
-        MatrixRealSymmetricMove(StochasticNode<MatrixReal>* n, double l, bool t, double w);                         //!< Constructor
+        MatrixRealSymmetricSlideMove(StochasticNode<MatrixReal>* n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        MatrixRealSymmetricMove*                clone(void) const;                                                                  //!< Clone this object.
+        MatrixRealSymmetricSlideMove*           clone(void) const;                                                                  //!< Clone this object.
         const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
         void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         

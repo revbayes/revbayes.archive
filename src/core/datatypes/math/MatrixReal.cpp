@@ -10,6 +10,7 @@
 #include "MatrixReal.h"
 #include "RbException.h"
 #include "RbVector.h"
+#include "TypedDagNode.h"
 
 #include <cstring>
 #include <iomanip>
@@ -190,6 +191,23 @@ MatrixReal MatrixReal::computeInverse( void ) const
 MatrixReal* MatrixReal::clone(void) const
 {
      return new MatrixReal( *this );
+}
+
+
+void MatrixReal::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+{
+    
+    if ( n == "[]" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = elements[index];
+    }
+    
+    else
+    {
+        throw RbException("A matrix object does not have a member method called '" + n + "'.");
+    }
+    
 }
 
 
