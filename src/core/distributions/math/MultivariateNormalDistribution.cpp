@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "StochasticNode.h"
 
 using namespace RevBayesCore;
 
@@ -52,8 +53,12 @@ MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) co
 
 void MultivariateNormalDistribution::clampAt(size_t i, double v)
 {
+    (*value)[i] = v;
     observations[i] = v;
     observed[i] = true;
+    
+    // set the flag the this node is clamped
+    this->dagNode->setClamped( true );
 }
 
 
@@ -88,7 +93,7 @@ void MultivariateNormalDistribution::executeProcedure(const std::string &name, c
     {
         found = true;
         
-        int    index = static_cast<const TypedDagNode<int>   *>( args[0] )->getValue();
+        int    index = static_cast<const TypedDagNode<int>   *>( args[0] )->getValue() - 1;
         double v     = static_cast<const TypedDagNode<double>*>( args[1] )->getValue();
         
         clampAt(index, v);
