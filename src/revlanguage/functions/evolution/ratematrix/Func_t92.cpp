@@ -11,13 +11,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_t92::Func_t92( void ) : TypedFunction<RateMatrix>( ) {
+Func_t92::Func_t92( void ) : TypedFunction<RateMatrix>( )
+{
     
 }
 
 
 /** Clone object */
-Func_t92* Func_t92::clone( void ) const {
+Func_t92* Func_t92::clone( void ) const
+{
     
     return new Func_t92( *this );
 }
@@ -35,12 +37,14 @@ RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_t92::createFunctio
 
 
 /* Get argument rules */
-const ArgumentRules& Func_t92::getArgumentRules( void ) const {
+const ArgumentRules& Func_t92::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
         argumentRules.push_back( new ArgumentRule( "kappa" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "gc",     Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
@@ -52,7 +56,8 @@ const ArgumentRules& Func_t92::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_t92::getClassType(void) { 
+const std::string& Func_t92::getClassType(void)
+{
     
     static std::string revType = "Func_t92";
     
@@ -60,7 +65,8 @@ const std::string& Func_t92::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_t92::getClassTypeSpec(void) { 
+const TypeSpec& Func_t92::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -68,7 +74,8 @@ const TypeSpec& Func_t92::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_t92::getTypeSpec( void ) const {
+const TypeSpec& Func_t92::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

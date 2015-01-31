@@ -297,6 +297,7 @@
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
 #include "Func_blosum62.h"
+#include "Func_chromosomes.h"
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_f81.h"
@@ -304,16 +305,16 @@
 #include "Func_FreeK.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
-#include "Func_t92.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
+#include "Func_k80.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
 #include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
+#include "Func_t92.h"
 #include "Func_wag.h"
-#include "Func_chromosomes.h"
 
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
@@ -856,10 +857,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
         addFunction( "fnJones",    new Func_jones()   );
+        addFunction( "fnK80",      new Func_k80()     );
         addFunction( "fnMtMam",    new Func_mtMam()   );
         addFunction( "fnMtRev",    new Func_mtRev()   );
         addFunction( "fnPomo",     new Func_pomo()    );
         addFunction( "fnRtRev",    new Func_rtRev()   );
+        addFunction( "fnT92",      new Func_t92()     );
         addFunction( "fnVT",       new Func_vt()      );
         addFunction( "fnWAG",      new Func_wag()     );
         
