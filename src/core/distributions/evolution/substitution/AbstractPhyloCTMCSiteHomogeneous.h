@@ -1548,7 +1548,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRoot
     if ( f != NULL )
     {
         // set the value
-        //        branchHeterogeneousSubstitutionMatrices = true;
         rootFrequencies = f;
     }
     else

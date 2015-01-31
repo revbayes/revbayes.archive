@@ -19,6 +19,7 @@
 #define MatrixReal_H
 
 #include "Cloneable.h"
+#include "RbVector.h"
 
 #include <cstddef>
 #include <iostream>
@@ -41,8 +42,8 @@ namespace RevBayesCore {
         
         // overloaded operators
         MatrixReal&                             operator=(const MatrixReal& m);
-        std::vector<double>&                    operator[](size_t index);
-        const std::vector<double>&              operator[](size_t index) const;
+        RbVector<double>&                       operator[](size_t index);
+        const RbVector<double>&                 operator[](size_t index) const;
         
         // global operators
         MatrixReal&                             operator+=(double b);                                               //!< operator += for scalar 
@@ -60,10 +61,10 @@ namespace RevBayesCore {
         std::vector<double>                     operator*(const std::vector<double> &b) const;                                          //!< operator * for scalar 
         
 
-        std::vector<std::vector<double> >::const_iterator       begin(void) const;
-        std::vector<std::vector<double> >::iterator             begin(void);
-        std::vector<std::vector<double> >::const_iterator       end(void) const;
-        std::vector<std::vector<double> >::iterator             end(void);
+//        std::vector<std::vector<double> >::const_iterator       begin(void) const;
+//        std::vector<std::vector<double> >::iterator             begin(void);
+//        std::vector<std::vector<double> >::const_iterator       end(void) const;
+//        std::vector<std::vector<double> >::iterator             end(void);
         
         
         
@@ -89,7 +90,7 @@ namespace RevBayesCore {
         void                                    update(void) const;
         
         // members
-        std::vector<std::vector<double> >       elements;
+        RbVector<RbVector<double> >             elements;
         size_t                                  nRows;
         size_t                                  nCols;
         mutable EigenSystem*                    eigensystem;
