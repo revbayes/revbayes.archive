@@ -397,6 +397,7 @@
 #include "Func_diagonalMatrix.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
+#include "Func_hyperbolicTangent.h"
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_max.h"
@@ -1058,7 +1059,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "ceiling",     new Func_ceil<RealPos,Natural>()  );
         
         // diagonal matrix
-        addFunction("diag",         new Func_diagonalMatrix() );
+        addFunction( "diag",         new Func_diagonalMatrix() );
         
         // exponential function
         addFunction( "exp",         new Func_exp() );
@@ -1066,6 +1067,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		// floor function
         addFunction( "floor",       new Func_floor<Real,Integer>()  );
         addFunction( "floor",       new Func_floor<RealPos,Natural>()  );
+        
+        // hyperbolic tangent function
+        addFunction( "tanh",        new Func_hyperbolicTangent() );
         
         // natural log function
         addFunction( "ln",          new Func_ln()  );
