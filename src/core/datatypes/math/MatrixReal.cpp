@@ -9,6 +9,7 @@
 #include "EigenSystem.h"
 #include "MatrixReal.h"
 #include "RbException.h"
+#include "RbVector.h"
 
 #include <cstring>
 #include <iomanip>
@@ -16,7 +17,7 @@
 using namespace RevBayesCore;
 
 
-MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >() ),
+MatrixReal::MatrixReal( void ) : elements( RbVector<RbVector<double> >() ),
     nRows( 0 ),
     nCols( 0 ),
     eigensystem( NULL ),
@@ -26,7 +27,7 @@ MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >() )
 }
 
 
-MatrixReal::MatrixReal( size_t n ) : elements( std::vector<std::vector<double> >(n, std::vector<double>(n,0.0) ) ),
+MatrixReal::MatrixReal( size_t n ) : elements( RbVector<RbVector<double> >(n, RbVector<double>(n,0.0) ) ),
     nRows( n ),
     nCols( n ),
     eigensystem( NULL ),
@@ -36,7 +37,7 @@ MatrixReal::MatrixReal( size_t n ) : elements( std::vector<std::vector<double> >
 }
 
 
-MatrixReal::MatrixReal( size_t n, size_t k) : elements( std::vector<std::vector<double> >(n, std::vector<double>(k,0.0) ) ),
+MatrixReal::MatrixReal( size_t n, size_t k) : elements( RbVector<RbVector<double> >(n, RbVector<double>(k,0.0) ) ),
     nRows( n ),
     nCols( k ),
     eigensystem( NULL ),
@@ -47,7 +48,7 @@ MatrixReal::MatrixReal( size_t n, size_t k) : elements( std::vector<std::vector<
 
 
 MatrixReal::MatrixReal( size_t n, size_t k, double v) :
-    elements( std::vector<std::vector<double> >(n, std::vector<double>(k,v) ) ),
+    elements( RbVector<RbVector<double> >(n, RbVector<double>(k,v) ) ),
     nRows( n ),
     nCols( k ),
     eigensystem( NULL ),
@@ -89,7 +90,7 @@ MatrixReal& MatrixReal::operator=(const MatrixReal &m)
 }
 
 
-std::vector<double>& MatrixReal::operator[]( size_t index )
+RbVector<double>& MatrixReal::operator[]( size_t index )
 {
     // to be safe
     eigenNeedsUpdate = true;
@@ -99,46 +100,46 @@ std::vector<double>& MatrixReal::operator[]( size_t index )
 
 
 
-const std::vector<double>& MatrixReal::operator[]( size_t index ) const
+const RbVector<double>& MatrixReal::operator[]( size_t index ) const
 {
     return elements[index];
 }
 
 
-std::vector<std::vector<double> >::const_iterator MatrixReal::begin( void ) const
-{
-    // to be safe
-    eigenNeedsUpdate = true;
-    
-    return elements.begin();
-}
-
-
-std::vector<std::vector<double> >::iterator MatrixReal::begin( void )
-{
-    // to be safe
-    eigenNeedsUpdate = true;
-    
-    return elements.begin();
-}
-
-
-std::vector<std::vector<double> >::const_iterator MatrixReal::end( void ) const
-{
-    // to be safe
-    eigenNeedsUpdate = true;
-    
-    return elements.end();
-}
-
-
-std::vector<std::vector<double> >::iterator MatrixReal::end( void )
-{
-    // to be safe
-    eigenNeedsUpdate = true;
-    
-    return elements.end();
-}
+//std::vector<std::vector<double> >::const_iterator MatrixReal::begin( void ) const
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator MatrixReal::begin( void )
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::const_iterator MatrixReal::end( void ) const
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.end();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator MatrixReal::end( void )
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.end();
+//}
 
 
 void MatrixReal::clear( void )
@@ -241,16 +242,16 @@ double MatrixReal::getLogDet() const
         {
             tot += log(eigenval[i]);
         }
-        if (std::isnan(tot))
-        {
-            std::cerr << "in MatrixReal::getLogDet(): nan\n";
-            std::cerr << "eigen values:\n";
-            for (size_t i=0; i<nRows; i++)
-            {
-                std::cerr << eigenval[i] << '\n';
-            }
-            RbException("Problem when computing log-determinant.");
-        }
+//        if (std::isnan(tot))
+//        {
+//            std::cerr << "in MatrixReal::getLogDet(): nan\n";
+//            std::cerr << "eigen values:\n";
+//            for (size_t i=0; i<nRows; i++)
+//            {
+//                std::cerr << eigenval[i] << '\n';
+//            }
+//            RbException("Problem when computing log-determinant.");
+//        }
         return tot;
     }
     
@@ -387,7 +388,7 @@ bool MatrixReal::isSquareMatrix( void ) const
 void MatrixReal::resize(size_t r, size_t c)
 {
     
-    elements = std::vector<std::vector<double> >(r, std::vector<double>(c,0.0) );
+    elements = RbVector<RbVector<double> >(r, RbVector<double>(c,0.0) );
     
     nRows = r;
     nCols = c;

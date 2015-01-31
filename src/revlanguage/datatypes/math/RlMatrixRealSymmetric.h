@@ -15,6 +15,21 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the symmetrix matrix real.
+     *
+     * The RevLanguage wrapper of the symmetric matrix real simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal move object can be constructed and hooked up
+     * in a DAG-nove (variable) that it works on.
+     * See the SymmetricMatrixReal.h for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Nicolas Lartillot and Sebastian Hoehna)
+     * @since 2014-03-27, version 1.0
+     *
+     */
     class MatrixRealSymmetric : public MatrixReal  {
         
     public:
