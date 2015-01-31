@@ -480,7 +480,7 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
 
 /**
  * Set directly the flag whether this node is clamped.
- * The caller needs to be responsible enough to know that we will assume 
+ * The caller needs to be responsible enough to know that we will assume
  * that the current value is the observed value.
  * We could use instead as well a call: clamp( getValue() );
  */
@@ -489,6 +489,25 @@ void RevBayesCore::StochasticNode<valueType>::setClamped(bool tf)
 {
     
     clamped = tf;
+    
+}
+
+
+
+/**
+ * Set the value.
+ */
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch)
+{
+    // set the value
+    distribution->setValue( val );
+    
+    if ( forceTouch )
+    {
+        // touch this node for probability recalculation
+        this->touch();
+    }
     
 }
 
