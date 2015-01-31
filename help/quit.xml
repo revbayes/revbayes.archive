@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>quit</name>
+
+        <alias>q</alias>
+
+        <title>Quit RevBayes</title>
+    
+        <description>
+            <p>
+            Terminates the currently running instance of RevBayes.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             quit()
+             ]]> 
+        </usage>
+    
+
+        <returnValue>void</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+                Quits RevBayes. All the current variables in the workspace will be lost.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+                # if you really want to quit
+                q()
+                # you can always start again later ...
+             ]]>
+
+        </example>
+
+        <author>Sebastian Hoehna</author>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+
