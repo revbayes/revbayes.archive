@@ -1,12 +1,12 @@
 //
-//  Move_MatrixRealSymmetricSimple.cpp
+//  Move_MatrixRealSymmetricSlide.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-28.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "Move_MatrixRealSymmetricSimple.h"
+#include "Move_MatrixRealSymmetricSlide.h"
 
 
 #include "ArgumentRule.h"
@@ -19,7 +19,7 @@
 #include "RevObject.h"
 #include "RlBoolean.h"
 #include "MatrixReal.h"
-#include "MatrixRealSymmetricSimpleMove.h"
+#include "MatrixRealSymmetricSlideMove.h"
 #include "RlMatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -27,18 +27,20 @@
 
 using namespace RevLanguage;
 
-Move_MatrixRealSymmetricSimple::Move_MatrixRealSymmetricSimple() : Move() {
+Move_MatrixRealSymmetricSlide::Move_MatrixRealSymmetricSlide() : Move()
+{
     
 }
 
 /** Clone object */
-Move_MatrixRealSymmetricSimple* Move_MatrixRealSymmetricSimple::clone(void) const {
+Move_MatrixRealSymmetricSlide* Move_MatrixRealSymmetricSlide::clone(void) const
+{
     
-	return new Move_MatrixRealSymmetricSimple(*this);
+	return new Move_MatrixRealSymmetricSlide(*this);
 }
 
 
-void Move_MatrixRealSymmetricSimple::constructInternalObject( void )
+void Move_MatrixRealSymmetricSlide::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -49,22 +51,22 @@ void Move_MatrixRealSymmetricSimple::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* tmp = static_cast<const MatrixRealSymmetric &>( mat->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    value = new RevBayesCore::MatrixRealSymmetricMove(matrix, l, t, w);
+    value = new RevBayesCore::MatrixRealSymmetricSlideMove(matrix, l, t, w);
         
 }
 
 
 /** Get class name of object */
-const std::string& Move_MatrixRealSymmetricSimple::getClassType(void)
+const std::string& Move_MatrixRealSymmetricSlide::getClassType(void)
 {
     
-    static std::string revClassType = "Move_MatrixRealSymmetricMove";
+    static std::string revClassType = "Move_MatrixRealSymmetricSlideMove";
     
 	return revClassType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_MatrixRealSymmetricSimple::getClassTypeSpec(void)
+const TypeSpec& Move_MatrixRealSymmetricSlide::getClassTypeSpec(void)
 {
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -75,7 +77,7 @@ const TypeSpec& Move_MatrixRealSymmetricSimple::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_MatrixRealSymmetricSimple::getParameterRules(void) const
+const MemberRules& Move_MatrixRealSymmetricSlide::getParameterRules(void) const
 {
     
     static MemberRules moveMemberRules;
@@ -99,7 +101,7 @@ const MemberRules& Move_MatrixRealSymmetricSimple::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_MatrixRealSymmetricSimple::getTypeSpec( void ) const
+const TypeSpec& Move_MatrixRealSymmetricSlide::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -109,10 +111,10 @@ const TypeSpec& Move_MatrixRealSymmetricSimple::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_MatrixRealSymmetricSimple::printValue(std::ostream &o) const
+void Move_MatrixRealSymmetricSlide::printValue(std::ostream &o) const
 {
     
-    o << "Move_MatrixRealSymmetricSimple(";
+    o << "Move_MatrixRealSymmetricSlide(";
     if (mat != NULL)
     {
         o << mat->getName();
@@ -126,7 +128,7 @@ void Move_MatrixRealSymmetricSimple::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_MatrixRealSymmetricSimple::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_MatrixRealSymmetricSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         mat = var;

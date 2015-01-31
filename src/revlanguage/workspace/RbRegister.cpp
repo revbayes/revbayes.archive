@@ -133,7 +133,7 @@
 
 
 ///* Moves on covariance matrices */
-#include "Move_MatrixRealSymmetricSimple.h"
+#include "Move_MatrixRealSymmetricSlide.h"
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
@@ -549,7 +549,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_MatrixRealSymmetricSimple() );
+        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );

@@ -19,6 +19,7 @@
 #define MatrixReal_H
 
 #include "Cloneable.h"
+#include "MemberObject.h"
 #include "RbVector.h"
 
 #include <cstddef>
@@ -29,7 +30,7 @@ namespace RevBayesCore {
     
     class EigenSystem;
     
-    class MatrixReal : public Cloneable {
+    class MatrixReal : public Cloneable, public MemberObject<RbVector<double> > {
         
     public:
         MatrixReal(void);                       //!< Default constructor required by revlanguage use of this class
@@ -72,6 +73,7 @@ namespace RevBayesCore {
         void                                    clear(void);
         MatrixReal*                             clone(void) const;
         MatrixReal                              computeInverse(void) const;
+        void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;        //!< Map the member methods to internal function calls
         size_t                                  getDim() const;
         EigenSystem&                            getEigenSystem(void);
         const EigenSystem&                      getEigenSystem(void) const ;
