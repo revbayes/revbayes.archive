@@ -66,9 +66,12 @@ double MatrixRealSymmetricSlideMove::performSimpleMove( void )
     double u = rng->uniform01();
     double m = lambda * (u - 0.5);
     mymat[indexa][indexb] += m;
-    mymat[indexb][indexa] = mymat[indexa][indexb];
-        
-    return 0;   
+    if ( indexa != indexb )
+    {
+        mymat[indexb][indexa] = mymat[indexa][indexb];
+    }
+    
+    return 0;
 }
 
 void MatrixRealSymmetricSlideMove::acceptSimpleMove()
@@ -88,6 +91,7 @@ void MatrixRealSymmetricSlideMove::rejectSimpleMove( void )
 {
  
     variable->getValue()[stored_i][stored_j] = storedValue;
+    variable->getValue()[stored_j][stored_i] = storedValue;
     variable->clearTouchedElementIndices();
 }
 

@@ -154,11 +154,12 @@ double RbStatistics::Wishart::pdf(double kappa, size_t df, const MatrixReal &z) 
 // this log density is only up to a normalization factor that *does* depend on df
 // df is therefore assumed to be constant throughout
 
-double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixReal &z) {
+double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixReal &z)
+{
 
     
 //    z.update();
-    size_t dim = z.getDim();
+    int dim = int(z.getDim());
     
     if ( !z.isPositive() )
     {
@@ -167,7 +168,8 @@ double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixReal &z
     
     double ret = 0;
     ret -= 0.5 * df * dim * log(kappa);
-    ret += 0.5 * (df - dim - 1) * z.getLogDet();
+    double logDet = z.getLogDet();
+    ret += 0.5 * (int(df) - dim - 1) * logDet;
     
     double trace = 0;
     
