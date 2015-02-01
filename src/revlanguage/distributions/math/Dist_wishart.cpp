@@ -38,7 +38,8 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
         om = static_cast<const MatrixRealSymmetric &>( omega->getRevObject() ).getDagNode();
     }
      */
-    if (kappa != NULL)  {
+    if (kappa != NULL)
+    {
         ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
     }
     
@@ -46,13 +47,14 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
 
     RevBayesCore::TypedDagNode<int>* dm = NULL;
 //    int dm = -1;
-    if (dim != NULL)    {
+    if (dim != NULL)
+    {
         dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
 //        dm = static_cast<const Natural &>( dim->getValue()).getValue();
     }
-    RevBayesCore::WishartDistribution* w    =  0;
+    RevBayesCore::WishartDistribution* w    =  NULL;
     
-    if (om != NULL )
+    if ( om != NULL )
     {
             w = new RevBayesCore::WishartDistribution( om, deg );
     }
@@ -146,19 +148,24 @@ void Dist_wishart::printValue(std::ostream& o) const {
 /** Set a member variable */
 void Dist_wishart::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "omega" ) {
+    if ( name == "omega" )
+    {
 //        omega = var;
     }
-    else if ( name == "kappa" ) {
+    else if ( name == "kappa" )
+    {
         kappa = var;
     }
-    else if ( name == "df" ) {
+    else if ( name == "df" )
+    {
         df = var;
     }
-    else if ( name == "dim" ) {
+    else if ( name == "dim" )
+    {
         dim = var;
     }
-    else {
+    else
+    {
         Distribution::setConstParameter(name, var);
     }
 }

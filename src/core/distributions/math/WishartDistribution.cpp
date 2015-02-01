@@ -19,10 +19,11 @@ using namespace RevBayesCore;
 
 WishartDistribution::WishartDistribution(const TypedDagNode<MatrixReal> *inomega0, const TypedDagNode<int>* indf)  :
 TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal(inomega0->getValue().getDim())),
-omega0(inomega0),
-kappa(NULL),
-df(indf),
-dim( NULL )  {
+    omega0(inomega0),
+    kappa(NULL),
+    df(indf),
+    dim( NULL )
+{
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
@@ -42,7 +43,7 @@ TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal( size_t(indim->getVal
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( inkappa );
+    addParameter( kappa );
     addParameter( df );
     addParameter( dim );
     

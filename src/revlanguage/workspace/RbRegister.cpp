@@ -546,10 +546,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
         
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
+        addTypeWithConstructor("mvMatrixElementSlide",          new Move_MatrixSingleElementSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_MatrixRealSymmetricSlide() );
+        addTypeWithConstructor("mvSymmetricMatrixElementSlide", new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
