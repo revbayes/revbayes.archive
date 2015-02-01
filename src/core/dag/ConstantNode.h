@@ -116,7 +116,9 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
         }
         else
         {
+            /*
             std::cerr << "Cloning a DAG node with name '" << this->name << "' again, doh!" << std::endl;
+             */
         }
     }
     

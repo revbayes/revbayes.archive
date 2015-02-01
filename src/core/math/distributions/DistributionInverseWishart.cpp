@@ -50,9 +50,6 @@ double RbStatistics::InverseWishart::pdf(const MatrixReal &sigma0, size_t df, co
 double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, const MatrixReal &z)
 {
     
-//    sigma0.update();
-//    z.update();
-    
     if ( !z.isPositive() )
     {
         return RbConstants::Double::neginf;
@@ -97,8 +94,8 @@ MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df,
     
     size_t dim = sigma0.getDim();
         
-    MatrixReal z(dim);
-    std::vector<double> mean(dim, 0.0);
+    MatrixReal z = MatrixReal(dim);
+    std::vector<double> mean = std::vector<double>(dim, 0.0);
     
     for (size_t k=0; k<df; k++)
     {
@@ -156,7 +153,7 @@ double RbStatistics::InverseWishart::lnPdf(const std::vector<double>& kappa, siz
     
     size_t dim = z.getDim();
     
-    if (! z.isPositive())
+    if ( z.isPositive() == false )
     {
         return RbConstants::Double::neginf;
     }
@@ -298,7 +295,7 @@ MatrixReal RbStatistics::InverseWishart::rv(double kappa, size_t dim, size_t df,
 {
 
     MatrixReal z(dim);
-    std::vector<double> tmp(dim);
+    std::vector<double> tmp = std::vector<double>(dim,0.0);
     
     double sk = 1.0 / sqrt(kappa);
     for (size_t k=0; k<df; k++)

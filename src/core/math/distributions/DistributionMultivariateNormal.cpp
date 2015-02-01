@@ -86,8 +86,8 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
     // draw the normal variate in eigen basis
     for (size_t i=0; i<dim; i++)
     {
-        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
-//        w[i] = RbStatistics::Normal::rv(0, sqrtScale * sqrt(eigen[i]), rng);
+//        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+        w[i] = RbStatistics::Normal::rv(0, sqrtScale * sqrt(eigen[i]), rng);
     }
     
     // get the eigenvector

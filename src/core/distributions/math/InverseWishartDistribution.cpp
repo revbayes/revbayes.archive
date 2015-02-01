@@ -77,41 +77,57 @@ InverseWishartDistribution* InverseWishartDistribution::clone(void) const   {
 
 
 void InverseWishartDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == sigma0) {
+    
+    if (oldP == sigma0)
+    {
         sigma0 = static_cast<const TypedDagNode<MatrixReal>* >( newP );
     }
-    if (oldP == kappaVector)  {
+    
+    if (oldP == kappaVector)
+    {
         kappaVector = static_cast<const TypedDagNode<RbVector<double> >* >(newP);
     }
-    if (oldP == kappa)  {
+    
+    if (oldP == kappa)
+    {
         kappa = static_cast<const TypedDagNode<double>* >(newP);
     }
-    if (oldP == dim)    {
+    
+    if (oldP == dim)
+    {
         dim = static_cast<const TypedDagNode<int>* >(newP);
     }
-    if (oldP == df)    {
+    
+    if (oldP == df)
+    {
         df = static_cast<const TypedDagNode<int>* >(newP);
     }
+    
 }
 
 
-double InverseWishartDistribution::computeLnProbability(void)  {
+double InverseWishartDistribution::computeLnProbability(void)
+{
     
     double ret = 0;
     
-    if (sigma0) {    
+    if ( sigma0 != NULL )
+    {
         ret = RbStatistics::InverseWishart::lnPdf(sigma0->getValue(),df->getValue(),getValue());
     }
-    else if (kappaVector)    {
+    else if ( kappaVector != NULL )
+    {
         ret = RbStatistics::InverseWishart::lnPdf(kappaVector->getValue(),df->getValue(),getValue());        
     }
-    else if (kappa)  {
+    else if ( kappa != NULL )
+    {
         ret = RbStatistics::InverseWishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
     }
-    else    {
-        std::cerr << "error in inverse wishart: no parameter\n";
-        throw(0);
+    else
+    {
+        throw RbException("error in inverse wishart: no parameter.");
     }
+    
     return ret;
 }
 

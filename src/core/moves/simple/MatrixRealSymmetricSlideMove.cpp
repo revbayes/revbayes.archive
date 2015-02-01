@@ -22,9 +22,9 @@ using namespace RevBayesCore;
 MatrixRealSymmetricSlideMove::MatrixRealSymmetricSlideMove(StochasticNode<MatrixReal > *v, double l, bool t, double w) : SimpleMove( v, w, t ),
     variable(v),
     lambda( l ),
-    storedValue( 0.0 ),
     stored_i( 0 ),
-    stored_j( 0 )
+    stored_j( 0 ),
+    storedValue( 0.0 )
 {
     
 }

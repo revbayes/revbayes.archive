@@ -28,7 +28,8 @@ Dist_inverseWishart* Dist_inverseWishart::clone( void ) const
 }
 
 
-RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistribution( void ) const {
+RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistribution( void ) const
+{
     
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sg = NULL;
@@ -38,47 +39,48 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
     RevBayesCore::TypedDagNode<int>* dm = NULL;
     
     if ( sigma->getRevObject() != RevNullObject::getInstance() )
-        {
+    {
         sg = static_cast<const MatrixRealSymmetric &>( sigma->getRevObject() ).getDagNode();
-        }
+    }
     
     if ( diagonal->getRevObject() != RevNullObject::getInstance() )
-        {
+    {
         dv = static_cast<const ModelVector<RealPos> &>( diagonal->getRevObject() ).getDagNode();
-        }
+    }
     
     if ( kappa->getRevObject() != RevNullObject::getInstance() )
-        {
+    {
         ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
-        }
+    }
     
     if ( df->getRevObject() != RevNullObject::getInstance() )
-        {
-            deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
-        }
+    {
+        deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
+    }
 
     if ( dim->getRevObject() != RevNullObject::getInstance() )
-        {
+    {
         dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
-        }
+    }
     
     RevBayesCore::InverseWishartDistribution* w =  NULL;
 
     if ( sg != NULL && sg->getValue().getDim() != 0 )
-        {
+    {
         // parameter is sigma
         w = new RevBayesCore::InverseWishartDistribution( sg, deg );
-        }
+    }
     else if (dm == NULL || dm->getValue() == 0)
-        {
+    {
         // parameter is Diagonal(kappaVector))
         w = new RevBayesCore::InverseWishartDistribution( dv, deg );
-        }
+    }
     else
-        {
+    {
         // parameter is kappa * Id
         w = new RevBayesCore::InverseWishartDistribution( dm, ka, deg );
-        }
+    }
+    
     return w;
 }
 

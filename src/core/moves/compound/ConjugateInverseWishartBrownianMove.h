@@ -1,5 +1,5 @@
-#ifndef RateAgeBetaShift_H
-#define RateAgeBetaShift_H
+#ifndef ConjugateInverseWishartBrownianMove_H
+#define ConjugateInverseWishartBrownianMove_H
 
 #include <map>
 #include <ostream>
@@ -7,23 +7,24 @@
 #include <string>
 
 #include "AbstractMove.h"
+#include "MatrixReal.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
 
 namespace RevBayesCore {
     
-    class RateAgeBetaShift : public AbstractMove {
+    class ConjugateInverseWishartBrownianMove : public AbstractMove {
         
     public:
-        RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
-        RateAgeBetaShift(const RateAgeBetaShift &m);                                                                                //!< Copy constructor
-        virtual                                ~RateAgeBetaShift(void);                                                             //!< Destructor
+        ConjugateInverseWishartBrownianMove(StochasticNode<MatrixReal>* s, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                                                         //!<  constructor
+        ConjugateInverseWishartBrownianMove(const ConjugateInverseWishartBrownianMove &m);                                                                                //!< Copy constructor
+        virtual                                ~ConjugateInverseWishartBrownianMove(void);                                                             //!< Destructor
         
         // overloaded operators
-        RateAgeBetaShift&                       operator=(const RateAgeBetaShift &m);                                               //!< Assignment operator
+        ConjugateInverseWishartBrownianMove&    operator=(const ConjugateInverseWishartBrownianMove &m);                                               //!< Assignment operator
         
         // Basic utility functions
-        RateAgeBetaShift*                       clone(void) const;                                                                  //!< Clone object
+        ConjugateInverseWishartBrownianMove*    clone(void) const;                                                                  //!< Clone object
         const std::set<DagNode*>&               getDagNodes(void) const;
         const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
@@ -38,14 +39,9 @@ namespace RevBayesCore {
         void                                    reject(void);
         
         // member variables
-        StochasticNode<TimeTree>*               tree;
-        std::vector<StochasticNode<double>* >   rates;
-        double                                  delta;
-        
-        // stored objects to undo proposal
-        TopologyNode*                           storedNode;
-        double                                  storedAge;
-        std::vector<double>                     storedRates;
+        StochasticNode<MatrixReal>*             sigma;
+        TypedDagNode<double>*                   kappa;
+        TypedDagNode<int>*                      df;
         
         std::set<DagNode*>                      nodes;
         size_t                                  numAccepted;

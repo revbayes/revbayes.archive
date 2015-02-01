@@ -65,6 +65,37 @@ size_t RbSettings::getLineWidth( void ) const
 }
 
 
+std::string RbSettings::getOption(const std::string &key) const
+{
+    if ( key == "helpdir" )
+    {
+        return helpDir;
+    }
+    else if ( key == "moduledir" )
+    {
+        return moduleDir;
+    }
+    else if ( key == "printNodeIndex" )
+    {
+        return printNodeIndex ? "TRUE" : "FALSE";
+    }
+    else if ( key == "tolerance" )
+    {
+        return StringUtilities::to_string(tolerance);
+    }
+    else if ( key == "linewidth" )
+    {
+        return StringUtilities::to_string(lineWidth);
+    }
+    else
+    {
+        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+    }
+    
+    return "";
+}
+
+
 bool RbSettings::getPrintNodeIndex( void ) const
 {
     // return the internal value
