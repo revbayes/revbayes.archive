@@ -257,10 +257,12 @@ void PowerPosteriorAnalysis::summarizeStones( void )
     {
         RbFileManager fm = RbFileManager(filename);
         std::string stoneFileName = fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
+        
+        RbFileManager f = RbFileManager(fm.getFilePath(), stoneFileName);
 
         // read the i-th stone
         std::ifstream inStream;
-        inStream.open( stoneFileName.c_str(), std::fstream::in);
+        inStream.open( f.getFullFileName().c_str(), std::fstream::in);
         if (inStream.is_open())
         {
             bool header = true;
