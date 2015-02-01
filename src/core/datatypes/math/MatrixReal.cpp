@@ -492,14 +492,19 @@ MatrixReal operator-(const MatrixReal& A) {
     
 	MatrixReal B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
+        {
 			B[i][j] = -B[i][j];
+        }
+    }
+    
 	return B;
 }
 
 
 /**
- * This function performs subtraction of a scalar from
+ * This function performs addition of a scalar from
  * each element of a matrix and returns the
  * resulting matrix.
  *
@@ -508,7 +513,8 @@ MatrixReal operator-(const MatrixReal& A) {
  * @param b Scalar
  * @return A - b
  */
-MatrixReal MatrixReal::operator+(double b) const {
+MatrixReal MatrixReal::operator+(double b) const
+{
     
 	MatrixReal B = MatrixReal(*this);
     B += b;
@@ -527,7 +533,8 @@ MatrixReal MatrixReal::operator+(double b) const {
  * @param b Scalar
  * @return A - b
  */
-MatrixReal MatrixReal::operator-(double b) const {
+MatrixReal MatrixReal::operator-(double b) const
+{
     
 	MatrixReal B = *this;
     B -= b;
@@ -537,7 +544,7 @@ MatrixReal MatrixReal::operator-(double b) const {
 
 
 /**
- * This function performs subtraction of a scalar from
+ * This function performs multiplication of a scalar from
  * each element of a matrix and returns the
  * resulting matrix.
  *
@@ -565,12 +572,18 @@ MatrixReal MatrixReal::operator*(double b) const
  * @param b Scalar
  * @return A * b
  */
-MatrixReal operator*(const MatrixReal& A, double b) {
+MatrixReal operator*(const MatrixReal& A, double b)
+{
     
 	MatrixReal B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
+        {
 			B[i][j] = A[i][j] * b;
+        }
+    }
+    
 	return B;
 }
 
@@ -584,12 +597,18 @@ MatrixReal operator*(const MatrixReal& A, double b) {
  * @param b Scalar
  * @return A / b
  */
-MatrixReal operator/(const MatrixReal& A, double b) {
+MatrixReal operator/(const MatrixReal& A, double b)
+{
     
 	MatrixReal B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
+        {
 			B[i][j] = A[i][j] / b;
+        }
+    }
+    
 	return B;
 }
 
@@ -603,12 +622,18 @@ MatrixReal operator/(const MatrixReal& A, double b) {
  * @param B Matrix
  * @return a + B
  */
-MatrixReal operator+(double a, const MatrixReal& B) {
+MatrixReal operator+(double a, const MatrixReal& B)
+{
     
 	MatrixReal A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
+        {
 			A[i][j] = a + B[i][j];
+        }
+    }
+    
 	return A;
 }
 
@@ -812,11 +837,16 @@ MatrixReal& MatrixReal::operator*=(double b)
  * @param b Scalar
  * @return A /= b
  */
-MatrixReal& operator/=(MatrixReal& A, double b) {
+MatrixReal& operator/=(MatrixReal& A, double b)
+{
     
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
+        {
 			A[i][j] /= b;
+        }
+    }
     
 	return A;
 }
@@ -831,7 +861,8 @@ MatrixReal& operator/=(MatrixReal& A, double b) {
  * @param B Matrix 2
  * @return A + B, null matrix on failure
  */
-MatrixReal MatrixReal::operator+(const MatrixReal& B) const {
+MatrixReal MatrixReal::operator+(const MatrixReal& B) const
+{
     
     MatrixReal A = MatrixReal(*this);
     A += B;
@@ -849,7 +880,8 @@ MatrixReal MatrixReal::operator+(const MatrixReal& B) const {
  * @param B Matrix 2
  * @return A - B, null matrix on failure
  */
-MatrixReal MatrixReal::operator-(const MatrixReal& B) const {
+MatrixReal MatrixReal::operator-(const MatrixReal& B) const
+{
     
 	MatrixReal A = *this;
     A -= B;
@@ -871,7 +903,8 @@ MatrixReal MatrixReal::operator-(const MatrixReal& B) const {
  * @param B An (n X k) matrix
  * @return A * B, an (m X k) matrix, or null matrix on failure
  */
-MatrixReal MatrixReal::operator*(const MatrixReal& B) const {
+MatrixReal MatrixReal::operator*(const MatrixReal& B) const
+{
     
 	MatrixReal C = MatrixReal(*this);
     C *= B;
@@ -890,14 +923,17 @@ MatrixReal MatrixReal::operator*(const MatrixReal& B) const {
  * @param B Matrix 2
  * @return A += B, A unmodified on failure
  */
-MatrixReal&  MatrixReal::operator+=(const MatrixReal& B) {
+MatrixReal&  MatrixReal::operator+=(const MatrixReal& B)
+{
     
 	if (B.getNumberOfRows() == nRows && B.getNumberOfColumns() == nCols) 
     {
 		for (size_t i=0; i<nRows; i++) 
         {
 			for (size_t j=0; j<nCols; j++)
+            {
 				elements[i][j] += B[i][j];
+            }
         }
     }
     else
@@ -919,14 +955,17 @@ MatrixReal&  MatrixReal::operator+=(const MatrixReal& B) {
  * @param B Matrix 2
  * @return A -= B, A unmodified on failure
  */
-MatrixReal& MatrixReal::operator-=(const MatrixReal& B) {
+MatrixReal& MatrixReal::operator-=(const MatrixReal& B)
+{
     
 	if (B.getNumberOfRows() == nRows && B.getNumberOfColumns() == nCols) 
     {
 		for (size_t i=0; i<nRows; i++) 
         {
 			for (size_t j=0; j<nCols; j++)
+            {
 				elements[i][j] -= B[i][j];
+            }
         }
     }
     else

@@ -223,7 +223,8 @@ std::string Clade::toString( void ) const
     
     for (size_t i = 0; i < taxonNames.size(); ++i) 
     {
-        if ( i > 0 ) {
+        if ( i > 0 )
+        {
             s += ",";
         }
         s += taxonNames[i];

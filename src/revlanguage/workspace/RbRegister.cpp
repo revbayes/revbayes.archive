@@ -130,6 +130,7 @@
 
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementSlide.h"
+#include "Move_ConjugateInverseWishartBrownian.h"
 
 
 ///* Moves on covariance matrices */
@@ -262,6 +263,7 @@
 
 #include "Func_clear.h"
 #include "Func_exists.h"
+#include "Func_getOption.h"
 #include "Func_getwd.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
@@ -551,6 +553,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Moves on matrices of real values */
         addTypeWithConstructor("mvSymmetricMatrixElementSlide", new Move_MatrixRealSymmetricSlide() );
 
+        /* Moves on matrices of real values */
+        addTypeWithConstructor("mvConjugateInverseWishartBrownian", new Move_ConjugateInverseWishartBrownian() );
+
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
         addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
@@ -756,6 +761,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // inverse Wishart distribution
         addDistribution( "dnInvWishart",       new Dist_inverseWishart() );
+        addDistribution( "dnInverseWishart",   new Dist_inverseWishart() );
 
         // and the so-called "decomposed" Inverse Wishart
         addDistribution( "dnDecomposedInvWishart",       new Dist_decomposedInverseWishart() );
@@ -811,6 +817,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
+        addFunction( "getOption",                new Func_getOption()                );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );

@@ -844,20 +844,23 @@ TopologyNode& TopologyNode::getParent(void)
     
 }
 
-const TopologyNode& TopologyNode::getParent(void) const {
+const TopologyNode& TopologyNode::getParent(void) const
+{
     
     return *parent;
 }
 
 
-std::string TopologyNode::getSpeciesName() const {
+std::string TopologyNode::getSpeciesName() const
+{
     std::string name = taxon.getSpeciesName();
     return name;
 }
 
 
 
-void TopologyNode::getTaxaStringVector( std::vector<std::string> &taxa ) const {
+void TopologyNode::getTaxaStringVector( std::vector<std::string> &taxa ) const
+{
     
     if ( isTip() )
     {

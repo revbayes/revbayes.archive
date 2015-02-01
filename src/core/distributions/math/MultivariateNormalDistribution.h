@@ -41,6 +41,7 @@ namespace RevBayesCore {
         // public member functions
         MultivariateNormalDistribution*                     clone(void) const;
         
+        MatrixReal                                          computeContrasts(void);
         virtual void                                        executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
         void                                                clampAt(size_t i, double v);
         double                                              computeLnProbability(void);

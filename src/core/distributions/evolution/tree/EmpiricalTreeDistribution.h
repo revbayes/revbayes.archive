@@ -63,19 +63,23 @@ using namespace RevBayesCore;
 
 
 template <typename treeType>
-RevBayesCore::EmpiricalTreeDistribution<treeType>::EmpiricalTreeDistribution(const TreeTrace<treeType> &t, int &b)
-:  TypedDistribution<treeType>( new treeType() ),
-probability( 0.0 ),
-trace( t ),
-burnin( b )
+RevBayesCore::EmpiricalTreeDistribution<treeType>::EmpiricalTreeDistribution(const TreeTrace<treeType> &t, int &b) : TypedDistribution<treeType>( new treeType() ),
+    probability( 0.0 ),
+    burnin( b ),
+    trace( t )
 {
 	// make sure burnin is proper
-	if (trace.size() <= burnin) {
+	if (trace.size() <= burnin)
+    {
 		throw RbException("Burnin size is too large for the trace.");
 	}
-	if (burnin == -1) {
+	
+    if (burnin == -1)
+    {
 		burnin = trace.size() / 4;
-	} else {
+	}
+    else
+    {
 		burnin = (size_t)(b);
 	}
 	

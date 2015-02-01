@@ -102,9 +102,11 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         }
         else
         {
+            /*
             const DagNode *orgCopy = n->second;
             std::cerr << "Ptr to org:\t" << orgCopy << "\t\t --- \t\t Ptr to desc:\t" << this << std::endl;
             std::cerr << "Cloning a DAG node with name '" << this->name << "' again, doh! Please tell this to Sebastian because it's most likely a bug." << std::endl;
+             */
         }
     }
     

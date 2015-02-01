@@ -5,6 +5,8 @@
 #include "RbException.h"
 #include "StochasticNode.h"
 
+#include <cmath>
+
 using namespace RevBayesCore;
 
 MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *m, const TypedDagNode<MatrixReal>* cov, const TypedDagNode<MatrixReal>* prec, const TypedDagNode<double>* sc) :
@@ -59,6 +61,31 @@ void MultivariateNormalDistribution::clampAt(size_t i, double v)
     
     // set the flag the this node is clamped
     this->dagNode->setClamped( true );
+}
+
+
+MatrixReal MultivariateNormalDistribution::computeContrasts( void )
+{
+    size_t dim = value->size();
+    std::vector<double> tmp = std::vector<double>(dim, 0.0);
+    
+    const RbVector<double> &m = mean->getValue();
+    for (size_t i = 0; i < dim; ++i)
+    {
+//        tmp[i] = ((*value)[i] - m[i]) / sqrt( scale->getValue() );
+        tmp[i] = ((*value)[i] - m[i]) / scale->getValue();
+    }
+    
+    MatrixReal c = MatrixReal( dim );
+    for (size_t i = 0; i < dim; ++i)
+    {
+        for (size_t j = 0; j < dim; ++j)
+        {
+            c[i][j] = tmp[i] * tmp[j];
+        }
+    }
+    
+    return c;
 }
 
 

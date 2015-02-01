@@ -103,7 +103,7 @@ MatrixReal RbStatistics::Wishart::rv(const MatrixReal &omega0, size_t df, Random
     
     size_t dim = omega0.getDim();
     MatrixReal z(dim);
-    std::vector<double> mean = std::vector<double>(dim,0.0);
+    std::vector<double> mean = std::vector<double>(dim, 0.0);
     
     for (size_t k=0; k<df; k++)
     {

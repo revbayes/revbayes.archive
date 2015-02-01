@@ -37,6 +37,7 @@ class RbSettings {
         const std::string&          getHelpDir(void) const;                             //!< Retrieve the help directory name
         const std::string&          getModuleDir(void) const;                           //!< Retrieve the module directory name
         size_t                      getLineWidth(void) const;                           //!< Retrieve the line width that will be used for the screen width when printing
+        std::string                 getOption(const std::string &k) const;              //!< Retrieve a user option
         bool                        getPrintNodeIndex(void) const;                      //!< Retrieve the flag whether we should print node indices
         double                      getTolerance(void) const;                           //!< Retrieve the tolerance for comparing doubles
         const std::string&          getWorkingDirectory(void) const;                    //!< Retrieve the current working directory
