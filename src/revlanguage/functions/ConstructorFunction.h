@@ -45,6 +45,7 @@ public:
     RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
     const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
+    RevObject*                              getRevObject(void) { return templateObject; }                                                      //!< Get type of return value
     
 protected:
     

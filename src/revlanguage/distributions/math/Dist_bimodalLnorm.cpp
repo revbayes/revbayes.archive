@@ -18,6 +18,8 @@ using namespace RevLanguage;
 Dist_bimodalLnorm::Dist_bimodalLnorm() : ContinuousDistribution() 
 {
     
+    setGuiDistributionName("Bimodal LogNormal");
+    setGuiDistributionToolTip("");
 }
 
 

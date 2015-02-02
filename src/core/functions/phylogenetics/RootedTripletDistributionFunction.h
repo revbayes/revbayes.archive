@@ -34,30 +34,38 @@ namespace RevBayesCore {
     class RootedTripletDistributionFunction : public TypedFunction<RootedTripletDistribution> {
         
     public:
-        RootedTripletDistributionFunction( const TypedDagNode<std::vector<TimeTree> > *ts, const TypedDagNode<std::vector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode<std::vector< TimeTree > > *ts, const TypedDagNode<std::vector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode<std::vector< BranchLengthTree > > *ts, const TypedDagNode<std::vector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode<std::vector< std::string > > *sn );
+        RootedTripletDistributionFunction( const TypedDagNode<std::vector< Taxon > > *t );
+
         virtual                                            ~RootedTripletDistributionFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
         RootedTripletDistributionFunction*                              clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
         
+        void setTrees(TypedDagNode<std::vector< TimeTree > >* ts); //!< Set the trees in the distribution
+        void setTrees(TypedDagNode<std::vector< BranchLengthTree > >* ts); //!< Set the trees in the distribution
+
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
     private:
         
-        void extractTriplets( TimeTree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
+        void extractTriplets( Tree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
         void extractTriplets(  );             //!< Getting the triplets from a tree and adding them to the tripletDistribution
         void populateTripletDistribution ( TopologyNode* node, std::vector< size_t >& allTips ) ;
         void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips) ; //!< Get all rooted triplets given vectors of left and right tips
         void addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize,size_t rightSize ); //!< Get rooted triplets given vectors of left and right tips, one way only
         
+
         // members
-        
-        const TypedDagNode<std::vector<TimeTree> >*                                   trees;
-        std::vector< Taxon >                                                           taxa;
-     //   std::vector< std::string >                                                  species;
-        const TypedDagNode<std::vector< std::string > >*                            species;
+
+        const TypedDagNode<std::vector<TimeTree> >*                                  ttrees;
+        const TypedDagNode<std::vector<BranchLengthTree> >*                         bltrees;
+        const TypedDagNode< std::vector< Taxon > >*                                    taxa;
+        const TypedDagNode< std::vector< std::string > >*                            species;
         std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t > tripletDistribution;
         size_t                                                                numberOfTrees;
         std::set< Taxon >                                                           taxaSet;

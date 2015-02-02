@@ -568,7 +568,7 @@ template<class charType, class treeType>
 void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::printHeader() {
     
     // print one column for the iteration number
-    outStream << "Iteration";
+    outStream << "Iter";
     
     if ( posterior ) {
         // add a separator before every new element

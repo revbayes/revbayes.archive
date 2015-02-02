@@ -32,6 +32,7 @@
 - (void)importModel;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (void)initializePallet;
 - (BOOL)isPlateIndexAvailableForChar:(char)c;
 - (BOOL)isInletActiveWithIndex:(int)idx;
 - (int)numAttachedMatrices;

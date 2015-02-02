@@ -30,7 +30,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const RbVector<Move> &moves, cons
         oneChain->setChainActive( a );
         oneChain->setChainHeat( b );
         oneChain->setChainIndex(i);
-        oneChain->startMonitors();
+        oneChain->startMonitors(0);
         
         // add chain to team
         chains.push_back(oneChain);
@@ -115,7 +115,13 @@ double ParallelMcmcmc::computeBeta(double d, double s, size_t idx)
 
 void ParallelMcmcmc::burnin(int g, int ti)
 {
-    
+    // Tell monitors how much job we have ahead of us
+    for( size_t i = 0; i < chains.size(); ++i )
+    {
+        RbVector<Monitor>& monitors = chains[i]->getMonitors();
+        for ( size_t j = 0; j < monitors.size(); ++j )
+            monitors[j].setNumCycles( g );
+    }
 }
 
 ParallelMcmcmc* ParallelMcmcmc::clone(void) const
@@ -134,6 +140,14 @@ void ParallelMcmcmc::printOperatorSummary(void) const
 
 void ParallelMcmcmc::run(size_t generations)
 {
+    // Tell monitors how much job we have ahead of us
+    for( size_t i = 0; i < chains.size(); ++i )
+    {
+        RbVector<Monitor>& monitors = chains[i]->getMonitors();
+        for ( size_t j = 0; j < monitors.size(); ++j )
+            monitors[j].setNumCycles( generations );
+    }
+    
     // print file header
     if (currentGeneration == 0)
         chains[0]->monitor(0);

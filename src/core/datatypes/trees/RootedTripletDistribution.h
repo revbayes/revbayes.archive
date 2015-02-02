@@ -23,7 +23,11 @@
 #include "MemberObject.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
+#include "BranchLengthTree.h"
 #include "TimeTree.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+
 
 #include <map>
 #include <vector>
@@ -41,6 +45,11 @@ namespace RevBayesCore {
         RootedTripletDistribution(const RootedTripletDistribution& t);                                             //!< Copy constructor
         virtual                                    ~RootedTripletDistribution(void);                                                                                                        //!< Destructor
         RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< std::string > spNames ) ;
+        RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< std::string > spNames ) ;
+        RootedTripletDistribution( const std::vector< std::string > spNames ) ;
+        RootedTripletDistribution( const std::vector<TimeTree>& ts, const std::vector< Taxon > tax ) ;
+        RootedTripletDistribution( const std::vector<BranchLengthTree>& ts, const std::vector< Taxon > tax ) ;
+        RootedTripletDistribution( const std::vector< Taxon > tax ) ;
 
         RootedTripletDistribution&                                   operator=(const RootedTripletDistribution& t);
         
@@ -50,8 +59,8 @@ namespace RevBayesCore {
         void executeMethod(const std::string &n, const std::vector<const DagNode *> &args, std::vector < std::string > &rv) const ;                                 //!< Execute the member-method
         
         // RootedTripletDistribution functions
-        void extractTriplets( const TimeTree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
-        void extractTriplets( const std::vector<TimeTree>& ts );             //!< Getting the triplets from a tree and adding them to the tripletDistribution
+        void extractTriplets( const Tree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
+        void extractTriplets(  );             //!< Getting the triplets from all trees and adding them to the tripletDistribution
         void populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips ) ;
         void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips) ; //!< Get all rooted triplets given vectors of left and right tips
         void addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize,size_t rightSize ); //!< Get rooted triplets given vectors of left and right tips, one way only
@@ -61,6 +70,9 @@ namespace RevBayesCore {
         
         void setSpecies ( std::vector< std::string > s );
         void setTaxa ( std::vector< Taxon > t );
+       // void setTrees( TypedDagNode< std::vector< Tree > >* ts ) ;
+        void setTrees ( const std::vector< TimeTree >& ts );
+        void setTrees ( const std::vector< BranchLengthTree >& ts );
         std::vector< std::string > getSpecies ( ) const;
         std::vector< Taxon > getTaxa ( ) const;
         std::string getSpecies ( size_t i ) const;
@@ -74,12 +86,12 @@ namespace RevBayesCore {
 
         
         //Members:
+        std::vector< TimeTree >                                                      ttrees;
+        std::vector< BranchLengthTree >                                             bltrees;
         std::vector< Taxon >                                                           taxa;
         std::vector< std::string >                                                  species;
         std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >                         tripletDistribution;
         size_t                                                                numberOfTrees;
-        std::set< Taxon >                                                           taxaSet;
-        std::set< std::string >                                                  speciesSet;
         std::map< Taxon, size_t >                                              taxonToIndex;
         std::map< std::string, size_t >                                      speciesToIndex;
         bool                                                                    speciesOnly;

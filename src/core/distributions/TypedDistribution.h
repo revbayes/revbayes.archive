@@ -161,7 +161,8 @@ template <class valueType>
 void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v ) {
     
     // free memory
-    delete value;
+    if (value != v)
+        delete value;
     
     value = v;
     

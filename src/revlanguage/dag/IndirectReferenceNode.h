@@ -35,20 +35,16 @@ namespace RevLanguage {
         
         // Public methods
         IndirectReferenceNode<rlType>*          clone(void) const;                                                      //!< Type-safe clone
-        double                                  getLnProbability(void) { return 0.0; }                                  //!< Get ln prob
-        double                                  getLnProbabilityRatio(void) { return 0.0; }                             //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                         //!< Get the value
         const typename rlType::valueType&       getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
-        void                                    redraw(void) {}                                                         //!< Redraw (or not)
         
         // Parent DAG nodes management functions
         std::set<const RevBayesCore::DagNode*>  getParents(void) const;                                                                     //!< Get the set of parents
         void                                    swapParent(const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent); //!< Exchange the parent (element variable)
         
     protected:
-        void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
         void                                    keepMe(RevBayesCore::DagNode* affecter);                                                    //!< Keep value of this and affected nodes
         void                                    restoreMe(RevBayesCore::DagNode *restorer);                                                 //!< Restore value of this nodes
         void                                    touchMe(RevBayesCore::DagNode *toucher);                                                    //!< Touch myself and tell affected nodes value is reset
@@ -157,16 +153,6 @@ IndirectReferenceNode<rlType>* IndirectReferenceNode<rlType>::clone( void ) cons
     return new IndirectReferenceNode<rlType>( *this );
 }
 
-
-/**
- * Get the affected nodes.
- * This call is started by the parent. We need to delegate this call to all our children.
- */
-template<typename rlType>
-void IndirectReferenceNode<rlType>::getAffected( std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter )
-{
-    this->getAffectedNodes( affected );
-}
 
 
 /**

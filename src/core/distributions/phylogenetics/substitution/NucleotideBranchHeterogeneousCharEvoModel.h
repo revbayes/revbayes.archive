@@ -442,7 +442,6 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
             __m128d c_gt = _mm_mul_pd(p23, tp_c_gt );
             __m128d c_acgt = _mm_hadd_pd(c_ac,c_gt);
             
-            //            *p_site_mixture = _mm_hadd_pd(a_acgt,c_acgt);
             __m128d ac = _mm_hadd_pd(a_acgt,c_acgt);
             _mm_store_pd(p_site_mixture,ac);
             
@@ -455,7 +454,6 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
             __m128d t_gt = _mm_mul_pd(p23, tp_t_gt );
             __m128d t_acgt = _mm_hadd_pd(t_ac,t_gt);
             
-            //            p_site_mixture[2] = _mm_hadd_pd(g_acgt,t_acgt);
             __m128d gt = _mm_hadd_pd(g_acgt,t_acgt);
             _mm_store_pd(p_site_mixture+2,gt);
  
@@ -463,7 +461,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
  
             __m256d a = _mm256_load_pd(p_site_mixture_left);
             __m256d b = _mm256_load_pd(p_site_mixture_right);
-            __m256d p = _mm_mul_pd(a,b);
+            __m256d p = _mm256_mul_pd(a,b);
             
             __m256d a_acgt = _mm256_mul_pd(p, tp_a );
             __m256d c_acgt = _mm256_mul_pd(p, tp_c );
@@ -471,7 +469,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
             __m256d t_acgt = _mm256_mul_pd(p, tp_t );
             
             __m256d ac   = _mm256_hadd_pd(a_acgt,c_acgt);
-            __m256d gt   = _mm256_hadd_pd(g_acgt,t_acgt)
+            __m256d gt   = _mm256_hadd_pd(g_acgt,t_acgt);
             
             __m256d acgt = _mm256_hadd_pd(ac,gt);
 
@@ -543,7 +541,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*                       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
+        const double*       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
         
         // get the pointer to the likelihoods for this site and mixture category
         double*     p_site_mixture      = p_mixture;

@@ -100,7 +100,12 @@ RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMo
 template<class charType, class treeType>
 RevBayesCore::PathRejectionSampleMove<charType, treeType>* RevBayesCore::PathRejectionSampleMove<charType, treeType>::clone(void) const
 {
-    return new PathRejectionSampleMove( *this );
+    PathRejectionSampleMove<charType, treeType>* p = new PathRejectionSampleMove( *this );
+    Proposal *prop = p->proposal;
+    
+    std::cout << prop->getProposalName() << "\n";
+    
+    return p;
 }
 
 template<class charType, class treeType>

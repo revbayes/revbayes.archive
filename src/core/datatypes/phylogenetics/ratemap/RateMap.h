@@ -12,6 +12,8 @@
 #include "CharacterEvent.h"
 #include "CharacterState.h"
 #include "Cloneable.h"
+#include "RateMatrix.h"
+#include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include <vector>
@@ -21,34 +23,55 @@ namespace RevBayesCore {
     class RateMap : public Cloneable {
         
     public:
+        RateMap(const RateMap& m);                                                              //!< Copy constructor
+        RateMap(size_t ns, size_t nc);                                                          //!< Construct rate matrix with n states
+        RateMap&                            operator=(const RateMap& r);
+        
         virtual                            ~RateMap(void);                                                                 //!< Destructor
         
         // public methods
         size_t                              getNumberOfStates(void) const;                      //!< Return the number of states
         size_t                              getNumberOfCharacters(void) const;                  //!< Return the number of characters
 
-        // pure virtual methods to overwrite
-        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition probabilities for the rate matrix
-        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx) const = 0;   //!< Calculate the transition probabilities for the rate matrix
-        virtual RateMap*                    clone(void) const = 0;
-        virtual double                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0) const = 0;
-        virtual double                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const = 0;
-        virtual double                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const = 0;
-        virtual double                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx=0, double age=0.0) const = 0;
-        virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const = 0;
-        virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const = 0;
-        virtual void                        updateMap(void) = 0;
+        // virtual public methods
+        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const;
+        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx) const;
+        virtual RateMap*                    clone(void) const;
+        virtual double                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
+        virtual double                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const;
+        virtual double                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx=0, double age=0.0) const;
+        virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
+        virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
+        virtual void                        updateMap(void);
+        
+        double                              getHomogeneousClockRate(void) const;
+        void                                setHomogeneousClockRate(double d);
+        const std::vector<double>&          getHeterogeneousClockRates(void) const;
+        void                                setHeterogeneousClockRates(const std::vector<double>& r);
+        const RateMatrix*                   getHomogeneousRateMatrix(void) const;
+        void                                setHomogeneousRateMatrix(const RateMatrix* r);
+        const RbVector<RateMatrix>&         getHeterogeneousRateMatrices(void) const;
+        void                                setHeterogeneousRateMatrices(const RbVector<RateMatrix>& r);
+        const std::vector<double>&          getRootFrequencies(void) const;
+        void                                setRootFrequencies(const std::vector<double>& r);
+
+
         
     protected:
-        // prevent instantiation
-        RateMap(const RateMap& m);                                                              //!< Copy constructor
-        RateMap(size_t ns, size_t nc);                                                          //!< Construct rate matrix with n states
-        RateMap&                            operator=(const RateMap& r);
-        
         // protected members available for derived classes
+        double                              homogeneousClockRate;
+        std::vector<double>                 heterogeneousClockRates;
+        RateMatrix*                         homogeneousRateMatrix;
+        RbVector<RateMatrix>                heterogeneousRateMatrices;
+        std::vector<double>                 rootFrequencies;
+        
         size_t                              numStates;                                          //!< The number of character states
         size_t                              numCharacters;                                      //!< The number of characters
         bool                                needsUpdate;
+        bool                                branchHeterogeneousRateMatrices;
+        bool                                branchHeterogeneousClockRates;
+        
+        
         
     };
     

@@ -57,14 +57,11 @@ namespace RevLanguage {
         ContainerNode<rlElemType,valueType>*    deepCopy(void) const;                                                   //!< Deep copy
         RevPtr<Variable>&                       getElement(size_t index);                                               //!< Return an element
         RevPtr<const Variable>&                 getElement(size_t index) const;                                         //!< Return an element (const version)
-        double                                  getLnProbability(void);                                                 //!< Get ln prob (0.0)
-        double                                  getLnProbabilityRatio(void);                                            //!< Get ln prob ratio (0.0)
         valueType&                              getValue(void);                                                         //!< Get the value
         const valueType&                        getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isComposite(void) const;                                                //!< Is this DAG node composite?
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
-        void                                    redraw(void);                                                           //!< Redraw (or not)
         void                                    setName(const std::string& n);                                          //!< Set the name of myself and of elements
         size_t                                  size(void) const { return elements.size(); }                            //!< Return number of elements
         void                                    update(void);                                                           //!< Update current value
@@ -74,7 +71,6 @@ namespace RevLanguage {
         void                                    swapParent(const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent); //!< Exchange the parent (element variable)
         
     protected:
-        void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
         void                                    keepMe(RevBayesCore::DagNode* affecter);                                                    //!< Keep value of this and affected nodes
         void                                    restoreMe(RevBayesCore::DagNode *restorer);                                                 //!< Restore value of this nodes
         void                                    touchMe(RevBayesCore::DagNode *toucher);                                                    //!< Touch myself and tell affected nodes value is reset
@@ -264,17 +260,6 @@ ContainerNode<rlElemType, valueType>* ContainerNode<rlElemType, valueType>::deep
 
 
 /**
- * Get the affected nodes.
- * This call is started by the parent. We need to delegate this call to all our children.
- */
-template<typename rlElemType, typename valueType>
-void ContainerNode<rlElemType, valueType>::getAffected( std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter )
-{
-    this->getAffectedNodes( affected );
-}
-
-
-/**
  * Return a reference to a specific element. The caller can modify the
  * element; the element will tell us through its DAG node if it has
  * been modified, so that our touched flag gets set, so this should be safe.
@@ -297,28 +282,6 @@ template<typename rlElemType, typename valueType>
 RevPtr<const Variable>& ContainerNode<rlElemType, valueType>::getElement( size_t index ) const
 {
     return elements[ index ];
-}
-
-
-/**
- * Calculate ln prob.
- * @todo Do we really need this?
- */
-template<typename rlElemType, typename valueType>
-double ContainerNode<rlElemType, valueType>::getLnProbability( void )
-{
-    return 0.0;
-}
-
-
-/**
- * Calculate ln prob ratio.
- * @todo Do we really need this?
- */
-template<typename rlElemType, typename valueType>
-double ContainerNode<rlElemType, valueType>::getLnProbabilityRatio( void )
-{
-    return 0.0;
 }
 
 
@@ -562,19 +525,6 @@ void ContainerNode<rlElemType, valueType>::push_front( rlElemType* x )
     
     // Tell everybody we have been changed
     this->touch();
-}
-
-
-/**
- * Redraw function.
- *
- * @todo Check if this is really needed.
- */
-template<typename rlElemType, typename valueType>
-void ContainerNode<rlElemType, valueType>::redraw( void )
-{
-    // nothing to do
-    // the touch should have called our update
 }
 
 

@@ -260,6 +260,12 @@ void BranchHistory::print(void) const
 {
     std::set<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     std::vector<CharacterEvent*>::iterator it_v;
+    
+//    std::cout << parentCharacters.size() << "\n";
+//    for (size_t i = 0; i < parentCharacters.size(); i++)
+//        std::cout << parentCharacters[i] << " ";
+//    std::cout << "\n";
+    
     std::vector<CharacterEvent*> tmp = parentCharacters;
     
     std::cout << "BranchHistory " << index << " size=" << history.size() << "  " << this << "\n";
@@ -273,7 +279,8 @@ void BranchHistory::print(void) const
     std::cout << "                       0.0 : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
-        std::cout << (*it_v)->getState();
+//        std::cout << (*it_v)->getState();
+        std::cout << (*it_v)->getStateStr();
     }
     std::cout << "\n";
     
@@ -287,7 +294,8 @@ void BranchHistory::print(void) const
             if (i != (*it_h)->getIndex())
                 std::cout << " ";
             else
-                std::cout << (*it_h)->getState();
+                std::cout << (*it_h)->getStateStr();
+//                std::cout << (*it_h)->getState();
             //std::cout << " ";
         }
         std::cout << "\n";
@@ -295,7 +303,8 @@ void BranchHistory::print(void) const
     std::cout << "                       1.0 : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
-        std::cout << (*it_v)->getState();
+//        std::cout << (*it_v)->getState();
+        std::cout << (*it_v)->getStateStr();
     }
     std::cout << "\n";
     std::cout << "                             ";

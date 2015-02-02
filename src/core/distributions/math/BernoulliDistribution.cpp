@@ -8,7 +8,6 @@ using namespace RevBayesCore;
 BernoulliDistribution::BernoulliDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ), p( q ) {
     
     double u = GLOBAL_RNG->uniform01();
-    
     *value = u > p->getValue() ? 0 : 1;
 }
 

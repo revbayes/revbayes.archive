@@ -13,6 +13,18 @@
 #import "WindowControllerModel.h"
 #import "WindowControllerModelSubmission.h"
 
+#include <iostream>
+#include <map>
+#include <string>
+#include "AbstractModelObject.h"
+#include "ConstructorFunction.h"
+#include "Environment.h"
+#include "FunctionTable.h"
+#include "RlMove.h"
+#include "RlDistribution.h"
+#include "RevObject.h"
+#include "Workspace.h"
+
 
 
 @implementation ToolModel
@@ -204,6 +216,8 @@
 		[self addOutletOfColor:[NSColor blueColor]];
         [self setInletLocations];
         [self setOutletLocations];
+        
+        [self initializePallet];
 
 		// allcoate the mutable array holding the parameters
 		parms = [[NSMutableArray alloc] init];
@@ -237,6 +251,8 @@
         possibleInlets[2] = [aDecoder decodeBoolForKey:@"possibleInlets2"];
         possibleInlets[3] = [aDecoder decodeBoolForKey:@"possibleInlets3"];
 
+        [self initializePallet];
+
 		// initialize the control window
 		controlWindow = [[WindowControllerModel alloc] initWithTool:self andParms:parms];
         modelBrowser    = nil;
@@ -262,6 +278,58 @@
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
+}
+
+- (void)initializePallet {
+
+    // get a pointer to the global workspace in the core and then
+    // extract the list of variables and moves stored there
+    RevLanguage::Workspace& myWorkspace = RevLanguage::Workspace::globalWorkspace();
+    std::map<std::string, RevLanguage::RevObject*> list = myWorkspace.getTypeTable();
+
+    // construct the list of variables for the random variable and constants pallets
+    for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
+        {
+        RevLanguage::AbstractModelObject* varPtr = dynamic_cast<RevLanguage::AbstractModelObject*>(it->second);
+        if (varPtr != NULL)
+            {
+            // it's a variable!
+            std::cout << "Variable: " << (it)->first << std::endl;
+            std::cout << "   " << varPtr->getGuiVariableName() << std::endl;
+            std::cout << "   " << varPtr->getGuiLatexSymbol() << std::endl;
+            }
+        }
+
+    // construct the list of moves
+    for (std::map<std::string, RevLanguage::RevObject*>::iterator it = list.begin(); it != list.end(); it++)
+        {
+        RevLanguage::Move* movePtr = dynamic_cast<RevLanguage::Move*>(it->second);
+        if (movePtr != NULL)
+            {
+            // it's a move!
+            std::cout << "Move: " << (it)->first << std::endl;
+            }
+
+        }
+    
+    // construct the list of distributions
+    RevLanguage::FunctionTable& funcList = myWorkspace.getFunctionTable();
+    for (RevLanguage::FunctionTable::iterator it = funcList.begin(); it != funcList.end(); it++)
+        {
+        RevLanguage::ConstructorFunction* conFunc = dynamic_cast<RevLanguage::ConstructorFunction*>(it->second);
+        if (conFunc != NULL)
+            {
+            RevLanguage::RevObject* revObj = conFunc->getRevObject();
+            RevLanguage::Distribution* distPtr = dynamic_cast<RevLanguage::Distribution*>(revObj);
+            if (distPtr != NULL)
+                {
+                // it's a distribution!
+                std::cout << "Distribution: " << (it)->first << std::endl;
+                std::cout << "   " << distPtr->getGuiDistributionName() << std::endl;
+                }
+            }
+       }
+
 }
 
 - (BOOL)isInletActiveWithIndex:(int)idx {

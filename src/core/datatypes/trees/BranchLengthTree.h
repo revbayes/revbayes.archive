@@ -33,6 +33,8 @@ namespace RevBayesCore {
         BranchLengthTree(void);                                                                                             //!< Default constructor
         virtual                                    ~BranchLengthTree(void);                                                                                                        //!< Destructor
         
+        BranchLengthTree&                           operator=(const BranchLengthTree& t);
+
         // Basic utility functions
         BranchLengthTree*                           clone(void) const;                                                      //!< Clone object
         
@@ -53,10 +55,10 @@ namespace RevBayesCore {
         
     };
     
-}
 
-// Global functions using the class
-std::ostream&                       operator<<(std::ostream& o, const RevBayesCore::BranchLengthTree& x);                                         //!< Overloaded output operator
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const BranchLengthTree& x);                                         //!< Overloaded output operator
+}
 
 #endif
 

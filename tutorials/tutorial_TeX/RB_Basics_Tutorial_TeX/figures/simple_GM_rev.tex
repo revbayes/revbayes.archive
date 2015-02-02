@@ -1,0 +1,36 @@
+\begin{tikzpicture}
+\node[obnode] (x) at (1,1) {\LARGE $x_i$};
+\node[detnode] (mu) at ($(x)+(-1,2)$) {\Large $\mu$};
+\node[snode] (sigma) at ($(x)+(1,2)$) {\Large $\sigma$};
+\node[snode] (mean) at ($(mu)+(0,2)$) {\large $M$};
+\draw [dtaro] (mean) -- (mu) ;
+\draw [dtaro] (sigma) -- (mu) ;
+\draw [taro] (mu) -- (x) ;
+\draw [taro] (sigma) -- (x) ;
+\node[rectangle,dashed, very thick, inner sep=6mm, draw=black!100, fit = (x)] (siteplate) {};
+\node[anchor=south east,inner sep=7pt] at (siteplate.south east) {\tiny $i \in N$};
+\node[constnode] (lambda) at ($(sigma)+(0,1.5)$) {\large $\lambda$};
+\draw [taro] (lambda) -- (sigma) ;
+\node[constnode] (alpha) at ($(mean)+(-1,1.5)$) {\large $\alpha$};
+\node[constnode] (beta) at ($(mean)+(1,1.5)$) {\large $\beta$};
+\draw [taro] (alpha) -- (mean) ;
+\draw [taro] (beta) -- (mean) ;
+\node (a1) at (4,0.25) { };
+\node (a2) at (4,6.5) { };
+\node (a3) at (11,2.75) { };
+\node[rectangle, very thick, inner sep=6mm, fill=shc, fit = (a1) (a2) (a3)] (console) {};
+\node (l1) at (4,6.5) [right]{\tt observations <- [<your data go here>]};
+\node (l2) at (4,5.7) [right]{\tt alpha <- 3.0  };
+\node (l3) at (4,5.35) [right]{\tt beta <- 1.0  };
+\node (l4) at (4,5.0) [right]{\tt M $\sim$ dnGamma(alpha, beta)  };
+\node (l5) at (4,4.0) [right]{\tt lambda <- 1.0  };
+\node (l6) at (4,3.6) [right]{\tt sigma $\sim$ dnExponential(lambda)  };
+\node (l7) at (4,2.7) [right]{\tt mu := ln(M) - (power(sigma, 2.0) / 2.0) };
+\node (l8) at (4,1.8) [right]{\tt N <- observations.size() };
+\node (l8) at (4,1.4) [right]{\tt for( i in 1:N )\{ };
+\node (l9) at (4.4,1) [right]{\tt x[i] $\sim$ dnLnorm(mu, sigma) };
+\node (l10) at (4.4,0.6) [right]{\tt x[i].clamp(observations[i]) };
+\node (l11) at (4,0.2) [right]{\tt \} };
+\end{tikzpicture}
+
+
