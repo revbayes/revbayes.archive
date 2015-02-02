@@ -1,0 +1,171 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: A Gibbs Move using Auxiliary Categories for Updating DPP-distributed Random Variables.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: A Gibbs Move using Auxiliary Categories for Updating DPP-distributed Random Variables.</h1>
+
+        <h2>Type mvDPPAllocateAuxGibbs</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvDPPAllocateAuxGibbs</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This move re-assigns the data elements to new parameter categories, when those elements are assigned a 
+            Dirichlet process prior (DPP). The algorithm for this update is described in Neal (2000; Algorithm 8).
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mvDPPAllocateAuxGibbs( Any[] x, Integer numAux = 4, RealPos weight = 1 )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The vector of values distributed under the DPP. (See dnDPP for allowed value types)<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+Any[]<br />
+</div>
+<br />
+<b >numAux</b>
+<div class="indent">
+The number of auxiliary categories proposed by the algorithm.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+<span class="argument">Default value</span>
+4<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+The expected number of times this move will be applied per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                This move is described by Neal (2000) as Algorithm 8 -- "Gibbs Sampling with Auxiliary Parameters". 
+                Here, the parameter-category assignment of data elements under the DPP are updated by  
+                removing an element from its current category, then reassigning it to each of the remaining categories
+                plus numAux additional "auxiliary" categories. This is done for each data element sequentially.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+	 ## number of DPP elements
+	 N <- 10
+ 
+	 ## prior mean number of categories
+	 k <- 8
+ 
+	 ## concentration parameter of the DPP
+	 a <- fnDPPConcFromMean(k, N)
+ 
+	 ## G_0 distribution
+	 G_0 = dnExponential(1.0)
+ 
+	 ## DPP distribution constructior
+	 rates ~ dnDPP(a, G_0, N)
+	 
+	 ## Iterator for moves vector
+	 mi = 1
+	 
+	 ## Add mvDPPScaleCatVals to moves vector
+	 moves[mi++] = mvDPPScaleCatVals(rates, 0.05, 3.0)
+
+	 ## Add mvDPPAllocateAuxGibbs to moves vector to update parameter-category assignment
+	 moves[mi++] = mvDPPAllocateAuxGibbs(rates, 4, 3.0)
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+					Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
+            	<br />
+<br />
+<br />
+
+					Heath TA. 2012. A hierarchical Bayesian model for calibrating estimates of species divergence times. Syst. Biol. 61:793-809.
+            	<br />
+<br />
+<br />
+
+					Huelsenbeck JP, Jain S, Frost SWD, Pond SLK. 2006. A Dirichlet process model for detecting positive selection in protein-coding DNA sequences. Proc Natl Acad Sci U S A. 103:6263–6268.
+            	<br />
+<br />
+<br />
+
+					Huelsenbeck JP, Suchard M. 2007. A nonparametric method for accommodating and testing across-site rate variation. Syst Biol. 56:975–987.
+            	<br />
+<br />
+<br />
+
+					Neal RM. 2000. Markov chain sampling methods for Dirichlet process mixture models. J Comput Graph Stat. 9:249–265.
+            	<br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Tracy A. Heath</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mvDPPScaleCatAllocateAux'); return false;">mvDPPScaleCatAllocateAux</a><br />
+<a href="" onClick="navigateHelp('mvDPPScaleCatVals'); return false;">mvDPPScaleCatVals</a><br />
+<a href="" onClick="navigateHelp('dnDPP'); return false;">dnDPP</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

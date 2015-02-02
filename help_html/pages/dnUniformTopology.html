@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Uniform distribution on tree topologies</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Uniform distribution on tree topologies</h1>
+
+        <h2>Type dnUniformTopology</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnUniformTopology</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Specifies equal probability for each possible tree topology with n taxa.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnUniformTopology( String[] names )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >names</b>
+<div class="indent">
+The taxon names that will be used as the tip names.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+String[]<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                This simply specifies a uniform probability distribution on all possible tree topologies with n taxa.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                 names <- ["A", "B", "C", "D"]
+                 topology ~ dnUniformTopology( names )
+                 topology
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('treeAssembly'); return false;">treeAssembly</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>
