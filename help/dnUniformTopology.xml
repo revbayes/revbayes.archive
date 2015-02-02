@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnUniformTopology</name>
+
+        <title>Uniform distribution on tree topologies</title>
+
+        <description>
+            <p>
+            Specifies equal probability for each possible tree topology with n taxa.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 dnUniformTopology( String[] names )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>names</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The taxon names that will be used as the tip names.</description>
+                <valueType>String[]</valueType>
+            </argument>
+
+            <returnValue>Dist_uniformTopology, Distribution, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                This simply specifies a uniform probability distribution on all possible tree topologies with n taxa.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 names <- ["A", "B", "C", "D"]
+                 topology ~ dnUniformTopology( names )
+                 topology
+                 ]]>
+
+            </example>
+
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>treeAssembly</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

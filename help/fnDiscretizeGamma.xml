@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>fnDiscretizeGamma</name>
+
+        <title>Compute a discretize gamma distribution</title>
+    
+        <description>
+            <p>
+            The discretized gamma distribution gives the quantiles of the gamma distribution.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             fnDiscretizeGamma( RealPos shape, RealPos rate, Integer num_cats, Bool median = FALSE )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>shape</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The shape parameter of the gamma distribution.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+        <argument>
+            <label>rate</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The rate parameter of the gamma distribution.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+        <argument>
+            <label>num_cats</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>Number of categories in which to break the distribution.</description>
+            <valueType>Integer</valueType>
+        </argument>
+        <argument>
+            <label>median</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>Should we use the median or the mean within each quantile.</description>
+            <valueType>Bool</valueType>
+            <defaultValue>FALSE</defaultValue>
+        </argument>
+
+        <returnValue>RealPos[], ModelObject, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            In some cases you want to use the quantiles of a distribution instead of estimating the continuous value of a distribution.
+            You could compute the k quantiles yourself. This function, however, provides you a convenient access to compute the gamma quantiles (discretized gamma)
+            because it is so often used for modeling rate variation among sites.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+                s <- 2
+                r <- 2
+                a := fnDiscretizeGamma(shape=s,rate=r,num_cats=4)
+                a
+                mean(a)
+                s <- 4
+                a
+                mean(a)
+             ]]>
+
+        </example>
+
+        <author>Sebastian Hoehna</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>dnGamma</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

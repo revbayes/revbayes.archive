@@ -1,0 +1,190 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The autocorrelated, lognormally distributed relaxed-clock model</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The autocorrelated, lognormally distributed relaxed-clock model</h1>
+
+        <h2>Type dnACLN</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnACLN</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This is the constructor function for the autocorrelated, log-normally distributed node rates
+            on a tree. This model was described in Thorne et al. (1998), Kishino et al. (2001), and Thorne &
+            Kishino (2002).
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnACLN( TimeTree tree, RealPos sigma, Real rootRate, RealPos scaleValue )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >tree</b>
+<div class="indent">
+The time-tree on which the node rates are mapped.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+TimeTree<br />
+</div>
+<br />
+<b >sigma</b>
+<div class="indent">
+The variance parameter controlling the degree of autocorrelation among node rates.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >rootRate</b>
+<div class="indent">
+The rate value at the root.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+<b >scaleValue</b>
+<div class="indent">
+The base-rate of the process.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                This distribution gives a vector of RealPos values that are mapped to the non-root
+            	nodes of a tree. A separate function (aveRateOnBranch) taking this vector and the other ACLN parameters
+            	is used to compute the branch-rates. 
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+	## read in the tree 
+	T <- readTrees("data/bears_dosReis.tre")[1]
+
+	### Load the sequence alignment
+	D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
+	
+	### get helpful variables from the data
+	n_sites <- D.nchar(1)
+	n_taxa <- D.ntaxa()
+	n_branches <- 2 * n_taxa - 2
+	names <- D.names()
+
+	### initialize an iterator for the moves vector
+	mi = 1
+
+	### Specify Yule (pure birth) tree prior
+	birth_rate <- 0.1
+	root_time ~ dnExponential(0.1, offset=35.0) 
+	timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=1.0, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
+	
+	### set up the base-rate parameter of the ACLN model 
+	base_rate <- 0.01
+
+	### set up the variance parameter of the ACLN model 
+	nu <- 0.1
+	
+	### the clock rate at the root of the tree
+	root_rate ~ dnGamma(2.0, 4.0)
+
+	### a vector of the rates at each node
+	### from the ACLN model, which is conditioned on the tree, nu, the root rate, and base rate
+	node_rates ~ dnACLN(timetree, nu, root_rate, base_rate)
+	
+	### the rate at each branch is the average of the rate at each node separated by that branch
+	### a special core function is used to calculate the rate for branch i
+	for(i in 1:n_branches){
+		branch_rates[i] := aveRateOnBranch(node_rates, timetree, root_rate, base_rate, index=i)
+	}
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                    Kishino H, Thorne JL, Bruno W. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution. Mol Biol Evol. 18:352–361.
+                <br />
+<br />
+<br />
+
+                    Rannala B, Yang Z. 2003. Bayes estimation of species divergence times and ancestral population sizes using DNA sequences from multiple loci. Genetics 164:1645–1656. 
+                <br />
+<br />
+<br />
+
+                    Thorne J, Kishino H. 2002. Divergence time and evolutionary rate estimation with multilocus data. Syst Biol. 51:689–702.
+                <br />
+<br />
+<br />
+
+                    Thorne J, Kishino H, Painter IS. 1998. Estimating the rate of evolution of the rate of molecular evolution. Mol Biol Evol. 15:1647–1657.
+                <br />
+<br />
+<br />
+
+                    Yang Z, Rannala B. 2006. Bayesian estimation of species divergence times under a molecular clock using multiple fossil calibrations with soft bounds. Mol Biol Evol. 23:212–226.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Tracy A. Heath</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('aveRateOnBranch'); return false;">aveRateOnBranch</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

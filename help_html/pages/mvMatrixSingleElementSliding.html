@@ -1,0 +1,133 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Simple Metropolis-Hastings move on a real matrix</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Simple Metropolis-Hastings move on a real matrix</h1>
+
+        <h2>Type mvMatrixSingleElementSliding</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvMatrixSingleElementSliding</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This move function performs a sliding-move on one random entry of a real matrix.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mvMatrixSingleElementSliding( RealMatrix x, RealPos lambda = 1, Bool tune = TRUE, RealPos weight = 1 )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The matrix to which the move is applied.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+RealMatrix<br />
+</div>
+<br />
+<b >lambda</b>
+<div class="indent">
+The tuning parameter or size of the proposal.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >tune</b>
+<div class="indent">
+This flag specifies if the proposal tuning parameter (lambda) is retuned during the burnin period.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+TRUE<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+The expected number of times this move will be applied per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                This move proposes a simple, one-component-at-a-time, sliding-move to a real matrix. The sliding move is applied to a randomly chosen entry of the matrix.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                 ...
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent"><br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Nicolas Lartillot</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>
