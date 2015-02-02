@@ -1,14 +1,6 @@
-//
-//  ContinuousDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 11/16/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlPositiveContinuousDistribution.h"
 
-#include "ContinuousStochasticNode.h"
+#include "RlContinuousStochasticNode.h"
 #include "TypedDistribution.h"
 
 using namespace RevLanguage;
@@ -34,7 +26,7 @@ PositiveContinuousDistribution::~PositiveContinuousDistribution() {
 RealPos* PositiveContinuousDistribution::createRandomVariable(void) const { 
     
     RevBayesCore::ContinuousDistribution* d = createDistribution();
-    RevBayesCore::TypedDagNode<double>* rv  = new RevBayesCore::ContinuousStochasticNode("", d);
+    RevBayesCore::TypedDagNode<double>* rv  = new ContinuousStochasticNode("", d, this->clone() );
     
     return new RealPos(rv);
 }

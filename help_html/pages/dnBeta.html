@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Beta distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Beta distribution</h1>
+
+        <h2>Type dnBeta</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnBeta</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            The Beta probability distribution.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnBeta( RealPos alpha, RealPos beta )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >alpha</b>
+<div class="indent">
+The alpha parameter.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >beta</b>
+<div class="indent">
+The beta parameter.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                The Beta distribution is a probability distribution defined on 0 to 1.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                 # we create a variable x from a beta distribution
+                 x ~ dnBeta(1,1)
+                 # this variable could be a parameter from a binomial distribution
+                 y ~ dnBinomial(n=10,p)
+                 # now you could clamp the variable y and run an MCMC on it ...
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('dBeta'); return false;">dBeta</a><br />
+<a href="" onClick="navigateHelp('rBeta'); return false;">rBeta</a><br />
+<a href="" onClick="navigateHelp('dnDirichlet'); return false;">dnDirichlet</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

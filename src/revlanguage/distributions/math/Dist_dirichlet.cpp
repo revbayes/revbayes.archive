@@ -1,12 +1,3 @@
-//
-//  ExponentialDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "DirichletDistribution.h"
@@ -38,7 +29,7 @@ Dist_dirichlet* Dist_dirichlet::clone( void ) const {
 RevBayesCore::DirichletDistribution* Dist_dirichlet::createDistribution( void ) const {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const ModelVector<RealPos> &>( alpha->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* a = static_cast<const ModelVector<RealPos> &>( alpha->getRevObject() ).getDagNode();
     RevBayesCore::DirichletDistribution* d              = new RevBayesCore::DirichletDistribution( a );
     
     return d;
@@ -66,7 +57,7 @@ const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_dirichlet::getMemberRules(void) const {
+const MemberRules& Dist_dirichlet::getParameterRules(void) const {
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -103,7 +94,7 @@ void Dist_dirichlet::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_dirichlet::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_dirichlet::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "alpha" ) 
     {
@@ -111,6 +102,6 @@ void Dist_dirichlet::setConstMemberVariable(const std::string& name, const RevPt
     }
     else 
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

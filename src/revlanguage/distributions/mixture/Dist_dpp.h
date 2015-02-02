@@ -38,7 +38,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
 //        void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
@@ -47,13 +47,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
-        RevPtr<const Variable>                          concentration;
-        RevPtr<const Variable>                          baseDistribution;
-        RevPtr<const Variable>                          numElements;
+        RevPtr<const RevVariable>                       concentration;
+        RevPtr<const RevVariable>                       baseDistribution;
+        RevPtr<const RevVariable>                       numElements;
         
     };
     
@@ -136,7 +136,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(vo
 
 /** Return member rules (no members) */
 template <typename valType>
-const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getMemberRules(void) const
+const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getParameterRules(void) const
 {
     
     static MemberRules distDPPMemberRules;
@@ -169,7 +169,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getTypeSpec( void )
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::Dist_dpp<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void RevLanguage::Dist_dpp<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "concentration" )
@@ -186,7 +186,7 @@ void RevLanguage::Dist_dpp<valType>::setConstMemberVariable(const std::string& n
     }
     else
     {
-        TypedDistribution< ModelVector< valType > >::setConstMemberVariable(name, var);
+        TypedDistribution< ModelVector< valType > >::setConstParameter(name, var);
     }
 }
 

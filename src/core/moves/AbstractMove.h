@@ -38,7 +38,7 @@ namespace RevBayesCore {
         void                                                    autoTune(void);                                                                         //!< Automatic tuning of the move.
         double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
         bool                                                    isActive(unsigned long gen) const;                                                      //!< Is the move active at the generation 'gen'?
-        void                                                    perform(double heat, bool raiseLikelihoodOnly);                                         //!< Perform the move.
+        void                                                    perform(double lHeat, double pHeat);                                                    //!< Perform the move.
         void                                                    resetCounters(void);                                                                    //!< Reset the counters such as numTried.
         
     protected:
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         
         
         // pure virtual protected methods
-        virtual void                                            performMove(double heat, bool raiseLikelihoodOnly) = 0;                                 //!< Perform the move.
+        virtual void                                            performMove(double lHeat, double pHeat) = 0;                                            //!< Perform the move.
         virtual void                                            tune(void) = 0;                                                                         //!< Specific tuning of the move
         
         // virtual methods

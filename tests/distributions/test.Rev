@@ -1,3 +1,0 @@
-# testing the distributions
-source("distributions/math.Rev")
-clear()

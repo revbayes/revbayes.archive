@@ -53,6 +53,34 @@ Topology::Topology(const Topology& t) :
     
 }
 
+//SK
+Topology::Topology(TopologyNode* Root, std::vector<TopologyNode*> Nodes) :
+root(Root),
+nodes(Nodes),
+treesUsingThisTopology()
+{
+	numNodes = nodes.size();
+	numTips = 0;
+	for (size_t i = 0; i < numNodes; i++) {
+		if (nodes[i]->getNumberOfChildren() == 0)
+			numTips++;
+	}
+    
+	if (root->getNumberOfChildren() == 2) {
+		rooted = true;
+		if (numNodes == 2 * numTips - 1) {
+			binary = true;
+		} else binary = false;
+	}
+	else {
+		rooted = false;
+		if (numNodes == 2 * numTips - 2) {
+			binary = true;
+		}
+		else binary = false;
+	}
+    
+}
 
 /* Destructor */
 Topology::~Topology(void) 
@@ -330,8 +358,6 @@ void Topology::setRoot( TopologyNode* r) {
     // set the root
     root = r;
     
-//    root->setTopology( this );
-    
     nodes.clear();
     
     // bootstrap all nodes from the root and add the in a pre-order traversal
@@ -349,6 +375,53 @@ void Topology::setRoot( TopologyNode* r) {
         root->setTree( NULL );
     else
         root->setTree( *treesUsingThisTopology.begin() );
+    
+}
+
+
+// used when reading in tree with existing node indexes we need to keep
+void Topology::setRootNoReIndexing( TopologyNode* r) {
+    
+    // set the root
+    root = r;
+	
+    nodes.clear();
+	fillNodesByPhylogeneticTraversal(r);
+	numNodes = nodes.size();
+    
+    // Set the tree pointer of the nodes
+    if ( treesUsingThisTopology.empty() )
+        root->setTree( NULL );
+    else
+        root->setTree( *treesUsingThisTopology.begin() );
+    
+}
+
+// method to reindex nodes by their order
+// necessary to keep track of branch lengths
+void Topology::reindexNodes() {
+	
+    for (unsigned int i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i]->setIndex(i);
+    }
+    
+}
+
+
+// method to order nodes by their existing index
+// used when reading in tree with existing node indexes we need to keep
+void Topology::orderNodesByIndex() {
+	
+	std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(numNodes);
+	for (int i = 0; i < numNodes; i++) {
+		for (int j = 0; j < numNodes; j++) {
+			if (i == nodes[j]->getIndex()) {
+				nodes_copy[i] = nodes[j];
+			}
+		}
+	}
+	nodes = nodes_copy;
     
 }
 

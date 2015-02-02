@@ -33,7 +33,7 @@ namespace RevLanguage {
     class SyntaxIncrement : public SyntaxElement {
         
     public:
-        SyntaxIncrement(SyntaxVariable* v);                                                         //!< Basic constructor
+        SyntaxIncrement(SyntaxElement* v, bool post);                                               //!< Basic constructor
         SyntaxIncrement(const SyntaxIncrement& x);                                                  //!< Copy constructor
         
 	    virtual                         ~SyntaxIncrement();                                         //!< Destructor
@@ -46,12 +46,14 @@ namespace RevLanguage {
         void                            printValue(std::ostream& o) const;                          //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>                evaluateContent(Environment& env);                          //!< Get semantic value
+        RevPtr<RevVariable>                evaluateContent(Environment& env, bool dynamic=false);      //!< Get semantic value
         bool                            isFunctionSafe(const Environment&       env,
                                                        std::set<std::string>&   localVars) const;   //!< Is this element safe in a function?
         
     protected:
-        SyntaxVariable*                 variable;                                                   //!< The variable expression
+        
+        bool                            postIncrement;                                              //!< Are we using post decrement?
+        SyntaxElement*                  variable;                                                   //!< The variable expression
         
     };
     

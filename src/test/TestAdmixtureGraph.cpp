@@ -135,7 +135,7 @@ bool TestAdmixtureGraph::run(void) {
     {
         // NclReader does not seem to work for Newick strings at this time
         /*
-        trees = NclReader::getInstance().readAdmixtureTrees( snpFilepath + treeFilename, "newick" );
+        trees = NclReader().readAdmixtureTrees( snpFilepath + treeFilename, "newick" );
         std::cout << "Read " << trees.size() << " trees." << std::endl;
         std::cout << trees[0]->getNewickRepresentation() << std::endl;
          */
@@ -271,7 +271,7 @@ bool TestAdmixtureGraph::run(void) {
         branchRates_nonConst.push_back( tmp_branch_rate );
         
     }
-    DeterministicNode< std::vector< double > >* br_vector = new DeterministicNode< std::vector< double > >( "br_vector", new VectorFunction< double >( branchRates ) );
+    DeterministicNode< RbVector< double > >* br_vector = new DeterministicNode< std::vector< double > >( "br_vector", new VectorFunction< double >( branchRates ) );
 
     
     // model node

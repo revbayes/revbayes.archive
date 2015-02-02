@@ -55,13 +55,13 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    RevBayesCore::TypedDagNode<double>* o = NULL;
     if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
     {
         o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
     }
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    RevBayesCore::TypedDagNode<double>* ra = NULL;
     if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
     {
         ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
@@ -129,7 +129,7 @@ const TypeSpec& Dist_divDepYuleProcess::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& Dist_divDepYuleProcess::getMemberRules(void) const 
+const MemberRules& Dist_divDepYuleProcess::getParameterRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -151,7 +151,7 @@ const MemberRules& Dist_divDepYuleProcess::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
 
         // add the rules from the base class
-        const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();
+        const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
@@ -185,7 +185,7 @@ const TypeSpec& Dist_divDepYuleProcess::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_divDepYuleProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_divDepYuleProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "lambda" ) 
@@ -221,7 +221,7 @@ void Dist_divDepYuleProcess::setConstMemberVariable(const std::string& name, con
         condition = var;
     }
     else {
-        TypedDistribution<TimeTree>::setConstMemberVariable(name, var);
+        TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
 }

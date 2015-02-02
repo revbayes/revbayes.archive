@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>fnDPPMeanFromConc</name>
+
+        <title>The mean number of categories from the concentration parameter for the DPP.</title>
+    
+        <description>
+            <p>
+            This function calculates the expected number of parameter categories for a given concentration parameter
+            and number of elements under the Dirichlet process prior.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             fnDPPMeanFromConc( RealPos concentration, RealPos num_elements )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>concentration</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The concentration parameter of the DPP.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+        <argument>
+            <label>num_elements</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The number of elements.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+
+        <returnValue>RealPos, Real, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            This function computes the expected number of parameter categories (k) for
+            a given number of elements (N) and a given concentration parameter (a) based on the formula given
+            in Liu (1996). (See also McAuliffe et al. 2006, Jara et al. 2007, and Heath et al. 2012.)
+            </p>
+            <p>
+            E(k | a, N) = ∑[ a / (a + i - 1) ]
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+	 ## number of DPP elements
+	 N <- 10
+ 
+	 ## prior mean number of categories
+	 a <- 3.3015
+ 
+	 ## concentration parameter of the DPP
+	 k <- fnDPPMeanFromConc(a, N)
+ 
+	 ## G_0 distribution
+	 g_0 = dnExponential(1.0)
+ 
+	 ## DPP distribution constructior
+	 rates ~ dnDPP(a, g_0, N)
+             ]]>
+
+        </example>
+
+        <reference>
+            <citation>
+                Liu JS. 1996. Nonparametric hierarchical Bayes via sequential imputa- tions. Ann Stat. 3:911–930.
+            </citation>
+        </reference>
+        <reference>
+            <citation>
+                McAuliffe JD, Blei DM, Jordan MI. 2006. Nonparametric empirical Bayes for the Dirichlet process mixture model. Stat Comput. 16: 5–14.
+            </citation>
+        </reference>
+        <reference>
+            <citation>
+            	Jara A, Garcia-Zattera MJ, Lesaffre E. 2007. A Dirichlet process mixture model for the analysis of correlated binary responses. Comput Stat Data Anal. 51:5402–5415.
+            </citation>
+        </reference>
+        <reference>
+            <citation>
+            	Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
+            </citation>
+        </reference>
+
+        <author>Tracy A. Heath</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>fnDPPConcFromMean</entry>
+            <entry>dnDPP</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

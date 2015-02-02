@@ -16,6 +16,11 @@ namespace RevBayesCore {
         
     public:
         RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
+        RateAgeBetaShift(const RateAgeBetaShift &m);                                                                                //!< Copy constructor
+        virtual                                ~RateAgeBetaShift(void);                                                             //!< Destructor
+        
+        // overloaded operators
+        RateAgeBetaShift&                       operator=(const RateAgeBetaShift &m);                                               //!< Assignment operator
         
         // Basic utility functions
         RateAgeBetaShift*                       clone(void) const;                                                                  //!< Clone object
@@ -25,7 +30,8 @@ namespace RevBayesCore {
         void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         
     protected:
-        void                                    performMove(double heat, bool raiseLikelihoodOnly);                                 //!< Perform move
+        void                                    performMove(double lHeat, double pHeat);                                 //!< Perform move
+        void                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
         void                                    tune(void);
         
     private:
@@ -48,4 +54,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__RateAgeBetaShift__) */
+#endif

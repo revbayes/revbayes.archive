@@ -1,5 +1,4 @@
 #include "ContinuousCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "ContinuousTaxonData.h"
 #include "RbConstants.h"
 #include "RbException.h"
@@ -39,17 +38,17 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd)
 {
-    
+    std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
     if ( rhs == NULL )
     {
-        throw RbException("Adding wrong character data type into CharacterData!!!");
+        throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -58,7 +57,7 @@ ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterDat
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd)
 {
     
     // check if both have the same number of taxa
@@ -77,7 +76,8 @@ ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterD
         if ( idx != RbConstants::Size_t::inf)
         {
             used[idx] = true;
-            taxon.add( obsd.getTaxonData( n ) );
+            taxon.concatenate( obsd.getTaxonData( n ) );
+
         }
         else
         {
@@ -224,7 +224,7 @@ void ContinuousCharacterData::excludeTaxon(size_t i)
  *
  * \param[in]    s    The name of the taxon that will be excluded.
  */
-void ContinuousCharacterData::excludeTaxon(std::string& s) 
+void ContinuousCharacterData::excludeTaxon(const std::string& s)
 {
     
     for (size_t i = 0; i < getNumberOfTaxa(); i++) 
@@ -248,7 +248,7 @@ void ContinuousCharacterData::excludeTaxon(std::string& s)
  *
  * \return              The cn-th character of the tn-th taxon. 
  */
-const ContinuousCharacterState& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) const 
+const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) const
 {
     
     if ( cn >= getNumberOfCharacters() )
@@ -266,16 +266,7 @@ const ContinuousCharacterState& ContinuousCharacterData::getCharacter( size_t tn
 std::string ContinuousCharacterData::getDatatype(void) const 
 {
     
-    std::string dt = "";
-    if ( sequenceNames.size() > 0 ) 
-    {
-        const ContinuousTaxonData &t = getTaxonData( sequenceNames[0] );
-        if ( t.size() > 0 ) 
-        {
-            dt = t[0].getDatatype();
-        }
-        
-    }
+    std::string dt = "Continuous";
     
     return dt;
 }
@@ -301,20 +292,6 @@ const std::string& ContinuousCharacterData::getFilePath(void) const
 {
     
     return filePath;
-}
-
-/** 
- * Get whether the homology of the characters has been established, or not.
- * For continuous characters, this should always be "true." However, we still 
- * return the state of the member variable (homologyEstablished) rather than
- * simply returning true.
- *
- * \return    The homology state of the character
- */
-const bool ContinuousCharacterData::getHomologyEstablished(void) const
-{
-
-    return homologyEstablished;
 }
 
 
@@ -359,25 +336,6 @@ size_t ContinuousCharacterData::getNumberOfCharacters(void) const
 
 
 /** 
- * Get the number of characters in the i-th taxon data object. 
- * This i regardless of whether the character are included or excluded.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-size_t ContinuousCharacterData::getNumberOfCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters();
-    }
-    
-    return 0;
-}
-
-
-/** 
  * Get the number of characters in taxon data object. 
  * This i regardless of whether the character are included or excluded.
  * For simplicity we assume that all taxon data objects contain the same number
@@ -391,24 +349,6 @@ size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const {
     {
         return getTaxonData(0).getNumberOfCharacters() - deletedCharacters.size();
     }
-    return 0;
-}
-
-
-/** 
- * Get the number of included characters in the i-th taxon data object.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-size_t ContinuousCharacterData::getNumberOfIncludedCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters() - deletedCharacters.size();
-    }
-    
     return 0;
 }
 
@@ -496,7 +436,7 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
 /** 
  * Get the taxon data object with name tn.
  *
- * \return     A non-const reference to the taxon data object with name tn.
+ * \return     A const reference to the taxon data object with name tn.
  */
 const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &tn ) const 
 {
@@ -523,7 +463,7 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::str
 /** 
  * Get the taxon data object with name tn.
  *
- * \return     A const reference to the taxon data object with name tn.
+ * \return     A non-const reference to the taxon data object with name tn.
  */
 ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &tn ) 
 {
@@ -607,7 +547,7 @@ void ContinuousCharacterData::includeCharacter(size_t i)
  *
  * \return            The index of the taxon.
  */
-size_t ContinuousCharacterData::indexOfTaxonWithName( std::string& s ) const 
+size_t ContinuousCharacterData::indexOfTaxonWithName( const std::string& s ) const
 {
     
     // search through all names
@@ -672,7 +612,7 @@ bool ContinuousCharacterData::isTaxonExcluded(size_t i) const
  *
  * \param[in]    s    The name of the taxon in question.
  */
-bool ContinuousCharacterData::isTaxonExcluded(std::string& s) const 
+bool ContinuousCharacterData::isTaxonExcluded(const std::string& s) const
 {
     
     size_t i = indexOfTaxonWithName(s);
@@ -722,7 +662,7 @@ void ContinuousCharacterData::restoreTaxon(size_t i)
  *
  * \param[in]    s    The name of the taxon in question.
  */
-void ContinuousCharacterData::restoreTaxon(std::string& s) 
+void ContinuousCharacterData::restoreTaxon(const std::string& s)
 {
     
     size_t i = indexOfTaxonWithName( s );
@@ -775,7 +715,7 @@ void ContinuousCharacterData::setHomologyEstablished(bool tf)
  * \param[in] currentName    self explanatory.
  * \param[in] newName        self explanatory.
  */
-void ContinuousCharacterData::setTaxonName(std::string& currentName, std::string& newName)
+void ContinuousCharacterData::setTaxonName(const std::string& currentName, const std::string& newName)
 {
     ContinuousTaxonData t = getTaxonData( currentName );
     t.setTaxonName(newName);
@@ -790,6 +730,42 @@ void ContinuousCharacterData::setTaxonName(std::string& currentName, std::string
     }
     taxonMap.erase( currentName );
     taxonMap.insert( std::pair<std::string, ContinuousTaxonData >( newName, t ) );
+    
+}
+
+
+
+
+
+/**
+ * Print the content of the data matrix.
+ */
+void ContinuousCharacterData::show(std::ostream &out)
+{
+    
+    size_t nt = this->getNumberOfTaxa();
+    for (size_t i=0; i<nt; i++)
+    {
+        
+        const ContinuousTaxonData& taxonData = this->getTaxonData(i);
+        std::string taxonName = this->getTaxonNameWithIndex(i);
+        size_t nc = taxonData.getNumberOfCharacters();
+        std::cout << "   " << taxonName << std::endl;
+        std::cout << "   ";
+        for (size_t j=0; j<nc; j++)
+        {
+            
+            
+            std::cout << taxonData[j] << " ";
+            if ( (j+1) % 100 == 0 && (j+1) != nc )
+            {
+                std::cout << std::endl << "   ";
+            }
+            
+        }
+        
+        std::cout << std::endl;
+    }
     
 }
 

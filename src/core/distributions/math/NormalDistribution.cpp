@@ -6,12 +6,17 @@
 
 using namespace RevBayesCore;
 
-NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 0.0 ) ), mean( m ), stDev( s ) {
+NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 0.0 ) ),
+    mean( m ),
+    stDev( s )
+{
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( mean );
+    addParameter( stDev );
+    
     *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
-}
-
-
-NormalDistribution::NormalDistribution(const NormalDistribution &n) : ContinuousDistribution( n ), mean( n.mean ), stDev( n.stDev ) {
 }
 
 
@@ -55,21 +60,8 @@ void NormalDistribution::redrawValue( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> NormalDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( mean );
-    parameters.insert( stDev );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void NormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+void NormalDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     if (oldP == mean)
     {

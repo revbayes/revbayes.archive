@@ -21,17 +21,17 @@
 
 #include "TypedFunction.h"
 #include "ContinuousDistribution.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
-    class DiscretizeGammaFunction : public TypedFunction< std::vector<double> >{
+    class DiscretizeGammaFunction : public TypedFunction< RbVector<double> >{
         
     public:
         DiscretizeGammaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc, bool med);
-        DiscretizeGammaFunction(const DiscretizeGammaFunction &pdf);
         
-        DiscretizeGammaFunction*                   clone(void) const;                                                  //!< Create a clon.
+        DiscretizeGammaFunction*            clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value
         
     protected:
@@ -40,8 +40,8 @@ namespace RevBayesCore {
     private:
         const TypedDagNode<double>*         shape;
         const TypedDagNode<double>*         rate;
-        const TypedDagNode<int>*         numCats;
-        bool                             median;
+        const TypedDagNode<int>*            numCats;
+        bool                                median;
     };
 }
 

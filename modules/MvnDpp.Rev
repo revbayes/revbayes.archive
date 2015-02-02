@@ -1,0 +1,19 @@
+################################################################################
+#
+# RevBayes Module: Multivariate normal distribution with the covariance matrix
+#                  separated into a variance and correlation coefficient parameters.
+#                  The correlation parameters are assumed to be drawn from a Dirichlet
+#                  process prior model.
+# 
+#
+# Authors: John Huelsenbeck and Risa Takenaka
+#
+################################################################################
+
+nTraits <- 3
+kappa <- 0.1
+df <- nTraits + 2
+covdim = nTraits
+
+
+R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df)

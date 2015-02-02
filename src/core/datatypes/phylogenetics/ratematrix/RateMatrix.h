@@ -1,6 +1,7 @@
 #ifndef RateMatrix_H
 #define RateMatrix_H
 
+#include "Assignable.h"
 #include "Cloneable.h"
 #include "MatrixReal.h"
 #include <vector>
@@ -11,19 +12,24 @@ namespace RevBayesCore {
     class TransitionProbabilityMatrix;
 
 
-    class RateMatrix : public Cloneable {
+    class RateMatrix : public Cloneable, public Assignable {
 
     public:
         virtual                            ~RateMatrix(void);                                                                           //!< Destructor
 
         // overloaded operators
-        virtual std::vector<double>&                operator[](size_t i) = 0;                                                           //!< Subscript operator
-        virtual const std::vector<double>&          operator[](size_t i) const = 0;                                                     //!< Subscript operator (const)
-           
-        virtual std::vector<std::vector<double> >::const_iterator       begin(void) const = 0;
-        virtual std::vector<std::vector<double> >::iterator             begin(void) = 0;
-        virtual std::vector<std::vector<double> >::const_iterator       end(void) const = 0;
-        virtual std::vector<std::vector<double> >::iterator             end(void) = 0;
+        virtual std::vector<double>&        operator[](size_t i) = 0;                                                           //!< Subscript operator
+        virtual const std::vector<double>&  operator[](size_t i) const = 0;                                                     //!< Subscript operator (const)
+        
+        virtual bool                        operator==(const RateMatrix &rm) const { return this == &rm; }
+        virtual bool                        operator!=(const RateMatrix &rm) const { return !operator==(rm); }
+        virtual bool                        operator<(const RateMatrix &rm) const { return this < &rm; }
+        virtual bool                        operator<=(const RateMatrix &rm) const { return operator<(rm) || operator==(rm); }
+        
+//        virtual std::vector<std::vector<double> >::const_iterator       begin(void) const = 0;
+//        virtual std::vector<std::vector<double> >::iterator             begin(void) = 0;
+//        virtual std::vector<std::vector<double> >::const_iterator       end(void) const = 0;
+//        virtual std::vector<std::vector<double> >::iterator             end(void) = 0;
 
 
         // pure virtual methods you have to overwrite
@@ -35,6 +41,7 @@ namespace RevBayesCore {
         virtual void                        setDiagonal(void) = 0;                                                                      //!< Set the diagonal such that each row sums to zero
         virtual void                        updateMatrix(void) = 0;                                                                     //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
 
+        virtual RateMatrix&                 assign(const Assignable &m);
 
         // public methods
         size_t                              getNumberOfStates(void) const;                                                              //!< Return the number of states

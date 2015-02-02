@@ -40,17 +40,13 @@ namespace RevBayesCore {
         RateMatrix_Pomo(size_t n,  const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
         
         RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
-        RateMatrix_Pomo(const RateMatrix_Pomo& m);                                  //!< Copy constructor
         virtual                         ~RateMatrix_Pomo(void);                     //!< Destructor
-        
-        // overloaded operators
-        RateMatrix_Pomo&                operator=(const RateMatrix_Pomo& r);
         
         // RateMatrix functions
         double                          averageRate(void) const;
         void                            calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMatrix_Pomo*                clone(void) const;
-        const std::vector<double>&  getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
+        const std::vector<double>&      getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
 
         void                            updateMatrix(void);
         void setMutationRates(const std::vector<double>& mr);

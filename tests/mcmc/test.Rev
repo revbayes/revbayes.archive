@@ -1,7 +1,0 @@
-# testing the MCMC on the normalmodel
-source("MCMC/normaltest.Rev")
-clear()
-
-# testing the MCMC on the normalmodel without data
-source("MCMC/normalcheck.Rev")
-clear()

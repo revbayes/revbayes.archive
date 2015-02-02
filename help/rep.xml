@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>rep</name>
+
+        <title>Create a vector of replicated values</title>
+    
+        <description>
+            <p>
+                'rep' creates a vector of 'n' copies of the value 'x'.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             rep( RealPos x, Natural n )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The value to be replicated</description>
+            <valueType>RealPos</valueType>
+        </argument>
+        <argument>
+            <label>n</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The number of replicated values</description>
+            <valueType>Natural</valueType>
+        </argument>
+
+        <returnValue>RealPos[], ModelObject, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            'rep' creates a vector of 'n' elements, each with value 'x', preserving the type of 'x' in the returned vector.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+            > rep(0.1, 3)
+               [ 0.1, 0.1, 0.1 ]
+            ]]>
+
+        </example>
+
+        <author>Michael Landis</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>seq</entry>
+            <entry>simplex</entry>
+            <entry>v</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

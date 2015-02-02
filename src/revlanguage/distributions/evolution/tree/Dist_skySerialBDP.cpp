@@ -68,21 +68,21 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
         ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     }
     // speciation rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* st    = static_cast<const ModelVector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* st    = static_cast<const ModelVector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
     // extinction rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* e     = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* e     = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
     // extinction rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* et    = static_cast<const ModelVector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* et    = static_cast<const ModelVector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
     // sampling rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* p     = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p     = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
     // sampling rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
     // sampling probabilities
-    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const ModelVector<RealPos> &>( rho->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* r     = static_cast<const ModelVector<RealPos> &>( rho->getRevObject() ).getDagNode();
     // sampling times
-    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<RealPos> &>( rhoTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rt    = static_cast<const ModelVector<RealPos> &>( rhoTimes->getRevObject() ).getDagNode();
     // time between now and most recent sample
     double tLastSample                          = static_cast<const RealPos &>( tLast->getRevObject() ).getValue();
     // condition
@@ -144,7 +144,7 @@ const TypeSpec& Dist_skySerialBDP::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& Dist_skySerialBDP::getMemberRules(void) const 
+const MemberRules& Dist_skySerialBDP::getParameterRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -161,7 +161,7 @@ const MemberRules& Dist_skySerialBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"               , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"                   , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"              , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"                   , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>(std::vector<double>(0.0)) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"                   , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>(std::vector<double>(1.0)) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"              , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample"   , RealPos::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         std::vector<std::string> optionsCondition;
@@ -173,7 +173,7 @@ const MemberRules& Dist_skySerialBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"          , ModelVector<Clade>::getClassTypeSpec()   , ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
-        const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();
+        const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
@@ -207,7 +207,7 @@ const TypeSpec& Dist_skySerialBDP::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_skySerialBDP::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_skySerialBDP::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "lambda" ) 
@@ -268,7 +268,7 @@ void Dist_skySerialBDP::setConstMemberVariable(const std::string& name, const Re
     }
     else 
     {
-        TypedDistribution<TimeTree>::setConstMemberVariable(name, var);
+        TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
 }

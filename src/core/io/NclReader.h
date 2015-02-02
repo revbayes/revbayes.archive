@@ -22,7 +22,6 @@
 #include "AminoAcidState.h"
 #include "AbstractCharacterData.h"
 #include "ContinuousCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "ncl.h"
@@ -42,7 +41,7 @@ namespace RevBayesCore {
     class Tree;
     class BranchLengthTree;
     class TimeTree;
-    class AdmixtureTree;
+//    class AdmixtureTree;
     
     class NclReader{
         
@@ -50,12 +49,15 @@ namespace RevBayesCore {
         friend class ::NxsUnalignedBlock;
         
     public:
+        NclReader(void) { }                                                                                                         //!< Default constructor
+        NclReader(const NclReader& r) { }                                                                                           //!< Copy constructor
+        virtual                                    ~NclReader(void) { }                                                             //!< Destructor
+
         
         void                                        addWarning(std::string s) { warningsSummary.insert(s); }                        //!< Add a warning to the warnings vector
         void                                        clearWarnings(void) { warningsSummary.clear(); }                                //!< Clear all of the warnings from the warnings vector
         size_t                                      getNumWarnings(void) { return warningsSummary.size(); }                         //!< Return the number of warnings
         std::set<std::string>&                      getWarnings(void) { return warningsSummary; }                                   //!< Get a reference to the warnings vector
-        static NclReader&                           getInstance(void);                                                              //!< Get a reference to this singleton class
         void                                        clearContent(void) { nexusReader.ClearContent(); }                              //!< Clear the content of the NCL object
         
         // file type methods
@@ -72,12 +74,9 @@ namespace RevBayesCore {
         // stuff for reading trees
         std::vector<BranchLengthTree* >*            readBranchLengthTrees(const std::string &fn);                                   //!< Read trees
         std::vector<TimeTree*>                      readTimeTrees(const std::string &treeFilename);
-        std::vector<AdmixtureTree* >                readAdmixtureTrees(const std::string &treeFileName);
+//        std::vector<AdmixtureTree* >                readAdmixtureTrees(const std::string &treeFileName);
         
     private:
-        NclReader(void) { }                                                             //!< Default constructor
-        NclReader(const NclReader& r) { }                                               //!< Copy constructor
-        virtual                                    ~NclReader(void) { }                                                             //!< Destructor
         
         DiscreteCharacterData<AminoAcidState>*      createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         ContinuousCharacterData*                    createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
@@ -89,7 +88,6 @@ namespace RevBayesCore {
         DiscreteCharacterData<RnaState>*            createUnalignedRnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold RNA data
         bool                                        fileExists(const char *fn) const;                                               //!< Returns whether a file exists
         std::string                                 findFileNameFromPath(const std::string& fp) const;                              //!< Returns the file name from a file path
-        void                                        formatError(RbFileManager& fm, std::string& errorStr);                          //!< Format the error string when (mis)reading files
         std::string                                 intuitDataType(std::string& s);                                                 //!< Attempt to determine the type of data
         
         // methods for reading sequence alignments

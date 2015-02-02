@@ -29,11 +29,10 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class LessEqualFunction : public TypedFunction<bool> {
+    class LessEqualFunction : public TypedFunction<unsigned int> {
         
     public:
         LessEqualFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
-        LessEqualFunction(const LessEqualFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~LessEqualFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -54,18 +53,13 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::LessEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::LessEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+    left( l ),
+    right( r )
+{
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
-    
-    update();
-}
-
-
-template <class leftValueType, class rightValueType>
-RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::LessEqualFunction(const LessEqualFunction<leftValueType,rightValueType> &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -79,13 +73,15 @@ RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::~LessEqualFunctio
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessEqualFunction<leftValueType,rightValueType>* RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::clone( void ) const {
+RevBayesCore::LessEqualFunction<leftValueType,rightValueType>* RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::clone( void ) const
+{
     return new LessEqualFunction<leftValueType,rightValueType>( *this );
 }
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::update( void ) {
+void RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::update( void )
+{
     
     *this->value = (left->getValue() <= right->getValue());
     
@@ -94,12 +90,15 @@ void RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::update( void
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    if ( oldP == left ) {
+    if ( oldP == left )
+    {
         left = static_cast<const TypedDagNode<leftValueType>* >( newP );
     }
-    if ( oldP == right ) {
+    if ( oldP == right )
+    {
         right = static_cast<const TypedDagNode<rightValueType>* >( newP );
     }
     

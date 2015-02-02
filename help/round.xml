@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>round</name>
+
+        <title>Round a number</title>
+    
+        <description>
+            <p>
+            'round' rounds the value 'x' to the nearest whole number.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             round( RealPos x )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The value</description>
+            <valueType>RealPos</valueType>
+        </argument>
+
+        <returnValue>Natural, Integer, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+                'round' rounds the number 'x' to the nearest whole number. If 'x' is RealPos, 'round(x)' returns a Natural number. If 'x' is Real, 'round(x)' returns an Integer. 
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+            > round(1.499)
+                1
+            > round(1.5)
+                2 
+            > round(1.999)
+                2
+            ]]>
+
+        </example>
+
+        <author>Michael Landis</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>ceil</entry>
+            <entry>floor</entry>
+            <entry>trunc</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

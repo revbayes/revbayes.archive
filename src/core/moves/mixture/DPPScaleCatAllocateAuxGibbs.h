@@ -21,6 +21,7 @@
 #include <ostream>
 
 #include "MoveOld.h"
+#include "RbVector.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -28,7 +29,7 @@ namespace RevBayesCore {
     class DPPScaleCatAllocateAuxGibbs : public MoveOld {
         
     public:
-        DPPScaleCatAllocateAuxGibbs(StochasticNode<std::vector<double> >* v, double l, int na, double w);                                                                      //!< Internal constructor
+        DPPScaleCatAllocateAuxGibbs(StochasticNode< RbVector<double> >* v, double l, int na, double w);                                                                      //!< Internal constructor
         
         // Basic utility functions
         DPPScaleCatAllocateAuxGibbs*									clone(void) const;                                                                  //!< Clone object
@@ -51,7 +52,7 @@ namespace RevBayesCore {
 		int														findTableIDForVal(std::vector<double> tvs, double val);
 
 		double													lambda;                                                                             //!< The scaling parameter of the move  
-        StochasticNode<std::vector<double> >*                   variable;
+        StochasticNode< RbVector<double> >*                     variable;
 		double													safeExponentiation(double x);
 		int														numAuxCat;
     };

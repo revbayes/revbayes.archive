@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnBinomial</name>
+
+        <title>Binomial distribution</title>
+
+        <description>
+            <p>
+            Binomial probability distribution of x successes in n trials.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 dnBinomial( Probability p, Natural n )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>p</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The probability of success.</description>
+                <valueType>Probability</valueType>
+            </argument>
+            <argument>
+                <label>n</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The number of trials.</description>
+                <valueType>Natural</valueType>
+            </argument>
+
+            <returnValue>Dist_binomial, Distribution, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                The binomial probability distribution defines the number of success in n trials,
+                where each trial has the same success probability p. The probability is given by
+                (n choose x) p^(x) * (1-p)^(n-p)
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                    # we create a variable x from a beta distribution
+                    x ~ dnBeta(1,1)
+                    # this variable could be a parameter from a binomial distribution
+                    y ~ dnBinomial(n=10,p)
+                    # now you could clamp the variable y and run an MCMC on it ...
+                 ]]>
+
+            </example>
+
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnBeta</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

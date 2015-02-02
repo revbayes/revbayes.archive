@@ -31,7 +31,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_getwd::Func_getwd( void ) : Function()
+Func_getwd::Func_getwd( void ) : Procedure()
 {
     
 }
@@ -46,7 +46,7 @@ Func_getwd* Func_getwd::clone( void ) const
 
 
 /** Execute function */
-RevPtr<Variable> Func_getwd::execute( void )
+RevPtr<RevVariable> Func_getwd::execute( void )
 {
     
     RbSettings& s = RbSettings::userSettings();
@@ -54,7 +54,7 @@ RevPtr<Variable> Func_getwd::execute( void )
     
     RlString* type = new RlString( wd );
     
-    return new Variable( type );
+    return new RevVariable( type );
 }
 
 

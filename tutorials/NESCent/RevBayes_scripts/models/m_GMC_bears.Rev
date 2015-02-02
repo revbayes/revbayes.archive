@@ -1,4 +1,4 @@
-D <- readCharacterData(file="data/bears_irbp.nex")
+D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
 
 n_taxa <- D.ntaxa()
 n_sites <- D.nchar(1)
@@ -15,14 +15,14 @@ abs_clock_rt := clock_rate * scale_rate
 
 bf <- v(1,1,1,1)
 e <- v(1,1,1,1,1,1)
-sf ~ dirichlet(bf)
-er ~ dirichlet(e)
-Q := gtr(er,sf)
+sf ~ dnDirichlet(bf)
+er ~ dnDirichlet(e)
+Q := fnGTR(er,sf)
 
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
 
-phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=abs_clock_rt, nSites=n_sites, type="DNA")
+phySeq ~ dnPhyloCTMC(tree=tau, Q=Q, branchRates=abs_clock_rt, nSites=n_sites, type="DNA")
 
 # attach the data
 phySeq.clamp(D)

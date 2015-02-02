@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>mean</name>
+
+        <title>Arithmetic mean of a vector of numbers</title>
+    
+        <description>
+            <p>
+                The 'mean' function computes the arithmetic mean of a vector of real numbers.
+                The arithmetic mean simply computes the average by summing all the values together and divides them by the number of values.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             mean( Real[] x )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>This is the vector of real number.</description>
+            <valueType>Real[]</valueType>
+        </argument>
+
+        <returnValue>Real, RevObject</returnValue>
+
+        <example>
+            <![CDATA[
+             # compute the mean of some random draws from a normal distribution
+             x <- rnorm(n=10, 5,1)
+             mean(x)
+             ]]>
+
+        </example>
+
+        <author>Sebastian Hoehna</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>sum</entry>
+            <entry>var</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+</revbayes-help>
+

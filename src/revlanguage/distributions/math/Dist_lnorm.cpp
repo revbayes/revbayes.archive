@@ -1,12 +1,3 @@
-//
-//  NormalDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_lnorm.h"
@@ -26,12 +17,13 @@ Dist_lnorm* Dist_lnorm::clone( void ) const {
 }
 
 
-RevBayesCore::LognormalDistribution* Dist_lnorm::createDistribution( void ) const {
+RevBayesCore::LognormalDistribution* Dist_lnorm::createDistribution( void ) const
+{
+
     // get the parameters
     RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* o   = static_cast<const RealPos &>( offset->getRevObject() ).getDagNode();
-    RevBayesCore::LognormalDistribution* d  = new RevBayesCore::LognormalDistribution(m, s, o);
+    RevBayesCore::LognormalDistribution* d  = new RevBayesCore::LognormalDistribution(m, s);
     
     return d;
 }
@@ -58,16 +50,16 @@ const TypeSpec& Dist_lnorm::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_lnorm::getMemberRules(void) const {
+const MemberRules& Dist_lnorm::getParameterRules(void) const {
     
     static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distLnormMemberRules.push_back( new ArgumentRule( "mean",   Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE,    ArgumentRule::ANY, new Real(0.0) ) );
-        distLnormMemberRules.push_back( new ArgumentRule( "sd"  ,   RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
-        distLnormMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        
+        distLnormMemberRules.push_back( new ArgumentRule( "mean",   Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE,    ArgumentRule::ANY ) );
+        distLnormMemberRules.push_back( new ArgumentRule( "sd"  ,   RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -99,18 +91,12 @@ void Dist_lnorm::printValue(std::ostream& o) const {
     } else {
         o << "?";
     }
-    o << ", offset=";
-    if ( offset != NULL ) {
-        o << offset->getName();
-    } else {
-        o << "?";
-    }
     o << ")";
 }
 
 
 /** Set a member variable */
-void Dist_lnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_lnorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "mean" ) 
     {
@@ -120,12 +106,8 @@ void Dist_lnorm::setConstMemberVariable(const std::string& name, const RevPtr<co
     {
         sd = var;
     }
-    else if ( name == "offset" )
-    {
-        offset = var;
-    }
     else 
     {
-        PositiveContinuousDistribution::setConstMemberVariable(name, var);
+        PositiveContinuousDistribution::setConstParameter(name, var);
     }
 }

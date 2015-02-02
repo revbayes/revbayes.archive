@@ -15,7 +15,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_bimodalLnorm::Dist_bimodalLnorm() : ContinuousDistribution() 
+Dist_bimodalLnorm::Dist_bimodalLnorm() : PositiveContinuousDistribution()
 {
     
     setGuiDistributionName("Bimodal LogNormal");
@@ -83,7 +83,7 @@ const std::string& Dist_bimodalLnorm::getClassType(void)
 const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -101,7 +101,7 @@ const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_bimodalLnorm::getMemberRules(void) const 
+const MemberRules& Dist_bimodalLnorm::getParameterRules(void) const 
 {
     
     static MemberRules distNormMemberRules;
@@ -198,7 +198,7 @@ void Dist_bimodalLnorm::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_bimodalLnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_bimodalLnorm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
  
     if ( name == "mean1" ) 
@@ -223,6 +223,6 @@ void Dist_bimodalLnorm::setConstMemberVariable(const std::string& name, const Re
     }
     else
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

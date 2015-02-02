@@ -1,3 +1,0 @@
-# testing the conditions and basic boolean operators
-source("conditions/conditions.Rev")
-clear()

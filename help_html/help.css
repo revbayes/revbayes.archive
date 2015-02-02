@@ -1,0 +1,132 @@
+
+/*
+General colour scheme:
+#333 Grey for copy text
+
+Links: #336699;
+Links visited state: #4488bb;
+Other Link states: #07488A;
+
+#666 text grey
+#ddd grey
+#BBCCD9 blue grey
+#4488bb lighter blue
+#336699 dk blue
+*/
+
+
+body { 
+    color:#000000; 
+    background-color:#F8F8F8; 
+    font-size: small;
+    margin-left : 100px;
+    margin-right: 100px;
+}
+
+b    { color:#502000; }
+i    { color:#006000; }
+h1 { 
+    color:#333333; 
+    padding-top: 15px;
+    font-size: 150%;
+    font-weight: bold;
+    text-align: center;
+}
+h2 { 
+    color:#A00000; 
+    padding-top: 15px;
+    font-size: 120%;
+    font-weight: bold;
+}
+h3 {
+    color:#600000;
+    font-size: 120%;
+    padding-top: 10px;
+    padding-left: 20px;
+}
+
+p.page_copyright {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+hr.end_man_text {
+    height:0px;
+    margin-top:0px; 
+    margin-bottom:0px; 
+    border-color:#ffffff;
+    width:100%;
+}
+
+.indent{
+    font-family: monospace, courier; 
+    margin-left: 40px;
+    //padding-left : 40px;
+}
+
+pre  { 
+    font-family: monospace, courier; 
+    white-space: pre-line;
+    background: #dddddd;
+    border-style: dashed;
+    border-width: 1px;
+    padding: 20px;
+}
+
+a:link    { text-decoration: underline; color: blue; }
+a:visited { text-decoration: underline; color: blue; }
+a:hover   { text-decoration: underline; color: red; }
+a:active  { text-decoration: underline; background-color: #FFD0D0; }
+
+.footer {
+    text-align: center;
+}
+.header {
+    text-align: center;
+}
+
+.hidden{
+    visibility: hidden;
+}
+
+.visible{
+    visibility: visible;
+}
+
+.more-label{
+    font-style: italic;
+}
+.filter-bar{
+    background-color: white;
+    text-align: right;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    border-bottom: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: gray;
+}
+
+.filter-controls{
+    padding-right: 30px;
+}
+
+.more-content{
+    border-width: 1px;
+    border-style: dotted;
+    border-color: gray;
+    padding: 25px;
+}
+
+.argument{
+    float: left;
+    width: 130px;
+}
+
+.section-label{
+    font: bold, italic;
+    text-align: center;
+    width: 100%;
+    background-color: lightgray;
+}

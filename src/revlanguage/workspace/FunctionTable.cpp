@@ -22,16 +22,17 @@ FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string,
 /** Copy constructor */
 FunctionTable::FunctionTable(const FunctionTable& x) {
     
-    for (std::multimap<std::string, Function *>::const_iterator i=x.begin(); i!=x.end(); i++)
+    for (std::multimap<std::string, Function *>::const_iterator it=x.begin(); it!=x.end(); ++it)
     {
-        insert(std::pair<std::string, Function *>( (*i).first, ( (*i).second->clone() )));
+        insert(std::pair<std::string, Function *>( it->first, ( it->second->clone() )));
     }
     parentTable = x.parentTable;
 }
 
 
 /** Destructor. We own the functions so we need to delete them. */
-FunctionTable::~FunctionTable(void) {
+FunctionTable::~FunctionTable(void)
+{
 
     clear();
     
@@ -132,16 +133,16 @@ void FunctionTable::eraseFunction(const std::string& name) {
 }
 
 
-/** Execute function and get its variable value (evaluate once) */
-RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
-
-    Function&         theFunction = findFunction(name, args, true);
-    RevPtr<Variable>  theValue    = theFunction.execute();
-
-    theFunction.clear();
-
-    return theValue;
-}
+///** Execute function and get its variable value (evaluate once) */
+//RevPtr<RevVariable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+//
+//    const Function&   theFunction = findFunction(name, args, true);
+//    RevPtr<RevVariable>  theValue    = theFunction.execute();
+//
+//    theFunction.clear();
+//
+//    return theValue;
+//}
 
 
 /**
@@ -230,10 +231,11 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
 
 /** Find function (also processes arguments) */
-Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
+const Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
+{
     
-    std::pair<std::multimap<std::string, Function *>::iterator,
-              std::multimap<std::string, Function *>::iterator> retVal;
+    std::pair<std::multimap<std::string, Function *>::const_iterator,
+              std::multimap<std::string, Function *>::const_iterator> retVal;
     
     size_t hits = count(name);
     if (hits == 0)
@@ -255,9 +257,10 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
     if (hits == 1) {
         if (retVal.first->second->checkArguments(args,NULL,once) == false)
         {
-            
             std::ostringstream msg;
-            msg << "Argument mismatch for function call '" << name << "' with arguments (";
+
+            msg << "Argument or label mismatch for function call '" << name << "' with arguments (";
+
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
@@ -267,7 +270,9 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 }
                 std::string type = "NULL";
                 if (it->getVariable() != NULL) type = it->getVariable()->getRevObject().getType();
-                msg << " " << type << " \"" << it->getLabel() << "\"";
+                msg << " " << type;
+                if ( it->getLabel() != "" )
+                    msg << " '" << it->getLabel() << "'";
             }
             msg << " )." << std::endl;
             msg << "Correct usage is:" << std::endl;
@@ -284,7 +289,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         Function* bestMatch = NULL;
 
         bool ambiguous = false;
-        std::multimap<std::string, Function *>::iterator it;
+        std::multimap<std::string, Function *>::const_iterator it;
         for (it=retVal.first; it!=retVal.second; it++) 
         {
             matchScore->clear();
@@ -342,7 +347,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 {
                     msg << ",";
                 }
-                const RevPtr<const Variable>& theVar = j->getVariable();
+                const RevPtr<const RevVariable>& theVar = j->getVariable();
                 msg << " " << theVar->getRevObject().getTypeSpec().getType();
                 
             }
@@ -380,7 +385,8 @@ const Function& FunctionTable::getFirstFunction( const std::string& name ) const
 
 
 /** Get function. This function will throw an error if the name is missing or if there are several matches (overloaded functions) */
-const Function& FunctionTable::getFunction( const std::string& name ) {
+const Function& FunctionTable::getFunction( const std::string& name ) const
+{
     
     // find the template function
     const std::vector<Function *>& theFunctions = findFunctions(name);
@@ -397,31 +403,13 @@ const Function& FunctionTable::getFunction( const std::string& name ) {
 
 
 /** Get function. This function will throw an error if the name and args do not match any named function. */
-Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
+const Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
+{
     
     // find the template function
-    Function& theFunction = findFunction(name, args, once);
+    const Function& theFunction = findFunction(name, args, once);
 
     return theFunction;
-}
-
-
-/** Get a copy of the function table, including either the functions in the frame or in the entire environment */
-std::multimap<std::string, Function*> FunctionTable::getTableCopy(bool env) const
-{
-    std::multimap<std::string, Function*> tableCopy = *this;
-
-    // TODO: Do not insert hidden (overridden) functions from parent table
-    if (env == true && parentTable != NULL)
-    {
-        std::multimap<std::string, Function*> parentTableCopy = parentTable->getTableCopy(true);
-        std::multimap<std::string, Function*>::iterator it;
-        
-        for (it=parentTableCopy.begin(); it!=parentTableCopy.end(); it++)
-            tableCopy.insert( (*it) );
-    }
-    
-    return tableCopy;
 }
 
 
@@ -457,33 +445,6 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
                 {
                     return false;
                 }
-            }
-            
-        }
-    }
-
-    /* Check that the same labels are not used for different positions */
-    for (size_t i=0; i<x.size(); i++) 
-    {
-
-        const std::string& xLabel = x[i].getArgumentLabel();
-        if (xLabel.size() == 0)
-        {
-            continue;
-        }
-        
-        for (size_t j=0; j<y.size(); j++)
-        {
-
-            const std::string& yLabel = y[j].getArgumentLabel();
-            if (yLabel.size() == 0)
-            {
-                continue;
-            }
-            
-            if (xLabel == yLabel && i != j)
-            {
-                return false;
             }
             
         }
@@ -553,20 +514,10 @@ bool FunctionTable::isProcedure(const std::string& name) const
 
 
 /** Print function table for user in pretty format */
-void FunctionTable::printValue(std::ostream& o, bool env) const {
+void FunctionTable::printValue(std::ostream& o, bool env) const
+{
     
-    std::multimap<std::string, Function*> printTable;
-    
-    // We get a single table for frame or environment, sorted appropriately
-    printTable = getTableCopy( env );
-
-    // Do not print anything if table is empty
-    if (printTable.size() == 0)
-    {
-        return;
-    }
-    
-    for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
+    for (std::multimap<std::string, Function *>::const_iterator i=begin(); i!=end(); i++)
     {
         std::ostringstream s("");
 
@@ -576,6 +527,13 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
         
         o << StringUtilities::oneLiner( s.str(), 70 ) << std::endl;
     }
+    
+    // Print the parent table too
+    if ( parentTable != NULL && env == true )
+    {
+        parentTable->printValue(o , env );
+    }
+    
 }
 
 

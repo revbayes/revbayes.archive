@@ -1,11 +1,3 @@
-//
-//  RlDist_poisson.h
-//  RevBayes
-//
-//  Created by Nicolas Lartillot on 2014-03-18.
-//
-//
-
 #ifndef Dist_poisson_h
 #define Dist_poisson_h
 
@@ -26,8 +18,8 @@ namespace RevLanguage {
      *
      *
      * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2012-08-08, version 1.0
+     * @author The RevBayes Development Core Team (Nicolas Lartillot)
+     * @since 2014-03-18, version 1.0
      *
      */
     class Dist_poisson :  public TypedDistribution<Natural> {
@@ -40,7 +32,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                                     //!< Get member rules (const)
         
         
         // Distribution functions you have to override
@@ -48,11 +40,11 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
         
     private:
-        RevPtr<const Variable>                          lambda;                                                                                         //!< The rate of the distribution
+        RevPtr<const RevVariable>                          lambda;                                                                                         //!< The rate of the distribution
         
     };
     

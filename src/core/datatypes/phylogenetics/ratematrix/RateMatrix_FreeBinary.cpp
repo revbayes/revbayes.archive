@@ -23,26 +23,9 @@ RateMatrix_FreeBinary::RateMatrix_FreeBinary(void) : GeneralRateMatrix( 2 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_FreeBinary::RateMatrix_FreeBinary(const RateMatrix_FreeBinary& m) : GeneralRateMatrix( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_FreeBinary::~RateMatrix_FreeBinary(void) {
     
-}
-
-
-RateMatrix_FreeBinary& RateMatrix_FreeBinary::operator=(const RateMatrix_FreeBinary &r) {
-    
-    if (this != &r)
-    {
-        GeneralRateMatrix::operator=( r );
-    }
-    
-    return *this;
 }
 
 double RateMatrix_FreeBinary::averageRate(void) const

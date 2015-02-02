@@ -44,13 +44,6 @@ AminoAcidState* AminoAcidState::clone(void) const {
 }
 
 
-/** Convert to type. The caller manages the returned object. */
-RevObject* AminoAcidState::convertTo(const TypeSpec& type) const {
-    
-    return RevObject::convertTo(type);
-}
-
-
 /** Get Rev type of object */
 const std::string& AminoAcidState::getClassType(void) { 
     
@@ -68,38 +61,11 @@ const TypeSpec& AminoAcidState::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& AminoAcidState::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& AminoAcidState::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-
-/** Is convertible to type? */
-bool AminoAcidState::isConvertibleTo(const TypeSpec& type, bool once) const {
-    
-    return RevObject::isConvertibleTo(type, once);
 }
 

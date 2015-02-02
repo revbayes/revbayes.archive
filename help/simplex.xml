@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>simplex</name>
+
+        <title>Create a simplex</title>
+    
+        <description>
+            <p>
+            'simplex' constructs a Simplex object, which functions as a Vector of RealPos whose elements sum to one.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+            simplex( RealPos[] x )
+            simplex( RealPos x1, RealPos x2, ... )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>List of values to construct a Simplex</description>
+            <valueType>RealPos[]</valueType>
+        </argument>
+
+        <argument>
+            <label>...</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>Values to construct a Simplex</description>
+            <valueType>RealPos, RealPos, ...</valueType>
+        </argument>
+        <returnValue>Simplex, RealPos[], ModelObject, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                'simplex' constructs a Simplex object from either a RealPos[] vector or from more than two RealPos values. Whenever a simplex value is assigned, each Simplex element is normalized by the sum of all Simplex elements, which guarantees the sum of all assigned Simplex values sums to one at all times.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+            > x <- simplex([2,2,4])
+            > x
+                [ 0.25, 0.25, 0.5 ]
+            ]]>
+
+        </example>
+
+        <author>Michael</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>v</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

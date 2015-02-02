@@ -29,7 +29,10 @@
 
 using namespace RevBayesCore;
 
-SimplexSingleElementScale::SimplexSingleElementScale(StochasticNode<std::vector<double> > *v, double a, bool t, double weight) : SimpleMove( v, weight, t ), variable( v ), alpha( a ) {
+SimplexSingleElementScale::SimplexSingleElementScale(StochasticNode< RbVector<double> > *v, double a, bool t, double weight) : SimpleMove( v, weight, t ),
+    variable( v ),
+    alpha( a )
+{
     
 }
 
@@ -103,7 +106,7 @@ void SimplexSingleElementScale::printParameterSummary(std::ostream &o) const {
 void SimplexSingleElementScale::rejectSimpleMove( void ) {
     // swap current value and stored value
 
-    variable->setValue( new std::vector<double>(storedValue), false );
+    variable->setValue( new RbVector<double>(storedValue), false );
 }
 
 
@@ -111,7 +114,7 @@ void SimplexSingleElementScale::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     SimpleMove::swapNode(oldN, newN);
     
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
 }
 
 

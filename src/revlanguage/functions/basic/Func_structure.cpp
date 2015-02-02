@@ -12,7 +12,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_structure::Func_structure( void ) : Function()
+Func_structure::Func_structure( void ) : Procedure()
 {
     
 }
@@ -27,7 +27,7 @@ Func_structure* Func_structure::clone( void ) const
 
 
 /** Execute function */
-RevPtr<Variable> Func_structure::execute( void )
+RevPtr<RevVariable> Func_structure::execute( void )
 {
     
     std::ostringstream o;
@@ -37,17 +37,23 @@ RevPtr<Variable> Func_structure::execute( void )
     o << std::endl;
     if ( verbose == true )
     {
-        o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+        if ( args[0].getVariable()->getName() == "" )
+            o << "_variable     = <unnamed> <" << args[0].getVariable() << ">" << std::endl;
+        else
+            o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
     }
     else
     {
-        o << "_variable     = " << args[0].getVariable()->getName() << std::endl;
+        if ( args[0].getVariable()->getName() == "" )
+            o << "_variable     = <unnamed>" << std::endl;
+        else
+            o << "_variable     = " << args[0].getVariable()->getName() << std::endl;
     }
-    if ( args[0].getVariable()->isControlVar() && verbose == true )
+    if ( args[0].getVariable()->isWorkspaceVariable() && verbose == true )
     {
-        o << "_varType      = control" << std::endl;
+        o << "_varType      = workspace (control)" << std::endl;
     }
-    else if ( args[0].getVariable()->isReferenceVar() && verbose == true  )
+    else if ( args[0].getVariable()->isReferenceVariable() && verbose == true  )
     {
         o << "_varType      = reference" << std::endl;
         o << "_refVar       = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
@@ -74,11 +80,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "x"      , RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-#if defined (DEBUG_STRUCTURE)
-        argumentRules.push_back( new ArgumentRule( "verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-#else
         argumentRules.push_back( new ArgumentRule( "verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-#endif
         rulesSet = true;
     }
     

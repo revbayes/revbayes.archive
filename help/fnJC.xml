@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>fnJC</name>
+
+        <title>The Jukes and Cantor function to create a rate matrix.</title>
+    
+        <description>
+            <p>
+            The function fnJC creates the simplest rate matrix on an alphabet with a given number of states.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             fnJC( Natural numStates )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>numStates</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>the number of states in the alphabet.</description>
+            <valueType>Natural</valueType>
+        </argument>
+
+        <returnValue>RateMatrix, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            The Jukes and Cantor model (1969) is the simplest substitution model and requires no parameter. It assumes equal transition rates among any two states. It works on alphabets of any size but was initially described by Jukes and Cantor for DNA (4 states). It is fast but makes a number of usually unrealistic assumptions, including equal base frequencies in the sequences, and equal mutation rates.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+             # Let's simulate data using a Jukes and Cantor model on an alphabet with 5 states.
+             matrix <- fnJC(numStates=5)
+             print(matrix)
+             
+             # We build a tree with 3 leaves
+             n_species <- 3
+             for (i in 1:n_species) {
+        			s_names[i] = "Species_"+i
+			 }
+             speciation ~ dnExponential(10.0)
+			 extinction ~ dnExponential(10.0)
+			 tree_height ~ dnUnif(0,1.0)
+			 speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+             
+             # Let's simulate 30 sites over this tree, starting from a sequence all in the first state.
+             # Root frequencies: all in the first state
+             frequencyFirstState <- 1.0
+             rootFrequencies <- simplex(frequencyFirstState, 0.0, 0.0, 0.0, 0.0)
+             n_sites=30
+             aln ~ dnPhyloCTMC(tree=speciesTree, Q=matrix, rootFrequencies=rootFrequencies, nSites=n_sites, type="Standard")
+			
+			 # Now we can have a look at the sequences in the resulting alignment
+			 aln.show()             
+             
+             # And we can compute the log probability of the alignment
+             aln.lnProbability()
+             ]]>
+
+        </example>
+
+        <reference>
+            <citation>
+                T.H. Jukes, C.R. Cantor. 1969. Evolution of protein molecules. 
+In Mammalian protein metabolism, Vol. III, pp. 21-132.
+            </citation>
+        </reference>
+
+        <author>Bastien Boussau</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>fnGTR</entry>
+            <entry>fnHKY</entry>
+            <entry>fnF81</entry>
+            <entry>fnPomo</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

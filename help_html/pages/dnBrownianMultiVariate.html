@@ -1,0 +1,139 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The multivariate Brownian model of trait evolution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The multivariate Brownian model of trait evolution</h1>
+
+        <h2>Type dnBrownianMultiVariate</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnBrownianMultiVariate</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This is the constructor function for the multivariate Brownian model of quantitative trait evolution along a time-calibrated phylogeny (Felsenstein, 1985). 
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnBrownianMultiVariate( TimeTree tree, RealSymmetricMatrix sigma )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >tree</b>
+<div class="indent">
+A time-calibrated phylogeny.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+TimeTree<br />
+</div>
+<br />
+<b >sigma</b>
+<div class="indent">
+The covariance per unit of time.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealSymmetricMatrix<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                A multivariate Brownian motion of dimension D is parameterized by its initial value X(0) (a vector of dimension D) and its rate of change Sigma(a DxD symmmetric definite positive covariance matrix). Along a given time interval (0,T), the value of X at time T is multivariate normal of mean X(0) and covariance sigma*T. The value at the root, X(0), has an improper uniform distribution.
+                </p>
+<p class="indent">
+                The process can be clamped at the tips of the phylogeny to the values specified by a continuous data matrix. This should be done trait by trait(see below). Values of X at the interior nodes of the phylogeny are usually integrated out (analytically). Here, in contrast, ancestral values are explicitly sampled by MCMC. This can be useful in the context of molecular comparative analyses, although this results in less efficient MCMC mixing.
+                </p>
+<p class="indent">
+                A mathematically convenient prior for the covariance matrix of a multivariate Brownian motion is the inverse-Wishart distribution (see dnInvWishart and example below). 
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                 # load a tree
+                 trueTree = readTrees("data/chronoplac40.tree")[1]
+
+                 # load quantitative trait data
+                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
+                 # get number of traits (dimension of multivariate Brownian process)
+                 nTraits <- contData.nchar()[1]
+
+                 # use an inverse-Wishart prior distribution for the rate of the Brownian process
+                 # of parameters kappa * Identity and df = nTraits+2 degrees of freedom
+                 # where kappa is itself a scaling factor
+                 kappa ~ dnLogUniform(min=0.001,max=1000)
+                 # can be useful to start from a reasonable value for kappa
+                 kappa.setValue(0.1)
+                 Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+2)
+
+                 # multivariate Brownian process along the tree
+                 X ~ dnBrownianMultiVariate(trueTree,sigma=Sigma)
+
+                 # clamp the process at the tips of the tree, at the trait values observed in extant taxa
+                 # this has to be done trait by trait
+                 for (i in 1:nTraits)	{
+                       # the ith entry of the Brownian process should map to the ith. quantitative trait
+                       X.clampAt(contData,i,i)
+                 }
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                    Felsenstein F, 1985. Phylogenies and the comparative method. Am. Nat. 125:1-15.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Nicolas Lartillot</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

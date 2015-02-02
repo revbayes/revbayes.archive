@@ -2,7 +2,9 @@
 #include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RlFunction.h"
 #include "TypeSpec.h"
+#include "Workspace.h"
 
 #include <sstream>
 
@@ -30,7 +32,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
-    defaultVar( new Variable( defVal ) ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label(argName),
@@ -60,7 +62,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
-    defaultVar( new Variable( defVal ) ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label(argName),
@@ -82,8 +84,6 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  * Fit a variable into an argument according to the argument rule. If necessary and
  * appropriate, we do type conversion or type promotion.
  *
- * @todo The constant flag is currently not used correctly in ArgumentRule. Therefore,
- *       we ignore it here for now. This needs to be changed.
  *
  * @todo We need to check whether workspace objects with member variables are
  *       modifiable by the user.
@@ -97,73 +97,127 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  */
 Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
-    //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
-    //    if ( isConstant() || !theVar->isAssignable() )
-    if ( evalType == BY_VALUE )
+
+    RevPtr<RevVariable> theVar = arg.getVariable();
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || theVar->getRevObject().isConstant() )
     {
         once = true;
     }
     
-    RevPtr<Variable> theVar = arg.getVariable();
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( theVar->getRevObject().isTypeSpec( *it ) )
+        if ( evalType == BY_VALUE )
         {
-            // For now, change the required type of the incoming variable wrapper
-            theVar->setRevObjectTypeSpec( *it );
-            
-            if ( !isEllipsis() )
-                return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
-            else
-                return Argument( theVar, arg.getLabel(), true );
-        }
-        else if ( once == false &&
-                 !theVar->isAssignable() &&
-                 theVar->getRevObject().isConvertibleTo( *it, true ) &&
-                 (*it).isDerivedOf( theVar->getRevObjectTypeSpec() )
-                 )
-        {
-            // Fit by type promotion. For now, we also modify the type of the incoming variable wrapper.
-            RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-            theVar->setRevObject( convertedObject );
-            theVar->setRevObjectTypeSpec( *it );
-            if ( !isEllipsis() )
-                return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
-            else
-                return Argument( theVar, arg.getLabel(), true );
-        }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
-        {
-            // Fit by type conversion
-            if ( once || !theVar->getRevObject().hasDagNode() )
+            if ( theVar->getRevObject().isType( *it ) )
             {
+                RevPtr<RevVariable> valueVar = RevPtr<RevVariable>( new RevVariable(theVar->getRevObject().clone(),arg.getLabel()) );
+                return Argument( valueVar, getArgumentLabel(), false );
+            }
+            else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1)
+            {
+                // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
                 RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-                Variable*  convertedVar    = new Variable( convertedObject );
-                convertedVar->setRevObjectTypeSpec( *it );
 
+                RevPtr<RevVariable> valueVar = RevPtr<RevVariable>( new RevVariable(convertedObject,arg.getLabel()) );
+                return Argument( valueVar, getArgumentLabel(), false );
+                
+            }
+        } // if (by-value)
+        else
+        {
+            if ( theVar->getRevObject().isType( *it ) )
+            {
+                // For now, change the required type of the incoming variable wrapper
+                theVar->setRequiredTypeSpec( *it );
+            
                 if ( !isEllipsis() )
-                    return Argument( convertedVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                {
+                    return Argument( theVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
+                }
                 else
-                    return Argument( convertedVar, arg.getLabel(), true );
+                {
+                    return Argument( theVar, arg.getLabel(), true );
+                }
+            
+            }
+            else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1  && (*it).isDerivedOf( theVar->getRequiredTypeSpec() ))
+            {
+                // Fit by type conversion. For now, we also modify the type of the incoming variable wrapper.
+                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+                theVar->replaceRevObject( convertedObject );
+                theVar->setRequiredTypeSpec( *it );
+                if ( !isEllipsis() )
+                {
+                    return Argument( theVar, getArgumentLabel(), false );
+                }
+                else
+                {
+                    return Argument( theVar, arg.getLabel(), false );
+                }
             }
             else
             {
-                RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
-                conversionObject->makeConversionValue( theVar );
-                Variable*  conversionVar    = new Variable( conversionObject );
-                conversionVar->setRevObjectTypeSpec( *it );
+                // Fit by type conversion function
+            
+                const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
+                const TypeSpec& typeTo   = *it;
+            
+                // create the function name
+                std::string functionName = "_" + typeFrom.getType() + "2" + typeTo.getType();
                 
-                if ( !isEllipsis() )
+                // Package arguments
+                std::vector<Argument> args;
+                Argument theArg = Argument( theVar, "arg" );
+                args.push_back( theVar );
+                
+                Environment& env = Workspace::globalWorkspace();
+            
+                try
+                {
+                    Function* func = env.getFunction(functionName, args, once).clone();
+
+                    // Allow the function to process the arguments
+                    func->processArguments( args, once );
+            
+                    // Set the execution environment of the function
+                    func->setExecutionEnviroment( &env );
+                
+                    // Evaluate the function
+                    RevPtr<RevVariable> conversionVar = func->execute();
+                
+                    // free the memory
+                    delete func;
+                
+                    conversionVar->setHiddenVariableState( true );
+                    conversionVar->setRequiredTypeSpec( *it );
+                
                     return Argument( conversionVar, getArgumentLabel(), evalType == BY_CONSTANT_REFERENCE );
-                else
-                    return Argument( conversionVar, arg.getLabel(), true );
-            }
-        }
+                
+                }
+                catch (RbException e)
+                {
+                // we do nothing here
+                }
+                
+            } // else (type conversion function)
+
+            
+        } // else (not by-value)
+
     }
+    
+    std::cerr << "Once = " << (once ? "TRUE" : "FALSE") << std::endl;
     
     throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
                         getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
+}
+
+
+ArgumentRule::DagNodeType ArgumentRule::getArgumentDagNodeType( void ) const
+{
+    // return the internal value
+    return nodeType;
 }
 
 
@@ -173,13 +227,14 @@ const std::string& ArgumentRule::getArgumentLabel(void) const
 }
 
 
-const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const {
+const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const
+{
     return argTypeSpecs;
 }
 
 
 
-const Variable& ArgumentRule::getDefaultVariable( void ) const {
+const RevVariable& ArgumentRule::getDefaultVariable( void ) const {
     
     if ( defaultVar == NULL ) 
     {
@@ -211,43 +266,74 @@ bool ArgumentRule::hasDefault(void) const {
  *
  * @todo See the TODOs for fitArgument(...)
  */
-bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const
+double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
 {
     
-    if ( var == NULL )
+    RevPtr<RevVariable> theVar = arg.getVariable();
+    if ( theVar == NULL )
     {
-        return false;
+        return -1;
     }
     
-//    TODO: Use this code when the constant flag in ArgumentRule is used correctly
-//    if ( isConstant() || !var->isAssignable() )
-//    if ( isConstant() )
-    if ( evalType == BY_VALUE )
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || theVar->getRevObject().isConstant() )
     {
         once = true;
     }
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        if ( var->getRevObject().isTypeSpec( *it ) )
+        if ( theVar->getRevObject().isType( *it ) )
         {
-            return true;
+            return 0.0;
         }
-        else if ( var->getRevObject().isConvertibleTo( *it, once ) )
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 && (*it).isDerivedOf( theVar->getRequiredTypeSpec() ) )
         {
-            return true;
+            return theVar->getRevObject().isConvertibleTo( *it, once );
         }
-        else if ( once == false && !var->isAssignable() &&
-                  var->getRevObject().isConvertibleTo( *it, true ) &&
-                  (*it).isDerivedOf( var->getRevObjectTypeSpec() )
-                )
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) != -1 && evalType == BY_VALUE )
         {
-            return true;
+            return theVar->getRevObject().isConvertibleTo( *it, once );
+        }
+
+//        else if ( once == true &&
+////                 !var->isAssignable() &&
+//                  theVar->getRevObject().isConvertibleTo( *it, true ) != -1 &&
+//                  (*it).isDerivedOf( theVar->getRequiredTypeSpec() )
+//                )
+//        {
+//            return theVar->getRevObject().isConvertibleTo( *it, true );
+//        }
+        else
+        {
+            
+            const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
+            const TypeSpec& typeTo   = *it;
+            
+            // create the function name
+            std::string functionName = "_" + typeFrom.getType() + "2" + typeTo.getType();
+            
+            // Package arguments
+            std::vector<Argument> args;
+            Argument theArg = Argument( theVar, "arg" );
+            args.push_back( theVar );
+            
+            Environment& env = Workspace::globalWorkspace();
+            try
+            {
+                // we just want to check if the function exists and can be found
+                env.getFunction(functionName, args, once);
+                return 0.1;
+            }
+            catch (RbException e)
+            {
+                // we do nothing here
+            }
+
         }
         
     }
     
-    return false;
+    return -1;
 }
 
 
@@ -265,12 +351,9 @@ bool RevLanguage::ArgumentRule::isEllipsis( void ) const
  * not use the isConst flag to denote whether an argument is supposed to be passed as
  * a constant currently, so the printing of this modifier is suspended for now.
  *
- * @todo Revise the usage and printing of the isConst flag
  */
-void RevLanguage::ArgumentRule::printValue(std::ostream &o) const {
-
-//    if ( isConstant() )
-//        o << "const ";
+void RevLanguage::ArgumentRule::printValue(std::ostream &o) const
+{
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {

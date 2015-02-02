@@ -30,22 +30,26 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Clade::Clade(void) : ModelObject<RevBayesCore::Clade>() {
+Clade::Clade(void) : ModelObject<RevBayesCore::Clade>()
+{
     
 }
 
 /** Construct from core Clade */
-Clade::Clade(RevBayesCore::Clade *c) : ModelObject<RevBayesCore::Clade>( c ) {
+Clade::Clade(RevBayesCore::Clade *c) : ModelObject<RevBayesCore::Clade>( c )
+{
     
 }
 
 /** Construct from core Clade */
-Clade::Clade(const RevBayesCore::Clade &t) : ModelObject<RevBayesCore::Clade>( new RevBayesCore::Clade( t ) ) {
+Clade::Clade(const RevBayesCore::Clade &t) : ModelObject<RevBayesCore::Clade>( new RevBayesCore::Clade( t ) )
+{
     
 }
 
 /** Construct from DAG node */
-Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : ModelObject<RevBayesCore::Clade>( n ) {
+Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : ModelObject<RevBayesCore::Clade>( n )
+{
     
 }
 
@@ -77,7 +81,7 @@ void Clade::constructInternalObject( void )
     
     // now allocate a new Clade
     std::vector<std::string> n;
-    for (std::vector<RevPtr<const Variable> >::iterator it = names.begin(); it != names.end(); ++it) 
+    for (std::vector<RevPtr<const RevVariable> >::iterator it = names.begin(); it != names.end(); ++it) 
     {
         n.push_back( static_cast<const RlString &>( (*it)->getRevObject() ).getValue() );
     }
@@ -87,25 +91,9 @@ void Clade::constructInternalObject( void )
 }
 
 
-/* Map calls to member methods */
-RevLanguage::RevPtr<Variable> Clade::executeMethod( const std::string& name, const std::vector<Argument>& args )
-{
-//    if (name == "nnodes") {
-//        size_t n = this->value->getValue().getNumberOfNodes();
-//        return new Natural( n );
-//    }
-//    else if (name == "names") {
-//        const std::vector<std::string>& n = this->value->getValue().getNames();
-//        return new ModelVector<RlString>( n );
-//    } 
-    
-    return ModelObject<RevBayesCore::Clade>::executeMethod( name, args );
-}
-
-
 
 /** Return member rules (no members) */
-const MemberRules& Clade::getMemberRules(void) const {
+const MemberRules& Clade::getParameterRules(void) const {
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
@@ -138,25 +126,6 @@ const TypeSpec& Clade::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& Clade::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& Clade::getTypeSpec( void ) const {
     
@@ -167,14 +136,14 @@ const TypeSpec& Clade::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Clade::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "taxonName" || name == "") 
     {
         names.push_back( var );
     } 
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
 }
 

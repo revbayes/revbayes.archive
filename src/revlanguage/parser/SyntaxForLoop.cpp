@@ -1,5 +1,5 @@
 #include "ConstantNode.h"
-#include "Container.h"
+#include "RlContainer.h"
 #include "Environment.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -18,7 +18,7 @@ SyntaxForLoop::SyntaxForLoop( const std::string& identifier, SyntaxElement* inEx
     varName( identifier ),
     inExpression( inExpr ),
     stateSpace( NULL ),
-    nextOneoffsetElementIndex( 0 )
+    nextIndex( 0 )
 {
     if ( inExpression == NULL )
         throw RbException("The 'in' expression of for loop is empty");
@@ -32,7 +32,7 @@ SyntaxForLoop::SyntaxForLoop( const SyntaxForLoop& x ) :
     varName                     = x.varName;
     inExpression                = x.inExpression->clone();
     stateSpace                  = NULL;
-    nextOneoffsetElementIndex   = 0;
+    nextIndex                   = 0;
 }
 
 
@@ -57,7 +57,7 @@ SyntaxForLoop& SyntaxForLoop::operator=( const SyntaxForLoop& x )
         varName                     = x.varName;
         inExpression                = x.inExpression->clone();
         stateSpace                  = NULL;
-        nextOneoffsetElementIndex   = 0;
+        nextIndex                   = 0;
     }
 
     return *this;
@@ -72,7 +72,7 @@ SyntaxElement* SyntaxForLoop::clone( void ) const
 
 
 /** Get semantic value (not applicable so return NULL) */
-RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env )
+RevPtr<RevVariable> SyntaxForLoop::evaluateContent( Environment& env, bool dynamic )
 {
     return NULL;
 }
@@ -81,7 +81,7 @@ RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env )
 /** Finalize loop. */
 void SyntaxForLoop::finalizeLoop( void )
 {
-    nextOneoffsetElementIndex = 0;
+    nextIndex = 0;
 }
 
 
@@ -101,14 +101,14 @@ const std::string& SyntaxForLoop::getIndexVarName( void ) const
 void SyntaxForLoop::getNextLoopState( void )
 {
     // Get the next value from the container
-    RevObject* elm = stateSpace->getElement( nextOneoffsetElementIndex )->getRevObject().clone();
+    RevObject* elm = stateSpace->getElement( nextIndex-1 )->clone();
 
     // Set the loop variable to the next value using a control variable assignment
-    loopVariable->setRevObject( elm );
-    loopVariable->setControlVarState( true );
+    loopVariable->replaceRevObject( elm );
+    loopVariable->setWorkspaceVariableState( true );
 
     // Increment the element index
-    nextOneoffsetElementIndex++;
+    nextIndex++;
 }
 
 
@@ -120,27 +120,29 @@ void SyntaxForLoop::getNextLoopState( void )
  */
 void SyntaxForLoop::initializeLoop( Environment& env )
 {
-    assert ( nextOneoffsetElementIndex == 0 );  // Check that we are not running already
+    
+    assert ( nextIndex == 0 );  // Check that we are not running already
 
     // Evaluate expression and check that we get a vector
-    const RevPtr<Variable>&      theVar      = inExpression->evaluateContent(env);
+    const RevPtr<RevVariable>&      theVar      = inExpression->evaluateContent(env);
     const RevObject&             theValue    = theVar->getRevObject();
 
     // Check that it is a container (the first dimension of which we will use)
-    if ( theValue.isTypeSpec( Container::getClassTypeSpec() ) == false )
+    stateSpace = dynamic_cast<Container*>( theValue.clone() );
+    if ( stateSpace == NULL )
+    {
        throw RbException( "The 'in' expression does not evaluate to a container" );
-
-    stateSpace = dynamic_cast<Container*>(theValue.clone());
-
+    }
+    
     // Add the loop variable to the environment, if it is not already there
     if ( !env.existsVariable( varName ) )
-        env.addVariable( varName, new Variable( NULL) );
+        env.addVariable( varName, new RevVariable( NULL) );
     
     // Set the local smart pointer to the loop variable
     loopVariable = env.getVariable( varName );
     
     // Initialize nextValue
-    nextOneoffsetElementIndex = 1;
+    nextIndex = 1;
 }
 
 
@@ -150,7 +152,7 @@ void SyntaxForLoop::initializeLoop( Environment& env )
  */
 bool SyntaxForLoop::isFinished( void ) const
 {
-    return nextOneoffsetElementIndex > stateSpace->size();
+    return nextIndex > stateSpace->size();
 }
 
 
@@ -163,7 +165,9 @@ bool SyntaxForLoop::isFinished( void ) const
 bool SyntaxForLoop::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     if ( env.existsVariable( varName ) )
+    {
         return false;
+    }
     
     return inExpression->isFunctionSafe( env, localVars );
 }

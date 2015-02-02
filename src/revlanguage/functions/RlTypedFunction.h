@@ -34,7 +34,10 @@ namespace RevLanguage {
         virtual                                         ~TypedFunction(void);                                                               //!< Destructor
         TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                        //!< Copy constuctor
         
-        virtual RevPtr<Variable>                        execute(void);                                                                      //!< Create a random variable from this distribution
+        virtual RevPtr<RevVariable>                        execute(void);                                                                      //!< Create a random variable from this distribution
+        virtual const TypeSpec&                         getReturnType(void) const;                                                          //!< Get type of return value
+        
+
         
         // Basic utility functions you have to override
         virtual TypedFunction<valueType>*               clone(void) const = 0;                                                              //!< Clone object
@@ -43,7 +46,7 @@ namespace RevLanguage {
         
         
         // Class-specific functions you have to override
-        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                             //!< Create a random variable from this distribution
+        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                             //!< Create a function object
         
         
     protected:
@@ -53,7 +56,7 @@ namespace RevLanguage {
     
 }
 
-#include "DeterministicNode.h"
+#include "RlDeterministicNode.h"
 
 template <typename valueType>
 RevLanguage::TypedFunction<valueType>::TypedFunction() : Function() {
@@ -77,12 +80,13 @@ RevLanguage::TypedFunction<valueType>::~TypedFunction() {
 
 
 template <typename valueType>
-RevPtr<Variable> RevLanguage::TypedFunction<valueType>::execute(void) {
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::TypedFunction<valueType>::execute(void)
+{
     
     RevBayesCore::TypedFunction<typename valueType::valueType>* d = createFunction();
-    RevBayesCore::TypedDagNode<typename valueType::valueType>* rv  = new RevBayesCore::DeterministicNode<typename valueType::valueType>("", d);
+    RevBayesCore::DeterministicNode<typename valueType::valueType>* rv  = new DeterministicNode<typename valueType::valueType>("", d, this->clone());
     
-    return new Variable( new valueType(rv) );
+    return new RevVariable( new valueType(rv) );
 }
 
 
@@ -103,6 +107,16 @@ const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassType
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+
+/* Get return type of function */
+template <typename valueType>
+const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getReturnType( void ) const
+{
+    
+    return valueType::getClassTypeSpec();
 }
 
 #endif

@@ -1,0 +1,40 @@
+D <- readDiscreteCharacterData("data/Primates.nex")
+
+tau <- readTrees("data/primates.tree")[1]
+
+# substition model priors
+bf <- v(1,1,1,1)
+e <- v(1,1,1,1,1,1)
+pi ~ dnDirichlet(bf)
+er ~ dnDirichlet(e)
+
+# moves on the substitution process parameters
+# first some moves only changing one value of the simplex
+moves[1] = mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=4.0)
+moves[2] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=6.0)
+
+# the rate matrix
+Q := fnGTR(er,pi)
+
+clockRate <- 1.0
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=tau, Q=Q, branchRates=clockRate, type="DNA")
+
+# attach the data
+seq.clamp(D)
+
+mymodel = model(pi)
+
+monitors[1] = mnModel(filename="performance_primates_GTR.log",printgen=1000, separator = TAB)
+monitors[2] = mnFile(filename="performance_primates_GTR.trees",printgen=1000, separator = TAB, tau)
+monitors[3] = mnScreen(printgen=1000, pi)
+
+ 
+mymcmc = mcmc(mymodel, monitors, moves,moveschedule="single")
+
+mymcmc.burnin(generations=300,50)
+mymcmc.run(generations=400)
+
+write(file="result.txt", append=TRUE,"Finished GTR.Rev")
+q()

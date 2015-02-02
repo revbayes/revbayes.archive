@@ -31,7 +31,7 @@ namespace RevBayesCore {
     public:
         PomoStateConverter();
         
-        DiscreteCharacterData<PomoState>*  convertData(const AbstractCharacterData &d, const unsigned int virtualPopulationSize, const std::map<std::string, std::string> sequenceNameToSpeciesName);
+        DiscreteCharacterData<PomoState>*  convertData(const AbstractDiscreteCharacterData &d, const unsigned int virtualPopulationSize, const std::map<std::string, std::string> sequenceNameToSpeciesName);
         
     private:
         PomoState* convertCounts(std::vector<double> &counts,

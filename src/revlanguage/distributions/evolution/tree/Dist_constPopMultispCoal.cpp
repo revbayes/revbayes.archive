@@ -65,14 +65,14 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
     
     RevBayesCore::MultispeciesCoalescent*   d = new RevBayesCore::MultispeciesCoalescent( st, t );
     
-    if ( Ne->getRevObjectTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( Ne->getRequiredTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< std::vector<double> >* neNode = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* neNode = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
         
         // sanity check
         if ( (nNodes-1) != neNode->getValue().size() )
         {
-            throw RbException( "The number of clock rates does not match the number of branches" );
+            throw RbException( "The number of effective population sizes does not match the number of branches." );
         }
         
         d->setNes( neNode );
@@ -129,7 +129,7 @@ const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_constPopMultispCoal::getMemberRules(void) const 
+const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const 
 {
     
     static MemberRules distMultiSpeCoalConstPopMemberRules;
@@ -160,7 +160,7 @@ const MemberRules& Dist_constPopMultispCoal::getMemberRules(void) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_constPopMultispCoal::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_constPopMultispCoal::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "speciesTree" ) 
@@ -177,7 +177,7 @@ void Dist_constPopMultispCoal::setConstMemberVariable(const std::string& name, c
     }
     else 
     {
-        TypedDistribution<TimeTree>::setConstMemberVariable(name, var);
+        TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
 }

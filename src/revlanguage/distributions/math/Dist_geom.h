@@ -14,7 +14,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the Dist_geom.h for more details.
+     * See the GeometricDistribution.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -32,7 +32,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                                     //!< Get member rules (const)
         
         
         // Distribution functions you have to override
@@ -40,11 +40,11 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
         
     private:
-        RevPtr<const Variable>                          p;                                                                                              //!< The rate of the distribution
+        RevPtr<const RevVariable>                          p;                                                                                              //!< The rate of the distribution
         
     };
     

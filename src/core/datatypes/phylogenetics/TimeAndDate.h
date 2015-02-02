@@ -19,7 +19,10 @@ namespace RevBayesCore {
         
     public:
         TimeAndDate();                                                          //!< Default constructor
-                
+        
+        bool                                operator==(const TimeAndDate &t) const;           //!< Equals operator
+        bool                                operator!=(const TimeAndDate &t) const;           //!< Not-equals operator
+
         // public functions
         double                              getDaysAD(void) const;              //!< Get the number of days since counting.
         double                              getMya(void) const;                 //!< Get the number of million years ago.

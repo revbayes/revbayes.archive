@@ -9,6 +9,7 @@
 
 #include "PomoRateMatrixFunction.h"
 #include "Func_pomo.h"
+#include "Natural.h"
 #include "RateMatrix_Pomo.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -20,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomo::Func_pomo( void ) : Function( ) {
+Func_pomo::Func_pomo( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -32,24 +33,18 @@ Func_pomo* Func_pomo::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_pomo::execute() {
-    
+RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_pomo::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix >* q = static_cast<const RateMatrix &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     //RevBayesCore::TypedDagNode< double >* root_pol = static_cast<const double &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* fit = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* fit = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
-// MJL 140822: caused compile error
     RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
-//    RevBayesCore::PomoRateMatrixFunction* f = NULL;
     
-    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
-    
-    RateMatrix* value = new RateMatrix( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -85,15 +80,6 @@ const TypeSpec& Func_pomo::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_pomo::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

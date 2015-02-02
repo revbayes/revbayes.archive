@@ -15,17 +15,6 @@ MethodTable::MethodTable( MethodTable* parent ) :
 {
 }
 
-/** Assignment operator */
-MethodTable& MethodTable::operator=( const MethodTable& x )
-{
-    if (this != &x)
-    {
-        FunctionTable::operator=(x);
-    }
-    
-    return (*this);
-}
-
 
 /** Insert inherited methods into method table */
 void MethodTable::insertInheritedMethods( const MethodTable& inheritedMethods )

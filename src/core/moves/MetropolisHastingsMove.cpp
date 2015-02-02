@@ -3,6 +3,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbException.h"
 #include "RbMathLogic.h"
 
 #include <cmath>
@@ -31,7 +32,18 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
     
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        (*it)->getAffectedNodes( affectedNodes );
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->addMove( this );
+        
+        // increase the DAG node reference count because we also have a pointer to it
+        theNode->incrementReferenceCount();
+        
+        // get the affected nodes if we would update this node
+        // then we don't need to get the affected nodes every time again
+        theNode->getAffectedNodes( affectedNodes );
     }
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
@@ -59,6 +71,19 @@ MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) 
     proposal( m.proposal->clone() )
 {
     
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->addMove( this );
+        
+        // increase the DAG node reference count because we also have a pointer to it
+        theNode->incrementReferenceCount();
+        
+    }
+    
 }
 
 
@@ -67,6 +92,22 @@ MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) 
  */
 MetropolisHastingsMove::~MetropolisHastingsMove( void )
 {
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->removeMove( this );
+        
+        // decrease the DAG node reference count because we also have a pointer to it
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete theNode;
+        }
+        
+    }
+    
     delete proposal;
 }
 
@@ -83,10 +124,40 @@ MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::Me
         // free memory
         delete proposal;
         
-        affectedNodes = m.affectedNodes;
-        nodes = m.nodes;
-        numAccepted = m.numAccepted;
-        proposal = m.proposal->clone();
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->removeMove( this );
+            
+            // decrease the DAG node reference count because we also have a pointer to it
+            if ( theNode->decrementReferenceCount() == 0 )
+            {
+                delete theNode;
+            }
+            
+        }
+        
+        affectedNodes   = m.affectedNodes;
+        nodes           = m.nodes;
+        numAccepted     = m.numAccepted;
+        proposal        = m.proposal->clone();
+        
+        
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->addMove( this );
+            
+            // increase the DAG node reference count because we also have a pointer to it
+            theNode->incrementReferenceCount();
+            
+        }
     }
     
     return *this;
@@ -131,7 +202,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly )
+void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 {
     // Propose a new value
     proposal->prepareProposal();
@@ -175,16 +246,10 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     
     // exponentiate with the chain heat
     double lnPosteriorRatio;
-    if ( raiseLikelihoodOnly )
-    {
-        lnPosteriorRatio = heat * lnLikelihoodRatio + lnPriorRatio;
-    }
-    else
-    {
-        lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
-    }
+    lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
 	
-	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) {
+	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) )
+    {
 		
             proposal->undoProposal();
             
@@ -199,7 +264,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-    
+
         if (lnAcceptanceRatio >= 0.0)
         {
             numAccepted++;
@@ -364,6 +429,17 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
     }
     // insert the new node
     nodes.insert( newN );
+    
+    // remove myself from the old node and add myself to the new node
+    oldN->removeMove( this );
+    newN->addMove( this );
+    
+    // increment and decrement the reference counts
+    newN->incrementReferenceCount();
+    if ( oldN->decrementReferenceCount() == 0 )
+    {
+        throw RbException("Memory leak in Metropolis-Hastings move. Please report this bug to Sebastian.");
+    }
         
     affectedNodes.clear();
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)

@@ -114,7 +114,7 @@ void WangLandauMcmc::updateBias(void)
 }
 
 
-unsigned long WangLandauMcmc::nextCycle(bool advanceCycle) {
+void WangLandauMcmc::nextCycle(bool advanceCycle) {
     
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++)
@@ -122,7 +122,7 @@ unsigned long WangLandauMcmc::nextCycle(bool advanceCycle) {
         // Get the move
         Move& theMove = schedule->nextMove( generation );
         
-        theMove.perform( chainHeat, false );
+        theMove.perform( chainLikelihoodHeat, 1.0 );
     }
     
     
@@ -130,6 +130,4 @@ unsigned long WangLandauMcmc::nextCycle(bool advanceCycle) {
     if (advanceCycle)
         generation++;
     
-    // gen number used for p(MC)^3
-    return generation;
 }

@@ -73,13 +73,13 @@ double AbstractMove::getUpdateWeight( void ) const
  * Perform the move. 
  * Here we store some info and delegate to performMove.
  */
-void AbstractMove::perform( double heat, bool raiseLikelihoodOnly )
+void AbstractMove::perform( double lHeat, double pHeat )
 {
     // increment the tries counter
     numTried++;
     
     // delegate to derived class
-    performMove(heat, raiseLikelihoodOnly);
+    performMove(lHeat, pHeat);
     
 }
 

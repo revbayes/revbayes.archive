@@ -23,16 +23,17 @@ namespace RevBayesCore {
         
         // public member functions
         double                                              cdf(void) const;                                                                  //!< Cummulative density function
-        InverseGammaDistribution*                                  clone(void) const;                                                          //!< Create an independent clone
+        InverseGammaDistribution*                           clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         double                                              getMax(void) const;
         double                                              getMin(void) const;
         double                                              quantile(double p) const;                                                       //!< Qu
         void                                                redrawValue(void);
         
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

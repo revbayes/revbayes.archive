@@ -11,30 +11,51 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>() {
+Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>()
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+
 }
 
 /** Construct from core Taxon */
-Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c ) {
+Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c )
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+
 }
 
 /** Construct from core Taxon */
-Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( new RevBayesCore::Taxon( t ) ) {
+Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( new RevBayesCore::Taxon( t ) )
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+
 }
 
 /** Construct from DAG node */
-Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<RevBayesCore::Taxon>( n ) {
+Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<RevBayesCore::Taxon>( n )
+{
+
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
-}
+    //    ArgumentRules* namesArgRules = new ArgumentRules();
+    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
 
-
-
-/** Construct */
-Taxon::Taxon(const Taxon &t) : ModelObject<RevBayesCore::Taxon>( t ) {
-    
 }
 
 
@@ -69,24 +90,28 @@ void Taxon::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-    if (name == "getSpeciesName") {
+    if (name == "getSpeciesName")
+    {
+        found = true;
+        
         std::string n = this->dagNode->getValue().getSpeciesName();
-        return RevPtr<Variable>( new Variable( new RlString( n ) ) );
+        return RevPtr<RevVariable>( new RevVariable( new RlString( n ) ) );
     }
 //    else if (name == "names") {
 //        const std::vector<std::string>& n = this->value->getValue().getNames();
 //        return new ModelVector<RlString>( n );
 //    } 
     
-    return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args, found );
 }
 
 
 
 /** Return member rules (no members) */
-const MemberRules& Taxon::getMemberRules(void) const {
+const MemberRules& Taxon::getParameterRules(void) const {
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -122,25 +147,6 @@ const TypeSpec& Taxon::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const RevLanguage::MethodTable& Taxon::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& Taxon::getTypeSpec( void ) const {
     
@@ -151,7 +157,7 @@ const TypeSpec& Taxon::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "taxonName") 
     {
@@ -166,26 +172,8 @@ void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const V
         date = var ;
     } 
     else {
-        RevObject::setConstMemberVariable(name, var);
+        RevObject::setConstParameter(name, var);
     }
-}
-
-
-/** Make methods for this class */
-RevLanguage::MethodTable Taxon::makeMethods(void) const
-{ 
-    MethodTable methods = MethodTable();
-        
-    ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
-
-//    ArgumentRules* namesArgRules = new ArgumentRules();
-//    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelObject<RevBayesCore::Taxon>::makeMethods() );
-
-    return methods;
 }
 
 

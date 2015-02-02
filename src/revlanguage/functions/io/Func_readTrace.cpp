@@ -12,7 +12,7 @@
  * @package functions
  * @since Version 1.0, 2009-09-03
  *
- * $Id: Func_readCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
+ * $Id: Func_readDiscreteCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
  */
 
 #include "ArgumentRule.h"
@@ -44,7 +44,7 @@ Func_readTrace* Func_readTrace::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_readTrace::execute( void ) {
+RevPtr<RevVariable> Func_readTrace::execute( void ) {
 
     // get the information from the arguments for reading the file
     const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -56,7 +56,7 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
     if ( !myFileManager.testFile() || !myFileManager.testDirectory() ) {
         std::string errorStr = "";
-        formatError(myFileManager, errorStr);
+        myFileManager.formatError( errorStr );
         throw( RbException(errorStr) );
     }
         
@@ -146,32 +146,11 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
     for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it)
     {
         it->computeStatistics();
-        rv->push_back( new Trace( *it ) );
+        rv->push_back( Trace( *it ) );
     }
     
     // return the vector of traces
-    return new Variable( rv );
-}
-
-
-/** Format the error exception string for problems specifying the file/path name */
-void Func_readTrace::formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr) {
-    
-    bool fileNameProvided    = fm.isFileNamePresent();
-    bool isFileNameGood      = fm.testFile();
-    bool isDirectoryNameGood = fm.testDirectory();
-    
-    if ( fileNameProvided == false && isDirectoryNameGood == false )
-        errorStr += "Could not read contents of directory \"" + fm.getFilePath() + "\" because the directory does not exist";
-    else if (fileNameProvided == true && (isFileNameGood == false || isDirectoryNameGood == false)) {
-        errorStr += "Could not read file named \"" + fm.getFileName() + "\" in directory named \"" + fm.getFilePath() + "\" ";
-        if (isFileNameGood == false && isDirectoryNameGood == true)
-            errorStr += "because the file does not exist";
-        else if (isFileNameGood == true && isDirectoryNameGood == false)
-            errorStr += "because the directory does not exist";
-        else
-            errorStr += "because neither the directory nor the file exist";
-    }
+    return new RevVariable( rv );
 }
 
 

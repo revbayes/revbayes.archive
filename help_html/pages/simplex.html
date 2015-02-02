@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Create a simplex</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Create a simplex</h1>
+
+        <h2>Function simplex</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">simplex</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            'simplex' constructs a Simplex object, which functions as a Vector of RealPos whose elements sum to one.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+            simplex( RealPos[] x )
+            simplex( RealPos x1, RealPos x2, ... )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+List of values to construct a Simplex<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos[]<br />
+</div>
+<br />
+<b >...</b>
+<div class="indent">
+Values to construct a Simplex<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos, RealPos, ...<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                'simplex' constructs a Simplex object from either a RealPos[] vector or from more than two RealPos values. Whenever a simplex value is assigned, each Simplex element is normalized by the sum of all Simplex elements, which guarantees the sum of all assigned Simplex values sums to one at all times.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+            > x <- simplex([2,2,4])
+            > x
+                [ 0.25, 0.25, 0.5 ]
+            </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Michael</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('v'); return false;">v</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

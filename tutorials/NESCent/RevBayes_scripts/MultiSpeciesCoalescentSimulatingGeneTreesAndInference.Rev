@@ -30,15 +30,15 @@ for (i in 1:n_species) {
 }
 
 # Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0,10000000)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUniform(0,10000000)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(1)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -55,7 +55,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=0.5,rate=0.5)
+Ne ~ dnGamma(shape=0.5,rate=0.5)
 Ne.setValue(0.00004)
 
 # Simulate gene trees
@@ -63,7 +63,7 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnCoalMultiSpeciesConst(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 	#We rescale the gene tree with a mutation rate of 10-8 per generation
    geneTrees[i].rescale(0.0000001)
 }
@@ -147,10 +147,10 @@ moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"GTST_NoSequences_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- mnModel(filename=dataFolder+"GTST_NoSequences_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"GTST_NoSequences_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- mnFile(filename=dataFolder+"GTST_NoSequences_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
@@ -158,7 +158,7 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 distNe:= Ne - trueNe
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree, Ne, distNe)
+monitors[mntrIndex++] <- mnScreen(printgen=10, distSpeciesTree, Ne, distNe)
 	
 
 #############

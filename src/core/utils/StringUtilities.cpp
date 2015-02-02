@@ -23,37 +23,6 @@
 #include <string>
 
 
-std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s) {
-
-#	ifdef WIN32
-    std::string pathSeparator = "\\";
-#	else
-    std::string pathSeparator = "/";
-#   endif
-
-    std::string tempS = s;
-	size_t location = tempS.find_last_of( pathSeparator );
-	if ( location == std::string::npos )
-    {
-		/* There is no path in this string. We 
-         must have only the file name. */
-		return "";
-    }
-	else if ( location == tempS.length() - 1 )
-    {
-		/* It looks like the last character is "/", which
-         means that no file name has been provided. */
-		return tempS;
-    }
-	else
-    {
-		/* We can divide the path into the path and the file. */
-		tempS.erase( location );
-		return tempS;
-    }
-    
-    return "";
-}
 
 
 
@@ -62,10 +31,10 @@ std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::st
  * Either fill the spaces on the right if left aligned (true)
  * or on the left if right aligned.
  */
-void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
+void StringUtilities::fillWithSpaces(std::string &s, int l, bool left)
 {
     
-    for (size_t i=s.length(); i<l ; ++i)
+    for (int i=int(s.length()); i<l ; ++i)
     {
         // either left algined
         if (left == true)
@@ -81,6 +50,78 @@ void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
     
 }
 
+
+/**
+ * Wraps text so that each line doesn't exceeds column width.
+ * Prepends tabs to each line.
+ *
+ * @param s             string to format
+ * @param tabs          number of tabs to prepend to each line
+ * @param width         column width
+ * @param removeFormat  strips newline, tab etc if set to true
+ * @return              formatted text
+ */
+std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t width, bool removeFormat)
+{
+    
+    std::string tabbing = "";
+    for (int i = 0; i < tabs * 4; i++)
+    {
+        tabbing.append(" ");
+    }
+    
+    std::string result = tabbing;
+    size_t w = width - tabbing.size();
+    int cc = 0; // character count
+    char lastChar = '\0';
+    
+    for (unsigned int i = 0; i < s.size(); i++)
+    {
+        if (result.size() > 0)
+        {
+            lastChar = result[result.size() - 1];
+        }
+        
+        // strip consecutive spaces
+        if (!(lastChar == ' ' && s[i] == ' '))
+        {
+            if (!removeFormat)
+            {
+                result += s[i];
+                lastChar = s[i];
+                cc++;
+            }
+            else if (!StringUtilities::isFormattingChar(s[i]))
+            {
+                result += s[i];
+                lastChar = s[i];
+                cc++;
+            }
+        }
+        
+        if (lastChar == '\n')
+        {
+            cc = 0;
+            result.append(tabbing);
+        }
+        
+        if (lastChar == ' ')
+        {
+            // we now have a possible point where to wrap the line.
+            // peek ahead and see where next possible wrap point is:
+            size_t next = s.substr(i).find_first_of(" ", 1);
+            
+            // if next wrap point is beyond the width, then wrap line now
+            if (cc + next >= w)
+            {
+                result.append("\n").append(tabbing);
+                // reset char count for next line
+                cc = 0;
+            }
+        }
+    }
+    return result;
+}
 
 
 /** Format string for printing to screen, with word wrapping, and various indents */
@@ -127,6 +168,40 @@ std::string StringUtilities::formatStringForScreen(const std::string &s, const s
 }
 
 
+std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s)
+{
+    
+#	ifdef WIN32
+    std::string pathSeparator = "\\";
+#	else
+    std::string pathSeparator = "/";
+#   endif
+    
+    std::string tempS = s;
+	size_t location = tempS.find_last_of( pathSeparator );
+	if ( location == std::string::npos )
+    {
+		/* There is no path in this string. We
+         must have only the file name. */
+		return "";
+    }
+	else if ( location == tempS.length() - 1 )
+    {
+		/* It looks like the last character is "/", which
+         means that no file name has been provided. */
+		return tempS;
+    }
+	else
+    {
+		/* We can divide the path into the path and the file. */
+		tempS.erase( location );
+		return tempS;
+    }
+    
+    return "";
+}
+
+
 /** Return file contents as string with '\n' line breaks */
 std::string StringUtilities::getFileContentsAsString(const std::string& s)
 {
@@ -169,6 +244,18 @@ std::string StringUtilities::getLastPathComponent(const std::string& s) {
     }
     
     return lastComponent;
+}
+
+
+
+/**
+ * Indicates if a char is affecting text formatting
+ * @param c
+ * @return
+ */
+bool StringUtilities::isFormattingChar(char c)
+{
+    return c == '\n' || c == '\t' || c == '\r';
 }
 
 
@@ -269,6 +356,18 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
 }
 
 
+void StringUtilities::replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr)
+{
+    size_t pos = 0;
+    while((pos = str.find(oldStr, pos)) != std::string::npos)
+    {
+        str.replace(pos, oldStr.length(), newStr);
+        pos += newStr.length();
+    }
+    
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
 {
@@ -307,6 +406,19 @@ void StringUtilities::toLower(std::string& str)
         str[i] = char( tolower(str[i]) );
     }
     
+}
+
+
+/** Utility function for converting string to all lower case */
+std::string& StringUtilities::firstCharToUpper(std::string& str)
+{
+    
+    if ( str.size() > 0)
+    {
+        str[0] = char( toupper(str[0]) );
+    }
+    
+    return str;
 }
 
 

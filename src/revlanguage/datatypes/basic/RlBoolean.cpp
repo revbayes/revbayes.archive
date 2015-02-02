@@ -1,26 +1,9 @@
-/**
- * @file
- * This file contains the implementation of RlBoolean, which is
- * a RevBayes wrapper around a regular bool.
- *
- * @brief Implementation of RlBoolean
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id$
- */
-
-
 #include "ConstantNode.h"
+#include "Integer.h"
+#include "Natural.h"
 #include "RlBoolean.h"
 #include "Real.h"
-#include "Integer.h"
+#include "RealPos.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 
@@ -29,21 +12,28 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-RlBoolean::RlBoolean(void) : ModelObject<bool>() {
+RlBoolean::RlBoolean(void) : ModelObject<unsigned int>() {
 
     setGuiVariableName("Boolean");
     setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
-RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<bool> *v) : ModelObject<bool>( v ) {
+RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<unsigned int> *v) : ModelObject<unsigned int>( v ) {
     
     setGuiVariableName("Boolean");
     setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
-RlBoolean::RlBoolean(bool v) : ModelObject<bool>( new bool(v) ) {
+RlBoolean::RlBoolean(unsigned int v) : ModelObject<unsigned int>( new unsigned(v) ) {
+    
+    setGuiVariableName("Boolean");
+    setGuiLatexSymbol("B");
+}
+
+/** Construct from bool */
+RlBoolean::RlBoolean(bool v) : ModelObject<unsigned int>( new unsigned(v) ) {
 
     setGuiVariableName("Boolean");
     setGuiLatexSymbol("B");
@@ -58,19 +48,60 @@ RlBoolean* RlBoolean::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RevObject* RlBoolean::convertTo(const TypeSpec& type) const {
+RevObject* RlBoolean::convertTo(const TypeSpec& type) const
+{
 
-    if (type == Integer::getClassTypeSpec()) {
-        if (dagNode->getValue())
-            return new Integer(1);
-        else 
-            return new Integer(0);
+    if (type == Natural::getClassTypeSpec())
+    {
+        
+        if ( dagNode->getValue() == true )
+        {
+            return new Natural(1);
+        }
+        else
+        {
+            return new Natural(0);
+        }
+        
     }
-    else if (type == Real::getClassTypeSpec()) {
-        if (dagNode->getValue())
+    else if (type == Integer::getClassTypeSpec())
+    {
+        
+        if ( dagNode->getValue() == true )
+        {
+            return new Integer(1);
+        }
+        else
+        {
+            return new Integer(0);
+        }
+            
+    }
+    else if (type == Real::getClassTypeSpec())
+    {
+        
+        if ( dagNode->getValue() == true )
+        {
             return new Real(1.0);
-        else 
+        }
+        else
+        {
             return new Real(0.0);
+        }
+        
+    }
+    else if (type == RealPos::getClassTypeSpec())
+    {
+        
+        if ( dagNode->getValue() == true )
+        {
+            return new RealPos(1.0);
+        }
+        else
+        {
+            return new RealPos(0.0);
+        }
+        
     }
 
     return RevObject::convertTo(type);
@@ -94,25 +125,6 @@ const TypeSpec& RlBoolean::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RlBoolean::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& RlBoolean::getTypeSpec( void ) const {
     
@@ -124,13 +136,26 @@ const TypeSpec& RlBoolean::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool RlBoolean::isConvertibleTo(const TypeSpec& type, bool once) const {
+double RlBoolean::isConvertibleTo(const TypeSpec& type, bool once) const
+{
 
-    if ( type == Integer::getClassTypeSpec() )
-        return true;
+    if ( type == Natural::getClassTypeSpec() )
+    {
+        return 0.1;
+    }
+    else if ( type == Integer::getClassTypeSpec() )
+    {
+        return 0.3;
+    }
+    else if ( type == RealPos::getClassTypeSpec() )
+    {
+        return 0.2;
+    }
     else if ( type == Real::getClassTypeSpec() )
-        return true;
-
+    {
+        return 0.4;
+    }
+    
     return RevObject::isConvertibleTo(type, once);
 }
 

@@ -136,7 +136,7 @@ const TypeSpec& Dist_serialBDP::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& Dist_serialBDP::getMemberRules(void) const 
+const MemberRules& Dist_serialBDP::getParameterRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -149,7 +149,7 @@ const MemberRules& Dist_serialBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"     , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
@@ -160,7 +160,7 @@ const MemberRules& Dist_serialBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
-        const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();
+        const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
@@ -194,7 +194,7 @@ const TypeSpec& Dist_serialBDP::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_serialBDP::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_serialBDP::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "lambda" ) 
@@ -238,7 +238,7 @@ void Dist_serialBDP::setConstMemberVariable(const std::string& name, const RevPt
         condition = var;
     }
     else {
-        TypedDistribution<TimeTree>::setConstMemberVariable(name, var);
+        TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
 }

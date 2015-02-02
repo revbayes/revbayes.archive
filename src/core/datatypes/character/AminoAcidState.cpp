@@ -21,7 +21,7 @@ using namespace RevBayesCore;
 /** Default constructor */
 AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
     
-    setState('?');
+    setState('-');
 }
 
 
@@ -77,26 +77,35 @@ bool AminoAcidState::operator<(const CharacterState &x) const {
     return false;
 }
 
-void AminoAcidState::operator++( void ) {
+void AminoAcidState::operator++( void )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
-void AminoAcidState::operator++( int i ) {
+void AminoAcidState::operator++( int i )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
 
-void AminoAcidState::operator--( void ) {
+void AminoAcidState::operator--( void )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
-void AminoAcidState::operator--( int i ) {
+void AminoAcidState::operator--( int i )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
-void AminoAcidState::addState(char symbol) {
+void AminoAcidState::addState(char symbol)
+{
     state |= computeState( symbol );
 }
 
@@ -267,7 +276,10 @@ void AminoAcidState::setGapState(bool tf) {
 
 void AminoAcidState::setState(size_t pos, bool val) {
     
-    state &= ((unsigned int)val) << pos;
+    unsigned x = (unsigned)val << pos;
+    
+//    state &= ((unsigned int)val) << pos;
+    state ^= x;
     stateIndex = pos;
 }
 
@@ -304,6 +316,7 @@ void AminoAcidState::setState(char symbol) {
 
 void AminoAcidState::setToFirstState( void ) {
     state = 0x1;
+    stateIndex = 0;
 }
 
 

@@ -2,7 +2,7 @@
 #include "Func_writeFasta.h"
 #include "RbException.h"
 #include "RevNullObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
 #include "FastaWriter.h"
@@ -33,12 +33,12 @@ Func_writeFasta* Func_writeFasta::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RevPtr<Variable> Func_writeFasta::execute( void ) 
+RevPtr<RevVariable> Func_writeFasta::execute( void ) 
 {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-    const RevBayesCore::AbstractCharacterData &data = static_cast< const AbstractCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
+    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::FastaWriter fw;
     fw.writeData(fn.getValue(), data);
@@ -64,8 +64,8 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "data"    , AbstractCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()                     , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "data"    , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         rulesSet = true;
     }
     

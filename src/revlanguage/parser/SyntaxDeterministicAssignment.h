@@ -1,8 +1,7 @@
 #ifndef SyntaxDeterministicAssignment_H
 #define SyntaxDeterministicAssignment_H
 
-#include "SyntaxElement.h"
-#include "SyntaxVariable.h"
+#include "SyntaxAssignment.h"
 
 #include <iostream>
 #include <list>
@@ -33,8 +32,8 @@ namespace RevLanguage {
      *
      * For this reason, the right-hand side expression of a deterministic
      * assignment is referred to as a dynamic expression. Its semantic
-     * value is evaluated using the evaluateDynamicContent() function,
-     * instead of the standard evaluateContent() function.
+     * value is evaluated using the evaluateContent(dynamic=true) function,
+     * instead of the standard evaluateContent(dynamic=false) function.
      *
      * Many syntax elements evaluate to the same objects in both contexts,
      * for instance constants. For other syntax elements, the behavior
@@ -42,31 +41,21 @@ namespace RevLanguage {
      * obvious in the variable syntax element but also in the function
      * call, unary and binary expression elements.
      */
-    class SyntaxDeterministicAssignment : public SyntaxElement {
+    class SyntaxDeterministicAssignment : public SyntaxAssignment {
         
     public:
         SyntaxDeterministicAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                                      //!< Basic constructor
-        SyntaxDeterministicAssignment(const SyntaxDeterministicAssignment& x);                                              //!< Copy constructor
 
 	    virtual                             ~SyntaxDeterministicAssignment();                                               //!< Destructor
         
-        // Assignment operator
-        SyntaxDeterministicAssignment&      operator=(const SyntaxDeterministicAssignment& x);                              //!< Assignment operator
-        
         // Basic utility functions
         SyntaxDeterministicAssignment*      clone() const;                                                                  //!< Clone object
-        bool                                isAssignment(void) const;
-        void                                printValue(std::ostream& o) const;                                              //!< Print info about object
-        
-        // Regular functions
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                              //!< Get semantic value
-        bool                                isFunctionSafe(const Environment&       env,
-                                                           std::set<std::string>&   localVars) const;                       //!< Is this element safe in a function?
-        
+                
     protected:
-        SyntaxElement*                      lhsExpression;                                                                  //!< A lhs variable (or NULL)
-        SyntaxElement*                      rhsExpression;                                                                  //!< The rhs expression
         
+        void                                assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs);                           //!< The assignment operation.
+        bool                                isDynamic(void);                                                                //!< Should the rhs be evaluated dynamically?
+    
     };
     
 }

@@ -1,3 +1,0 @@
-1) The 'gtr' function does not complain if you give pi and exch rates in the wrong order. I personally would prefer if they were given in the other order.
-
-2)

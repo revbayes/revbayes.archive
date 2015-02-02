@@ -20,11 +20,11 @@
 #ifndef Func_ls_H
 #define Func_ls_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
-    class Func_ls : public Function {
+    class Func_ls : public Procedure {
         
     public:
         Func_ls( void );
@@ -38,9 +38,9 @@ namespace RevLanguage {
         // Func_ls functions
         const ArgumentRules&                    getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
-        bool                                    throws(void) const { return false; }                                         //!< Function may throw exceptions
+        bool                                    throws(void) const { return false; }                                        //!< Function may throw exceptions
         
-        RevPtr<Variable>                        execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                     execute(void);                                                              //!< Execute function
         
     };
     

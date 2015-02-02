@@ -47,8 +47,7 @@ RevBayesCore::ExponentialDistribution* Dist_exponential::createDistribution( voi
 {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( offset->getRevObject() ).getDagNode();
-    RevBayesCore::ExponentialDistribution* d    = new RevBayesCore::ExponentialDistribution( l, o );
+    RevBayesCore::ExponentialDistribution* d    = new RevBayesCore::ExponentialDistribution( l );
     
     return d;
 }
@@ -92,7 +91,7 @@ const TypeSpec& Dist_exponential::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_exponential::getMemberRules(void) const 
+const MemberRules& Dist_exponential::getParameterRules(void) const 
 {
     
     static MemberRules distMemberRules;
@@ -101,7 +100,6 @@ const MemberRules& Dist_exponential::getMemberRules(void) const
     if ( !rulesSet ) 
     {
         distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1.0) ) );
-        distMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         
         rulesSet = true;
     }
@@ -135,20 +133,16 @@ const TypeSpec& Dist_exponential::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_exponential::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_exponential::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "lambda" ) 
     {
         lambda = var;
     }
-    else if ( name == "offset" ) 
-    {
-        offset = var;
-    }
     else 
     {
-        PositiveContinuousDistribution::setConstMemberVariable(name, var);
+        PositiveContinuousDistribution::setConstParameter(name, var);
     }
     
 }

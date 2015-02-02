@@ -17,30 +17,28 @@
 #ifndef Func__ne_H
 #define Func__ne_H
 
-#include "Function.h"
-#include <map>
+#include "RlBoolean.h"
+#include "RlTypedFunction.h"
+
 #include <string>
 
 namespace RevLanguage {
     
     template <typename leftValType, typename rightValType>
-    class Func__ne : public Function {
+    class Func__ne : public TypedFunction<RlBoolean> {
         
     public:
         Func__ne();
         
         // Basic utility functions
-        Func__ne*                   clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func__ne*                                   clone(void) const;                                          //!< Clone the object
+        static const std::string&                   getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-        
-        
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction<unsigned int>*  createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -58,7 +56,7 @@ namespace RevLanguage {
 
 
 template <typename leftValType, typename rightValType>
-RevLanguage::Func__ne<leftValType,rightValType>::Func__ne() : Function() {
+RevLanguage::Func__ne<leftValType,rightValType>::Func__ne() : TypedFunction<RlBoolean>() {
     
 }
 
@@ -72,19 +70,15 @@ RevLanguage::Func__ne<leftValType,rightValType>* RevLanguage::Func__ne<leftValTy
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename leftValType, typename rightValType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__ne<leftValType,rightValType>::execute( void ) {
+RevBayesCore::TypedFunction<unsigned int>* RevLanguage::Func__ne<leftValType,rightValType>::createFunction( void ) const
+{
     
     const RevBayesCore::TypedDagNode<typename leftValType::valueType>* leftVal = static_cast<const leftValType &>( args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::TypedDagNode<typename rightValType::valueType>* rightVal = static_cast<const rightValType &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::NotEqualFunction<typename leftValType::valueType, typename rightValType::valueType> *func = new RevBayesCore::NotEqualFunction<typename leftValType::valueType, typename rightValType::valueType>( leftVal, rightVal );
 
-    DeterministicNode<bool> *detNode = new DeterministicNode<bool>("", func, this->clone());
-    
-    RlBoolean *theBool = new RlBoolean( detNode );
-    
-    return new Variable( theBool );
-    
+    return func;
 }
 
 
@@ -134,14 +128,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func__ne<leftValType,rightValType>::ge
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-template <typename leftValType, typename rightValType>
-const RevLanguage::TypeSpec& RevLanguage::Func__ne<leftValType,rightValType>::getReturnType( void ) const {
-    
-    return RlBoolean::getClassTypeSpec();
 }
 
 

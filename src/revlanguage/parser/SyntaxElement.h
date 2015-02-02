@@ -3,7 +3,7 @@
 
 #include "RevObject.h"
 #include "RevPtr.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 #include <iostream>
 #include <string>
@@ -36,13 +36,12 @@ namespace RevLanguage {
         // Basic utility functions you have to override
         virtual SyntaxElement*          clone(void) const = 0;                                                              //!< Clone object
         virtual void                    printValue(std::ostream& o) const = 0;                                              //!< Print info about object
-
+        
         // Regular functions
-        virtual RevPtr<Variable>        evaluateContent(Environment& env) = 0;                                              //!< Get semantic value (static)
-        virtual RevPtr<Variable>        evaluateDynamicContent(Environment& env);                                           //!< Get semantic value (dynamic, if different)
-        virtual RevPtr<Variable>        evaluateLHSContent(Environment& env, const std::string& varType);                   //!< Get semantic value (static)
+        virtual RevPtr<RevVariable>     evaluateContent(Environment& env, bool dynamic=false) = 0;                          //!< Get semantic value (static)
+        virtual RevPtr<RevVariable>     evaluateLHSContent(Environment& env, const std::string& varType);                   //!< Get semantic value (static)
         virtual bool                    isAssignment(void) const;                                                           //!< Is this an assignment statement element?
-        virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
+        virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?        
         virtual bool                    isFunctionSafe(const Environment&       env,
                                                        std::set<std::string>&   localVars) const;                           //!< Is this element safe in a function?
         virtual bool                    retrievesExternVar(const Environment&       env,

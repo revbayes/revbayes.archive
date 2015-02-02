@@ -1,35 +1,10 @@
-/**
- * @file
- * This file contains the implementation of RateMatrix_HKY, which is
- * class that holds a rate matrix in RevBayes.
- *
- * @brief Implementation of RateMatrix_HKY
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-12-11 14:46:24 +0100 (Tue, 11 Dec 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-08-27, version 1.0
- * @interface Mcmc
- * @package distributions
- *
- * $Id: RateMatrix_HKY.cpp 1921 2012-12-11 13:46:24Z hoehna $
- */
-
-#include "EigenSystem.h"
-#include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include "RateMatrix_HKY.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
-#include <fstream>
-#include <sstream>
 #include <string>
-#include <iomanip>
 
 using namespace RevBayesCore;
 
@@ -43,29 +18,9 @@ RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_HKY::RateMatrix_HKY(const RateMatrix_HKY& m) : TimeReversibleRateMatrix( m ) {
-    
-    kappa = m.kappa;
-    
-}
-
-
 /** Destructor */
 RateMatrix_HKY::~RateMatrix_HKY(void) {
     
-}
-
-
-RateMatrix_HKY& RateMatrix_HKY::operator=(const RateMatrix_HKY &r) {
-    
-    if (this != &r) {
-        TimeReversibleRateMatrix::operator=( r );
-        
-        kappa = r.kappa;
-    }
-    
-    return *this;
 }
 
 

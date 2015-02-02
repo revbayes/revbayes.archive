@@ -42,12 +42,12 @@ bool TestSkylineBirthDeathHCV::run( void ) {
     treeFilename = "/Users/tracyh/Code/RevBayes/virus/data/HCV_data_start.tre";
 
     /* First, we read in the data */
-	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
+	std::vector<AbstractCharacterData*> data = NclReader().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
 //    std::cout << data[0] << std::endl;
 	
 	// First, we read in the data 
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
 //    std::cout << trees[0]->getNewickRepresentation() << std::endl;
 	

@@ -46,6 +46,7 @@ namespace RevBayesCore {
         void                setValue(const valueType &v);
     
     private:
+        
         valueType           value;
         unsigned int        frequency;
         std::vector<double> trace;
@@ -109,7 +110,7 @@ void RevBayesCore::Sample<valueType>::computeStatistics( void )
 template <class valueType>
 double RevBayesCore::Sample<valueType>::getEss( void ) const
 {
-    
+    const_cast< Sample<valueType>* >(this)->computeStatistics();
     return ess;
 }
 

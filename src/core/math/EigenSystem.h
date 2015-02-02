@@ -60,7 +60,7 @@ namespace RevBayesCore {
         int                                     luDecompose(MatrixReal& a, double *vv, int *indx, double *pd);                                                   //!< calculates the LU-decomposition of a matrix
 
         size_t                                  n;                                                                                                                  //!< Row and column dimension (square matrix)
-        const MatrixReal*                             qPtr;                                                                                                               //!< A pointer to the rate matrix for this system of eigen values and vectors
+        const MatrixReal*                       qPtr;                                                                                                               //!< A pointer to the rate matrix for this system of eigen values and vectors
         MatrixReal                              eigenvectors;                                                                                                       //!< Matrix for internal storage of eigenvectors
         MatrixReal                              inverseEigenvectors;                                                                                                //!< Matrix for internal storage of the inverse eigenvectors
         MatrixComplex                           complexEigenvectors;                                                                                                //!< Matrix for internal storage of complex eigenvectors

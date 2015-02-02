@@ -31,7 +31,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_setwd::Func_setwd( void ) : Function()
+Func_setwd::Func_setwd( void ) : Procedure()
 {
     
 }
@@ -46,7 +46,7 @@ Func_setwd* Func_setwd::clone( void ) const
 
 
 /** Execute function */
-RevPtr<Variable> Func_setwd::execute( void )
+RevPtr<RevVariable> Func_setwd::execute( void )
 {
     
     const std::string &wd = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();

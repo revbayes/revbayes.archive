@@ -29,7 +29,7 @@
 using namespace RevLanguage;
 
 /** Constructor */
-MemberProcedure::MemberProcedure(const TypeSpec retType, ArgumentRules* argRules) : Function(),
+MemberProcedure::MemberProcedure(const TypeSpec retType, ArgumentRules* argRules) : Procedure(),
     argumentRules(argRules),
     object(NULL),
     returnType(retType)
@@ -47,10 +47,16 @@ MemberProcedure* MemberProcedure::clone(void) const
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RevPtr<Variable> MemberProcedure::execute( void )
+RevPtr<RevVariable> MemberProcedure::execute( void )
 {
     
-    RevPtr<Variable> retValue = object->getRevObject().executeMethod( getName(), args );
+    bool found = false;
+    RevPtr<RevVariable> retValue = object->getRevObject().executeMethod( getName(), args, found );
+    
+    if ( found == false )
+    {
+        throw RbException("Couldn't find member procedure called '" + getName() + "'");
+    }
     
     try
     {
@@ -117,7 +123,7 @@ bool MemberProcedure::isProcedure( void ) const
 }
 
 
-void MemberProcedure::setMemberObject( const RevPtr<Variable> &obj) {
+void MemberProcedure::setMemberObject( const RevPtr<RevVariable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;

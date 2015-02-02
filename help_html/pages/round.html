@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Round a number</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Round a number</h1>
+
+        <h2>Function round</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">round</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            'round' rounds the value 'x' to the nearest whole number.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             round( RealPos x )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The value<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                'round' rounds the number 'x' to the nearest whole number. If 'x' is RealPos, 'round(x)' returns a Natural number. If 'x' is Real, 'round(x)' returns an Integer. 
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+            > round(1.499)
+                1
+            > round(1.5)
+                2 
+            > round(1.999)
+                2
+            </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Michael Landis</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('ceil'); return false;">ceil</a><br />
+<a href="" onClick="navigateHelp('floor'); return false;">floor</a><br />
+<a href="" onClick="navigateHelp('trunc'); return false;">trunc</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

@@ -34,20 +34,17 @@ namespace RevLanguage {
         RootedTripletDistribution(RevBayesCore::RootedTripletDistribution *v);                                                                                //!< Constructor requires character type
         RootedTripletDistribution(const RevBayesCore::RootedTripletDistribution &v);                                                                          //!< Constructor requires character type
         RootedTripletDistribution(RevBayesCore::TypedDagNode<RevBayesCore::RootedTripletDistribution> *n);                                                    //!< Constructor requires character type
-        RootedTripletDistribution(const RootedTripletDistribution& d);                                                                                        //!< Constructor requires character type
         
         typedef RevBayesCore::RootedTripletDistribution valueType;
         
         // Basic utility functions
-        RootedTripletDistribution*                           clone(void) const;                                                              //!< Clone object
+        RootedTripletDistribution*          clone(void) const;                                                              //!< Clone object
         static const std::string&           getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Member method functions
-        const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
-        MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
+        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found); //!< Map member methods to internal functions
         
         
     };

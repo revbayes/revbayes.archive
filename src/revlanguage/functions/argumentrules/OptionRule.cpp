@@ -71,13 +71,20 @@ bool OptionRule::areOptionsUnique( const std::vector<std::string>& optVals ) con
 
 
 
+const std::vector<std::string>& OptionRule::getOptions( void ) const
+{
+    // return a const reference to the internal value
+    return options;
+}
+
+
 /** Print value for user */
 void OptionRule::printValue(std::ostream& o) const
 {
 
     ArgumentRule::printValue(o);
 
-    o << " = ";
+    o << " {valid options: ";
     for (std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
     {
         
@@ -86,9 +93,9 @@ void OptionRule::printValue(std::ostream& o) const
             o << "|";
         }
         
-        o << *it;
+        o << "\"" << *it << "\"";
 
     }
-    o << std::endl;
+    o << "}" << std::endl;
 }
 

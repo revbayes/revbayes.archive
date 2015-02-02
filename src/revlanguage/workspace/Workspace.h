@@ -31,6 +31,8 @@
 
 namespace RevLanguage {
 
+    class AbstractModelObject;
+    class AbstractWorkspaceObject;
     class RevObject;
     class Container;
     class Distribution;
@@ -80,7 +82,7 @@ namespace RevLanguage {
         // Workspace functions
         bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution
         bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
-        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
+//        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
         bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);          //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
@@ -88,26 +90,23 @@ namespace RevLanguage {
         const TypeTable&        getTypeTable(void) const;                                                   //!< Get the type table
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
         RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
-        RevObject*              makeNewNAObject(const std::string& type) const;                             //!< Make a clone of the template type object
-        Container*              makeNewEmptyContainer(const std::string& elemType, size_t dim) const;       //!< Make an empty container of specified element type and dim
         
         static Workspace& globalWorkspace(void) //!< Get global workspace
         {
-            static Workspace globalSpace = Workspace();
+            static Workspace globalSpace = Workspace("GlobalWorkspace");
             return globalSpace;
         }
 
         static Workspace& userWorkspace(void) //!< Get user workspace
         {
-            static Workspace userSpace = Workspace(&Workspace::globalWorkspace());
+            static Workspace userSpace = Workspace(&Workspace::globalWorkspace(),"UserWorkspace");
             return userSpace;
         }
         
 
     private:
-                                Workspace(void);                                                            //!< Workspace with NULL parent
-                                Workspace(Workspace* parentSpace);                                          //!< Workspace with parent
-                                Workspace(Environment* parentSpace);                                        //!< Workspace with parent
+                                Workspace(const std::string &n);                                                            //!< Workspace with NULL parent
+                                Workspace(Environment* parentSpace, const std::string &n);                                        //!< Workspace with parent
                                 Workspace(const Workspace& w);                                              //!< Prevent copy
 
         Workspace&              operator=(const Workspace& w);                                              //!< Prevent assignment
@@ -116,7 +115,9 @@ namespace RevLanguage {
         bool                    typesInitialized;                                                           //!< Are types initialized?
     };
 
+    
 }
+
 
 #endif
 

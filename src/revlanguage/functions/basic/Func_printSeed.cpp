@@ -1,11 +1,3 @@
-//
-//  Func_printSeed.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 9/8/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "Func_printSeed.h"
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
@@ -22,7 +14,7 @@
 
 using namespace RevLanguage;
 
-Func_printSeed::Func_printSeed() : Function() {
+Func_printSeed::Func_printSeed() : Procedure() {
     
 }
 
@@ -34,13 +26,13 @@ Func_printSeed* Func_printSeed::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func_printSeed::execute( void ) {
+RevPtr<RevVariable> Func_printSeed::execute( void ) {
     
     
     RevBayesCore::RandomNumberGenerator *rng = RevBayesCore::GLOBAL_RNG;
-	std::vector<unsigned int> s = rng->getSeed();
+	unsigned int s = rng->getSeed();
 
-	std::cout << "Current RNG Seed = (" << s[0] << ", " << s[1] << ")" << std::endl;
+	std::cout << "Current RNG Seed = " << s << "" << std::endl;
     
     return NULL;
 }

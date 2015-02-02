@@ -19,6 +19,7 @@
 #define RandomNumberGenerator_H
 
 #include <vector>
+#include "boost/random.hpp"
 
 namespace RevBayesCore {
 
@@ -27,15 +28,16 @@ namespace RevBayesCore {
     public:
 
                                             RandomNumberGenerator(void);                            //!< Default constructor using time seed
-                                            RandomNumberGenerator(std::vector<unsigned int> s);     //!< Constructor explicitly setting seeds
-
+                                            
         // Regular functions
-        const std::vector<unsigned int>&    getSeed(void) const;                                    //!< Get the seed values
-        void                                setSeed(std::vector<unsigned int> s);                   //!< Set the seeds of the RNG
+        unsigned int                        getSeed(void) const;                                    //!< Get the seed values
+        void                                setSeed(unsigned int s);                                //!< Set the seeds of the RNG
 		double                              uniform01(void);                                        //!< Get a random [0,1) var
 
 	private:
-		std::vector<unsigned int>           seed;                                                   //!< Vector of two seed values
+        unsigned int                        seed;
+        boost::rand48                       rng;
+        boost::uniform_01<boost::rand48>    zeroone;
 
     };
     
