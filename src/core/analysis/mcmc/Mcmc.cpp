@@ -88,7 +88,7 @@ void Mcmc::run(size_t kIterations)
     if ( generation == 0 )
     {
         // Monitor
-        startMonitors();
+        startMonitors( kIterations );
         monitor(0);
     }
     
@@ -149,7 +149,7 @@ void Mcmc::runPriorSampler(size_t kIterations)
     if ( generation == 0 )
     {
         // Monitor
-        startMonitors();
+        startMonitors( kIterations );
         monitor(0);
     }
     

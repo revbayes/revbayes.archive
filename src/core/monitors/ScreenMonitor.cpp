@@ -22,6 +22,8 @@
 #include "Monitor.h"
 #include "StringUtilities.h"
 
+#include <cmath>
+#include <iomanip>
 #include <sstream>
 
 using namespace RevBayesCore;
@@ -31,7 +33,9 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    separator("   |   "),
+    waitingTime( true ),
+    prefixSeparator("   "),
+    suffixSeparator("   |"),
     headerPrintingInterval( 20 )
 {
     
@@ -43,9 +47,10 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    separator("   |   "),
-    headerPrintingInterval( 20 )
-{
+    waitingTime( true ),
+    prefixSeparator("   "),
+    suffixSeparator("   |"),
+    headerPrintingInterval( 20 ){
     
 }
 
@@ -54,7 +59,9 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    separator("   |   "),
+    waitingTime( true ),
+    prefixSeparator("   "),
+    suffixSeparator("   |"),
     headerPrintingInterval( 20 )
 {
     
@@ -73,7 +80,10 @@ ScreenMonitor* ScreenMonitor::clone(void) const
 /** Monitor value at generation gen */
 void ScreenMonitor::monitor(unsigned long gen)
 {
-    
+    // start timer if gen == 0
+    if ( gen == 0 )
+        startTime = time( NULL );
+
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     
@@ -86,36 +96,42 @@ void ScreenMonitor::monitor(unsigned long gen)
     
     if (gen % samplingFrequency == 0)
     {
-        // print the iteration number first
+        // handy string and stringstream
+        std::string s;
         std::stringstream ss;
-        ss << gen;
-        std::string s = ss.str();
-        StringUtilities::fillWithSpaces(s, 10, true);
-        std::cout << s;
         
+        // set column width
+        size_t columnWidth = 12;
+        
+        // set cycle column width
+        size_t cycleWidth = floor( log10( numCycles ) ) + 1;
+        cycleWidth = 5 > cycleWidth ? 5 : cycleWidth;
+
+        // print the cycle number
+        ss << gen;
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, cycleWidth, true);
+        std::cout << s << suffixSeparator;
+        ss.str("");
+
         if ( posterior )
         {
-            // add a separator before every new element
-            std::cout << separator;
-            
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
             for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
             {
                 pp += (*it)->getLnProbability();
             }
-            std::stringstream ss;
+            
             ss << pp;
-            std::string s = ss.str();
-            StringUtilities::fillWithSpaces(s, 12, false);
-            std::cout << s;
+            s = ss.str();
+            StringUtilities::fillWithSpaces( s, columnWidth, false );
+            std::cout << prefixSeparator << s << suffixSeparator;
+            ss.str("");
         }
         
         if ( likelihood )
         {
-            // add a separator before every new element
-            std::cout << separator;
-            
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
             for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
@@ -125,18 +141,16 @@ void ScreenMonitor::monitor(unsigned long gen)
                     pp += (*it)->getLnProbability();
                 }
             }
-            std::stringstream ss;
+
             ss << pp;
-            std::string s = ss.str();
-            StringUtilities::fillWithSpaces(s, 12, false);
-            std::cout << s;
+            s = ss.str();
+            StringUtilities::fillWithSpaces( s, columnWidth, false );
+            std::cout << prefixSeparator << s << suffixSeparator;
+            ss.str("");
         }
         
         if ( prior )
         {
-            // add a separator before every new element
-            std::cout << separator;
-            
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
             for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
@@ -146,23 +160,47 @@ void ScreenMonitor::monitor(unsigned long gen)
                     pp += (*it)->getLnProbability();
                 }
             }
-            std::stringstream ss;
+
             ss << pp;
-            std::string s = ss.str();
-            StringUtilities::fillWithSpaces(s, 12, false);
-            std::cout << s;
+            s = ss.str();
+            StringUtilities::fillWithSpaces( s, columnWidth, false );
+            std::cout << prefixSeparator << s << suffixSeparator;
+            ss.str("");
         }
         
         for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
         {
-            // add a separator before every new element
-            std::cout << separator;
-            
             // get the node
             DagNode *node = *i;
             
             // print the value
-            node->printValue(std::cout, separator, 12, false);
+            node->printValue(ss, prefixSeparator + suffixSeparator, int( columnWidth ), false);
+            std::cout << prefixSeparator << ss.str() << suffixSeparator;
+            ss.str("");
+        }
+        
+        if ( waitingTime )
+        {
+            if ( gen == 0 )
+            {
+                std::cout << prefixSeparator << "--:--:--" << suffixSeparator;
+            }
+            else
+            {
+                double progress = double( gen ) / double( numCycles );
+                size_t timeUsed = time(NULL) - startTime;
+                size_t waitTime = double( timeUsed ) / progress - double( timeUsed );
+                
+                size_t hours   = waitTime / 3600;
+                size_t minutes = waitTime / 60 - hours * 60;
+                size_t seconds = waitTime - minutes * 60 - hours * 3600;
+                
+                ss << std::setw( 2 ) << std::setfill( '0' ) << hours << ":";
+                ss << std::setw( 2 ) << std::setfill( '0' ) << minutes << ":";
+                ss << std::setw( 2 ) << std::setfill( '0' ) << seconds;
+                
+                std::cout << prefixSeparator << ss.str() << suffixSeparator;
+            }
         }
         
         std::cout << std::endl;
@@ -173,77 +211,79 @@ void ScreenMonitor::monitor(unsigned long gen)
 
 
 /** Print header for monitored values */
-void ScreenMonitor::printHeader() 
+void ScreenMonitor::printHeader( void )
 {
-    
     // print empty line first
     std::cout << std::endl;
     
+    // print everything to a string stream
+    std::stringstream ss;
+
     // print one column for the iteration number
-    std::string itString = "Iteration";
-    StringUtilities::fillWithSpaces(itString,10,true);
-    std::cout << itString;
+    std::string header = "Iter";
+
+    size_t width = 4;
     
-    size_t width = 12;
+    size_t numWidth = size_t( log10( numCycles ) ) + 1;
+    width = width > numWidth ? width : numWidth;
     
-    if ( posterior ) 
+    size_t columnWidth = 12;
+
+    StringUtilities::fillWithSpaces( header, width, true );
+    ss << header << suffixSeparator;
+    
+    if ( posterior )
     {
-        // add a separator before every new element
-        std::cout << separator;
-        std::string poString = "Posterior";
-        StringUtilities::fillWithSpaces(poString,12,false);
-        std::cout << poString;
-        
-        width += 12 + separator.size();
+        header = "Posterior";
+        StringUtilities::fillWithSpaces( header, columnWidth, false );
+        ss << prefixSeparator << header << suffixSeparator;
     }
     
     if ( likelihood ) 
     {
-        // add a separator before every new element
-        std::cout << separator;
-        std::string liString = "Likelihood";
-        StringUtilities::fillWithSpaces(liString,12,false);
-        std::cout << liString;
-        
-        width += 12 + separator.size();
+        header = "Likelihood";
+        StringUtilities::fillWithSpaces( header, columnWidth, false );
+        ss << prefixSeparator << header << suffixSeparator;
     }
     
     if ( prior ) 
     {
-        // add a separator before every new element
-        std::cout << separator;
-        std::string prString = "Prior";
-        StringUtilities::fillWithSpaces(prString,12,false);
-        std::cout << prString;
-        
-        width += 12 + separator.size();
+        header = "Prior";
+        StringUtilities::fillWithSpaces( header, columnWidth, false );
+        ss << prefixSeparator << header << suffixSeparator;
     }
     
     for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) 
     {
-        // add a separator before every new element
-        std::cout << separator;
-        
         const DagNode* theNode = *it;
-        
+
         // print the header
-        if (theNode->getName() != "")
+        if ( theNode->getName() != "" )
         {
-            theNode->printName(std::cout,separator,12,false);
+            ss << prefixSeparator;
+            theNode->printName( ss, prefixSeparator + suffixSeparator, int( columnWidth ), false );
+            ss << suffixSeparator;
         }
         else
         {
-            std::string nString = "Unnamed";
-            StringUtilities::fillWithSpaces(nString,12,false);
-            std::cout << nString;
+            header = "Unnamed";
+            StringUtilities::fillWithSpaces( header, columnWidth, false );
+            ss << prefixSeparator << header << suffixSeparator;
         }
-        
-        width += theNode->getNumberOfElements()*(12 + separator.size());
     }
     
-    std::cout << std::endl;
-    
-    for (size_t i=0; i<width; ++i)
+    if ( waitingTime )
+    {
+        // We know it takes 8 characters to print the waiting time, so hard-set column
+        // width to this number
+        header = "ETA";
+        StringUtilities::fillWithSpaces( header, 8, false );
+        ss << prefixSeparator << header << suffixSeparator;
+    }
+
+    std::cout << ss.str() << std::endl;
+
+    for (size_t i=0; i<ss.str().size(); ++i)
     {
         std::cout << "-";
     }

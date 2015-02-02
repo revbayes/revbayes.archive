@@ -69,18 +69,28 @@ RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const {
 }
 
 
+
+void RateMatrix_FreeBinary::fillRateMatrix( void )
+{
+    
+    MatrixReal& m = *theRateMatrix;
+    
+    // set the off-diagonal portions of the rate matrix
+    m[0][0] = -transitionRates[1];
+    m[0][1] = transitionRates[1];
+    m[1][0] = transitionRates[0];
+    m[1][1] = -transitionRates[0];
+    
+    // set flags
+    needsUpdate = true;
+}
+
+
 void RateMatrix_FreeBinary::updateMatrix( void ) {
     
     if ( needsUpdate )
     {
-//        // compute the off-diagonal values
-//        computeOffDiagonal();
-//        
-//        // set the diagonal values
-//        setDiagonal();
-//        
-//        // rescale
-//        rescaleToAverageRate( 1.0 );
+        fillRateMatrix();
         
         // clean flags
         needsUpdate = false;

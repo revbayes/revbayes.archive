@@ -20,20 +20,15 @@ namespace RevLanguage {
         
         NAValueNode<rlType>*                                clone(void) const;                                                      //!< Create a clone of this node.
         RevBayesCore::DagNode*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
-        double                                              getEntireLnLikelihood(void);                                            //!< Compute the entire likelihood of this node AND all its children
-        double                                              getLnProbability(void);
-        double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);                                                         //!< Get value (throw error)
         const valueType&                                    getValue(void) const;                                                   //!< Get value (throw error) (const)
         bool                                                isConstant(void) const;                                                 //!< Is this DAG node constant?
         bool                                                isNAValue(void) const;                                                  //!< Is this an NA value node?
         void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;          //!< Print structure info
         void                                                printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;    //!< Monitor/Print this variable
-        void                                                redraw(void);
         void                                                setValue(const valueType &v);                                           //!< Stop attempts to set value of this node
         
     protected:
-        void                                                getAffected(std::set<RevBayesCore::DagNode *>& affected,RevBayesCore::DagNode* affecter);   //!< Mark and get affected nodes
         void                                                keepMe(RevBayesCore::DagNode* affecter);                                //!< Keep value of this and affected nodes
         void                                                restoreMe(RevBayesCore::DagNode *restorer);                             //!< Restore value of this nodes
         void                                                touchMe(RevBayesCore::DagNode *toucher);                                //!< Tell affected nodes value is reset
@@ -104,40 +99,6 @@ RevBayesCore::DagNode* NAValueNode<rlType>::cloneDAG( std::map<const RevBayesCor
     }
     
     return copy;
-}
-
-
-/**
- * Get the affected nodes.
- * This call is started by the parent and since we don't have one this is a dummy implementation!
- */
-template<class rlType>
-void NAValueNode<rlType>::getAffected(std::set<RevBayesCore::DagNode *> &affected, RevBayesCore::DagNode* affecter) {
-    
-    // do nothing
-    throw RbException("You should never call getAffected() of a constant node!!!");
-    
-}
-
-
-template<class rlType>
-double NAValueNode<rlType>::getEntireLnLikelihood( void ) {
-    
-    return 0.0;
-}
-
-
-template<class rlType>
-double NAValueNode<rlType>::getLnProbability( void ) {
-    
-    return 0.0;
-}
-
-
-template<class rlType>
-double NAValueNode<rlType>::getLnProbabilityRatio( void ) {
-    
-    return 0.0;
 }
 
 
@@ -232,12 +193,6 @@ void NAValueNode<rlType>::printValue( std::ostream &o, const std::string &sep, i
         StringUtilities::fillWithSpaces(s, l, left);
     }
     o << s;
-}
-
-
-template<class rlType>
-void NAValueNode<rlType>::redraw( void ) {
-    // nothing to do
 }
 
 

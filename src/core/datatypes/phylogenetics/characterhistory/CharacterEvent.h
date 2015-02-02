@@ -30,7 +30,9 @@ namespace RevBayesCore {
         double                              getTime(void);
         size_t                              getIndex(void);
         unsigned int                        getState(void);
+        std::string                         getStateStr(void);
         void                                setState(unsigned int s);
+        void                                setTime(double t);
         void                                print(void);
         
         bool                                operator<(const CharacterEvent& lhs) const;

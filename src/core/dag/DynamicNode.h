@@ -27,34 +27,32 @@ namespace RevBayesCore {
     
     template<class valueType>
     class DynamicNode : public TypedDagNode<valueType> {
-    
+        
     public:
-    
+        
         DynamicNode(const std::string &n);
         DynamicNode(const DynamicNode &n);
         virtual                                            ~DynamicNode(void);                                                              //!< Virtual destructor
-
+        
         // pure virtual methods
         virtual DynamicNode<valueType>*                     clone(void) const = 0;
-        virtual double                                      getLnProbability(void) = 0;
-        virtual double                                      getLnProbabilityRatio(void) = 0;
-
+        
         // public methods
         virtual DagNode*                                    cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;                   //!< Clone the entire DAG which is connected to this node
-
+        
         // this function provided for derived classes used in the language layer, which need to override it
         virtual const std::string&                          getRevTypeOfValue(void);                                                        //!< Get Rev language type of value
-
+        
     protected:
         virtual void                                        keepMe(DagNode* affecter);                                                      //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                                   //!< Restore value of this node
         virtual void                                        touchMe(DagNode *toucher);                                                      //!< Tell affected nodes value is reset
-
-    
+        
+        
         // members
         bool                                                touched;                                                                        //!< Is touched by move?
     };
-
+    
 }
 
 #include "RbException.h"
@@ -121,7 +119,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     }
     
     // Make sure the children clone themselves
-    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ ) 
+    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
     {
         (*i)->cloneDAG( newNodes );
     }
@@ -189,10 +187,10 @@ void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher ) {
     
     if (!touched)
     {
-        // Store the current lnProb 
+        // Store the current lnProb
         touched      = true;
     }
-        
+    
 }
 
 

@@ -16,17 +16,24 @@ using namespace RevLanguage;
 
 /** Default constructor */
 Natural::Natural( void ) : Integer( 0 ) {
+
+    setGuiVariableName("Natural Number");
+    setGuiLatexSymbol("N");
 }
 
 
 Natural::Natural( RevBayesCore::TypedDagNode<int> *v ) : Integer( v ) {
     
+    setGuiVariableName("Natural Number");
+    setGuiLatexSymbol("N");
 }
 
 
 /** Construct from int */
 Natural::Natural( int x ) : Integer( x ) {
 
+    setGuiVariableName("Natural Number");
+    setGuiLatexSymbol("N");
     if ( x < 0 )
         throw RbException( "Negative value for " + getClassType() );
 }
@@ -35,12 +42,16 @@ Natural::Natural( int x ) : Integer( x ) {
 /* Construct from unsigned int */
 Natural::Natural( unsigned int x ) : Integer( x ) {
         
+    setGuiVariableName("Natural Number");
+    setGuiLatexSymbol("N");
 }
 
 
 /* Construct from unsigned long */
 Natural::Natural( unsigned long x) : Integer( int(x) ) {
 
+    setGuiVariableName("Natural Number");
+    setGuiLatexSymbol("N");
     if ( x > INT_MAX )
         throw RbException( "Value out of range for " + getClassType() );
 

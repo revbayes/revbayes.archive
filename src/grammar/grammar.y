@@ -469,6 +469,7 @@ baseVariable    :   fxnCall optElements '.'
                     printf("Parser inserting base variable (BASE_VAR, fxnCall) in syntax tree\n");
 #endif
                     $$ = new SyntaxVariable($1, $2);
+                    parser.setBaseVariable( $$ );
                 }
                 |   '(' expression ')' optElements '.'
                 {
@@ -476,6 +477,7 @@ baseVariable    :   fxnCall optElements '.'
                     printf("Parser inserting base variable (BASE_VAR, expr) in syntax tree\n");
 #endif
                     $$ = new SyntaxVariable($2, $4);
+                    parser.setBaseVariable( $$ );
                 }
                 |   var '.'
                 {
@@ -483,6 +485,7 @@ baseVariable    :   fxnCall optElements '.'
                     printf("Parser inserting base variable (BASE_VAR, namedVar) in syntax tree\n");
 #endif
                     $$ = $1;
+                    parser.setBaseVariable( $$ );
                 }
                 |   baseVariable fxnCall optElements '.'
                 {
@@ -491,6 +494,7 @@ baseVariable    :   fxnCall optElements '.'
 #endif
                     $2->setBaseVariable($1);
                     $$ = new SyntaxVariable($2, $3);
+                    parser.setBaseVariable( $$ );
                 }
                 |   baseVariable var '.'
                 {
@@ -499,6 +503,7 @@ baseVariable    :   fxnCall optElements '.'
 #endif
                     $2->setBaseVariable($1);
                     $$ = $2;
+                    parser.setBaseVariable( $$ );
                 }
                 ;
 
@@ -537,6 +542,7 @@ variable    :   var
 #endif
                     $2->setBaseVariable($1);
                     $$ = $2;
+                    parser.setBaseVariable( NULL );
                 }
             |   baseVariable fxnCall elementList
                 {
@@ -545,6 +551,7 @@ variable    :   var
 #endif
                     $2->setBaseVariable($1);
                     $$ = new SyntaxVariable($2, $3);
+                    parser.setBaseVariable( NULL );
                 }
             ;
 
@@ -558,10 +565,11 @@ elementList :   '[' expression ']'              { $$ = new std::list<SyntaxEleme
             |   elementList '[' ']'             { $1->push_back( NULL ); $$ = $1; }
             ;
 
-fxnCall     :   identifier '(' optArguments ')' 
+fxnCall     :   identifier { parser.setFunctionName( *$1 ); } '(' optArguments ')'
                 {
-                    $$ = new SyntaxFunctionCall(*$1, $3);
+                    $$ = new SyntaxFunctionCall(*$1, $4);
                     delete $1;
+                    parser.setFunctionName( "" );
                 }
             ;
 
@@ -597,13 +605,14 @@ argument   :    expression
 #endif
                     $$ = new SyntaxLabeledExpr( "", $1);
                 }
-            |   identifier EQUAL expression
+            |   identifier EQUAL { parser.setArgumentLabel( *$1 ); } expression
                 { 
 #ifdef DEBUG_BISON_FLEX
                     printf("Parser inserting labeled argument in syntax tree\n");
 #endif
-                    $$ = new SyntaxLabeledExpr(*$1, $3);
+                    $$ = new SyntaxLabeledExpr(*$1, $4);
                     delete $1;
+                    parser.setArgumentLabel( "" );
                 }
             ;
 
@@ -901,9 +910,9 @@ constant    :   FALSE
                     */
                     
                     if ($1 >= 0.0 && $1 <= 1.0) {
-                        #ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting RealPos constant in syntax tree \n");
-                        #endif
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting Probability constant in syntax tree \n");
+#endif
                         $$ = new SyntaxConstant(new Probability($1) );
                     }
                     else if ($1 >= 0.0) {
@@ -934,6 +943,9 @@ int yyerror(const char *msg)
         foundErrorBeforeEnd = false;
     else
         foundErrorBeforeEnd = true;
+
+    if ( foundErrorBeforeEnd == false && parser.isChecking() )
+        parser.executeBaseVariable();
 
     yylloc.first_column = yycolumn - yyleng;
     yylloc.last_column  = yycolumn - 1;

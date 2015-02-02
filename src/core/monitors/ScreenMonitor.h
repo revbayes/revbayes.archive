@@ -41,17 +41,20 @@ namespace RevBayesCore {
         // Monitor functions
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         
-        // FileMonitor functions
+        // ScreenMonitor functions
         void                                printHeader(void);                                                  //!< Print header
-        
+
     private:
         
         // parameters
         bool                                posterior;
         bool                                prior;
         bool                                likelihood;
-        std::string                         separator;
+        bool                                waitingTime;
+        std::string                         prefixSeparator;
+        std::string                         suffixSeparator;
         size_t                              headerPrintingInterval;
+        time_t                              startTime;
     };
     
 }

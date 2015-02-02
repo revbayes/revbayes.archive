@@ -107,7 +107,12 @@ public:
         }
 
         // extract the unprocessed string
-        cmd = buf.substr(linePos.back(), buf.size());
+        if(buf.size() > linePos.back()){
+            cmd = buf.substr(linePos.back(), buf.size());
+        }
+        else{
+            cmd = buf;
+        }
         std::string subject = LineEditUtils().extractSubject(cmd);
 
         StateType type = (queuedStates->back())->getType();

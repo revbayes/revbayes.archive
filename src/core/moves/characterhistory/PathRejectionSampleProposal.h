@@ -325,7 +325,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     {
         branchLength = node->getAge() * 5;
     }
-    else
+    else if (node->isRoot())
         return 0.0;
     
     const RateMap& rm = qmap->getValue();
@@ -350,12 +350,41 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
             // proceed with rejection sampling
             currState = parentVector[*it]->getState();
             double t = 0.0;
+            double sr = 0.0;
             
             // repeated rejection sampling
             do
             {
-                unsigned int nextState = (currState == 1 ? 0 : 1);
-                double r = rm.getSiteRate(*node, currState, nextState);
+                double r = 0.0;
+                unsigned int nextState;
+                if (numStates == 2)
+                {
+                    nextState = (currState == 1 ? 0 : 1);
+                    r = rm.getSiteRate(*node, currState, nextState);
+                }
+                
+                else
+                {
+                    std::vector<double> rates(numStates,0.0);
+                    for (size_t i = 0; i < numStates; i++)
+                    {
+                        if (i == currState)
+                            continue;
+                        double v = rm.getSiteRate(*node, currState, i);
+                        rates[i] = v;
+                        r += v;
+                    }
+                    double u = GLOBAL_RNG->uniform01() * r;
+                    for (size_t i = 0; i < numStates; i++)
+                    {
+                        u -= rates[i];
+                        if (u <= 0.0)
+                        {
+                            nextState = i;
+                            break;
+                        }
+                    }
+                }
                 
                 // force valid time if event needed
                 if (t == 0.0 && currState != endState)
@@ -390,6 +419,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
         }
     }
     
+//    std::cout << proposedHistory.size() << "\n";
     // assign values back to model for likelihood
     bh->updateHistory(proposedHistory, siteIndexSet);
     

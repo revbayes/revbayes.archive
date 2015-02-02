@@ -9,13 +9,14 @@
 #include "Func_constructRootedTripletDistribution.h"
 #include "ModelVector.h"
 #include "RealPos.h"
+#include "RlBranchLengthTree.h" 
 #include "RlDeterministicNode.h"
+#include "RlRootedTripletDistribution.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "ModelVector.h"
-#include "Topology.h"
+#include "RlTaxon.h"
 #include "RootedTripletDistributionFunction.h"
-#include "RlRootedTripletDistribution.h"
+#include "Topology.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -35,15 +36,29 @@ Func_constructRootedTripletDistribution* Func_constructRootedTripletDistribution
 
 RevPtr<Variable> Func_constructRootedTripletDistribution::execute() {
     
-    // RevBayesCore::TypedDagNode<std::vector<TimeTree> >* gTrees = static_cast<const ModelVector<TimeTree> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::RootedTripletDistributionFunction* f ;
+    if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< RlString >::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode<std::vector< std::string > >* sn = static_cast<const ModelVector< RlString > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        f = new RevBayesCore::RootedTripletDistributionFunction( sn );
+    }
+    else if ( this->args[1].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< Taxon >::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode<std::vector< RevBayesCore::Taxon > >* t = static_cast<const ModelVector< Taxon > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        f = new RevBayesCore::RootedTripletDistributionFunction( t );
+    }
     
-    
-    RevBayesCore::TypedDagNode<std::vector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    
-    RevBayesCore::TypedDagNode<std::vector< std::string > >* sn = static_cast<const ModelVector< RlString > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    if ( this->args[0].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< TimeTree >::getClassTypeSpec() ) )
+    {
+       RevBayesCore::TypedDagNode<std::vector< RevBayesCore::TimeTree > >* gTrees = static_cast<const ModelVector< TimeTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        f->setTrees(gTrees);
+    }
+    else if ( this->args[0].getVariable()->getRevObjectTypeSpec().isDerivedOf( ModelVector< BranchLengthTree >::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode<std::vector< RevBayesCore::BranchLengthTree > >* gTrees = static_cast<const ModelVector< BranchLengthTree > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        f->setTrees(gTrees);
+    }
 
-    
-    RevBayesCore::RootedTripletDistributionFunction* f = new RevBayesCore::RootedTripletDistributionFunction( gTrees, sn );
     
     DeterministicNode<RevBayesCore::RootedTripletDistribution> *detNode = new DeterministicNode<RevBayesCore::RootedTripletDistribution>("", f, this->clone());
     
@@ -62,7 +77,12 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "geneTrees", ModelVector< TimeTree >::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        std::vector<TypeSpec> treeTypes;
+        treeTypes.push_back( ModelVector< TimeTree >::getClassTypeSpec() );
+        treeTypes.push_back( ModelVector< BranchLengthTree >::getClassTypeSpec() );
+
+
+        argumentRules.push_back( new ArgumentRule( "geneTrees", treeTypes , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "speciesNames", ModelVector< RlString >::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
         rulesSet = true;
@@ -91,7 +111,7 @@ const TypeSpec& Func_constructRootedTripletDistribution::getClassTypeSpec(void) 
 /* Get return type */
 const TypeSpec& Func_constructRootedTripletDistribution::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = TimeTree::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RootedTripletDistribution::getClassTypeSpec();
     
     return returnTypeSpec;
 }

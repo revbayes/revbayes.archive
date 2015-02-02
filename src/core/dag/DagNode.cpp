@@ -10,12 +10,12 @@ using namespace RevBayesCore;
  * with a name (default is "").
  */
 DagNode::DagNode( const std::string &n ) :
-        children(),
-        name( n ), 
-        touchedElements(),
-        refCount( 0 )
+children(),
+name( n ),
+touchedElements(),
+refCount( 0 )
 {
-
+    
 }
 
 
@@ -27,11 +27,11 @@ DagNode::DagNode( const std::string &n ) :
  * from those parents and deleting the parents
  * if necessary.
  */
-DagNode::DagNode( const DagNode &n ) : 
-        children(),
-        name( n.name ),  
-        touchedElements( n.touchedElements ),
-        refCount( 0 )
+DagNode::DagNode( const DagNode &n ) :
+children(),
+name( n.name ),
+touchedElements( n.touchedElements ),
+refCount( 0 )
 {
 }
 
@@ -56,7 +56,7 @@ DagNode::~DagNode( void )
     else
         std::cerr << "Deleting DAG node <" << this << ">" << std::endl;
 #endif
-
+    
     // Sanity checks
     if ( refCount != 0 )
     {
@@ -89,7 +89,7 @@ DagNode& DagNode::operator=(const DagNode &d)
 {
     if ( &d != this )
     {
-        name = d.name;  
+        name = d.name;
         touchedElements = d.touchedElements;
     }
     
@@ -108,7 +108,7 @@ void DagNode::addTouchedElementIndex(size_t i)
 {
     
     touchedElements.insert( i );
-
+    
 }
 
 
@@ -116,12 +116,12 @@ void DagNode::clearTouchedElementIndices( void )
 {
     
     touchedElements.clear();
-
+    
 }
 
 
 /** Clone the graph downstream from this node: clone children */
-DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNodes ) const 
+DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNodes ) const
 {
     
     if ( newNodes.find( this ) != newNodes.end() )
@@ -165,10 +165,10 @@ void DagNode::collectDownstreamGraph(std::set<RevBayesCore::DagNode *> &nodes)
 }
 
 
-/** 
- * Decrement the reference count and return it. 
+/**
+ * Decrement the reference count and return it.
  */
-size_t DagNode::decrementReferenceCount( void ) const 
+size_t DagNode::decrementReferenceCount( void ) const
 {
     // Sanity checks
     if ( refCount == 0) {
@@ -188,7 +188,7 @@ size_t DagNode::decrementReferenceCount( void ) const
             o << "Decrementing reference count of node <" << this << "> below number of children" << std::endl;
         throw RbException( o );
     }
-
+    
     refCount--;
     
     return refCount;
@@ -196,18 +196,33 @@ size_t DagNode::decrementReferenceCount( void ) const
 
 
 /**
- * Get all affected nodes this DAGNode.
- * This means we call getAffected() of all children. getAffected() is pure virtual.
+ * Get the stochastic nodes affected by an upstream change of a DAG node. The default
+ * behavior, which is appropriate for all DAG nodes except stochastic nodes, is to
+ * pass on the call to our children through their getAffected() function, updating
+ * the affecter when passing the call on, so that the stochastic nodes at the end
+ * of the chain will know through which immediate parent the call came.
  */
-void DagNode::getAffectedNodes(std::set<DagNode *> &affected)
+void DagNode::getAffected( std::set<DagNode*>& affected, DagNode* affecter )
 {
-    
-    // get all my affected children
-    for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    // Dispatch the call to our children
+    for ( std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it )
     {
-        (*i)->getAffected(affected, this);
+        (*it)->getAffected( affected, this );
     }
-    
+}
+
+
+/**
+ * Get the downstream stochastic nodes whose probability will be affected by a change of this
+ * node. We simply pass on the call to our children through their getAffected() function.
+ */
+void DagNode::getAffectedNodes( std::set<DagNode*>& affected )
+{
+    // Dispatch the call to our children
+    for ( std::set<DagNode*>::iterator it = children.begin(); it != children.end(); ++it )
+    {
+        (*it)->getAffected( affected, this );
+    }
 }
 
 
@@ -220,10 +235,10 @@ const std::set<DagNode*>& DagNode::getChildren( void ) const
 std::string DagNode::getDagNodeType( void ) const
 {
     
-    if ( type == CONSTANT ) 
+    if ( type == CONSTANT )
     {
         return "constant";
-    } 
+    }
     else if ( type == DETERMINISTIC )
     {
         return "deterministic";
@@ -244,14 +259,14 @@ DagNode* DagNode::getFirstChild( void ) const
 
 const std::string& DagNode::getName( void ) const
 {
-
+    
     return name;
 }
 
 
 size_t DagNode::getNumberOfChildren( void ) const
 {
-
+    
     return children.size();
 }
 
@@ -267,10 +282,10 @@ std::set<const DagNode*> DagNode::getParents( void ) const
 }
 
 
-/** 
- * Get the reference count. 
+/**
+ * Get the reference count.
  */
-size_t DagNode::getReferenceCount( void ) const 
+size_t DagNode::getReferenceCount( void ) const
 {
     
     return refCount;
@@ -280,15 +295,15 @@ size_t DagNode::getReferenceCount( void ) const
 /* Get the indices of all touched elements */
 const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
 {
-
+    
     return touchedElements;
 }
 
 
-/** 
- * Increment the reference count. 
+/**
+ * Increment the reference count.
  */
-void DagNode::incrementReferenceCount( void ) const 
+void DagNode::incrementReferenceCount( void ) const
 {
     
     refCount++;
@@ -308,7 +323,7 @@ void DagNode::incrementReferenceCount( void ) const
         
     }
 #endif
-
+    
 }
 
 
@@ -333,14 +348,14 @@ bool DagNode::isAssignable( void ) const
     for ( std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
         if ( (*it)->isAssignable() )
             return true;
-
+    
     return false;
 }
 
 
 bool DagNode::isClamped( void ) const
 {
-
+    
     return false;
 }
 
@@ -358,7 +373,7 @@ bool DagNode::isComposite( void ) const
 
 bool DagNode::isConstant( void ) const
 {
-
+    
     return false;
 }
 
@@ -374,9 +389,9 @@ bool DagNode::isNAValue( void ) const
  * Is this variable a simple numeric variable?
  * This is asked for example by the model monitor that only wants to monitor simple
  * numeric variable because all others (e.g. trees and vectors/matrices) cannot be read
- * by Tracer. 
+ * by Tracer.
  */
-bool DagNode::isSimpleNumeric( void ) const 
+bool DagNode::isSimpleNumeric( void ) const
 {
     return false;
 }
@@ -439,7 +454,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
     
     size_t currentLength = indent + 2;
     std::ostringstream s;
-
+    
     std::set<DagNode*>::const_iterator it;
     size_t i = 0;
     for ( i = 0, it = children.begin(); it != children.end(); ++it, ++i )
@@ -453,7 +468,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
         {
             if ( verbose == true )
             {
-            s << (*it)->getName() << " <" << (*it) << ">";
+                s << (*it)->getName() << " <" << (*it) << ">";
             }
             else
             {
@@ -491,7 +506,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
 void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool verbose ) const
 {
     const std::set<const DagNode*>& parents = getParents();
-
+    
     std::string pad;
     for ( size_t i = 0; i < indent; ++i )
     {
@@ -504,10 +519,10 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
     
     size_t currentLength = indent + 2;
     std::ostringstream s;
-
+    
     std::set<const DagNode*>::const_iterator it;
     size_t i = 0;
-
+    
     for ( i = 0, it = parents.begin(); it != parents.end(); ++it, ++i )
     {
         if ( (*it)->getName() == "" )
@@ -567,7 +582,7 @@ void DagNode::reInitializeAffected( void )
     {
         (*i)->reInitializeMe();
     }
-
+    
 }
 
 
@@ -584,7 +599,7 @@ void DagNode::removeChild(DagNode *child) const
 {
     
     // test if we even have this node as a child
-    if (children.find(child) != children.end()) 
+    if (children.find(child) != children.end())
     {
         // we do not own our children! See addChildNode for explanation
         
@@ -596,7 +611,7 @@ void DagNode::removeChild(DagNode *child) const
 
 
 /**
- * Replace the DAG node. 
+ * Replace the DAG node.
  * We call swap parent for all children so that they get a new parent. We do not change the parents.
  */
 void DagNode::replace( DagNode *n )
@@ -654,9 +669,9 @@ void DagNode::restoreAffected(void)
 
 void DagNode::setName(std::string const &n)
 {
-
+    
     name = n;
-
+    
 }
 
 
@@ -677,14 +692,14 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
 {
     
     throw RbException( "This DAG node does not have any parents" );
-
+    
 }
 
 
 /**
  * Touch the DAG node.
  *
- * This function should be called if the value of the variable has changed or if you want this node to be reevaluated. 
+ * This function should be called if the value of the variable has changed or if you want this node to be reevaluated.
  * The function will automatically call the touchMe() which is implemented differently in the different DAG node types.
  *
  * Since the DAG node was touched and possibly changed, we tell affected DAG nodes that they too have been touched
@@ -692,11 +707,11 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
  */
 void DagNode::touch()
 {
-
+    
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "Touching DAG node " << getName() << " <" << this << ">" << std::endl;
 #endif
-
+    
     // first touch myself
     touchMe( this );
     
@@ -710,11 +725,11 @@ void DagNode::touch()
  */
 void DagNode::touchAffected()
 {
-
+    
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "Touching affected of DAG node " << getName() << " <" << this << ">" << std::endl;
 #endif
-
+    
     // touch all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->touchMe( this );

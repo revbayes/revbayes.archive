@@ -152,6 +152,20 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<TimeTr
 }
 
 
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<BranchLengthTree>& x) {
+    o << "(";
+    for (std::vector<BranchLengthTree>::const_iterator it = x.begin(); it != x.end(); ++it) {
+        if ( it != x.begin() ) {
+            o << ", ";
+        }
+        o << *it;
+    }
+    o << ")";
+    
+    return o;
+}
+
+
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Trace>& x) {
     o << "(";
     for (std::vector<Trace>::const_iterator it = x.begin(); it != x.end(); ++it) {
