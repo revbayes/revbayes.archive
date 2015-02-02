@@ -28,7 +28,7 @@ namespace RevLanguage {
         virtual BirthDeathProcess*                          clone(void) const = 0;                                                              //!< Clone the object
 
         // Basic utility functions you may want to overwrite
-        const MemberRules&                                  getMemberRules(void) const;                                                         //!< Get member rules (const)
+        const MemberRules&                                  getParameterRules(void) const;                                                         //!< Get member rules (const)
         
         // Basic utility functions
         static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
@@ -40,17 +40,17 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var); //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var); //!< Set member variable
     
         // members        
-        RevPtr<const Variable>                              origin;                                                                             //!< The time of the process since the origin
-        RevPtr<const Variable>                              rootAge;                                                                             //!< The time of the process since the origin
-        RevPtr<const Variable>                              rho;                                                                                //!< The sampling probability of a species at present
-        RevPtr<const Variable>                              samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
-        RevPtr<const Variable>                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
-        RevPtr<const Variable>                              numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
-        RevPtr<const Variable>                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
-        RevPtr<const Variable>                              constraints;                                                                        //!< Topological constraints that will be used for calibrations
+        RevPtr<const RevVariable>                              origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                              rootAge;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                              rho;                                                                                //!< The sampling probability of a species at present
+        RevPtr<const RevVariable>                              samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
+        RevPtr<const RevVariable>                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
+        RevPtr<const RevVariable>                              numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
+        RevPtr<const RevVariable>                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const RevVariable>                              constraints;                                                                        //!< Topological constraints that will be used for calibrations
         
     };
     

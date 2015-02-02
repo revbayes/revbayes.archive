@@ -27,11 +27,12 @@
 
 namespace RevLanguage {
 
-class RlBoolean : public ModelObject<bool> {
+class RlBoolean : public ModelObject<unsigned int> {
 
     public:
         RlBoolean(void);                                                                                        //!< Default constructor
-        RlBoolean(RevBayesCore::TypedDagNode<bool> *v);                                                         //!< Constructor from DAG node
+        RlBoolean(RevBayesCore::TypedDagNode<unsigned int> *v);                                                         //!< Constructor from DAG node
+        RlBoolean(unsigned int v);                                                                                      //!< Construct from bool
         RlBoolean(bool v);                                                                                      //!< Construct from bool
 
         // Operators
@@ -42,13 +43,10 @@ class RlBoolean : public ModelObject<bool> {
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-        bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
+        double                          isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
     
-        // Member methods
-        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
-    
-};
+    };
     
 }
 

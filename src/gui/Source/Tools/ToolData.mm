@@ -190,7 +190,7 @@
     // formatted string to the parser
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
+    std::string line = variableName + " <- readDiscreteCharacterData(\"" + cmdAsStlStr + "\")";
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -220,7 +220,7 @@
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
     RbData* m = [[RbData alloc] init];
     [m setNumTaxa:(int)(cd.getNumberOfTaxa())];
-    if ( cd.getHomologyEstablished() == true )
+    if ( cd.isHomologyEstablished() == true )
         [m setIsHomologyEstablished:YES];
     else
         [m setIsHomologyEstablished:NO];

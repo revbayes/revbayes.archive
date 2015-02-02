@@ -1,121 +1,361 @@
-/* 
- * File:   ConjugateInverseWishartBrownianMove.cpp
- * Author: nl
- * 
- * Created on 23 juillet 2014, 16:48
- */
-
-//
-//  ConjugateInverseWishartBrownianMove.cpp
-
-
+#include "DistributionInverseWishart.h"
+#include "DistributionWishart.h"
+#include "MultivariateNormalDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "ConjugateInverseWishartBrownianMove.h"
-#include "TimeTree.h"
-#include "DistributionInverseWishart.h"
 
 #include <cmath>
 
 using namespace RevBayesCore;
 
-// ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, StochasticNode<TimeTree>* t, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : CompoundMove(std::vector<DagNode*>(),w,false)    {
-ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : CompoundMove(std::vector<DagNode*>(),w,false)    {
-
-    process = p;
-//    tau = t;
-    sigma = s;
-    kappa = k;
-    df = d;
+ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<MatrixReal>* s, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : AbstractMove(w),
+    sigma( s ),
+    kappa( k ),
+    df( d ),
+    nodes(),
+    numAccepted( 0 )
+{
     
-    nodes.insert( process );
     nodes.insert( sigma );
-    nodes.insert( kappa );
-    nodes.insert( df );
-//    nodes.insert( tau );
+    
 }
 
-ConjugateInverseWishartBrownianMove* ConjugateInverseWishartBrownianMove::clone( void ) const {
+/**
+ * Copy constructor.
+ * We need to create a deep copy of the proposal here.
+ *
+ * \param[in]   m   The object to copy.
+ *
+ */
+ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(const ConjugateInverseWishartBrownianMove &m) : AbstractMove(m),
+    sigma( m.sigma ),
+    kappa( m.kappa ),
+    df( m.df ),
+    nodes( m.nodes ),
+    numAccepted( m.numAccepted )
+{
+    
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->addMove( this );
+        
+        // increase the DAG node reference count because we also have a pointer to it
+        theNode->incrementReferenceCount();
+        
+    }
+    
+}
+
+
+/**
+ * Overloaded assignment operator.
+ * We need a deep copy of the operator.
+ */
+ConjugateInverseWishartBrownianMove& ConjugateInverseWishartBrownianMove::operator=(const ConjugateInverseWishartBrownianMove &m)
+{
+    
+    if ( this != &m )
+    {
+        
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->removeMove( this );
+            
+            // decrease the DAG node reference count because we also have a pointer to it
+            if ( theNode->decrementReferenceCount() == 0 )
+            {
+                delete theNode;
+            }
+            
+        }
+        
+        sigma           = m.sigma;
+        kappa           = m.kappa;
+        df              = m.df;
+        nodes           = m.nodes;
+        numAccepted     = m.numAccepted;
+        
+        
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->addMove( this );
+            
+            // increase the DAG node reference count because we also have a pointer to it
+            theNode->incrementReferenceCount();
+            
+        }
+    }
+    
+    return *this;
+}
+
+
+/**
+ * Basic destructor doing nothing.
+ */
+ConjugateInverseWishartBrownianMove::~ConjugateInverseWishartBrownianMove( void )
+{
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->removeMove( this );
+        
+        // decrease the DAG node reference count because we also have a pointer to it
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete theNode;
+        }
+        
+    }
+    
+}
+
+
+
+
+/* Clone object */
+ConjugateInverseWishartBrownianMove* ConjugateInverseWishartBrownianMove::clone( void ) const
+{
     
     return new ConjugateInverseWishartBrownianMove( *this );
 }
 
 
-const std::string& ConjugateInverseWishartBrownianMove::getMoveName( void ) const {
+const std::set<DagNode*>& ConjugateInverseWishartBrownianMove::getDagNodes( void ) const
+{
+    
+    return nodes;
+}
+
+
+
+const std::string& ConjugateInverseWishartBrownianMove::getMoveName( void ) const
+{
+    
     static std::string name = "ConjugateInverseWishartBrownianMove";
     
     return name;
 }
 
 
-double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
-       
-    // std::cerr << "perform move\n";
-    // Get random number generator    
+/** Perform the move */
+void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHeat )
+{
+    
+    // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-
+    
     size_t dim = sigma->getValue().getDim();
     
-    bksigma = sigma->getValue();
-
+//    const MatrixReal& bksigma = sigma->getValue();
+    
+    std::vector< StochasticNode<RbVector<double> >* > children;
+    const std::set<DagNode*>& c = sigma->getChildren();
+    for (std::set<DagNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
+    {
+        StochasticNode<RbVector<double> >* tmp = dynamic_cast< StochasticNode<RbVector<double> > *>( *it );
+        if ( tmp != NULL )
+        {
+            children.push_back( tmp );
+        }
+        
+    }
+    
     // calculate sufficient statistics based on current process
-    int nnode = 0;
-    MatrixRealSymmetric A = process->getValue().getBranchContrasts(nnode);    
-    for (size_t i=0; i<dim; i++)    {
+    MatrixReal A = MatrixReal(dim);
+    for (std::vector<StochasticNode<RbVector<double> > *>::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+        MultivariateNormalDistribution* dist = dynamic_cast<MultivariateNormalDistribution *>( &(*it)->getDistribution() );
+        if ( dist != NULL )
+        {
+            A += dist->computeContrasts();
+        }
+        
+    }
+    for (size_t i=0; i<dim; ++i)
+    {
         A[i][i] += kappa->getValue();
     }
-    A.touch();
-    A.update();
-
-    // calculate old posterior for sigma based on current process
-    double logs1 = RbStatistics::InverseWishart::lnPdf(A,nnode + df->getValue(),sigma->getValue());
-
-    sigma->getValue().touch();
-
-    // resample sigma based on new sufficient statistics
-    sigma->setValue( RbStatistics::InverseWishart::rv(A,nnode + df->getValue(),*rng) );
     
-    sigma->getValue().update();
+//    MatrixReal inverse = A.computeInverse();
+//    MatrixReal sigma_inverse = sigma->getValue().computeInverse();
+    
+    // calculate old posterior for sigma based on current process
+    double logs1 = RbStatistics::InverseWishart::lnPdf(A, children.size() + df->getValue(), sigma->getValue());
+//    double logs1 = RbStatistics::InverseWishart::lnPdf(A, df->getValue(), sigma->getValue());
+//    double logs1 = RbStatistics::Wishart::lnPdf(inverse, df->getValue(), sigma_inverse);
 
+//    sigma->getValue().touch();
+    
+    // resample sigma based on new sufficient statistics
+    sigma->setValue( RbStatistics::InverseWishart::rv(A, children.size() + df->getValue(), *rng) );
+//    sigma->setValue( RbStatistics::InverseWishart::rv(A, df->getValue(), *rng) );
+//    sigma->setValue( RbStatistics::Wishart::rv(inverse, df->getValue(), *rng).computeInverse() );
+
+//    sigma->getValue().update();
+    
     // calculate posterior for sigma based on current process
-    double logs2 = RbStatistics::InverseWishart::lnPdf(A,nnode + df->getValue(),sigma->getValue());
+    double logs2 = RbStatistics::InverseWishart::lnPdf(A, children.size() + df->getValue(), sigma->getValue());
+//    double logs2 = RbStatistics::InverseWishart::lnPdf(A, df->getValue(), sigma->getValue());
+
+    sigma->touch();
+    sigma->keep();
     
     // log hastings ratio
-    // should cancel out the ratio of probabilities of the finak and initial configuration
-    return logs1 - logs2;
-
-}
-
-void ConjugateInverseWishartBrownianMove::acceptCompoundMove()   {
-}
-
-void ConjugateInverseWishartBrownianMove::printParameterSummary(std::ostream &o) const {
-
-}
-
-
-void ConjugateInverseWishartBrownianMove::rejectCompoundMove( void ) {
-
-    std::cerr << "in ConjugateInverseWishartBrownianMove: move should not be rejected??\n";
-    exit(1);
-    sigma->getValue() = bksigma;
-    sigma->getValue().touch();
-    sigma->getValue().update();
-}
-
-void ConjugateInverseWishartBrownianMove::swapNode(DagNode *oldN, DagNode *newN) {
-    // call the parent method
+    // should cancel out the ratio of probabilities of the final and initial configuration
+//    return logs1 - logs2;
     
-    CompoundMove::swapNode(oldN, newN);
-    if (oldN == sigma)
-        sigma = static_cast<StochasticNode<MatrixRealSymmetric>*> (newN);
-    if (oldN == process)
-        process = static_cast<StochasticNode<MultivariateRealNodeContainer>*> (newN);
-    if (oldN == kappa)
-        kappa = static_cast<TypedDagNode<double>*> (newN);
-    if (oldN == df)
-        df = static_cast<TypedDagNode<int>*> (newN);    
-//    if (oldN == tau)
-//        tau = static_cast<StochasticNode<TimeTree>*> (newN);    
+    
 }
+
+
+void ConjugateInverseWishartBrownianMove::printSummary(std::ostream &o) const
+{
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the name
+    const std::string &n = getMoveName();
+    size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
+    o << n;
+    for (size_t i = 0; i < spaces; ++i) {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the DagNode name
+    const std::string &dn_name = (*nodes.begin())->getName();
+    spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
+    o << dn_name;
+    for (size_t i = 0; i < spaces; ++i) {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the weight
+    int w_length = 4 - (int)log10(weight);
+    for (int i = 0; i < w_length; ++i) {
+        o << " ";
+    }
+    o << weight;
+    o << " ";
+    
+    // print the number of tries
+    int t_length = 9 - (int)log10(numTried);
+    for (int i = 0; i < t_length; ++i) {
+        o << " ";
+    }
+    o << numTried;
+    o << " ";
+    
+    // print the number of accepted
+    int a_length = 9;
+    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    
+    for (int i = 0; i < a_length; ++i) {
+        o << " ";
+    }
+    o << numAccepted;
+    o << " ";
+    
+    // print the acceptance ratio
+    double ratio = numAccepted / (double)numTried;
+    if (numTried == 0) ratio = 0;
+    int r_length = 5;
+    
+    for (int i = 0; i < r_length; ++i) {
+        o << " ";
+    }
+    o << ratio;
+    o << " ";
+    
+    o << std::endl;
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
+}
+
+
+void ConjugateInverseWishartBrownianMove::reject( void )
+{
+    
+    // undo the proposal
+    
+}
+
+/**
+ * Reset the move counters. Here we only reset the counter for the number of accepted moves.
+ *
+ */
+void ConjugateInverseWishartBrownianMove::resetMoveCounters( void )
+{
+    numAccepted = 0;
+}
+
+
+void ConjugateInverseWishartBrownianMove::swapNode(DagNode *oldN, DagNode *newN)
+{
+    
+    if (oldN == sigma)
+    {
+        sigma = static_cast<StochasticNode<MatrixReal>* >(newN) ;
+    }
+    else if ( oldN == kappa )
+    {
+        kappa = static_cast<TypedDagNode<double>* >(newN) ;
+    }
+    else if ( oldN == df )
+    {
+        df = static_cast<TypedDagNode<int>* >(newN) ;
+    }
+    
+    
+    // find the old node
+    std::set<DagNode*>::iterator pos = nodes.find( oldN );
+    // remove it from the set if it was contained
+    if ( pos != nodes.end() )
+    {
+        nodes.erase( pos );
+    }
+    // insert the new node
+    nodes.insert( newN );
+    
+    // remove myself from the old node and add myself to the new node
+    oldN->removeMove( this );
+    newN->addMove( this );
+    
+    // increment and decrement the reference counts
+    newN->incrementReferenceCount();
+    if ( oldN->decrementReferenceCount() == 0 )
+    {
+        throw RbException("Memory leak in Metropolis-Hastings move. Please report this bug to Sebastian.");
+    }
+}
+
+
+void ConjugateInverseWishartBrownianMove::tune( void )
+{
+    
+}
+
 

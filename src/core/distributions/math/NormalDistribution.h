@@ -31,7 +31,6 @@ namespace RevBayesCore {
         
     public:
         NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s);
-        NormalDistribution(const NormalDistribution &n);                                                                                //!< Copy constructor
         virtual                                            ~NormalDistribution(void);                                                   //!< Virtual destructor
         
         // public member functions
@@ -43,9 +42,9 @@ namespace RevBayesCore {
         double                                              quantile(double p) const;                                                       //!< Qu
         void                                                redrawValue(void);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

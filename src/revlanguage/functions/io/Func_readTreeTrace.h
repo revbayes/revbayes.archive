@@ -11,14 +11,14 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_readCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
+ * $Id: Func_readDiscreteCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
  */
 
 #ifndef Func_readTreeTrace_H
 #define Func_readTreeTrace_H
 
 #include "RlBranchLengthTree.h"
-#include "RlFunction.h"
+#include "Procedure.h"
 #include "RbFileManager.h"
 #include "RlTimeTree.h"
 #include "RlTreeTrace.h"
@@ -30,7 +30,7 @@
 
 namespace RevLanguage {
     
-    class Func_readTreeTrace :  public Function {
+    class Func_readTreeTrace : public Procedure {
         
     public:
         // Basic utility functions
@@ -40,13 +40,12 @@ namespace RevLanguage {
         const TypeSpec&                 getTypeSpec(void) const;                                                            //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>                execute(void);                                                                      //!< Execute function
+        RevPtr<RevVariable>                execute(void);                                                                      //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                                       //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                                          //!< Get type of return value
         
     private:
 
-        void                            formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr);                //!< Format the error string when (mis)reading files
         TreeTrace<BranchLengthTree>*    readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
         TreeTrace<TimeTree>*            readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
     };

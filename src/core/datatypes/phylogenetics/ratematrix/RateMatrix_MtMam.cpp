@@ -146,12 +146,6 @@ RateMatrix_MtMam::RateMatrix_MtMam( void ) : RateMatrix_Empirical( 20 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_MtMam::RateMatrix_MtMam(const RateMatrix_MtMam& m) : RateMatrix_Empirical( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_MtMam::~RateMatrix_MtMam(void) {
     

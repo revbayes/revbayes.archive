@@ -1,0 +1,192 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Entire model monitor.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Entire model monitor.</h1>
+
+        <h2>Type mnModel</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mnModel</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Monitor all numeric variables of a model and print them to a file.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mnModel( String filename, Natural printgen = 1, String separator = TAB, Bool posterior = TRUE, Bool likelihood = TRUE, Bool prior = TRUE, Bool append = FALSE, Bool stochasticOnly = FALSE )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >filename</b>
+<div class="indent">
+The file to log to.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >printgen</b>
+<div class="indent">
+The frequency of monitoring (i.e. thinning).<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >separator</b>
+<div class="indent">
+The separator between variables in the file. The default is a tab.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >posterior</b>
+<div class="indent">
+Should the posterior probability be printed too?<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+TRUE<br />
+</div>
+<br />
+<b >likelihood</b>
+<div class="indent">
+Should the likelihood be printed too?<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+TRUE<br />
+</div>
+<br />
+<b >prior</b>
+<div class="indent">
+Should the prior probability be printed too?<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+TRUE<br />
+</div>
+<br />
+<b >append</b>
+<div class="indent">
+Should we append to an existing file?<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+FALSE<br />
+</div>
+<br />
+<b >stochasticOnly</b>
+<div class="indent">
+Should we monitor stochastic nodes only or deterministic nodes as well?<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+FALSE<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                The model monitor is very useful to automatically collect all variables in a model and monitors them.
+                The model monitor traverses the model graph and collects all numeric variables (e.g., no trees).
+                Numeric variables can be read in and interpreted easier than other variables.
+                The model monitor prints the current value of the variables every printgen iterations to the specified file.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel = model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] = mnModel("output/out.log")
+                    
+                    # Create an mcmc object
+                    mymcmcObject = mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mnFile'); return false;">mnFile</a><br />
+<a href="" onClick="navigateHelp('mnScreen'); return false;">mnScreen</a><br />
+<a href="" onClick="navigateHelp('mcmc'); return false;">mcmc</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

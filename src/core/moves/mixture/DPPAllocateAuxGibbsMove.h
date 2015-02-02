@@ -21,6 +21,7 @@
 
 #include "DirichletProcessPriorDistribution.h"
 #include "MoveOld.h"
+#include "RbVector.h"
 
 namespace RevBayesCore {
 
@@ -28,7 +29,7 @@ namespace RevBayesCore {
     class DPPAllocateAuxGibbsMove : public MoveOld {
     
     public:
-        DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> >* v, int na, double w);                                                                      //!< Internal constructor
+        DPPAllocateAuxGibbsMove(StochasticNode< RbVector<valueType> >* v, int na, double w);                                                                      //!< Internal constructor
     
         // Basic utility functions
         DPPAllocateAuxGibbsMove<valueType>*						clone(void) const;                                                                  //!< Clone object
@@ -48,7 +49,7 @@ namespace RevBayesCore {
 		void													dppNormalizeVector(std::vector<double> &v);
 		int														findElementNewTable(double u, std::vector<double> lnProb);
 		
-        StochasticNode<std::vector<valueType> >*				variable;
+        StochasticNode< RbVector<valueType> >*                  variable;
 		int														numAuxCat;
     };
 }
@@ -62,7 +63,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class valueType>
-RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> > *v, int na, double w) : MoveOld( v, w, false ), variable( v ) {
+RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< RbVector<valueType> > *v, int na, double w) : MoveOld( v, w, false ), variable( v ) {
     
 	numAuxCat = na;
 }
@@ -185,7 +186,7 @@ template <class valueType>
 void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     MoveOld::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode< std::vector<valueType> > * >( newN );
+    variable = static_cast<StochasticNode< RbVector<valueType> > * >( newN );
 }
 
 

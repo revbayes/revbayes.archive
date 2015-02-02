@@ -65,7 +65,7 @@ const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
 
 
 /* Return member rules */
-const MemberRules& Dist_uniformTimeTree::getMemberRules(void) const {
+const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const {
     
     static MemberRules distUTTDMemberRules;
     static bool rulesSet = false;
@@ -74,7 +74,7 @@ const MemberRules& Dist_uniformTimeTree::getMemberRules(void) const {
     {
 
         distUTTDMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distUTTDMemberRules.push_back( new ArgumentRule( "taxonNames", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distUTTDMemberRules.push_back( new ArgumentRule( "names", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
@@ -92,16 +92,16 @@ const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_uniformTimeTree::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "originTime" ) {
         originTime = var;
     }
-    else if ( name == "taxonNames" ) {
+    else if ( name == "names" ) {
         taxonNames = var;
     }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }
 

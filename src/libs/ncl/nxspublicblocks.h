@@ -602,7 +602,7 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 				-# call ClearContent()
 				-# add back the block instances that provide necessary context for additional parses.
 		*/
-		void AddReadCharactersBlock(NxsCharactersBlock * block)
+		void AddreadDiscreteCharactersBlock(NxsCharactersBlock * block)
 			{
 			charactersBlockVec.push_back(block);
 			AddReadBlock("CHARACTERS", block);

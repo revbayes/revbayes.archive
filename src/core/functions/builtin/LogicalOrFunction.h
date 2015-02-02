@@ -29,15 +29,14 @@
 
 namespace RevBayesCore {
     
-    class LogicalOrFunction : public TypedFunction<bool> {
+    class LogicalOrFunction : public TypedFunction<unsigned int> {
         
     public:
-        LogicalOrFunction(const TypedDagNode<bool> * l, const TypedDagNode<bool> *r);
-        LogicalOrFunction(const LogicalOrFunction &n);                                                                                        //!< Copy constructor
+        LogicalOrFunction(const TypedDagNode<unsigned int> * l, const TypedDagNode<unsigned int> *r);
         virtual                                            ~LogicalOrFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
-        LogicalOrFunction*                                 clone(void) const;                                                          //!< Create an independent clone
+        LogicalOrFunction*                                  clone(void) const;                                                          //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -46,8 +45,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<bool>*                           left;
-        const TypedDagNode<bool>*                           right;
+        const TypedDagNode<unsigned int>*                   left;
+        const TypedDagNode<unsigned int>*                   right;
         
     };
     

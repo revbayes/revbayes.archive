@@ -60,47 +60,30 @@ TimeTree& TimeTree::operator=(const TimeTree &t) {
 
 
 /* Clone function */
-TimeTree* TimeTree::clone(void) const {
+TimeTree* TimeTree::clone(void) const
+{
     
     return new TimeTree(*this);
 }
 
 
-void TimeTree::equalizeBranchLengths( void ) {
-    
-//    equalizeBranchLengths( topology->getRoot() );
-}
-
-
-
-//void TimeTree::equalizeBranchLengths( TimeNode &node ) {
-//    
-//    if ( !node.isTip() ) {
-//        equalizeBranchLengths( node.getChild(0) );
-//        equalizeBranchLengths( node.getChild(1) );
-//        
-//        double left = node.getChild(0).getAge() + node.getChild( 0 ).getBranchLength();
-//        double right = node.getChild(1).getAge() + node.getChild( 1 ).getBranchLength();
-//        std::cout << node.getAge() << " = " << ((left + right) / 2.0) << std::endl;
-//        node.setAge( (left + right) / 2.0 );
-//    }
-//    
-//}
-
-
-
-double TimeTree::getAge(size_t idx) const {
+double TimeTree::getAge(size_t idx) const
+{
     return ages[idx];
 }
 
 
 
-double TimeTree::getBranchLength(size_t idx) const {
+double TimeTree::getBranchLength(size_t idx) const
+{
     
     const TopologyNode &n = topology->getNode( idx );
-    if ( n.isRoot() ) {
+    if ( n.isRoot() )
+    {
         return 0.0;
-    } else {
+    }
+    else
+    {
         size_t parentIdx = n.getParent().getIndex();
         return ages[parentIdx] - ages[idx];
     }
@@ -108,12 +91,16 @@ double TimeTree::getBranchLength(size_t idx) const {
 
 
 
-double TimeTree::getTime(size_t idx) const {
+double TimeTree::getTime(size_t idx) const
+{
     
     const TopologyNode &n = topology->getNode( idx );
-    if ( n.isRoot() ) {
+    if ( n.isRoot() )
+    {
         return 0.0;
-    } else {
+    }
+    else
+    {
         size_t parentIdx = n.getParent().getIndex();
         return ages[parentIdx] - ages[idx] + getTime(parentIdx);
     }
@@ -140,24 +127,25 @@ void TimeTree::resizeElementVectors(size_t n) {
 }
 
 
-void TimeTree::setAge(size_t idx, double a) {
+void TimeTree::setAge(size_t idx, double a)
+{
     
     // fire a tree change event
     const std::set<TreeChangeEventListener*> &listeners = changeEventHandler.getListeners();
     const TopologyNode &n = topology->getNode(idx);
-    for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it) {
+    for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it)
+    {
 
-        // added 07/25/2014 Nicolas
-        // (*it)->fireTreeChangeEvent(n);
-
-        for (size_t i = 0; i < n.getNumberOfChildren(); ++i) {
+        for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
+        {
             (*it)->fireTreeChangeEvent(n.getChild(i));
         }
     }
     
     // flag the newick string as invalid
     const std::vector<TopologyNode*> &children = n.getChildren();
-    for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+    for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
         (*it)->flagNewickRecomputation();
     }
     

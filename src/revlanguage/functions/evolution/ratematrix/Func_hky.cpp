@@ -1,11 +1,3 @@
-//
-//  Func_hky.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "Func_hky.h"
 #include "HkyRateMatrixFunction.h"
 #include "RateMatrix_HKY.h"
@@ -19,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_hky::Func_hky( void ) : Function( ) {
+Func_hky::Func_hky( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -31,10 +23,11 @@ Func_hky* Func_hky::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_hky::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_hky::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     if ( bf->getValue().size() != 4 )
     {
@@ -42,12 +35,8 @@ RevPtr<Variable> Func_hky::execute() {
     }
     
     RevBayesCore::HkyRateMatrixFunction* f = new RevBayesCore::HkyRateMatrixFunction( ka, bf );
-
-    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     
-    RateMatrix* value = new RateMatrix( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -82,15 +71,6 @@ const TypeSpec& Func_hky::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_hky::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

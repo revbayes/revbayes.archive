@@ -243,7 +243,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
         selectedAttributedString[i]   = [[NSAttributedString alloc] initWithString:infoStr attributes:selAattrs];
         unselectedAttributedString[i] = [[NSAttributedString alloc] initWithString:infoStr attributes:unselAattrs];
 
-        NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+        NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
         NSPoint tempP = iRect.origin;
         NSRect glyphRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
         iRect.size = glyphRect.size;

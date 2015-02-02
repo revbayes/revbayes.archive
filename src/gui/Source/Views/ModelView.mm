@@ -371,7 +371,11 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 					endingRangeRange.location += 11;
 					[attrString applyFontTraits:NSItalicFontMask range:endingRangeRange];
 					}
-				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+<<<<<<< HEAD
+				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+=======
+				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
+>>>>>>> 61480579c58f84b39cbc487a4a6a95bbd1fa0697
 				float padding = 4.0 * scaleFactor;
 				textSize.origin.x = pr.origin.x + (pr.size.width - textSize.size.width - padding);
 				textSize.origin.y = pr.origin.y + padding;
@@ -600,7 +604,11 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 					endingRangeRange.location += 11;
 					[attrString applyFontTraits:NSItalicFontMask range:endingRangeRange];
 					}
-				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+<<<<<<< HEAD
+				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+=======
+				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
+>>>>>>> 61480579c58f84b39cbc487a4a6a95bbd1fa0697
 				float padding = 4.0 * scaleFactor;
 				textSize.origin.x = pr.origin.x + (pr.size.width - textSize.size.width - padding);
 				textSize.origin.y = pr.origin.y + padding;
@@ -854,7 +862,11 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 			NSString* pn = [element parmName];
 			
 			NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:pn attributes:attrs];
-			NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+<<<<<<< HEAD
+			NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+=======
+			NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
+>>>>>>> 61480579c58f84b39cbc487a4a6a95bbd1fa0697
 			p.x -= textSize.size.width * 0.5;
 			p.y -= (ITEM_IMAGE_SIZE * scaleFactor * 0.5 + textSize.size.height * 0.75);
 
@@ -1023,7 +1035,11 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 								                          forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]];
         NSString* tempName = @"TEMP";
         NSAttributedString* tempText = [[NSAttributedString alloc] initWithString:tempName attributes:attrs];
-        parmNameHeight = [tempText boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil].size.height;
+<<<<<<< HEAD
+        parmNameHeight = [tempText boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin].size.height;
+=======
+        parmNameHeight = [tempText boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics].size.height;
+>>>>>>> 61480579c58f84b39cbc487a4a6a95bbd1fa0697
         
         // allocate an NSView object for drawing parameters
         parameterDrawObj = [[PaletteView alloc] initWithFrame:[self frame]];
@@ -1075,7 +1091,11 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
         selectedAttributedString[i]   = [[NSAttributedString alloc] initWithString:infoStr attributes:selAattrs];
         unselectedAttributedString[i] = [[NSAttributedString alloc] initWithString:infoStr attributes:unselAattrs];
 
-        NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+<<<<<<< HEAD
+        NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+=======
+        NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
+>>>>>>> 61480579c58f84b39cbc487a4a6a95bbd1fa0697
         NSPoint tempP = iRect.origin;
         NSRect glyphRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
         iRect.size = glyphRect.size;

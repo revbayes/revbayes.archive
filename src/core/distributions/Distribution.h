@@ -5,8 +5,11 @@
 
 #include <iostream>
 #include <set>
+#include <vector>
 
 namespace RevBayesCore {
+    
+    class DagNode;
     
     /**
      * @brief Distribution: interface for all core distributions
@@ -28,40 +31,46 @@ namespace RevBayesCore {
      * Each derived distribution is responsible for managing its parameters, swapping them and returning
      * a set of pointers to them.
      */
-    class DagNode;
-    
     class Distribution : public Cloneable {
         
     public:
         // destructor
-        virtual                                ~Distribution(void) {}
+        virtual                                ~Distribution(void);
         
         // public methods
-        virtual void                            getAffected(std::set<DagNode *>& affected, DagNode* affecter);  //!< get affected nodes
+        virtual void                            executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
+        virtual void                            getAffected(std::set<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
+        const std::set<const DagNode*>&         getParameters(void) const;                                              //!< get the parameters of the function
         void                                    keep(DagNode* affecter);
+        virtual void                            reInitialized( void );                                                  //!< The model was re-initialized
         void                                    restore(DagNode *restorer);
+        void                                    swapParameter(const DagNode *oldP, const DagNode *newP);                //!< Exchange the parameter
         void                                    touch(DagNode *toucher );
-
-        virtual void                            reInitialized( void );                                          //!< The model was re-initialized
         
         // pure virtual public methods
-        virtual Distribution*                   clone(void) const = 0;                                          //!< Clone the distribution
-        virtual double                          computeLnProbability(void) = 0;                                 //!< Compute the ln probability
-        virtual void                            redrawValue(void) = 0;                                          //!< Draw a new random value from the distribution
-
-        // Parameter management functions
-        virtual std::set<const DagNode*>        getParameters(void) const = 0;                                  //!< Return parameters
-        virtual void                            swapParameter(const DagNode *oldP, const DagNode *newP) = 0;    //!< Swap a parameter
+        virtual Distribution*                   clone(void) const = 0;                                                  //!< Clone the distribution
+        virtual double                          computeLnProbability(void) = 0;                                         //!< Compute the ln probability
+        virtual void                            redrawValue(void) = 0;                                                  //!< Draw a new random value from the distribution
         
     protected:
-        // hidden constructor
-        Distribution(void);
+        Distribution(void);                                                                                             //!< Default constructor
+        Distribution(const Distribution &f);                                                                            //!< Copy constructor
+        Distribution&                           operator=(const Distribution &f);                                       //!< Assignment operator
         
+        // keep specialization for derived classes
         virtual void                            keepSpecialization(DagNode* affecter);
         virtual void                            restoreSpecialization(DagNode *restorer);
         virtual void                            touchSpecialization(DagNode *toucher);
+        
+        // swap parameter methods for internal use of derived classes
+        void                                    addParameter(const DagNode* p);                                         //!< add a parameter to the function
+        void                                    removeParameter(const DagNode* p);                                      //!< remove a parameter from the function
+        virtual void                            swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;    //!< Exchange the parameter
 
+        
     private:
+        
+        std::set<const DagNode*>                parameters;
         
     };
     

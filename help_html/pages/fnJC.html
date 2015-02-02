@@ -1,0 +1,119 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The Jukes and Cantor function to create a rate matrix.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The Jukes and Cantor function to create a rate matrix.</h1>
+
+        <h2>Function fnJC</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">fnJC</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            The function fnJC creates the simplest rate matrix on an alphabet with a given number of states.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             fnJC( Natural numStates )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >numStates</b>
+<div class="indent">
+the number of states in the alphabet.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            The Jukes and Cantor model (1969) is the simplest substitution model and requires no parameter. It assumes equal transition rates among any two states. It works on alphabets of any size but was initially described by Jukes and Cantor for DNA (4 states). It is fast but makes a number of usually unrealistic assumptions, including equal base frequencies in the sequences, and equal mutation rates.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+             # Let's simulate data using a Jukes and Cantor model on an alphabet with 5 states.
+             matrix <- fnJC(numStates=5)
+             print(matrix)
+             
+             # We build a tree with 3 leaves
+             n_species <- 3
+             for (i in 1:n_species) {
+        			s_names[i] = "Species_"+i
+			 }
+             speciation ~ dnExponential(10.0)
+			 extinction ~ dnExponential(10.0)
+			 tree_height ~ dnUnif(0,1.0)
+			 speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+             
+             # Let's simulate 30 sites over this tree, starting from a sequence all in the first state.
+             # Root frequencies: all in the first state
+             frequencyFirstState <- 1.0
+             rootFrequencies <- simplex(frequencyFirstState, 0.0, 0.0, 0.0, 0.0)
+             n_sites=30
+             aln ~ dnPhyloCTMC(tree=speciesTree, Q=matrix, rootFrequencies=rootFrequencies, nSites=n_sites, type="Standard")
+			
+			 # Now we can have a look at the sequences in the resulting alignment
+			 aln.show()             
+             
+             # And we can compute the log probability of the alignment
+             aln.lnProbability()
+             </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                T.H. Jukes, C.R. Cantor. 1969. Evolution of protein molecules. 
+In Mammalian protein metabolism, Vol. III, pp. 21-132.
+            <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Bastien Boussau</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('fnGTR'); return false;">fnGTR</a><br />
+<a href="" onClick="navigateHelp('fnHKY'); return false;">fnHKY</a><br />
+<a href="" onClick="navigateHelp('fnF81'); return false;">fnF81</a><br />
+<a href="" onClick="navigateHelp('fnPomo'); return false;">fnPomo</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

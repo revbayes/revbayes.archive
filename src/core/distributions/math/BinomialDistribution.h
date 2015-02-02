@@ -29,17 +29,16 @@ namespace RevBayesCore {
         
     public:
         BinomialDistribution(const TypedDagNode<int> *n, const TypedDagNode<double> *p);
-        BinomialDistribution(const BinomialDistribution &n);                                                                      //!< Copy constructor
-        virtual                                            ~BinomialDistribution(void);                                              //!< Virtual destructor
+        virtual                                            ~BinomialDistribution(void);                                             //!< Virtual destructor
         
         // public member functions
-        BinomialDistribution*                               clone(void) const;                                                          //!< Create an independent clone
+        BinomialDistribution*                               clone(void) const;                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        
+
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);        //!< Swap a parameter
         
     private:
         

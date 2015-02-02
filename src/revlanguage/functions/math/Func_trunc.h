@@ -1,47 +1,41 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage trunc function, which
- * is used to created deterministic variable associated with the trunc function.
- * This is the standard arithmetic truncating of real numbers. Thus, the real part is simply dropped
- * which makes this function a floor for positive numbers and a ceil for negative numbers.
- *
- * @brief Declaration and implementation of Func_exp
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-
 #ifndef Func_trunc_H
 #define Func_trunc_H
 
-#include "RlFunction.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
 namespace RevLanguage {
     
+    
+    /**
+     * The RevLanguage wrapper of the trunc function.
+     *
+     * The RevLanguage wrapper of the trunc function connects
+     * the variables/parameters of the function and creates the internal TruncateFunction object.
+     * Please read the TruncateFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-07-27, version 1.0
+     *
+     */
     template <typename valType, typename retType>
-    class Func_trunc :  public Function {
+    class Func_trunc : public TypedFunction<retType> {
         
     public:
         Func_trunc( void );
         
         // Basic utility functions
-        Func_trunc*                                     clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_trunc*                                                             clone(void) const;                                         //!< Clone the object
+        static const std::string&                                               getClassType(void);                                        //!< Get Rev type
+        static const TypeSpec&                                                  getClassTypeSpec(void);                                    //!< Get class type spec
+        const TypeSpec&                                                         getTypeSpec(void) const;                                   //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction< typename retType::valueType>*              createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                                                    getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -56,7 +50,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType, typename retType>
-RevLanguage::Func_trunc<valType, retType>::Func_trunc( void ) : Function( ) {
+RevLanguage::Func_trunc<valType, retType>::Func_trunc( void ) : TypedFunction<retType>( ) {
     
 }
 
@@ -70,16 +64,13 @@ RevLanguage::Func_trunc<valType, retType>* RevLanguage::Func_trunc<valType, retT
 
 
 template <typename valType, typename retType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_trunc<valType, retType>::execute() {
+RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Func_trunc<valType, retType>::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TruncateFunction* f = new RevBayesCore::TruncateFunction( arg );
     
-    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
-    
-    retType* value = new retType( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -117,16 +108,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClass
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

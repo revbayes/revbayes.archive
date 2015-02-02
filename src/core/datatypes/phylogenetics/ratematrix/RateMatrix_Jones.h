@@ -27,7 +27,6 @@ namespace RevBayesCore {
         
     public:
         RateMatrix_Jones(void);                                                                                                //!< Construct rate matrix with n states
-        RateMatrix_Jones(const RateMatrix_Jones& m);                                                                                  //!< Copy constructor
         virtual                             ~RateMatrix_Jones(void);                                                               //!< Destructor
                 
         // RateMatrix functions

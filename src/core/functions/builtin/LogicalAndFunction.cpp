@@ -2,17 +2,13 @@
 
 using namespace RevBayesCore;
 
-LogicalAndFunction::LogicalAndFunction(const TypedDagNode<bool> *l, const TypedDagNode<bool> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+LogicalAndFunction::LogicalAndFunction(const TypedDagNode<unsigned int> *l, const TypedDagNode<unsigned int> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+    left( l ),
+    right( r )
+{
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
-    
-    update();
-}
-
-
-LogicalAndFunction::LogicalAndFunction(const LogicalAndFunction &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -40,10 +36,10 @@ void LogicalAndFunction::update( void ) {
 void LogicalAndFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == left ) {
-        left = static_cast<const TypedDagNode<bool>* >( newP );
+        left = static_cast<const TypedDagNode<unsigned int>* >( newP );
     }
     if ( oldP == right ) {
-        right = static_cast<const TypedDagNode<bool>* >( newP );
+        right = static_cast<const TypedDagNode<unsigned int>* >( newP );
     }
     
 }

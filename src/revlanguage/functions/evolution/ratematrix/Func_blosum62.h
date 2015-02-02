@@ -15,14 +15,14 @@
 #ifndef Func_blosum62_H
 #define Func_blosum62_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_blosum62 :  public Function {
+    class Func_blosum62 : public Procedure {
         
     public:
         Func_blosum62( void );
@@ -34,7 +34,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevPtr<RevVariable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         

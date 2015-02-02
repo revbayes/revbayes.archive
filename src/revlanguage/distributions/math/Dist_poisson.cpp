@@ -91,7 +91,7 @@ const TypeSpec& Dist_poisson::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_poisson::getMemberRules(void) const 
+const MemberRules& Dist_poisson::getParameterRules(void) const 
 {
     
     static MemberRules distPoisMemberRules;
@@ -133,7 +133,7 @@ const TypeSpec& Dist_poisson::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_poisson::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_poisson::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "lambda" )
@@ -142,7 +142,7 @@ void Dist_poisson::setConstMemberVariable(const std::string& name, const RevPtr<
     }
     else 
     {
-        TypedDistribution<Natural>::setConstMemberVariable(name, var);
+        TypedDistribution<Natural>::setConstParameter(name, var);
     }
     
 }

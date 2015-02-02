@@ -28,7 +28,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_range::Func_range( void ) : Function() {
+Func_range::Func_range( void ) : Procedure() {
     
 }
 
@@ -41,22 +41,29 @@ Func_range* Func_range::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_range::execute( void ) {
+RevPtr<RevVariable> Func_range::execute( void )
+{
     
     int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
     int l = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
     
-    ModelVector<Integer> *range = new ModelVector<Integer>();
-    if (f < l) {
+    ModelVector<Integer> *range = new ModelVector<Integer>( RevBayesCore::RbVector<int>() );
+    if (f < l)
+    {
         for ( int i = f; i <= l; i++ )
+        {
             range->push_back( Integer(i) );
+        }
     }
-    else {
+    else
+    {
         for ( int i = f; i >= l; i-- )
+        {
             range->push_back( Integer(i) );
+        }
     }
     
-    return new Variable( range );
+    return new RevVariable( range );
 }
 
 

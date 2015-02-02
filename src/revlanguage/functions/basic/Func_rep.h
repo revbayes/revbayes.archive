@@ -1,7 +1,7 @@
 #ifndef Func_rep_H
 #define Func_rep_H
 
-#include "Function.h"
+#include "Procedure.h"
 #include <string>
 
 namespace RevLanguage {
@@ -26,7 +26,7 @@ namespace RevLanguage {
      */
     
     template <typename valType>
-    class Func_rep :  public Function {
+    class Func_rep : public Procedure {
         
     public:
         Func_rep();
@@ -42,7 +42,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
         
     };
     
@@ -58,7 +58,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Func_rep<valType>::Func_rep() : Function()
+RevLanguage::Func_rep<valType>::Func_rep() : Procedure()
 {
     
 }
@@ -74,11 +74,11 @@ RevLanguage::Func_rep<valType>* RevLanguage::Func_rep<valType>::clone( void ) co
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rep<valType>::execute( void )
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_rep<valType>::execute( void )
 {
     
-    typename valType::valueType v   = static_cast<const valType &>( args[1].getVariable()->getRevObject() ).getValue();
-    int                         n   = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+    typename valType::valueType v   = static_cast<const valType &>( args[0].getVariable()->getRevObject() ).getValue();
+    int                         n   = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
     
     ModelVector<valType> *rep = new ModelVector<valType>();
     for ( int i=0; i<n; ++i )
@@ -86,7 +86,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rep<valType>::execu
         rep->push_back( valType( v ) );
     }
     
-    return new Variable( rep );
+    return new RevVariable( rep );
 }
 
 

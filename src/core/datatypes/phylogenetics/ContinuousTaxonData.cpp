@@ -1,5 +1,4 @@
 #include "ContinuousTaxonData.h"
-#include "ContinuousCharacterState.h"
 #include "RbException.h"
 
 
@@ -37,7 +36,7 @@ sequence()
  *
  * \return            A non-const reference to the character
  */
-ContinuousCharacterState& ContinuousTaxonData::operator[](size_t i) 
+double& ContinuousTaxonData::operator[](size_t i)
 {
     
     if (i >= sequence.size())
@@ -54,7 +53,7 @@ ContinuousCharacterState& ContinuousTaxonData::operator[](size_t i)
  *
  * \return            A const reference to the character
  */
-const ContinuousCharacterState& ContinuousTaxonData::operator[](size_t i) const 
+const double& ContinuousTaxonData::operator[](size_t i) const
 {
     
     if (i >= sequence.size())
@@ -69,7 +68,7 @@ const ContinuousCharacterState& ContinuousTaxonData::operator[](size_t i) const
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousTaxonData& ContinuousTaxonData::add(const AbstractTaxonData &obsd)
+ContinuousTaxonData& ContinuousTaxonData::concatenate(const AbstractTaxonData &obsd)
 {
     
     const ContinuousTaxonData* rhs = dynamic_cast<const ContinuousTaxonData* >( &obsd );
@@ -79,7 +78,7 @@ ContinuousTaxonData& ContinuousTaxonData::add(const AbstractTaxonData &obsd)
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -88,7 +87,7 @@ ContinuousTaxonData& ContinuousTaxonData::add(const AbstractTaxonData &obsd)
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousTaxonData& ContinuousTaxonData::add(const ContinuousTaxonData &obsd)
+ContinuousTaxonData& ContinuousTaxonData::concatenate(const ContinuousTaxonData &obsd)
 {
     
     sequence.insert( sequence.end(), obsd.sequence.begin(), obsd.sequence.end() );
@@ -98,33 +97,12 @@ ContinuousTaxonData& ContinuousTaxonData::add(const ContinuousTaxonData &obsd)
 }
 
 
-
 /**
  * Push back a new character.
  * 
  * \param[in]    newChar    The new character.
  */
-void ContinuousTaxonData::addCharacter( const CharacterState &newChar ) 
-{
-    
-#ifdef ASSERTIONS_ALL
-    if ( dynamic_cast<const charType&>( newChar ) == NULL ) 
-    {
-        throw RbException("Inserting wrong character type into TaxonData!!!");
-    }
-#endif
-    
-    addCharacter( static_cast<const ContinuousCharacterState &>(newChar) );
-    
-}
-
-
-/**
- * Push back a new character.
- * 
- * \param[in]    newChar    The new character.
- */
-void ContinuousTaxonData::addCharacter( const ContinuousCharacterState &newChar ) 
+void ContinuousTaxonData::addCharacter( const double &newChar )
 {
     
     sequence.push_back( newChar );
@@ -137,7 +115,7 @@ void ContinuousTaxonData::addCharacter( const ContinuousCharacterState &newChar 
  * 
  * \param[in]    index    The position character.
  */
-ContinuousCharacterState& ContinuousTaxonData::getCharacter(size_t index) 
+double& ContinuousTaxonData::getCharacter(size_t index)
 {
     
     if (index >= sequence.size())
@@ -154,47 +132,13 @@ ContinuousCharacterState& ContinuousTaxonData::getCharacter(size_t index)
  *
  * \return            A const reference to the character
  */
-const ContinuousCharacterState& ContinuousTaxonData::getCharacter(size_t index) const 
+const double& ContinuousTaxonData::getCharacter(size_t index) const
 {
     
     if (index >= sequence.size())
         throw RbException("Index out of bounds");
     
     return sequence[index];
-}
-
-
-/**
- * Getter  for convenience access.
- *
- * \param[in]    i    The position of the character.
- *
- * \return            A non-const reference to the character
- */
-ContinuousCharacterState& ContinuousTaxonData::getElement(size_t i) 
-{
-    
-    if (i >= sequence.size())
-        throw RbException("Index out of bounds");
-    
-    return sequence[i];
-}
-
-
-/**
- * Getter for convenience access.
- *
- * \param[in]    i    The position of the character.
- *
- * \return            A const reference to the character
- */
-const ContinuousCharacterState& ContinuousTaxonData::getElement(size_t i) const 
-{
-    
-    if (i >= sequence.size())
-        throw RbException("Index out of bounds");
-    
-    return sequence[i];
 }
 
 
@@ -227,7 +171,7 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
  *
  * \param[in]    tn    The new name of the taxon.
  */
-void ContinuousTaxonData::setTaxonName(std::string tn) 
+void ContinuousTaxonData::setTaxonName(const std::string &tn)
 {
     
     taxonName = tn;
@@ -246,9 +190,7 @@ size_t ContinuousTaxonData::size(void) const
 }
 
 
-
-template<class charType>
-std::ostream& operator<<(std::ostream& o, const ContinuousTaxonData& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::ContinuousTaxonData& x) {
     
     o << x.getTaxonName() << ":" << std::endl;
     for (size_t i = 0; i < x.getNumberOfCharacters(); ++i) 

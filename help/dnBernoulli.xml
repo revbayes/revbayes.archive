@@ -1,0 +1,93 @@
+    <?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnBernoulli</name>
+
+        <alias>dbernoulli</alias>
+        <alias>pbernoulli</alias>
+        <alias>qbernoulli</alias>
+
+        <title>Bernoulli Distribution</title>
+
+        <description>
+            <p>
+            A Bernoulli-distributed random variable takes the value 1 with probability
+            p and the value 0 with probability 1-p.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                    dnBernoulli( Probability prob )
+                    dbernoulli( Natural x, Probability prob )
+                    pbernoulli( Natural q, Probability prob )
+                    qbernoulli( Probability p, Probability prob )
+                    rbernoulli( Natural n, Probability prob )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>prob</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The probability of success on the single trial.</description>
+                <valueType>Probability</valueType>
+            </argument>
+
+            <returnValue>Dist_bernoulli, Distribution, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                This function was among the easiest in RevBayes to implement. 
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                    p ~ dnBeta(1.0,1.0)
+                    x ~ dnBernoulli(p)
+                    x.clamp(1)
+                    moves[1] = mvSlide(p, delta=0.1, weight=1.0)
+                    monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)
+                    mymodel = model(p)
+                    mymcmc = mcmc(mymodel, monitors, moves)
+                    mymcmc.burnin(generations=20000,tuningInterval=100)
+                    mymcmc.run(generations=200000)
+                    
+                 ]]>
+
+            </example>
+
+            <reference>
+                <citation>
+                    The Bernoulli distribution is attributed to the Swiss scientist Jacob Bernoulli.
+                </citation>
+            </reference>
+
+            <author>John Huelsenbeck</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnBinomial</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

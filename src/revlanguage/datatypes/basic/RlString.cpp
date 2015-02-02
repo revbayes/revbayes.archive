@@ -127,25 +127,6 @@ const TypeSpec& RlString::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RlString::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
 const TypeSpec& RlString::getTypeSpec( void ) const {
     
@@ -158,6 +139,8 @@ const TypeSpec& RlString::getTypeSpec( void ) const {
 /** Print value */
 void RlString::printValue(std::ostream& o) const {
 
-	dagNode->printValue( o , "" );
+	o << "\"";
+    dagNode->printValue( o );
+    o << "\"";
 }
 

@@ -5,8 +5,12 @@
 
 
 
-RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc, bool med) : TypedFunction< std::vector<double> >( new std::vector<double>(nc->getValue(), 1.0) ), 
-shape( s ), rate( r ), numCats(nc), median(med) {
+RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc, bool med) : TypedFunction< RbVector<double> >( new RbVector<double>(nc->getValue(), 1.0) ),
+    shape( s ),
+    rate( r ),
+    numCats(nc),
+    median(med)
+{
     
     addParameter( shape );
     addParameter( rate );
@@ -15,13 +19,9 @@ shape( s ), rate( r ), numCats(nc), median(med) {
 }
 
 
-RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const DiscretizeGammaFunction &dgf) : TypedFunction< std::vector<double> >( dgf ), shape( dgf.shape ), rate( dgf.rate ), numCats(dgf.numCats), median(dgf.median) {
-    
-}
 
-
-
-RevBayesCore::DiscretizeGammaFunction* RevBayesCore::DiscretizeGammaFunction::clone( void ) const {
+RevBayesCore::DiscretizeGammaFunction* RevBayesCore::DiscretizeGammaFunction::clone( void ) const
+{
     
     return new DiscretizeGammaFunction(*this);
 }
@@ -33,11 +33,13 @@ void RevBayesCore::DiscretizeGammaFunction::swapParameterInternal(const DagNode 
     {
         shape = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if(oldP == rate)
+    
+    if (oldP == rate)
     {
         rate = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if(oldP == numCats)
+    
+    if (oldP == numCats)
     {
         numCats = static_cast<const TypedDagNode<int>* >( newP );
     }
@@ -64,7 +66,8 @@ void RevBayesCore::DiscretizeGammaFunction::update( void ) {
         for (int i=0; i<nCats; i++)     
             (*value)[i] *= factor / t;
     }
-    else {
+    else
+    {
         /* the mean value for each category is used to represent all of the values
         in that category */
         /* calculate the points in the gamma distribution */

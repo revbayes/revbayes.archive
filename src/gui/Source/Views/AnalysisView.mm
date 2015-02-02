@@ -310,7 +310,11 @@
 					endingRangeRange.location += 11;
 					[attrString applyFontTraits:NSItalicFontMask range:endingRangeRange];
 					}
-				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+<<<<<<< HEAD
+				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+=======
+				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
+>>>>>>> 61480579c58f84b39cbc487a4a6a95bbd1fa0697
 				float padding = 4.0 * scaleFactor;
 				textSize.origin.x = pr.origin.x + (pr.size.width - textSize.size.width - padding);
 				textSize.origin.y = pr.origin.y + padding;

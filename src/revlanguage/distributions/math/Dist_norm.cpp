@@ -92,7 +92,7 @@ const TypeSpec& Dist_norm::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_norm::getMemberRules(void) const
+const MemberRules& Dist_norm::getParameterRules(void) const
 {
     
     static MemberRules distNormMemberRules;
@@ -153,7 +153,7 @@ void Dist_norm::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_norm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+void Dist_norm::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "mean" ) 
@@ -166,6 +166,6 @@ void Dist_norm::setConstMemberVariable(const std::string& name, const RevPtr<con
     }
     else 
     {
-        Distribution::setConstMemberVariable(name, var);
+        Distribution::setConstParameter(name, var);
     }
 }

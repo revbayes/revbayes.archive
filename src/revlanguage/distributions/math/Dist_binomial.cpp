@@ -1,12 +1,3 @@
-//
-//  Dist_binomial
-//  RevBayesCore
-//
-//  Created by John Huelsenbeck on 8/25/14.
-//  Copyright 2012 UC Berkeley. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BinomialDistribution.h"
@@ -63,7 +54,7 @@ const TypeSpec& Dist_binomial::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_binomial::getMemberRules(void) const {
+const MemberRules& Dist_binomial::getParameterRules(void) const {
     
     static MemberRules distBinMemberRules;
     static bool rulesSet = false;
@@ -104,7 +95,7 @@ void Dist_binomial::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_binomial::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_binomial::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
         
     if ( name == "p" ) 
         {
@@ -116,6 +107,6 @@ void Dist_binomial::setConstMemberVariable(const std::string& name, const RevPtr
         }
     else
         {
-        TypedDistribution<Natural>::setConstMemberVariable(name, var);
+        TypedDistribution<Natural>::setConstParameter(name, var);
         }
 }

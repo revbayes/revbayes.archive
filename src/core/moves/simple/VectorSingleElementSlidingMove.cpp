@@ -11,7 +11,10 @@
 using namespace RevBayesCore;
 
 
-VectorSingleElementSlidingMove::VectorSingleElementSlidingMove(StochasticNode<std::vector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
+VectorSingleElementSlidingMove::VectorSingleElementSlidingMove(StochasticNode<RbVector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ),
+    variable(v),
+    lambda( l )
+{
     
 }
 
@@ -24,7 +27,8 @@ VectorSingleElementSlidingMove* VectorSingleElementSlidingMove::clone( void ) co
 
 
 
-const std::string& VectorSingleElementSlidingMove::getMoveName( void ) const {
+const std::string& VectorSingleElementSlidingMove::getMoveName( void ) const
+{
     static std::string name = "VectorSingleElementMove";
     
     return name;
@@ -77,7 +81,7 @@ void VectorSingleElementSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
     
 }
 
@@ -85,10 +89,13 @@ void VectorSingleElementSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
 void VectorSingleElementSlidingMove::tune( void ) {
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.44 ) {
+    if ( rate > 0.44 )
+    {
         lambda *= (1.0 + ((rate-0.44)/0.56) );
     }
-    else {
+    else
+    {
         lambda /= (2.0 - rate/0.44 );
     }
+    
 }

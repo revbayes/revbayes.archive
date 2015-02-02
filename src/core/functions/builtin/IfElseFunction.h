@@ -10,7 +10,7 @@ namespace RevBayesCore {
     class IfElseFunction : public TypedFunction<valueType> {
         
     public:
-        IfElseFunction(const TypedDagNode<bool> *c, const TypedDagNode<valueType> *a, const TypedDagNode<valueType> *b);
+        IfElseFunction(const TypedDagNode<unsigned int> *c, const TypedDagNode<valueType> *a, const TypedDagNode<valueType> *b);
         
         IfElseFunction*                         clone(void) const;                                                  //!< Create a clon.
         void                                    update(void);                                                       //!< Recompute the value
@@ -20,7 +20,7 @@ namespace RevBayesCore {
         
     private:
         
-        const TypedDagNode<bool>*               condition;
+        const TypedDagNode<unsigned int>*       condition;
         const TypedDagNode<valueType>*          a;
         const TypedDagNode<valueType>*          b;
         
@@ -30,7 +30,7 @@ namespace RevBayesCore {
 
 
 template<class valType>
-RevBayesCore::IfElseFunction<valType>::IfElseFunction(const TypedDagNode<bool> *c, const TypedDagNode<valType> *l, const TypedDagNode<valType> *r) : TypedFunction<valType>( new valType() ),
+RevBayesCore::IfElseFunction<valType>::IfElseFunction(const TypedDagNode<unsigned int> *c, const TypedDagNode<valType> *l, const TypedDagNode<valType> *r) : TypedFunction<valType>( new valType() ),
     condition( c ),
     a( l ),
     b( r )
@@ -56,7 +56,7 @@ void RevBayesCore::IfElseFunction<valType>::swapParameterInternal(const DagNode 
     
     if ( oldP == condition)
     {
-        condition = static_cast<const TypedDagNode<bool>* >( newP );
+        condition = static_cast<const TypedDagNode<unsigned int>* >( newP );
     }
     
     if (oldP == a)

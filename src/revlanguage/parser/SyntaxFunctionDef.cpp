@@ -4,7 +4,7 @@
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
 #include "UserFunctionDef.h"
-#include "UserInterface.h"
+#include "RlUserInterface.h"
 #include "UserProcedure.h"
 #include "Workspace.h"
 
@@ -99,7 +99,7 @@ SyntaxFunctionDef* SyntaxFunctionDef::clone( void ) const
  * @todo Deal with local variables hiding external variables. Ask if user wants to replace
  *       an existing function or procedure.
  */
-RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
+RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool dynamic )
 {
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();

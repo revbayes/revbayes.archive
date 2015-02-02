@@ -3,7 +3,7 @@
 
 #include "DynamicNode.h"
 #include "RevPtr.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 #include <vector>
 
@@ -33,11 +33,14 @@ namespace RevLanguage {
         
         // Public methods
         UserFunctionNode<rlType>*               clone(void) const;                                                  //!< Type-safe clone
-        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
+        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap, std::map<std::string, const RevBayesCore::DagNode* > &names) const;   //!< Clone the entire DAG connected to this node
+        double                                  getLnProbability(void) { return 0.0; }                              //!< Get ln prob
+        double                                  getLnProbabilityRatio(void) { return 0.0; }                         //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                     //!< Get the value
         const typename rlType::valueType&       getValue(void) const;                                               //!< Get the value (const)
         bool                                    isConstant(void) const;                                             //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;      //!< Print structure info
+        void                                    redraw(void) {}                                                     //!< Redraw (or not)
         void                                    update(void);                                                       //!< Update current value
         
         // Parent DAG nodes management functions
@@ -45,13 +48,14 @@ namespace RevLanguage {
         void                                    swapParent(const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent); //!< Exchange the parent (element variable)
         
     protected:
+        void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
         void                                    keepMe(RevBayesCore::DagNode* affecter);                                                    //!< Keep value of this and affected nodes
         void                                    restoreMe(RevBayesCore::DagNode *restorer);                                                 //!< Restore value of this nodes
         void                                    touchMe(RevBayesCore::DagNode *toucher);                                                    //!< Touch myself and tell affected nodes value is reset
         
     private:
         UserFunction*                           userFunction;                                                       //!< The user function used to compute the value
-        RevPtr<Variable>                        returnVariable;                                                     //!< The current value of the function, wrapped as a variable
+        RevPtr<RevVariable>                        returnVariable;                                                     //!< The current value of the function, wrapped as a variable
     };
     
 }
@@ -67,9 +71,9 @@ using namespace RevLanguage;
  */
 template<typename rlType>
 UserFunctionNode<rlType>::UserFunctionNode( const std::string& n, UserFunction* fxn ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    userFunction( fxn ),
-    returnVariable( NULL )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+userFunction( fxn ),
+returnVariable( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -89,9 +93,9 @@ UserFunctionNode<rlType>::UserFunctionNode( const std::string& n, UserFunction* 
  */
 template<typename rlType>
 UserFunctionNode<rlType>::UserFunctionNode( const UserFunctionNode<rlType>& n ) :
-    RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    userFunction( n.userFunction->clone() ),
-    returnVariable( NULL )
+RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
+userFunction( n.userFunction->clone() ),
+returnVariable( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -148,13 +152,13 @@ UserFunctionNode<rlType>& UserFunctionNode<rlType>::operator=( const UserFunctio
         
         // Delete the user function
         delete userFunction;
-
+        
         // Call the base class assignment operator
         RevBayesCore::DynamicNode<typename rlType::valueType>::operator=( x );
         
         // Make a clone of the new function
         userFunction = x.userFunction->clone();
-
+        
         // Adopt our new parents
         const std::set<const RevBayesCore::DagNode*>& newParents = userFunction->getParameters();
         for ( std::set<const RevBayesCore::DagNode*>::iterator it = newParents.begin(); it != newParents.end(); ++it )
@@ -162,7 +166,7 @@ UserFunctionNode<rlType>& UserFunctionNode<rlType>::operator=( const UserFunctio
             (*it)->addChild( this );
             (*it)->incrementReferenceCount();
         }
-
+        
         // Tell everybody we have been changed
         this->touch();
     }
@@ -193,7 +197,7 @@ UserFunctionNode<rlType>* UserFunctionNode<rlType>::clone( void ) const
  *       not expose its model variables to the parser.
  */
 template<typename rlType>
-RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode* >& newNodes ) const
+RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode* >& newNodes, std::map<std::string, const RevBayesCore::DagNode* > &names ) const
 {
     // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )
@@ -227,20 +231,45 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBay
     for ( size_t i = 0; i < args.size(); ++i )
     {
         // Replace the i-th copy argument with an appropriate object
-        RevPtr<Variable> theArgumentVariableClone = new Variable( args[i].getVariable()->getRevObject().cloneDAG( newNodes ), args[i].getVariable()->getName() );
-        copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
+        
+        const RevObject &rObject = args[i].getVariable()->getRevObject();
+        if ( rObject.isModelObject() )
+        {
+            const AbstractModelObject &modelObj = static_cast< const AbstractModelObject &>( rObject );
+            RevBayesCore::DagNode* theNode = modelObj.getDagNode();
+            std::map<std::string, const RevBayesCore::DagNode*> names;
+            AbstractModelObject *rObjClone = modelObj.clone();
+            rObjClone->setDagNode( theNode->cloneDAG( newNodes, names ) );
+            RevPtr<RevVariable> theArgumentVariableClone = new RevVariable( rObjClone, args[i].getVariable()->getName() );
+            copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
+        
+            // Manage the DAG node connections
+            RevBayesCore::DagNode* theArgumentNodeClone = theArgumentVariableClone->getRevObject().getDagNode();
+            theArgumentNodeClone->addChild( copy );
+            theArgumentNodeClone->incrementReferenceCount();
+        }
+        else
+        {
+            throw RbException("Missing implementation");
+        }
 
-        // Manage the DAG node connections
-        RevBayesCore::DagNode* theArgumentNodeClone = theArgumentVariableClone->getRevObject().getDagNode();
-        theArgumentNodeClone->addChild( copy );
-        theArgumentNodeClone->incrementReferenceCount();
     }
     
     /* Make sure the children clone themselves */
     for( std::set<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
-        (*it)->cloneDAG( newNodes );
+        (*it)->cloneDAG( newNodes, names );
     
     return copy;
+}
+
+
+/**
+ * Get the affected nodes. This call is started by a parent. We need to delegate this call to all our children.
+ */
+template<typename rlType>
+void UserFunctionNode<rlType>::getAffected( std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter )
+{
+    this->getAffectedNodes( affected );
 }
 
 
@@ -313,9 +342,6 @@ bool UserFunctionNode<rlType>::isConstant( void ) const
 template<typename rlType>
 void UserFunctionNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of user function node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Pass the call to downstream nodes
     this->keepAffected();
@@ -337,14 +363,14 @@ void UserFunctionNode<rlType>::printStructureInfo( std::ostream& o, bool verbose
         else
             o << "_dagNode      = <" << this << ">" << std::endl;
     }
-
+    
     o << "_dagType      = Deterministic Rev user function node" << std::endl;
     
     if ( verbose == true )
     {
         o << "_refCount     = " << this->getReferenceCount() << std::endl;
     }
-
+    
     o << "_function     = " << userFunction->getRevDeclaration() << std::endl;
     
     
@@ -378,10 +404,6 @@ void UserFunctionNode<rlType>::printStructureInfo( std::ostream& o, bool verbose
 template<typename rlType>
 void UserFunctionNode<rlType>::restoreMe( RevBayesCore::DagNode* restorer )
 {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of user function node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // We can no longer trust our value, so mark us as touched
     this->touched = true;
@@ -425,7 +447,7 @@ void UserFunctionNode<rlType>::swapParent(const RevBayesCore::DagNode* oldParent
             return;
         }
     }
-
+    
     // We did not find oldParent among our parents
     throw RbException( "Invalid attempt to swap non-parent" );
 }
@@ -441,9 +463,6 @@ void UserFunctionNode<rlType>::swapParent(const RevBayesCore::DagNode* oldParent
 template<typename rlType>
 void UserFunctionNode<rlType>::touchMe( RevBayesCore::DagNode* toucher )
 {
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of user function node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
     
     // Touch myself
     this->touched = true;

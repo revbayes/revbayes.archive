@@ -1,0 +1,86 @@
+# Test file for mcmc on gtr model with primates dataset
+
+# read the data
+# the readDiscreteCharacterData function returns a vector of matrices. We just take the first one
+D <- readDiscreteCharacterData("data/Primates.nex")
+
+# get some useful variables from the data
+taxaCount <- D.ntaxa()
+nSites <- D.nchar()[1]
+names <- D.names()
+
+# Birth-Death process priors
+diversification ~ dnExponential(0.1)
+turnover ~ dnExponential(0.1)
+org ~ dnUnif(0,100.0)
+
+mi <- 1
+# moves for the birth-death paramaters
+moves[mi++] = mvScale(diversification,lambda=1,tune=true,weight=3)
+moves[mi++] = mvScale(turnover,lambda=1,tune=true,weight=3)
+moves[mi++] = mvSlide(org,delta=1,tune=true,weight=3)
+
+# tree from birth-death process
+tau ~ dnBDP(origin=org, diversification, turnover, nTaxa=taxaCount, names=names)
+
+# moves on the tree
+#moves[mi++] <- mvNNI(tau, weight=1.0)
+#moves[mi++] <- mvFNPR(tau, weight=1.0)
+#moves[mi++] <- mvSubtreeScale(tau, weight=5.0)
+#moves[mi++] <- mvTreeScale(tau, lambda=1.0, tune=true, weight=3.0)
+moves[mi++] = mvNodeTimeSlideUniform(tau, weight=30.0)
+moves[mi++] = mvRootTimeSlide(tau, delta=1.0, tune=true, weight=3.0)
+
+# substition model priors
+bf <- v(1,1,1,1)
+e <- v(1,1,1,1,1,1)
+pi ~ dnDirichlet(bf)
+er ~ dnDirichlet(e)
+
+
+# moves on the substitution process parameters
+# first some moves only changing one value of the simplex
+moves[mi++] = mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=4.0)
+moves[mi++] = mvSimplexElementScale(er, alpha=10.0, tune=true, weight=6.0)
+
+# the rate matrix
+Q := fnGTR(er,pi)
+
+
+##cr ~ dnGamma(2.0,4.0)
+n_branches <- 2 * taxaCount - 2
+
+
+for(i in 1:n_branches){
+	branch_rates[i] ~ dnGamma(2.0,4.0)
+	moves[mi++] = mvScale(branch_rates[i],lambda=0.5,tune=true,weight=3.0)
+}
+
+mean_rt := mean(branch_rates)
+
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=tau, Q=Q, branchRates=branch_rates, nSites=nSites, type="DNA")
+
+# attach the data
+seq.clamp(D)
+
+mymodel = model(pi)
+
+monitors[1] = mnModel(filename="uncor_clock2.log",printgen=10)
+monitors[2] = mnFile(filename="uncor_clock2.trees",printgen=10, tau)
+monitors[3] = mnScreen(printgen=10, pi, mean_rt)
+
+ 
+mymcmc = mcmc(mymodel, monitors, moves)
+
+# Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
+# If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
+mymcmc.burnin(generations=200,tuningInterval=50)
+mymcmc.run(generations=400)
+
+#mymcmc.operatorSummary()
+
+write(file="result.txt", append=TRUE,"Finished IGR.Rev")
+
+q()

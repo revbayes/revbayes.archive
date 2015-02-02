@@ -129,7 +129,7 @@ const TypeSpec& Dist_bdp::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& Dist_bdp::getMemberRules(void) const 
+const MemberRules& Dist_bdp::getParameterRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -142,7 +142,7 @@ const MemberRules& Dist_bdp::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
         // add the rules from the base class
-        const MemberRules &parentRules = BirthDeathProcess::getMemberRules();
+        const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
@@ -176,7 +176,7 @@ const TypeSpec& Dist_bdp::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_bdp::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_bdp::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "lambda" ) 
@@ -188,7 +188,7 @@ void Dist_bdp::setConstMemberVariable(const std::string& name, const RevPtr<cons
         mu = var;
     }
     else {
-        BirthDeathProcess::setConstMemberVariable(name, var);
+        BirthDeathProcess::setConstParameter(name, var);
     }
     
 }

@@ -30,7 +30,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                             //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                             //!< Get member rules (const)
         
         
         // Distribution functions you have to override
@@ -38,13 +38,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
 
-        RevPtr<const Variable>                          lambda;                                                                                 //!< The speciation rate
-        RevPtr<const Variable>                          mu;                                                                                     //!< The extinction rate
+        RevPtr<const RevVariable>                          lambda;                                                                                 //!< The speciation rate
+        RevPtr<const RevVariable>                          mu;                                                                                     //!< The extinction rate
         
     };
     

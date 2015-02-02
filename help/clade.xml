@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>clade</name>
+
+        <title>Construction of a clade from a vector of leaf names.</title>
+    
+        <description>
+            <p>
+                The 'clade' function builds a clade with n leaves from a vector of n strings. 
+                The strings become the leaf names. 
+                The clade is multifurcated if there are more than 2 leaves.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             clade( String[] taxa )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>taxa</label>
+            <argumentPassingMethod>by-value</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>A vector of strings representing leaf names.</description>
+            <valueType>String[]</valueType>
+        </argument>
+
+        <returnValue>Clade, RevObject</returnValue>
+
+        <example>
+            <![CDATA[
+             # Creating a clade from a string
+			 myClade <- clade("A")
+			 print( myClade )
+			 myClade2 <- clade(["A","B","C"])
+			 print( myClade2 )
+			 type(myClade2)
+             ]]>
+
+        </example>
+
+
+        <author>Bastien Boussau</author>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

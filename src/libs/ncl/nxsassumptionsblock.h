@@ -63,7 +63,7 @@ class NxsAssumptionsBlockAPI
 		virtual void FlagTaxaBlockAsUsed() = 0;
 		virtual void FlagTreesBlockAsUsed() = 0;
 
-  		virtual void ReadCharsetDef(NxsString charset_name, NxsToken &token, bool asterisked) = 0;
+  		virtual void readDiscreteCharsetDef(NxsString charset_name, NxsToken &token, bool asterisked) = 0;
   		virtual void ReadExsetDef(NxsString charset_name, NxsToken &token, bool asterisked) = 0;
 		virtual void ReadTaxsetDef(NxsString set_name, NxsToken &token, bool asterisked) = 0;
 		virtual void ReadTreesetDef(NxsString set_name, NxsToken &token, bool asterisked) = 0;
@@ -253,7 +253,7 @@ class NxsAssumptionsBlock
 	protected:
 		typedef std::vector<NxsAssumptionsBlockAPI *> VecAssumpBlockPtr;
 
-		virtual void 		ReadCharsetDef(NxsString charset_name, NxsToken &token, bool asterisked);
+		virtual void 		readDiscreteCharsetDef(NxsString charset_name, NxsToken &token, bool asterisked);
 		virtual void 		ReadExsetDef(NxsString charset_name, NxsToken &token, bool asterisked);
 		virtual void 		ReadTreesetDef(NxsString set_name, NxsToken &token, bool asterisked);
 		virtual void 		ReadTaxsetDef(NxsString set_name, NxsToken &token, bool asterisked);

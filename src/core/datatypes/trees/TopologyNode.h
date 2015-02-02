@@ -70,7 +70,9 @@ namespace RevBayesCore {
         void                                        addNodeParameter(const std::string &n, double p);
         void                                        addNodeParameter(const std::string &n, const std::string &p);
         void                                        addParameter(const std::string &n, const std::vector<double> &p, bool io);
+		void                                        addParameter(const std::string &n, const std::vector<std::string*> &p, bool io);
         void                                        clearBranchParameters(void);
+		void                                        clearNodeParameters(void);
         virtual const std::string&                  computeNewick(void);                                                                //!< Compute the newick string for this clade
         std::string                                 computePlainNewick(void) const;                                                     //!< Compute the newick string for this clade as a plain string without branch length
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
@@ -108,6 +110,7 @@ namespace RevBayesCore {
         void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
+  		void										setNodeType(bool tip, bool root, bool interior); //SK
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
 

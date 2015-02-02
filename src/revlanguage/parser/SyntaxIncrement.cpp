@@ -16,8 +16,8 @@ using namespace RevLanguage;
  *
  * \param[in]   v   The variable expression
  */
-SyntaxIncrement::SyntaxIncrement( SyntaxVariable* v ) :
-    SyntaxElement(),
+SyntaxIncrement::SyntaxIncrement( SyntaxElement* v, bool post ) : SyntaxElement(),
+    postIncrement( post ),
     variable( v )
 {
 }
@@ -28,8 +28,8 @@ SyntaxIncrement::SyntaxIncrement( SyntaxVariable* v ) :
  * parser to return a NULL variable statement, so we do not have
  * to check for a NULL pointer.
  */
-SyntaxIncrement::SyntaxIncrement( const SyntaxIncrement& x ) :
-    SyntaxElement(x)
+SyntaxIncrement::SyntaxIncrement( const SyntaxIncrement& x ) : SyntaxElement(x),
+    postIncrement( x.postIncrement )
 {
     variable   = x.variable->clone();
 }
@@ -52,6 +52,8 @@ SyntaxIncrement& SyntaxIncrement::operator=( const SyntaxIncrement& x )
     if ( this != &x )
     {
         SyntaxElement::operator=( x );
+        
+        postIncrement = x.postIncrement;
         
         delete variable;
         variable = x.variable->clone();
@@ -77,15 +79,17 @@ SyntaxIncrement* SyntaxIncrement::clone () const
  * Evaluate the content of this syntax element. This will perform
  * an increment assignment operation.
  */
-RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
+RevPtr<RevVariable> SyntaxIncrement::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating increment assignment\n" );
 #endif
     
+    RevPtr<RevVariable> retVar;
+    
     // Get variable. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
-    RevPtr<Variable> theVariable = variable->evaluateContent( env );
+    RevPtr<RevVariable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by variable expression in increment assignment" );
     
@@ -96,15 +100,25 @@ RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
     // Get a non-const reference to the lhs value object
     RevObject& lhs_value = theVariable->getRevObject();
     
+    if ( postIncrement )
+    {
+        retVar = new RevVariable( lhs_value.clone() );
+    }
+    
     // Increment the lhs value. This will not change the control variable status.
     lhs_value.increment();
+    
+    if ( !postIncrement )
+    {
+        retVar = new RevVariable( lhs_value.clone() );
+    }
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
     
     // No further assignment with this type of statement
-    return theVariable;
+    return retVar;
 }
 
 

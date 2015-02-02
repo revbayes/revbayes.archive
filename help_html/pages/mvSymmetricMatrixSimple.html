@@ -1,0 +1,166 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Simple Metropolis-Hastings move on a real symmetric matrix</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Simple Metropolis-Hastings move on a real symmetric matrix</h1>
+
+        <h2>Type mvSymmetricMatrixSimple</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvSymmetricMatrixSimple</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This move function performs a sliding-move update on one random entry of a real symmetric matrix.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mvSymmetricMatrixSimple( RealSymmetricMatrix x, RealPos lambda = 1, Bool tune = TRUE, RealPos weight = 1 )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The matrix to which the move is applied.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+RealSymmetricMatrix<br />
+</div>
+<br />
+<b >lambda</b>
+<div class="indent">
+The tuning parameter or size of the proposal.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >tune</b>
+<div class="indent">
+This flag specifies if the proposal tuning parameter (lambda) is retuned during the burnin period.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+TRUE<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+The expected number of times this move will be applied per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                This move proposes a simple, one-component-at-a-time, sliding-move update to a real symmetric matrix. The sliding move is applied to a randomly chosen entry of the matrix (and to the symmetric entry if not along the diagonal). 
+                </p>
+<p class="indent">
+                This move function is very general. In the case of covariance matrices, and using an inverse-Wishart prior, another specialized and more efficient Gibbs sampling move can be used instead: see mvConjugateInverseWishartBrownian.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+		# load trait data 
+		contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+		nTraits <- contData.nchar()[1]
+
+		# load tree
+		tree <- readTrees("data/chronoplac40.tree")[1]
+
+		# covariance matrix with free scaling factor kappa
+		kappa ~ dnLogUniform(min=0.001,max=1000)
+		Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+1)
+
+		# bivariate Brownian process along the tree
+		X ~ dnBrownianMultiVariate(tree,sigma=Sigma)
+
+		# clamp process at the tips of the tree to observed trait values
+		for (i in 1:nTraits)	{
+			X.clampAt(contData,i,i)
+		}
+
+		... 
+
+		# set up index for array of moves
+		index <- 1
+
+		# a simple move on Sigma
+		moves[index++] = mvSymmetricMatrixSimple(Sigma, lambda=1.0, tune=true, weight=10.0)
+
+		# moves on the Brownian process
+		moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+		moves[index++] = mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
+
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent"><br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Nicolas Lartillot</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

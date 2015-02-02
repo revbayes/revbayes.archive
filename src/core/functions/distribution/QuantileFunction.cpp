@@ -9,7 +9,10 @@
 #include "QuantileFunction.h"
 
 
-RevBayesCore::QuantileFunction::QuantileFunction(const TypedDagNode<double> *q, ContinuousDistribution* d) : ContinuousFunction( new double(0.0) ), p( q ), dist( d ) {
+RevBayesCore::QuantileFunction::QuantileFunction(const TypedDagNode<double> *q, ContinuousDistribution* d) : ContinuousFunction( new double(0.0) ),
+    p( q ),
+    dist( d )
+{
     
     addParameter( p );
     
@@ -22,7 +25,10 @@ RevBayesCore::QuantileFunction::QuantileFunction(const TypedDagNode<double> *q, 
 }
 
 
-RevBayesCore::QuantileFunction::QuantileFunction(const QuantileFunction &qf) : ContinuousFunction( qf ), p( qf.p ), dist( qf.dist->clone() ) {
+RevBayesCore::QuantileFunction::QuantileFunction(const QuantileFunction &qf) : ContinuousFunction( qf ),
+    p( qf.p ),
+    dist( qf.dist->clone() )
+{
     
 }
 

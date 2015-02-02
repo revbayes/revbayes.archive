@@ -1,9 +1,0 @@
-Tutorials and associated file for performing different analyses in RevBayes
-
-These tutorials are prepared for the NESCent Academy Course on Phylogenetic Analysis using RevBayes
-
-* RB_Basics_Tutorial: Basic language features and simple statistical (Poisson) regression model example.
-* RB_CTMC_Tutorial: Bayesian inference on various GTR-variants for unrooted trees.
-* RB_BayesFactor_Tutorial: Bayes Factors and model partitioning.
-* RB_biogeo_tutorial: Biogeographic analysis of large state-space
-* RB_PhyloComparative_Tutorial: Phylogenetic comparative methods

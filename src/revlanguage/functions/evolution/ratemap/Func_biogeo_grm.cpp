@@ -16,7 +16,8 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_biogeo_grm::Func_biogeo_grm( void ) : Function( ) {
+Func_biogeo_grm::Func_biogeo_grm( void ) : TypedFunction< GeographyRateModifier >( )
+{
     
 }
 
@@ -28,7 +29,8 @@ Func_biogeo_grm* Func_biogeo_grm::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_biogeo_grm::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::GeographyRateModifier >* Func_biogeo_grm::createFunction( void ) const
+{
     
     const RevBayesCore::TimeAtlas* atlas = &( static_cast<const RlAtlas&>( this->args[0].getVariable()->getRevObject() ).getValue() );
     
@@ -38,13 +40,9 @@ RevPtr<Variable> Func_biogeo_grm::execute() {
     bool uadj   = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
 
 
-    RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::DistanceDependentDispersalFunction(dp, atlas, uadj, true, udd);
+    RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::DistanceDependentDispersalFunction(dp, atlas, uadj, uav, udd);
     
-    DeterministicNode<RevBayesCore::GeographyRateModifier> *detNode = new DeterministicNode<RevBayesCore::GeographyRateModifier>("", f, this->clone());
-    
-    RlGeographyRateModifier* value = new RlGeographyRateModifier( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -84,15 +82,6 @@ const TypeSpec& Func_biogeo_grm::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_biogeo_grm::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RateMap::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

@@ -34,7 +34,6 @@ namespace RevLanguage {
         Taxon(RevBayesCore::Taxon *v);                                                                                              //!< Constructor requires character type
         Taxon(const RevBayesCore::Taxon &v);                                                                                        //!< Constructor requires character type
         Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n);                                                                  //!< Constructor requires character type
-        Taxon(const Taxon& d);                                                                                                      //!< Constructor requires character type
         
         typedef RevBayesCore::Taxon valueType;
         
@@ -43,20 +42,18 @@ namespace RevLanguage {
         void                                constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
         static const std::string&           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
-        const MemberRules&                  getMemberRules(void) const;                                                             //!< Get member rules (const)
+        const MemberRules&                  getParameterRules(void) const;                                                          //!< Get member rules (const)
         const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                                                 //!< Get member methods
-        MethodTable                         makeMethods(void) const;                                                                //!< Make member methods
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Map member methods to internal functions
+        virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
         
     protected:
-        void                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
-        RevPtr<const Variable>              taxon;
-        RevPtr<const Variable>              species;
-        RevPtr<const Variable>              date;
+        RevPtr<const RevVariable>           taxon;
+        RevPtr<const RevVariable>           species;
+        RevPtr<const RevVariable>           date;
 
     };
     

@@ -9,7 +9,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_powerVector::Func_powerVector( void ) : Function( ) {
+Func_powerVector::Func_powerVector( void ) : TypedFunction< ModelVector< RealPos > >( ) {
     
 }
 
@@ -21,17 +21,14 @@ Func_powerVector* Func_powerVector::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_powerVector::execute() {
+RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_powerVector::createFunction( void ) const
+{
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* b = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* b = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* e = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::PowerVectorFunction* f = new RevBayesCore::PowerVectorFunction( b, e );
     
-    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", f, this->clone());
-    
-    ModelVector<RealPos>* value = new ModelVector<RealPos>( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -66,15 +63,6 @@ const TypeSpec& Func_powerVector::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
-}
-
-
-/* Get return type */
-const TypeSpec& Func_powerVector::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = ModelVector<RealPos>::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

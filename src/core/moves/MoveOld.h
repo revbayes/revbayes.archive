@@ -38,7 +38,7 @@ namespace RevBayesCore {
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN);
 
     protected:
-                                                                MoveOld(DagNode* n, double w, bool autoTune = false);                                      //!< Constructor
+                                                                MoveOld( DagNode* n, double w, bool autoTune = false);                                      //!< Constructor
                                                                 MoveOld( std::vector<DagNode*> n, double w, bool autoTune = false);
     
         // function you have to implement
@@ -58,7 +58,7 @@ namespace RevBayesCore {
        
         unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
         unsigned int                                            numTried;                                                                               //!< Number of times tried
-         bool                                                    autoTuning;
+        bool                                                    autoTuning;
     
         std::set<DagNode*>                                      nodes;
         

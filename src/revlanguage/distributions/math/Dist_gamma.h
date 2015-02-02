@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the gamma distribution, which is used create
- * random variables of gamma distributions.
- *
- * @brief Declaration and implementation of GammaDistribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef Dist_gamma_H
 #define Dist_gamma_H
 
@@ -23,6 +6,22 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * The RevLanguage wrapper of the gamma distribution.
+     *
+     * The RevLanguage wrapper of the gamma distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the GammaDistribution for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2012-08-08, version 1.0
+     *
+     */
     class Dist_gamma :  public PositiveContinuousDistribution {
         
     public:
@@ -34,7 +33,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
@@ -43,12 +42,12 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
-        RevPtr<const Variable>                          shape;
-        RevPtr<const Variable>                          rate;
+        RevPtr<const RevVariable>                          shape;
+        RevPtr<const RevVariable>                          rate;
         
     };
     

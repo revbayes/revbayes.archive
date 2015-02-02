@@ -54,7 +54,7 @@ namespace RevLanguage {
         void                                            setName(const std::string& nm);                                                     //!< Name the function
     
         // Functions you have to override
-        virtual RevPtr<Variable>                        execute(void) = 0;                                                                  //!< Execute function
+        virtual RevPtr<RevVariable>                     execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
@@ -86,7 +86,7 @@ namespace RevLanguage {
         std::string                                     name;                                                                               //!< The name of the function in the environment
 
     private:
-        double                                          computeMatchScore(const Variable* arg, const ArgumentRule& rule);
+        double                                          computeMatchScore(const RevVariable* arg, const ArgumentRule& rule);
 };
     
 }

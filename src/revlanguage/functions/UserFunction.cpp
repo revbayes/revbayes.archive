@@ -30,7 +30,7 @@ UserFunction* UserFunction::clone(void) const
 
 
 /** Execute function. Here we create a deterministic node if applicable, otherwise we just execute the code */
-RevPtr<Variable> UserFunction::execute( void )
+RevPtr<RevVariable> UserFunction::execute( void )
 {
     
     // If the return type object has a DAG node inside it, we return an appropriate model/container/factor object
@@ -38,11 +38,11 @@ RevPtr<Variable> UserFunction::execute( void )
 
     RevObject* retVal = Workspace::userWorkspace().makeNewDefaultObject( getReturnType().getType() );
 
-    if ( retVal->hasDagNode() )
+    if ( retVal->isModelObject() )
     {
         retVal->makeUserFunctionValue( this->clone() );
 
-        return new Variable( retVal );
+        return new RevVariable( retVal );
     }
     else
     {
@@ -55,10 +55,10 @@ RevPtr<Variable> UserFunction::execute( void )
 
 
 /** In this function we execute the Rev code for the function (compiled syntax tree) */
-RevPtr<Variable> UserFunction::executeCode( void )
+RevPtr<RevVariable> UserFunction::executeCode( void )
 {
     // Create new evaluation frame with function base class execution environment as parent
-    Environment* functionFrame = new Environment( getEnvironment() );
+    Environment* functionFrame = new Environment( getEnvironment(), "UserFunctionEnvironment" );
     
     // Add the arguments to our environment
     for ( std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it )
@@ -73,7 +73,7 @@ RevPtr<Variable> UserFunction::executeCode( void )
     Signals::getSignals().clearFlags();
     
     // Set initial return value
-    RevPtr<Variable> retVar = NULL;
+    RevPtr<RevVariable> retVar = NULL;
     
     // Execute code
     const std::list<SyntaxElement*>& code = functionDef->getCode();
@@ -84,7 +84,7 @@ RevPtr<Variable> UserFunction::executeCode( void )
         
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
         {
-            Signals::getSignals().clearFlags();
+//            Signals::getSignals().clearFlags();
             break;
         }
     }
@@ -119,7 +119,7 @@ std::set<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
 
     for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it )
     {
-        if ( (*it).getVariable()->getRevObject().hasDagNode() )
+        if ( (*it).getVariable()->getRevObject().isModelObject() )
             params.insert( (*it).getVariable()->getRevObject().getDagNode() );
     }
 

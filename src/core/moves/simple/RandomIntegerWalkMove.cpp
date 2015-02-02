@@ -103,7 +103,7 @@ void RandomIntegerWalkMove::rejectSimpleMove( void )
  * Swap the current variable for a new one.
  *
  * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new variable.
+ * \param[in]     newN     The new RevVariable.
  */
 void RandomIntegerWalkMove::swapNode(DagNode *oldN, DagNode *newN) 
 {

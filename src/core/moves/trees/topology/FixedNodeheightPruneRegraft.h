@@ -48,6 +48,7 @@ namespace RevBayesCore {
         
         // member variables
         StochasticNode<TimeTree>*       variable;
+        bool                            failed;
         
         // stored objects to undo proposal
         TopologyNode*                   storedBrother;

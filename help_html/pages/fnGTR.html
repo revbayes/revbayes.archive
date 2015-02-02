@@ -1,0 +1,145 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The General Time Reversible function to create a rate matrix.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The General Time Reversible function to create a rate matrix.</h1>
+
+        <h2>Function fnGTR</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">fnGTR</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            The function fnGTR creates the most general reversible rate matrix on an  alphabet with an arbitrary number of states.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             fnGTR( Simplex exchangeRates, Simplex baseFrequencies )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >exchangeRates</b>
+<div class="indent">
+A simplex giving the exchange rate parameters. Size 6 for an alphabet of size 4, like DNA.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Simplex<br />
+</div>
+<br />
+<b >baseFrequencies</b>
+<div class="indent">
+A simplex giving the equilibrium state frequencies. Size the size of the alphabet (4 for DNA).<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Simplex<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            The General Time Reversible (GTR) model is the most general reversible Markov model possible. More complex models are not reversible (for a discussion of reversibility in models of sequence evolution, see e.g. Jayaswal et al., 2010). All other reversible models can be seed as specific cases of the GTR model. It has been first proposed by Lanave et al. (1984), Tavaré et al. (1986), and Rodriguez et al. (1990), and is sometimes called "REV" (Yang, 1994).
+            </p>
+<p class="indent">
+            It is usually specified thanks to two sets of parameters, exchangeability rates (a simplex with 6 values for alphabets of size 4 like DNA) and equilibrium frequencies (a simplex with 4 values for alphabets of size 4 like DNA). If sequences are evolved for an infinite amount of time using a GTR matrix, their state frequencies will converge to the equilibrium frequencies of the GTR matrix. In total, a GTR matrix for DNA has 8 free parameters: 5 independent exchangeability rates (the sixth one can be obtained from the other ones, because they sum to 1.0), and 3 independent equilibrium frequencies (the frequencies also sum to one).
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+             # Let's simulate data using a GTR model on a DNA alphabet.
+             er_prior <- v(1,1,1,1,1,1)
+  			 er ~ dnDirichlet(er_prior)
+
+  			 sf_prior <- v(1,1,1,1)
+  			 sf ~ dnDirichlet(sf_prior)
+
+  			 matrix := fnGTR(er,sf) 
+             print(matrix)
+             
+             # Let's change the matrix so that changes towards "G" are much more frequent than others. To achieve that, we put a high "G" equilibrium frequency.
+             # We create a simplex:
+             GBiasedFrequencies <- simplex(0.01, 0.01, 0.97, 0.01)
+             sf.setValue(GBiasedFrequencies)
+             
+             #What does the matrix look like now?
+             print(matrix)
+             
+             # We build a tree with 3 leaves
+             n_species <- 3
+             for (i in 1:n_species) {
+        			s_names[i] = "Species_"+i
+			 }
+             speciation ~ dnExponential(10.0)
+			 extinction ~ dnExponential(10.0)
+			 tree_height ~ dnUnif(0,1.0)
+			 speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+             
+             # Let's simulate 30 sites over this tree, starting from a sequence completely made of "A"s.
+             # Root frequencies: all "A"s
+             frequencyA <- 1.0
+             rootFrequencies <- simplex(frequencyFirstState, 0.0, 0.0, 0.0)
+             n_sites=30
+             aln ~ dnPhyloCTMC(tree=speciesTree, Q=matrix, rootFrequencies=rootFrequencies, nSites=n_sites, type="DNA")
+			
+			 # Now we can have a look at the sequences in the resulting alignment. If things worked well, we should see traces of a vast increase in "G"s from an ancestral sequence entirely made of "A"s.
+			 aln.show()             
+             
+             # And we can compute the log probability of the alignment
+             aln.lnProbability()
+             </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+        	Jayaswal V, Jermiin L, Pladian L, Robinson J. 2010. Two Stationary Nonhomogeneous Markov Models of Nucleotide Sequence Evolution, Syst. Biology, 60, 74-86.
+            <br />
+<br />
+10.1093/sysbio/syq076<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Bastien Boussau</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('fnJC'); return false;">fnJC</a><br />
+<a href="" onClick="navigateHelp('fnHKY'); return false;">fnHKY</a><br />
+<a href="" onClick="navigateHelp('fnF81'); return false;">fnF81</a><br />
+<a href="" onClick="navigateHelp('fnPomo'); return false;">fnPomo</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

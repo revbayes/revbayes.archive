@@ -15,26 +15,23 @@ namespace RevBayesCore {
     class DiscreteTaxonData : public AbstractDiscreteTaxonData {
     
     public:
-        DiscreteTaxonData(void);                                                                                    //!< Set type spec of container from type of elements
         DiscreteTaxonData(const std::string &tname);                                                                //!< Set type spec of container from type of elements
     
         charType&                               operator[](size_t i);                                               //!< Index op allowing change
         const charType&                         operator[](size_t i) const;                                         //!< Const index op
                        
         // TaxonData functions
-        DiscreteTaxonData&                      add(const AbstractTaxonData &d);                                    //!< Addition operator used for example in '+=' statements
-        DiscreteTaxonData&                      add(const AbstractDiscreteTaxonData &d);                            //!< Addition operator used for example in '+=' statements
-        DiscreteTaxonData&                      add(const DiscreteTaxonData &d);                                    //!< Addition operator used for example in '+=' statements
         void                                    addCharacter(const CharacterState &newChar );                       //!< Push back a new character
         void                                    addCharacter(const DiscreteCharacterState &newChar );               //!< Push back a new character
         void                                    addCharacter(const charType &newChar );                             //!< Push back a new character
+        DiscreteTaxonData&                      concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
+        DiscreteTaxonData&                      concatenate(const AbstractDiscreteTaxonData &d);                    //!< Concatenate sequences
+        DiscreteTaxonData&                      concatenate(const DiscreteTaxonData &d);                            //!< Concatenate sequences
         const charType&                         getCharacter(size_t index) const;                                   //!< Get the character at position index
         charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
-        charType&                               getElement(size_t i);                                               //!< Index op allowing change
-        const charType&                         getElement(size_t i) const;                                         //!< Const index op
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
-        void                                    setTaxonName(std::string tn);                                       //!< Set the taxon name
+        void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
         
     private:
@@ -53,20 +50,6 @@ namespace RevBayesCore {
 
 #include "CharacterState.h"
 #include "RbException.h"
-
-
-
-/**
- * Default constructor.
- * Does nothing except instanciating the object.
- */
-template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>::DiscreteTaxonData(void) : 
-    taxonName(""), 
-    sequence() 
-{
-    
-}
 
 
 /**
@@ -94,7 +77,9 @@ charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i)
 {
     
     if (i >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[i];
 }
@@ -112,7 +97,9 @@ const charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i) 
 {
     
     if (i >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[i];
 }
@@ -124,7 +111,7 @@ const charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i) 
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::add(const AbstractTaxonData &obsd)
+RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::concatenate(const AbstractTaxonData &obsd)
 {
     
     const DiscreteTaxonData<charType>* rhs = dynamic_cast<const DiscreteTaxonData<charType>* >( &obsd );
@@ -134,7 +121,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charT
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -144,7 +131,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charT
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::add(const AbstractDiscreteTaxonData &obsd)
+RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::concatenate(const AbstractDiscreteTaxonData &obsd)
 {
     
     const DiscreteTaxonData<charType>* rhs = dynamic_cast<const DiscreteTaxonData<charType>* >( &obsd );
@@ -154,7 +141,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charT
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -164,7 +151,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charT
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::add(const DiscreteTaxonData<charType> &obsd)
+RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::concatenate(const DiscreteTaxonData<charType> &obsd)
 {
     
     sequence.insert( sequence.end(), obsd.sequence.begin(), obsd.sequence.end() );
@@ -241,7 +228,9 @@ charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t index)
 {
     
     if (index >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[index];
 }
@@ -259,45 +248,11 @@ const charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t i
 {
     
     if (index >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[index];
-}
-
-
-/**
- * Getter  for convenience access.
- *
- * \param[in]    i    The position of the character.
- *
- * \return            A non-const reference to the character
- */
-template<class charType>
-charType& RevBayesCore::DiscreteTaxonData<charType>::getElement(size_t i) 
-{
-    
-    if (i >= sequence.size())
-        throw RbException("Index out of bounds");
-    
-    return sequence[i];
-}
-
-
-/**
- * Getter for convenience access.
- *
- * \param[in]    i    The position of the character.
- *
- * \return            A const reference to the character
- */
-template<class charType>
-const charType& RevBayesCore::DiscreteTaxonData<charType>::getElement(size_t i) const 
-{
-    
-    if (i >= sequence.size())
-        throw RbException("Index out of bounds");
-    
-    return sequence[i];
 }
 
 
@@ -333,7 +288,7 @@ const std::string& RevBayesCore::DiscreteTaxonData<charType>::getTaxonName(void)
  * \param[in]    tn    The new name of the taxon.
  */
 template<class charType>
-void RevBayesCore::DiscreteTaxonData<charType>::setTaxonName(std::string tn) 
+void RevBayesCore::DiscreteTaxonData<charType>::setTaxonName(const std::string &tn)
 {
     
     taxonName = tn;

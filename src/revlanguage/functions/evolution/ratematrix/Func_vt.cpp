@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DeterministicNode.h"
 #include "Func_vt.h"
 #include "Natural.h"
@@ -19,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_vt::Func_vt( void ) : Function( ) {
+Func_vt::Func_vt( void ) : Procedure( ) {
     
 }
 
@@ -31,13 +23,13 @@ Func_vt* Func_vt::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_vt::execute() {
+RevPtr<RevVariable> Func_vt::execute() {
     
     
     RevBayesCore::RateMatrix_Vt *rmj = new RevBayesCore::RateMatrix_Vt();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return new Variable( value );
+    return new RevVariable( value );
 }
 
 
