@@ -10,6 +10,7 @@
 #define __revbayes_proj__PhyloCTMCClado__
 
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
+#include "BiogeographicCladoEvent.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
 #include "MatrixReal.h"
@@ -266,37 +267,26 @@ template<class charType, class treeType>
 void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {
     
-    // compute the transition probability matrix
-//    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
-    
     // get cladogenesis values
-//    const MatrixReal& cp = ( branchHeterogeneousCladogenesis
-//                             ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
-//                             : homogeneousCladogenesisMatrix->getValue() );
     const MatrixReal& cp = ( branchHeterogeneousCladogenesis
                             ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
                             : homogeneousCladogenesisMatrix->getValue() );
     
     
+    // get cladogenesis event map (sparse transition probability matrix)
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    
     const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
-    
     std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
 
-//    std::cout << this->transitionProbMatrices[0] << "\n";
-    
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
 
-//    std::cout << this->transitionProbMatrices[0] << "\n";
-    
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
     const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
     double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    double*         p_clado_node  = this->cladoPartialLikelihoods + this->activeLikelihood[nodeIndex]*this->cladoActiveLikelihoodOffset + nodeIndex*this->cladoNodeOffset;
     
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
@@ -307,6 +297,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
         // get the pointers to the likelihood for this mixture category
         size_t offset = mixture*this->mixtureOffset;
         double*          p_site_mixture          = p_node + offset;
+        double*          p_clado_site_mixture    = p_clado_node + mixture * this->cladoMixtureOffset;
         const double*    p_site_mixture_left     = p_left + offset;
         const double*    p_site_mixture_right    = p_right + offset;
         
@@ -358,29 +349,23 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
                     const size_t c1 = idx[0];
                     const size_t c2 = idx[1];
                     const size_t c3 = idx[2];
-//                    const size_t c4 = this->numChars * c3 + c2;
                  
+                    // if key's ancestral state changes, update the resp. partial likelihood
                     if (c1 != old_c1)
                     {
-//                        std::cout << " -- " << tp_a[c1] << "\n";
+                        p_clado_site_mixture[c1] = sum_clado;
                         sum_ana += sum_clado * tp_a[c1];
                         sum_clado = 0.0;
                     }
 
-//                    sum_clado += p_site_mixture_left[c2] * p_site_mixture_right[c3] * cp[c1][c4];
                     const double pl = p_site_mixture_left[c2];
                     const double pr = p_site_mixture_right[c3];
                     const double pcl = it->second;
-//                    sum_clado += p_site_mixture_left[c2] * p_site_mixture_right[c3] * it->second;
                     sum_clado += pl * pr * pcl;
-//                    std::cout << nodeIndex << " " << c0 << " " << c1 << " ?= " << old_c1 << " " << c2 << " " << c3 << " | " << pl << " " << pr << " " << pcl << " " << sum_clado << "\n";
                     
                     old_c1 = c1;
                 }
-                /**/
-                
-//                std::cout << nodeIndex << " " << c0 << " " << sum_ana << "\n";
-//                std::cout << "----\n";
+
                 // store the likelihood for this starting state
                 p_site_mixture[c0] = sum_ana;
                 
@@ -392,6 +377,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
             p_site_mixture_left  += this->siteOffset;
             p_site_mixture_right += this->siteOffset;
             p_site_mixture       += this->siteOffset;
+            p_clado_site_mixture += this->cladoSiteOffset;
             
         } // end-for over all sites (=patterns)
         
@@ -402,19 +388,37 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
 template<class charType, class treeType>
 void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalNodeLikelihood( size_t nodeIndex, size_t parentNodeIndex )
 {
+    // get cladogenic transition probs
+    const MatrixReal& cp = ( branchHeterogeneousCladogenesis
+                            ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
+                            : homogeneousCladogenesisMatrix->getValue() );
+    
+    
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
     
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, this->tau->getValue().getBranchLength(nodeIndex) );
     
     // get the pointers to the partial likelihoods and the marginal likelihoods
-    const double*   p_node                  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
-    double*         p_node_marginal         = this->marginalLikelihoods + nodeIndex*this->nodeOffset;
-    const double*   p_parent_node_marginal  = this->marginalLikelihoods + parentNodeIndex*this->nodeOffset;
+    const double*   p_node                          = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    const double*   p_parent_node_marginal          = this->marginalLikelihoods + parentNodeIndex*this->nodeOffset;
+    double*         p_node_marginal                 = this->marginalLikelihoods + nodeIndex*this->nodeOffset;
+    const double*   p_clado_node                    = this->cladoPartialLikelihoods + this->activeLikelihood[nodeIndex]*this->cladoActiveLikelihoodOffset + nodeIndex*this->cladoNodeOffset;
+    const double*   p_clado_parent_node_marginal    = this->cladoMarginalLikelihoods + parentNodeIndex*this->cladoNodeOffset;
+    double*         p_clado_node_marginal           = this->cladoMarginalLikelihoods + nodeIndex*this->cladoNodeOffset;
+   
     
     // get pointers the likelihood for both subtrees
-    const double*   p_mixture                   = p_node;
-    double*         p_mixture_marginal          = p_node_marginal;
-    const double*   p_parent_mixture_marginal   = p_parent_node_marginal;
+    const double*   p_mixture                       = p_node;
+    const double*   p_parent_mixture_marginal       = p_parent_node_marginal;
+    double*         p_mixture_marginal              = p_node_marginal;
+    const double*   p_clado_mixture                 = p_clado_node;
+    const double*   p_clado_parent_mixture_marginal = p_clado_parent_node_marginal;
+    double*         p_clado_mixture_marginal        = p_clado_node_marginal;
+    
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
@@ -422,22 +426,27 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalNodeLikeli
         const double*    tp_begin                = this->transitionProbMatrices[mixture].theMatrix;
         
         // get pointers to the likelihood for this mixture category
-        const double*   p_site_mixture                  = p_mixture;
-        double*         p_site_mixture_marginal         = p_mixture_marginal;
-        const double*   p_parent_site_mixture_marginal  = p_parent_mixture_marginal;
+        const double*   p_site_mixture                          = p_mixture;
+        const double*   p_parent_site_mixture_marginal          = p_parent_mixture_marginal;
+        double*         p_site_mixture_marginal                 = p_mixture_marginal;
+        const double*   p_clado_site_mixture                    = p_clado_mixture;
+        const double*   p_clado_parent_site_mixture_marginal    = p_clado_parent_mixture_marginal;
+        double*         p_clado_site_mixture_marginal           = p_clado_mixture_marginal;
+        
         // iterate over all sites
         for (size_t site = 0; site < this->numPatterns; ++site)
         {
             // get the pointers to the likelihoods for this site and mixture category
             const double*   p_site_j                    = p_site_mixture;
             double*         p_site_marginal_j           = p_site_mixture_marginal;
-            // iterate over all end states
+    
+            // iterate over all end states, after anagenesis
             for (size_t j=0; j<this->numChars; ++j)
             {
                 const double*   p_parent_site_marginal_k    = p_parent_site_mixture_marginal;
                 *p_site_marginal_j = 0.0;
-                
-                // iterator over all start states
+
+                // iterator over all start states, before anagenesis
                 for (size_t k=0; k<this->numChars; ++k)
                 {
                     // transition probability for k->j
@@ -449,18 +458,40 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalNodeLikeli
                     // next parent state
                     ++p_parent_site_marginal_k;
                 }
-				
+                
                 // increment pointers
                 ++p_site_j; ++p_site_marginal_j;
             }
             
+            // iterate over all (X_L, X_R) states, after cladogenesis
+            const double*         p_site_marginal_k            = p_site_mixture_marginal;
+            double*               p_clado_site_marginal_j      = p_clado_site_mixture_marginal;
+            
+            std::map< std::vector<unsigned>, double >::iterator it;
+            for (it = eventMapProbs.begin(); it != eventMapProbs.end(); it++)
+            {
+                
+            }
+            
+            
             // increment the pointers to the next site
-            p_site_mixture+=this->siteOffset; p_site_mixture_marginal+=this->siteOffset; p_parent_site_mixture_marginal+=this->siteOffset;
+            p_site_mixture                          += this->siteOffset;
+            p_site_mixture_marginal                 += this->siteOffset;
+            p_parent_site_mixture_marginal          += this->siteOffset;
+            p_clado_site_mixture                    += this->cladoSiteOffset;
+            p_clado_site_mixture_marginal           += this->cladoSiteOffset;
+            p_clado_parent_site_mixture_marginal    += this->cladoSiteOffset;
+
             
         } // end-for over all sites (=patterns)
         
         // increment the pointers to the next mixture category
-        p_mixture+=this->mixtureOffset; p_mixture_marginal+=this->mixtureOffset; p_parent_mixture_marginal+=this->mixtureOffset;
+        p_mixture                           += this->mixtureOffset;
+        p_mixture_marginal                  += this->mixtureOffset;
+        p_parent_mixture_marginal           += this->mixtureOffset;
+        p_clado_mixture                     += this->cladoMixtureOffset;
+        p_clado_mixture_marginal            += this->cladoMixtureOffset;
+        p_clado_parent_mixture_marginal     += this->cladoMixtureOffset;
         
     } // end-for over all mixtures (=rate categories)
     

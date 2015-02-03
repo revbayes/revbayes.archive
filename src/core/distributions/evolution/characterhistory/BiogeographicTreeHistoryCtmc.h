@@ -10,6 +10,7 @@
 #define __rb_mlandis__BiogeographicTreeHistoryCtmc__
 
 #include "AbstractTreeHistoryCtmc.h"
+#include "BiogeographicCladoEvent.h"
 #include "RateMap_Biogeography.h"
 #include "ContinuousCharacterData.h"
 #include "DistributionExponential.h"
@@ -159,7 +160,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     cladogenicEvents                            = useClado;
     imperfectTipData                            = false;
     forbidExtinction                            = forbidExt;
-    useTail                                     = false; //ut;
+    useTail                                     = !false; //ut;
     
     cladogenicState                             = std::vector<int>(this->histories.size(), 0);
     if (cladogenicEvents && false) {
@@ -1142,7 +1143,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
 
     // draw cladogenic states
     double u_csf = GLOBAL_RNG->uniform01();
-    int cs = 0;
+    int cs = BiogeographicCladoEvent::SYMPATRY_NARROW;
     const std::vector<double>& csf = cladogenicStateFreqs->getValue();
     for (unsigned i = 0; i < csf.size(); i++)
     {
@@ -1170,7 +1171,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
         }
     }
     // wide ABCD|ABCD
-    else if (cs == 1)
+    else if (cs == BiogeographicCladoEvent::SYMPATRY_WIDESPREAD || !cladogenicEvents)
     {
         for (size_t i = 0; i < children.size(); i++)
         {
@@ -1187,7 +1188,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
     }
     
     // subset A|ABCD
-    else if (cs == 2)
+    else if (cs == BiogeographicCladoEvent::SYMPATRY_SUBSET)
     {
         std::set<size_t> present;
         for (size_t i = 0; i < nodeChildState.size(); i++)
@@ -1225,7 +1226,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
     }
     
     // allopatry AB|CD
-    else if (cs == 3)
+    else if (cs == BiogeographicCladoEvent::ALLOPATRY)
     {
         std::vector<unsigned> trunkAreas(this->numSites, 0);
         std::vector<unsigned> budAreas(this->numSites, 0);
@@ -1335,6 +1336,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
                 {
                     CharacterEvent* evt = NULL;
                     double u = GLOBAL_RNG->uniform01() * r;
+//                    std::cout << u << " " << r << "\n";
                     for (size_t i = 0; i < rates.size(); i++)
                     {
                         u -= rates[i];
@@ -1351,6 +1353,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
                             if (n1 == 0)
                                 failed = true;
                             
+//                            std::cout << i << " " << s << " " << t << " " << n1 << "\n";
                             evt = new CharacterEvent(i,s,t);
                             break;
                         }
@@ -1382,7 +1385,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
     }
     
     bh->setChildCharacters(currState);
-//    bh->print();
     
 }
 
@@ -1408,8 +1410,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
         std::vector<CharacterEvent*> parentState;
         for (size_t i = 0; i < this->numSites; i++)
         {
+            double r01 = rm->getSiteRate(nodeIndex, 0, 1, i, node.getAge());
+            double r10 = rm->getSiteRate(nodeIndex, 1, 0, i, node.getAge());
+            double pi1 = r01 / (r01 + r10);
+
             unsigned s = 0;
-            if (rm->isAreaAvailable(i, node.getAge()) && GLOBAL_RNG->uniform01() < 0.25)
+            if (rm->isAreaAvailable(i, node.getAge()) && GLOBAL_RNG->uniform01() < pi1)
                 s = 1;
             parentState.push_back(new CharacterEvent(i, s, node.getAge() * 5));
         }
@@ -1421,21 +1427,23 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
     simulateHistory(node, bh);
     
     const std::vector<CharacterEvent*>& childState = bh->getChildCharacters();
+    size_t n1 = 0;
     for ( size_t i = 0; i < this->numSites; ++i )
     {
         // create the character
         charType c;
         std::string s = "0";
         if (childState[i]->getState() == 1)
+        {
             s = "1";
+            n1++;
+        }
         c.setState( s );
-//        c.setToFirstState();
-//        for (size_t j = 0; j < childState[i]->getState(); j++)
-//            c++;
 
         // add the character to the sequence
         taxa[nodeIndex].addCharacter( c );
     }
+//    std::cout << nodeIndex << " " << n1 << "\n";
 
     if ( node.isTip() )
     {
@@ -1449,7 +1457,10 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
         {
             this->histories[ children[i]->getIndex() ] = new BranchHistory(this->numSites, this->numChars, children[i]->getIndex() );
         }
-        simulateCladogenesis(node);
+        
+//        if (cladogenicEvents)
+            simulateCladogenesis(node);
+        
         for (size_t i = 0; i < children.size(); i++)
         {
             BranchHistory* bh_ch = this->histories[ children[i]->getIndex() ];

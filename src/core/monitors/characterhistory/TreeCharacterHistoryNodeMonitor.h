@@ -12,6 +12,7 @@
 
 #include "AbstractCharacterData.h"
 #include "AbstractTreeHistoryCtmc.h"
+#include "BiogeographicCladoEvent.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "DagNode.h"
 #include "Model.h"
@@ -89,7 +90,7 @@ namespace RevBayesCore {
 /* Constructor */
 template<class charType, class treeType>
 RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType>* t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sne, bool ste) :
-Monitor(g,s),
+Monitor(g,t),
 outStream(),
 variable(s),
 tree( t ),
@@ -105,7 +106,8 @@ showTreeEvents(ste),
 numStates(0)
 {
     nodes.push_back(s);
-    nodes.push_back(t);
+//    nodes.push_back(t);
+    s->incrementReferenceCount();
     
     numStates = static_cast<const DiscreteCharacterState&>(s->getValue().getCharacter(0,0)).getNumberOfStates();
 }
@@ -182,13 +184,13 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         BiogeographicTreeHistoryCtmc<charType, treeType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p);
         int cladoState = q->getCladogenicState(*n);
         
-        if (cladoState == 0)
+        if (cladoState == BiogeographicCladoEvent::SYMPATRY_NARROW)
             ss << "n";
-        else if (cladoState == 1)
+        else if (cladoState == BiogeographicCladoEvent::SYMPATRY_WIDESPREAD)
             ss << "w";
-        else if (cladoState == 2)
+        else if (cladoState == BiogeographicCladoEvent::SYMPATRY_SUBSET)
             ss << "s";
-        else if (cladoState == 3)
+        else if (cladoState == BiogeographicCladoEvent::ALLOPATRY)
             ss << "a";
         else
             ss << "NA";
@@ -624,31 +626,16 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::printHea
 
 template<class charType, class treeType>
 void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::swapNode(DagNode *oldN, DagNode *newN) {
-    
-    bool found = false;
+
     if ( oldN == tree )
     {
         tree = static_cast< TypedDagNode< treeType > *>( newN );
-        found = true;
     }
     else if (oldN == variable)
     {
         variable = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN);
     }
 
-    /*
-     if (found == false)
-     {
-     // error catching
-     if ( nodeVariables.find(oldN) == nodeVariables.end() ) {
-     throw RbException("Cannot replace DAG node in this monitor because the monitor doesn't hold this DAG node.");
-     }
-     
-     nodeVariables.erase( oldN );
-     nodeVariables.insert( newN );
-     }
-     */
-    
     // delegate to base class
     Monitor::swapNode(oldN, newN);
 }

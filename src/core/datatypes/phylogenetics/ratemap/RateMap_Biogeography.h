@@ -46,16 +46,6 @@ namespace RevBayesCore {
         // public methods
         double                                      getDistancePower(void) const;
         void                                        setDistancePower(double d);
-//        double                                      getHomogeneousClockRate(void) const;
-//        void                                        setHomogeneousClockRate(double d);
-//        const std::vector<double>&                  getHeterogeneousClockRates(void) const;
-//        void                                        setHeterogeneousClockRates(const std::vector<double>& r);
-//        const std::vector<double>&                  getHomogeneousGainLossRates(void) const;
-//        void                                        setHomogeneousGainLossRates(const std::vector<double>& r);
-//        const std::vector<std::vector<double> >&    getHeterogeneousGainLossRates(void) const;
-//        void                                        setHeterogeneousGainLossRates(const std::vector<std::vector<double> >& r);
-//        const std::vector<double>&                  getRootFrequencies(void) const;
-//        void                                        setRootFrequencies(const std::vector<double>& r);
         
         // other crazy stuff for BiogeographyRateMapFunction to handle
         void                                        setGeographyRateModifier(const GeographyRateModifier& gdrm);
@@ -68,12 +58,6 @@ namespace RevBayesCore {
         size_t                                      numOn(const std::vector<CharacterEvent*>& s, double age) const;
         unsigned                                    getEpochIndex(double age) const;
         size_t                                      branchOffset;
-
-//        double                                      homogeneousClockRate;
-//        std::vector<double>                         heterogeneousClockRates;
-//        std::vector<double>                         homogeneousGainLossRates;
-//        std::vector<std::vector<double> >           heterogeneousGainLossRates;
-//        std::vector<double>                         rootFrequencies;
         double                                      distancePower;
         
         // geography models
@@ -86,8 +70,6 @@ namespace RevBayesCore {
         std::vector<double>                         availableAreaVector;
 
         // model flags
-//        bool                                        branchHeterogeneousClockRates;
-//        bool                                        branchHeterogeneousGainLossRates;
         bool                                        forbidExtinction;
         
         bool                                        useUnnormalizedRates;
