@@ -6,6 +6,7 @@
 #include "TreeUtilities.h"
 
 #include <cmath>
+#include <iomanip>
 
 using namespace RevBayesCore;
 
