@@ -11,7 +11,7 @@ namespace RevLanguage {
     /**
      * The RevLanguage wrapper of the arithmetic mean function.
      *
-     * The RevLanguage wrapper of the sum function connects
+     * The RevLanguage wrapper of the mean function connects
      * the variables/parameters of the function and creates the internal MeanFunction object.
      * Please read the MeanFunction.h for more info.
      *

@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of the variance-covariance matrix function class.
- * This class is derived from the TypedFunction<MatrixRealSymmetric> class and is used to
+ * This class is derived from the TypedFunction<MatrixReal> class and is used to
  * compute the variance-covariance matrix from the standard deviations and correlation
  * coefficients.
  *
@@ -24,7 +24,7 @@
 #define VarianceCovarianceFunction_H
 
 #include "RbVector.h"
-#include "MatrixRealSymmetric.h"
+#include "MatrixReal.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -32,7 +32,7 @@
 
 namespace RevBayesCore {
     
-    class VarianceCovarianceFunction : public TypedFunction<MatrixRealSymmetric> {
+    class VarianceCovarianceFunction : public TypedFunction<MatrixReal> {
         
     public:
         VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf);

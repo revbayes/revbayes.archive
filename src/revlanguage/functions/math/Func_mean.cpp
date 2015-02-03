@@ -16,7 +16,8 @@ Func_mean::Func_mean( void ) : TypedFunction<Real>( )
 
 
 /** Clone object */
-Func_mean* Func_mean::clone( void ) const {
+Func_mean* Func_mean::clone( void ) const
+{
     
     return new Func_mean( *this );
 }
@@ -33,7 +34,8 @@ RevBayesCore::TypedFunction<double>* Func_mean::createFunction( void ) const
 
 
 /* Get argument rules */
-const ArgumentRules& Func_mean::getArgumentRules( void ) const {
+const ArgumentRules& Func_mean::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -50,7 +52,8 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_mean::getClassType(void) { 
+const std::string& Func_mean::getClassType(void)
+{
     
     static std::string revType = "Func_mean";
     
@@ -58,7 +61,8 @@ const std::string& Func_mean::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_mean::getClassTypeSpec(void) { 
+const TypeSpec& Func_mean::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -66,7 +70,8 @@ const TypeSpec& Func_mean::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_mean::getTypeSpec( void ) const {
+const TypeSpec& Func_mean::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

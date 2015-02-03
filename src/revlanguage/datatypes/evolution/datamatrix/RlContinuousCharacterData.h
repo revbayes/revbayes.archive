@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#ifndef __revbayes__RlContinuousCharacterData__
-#define __revbayes__RlContinuousCharacterData__
+#ifndef RlContinuousCharacterData_H
+#define RlContinuousCharacterData_H
 
 #include <iostream>
 

@@ -26,6 +26,10 @@ TimeTree::TimeTree(void) : ModelObject<RevBayesCore::TimeTree>()
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
     
+    ArgumentRules* nodeNameArgRules = new ArgumentRules();
+    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules    ) );
+
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
@@ -60,6 +64,10 @@ TimeTree::TimeTree(RevBayesCore::TimeTree *t) : ModelObject<RevBayesCore::TimeTr
     
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
+    
+    ArgumentRules* nodeNameArgRules = new ArgumentRules();
+    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules    ) );
     
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -96,6 +104,10 @@ TimeTree::TimeTree(const RevBayesCore::TimeTree &t) : ModelObject<RevBayesCore::
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules    ) );
     
+    ArgumentRules* nodeNameArgRules = new ArgumentRules();
+    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules    ) );
+
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("rescale", new MemberProcedure(RlUtils::Void, rescaleArgRules  ) );
@@ -131,6 +143,10 @@ TimeTree::TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n) : Mode
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules    ) );
     
+    ArgumentRules* nodeNameArgRules = new ArgumentRules();
+    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules    ) );
+
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("rescale", new MemberProcedure(RlUtils::Void, rescaleArgRules  ) );
@@ -155,7 +171,8 @@ TimeTree::TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n) : Mode
 
 
 /** Clone object */
-TimeTree* TimeTree::clone(void) const {
+TimeTree* TimeTree::clone(void) const
+{
     
 	return new TimeTree(*this);
 }
@@ -185,7 +202,15 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
         return new RevVariable( new ModelVector<RlString>( n ) );
-    } 
+    }
+    else if (name == "nodeName")
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        const std::string& n = this->dagNode->getValue().getNode(index).getName();
+        return new RevVariable( new RlString( n ) );
+    }
     else if (name == "rescale")
     {
         found = true;

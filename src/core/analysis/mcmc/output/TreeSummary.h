@@ -163,10 +163,7 @@ namespace RevBayesCore {
             const TopologyNode& root = tree->getRoot();
             for (size_t j = 0; j < nodes.size(); ++j)
             {
-                if ( j == 41 )
-                {
-//                    std::cerr << "Missing node:\n" << nodes[j]->computePlainNewick() << std::endl;
-                }
+                
                 if ( root.containsClade(nodes[j], true) )
                 {
                     size_t cladeIndex = root.getCladeIndex( nodes[j] );
@@ -430,7 +427,7 @@ namespace RevBayesCore {
 		Clade parentClade (taxa, n.getAge());
 		clades.push_back(parentClade);
         
-		if (!n.isTip())
+		if ( !n.isTip() )
 		{
 			for (size_t i = 0; i < n.getNumberOfChildren(); i++)
 			{
@@ -447,11 +444,19 @@ namespace RevBayesCore {
 		std::vector<std::string> taxa;
 		n.getTaxaStringVector(taxa);
 		Clade parentClade(taxa, n.getBranchLength());
-		clades.push_back(parentClade);
         
-		if (!n.isTip() )
-		{
-			for (size_t i = 0; i < n.getNumberOfChildren(); i++)
+		if ( !n.isTip() )
+        {
+            if ( taxa.size() <= 1)
+            {
+                std::cerr << "oh: " << n.getName() << std::endl;
+            }
+            else
+            {
+                clades.push_back(parentClade);
+            }
+            
+            for (size_t i = 0; i < n.getNumberOfChildren(); i++)
 			{
 				const TopologyNode &childNode = n.getChild(i);
 				Clade ChildClade = fillClades(childNode, clades);
@@ -912,66 +917,157 @@ RevBayesCore::Sample<std::string>& RevBayesCore::TreeSummary<treeType>::findClad
 template <class treeType>
 void RevBayesCore::TreeSummary<treeType>::summarizeClades(int b)
 {
-	setBurnin(b);
+//	setBurnin(b);
+//    
+//    // first we need to get a taxon map
+////    TaxonMap;
+//    
+//    
+//    
+//	for (size_t i = burnin; i < trace.size(); ++i)
+//	{
+//		treeType* tree = trace.objectAt(i);
+//        
+//		// get the clades for this tree
+//		std::vector<Clade> clades;
+//		fillClades(tree->getRoot(), clades);
+//        
+//		// collect clade ages and increment the clade frequency counter
+//		for (size_t j = 0; j < clades.size(); ++j)
+//		{
+//			const Clade & c = clades[j];
+//			std::string cladeString = c.toString();
+//			Sample<std::string> thisSample = Sample<std::string>(cladeString, 0);
+//            
+//			if (cladeSamples.size() == 0)
+//            {
+//				cladeSamples.push_back(thisSample);
+//				cladeSamples[0].addObservation(true);
+//				std::vector<double> tempAgeVec(1, c.getAge());
+//				cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
+//			}
+//			else
+//			{
+//				bool found = false;
+//				for (size_t ii = 0; ii < cladeSamples.size(); ii++)
+//				{
+//					if (!cladeString.compare(cladeSamples[ii].getValue()) )
+//					{
+//						found = true;
+//						cladeSamples[ii].addObservation(true);
+//                        
+//						std::map<std::string, std::vector<double> >::iterator entry = cladeAges.find(cladeString);
+//						if (entry != cladeAges.end())
+//						{
+//							entry->second.push_back(c.getAge());
+//						}
+//						break;
+//					}
+//					else
+//					{
+//						cladeSamples[ii].addObservation(false);
+//					}
+//				}
+//                
+//				if (!found)
+//				{
+//					cladeSamples.push_back(thisSample);
+//					cladeSamples.rbegin()->addObservation(true);
+//					std::vector<double> tempAgeVec(1, c.getAge());
+//					cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
+//                    
+//				}
+//			}
+//		}
+//	}
+//    
+//    for (size_t ii = 0; ii < cladeSamples.size(); ii++)
+//    {
+//        cladeSamples[ii].computeStatistics();
+//    }
+//    
+//	// sort the samples by frequency
+//	sort(cladeSamples.begin(), cladeSamples.end());
     
-	for (size_t i = burnin; i < trace.size(); ++i)
-	{
-		treeType* tree = trace.objectAt(i);
+    
+    
+    std::map<std::string, Sample<std::string> > cladeAbsencePresence;
+    
+    setBurnin(b);
+    
+    std::string outgroup = "";
+    for (size_t i = burnin; i < trace.size(); ++i)
+    {
+        treeType* tree = trace.objectAt(i);
         
-		// get the clades for this tree
-		std::vector<Clade> clades;
-		fillClades(tree->getRoot(), clades);
+        // get the clades for this tree
+        std::vector<Clade> clades;
+        fillClades(tree->getRoot(), clades);
         
-		// collect clade ages and increment the clade frequency counter
-		for (size_t j = 0; j < clades.size(); ++j)
-		{
-			const Clade & c = clades[j];
-			std::string cladeString = c.toString();
-			Sample<std::string> thisSample = Sample<std::string>(cladeString, 0);
+        // collect clade ages and increment the clade frequency counter
+        for (size_t j = 0; j < clades.size(); ++j)
+        {
+            const Clade & c = clades[j];
             
-			if (cladeSamples.size() == 0) {
-				cladeSamples.push_back(thisSample);
-				cladeSamples[0].addObservation(true);
-				std::vector<double> tempAgeVec(1, c.getAge());
-				cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
-			}
-			else
-			{
-				bool found = false;
-				for (size_t ii = 0; ii < cladeSamples.size(); ii++)
-				{
-					if (!cladeString.compare(cladeSamples[ii].getValue()) )
-					{
-						found = true;
-						cladeSamples[ii].addObservation(true);
-                        
-						std::map<std::string, std::vector<double> >::iterator entry = cladeAges.find(cladeString);
-						if (entry != cladeAges.end())
-						{
-							entry->second.push_back(c.getAge());
-						}
-						break;
-					}
-					else
-					{
-						cladeSamples[ii].addObservation(false);
-					}
-				}
+            if ( c.size() <= 1 ) continue;
+            
+            std::string cladeString = c.toString();
+            Sample<std::string> thisSample = Sample<std::string>(cladeString, 0);
+        
+            const std::map<std::string, Sample<std::string> >::iterator& entry = cladeAbsencePresence.find(cladeString);
+            if (entry == cladeAbsencePresence.end())
+            {
+                Sample<std::string> cladeSample = Sample<std::string>(cladeString, 0);
+                if (i > burnin)
+                {
+                    cladeSample.setTrace(std::vector<double>(i - burnin, 0.0));
+                }
+                else
+                {
+                    cladeSample.setTrace(std::vector<double>());
+                }
+                cladeAbsencePresence.insert(std::pair<std::string, Sample<std::string> >(cladeString, cladeSample));
+            }
+        }
+        
+        for (std::map<std::string, Sample<std::string> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
+        {
+            bool found = false;
+            for (size_t i = 0; i < clades.size(); ++i)
+            {
+                std::string c = clades[i].toString();
+                if ( it->first == c )
+                {
+                    found = true;
+                    break;
+                }
                 
-				if (!found)
-				{
-					cladeSamples.push_back(thisSample);
-					cladeSamples.rbegin()->addObservation(true);
-					std::vector<double> tempAgeVec(1, c.getAge());
-					cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
-                    
-				}
-			}
-		}
-	}
+            }
+            
+            if ( found == true )
+            {
+                it->second.addObservation( true );
+            }
+            else
+            {
+                it->second.addObservation( false );
+            }
+            
+        }
+
+    }
     
-	// sort the samples by frequency
-	sort(cladeSamples.begin(), cladeSamples.end());
+    // collect the samples
+    cladeSamples.clear();
+    for (std::map<std::string, Sample<std::string> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
+    {
+        it->second.computeStatistics();
+        cladeSamples.push_back(it->second);
+    }
+    
+    // sort the samples by frequency
+    sort(cladeSamples.begin(), cladeSamples.end());
+    
 }
 
 template <class treeType>

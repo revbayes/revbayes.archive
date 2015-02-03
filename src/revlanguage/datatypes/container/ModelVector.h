@@ -47,7 +47,7 @@ namespace RevLanguage {
         virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
         // Member object functions
-        virtual RevPtr<RevVariable>                    executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
+        virtual RevPtr<RevVariable>                 executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
         
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)

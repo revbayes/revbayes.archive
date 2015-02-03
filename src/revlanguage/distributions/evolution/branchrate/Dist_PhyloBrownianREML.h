@@ -115,7 +115,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* RevLan
         homSiteRatesNode = static_cast<const RealPos &>( siteRates->getRevObject() ).getDagNode();
     }
     
-    RevBayesCore::PhyloBrownianProcessREML< typename treeType::valueType> *dist = new RevBayesCore::PhyloBrownianProcessREML<typename treeType::valueType>(tau, homSiteRatesNode, hetSiteRatesNode, homSiteRatesNode, hetSiteRatesNode, n);
+    RevBayesCore::PhyloBrownianProcessREML< typename treeType::valueType> *dist = new RevBayesCore::PhyloBrownianProcessREML<typename treeType::valueType>(tau, homBranchRatesNode, hetBranchRatesNode, homSiteRatesNode, hetSiteRatesNode, n);
     
     return dist;
 }

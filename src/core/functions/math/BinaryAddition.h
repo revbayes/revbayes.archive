@@ -23,6 +23,16 @@
 
 namespace RevBayesCore {
     
+    /**
+     * \brief Binary addition (of two parameters).
+     *
+     * We compute the sum of a + b.
+     *
+     * \copyright (c) Copyright 2009-2015 (GPL version 3)
+     * \author The RevBayes Development Core Team (Sebastian Hoehna)
+     * \since Version 1.0, 2012-08-13
+     *
+     */
     template <class firstValueType, class secondValueType, class returnType>
     class BinaryAddition : public TypedFunction<returnType> {
         

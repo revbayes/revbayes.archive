@@ -59,6 +59,7 @@ namespace RevBayesCore {
         void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
+        virtual void                                        setClamped(bool tf);                                                        //!< Set directly the flag whether this node is clamped.
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
@@ -147,7 +148,8 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<va
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::~StochasticNode( void ) {
+RevBayesCore::StochasticNode<valueType>::~StochasticNode( void )
+{
     
     // Remove us as the child of the distribution parameters
     std::set<const DagNode*> distParents = distribution->getParameters();
@@ -475,6 +477,26 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
 }
 
 
+
+/**
+ * Set directly the flag whether this node is clamped.
+ * The caller needs to be responsible enough to know that we will assume
+ * that the current value is the observed value.
+ * We could use instead as well a call: clamp( getValue() );
+ */
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setClamped(bool tf)
+{
+    
+    clamped = tf;
+    
+}
+
+
+
+/**
+ * Set the value.
+ */
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch)
 {

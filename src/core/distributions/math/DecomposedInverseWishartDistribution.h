@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "TypedDistribution.h"
-#include "MatrixRealSymmetric.h"
+#include "MatrixReal.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 
@@ -19,10 +19,10 @@
 
 namespace RevBayesCore {
     
-    class DecomposedInverseWishartDistribution : public TypedDistribution<MatrixRealSymmetric>   {
+    class DecomposedInverseWishartDistribution : public TypedDistribution<MatrixReal>   {
         
     public:
-                                                    DecomposedInverseWishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf);
+                                                    DecomposedInverseWishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<int>* indf);
                                                     DecomposedInverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<int>* indf);
                                                     DecomposedInverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
         virtual                                    ~DecomposedInverseWishartDistribution(void) {}
@@ -35,7 +35,7 @@ namespace RevBayesCore {
         void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
 
     private:
-        const TypedDagNode<MatrixRealSymmetric>*    sigma0;
+        const TypedDagNode<MatrixReal>*             sigma0;
         const TypedDagNode<RbVector<double> >*      kappaVector;
         const TypedDagNode<double>*                 kappa;
         const TypedDagNode<int>*                    df;

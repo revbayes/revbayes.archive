@@ -84,28 +84,28 @@ std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) {
 }
 
 
-std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::begin( void ) const
-{
-    return theRateMatrix->begin();
-}
-
-
-std::vector<std::vector<double> >::iterator AbstractRateMatrix::begin( void )
-{
-    return theRateMatrix->begin();
-}
-
-
-std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::end( void ) const
-{
-    return theRateMatrix->end();
-}
-
-
-std::vector<std::vector<double> >::iterator AbstractRateMatrix::end( void )
-{
-    return theRateMatrix->end();
-}
+//std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::begin( void ) const
+//{
+//    return theRateMatrix->begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator AbstractRateMatrix::begin( void )
+//{
+//    return theRateMatrix->begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::end( void ) const
+//{
+//    return theRateMatrix->end();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator AbstractRateMatrix::end( void )
+//{
+//    return theRateMatrix->end();
+//}
 
 
 

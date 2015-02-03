@@ -30,7 +30,7 @@ namespace RevLanguage {
         
         const ArgumentRules*                                            argumentRules;                                  //!< Argument rules (different for different member functions)
         std::string                                                     funcName;                                       //!< Name of member method
-        RevPtr<RevVariable>                                                object;
+        RevPtr<RevVariable>                                             object;
         const memberObjectType*                                         theMemberObject;
     };
     

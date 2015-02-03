@@ -6,11 +6,10 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
-#ifndef __revbayes_proj__Func_cladoProbs__
-#define __revbayes_proj__Func_cladoProbs__
+#ifndef Func_cladoProbs_H
+#define Func_cladoProbs_H
 
-#include "RealMatrix.h"
-#include "MatrixReal.h"
+#include "RlMatrixReal.h"
 #include "RlTypedFunction.h"
 
 #include <map>
@@ -18,7 +17,7 @@
 
 namespace RevLanguage {
     
-    class Func_cladoProbs : public TypedFunction<RealMatrix> {
+    class Func_cladoProbs : public TypedFunction<MatrixReal> {
         
     public:
         Func_cladoProbs( void );

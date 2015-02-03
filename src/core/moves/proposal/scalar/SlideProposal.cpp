@@ -98,9 +98,13 @@ double SlideProposal::doProposal( void )
     /* reflect the new value */
     do {
         if ( newVal < min )
+        {
             newVal = 2.0 * min - newVal;
+        }
         else if ( newVal > max )
+        {
             newVal = 2.0 * max - newVal;
+        }
     } while ( newVal < min || newVal > max );
     
     // FIXME: not the most efficient way of handling multiple reflections :-P

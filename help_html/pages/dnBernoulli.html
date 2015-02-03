@@ -1,0 +1,113 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Bernoulli Distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Bernoulli Distribution</h1>
+
+        <h2>Type dnBernoulli</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnBernoulli</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            A Bernoulli-distributed random variable takes the value 1 with probability
+            p and the value 0 with probability 1-p.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                    dnBernoulli( Probability prob )
+                    dbernoulli( Natural x, Probability prob )
+                    pbernoulli( Natural q, Probability prob )
+                    qbernoulli( Probability p, Probability prob )
+                    rbernoulli( Natural n, Probability prob )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >prob</b>
+<div class="indent">
+The probability of success on the single trial.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Probability<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                This function was among the easiest in RevBayes to implement. 
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    p ~ dnBeta(1.0,1.0)
+                    x ~ dnBernoulli(p)
+                    x.clamp(1)
+                    moves[1] = mvSlide(p, delta=0.1, weight=1.0)
+                    monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)
+                    mymodel = model(p)
+                    mymcmc = mcmc(mymodel, monitors, moves)
+                    mymcmc.burnin(generations=20000,tuningInterval=100)
+                    mymcmc.run(generations=200000)
+                    
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                    The Bernoulli distribution is attributed to the Swiss scientist Jacob Bernoulli.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">John Huelsenbeck</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('dnBinomial'); return false;">dnBinomial</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

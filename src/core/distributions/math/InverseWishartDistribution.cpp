@@ -16,8 +16,8 @@
 
 using namespace RevBayesCore;
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(insigma0->getValue().getDim())),
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<MatrixReal> *insigma0, const TypedDagNode<int>* indf)  :
+TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal(insigma0->getValue().getDim())),
 sigma0(insigma0),
 kappaVector(NULL),
 kappa(NULL),
@@ -34,7 +34,7 @@ dim( NULL )  {
 }
 
 InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<RbVector<double> > *inkappaVector, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( inkappaVector->getValue().size()) ),
+TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal( inkappaVector->getValue().size()) ),
     sigma0(NULL),
     kappaVector(inkappaVector),
     kappa(NULL),
@@ -52,7 +52,7 @@ TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( in
 }
 
 InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( size_t(indim->getValue()) )),
+TypedDistribution<RevBayesCore::MatrixReal>(new MatrixReal( size_t(indim->getValue()) )),
     sigma0(NULL),
     kappaVector(NULL),
     kappa(inkappa),
@@ -77,62 +77,81 @@ InverseWishartDistribution* InverseWishartDistribution::clone(void) const   {
 
 
 void InverseWishartDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == sigma0) {
-        sigma0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
+    
+    if (oldP == sigma0)
+    {
+        sigma0 = static_cast<const TypedDagNode<MatrixReal>* >( newP );
     }
-    if (oldP == kappaVector)  {
+    
+    if (oldP == kappaVector)
+    {
         kappaVector = static_cast<const TypedDagNode<RbVector<double> >* >(newP);
     }
-    if (oldP == kappa)  {
+    
+    if (oldP == kappa)
+    {
         kappa = static_cast<const TypedDagNode<double>* >(newP);
     }
-    if (oldP == dim)    {
+    
+    if (oldP == dim)
+    {
         dim = static_cast<const TypedDagNode<int>* >(newP);
     }
-    if (oldP == df)    {
+    
+    if (oldP == df)
+    {
         df = static_cast<const TypedDagNode<int>* >(newP);
     }
+    
 }
 
 
-double InverseWishartDistribution::computeLnProbability(void)  {
+double InverseWishartDistribution::computeLnProbability(void)
+{
     
     double ret = 0;
     
-    if (sigma0) {    
+    if ( sigma0 != NULL )
+    {
         ret = RbStatistics::InverseWishart::lnPdf(sigma0->getValue(),df->getValue(),getValue());
     }
-    else if (kappaVector)    {
+    else if ( kappaVector != NULL )
+    {
         ret = RbStatistics::InverseWishart::lnPdf(kappaVector->getValue(),df->getValue(),getValue());        
     }
-    else if (kappa)  {
+    else if ( kappa != NULL )
+    {
         ret = RbStatistics::InverseWishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
     }
-    else    {
-        std::cerr << "error in inverse wishart: no parameter\n";
-        throw(0);
+    else
+    {
+        throw RbException("error in inverse wishart: no parameter.");
     }
+    
     return ret;
 }
 
-void InverseWishartDistribution::redrawValue(void)  {
+void InverseWishartDistribution::redrawValue(void)
+{
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
-    if (sigma0) {
+    if ( sigma0 != NULL )
+    {
         setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng) );
     }
-    else if (kappaVector)    {
+    else if ( kappaVector != NULL )
+    {
         setValue( RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng) );
     }
-    else if (kappa)   {
+    else if ( kappa != NULL )
+    {
         setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng) );
     }
-    else    {
-        std::cerr << "error in inverse wishart: no parameter\n";
-        throw(0);
+    else
+    {
+        throw RbException("error in inverse wishart: no parameter\n");
     }
-    getValue().update();
-
+    
 
 }
