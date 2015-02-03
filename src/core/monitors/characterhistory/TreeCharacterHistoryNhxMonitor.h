@@ -115,7 +115,8 @@ maxGen(mg),
 burn(b) {
     
     nodes.push_back(s);
-    nodes.push_back(t);
+    s->incrementReferenceCount();
+//    nodes.push_back(t);
     
     numHistories = tree->getValue().getNumberOfNodes();
     numCharacters = variable->getValue().getNumberOfCharacters();
@@ -127,7 +128,7 @@ burn(b) {
         parentCharacterCounts[i].resize(numCharacters,0);
         childCharacterCounts[i].resize(numCharacters,0);
     }
-    areas = timeAtlas->getAreas()[0];
+    areas = timeAtlas->getAreas().back();
 }
 
 template<class charType, class treeType>
@@ -390,20 +391,9 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
     
     // write tree string
     std::string treeStr = "";
-    treeStr = buildExtendedNewick(); //buildExtendedNewick(&tree->getValue().getRoot());
-//    std::cout << treeStr << "\n";
-//    std::cout << "nhxStr\n" << treeStr << "\n";
+    treeStr = buildExtendedNewick();
     nhxStrm << "tree TREE1 = " << treeStr << ";\n";
     nhxStrm << "End;\n";
-    
-//    std::cout << "[";
-//    for (size_t i = 0; i < numCharacters; i++)
-//    {
-//        if (i != 0)
-//            std::cout << ",";
-//        std::cout << (double)childCharacterCounts[0][i] / numSamples;
-//    }
-//    std::cout << "]\n";
     
     return nhxStrm.str();
 }

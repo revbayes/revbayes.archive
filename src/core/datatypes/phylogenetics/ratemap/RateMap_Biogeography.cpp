@@ -307,6 +307,8 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
 {
     double rate = 0.0;
     int s = to;
+    
+    int pres = !s;
 //    int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)
