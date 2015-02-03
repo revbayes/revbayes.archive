@@ -72,7 +72,6 @@ MatrixReal MultivariateNormalDistribution::computeContrasts( void )
     const RbVector<double> &m = mean->getValue();
     for (size_t i = 0; i < dim; ++i)
     {
-//        tmp[i] = ((*value)[i] - m[i]) / sqrt( scale->getValue() );
         tmp[i] = ((*value)[i] - m[i]) / scale->getValue();
     }
     

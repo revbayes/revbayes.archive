@@ -18,6 +18,8 @@ ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(Stochas
 {
     
     nodes.insert( sigma );
+    nodes.insert( kappa );
+    nodes.insert( df );
     
 }
 
@@ -159,7 +161,7 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
 {
     
     // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     size_t dim = sigma->getValue().getDim();
     
@@ -179,12 +181,14 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
     
     // calculate sufficient statistics based on current process
     MatrixReal A = MatrixReal(dim);
+    size_t test = 0;
     for (std::vector<StochasticNode<RbVector<double> > *>::const_iterator it = children.begin(); it != children.end(); ++it)
     {
         MultivariateNormalDistribution* dist = dynamic_cast<MultivariateNormalDistribution *>( &(*it)->getDistribution() );
         if ( dist != NULL )
         {
             A += dist->computeContrasts();
+            ++test;
         }
         
     }
@@ -192,31 +196,47 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
     {
         A[i][i] += kappa->getValue();
     }
+    std::cerr << A << std::endl;
     
-//    MatrixReal inverse = A.computeInverse();
-//    MatrixReal sigma_inverse = sigma->getValue().computeInverse();
+    size_t nnodes = children.size();
+    
+    double logs1 = sigma->getLnProbability();
+    for (std::vector<StochasticNode<RbVector<double> > *>::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+        logs1 += (*it)->getLnProbability();
+    }
+    
     
     // calculate old posterior for sigma based on current process
-    double logs1 = RbStatistics::InverseWishart::lnPdf(A, children.size() + df->getValue(), sigma->getValue());
-//    double logs1 = RbStatistics::InverseWishart::lnPdf(A, df->getValue(), sigma->getValue());
-//    double logs1 = RbStatistics::Wishart::lnPdf(inverse, df->getValue(), sigma_inverse);
+    double backward = RbStatistics::InverseWishart::lnPdf(A, nnodes + df->getValue(), sigma->getValue());
 
 //    sigma->getValue().touch();
     
     // resample sigma based on new sufficient statistics
-    sigma->setValue( RbStatistics::InverseWishart::rv(A, children.size() + df->getValue(), *rng) );
-//    sigma->setValue( RbStatistics::InverseWishart::rv(A, df->getValue(), *rng) );
-//    sigma->setValue( RbStatistics::Wishart::rv(inverse, df->getValue(), *rng).computeInverse() );
-
-//    sigma->getValue().update();
-    
-    // calculate posterior for sigma based on current process
-    double logs2 = RbStatistics::InverseWishart::lnPdf(A, children.size() + df->getValue(), sigma->getValue());
-//    double logs2 = RbStatistics::InverseWishart::lnPdf(A, df->getValue(), sigma->getValue());
+    sigma->setValue( RbStatistics::InverseWishart::rv(A, nnodes + df->getValue(), *rng) );
 
     sigma->touch();
     sigma->keep();
+
     
+    double logs2 = sigma->getLnProbability();
+    for (std::vector<StochasticNode<RbVector<double> > *>::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+        logs2 += (*it)->getLnProbability();
+    }
+    
+//    sigma->getValue().update();
+    
+    // calculate posterior for sigma based on current process
+    double forward = RbStatistics::InverseWishart::lnPdf(A, nnodes + df->getValue(), sigma->getValue());
+
+    
+    double alpha = logs2 - logs1 + backward - forward;
+    
+    if ( fabs(alpha - 0.0) > 1E-8 )
+    {
+        std::cerr << "oooohh" << std::endl;
+    }
     // log hastings ratio
     // should cancel out the ratio of probabilities of the final and initial configuration
 //    return logs1 - logs2;
