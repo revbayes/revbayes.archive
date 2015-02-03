@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the binary multiplication function, f(x) = a(x) * b(x).
- *
- * @brief Declaration of functions.
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-06-20 22:57:09 +0200 (Wed, 20 Jun 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-08-13, version 1.0
- *
- * $Id: RandomNumberFactory.h 1643 2012-06-20 20:57:09Z hoehna $
- */
-
 #ifndef BinaryMultiplication_H
 #define BinaryMultiplication_H
 
@@ -22,6 +6,16 @@
 
 namespace RevBayesCore {
     
+    /**
+     * \brief Binary multiplication.
+     *
+     * We compute the product of a * b.
+     *
+     * \copyright (c) Copyright 2009-2015 (GPL version 3)
+     * \author The RevBayes Development Core Team (Sebastian Hoehna)
+     * \since Version 1.0, 2012-08-13
+     *
+     */
     template <class firstValueType, class secondValueType, class returnType>
     class BinaryMultiplication : public TypedFunction<returnType> {
         

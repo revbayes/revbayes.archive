@@ -58,7 +58,6 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlDistributionMemberFunction.h"
 #include "Probability.h"
 #include "StochasticNode.h"
 #include "TypedDistribution.h"

@@ -130,10 +130,11 @@
 
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementSlide.h"
+#include "Move_ConjugateInverseWishartBrownian.h"
 
 
 ///* Moves on covariance matrices */
-#include "Move_RealSymmetricMatrixSimple.h"
+#include "Move_MatrixRealSymmetricSlide.h"
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
@@ -170,8 +171,8 @@
 #include "Move_WeightedNodeTimeSlide.h"
 
 /* Math types (in folder "datatypes/math") */
-#include "RealMatrix.h"
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixReal.h"
+#include "RlMatrixRealSymmetric.h"
 #include "RlRateMap.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
@@ -190,6 +191,7 @@
 
 /* Trait evolution models (in folder "distributions/evolution/branchrates") */
 #include "Dist_PhyloBrownian.h"
+#include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
 #include "Dist_PhyloMvtBrownian.h"
@@ -225,6 +227,7 @@
 #include "Dist_lnormOffset.h"
 #include "Dist_lnormOffsetPositive.h"
 #include "Dist_logUniform.h"
+#include "Dist_multivariateNorm.h"
 #include "Dist_norm.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_unif.h"
@@ -260,6 +263,7 @@
 
 #include "Func_clear.h"
 #include "Func_exists.h"
+#include "Func_getOption.h"
 #include "Func_getwd.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
@@ -295,6 +299,7 @@
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
 #include "Func_blosum62.h"
+#include "Func_chromosomes.h"
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_f81.h"
@@ -302,16 +307,16 @@
 #include "Func_FreeK.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
-#include "Func_t92.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
+#include "Func_k80.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
 #include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
+#include "Func_t92.h"
 #include "Func_wag.h"
-#include "Func_chromosomes.h"
 
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
@@ -391,8 +396,10 @@
 /* Math functions (in folder "functions/math") */
 #include "Func_abs.h"
 #include "Func_ceil.h"
+#include "Func_diagonalMatrix.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
+#include "Func_hyperbolicTangent.h"
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_max.h"
@@ -401,6 +408,7 @@
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powerVector.h"
+#include "Func_probability.h"
 #include "Func_round.h"
 #include "Func_simplex.h"
 #include "Func_simplexFromVector.h"
@@ -480,7 +488,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Add math types (in folder "datatypes/math") */
         addType( new RateMap()              );
-        addType( new RealMatrix()           );
+        addType( new MatrixReal()           );
 
 
 
@@ -540,10 +548,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
         
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
+        addTypeWithConstructor("mvMatrixElementSlide",          new Move_MatrixSingleElementSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
+        addTypeWithConstructor("mvSymmetricMatrixElementSlide", new Move_MatrixRealSymmetricSlide() );
+
+        /* Moves on matrices of real values */
+        addTypeWithConstructor("mvConjugateInverseWishartBrownian", new Move_ConjugateInverseWishartBrownian() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
@@ -615,6 +626,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // brownian motion
         addDistribution( "dnPhyloBrownian",                  new Dist_PhyloBrownian() );
         addDistribution( "dnPhyloBrownianREML",              new Dist_PhyloBrownianREML<TimeTree>() );
+        addDistribution( "dnPhyloBrownianMVN",               new Dist_PhyloBrownianMVN<TimeTree>() );
         addDistribution( "dnPhyloOUP",                       new Dist_PhyloOrnsteinUhlenbeck() );
         addDistribution( "dnPhyloOrnsteinUhlenbeck",         new Dist_PhyloOrnsteinUhlenbeck() );
         
@@ -722,6 +734,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnLognormal",     new Dist_lnormOffsetPositive() );
         
         // normal distribution
+        addDistribution("dnMultivariateNormal", new Dist_multivariateNorm());
+        addDistribution("dnMVNormal",           new Dist_multivariateNorm());
+        
+        // normal distribution
         AddContinuousDistribution<Real>("Normal", new Dist_norm());
 //        addDistribution( "dnNorm",          new Dist_norm() );
 //        addDistribution( "dnNormal",        new Dist_norm() );
@@ -745,6 +761,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // inverse Wishart distribution
         addDistribution( "dnInvWishart",       new Dist_inverseWishart() );
+        addDistribution( "dnInverseWishart",   new Dist_inverseWishart() );
 
         // and the so-called "decomposed" Inverse Wishart
         addDistribution( "dnDecomposedInvWishart",       new Dist_decomposedInverseWishart() );
@@ -800,6 +817,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "exists",                   new Func_exists()                   );
         addFunction( "getwd",                    new Func_getwd()                    );
+        addFunction( "getOption",                new Func_getOption()                );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
@@ -848,10 +866,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnHKY",      new Func_hky()     );
         addFunction( "fnJC",       new Func_jc()      );
         addFunction( "fnJones",    new Func_jones()   );
+        addFunction( "fnK80",      new Func_k80()     );
         addFunction( "fnMtMam",    new Func_mtMam()   );
         addFunction( "fnMtRev",    new Func_mtRev()   );
         addFunction( "fnPomo",     new Func_pomo()    );
         addFunction( "fnRtRev",    new Func_rtRev()   );
+        addFunction( "fnT92",      new Func_t92()     );
         addFunction( "fnVT",       new Func_vt()      );
         addFunction( "fnWAG",      new Func_wag()     );
         
@@ -1046,12 +1066,18 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "ceiling",     new Func_ceil<Real,Integer>()  );
         addFunction( "ceiling",     new Func_ceil<RealPos,Natural>()  );
         
+        // diagonal matrix
+        addFunction( "diag",         new Func_diagonalMatrix() );
+        
         // exponential function
         addFunction( "exp",         new Func_exp() );
 		
 		// floor function
         addFunction( "floor",       new Func_floor<Real,Integer>()  );
         addFunction( "floor",       new Func_floor<RealPos,Natural>()  );
+        
+        // hyperbolic tangent function
+        addFunction( "tanh",        new Func_hyperbolicTangent() );
         
         // natural log function
         addFunction( "ln",          new Func_ln()  );
@@ -1074,6 +1100,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		// power function
         addFunction( "power",       new Func_power() );
         addFunction( "power",       new Func_powerVector() );
+        
+        // conversion function from Real to Probability
+        addFunction( "Probability", new Func_probability() );
         
 		// round function
         addFunction( "round",       new Func_round<Real,Integer>()  );

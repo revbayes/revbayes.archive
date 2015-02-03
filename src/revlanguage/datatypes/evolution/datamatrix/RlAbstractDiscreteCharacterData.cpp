@@ -23,9 +23,9 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules2->push_back( new ArgumentRule("", ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     
     
     methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );

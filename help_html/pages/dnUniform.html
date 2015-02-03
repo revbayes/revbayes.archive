@@ -1,0 +1,126 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Uniform distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Uniform distribution</h1>
+
+        <h2>Type dnUniform</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnUniform</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Uniform probabability density.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnUniform( RealPos lower = 0, RealPos upper = 1 )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >lower</b>
+<div class="indent">
+The lower bound.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+0<br />
+</div>
+<br />
+<b >upper</b>
+<div class="indent">
+The upper bound.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                The uniform probability density is given by
+                f(x) = 1 / (b-a)
+                if x is within a and b and 0 otherwise.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # draw some random numbers
+                    a <- runif(10,0,1)
+                    # compute the max
+                    max(a)
+                    
+                    # now let us create a random variable
+                    x ~ dnUniform(-10,10)
+                    # note that the type is a real number
+                    type(x)
+                    
+                    # now let us create another random variable
+                    y ~ dnUniform(0,10)
+                    # note that the type is a positive real number
+                    type(y)
+                    
+                    # now let us create yet another random variable
+                    z ~ dnUniform(0,1)
+                    # note that the type is a probability because it is between 0 and 1
+                    type(z)
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('dnNormal'); return false;">dnNormal</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

@@ -14,7 +14,7 @@
 
 #include "PhyloMultivariateBrownianProcess.h"
 #include "RlTypedDistribution.h"
-#include "RealMatrix.h"
+#include "MatrixReal.h"
 #include "Real.h"
 
 namespace RevLanguage {

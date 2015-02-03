@@ -128,6 +128,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
     dagNode->incrementReferenceCount();
     
     // add the DAG node member methods
+    // note that this is a sage case because all DAG nodes are member objects
     const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
     methods.insertInheritedMethods( dagMethods );
 

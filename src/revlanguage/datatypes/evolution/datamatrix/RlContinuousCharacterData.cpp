@@ -23,6 +23,10 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
+    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
     methods.insertInheritedMethods( charDataMethods );
@@ -41,6 +45,10 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    
+    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
 
     
     // insert the character data specific methods
@@ -62,6 +70,10 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
+    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
     methods.insertInheritedMethods( charDataMethods );
@@ -80,6 +92,10 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
+    ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
     methods.insertInheritedMethods( charDataMethods );
@@ -135,21 +151,32 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
     {
         return retVal;
     }
-    else if (name == "[]")
+    else if (name == "[]" || name == "getTaxon")
     {
         found = true;
         
-        // get the member with give index
-        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
-        
-        if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
+        if ( args[0].getVariable()->getRevObject().isType( Natural::getClassTypeSpec() ) )
         {
-            throw RbException("Index out of bounds in []");
+            // get the member with give index
+            const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
+        
+            if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
+            {
+                throw RbException("Index out of bounds in []");
+            }
+        
+            const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+        
+            return new RevVariable( new ContinuousTaxonData( new RevBayesCore::ContinuousTaxonData( element ) ) );
         }
-        
-        const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
-        
-        return new RevVariable( new ContinuousTaxonData( new RevBayesCore::ContinuousTaxonData( element ) ) );
+        else
+        {
+            // get the member with give index
+            const std::string &index = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+            
+            const RevBayesCore::ContinuousTaxonData& element = static_cast< RevBayesCore::ContinuousCharacterData& >( this->dagNode->getValue() ).getTaxonData(index);            
+            return new RevVariable( new ContinuousTaxonData( new RevBayesCore::ContinuousTaxonData( element ) ) );
+        }
     }
     
     

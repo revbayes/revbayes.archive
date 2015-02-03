@@ -1,29 +1,5 @@
-/* 
- * File:   Func_t92.h
- * Author: nl
- *
- * Created on 25 juillet 2014, 20:12
- */
-
-/**
- * @file
- * This file contains the declaration of the RevLanguage HKY function, which
- * is used to created deterministic variable associated with the HKY function.
- *
- * @brief Declaration and implementation of Func_t92
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-#ifndef FUNC_T92_H
-#define	FUNC_T92_H
-
+#ifndef Func_t92_H
+#define Func_t92_H
 
 #include "RlRateMatrix.h"
 #include "RlTypedFunction.h"
@@ -32,24 +8,36 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the Tamura (1992) rate matrix function.
+     *
+     * The RevLanguage wrapper of the Tamura two parameter rate matrix connects
+     * the variables/parameters of the function and creates the internal T92RateMatrixFunction object.
+     * Please read the T92RateMatrixFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Nicolas Lartillot and Sebastian Hoehna)
+     * @since 2014-08-14, version 1.0
+     *
+     */
     class Func_t92 : public TypedFunction<RateMatrix> {
         
     public:
         Func_t92( void );
         
         // Basic utility functions
-        Func_t92*                                                       clone(void) const;                                                              //!< Clone the object
-        static const std::string&                                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-    
+        Func_t92*                                                           clone(void) const;                                                              //!< Clone the object
+        static const std::string&                                           getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                                              getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                                     getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::RateMatrix>*         createFunction(void) const;                                                     //!< Create internal function object
-        const ArgumentRules&                                            getArgumentRules(void) const;                                                   //!< Get argument rules
+        RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >*            createFunction(void) const;                                                     //!< Create a function object
+        const ArgumentRules&                                                getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };
     
 }
 
-#endif	/* FUNC_T92_H */
-
+#endif

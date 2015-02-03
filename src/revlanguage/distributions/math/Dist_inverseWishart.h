@@ -1,17 +1,10 @@
-/* 
- * File:   Dist_InverseWishart.h
- * Author: nl
- *
- * Created on 15 juillet 2014, 10:31
- */
-
 #ifndef DIST_INVERSEWISHART_H
 #define	DIST_INVERSEWISHART_H
 
 
 #include <iostream>
 
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "RlTypedDistribution.h"
 #include "InverseWishartDistribution.h"
 
@@ -32,7 +25,7 @@ namespace RevLanguage {
      * @since 2014-07-15, version 1.0
      *
      */
-    class Dist_inverseWishart :  public  TypedDistribution<RealSymmetricMatrix> {
+    class Dist_inverseWishart : public TypedDistribution<MatrixRealSymmetric> {
         
     public:
         Dist_inverseWishart( void );

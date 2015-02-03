@@ -73,7 +73,9 @@ void ModelMonitor::resetDagNodes( void )
                     }
                     else
                     {
+                        /*
                         std::cerr << "Trying to add variable with name '" << name << "' twice." << std::endl;
+                         */
                     }
                 }
             }

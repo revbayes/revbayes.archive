@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <set>
+#include <vector>
 
 namespace RevBayesCore {
     
@@ -37,6 +38,7 @@ namespace RevBayesCore {
         virtual                                ~Distribution(void);
         
         // public methods
+        virtual void                            executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
         virtual void                            getAffected(std::set<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
         const std::set<const DagNode*>&         getParameters(void) const;                                              //!< get the parameters of the function
         void                                    keep(DagNode* affecter);

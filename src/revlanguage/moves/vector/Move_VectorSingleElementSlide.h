@@ -46,10 +46,10 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                      v;
-        RevPtr<const RevVariable>                      lambda;
-        RevPtr<const RevVariable>                      weight;
-        RevPtr<const RevVariable>                      tune;
+        RevPtr<const RevVariable>                   v;
+        RevPtr<const RevVariable>                   lambda;
+        RevPtr<const RevVariable>                   weight;
+        RevPtr<const RevVariable>                   tune;
         
     };
     

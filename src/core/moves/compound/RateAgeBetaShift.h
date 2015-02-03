@@ -54,4 +54,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__RateAgeBetaShift__) */
+#endif

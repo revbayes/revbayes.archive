@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Round functions, f(x) = exp( a(x) ).
- *
- * @brief Declaration of the Round functions.
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-06-20 22:57:09 +0200 (Wed, 20 Jun 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-08-13, version 1.0
- *
- * $Id: RandomNumberFactory.h 1643 2012-06-20 20:57:09Z hoehna $
- */
-
 #ifndef RoundFunction_H
 #define RoundFunction_H
 
@@ -22,6 +6,18 @@
 
 namespace RevBayesCore {
     
+    /**
+     * \brief Round a real number to the next integer.
+     *
+     * Round a real number to the closest integer.
+     * That is, all value x.5 to x.9999 will be rounded up.
+     * Otherwise we round down.
+     *
+     * \copyright (c) Copyright 2009-2015 (GPL version 3)
+     * \author The RevBayes Development Core Team (Sebastian Hoehna)
+     * \since Version 1.0, 2012-08-13
+     *
+     */
     class RoundFunction : public TypedFunction<int> {
         
     public:

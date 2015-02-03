@@ -88,6 +88,13 @@ void Distribution::addParameter(const DagNode *p)
 
 
 
+void Distribution::executeProcedure(const std::string &n, const std::vector<DagNode *> args, bool &f)
+{
+    // no function found
+}
+
+
+
 /* Method stub: override for specialized treatment. */
 void Distribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
 {

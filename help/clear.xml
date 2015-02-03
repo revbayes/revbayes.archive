@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>clear</name>
+
+        <title>Clear the current workspace.</title>
+    
+        <description>
+            <p>
+            Clear the current workspace.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             clear( RevObject x = NULL )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>This argument will be removed.</description>
+            <valueType>RevObject</valueType>
+        </argument>
+
+        <returnValue>void</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            The clear function removes either a given variable or all variables from the workspace.
+            Clearing the workspace is very useful between analysis if you do not want to have
+            old connections between variables hanging around.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+             ls()   # check what is in the workspace
+             a <- 1
+             b := exp(a)
+             ls()   # check what is in the workspace
+             clear()
+             ls()   # check what is in the workspace
+             a <- 1
+             b := exp(a)
+             ls()   # check what is in the workspace
+             clear( b )
+             ls()   # check what is in the workspace
+             ]]>
+
+        </example>
+
+        <author>Sebastian Hoehna</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>ls</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

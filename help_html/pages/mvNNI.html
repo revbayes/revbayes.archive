@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Nearest-Neighbor-Interchange</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Nearest-Neighbor-Interchange</h1>
+
+        <h2>Type mvNNI</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvNNI</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This is a 'brief' description of the amazing function you have implemented.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mvNNI( TimeTree|Topology tree, RealPos weight = 1 )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >tree</b>
+<div class="indent">
+The tree that we want to change.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+TimeTree|Topology<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+How often do we use this move per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                Propose a nearest neighbor interchange to search tree space. That is, we randomly select a node in the tree that is not the root.
+                Then we exchange the node with the sibling of its parent. For time trees this proposal will change the node age
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                 names <- ["A", "B", "C", "D"]
+                 tau ~ dnUniformTopology( names)
+                 moves[1] = mvNNI( tau )
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mvNarrow'); return false;">mvNarrow</a><br />
+<a href="" onClick="navigateHelp('mvSPR'); return false;">mvSPR</a><br />
+<a href="" onClick="navigateHelp('mvFNPR'); return false;">mvFNPR</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>
