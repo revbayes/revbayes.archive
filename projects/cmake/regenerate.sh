@@ -176,12 +176,14 @@ if [ "$mpi" = "true" ]
 then
 echo '
 add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+install(TARGETS rb-mpi DESTINATION bin)
 
 target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 else
 echo '
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+install(TARGETS rb DESTINATION bin)
 
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
