@@ -3,39 +3,22 @@
 //
 //  Copyright 2009 Kelan Champagne. All rights reserved.
 //
+
 #import <Cocoa/Cocoa.h>
 
-#define NUM_FINS 12
 
+@interface YRKSpinningProgressIndicator : NSView
 
+@property (nonatomic, copy) NSColor *color;
+@property (nonatomic, copy) NSColor *backgroundColor;
+@property (nonatomic, assign) BOOL drawsBackground;
 
-@interface YRKSpinningProgressIndicator : NSView {
+@property (nonatomic, assign, getter=isDisplayedWhenStopped) BOOL displayedWhenStopped;
+@property (nonatomic, assign) BOOL usesThreadedAnimation;
 
-    int         _position;
-    int         _numFins;
-    NSColor*    _finColors[NUM_FINS];
-    BOOL        _isAnimating;
-    BOOL        _isFadingOut;
-    NSTimer*    _animationTimer;
-    NSThread*   _animationThread;
-    NSColor*    _foreColor;
-    NSColor*    _backColor;
-    BOOL        _drawsBackground;
-    BOOL        _displayedWhenStopped;
-    BOOL        _usesThreadedAnimation;
-    BOOL        _isIndeterminate;
-    double      _currentValue;
-    double      _maxValue;
-}
-
-@property (nonatomic, retain)                                NSColor* color;
-@property (nonatomic, retain)                                NSColor* backgroundColor;
-@property (nonatomic, assign)                                BOOL     drawsBackground;
-@property (nonatomic, assign, getter=isDisplayedWhenStopped) BOOL     displayedWhenStopped;
-@property (nonatomic, assign)                                BOOL     usesThreadedAnimation;
-@property (nonatomic, assign, getter=isIndeterminate)        BOOL     indeterminate;
-@property (nonatomic, assign)                                double   doubleValue;
-@property (nonatomic, assign)                                double   maxValue;
+@property (nonatomic, assign, getter=isIndeterminate) BOOL indeterminate;
+@property (nonatomic, assign) CGFloat currentValue;
+@property (nonatomic, assign) CGFloat maxValue;
 
 - (void)stopAnimation:(id)sender;
 - (void)startAnimation:(id)sender;
