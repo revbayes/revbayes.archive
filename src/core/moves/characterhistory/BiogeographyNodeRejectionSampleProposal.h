@@ -445,6 +445,11 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
         proposedTrunkNode = storedTrunkNode;
     }
     
+    
+    const std::vector<CharacterEvent*>& nodeState  = p->getHistory(*node).getChildCharacters();
+    const std::vector<CharacterEvent*>& budState   = p->getHistory(*storedBudNode).getParentCharacters();
+    const std::vector<CharacterEvent*>& trunkState = p->getHistory(*storedTrunkNode).getParentCharacters();
+    
     // resample all characters for now...
     if (sampleSiteIndexSet)
     {
@@ -455,7 +460,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
             const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
             {
-//                if (GLOBAL_RNG->uniform01() < this->lambda)
+                if (GLOBAL_RNG->uniform01() < this->lambda)
                 {
                     this->siteIndexSet.insert(*s_it);
                 }
@@ -466,7 +471,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
             for (size_t i = 0; i < numCharacters; i++)
             {
                 // just resample all states for now, try something clever later
-//                if (GLOBAL_RNG->uniform01() < lambda)
+                if (GLOBAL_RNG->uniform01() < lambda || nodeState[i]->getState() == 1)
                 {
                     siteIndexSet.insert(i);
                 }
@@ -504,9 +509,6 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     storedNodeState.resize(numCharacters,0);
     storedBudState.resize(numCharacters,0);
     storedTrunkState.resize(numCharacters,0);
-    const std::vector<CharacterEvent*>& nodeState  = p->getHistory(*node).getChildCharacters();
-    const std::vector<CharacterEvent*>& budState   = p->getHistory(*storedBudNode).getParentCharacters();
-    const std::vector<CharacterEvent*>& trunkState = p->getHistory(*storedTrunkNode).getParentCharacters();
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
         storedNodeState[*it]    = nodeState[*it]->getState();
@@ -618,9 +620,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             // "Overcount", then thin through cladogenesis below
             // Expected freq(X=0|C) after cladogenesis given X=1 prior to speciation
             double c0  = csf[BiogeographicCladoEvent::SYMPATRY_WIDESPREAD - 1] * 1.0;
-            
                    c0 += csf[BiogeographicCladoEvent::SYMPATRY_SUBSET     - 1] * 0.5 * (1.0 + 1.0/numCharacters);
-            
                    c0 += csf[BiogeographicCladoEvent::ALLOPATRY           - 1] * 0.5;
 
             g0 *= c0;
@@ -719,7 +719,16 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 trunkParentState[*it]->setState(s);
             }
         }
+        
+        int dn = 0;
+        for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
+        {
+            dn += ( storedNodeState[*it] - nodeChildState[*it]->getState() );
+        }
+        lnP += dn * log(lambda);
     }
+    
+
     
     return lnP;
 }
