@@ -160,7 +160,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     cladogenicEvents                            = useClado;
     imperfectTipData                            = false;
     forbidExtinction                            = forbidExt;
-    useTail                                     = false; //ut;
+    useTail                                     = !false; //ut;
     
     cladogenicState                             = std::vector<int>(this->histories.size(), 0);
     if (cladogenicEvents && false) {
