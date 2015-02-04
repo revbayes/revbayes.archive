@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class BiogeographyRateMapFunction : public TypedFunction<RateMap> {
         
     public:
-        BiogeographyRateMapFunction(size_t nc, bool fe=true);                                                                                             // pass in geography object??
+        BiogeographyRateMapFunction(size_t nc, bool fe=true, unsigned mrs=0);                                                                                             // pass in geography object??
         virtual                                            ~BiogeographyRateMapFunction(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -52,9 +52,9 @@ namespace RevBayesCore {
         const TypedDagNode<RateMatrix>*                     homogeneousRateMatrix;
         const TypedDagNode<RbVector<RateMatrix> >*          heterogeneousRateMatrices;
 
-        const TypedDagNode<GeographyRateModifier>*              geographyRateModifier;
-//      const TypedDagNode<CountRateModifier>*                  countRateModifier;
-        const TypedDagNode<TimeTree>*                           tau;
+        const TypedDagNode<GeographyRateModifier>*          geographyRateModifier;
+//      const TypedDagNode<CountRateModifier>*              countRateModifier;
+        const TypedDagNode<TimeTree>*                       tau;
         const TypedDagNode< RbVector<double> >*             rootFrequencies;
         
         // geography epochs

@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe) : TypedFunction<RateMap>( new RateMap_Biogeography( nc, fe ) )
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe, unsigned mrs) : TypedFunction<RateMap>( new RateMap_Biogeography( nc, fe, mrs ) )
 {
 //    homogeneousGainLossRates            = new ConstantNode<RbVector<double> >("homogeneousGainLossRates", new RbVector<double>(2,0.5));
 //    heterogeneousGainLossRates          = NULL;
