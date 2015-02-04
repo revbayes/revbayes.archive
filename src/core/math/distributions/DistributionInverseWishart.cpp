@@ -110,6 +110,7 @@ MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df,
     }
 
     return z.computeInverse();
+//    return z;
 }
 
 
