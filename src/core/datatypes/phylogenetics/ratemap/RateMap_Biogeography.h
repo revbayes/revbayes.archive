@@ -19,7 +19,7 @@ namespace RevBayesCore {
     class RateMap_Biogeography : public RateMap {
         
     public:
-        RateMap_Biogeography(size_t nc, bool fe=true);                                                                               //!< Construct rate matrix with n states
+        RateMap_Biogeography(size_t nc, bool fe=true, unsigned mrs=0);                                                                               //!< Construct rate matrix with n states
         RateMap_Biogeography(const RateMap_Biogeography& m);                                                           //!< Copy constructor
         virtual                                     ~RateMap_Biogeography(void);                                       //!< Destructor
         
@@ -59,6 +59,7 @@ namespace RevBayesCore {
         unsigned                                    getEpochIndex(double age) const;
         size_t                                      branchOffset;
         double                                      distancePower;
+        unsigned                                    maxRangeSize;
         
         // geography models
         bool                                        useGeographyRateModifier;

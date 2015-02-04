@@ -183,7 +183,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getPara
         
         distMemberRules.push_back( new ArgumentRule( "tree"               , treeType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         distMemberRules.push_back( new ArgumentRule( "Q"                  , RateMap::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "C"                  , Simplex::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         
@@ -272,7 +272,7 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::setConstParameter(const std::strin
     {
         useCladogenesis = var;
     }
-    else if (name == "C")
+    else if (name == "cladoProbs")
     {
         cladoStateFreqs = var;
     }

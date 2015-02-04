@@ -455,7 +455,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
             const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
             {
-                if (GLOBAL_RNG->uniform01() < this->lambda)
+//                if (GLOBAL_RNG->uniform01() < this->lambda)
                 {
                     this->siteIndexSet.insert(*s_it);
                 }
@@ -466,7 +466,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
             for (size_t i = 0; i < numCharacters; i++)
             {
                 // just resample all states for now, try something clever later
-                if (GLOBAL_RNG->uniform01() < lambda)
+//                if (GLOBAL_RNG->uniform01() < lambda)
                 {
                     siteIndexSet.insert(i);
                 }
