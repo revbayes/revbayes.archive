@@ -61,8 +61,8 @@ const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const {
         
         argumentRules.push_back( new ArgumentRule( "eventProbs", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
 //        argumentRules.push_back( new ArgumentRule( "eventRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numCharacters", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "numCharacters", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
