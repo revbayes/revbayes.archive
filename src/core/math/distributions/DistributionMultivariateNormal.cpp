@@ -161,6 +161,7 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
     }
     
     double lnProb = dim * logNormalize + 0.5 * (logDet - dim * log(scale) - s2 / scale);
+//    double lnProb = dim * logNormalize + 0.5 * (logDet - dim * log(scale*scale) - s2 / (scale*scale));
     
     return lnProb;
 }
