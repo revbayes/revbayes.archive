@@ -625,7 +625,8 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
         size_t uIdx = 0;
         for (size_t i = 0; i < csf.size(); i++)
         {
-            u1 -= 1.0; // csf[i];
+//            u1 -= 1.0; // csf[i];
+            u1 -= csf[i] * csf.size();
             if (u1 < 0.0)
                 break;
             uIdx++;
