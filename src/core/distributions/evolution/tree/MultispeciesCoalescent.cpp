@@ -599,7 +599,7 @@ double  MultispeciesCoalescent::getNe(size_t index) const
     }
     else if (Nes != NULL)
     {
-        return Nes->getValue()[index-1];
+        return Nes->getValue()[index];
     }
     else
     {

@@ -196,7 +196,6 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
     {
         A[i][i] += kappa->getValue();
     }
-    std::cerr << A << std::endl;
     
     size_t nnodes = children.size();
     
