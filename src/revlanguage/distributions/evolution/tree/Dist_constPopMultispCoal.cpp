@@ -70,7 +70,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* neNode = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
         
         // sanity check
-        if ( (nNodes-1) != neNode->getValue().size() )
+        if ( nNodes != neNode->getValue().size() )
         {
             throw RbException( "The number of effective population sizes does not match the number of branches." );
         }

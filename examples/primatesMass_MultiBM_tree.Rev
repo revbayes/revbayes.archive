@@ -1,0 +1,97 @@
+mi = 0
+
+# read the data 
+contData <- readContinuousCharacterData("data/primates_lhtlog.nex")
+
+contData.excludeCharacter(5:11)
+
+######### 
+# tree  
+#########
+
+
+# get some useful variables from the data
+numTips = contData.ntaxa()
+names = contData.names()
+numNodes = numTips * 2 - 1
+
+# create a birth death process, leading to a tree whose tips match the taxon names given by the dataset
+
+diversification ~ dnLognormal(0,1)
+turnover ~ dnGamma(4,4)
+
+speciation := diversification + turnover
+extinction := turnover
+
+
+# rescaling moves on speciation and extinction rates
+moves[++mi] = mvScale(diversification, lambda=1, tune=true, weight=3.0)
+moves[++mi] = mvScale(turnover, lambda=1, tune=true, weight=3.0)
+
+sampling_fraction <- 23 / 270     # 23 out of the ~ 270 primate species
+
+psi ~ dnBDP(lambda=speciation, mu=extinction, rho=sampling_fraction, rootAge=75, nTaxa=numTips, names=names)
+
+# moves on the tree: only relative dates
+moves[++mi] = mvSubtreeScale(psi, weight=5.0)
+moves[++mi] = mvNodeTimeSlideUniform(psi, weight=10.0)
+
+# we also move the tree topology
+# and integrate over the posterior induced by the sequence data
+moves[++mi] = mvNNI(psi, weight=5.0)
+moves[++mi] = mvFNPR(psi, weight=5.0)
+
+
+
+######### 
+# trait evolution
+#########
+
+# sigma: variance per unit of time of the Brownian motion
+logSigma ~ dnUniform(-5,5)
+sigma := 10^logSigma
+
+moves[++mi] = mvSlide(logSigma, delta=1.0, tune=true, weight=2.0)
+
+perSiteRates <- [1,1,1,1]
+
+#for (i in 1:4) {
+#   rootlogmass[i] ~ dnUniform(-100,100)
+#   moves[++mi] = mvSlide(rootlogmass[i],delta=10,tune=true,weight=2) 
+#}
+
+# univariate Brownian process along the tree parameterized by sigma
+#logmass ~ dnPhyloBrownianMVN(psi, branchRates=1.0, siteRates=sigma*perSiteRates, rootStates=rootlogmass, nSites=4)
+logmass ~ dnPhyloBrownianREML(psi, branchRates=1.0, siteRates=sigma*perSiteRates, nSites=4)
+
+logmass.clamp( contData )
+
+
+
+
+
+# create the model
+mymodel = model(sigma)
+
+# on screen, we will monitor only the correlation coefficient and the mean value of each trait
+monitors[1] = mnScreen(printgen=10000, sigma)
+
+# a model monitor
+monitors[2] = mnModel(filename="output/primates_mass_multiBM_tree.log", printgen=10, separator = TAB)
+
+# a file monitor for the tree
+monitors[3] = mnFile(filename="output/primates_mass_multiBM_tree.trees", printgen=100, separator = TAB, psi)
+ 
+mymcmc = mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=50000, tuningInterval=250)
+
+mymcmc.run(50000)
+
+
+
+
+treetrace = readTreeTrace("output/primates_mass_multiBM_tree.trees", "clock")
+treetrace.summarize()
+
+map = mapTree( file="primates_mass_multiBM.tree", treetrace )
