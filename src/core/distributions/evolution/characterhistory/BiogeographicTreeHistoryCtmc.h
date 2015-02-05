@@ -231,6 +231,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
     
     if (node.isRoot() && useTail == false)
     {
+        
         return lnL;
     }
     

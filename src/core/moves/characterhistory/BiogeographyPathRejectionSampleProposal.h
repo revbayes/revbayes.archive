@@ -80,6 +80,7 @@ RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::Bioge
     useAreaAdjacency = false;
     
     const BiogeographicTreeHistoryCtmc<charType,treeType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
+    
     useTail = p.getUseTail();
 }
 
@@ -225,7 +226,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
         if (!useTail)
             return 0.0;
         else
-            branchLength = this->node->getAge() * 5; //1e10;//2*tree.getTreeLength();
+            branchLength = this->node->getAge() * (5-1); //1e10;//2*tree.getTreeLength();
     }
     
     // get epoch variables
