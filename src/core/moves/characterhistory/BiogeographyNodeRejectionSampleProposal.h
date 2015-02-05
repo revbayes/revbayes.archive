@@ -357,7 +357,20 @@ template<class charType, class treeType>
 double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    const std::vector<BranchHistory*>& histories = p->getHistories();
+
     proposedLnProb = 0.0;
+
+//    if (node->isRoot())
+//    {
+//        std::cout  << "BEFORE\n";
+//        std::cout  << "A\n";
+//        histories[ node->getIndex() ]->print();
+//        std::cout  << "L\n";
+//        histories[ node->getChild(0).getIndex() ]->print();
+//        std::cout  << "R\n";
+//        histories[ node->getChild(1).getIndex() ]->print();
+//    }
 
     // assign prepared bud/clado states
     p->setBuddingState(*proposedTrunkNode, 0);
@@ -370,21 +383,30 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
     p->setCladogenicState(*proposedTrunkNode, proposedCladogenicState);
     p->setCladogenicState(*proposedBudNode, proposedCladogenicState);
 
-    if (node->isRoot() && useTail)
+    if (node->isRoot())
     {
-        sampleRootCharacters(siteIndexSet);
+//        if (useTail)
+            sampleRootCharacters(siteIndexSet);
         //        std::cout << "wha!\n";
         ;
     }
-
     
     // update 3x incident paths
     double nodeLnProb = nodeProposal->doProposal();
     double leftLnProb = leftProposal->doProposal();
     double rightLnProb = rightProposal->doProposal();
 
-    
-    
+//    if (node->isRoot())
+//    {
+//        std::cout << "AFTER\n";
+//        std::cout  << "A\n";
+//        histories[ node->getIndex() ]->print();
+//        std::cout  << "L\n";
+//        histories[ node->getChild(0).getIndex() ]->print();
+//        std::cout  << "R\n";
+//        histories[ node->getChild(1).getIndex() ]->print();
+//    }
+//    
 // return storedLnProb - proposedLnProb + nodeLnProb + leftLnProb + rightLnProb;
     proposedLnProb += nodeLnProb;
     proposedLnProb += leftLnProb;
@@ -455,7 +477,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     {
         siteIndexSet.clear();
         siteIndexSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
-        if (useAreaAdjacency)
+        if (useAreaAdjacency && false)
         {
             const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
@@ -592,12 +614,25 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
         rm.calculateTransitionProbabilities(*proposedTrunkNode, trunkTpMatrix);
         rm.calculateTransitionProbabilities(*proposedBudNode, budTpMatrix);
 
-        
+        // track count
         int dOn = 0;
         for (size_t i = 0; i < nodeChildState.size(); i++)
             if (nodeChildState[i]->getState() == 1)
                 dOn++;
         
+        // sample new clado state
+        double u1 = GLOBAL_RNG->uniform01() * csf.size();
+        size_t uIdx = 0;
+        for (size_t i = 0; i < csf.size(); i++)
+        {
+            u1 -= 1.0; // csf[i];
+            if (u1 < 0.0)
+                break;
+            uIdx++;
+        }
+        unsigned uCladoState = uIdx + 1;
+        
+        // keep track of range
         std::set<size_t> present;
         
         // sample states
@@ -614,16 +649,36 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             // For now, nice n' dumb.
             double u = GLOBAL_RNG->uniform01();
             
-            double g0 = nodeTpMatrix[ancS][0] * trunkTpMatrix[0][desS1] * budTpMatrix[0][desS2];
-            double g1 = nodeTpMatrix[ancS][1] * trunkTpMatrix[1][desS1] * budTpMatrix[1][desS2];
 
             // "Overcount", then thin through cladogenesis below
             // Expected freq(X=0|C) after cladogenesis given X=1 prior to speciation
-            double c0  = csf[BiogeographicCladoEvent::SYMPATRY_WIDESPREAD - 1] * 1.0;
-                   c0 += csf[BiogeographicCladoEvent::SYMPATRY_SUBSET     - 1] * 0.5 * (1.0 + 1.0/numCharacters);
-                   c0 += csf[BiogeographicCladoEvent::ALLOPATRY           - 1] * 0.5;
-
-            g0 *= c0;
+//            double c0  = csf[BiogeographicCladoEvent::SYMPATRY_WIDESPREAD - 1] * 1.0;
+//                   c0 += csf[BiogeographicCladoEvent::SYMPATRY_SUBSET     - 1] * 0.5 * (1.0 + 1.0/numCharacters);
+//                   c0 += csf[BiogeographicCladoEvent::ALLOPATRY           - 1] * 0.5;
+//            double c0 = 1.0;
+            double g0 = 0.0;
+            double g1 = 0.0;
+            if (uCladoState == BiogeographicCladoEvent::SYMPATRY_WIDESPREAD)
+            {
+                g0 = nodeTpMatrix[ancS][0] * trunkTpMatrix[0][desS1] * budTpMatrix[0][desS2];
+                g1 = nodeTpMatrix[ancS][1] * trunkTpMatrix[1][desS1] * budTpMatrix[1][desS2];
+            }
+            else if (uCladoState == BiogeographicCladoEvent::SYMPATRY_SUBSET)
+            {
+                double p_ss = (double)(numCharacters - 1) / numCharacters;
+                g0 = nodeTpMatrix[ancS][0] * trunkTpMatrix[0][desS1] * budTpMatrix[0][desS2];
+                g1 = nodeTpMatrix[ancS][1] * trunkTpMatrix[0][desS1] * (p_ss * budTpMatrix[0][desS2] + (1-p_ss) * budTpMatrix[1][desS2]) ;
+            }
+            else if (uCladoState == BiogeographicCladoEvent::ALLOPATRY)
+            {
+                g0 = nodeTpMatrix[ancS][0] * trunkTpMatrix[0][desS1] * budTpMatrix[0][desS2];
+                g1 = nodeTpMatrix[ancS][1] * (0.5 * trunkTpMatrix[0][desS1] * budTpMatrix[1][desS2] + 0.5 * trunkTpMatrix[1][desS1] * budTpMatrix[0][desS2]) ;
+            }
+            
+//            double g0 = nodeTpMatrix[ancS][0] * trunkTpMatrix[0][desS1] * budTpMatrix[0][desS2];
+//            double g1 = nodeTpMatrix[ancS][1] * trunkTpMatrix[1][desS1] * budTpMatrix[1][desS2];
+            
+//            g0 *= c0;
             
             unsigned int s = 0;
             if (u < (g1 / (g0 + g1)) && rm.isAreaAvailable(*it, node->getAge()))
@@ -637,18 +692,19 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
         // cladogenesis
         if (present.size() > 1 && p->useCladogenicEvents() == true)
         {
-            double u = GLOBAL_RNG->uniform01() * csf.size();
+//            double u = GLOBAL_RNG->uniform01() * csf.size();
+//            size_t uIdx = 0;
+//            for (size_t i = 0; i < csf.size(); i++)
+//            {
+//                u -= 1.0; // csf[i];
+//                if (u < 0.0)
+//                    break;
+//                uIdx++;
+//            }
+//            
+//            proposedCladogenicState = uIdx + 1;
             
-            size_t uIdx = 0;
-            for (size_t i = 0; i < csf.size(); i++)
-            {
-                u -= 1.0; // csf[i];
-                if (u < 0.0)
-                    break;
-                uIdx++;
-            }
-            
-            proposedCladogenicState = uIdx + 1;
+            proposedCladogenicState = uCladoState;
             
             // wide sympatry ABCD->ABCD|ABCD
             if (proposedCladogenicState == BiogeographicCladoEvent::SYMPATRY_WIDESPREAD)
@@ -720,14 +776,32 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             }
         }
         
+        // MH ratio for selecting the areas to update
         int dn = 0;
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
             dn += ( storedNodeState[*it] - nodeChildState[*it]->getState() );
         }
         lnP += dn * log(lambda);
+    
+        // reverse proposal prob
+        if (storedCladogenicState == BiogeographicCladoEvent::SYMPATRY_WIDESPREAD)
+            ; // do nothing
+        else if (storedCladogenicState == BiogeographicCladoEvent::SYMPATRY_SUBSET)
+            lnP += log(1.0 / dOn);
+        else if (storedCladogenicState == BiogeographicCladoEvent::ALLOPATRY)
+            lnP += dOn * log(.5);
+        // forward proposal prob
+        if (proposedCladogenicState == BiogeographicCladoEvent::SYMPATRY_WIDESPREAD)
+            ; // do nothing
+        else if (proposedCladogenicState == BiogeographicCladoEvent::SYMPATRY_SUBSET)
+            lnP -= log(1.0 / present.size());
+        else if (proposedCladogenicState == BiogeographicCladoEvent::ALLOPATRY)
+            lnP -= present.size() * log(.5);
+
     }
     
+
 
     
     return lnP;
@@ -776,7 +850,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
     double p0 = 1.0 - p1;
     
     lnP = n1_old * log(p1) + n0_old * log(p0) - n1_new * log(p1) - n0_new * log(p0);
-    return 0.0;
+//    return 0.0;
     return lnP;
 }
 
