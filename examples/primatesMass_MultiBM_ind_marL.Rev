@@ -1,0 +1,53 @@
+mi = 0
+
+# read the data 
+contData <- readContinuousCharacterData("data/primates_lhtlog.nex")
+
+contData.excludeCharacter(5:11)
+
+# work under fixed topology
+treeArray <- readTrees("data/primates.tree")
+psi <- treeArray[1]
+
+# sigma: variance per unit of time of the Brownian motion
+logSigma ~ dnUniform(-5,5)
+sigma := 10^logSigma
+
+moves[++mi] = mvSlide(logSigma, delta=1.0, tune=true, weight=2.0)
+
+perSiteRates ~ dnDirichlet([1,1,1,1])
+moves[++mi] = mvSimplexElementScale(perSiteRates,alpha=10,tune=true,weight=4)
+
+for (i in 1:4) {
+   rootlogmass[i] ~ dnUniform(-100,100)
+   moves[++mi] = mvSlide(rootlogmass[i],delta=10,tune=true,weight=2) 
+}
+
+# univariate Brownian process along the tree
+# parameterized by sigma
+logmass ~ dnPhyloBrownianMVN(psi, branchRates=1.0, siteRates=sigma*perSiteRates, rootStates=rootlogmass, nSites=4)
+
+# let us have a look at the stochastic variable logmass
+#logmass
+# you can see the actual data by
+#logmass.show()
+
+logmass.clamp( contData )
+
+# create the model
+mymodel = model(sigma)
+
+# a model monitor
+monitors[1] = mnModel(filename="output/primates_mass_multiBM_ind.log", printgen=10, separator = TAB)
+ 
+
+### Compute power posterior distributions
+pow_p = powerPosterior(mymodel, moves, monitors, "output/pow_p_MultiBM_ind.out", cats=100, sampleFreq=10) 
+pow_p.burnin(generations=10000,tuningInterval=250)
+pow_p.run(generations=10000)  
+
+### Use stepping-stone sampling to calculate marginal likelihoods
+ss = steppingStoneSampler(file="output/pow_p_MultiBM_ind.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss.marginal() 
+
+
