@@ -135,8 +135,8 @@ void RbSettings::initializeUserSettings(void)
         {
             std::vector<std::string> tokens;
             StringUtilities::stringSplit(readLine, "=", tokens);
-            
-            setOption(tokens[0], tokens[1], false);
+            if (tokens.size() > 1)
+                setOption(tokens[0], tokens[1], false);
             
         }
         
