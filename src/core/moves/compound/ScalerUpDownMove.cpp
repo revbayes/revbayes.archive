@@ -14,8 +14,8 @@ using namespace RevBayesCore;
 
 ScalerUpDownMove::ScalerUpDownMove( std::vector<DagNode*> n, double sf, bool t, double w) : CompoundMove( n, w, t), scaleFactor( sf ) {
     
-    scalerVal1 = static_cast<StochasticNode< double >* >( n[0] );
-	scalerVal2 = static_cast<StochasticNode< double >* >( n[1] ) ;
+    scalerVal1 = static_cast<ContinuousStochasticNode*>( n[0] );
+	scalerVal2 = static_cast<ContinuousStochasticNode*>( n[1] ) ;
     
 }
 
@@ -45,28 +45,17 @@ double ScalerUpDownMove::performCompoundMove( void ) {
     double& sv1 = scalerVal1->getValue();
     double& sv2 = scalerVal2->getValue();
 	
-	
 	double u = rng->uniform01();
 	double c = exp( scaleFactor * (u - 0.5) );
-	
 
+    storedSV1 = sv1;
+    storedSV2 = sv2;
+    
+    sv1 *= c;
+    sv2 /= c;
 	
-	double sv1Current = sv1;
-	double sv2Current = sv2;
-	
-	double newSV1 = sv1Current * c;
-	storedSV1 = sv1Current;
-	sv1 = newSV1;
-	
-	double newSV2 = sv2Current / c;
-	storedSV2 = sv2Current;
-	sv2 = newSV2;
-	
-	
-	
-	storedC = c;
-	double pr = (1.0 - 1.0 - 2.0) * log(c);
-	return pr;
+//	double pr = (1.0 - 1.0 - 2.0) * log(c);
+	return 0.0;
 }
 
 
@@ -81,10 +70,8 @@ void ScalerUpDownMove::rejectCompoundMove( void ) {
 	double& sv1 = scalerVal1->getValue();
 	double& sv2 = scalerVal2->getValue();
 
-	double c = storedC;
-	
-	sv1 = storedSV1 / c;
-	sv2 = storedSV2 * c;
+	sv1 = storedSV1;
+	sv2 = storedSV2;
 	
 }
 
@@ -94,9 +81,9 @@ void ScalerUpDownMove::swapNode(DagNode *oldN, DagNode *newN) {
     CompoundMove::swapNode(oldN, newN);
     
 	if(oldN == scalerVal1)
-		scalerVal1 = static_cast<StochasticNode<double >* >( newN ) ;
+		scalerVal1 = static_cast<ContinuousStochasticNode* >( newN ) ;
     if(oldN == scalerVal2)
-		scalerVal2 = static_cast<StochasticNode<double >* >( newN ) ;
+		scalerVal2 = static_cast<ContinuousStochasticNode* >( newN ) ;
 }
 
 
