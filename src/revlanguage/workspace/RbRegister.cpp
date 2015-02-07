@@ -295,6 +295,7 @@
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
+#include "Func_treeScale.h"
 
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
@@ -853,6 +854,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
+        addFunction( "treeScale",                   new Func_treeScale()                );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "fnBlosum62", new Func_blosum62());
