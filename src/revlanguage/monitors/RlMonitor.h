@@ -41,7 +41,9 @@ namespace RevLanguage {
         virtual Monitor*                            clone(void) const = 0;                                                  //!< Clone object
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-                
+        
+    protected:
+        static bool                                 compareVarNames(RevPtr<const RevVariable> i, RevPtr<const RevVariable> j) { return strcmp(i->getName().c_str(), j->getName().c_str()) < 0; }
     };
     
 }

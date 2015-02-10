@@ -11,6 +11,8 @@
 #include "RlString.h"
 #include "TypeSpec.h"
 
+#include <algorithm>
+#include <string>
 
 using namespace RevLanguage;
 
@@ -38,8 +40,8 @@ void Mntr_File::constructInternalObject( void )
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     
     // sort, remove duplicates, the create monitor vector
-    sort( vars.begin(), vars.end() );
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
+    sort( vars.begin(), vars.end(), compareVarNames );
     std::vector<RevBayesCore::DagNode *> n;
     for (std::vector<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
     {
@@ -53,7 +55,6 @@ void Mntr_File::constructInternalObject( void )
     
     value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app);
 }
-
 
 /** Get Rev type of object */
 const std::string& Mntr_File::getClassType(void) { 
