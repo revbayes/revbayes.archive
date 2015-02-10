@@ -234,16 +234,16 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::dppNormalizeVector(std::vector<d
     
 	size_t n = v.size();
 	double lnC = v[0];
-	for (int i=1; i<n; i++){
+	for (size_t i=1; i<n; i++){
 		if (v[i] > lnC)
 			lnC = v[i];
 	}
 	
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		v[i] -= lnC;
 	
 	double sum = 0.0;
-	for (int i=0; i<n; i++){
+	for (size_t i=0; i<n; i++){
 		if ( v[i] < -300.0 )
 			v[i] = 0.0;
 		else
@@ -251,7 +251,7 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::dppNormalizeVector(std::vector<d
 		sum += v[i];
 	}
 	
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		v[i] /= sum;    
 }
 
