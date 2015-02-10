@@ -591,8 +591,14 @@ void Mcmcmc::swapRandomChains(void)
     
     if ( processActive == true )
     {
-        j = int(GLOBAL_RNG->uniform01() * (numChains-1));
-        k = int(GLOBAL_RNG->uniform01() * (numChains-j-1)) + j + 1;
+        j = int(GLOBAL_RNG->uniform01() * numChains);
+        if (numChains > 1)
+        {
+            do {
+                k = int(GLOBAL_RNG->uniform01() * numChains);
+            }
+            while(j == k);
+        }
         
         ++numAttemptedSwaps;
             
@@ -634,7 +640,7 @@ void Mcmcmc::swapRandomChains(void)
             size_t tmp = heatRanks[j];
             heatRanks[j] = heatRanks[k];
             heatRanks[k] = tmp;
-
+            
             ++numAcceptedSwaps;
         }
         
