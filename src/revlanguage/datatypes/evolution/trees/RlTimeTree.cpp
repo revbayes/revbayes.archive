@@ -208,7 +208,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         found = true;
         
         int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        const std::string& n = this->dagNode->getValue().getNode(index).getName();
+        const std::string& n = this->dagNode->getValue().getNode((size_t)index).getName();
         return new RevVariable( new RlString( n ) );
     }
     else if (name == "rescale")

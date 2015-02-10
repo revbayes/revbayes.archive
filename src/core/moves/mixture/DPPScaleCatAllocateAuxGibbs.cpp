@@ -256,10 +256,10 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::dppNormalizeVector(std::vector<d
 }
 
 int RevBayesCore::DPPScaleCatAllocateAuxGibbs::findElementNewTable(double u, std::vector<double> lnProb) {
-	for (int j = 0; j < lnProb.size(); j++){
+	for (size_t j = 0; j < lnProb.size(); j++){
 		u -= lnProb[j];
 		if (u < 0.0){
-			return j;
+			return (int)j;
 		}
 	}
 	return -1;
@@ -267,10 +267,10 @@ int RevBayesCore::DPPScaleCatAllocateAuxGibbs::findElementNewTable(double u, std
 
 int RevBayesCore::DPPScaleCatAllocateAuxGibbs::findTableIDForVal(std::vector<double> tvs, double val) {
 	
-	for (int j=0; j<tvs.size(); j++){
+	for (size_t j=0; j<tvs.size(); j++){
 		if(tvs[j] == val){
 			// this is an existing table
-			return j;
+			return (int)j;
 		}
 	}
 	return -1; // new table
