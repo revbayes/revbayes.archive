@@ -62,9 +62,13 @@ double SubtreeScale::performSimpleMove( void ) {
     // now we store all necessary values
     storedNode = node;
     storedAge = my_age;
+    
+    // lower bound
+    double min_age = 0.0;
+    TreeUtilities::getOldestTip(&tau, node, min_age);
         
     // draw new ages and compute the hastings ratio at the same time
-    double my_new_age = parent_age * rng->uniform01();
+    double my_new_age = min_age + (parent_age - min_age) * rng->uniform01();
     
     double scalingFactor = my_new_age / my_age;
     
@@ -72,6 +76,16 @@ double SubtreeScale::performSimpleMove( void ) {
     
     // rescale the subtrees
     TreeUtilities::rescaleSubtree(&tau, node, scalingFactor );
+    
+    if (min_age != 0.0)
+    {
+        for (size_t i = 0; i < tau.getNumberOfTips(); i++)
+        {
+            if (tau.getNode(i).getAge() < 0.0) {
+                return RbConstants::Double::neginf;
+            }
+        }
+    }
     
     // compute the Hastings ratio
     double lnHastingsratio = (nNodes > 1 ? log( scalingFactor ) * (nNodes-1) : 0.0 );
