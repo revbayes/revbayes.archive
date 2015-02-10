@@ -23,7 +23,7 @@
 #include "WorkspaceToCoreWrapperObject.h"
 
 #include <ostream>
-#include <string>
+#include <cstring>
 
 namespace RevLanguage {
     
