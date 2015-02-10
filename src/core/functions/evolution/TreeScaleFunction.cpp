@@ -11,12 +11,25 @@
 
 using namespace RevBayesCore;
 
-TreeScaleFunction::TreeScaleFunction(const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *s) : TypedFunction<TimeTree>( new TimeTree() ), tau( t ), scale( s ) {
+TreeScaleFunction::TreeScaleFunction(const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *s, std::vector<double> m) : TypedFunction<TimeTree>( new TimeTree() ),
+    tau( t ),
+    scale( s ),
+    tipAges( m ),
+    scaleLimit(0.0)
+{
     // add the lambda parameter as a parent
     addParameter( tau );
     addParameter( scale );
     
-//    value->setTopology( &(tau->getValue()), false );
+    // get scale limit from tip ages
+    double maxAge = 0.0;
+    for (size_t i = 0; i < tipAges.size(); i++)
+    {
+        if (tipAges[i] > maxAge)
+            maxAge = tipAges[i];
+    }
+    scaleLimit = maxAge;
+    
     *value = tau->getValue();
     
     update();
@@ -75,11 +88,24 @@ void TreeScaleFunction::touch(DagNode *toucher)
 void TreeScaleFunction::update( void )
 {
     TimeTree tree = tau->getValue();
+    
+    // update newick string
+    tree.getRoot().flagNewickRecomputation();
+    
     const double &v = scale->getValue();
-    for (size_t i = 0; i < tree.getNumberOfNodes(); i++)
+    
+    // internal node ages are scaled
+    for (size_t i = tree.getNumberOfTips(); i < tree.getNumberOfNodes(); i++)
     {
         tree.setAge(i, v * tree.getAge(i));
     }
+    
+    // tip nodes have pre-set ages
+    for (size_t i = 0; i < tree.getNumberOfTips(); i++)
+    {
+        tree.setAge(i, tipAges[i]);
+    }
+    
     *value = tree;
 }
 
@@ -91,7 +117,7 @@ void TreeScaleFunction::swapParameterInternal(const DagNode *oldP, const DagNode
     if (oldP == tau)
     {
         tau = static_cast<const TypedDagNode<TimeTree>* >( newP );
-        *value = tau->getValue();
+//        *value = tau->getValue();
     }
     else if (oldP == scale)
     {
