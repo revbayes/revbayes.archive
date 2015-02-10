@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class TreeScaleFunction : public TypedFunction<TimeTree> {
         
     public:
-        TreeScaleFunction(const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *b);
+        TreeScaleFunction(const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *b, std::vector<double> m);
         virtual                                            ~TreeScaleFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -40,6 +40,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<TimeTree>*                       tau;
         const TypedDagNode<double>*                         scale;
+        std::vector<double>                                 tipAges;
+        double                                              scaleLimit;
         std::set<size_t>                                    touchedNodeIndices;
     };
     

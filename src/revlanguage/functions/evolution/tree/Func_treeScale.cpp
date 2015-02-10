@@ -8,6 +8,7 @@
 
 #include "Func_treeScale.h"
 #include "ModelVector.h"
+#include "RbVector.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
@@ -33,9 +34,32 @@ Func_treeScale* Func_treeScale::clone( void ) const {
 RevBayesCore::TypedFunction<RevBayesCore::TimeTree>* Func_treeScale::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* scale               = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TreeScaleFunction* f = new RevBayesCore::TreeScaleFunction( tau, scale );
+    RevBayesCore::TypedDagNode<double>* scale                             = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau               = static_cast<const TimeTree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    
+    size_t nTips = tau->getValue().getNumberOfTips();
+    RevBayesCore::RbVector<double> tipAges;
+    if ( this->args[2].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+//        tipAges = static_cast< RevBayesCore::RbVector<RealPos>& >( this->args[2].getVariable()->getRevObject() ).getValue();
+        tipAges = static_cast<const ModelVector<RealPos> &>( this->args[2].getVariable()->getRevObject() ).getDagNode()->getValue();
+        
+        // sanity check
+        if ( nTips != tipAges.size() )
+        {
+            throw RbException( "The number of tip ages does not match the number of tips" );
+        }
+    }
+    else
+    {
+        double v = static_cast<RealPos&>( this->args[2].getVariable()->getRevObject() ).getValue();
+        for (size_t i = 0; i < nTips; i++)
+        {
+            tipAges.push_back( v );
+        }
+    }
+    
+    RevBayesCore::TreeScaleFunction* f = new RevBayesCore::TreeScaleFunction( tau, scale, tipAges );
     
     return f;
 }
@@ -48,9 +72,14 @@ const ArgumentRules& Func_treeScale::getArgumentRules( void ) const {
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
-        
-        argumentRules.push_back( new ArgumentRule( "tree",    TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "scale",   RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    
+        argumentRules.push_back( new ArgumentRule( "scale",       RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "tree",        TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        std::vector<TypeSpec> tipAgeTypes;
+        tipAgeTypes.push_back( RealPos::getClassTypeSpec() );
+        tipAgeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "tipAges"    , tipAgeTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+
         
         rulesSet = true;
     }
