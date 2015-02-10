@@ -121,11 +121,17 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 #define	MAX_DIR_PATH	2048
 void RbSettings::initializeUserSettings(void)
 {
+    helpDir   = "help";         // the default help directory
+    moduleDir = "modules";      // the default module directory
+    lineWidth = 100;            // the default line width
+    tolerance = 10E-10;         // set default value for tolerance comparing doubles
+    printNodeIndex = true;      // print node indices of tree nodes as comments
     
     std::string userDir = RevBayesCore::RbFileManager::expandUserDir("~");
     
-    // read the ini file
+    // read the ini file, override defaults if applicable
     RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
+    bool failed = false;
     if ( fm.isFile() )
     {
         std::ifstream readStream;
@@ -136,23 +142,13 @@ void RbSettings::initializeUserSettings(void)
             std::vector<std::string> tokens;
             StringUtilities::stringSplit(readLine, "=", tokens);
             if (tokens.size() > 1)
+            {
                 setOption(tokens[0], tokens[1], false);
-            
+            }
         }
         
         fm.closeFile(readStream);
     }
-    else
-    {
-
-        helpDir   = "help";         // the default help directory
-        moduleDir = "modules";      // the default module directory
-        lineWidth = 100;            // the default line width
-        tolerance = 10E-10;         // set default value for tolerance comparing doubles
-        printNodeIndex = true;      // print node indices of tree nodes as comments
-
-    }
-    
 
     // initialize the current directory to be the directory the binary is sitting in
     char cwd[MAX_DIR_PATH+1];
