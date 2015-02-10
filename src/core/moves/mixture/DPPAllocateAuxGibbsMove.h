@@ -209,7 +209,7 @@ int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findTableIDForVal(std::vec
 	for (size_t j=0; j<tvs.size(); j++){
 		if(tvs[j] == val){
 			// this is an existing table
-			return j;
+			return (int)j;
 		}
 	}
 	return -1; // new table
@@ -258,10 +258,10 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::dppNormalizeVector(std::v
 
 template <class valueType>
 int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findElementNewTable(double u, std::vector<double> lnProb) {
-	for (int j = 0; j < lnProb.size(); j++){
+	for (size_t j = 0; j < lnProb.size(); j++){
 		u -= lnProb[j];
 		if (u < 0.0){
-			return j;
+			return (int)j;
 		}
 	}
 	return -1;

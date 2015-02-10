@@ -131,7 +131,7 @@ void RbSettings::initializeUserSettings(void)
     
     // read the ini file, override defaults if applicable
     RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
-    bool failed = false;
+	//    bool failed = false; //unused
     if ( fm.isFile() )
     {
         std::ifstream readStream;
