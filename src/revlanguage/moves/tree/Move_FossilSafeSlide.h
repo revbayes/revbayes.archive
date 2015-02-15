@@ -52,6 +52,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                      tree;
         RevPtr<const RevVariable>                      delta;
+        RevPtr<const RevVariable>                      tipAges;
         RevPtr<const RevVariable>                      scale;
         RevPtr<const RevVariable>                      tune;
         

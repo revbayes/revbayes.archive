@@ -47,9 +47,10 @@ void Move_FossilSafeSlide::constructInternalObject( void )
     double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    std::vector<double> ta       = static_cast<const ModelVector<RealPos> &>( tipAges->getRevObject() ).getDagNode()->getValue();
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t_tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t     = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( t_tmp );
+    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t     = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( t_tmp );
     
     RevBayesCore::TypedDagNode<double>* n_tmp = static_cast<const RealPos &>( scale->getRevObject() ).getDagNode();
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( n_tmp );
@@ -58,7 +59,7 @@ void Move_FossilSafeSlide::constructInternalObject( void )
     nd.push_back(t);
     nd.push_back(n);
     
-    value = new RevBayesCore::FossilSafeSlideMove(nd, d, at, w);
+    value = new RevBayesCore::FossilSafeSlideMove(nd, ta, d, at, w);
 }
 
 
@@ -88,10 +89,11 @@ const MemberRules& Move_FossilSafeSlide::getParameterRules(void) const {
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "scale", RealPos::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "scale",   RealPos::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "tree",    TimeTree::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "tipAges", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta",   RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune" ,   RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -135,6 +137,9 @@ void Move_FossilSafeSlide::setConstParameter(const std::string& name, const RevP
     }
     else if ( name == "scale" ) {
         scale = var;
+    }
+    else if ( name == "tipAges" ) {
+        tipAges = var;
     }
     else if ( name == "delta" ) {
         delta = var;
