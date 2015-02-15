@@ -107,13 +107,13 @@ void TreeScaleFunction::update( void )
         tree.setAge(i, tipAges[i]);
     }
     
-    for (size_t i = 0; i < tree.getNumberOfNodes(); i++)
-    {
-        if (tree.getBranchLength(i) < 0.0) {
-            
-            std::cout << "TreeScale has negative brlen\n";
-        }
-    }
+//    for (size_t i = 0; i < tree.getNumberOfNodes(); i++)
+//    {
+//        if (tree.getBranchLength(i) < 0.0) {
+//            
+//            ; //std::cout << "TreeScale has negative brlen\n";
+//        }
+//    }
     
     *value = tree;
 }
