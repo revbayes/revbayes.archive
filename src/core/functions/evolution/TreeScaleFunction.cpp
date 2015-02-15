@@ -101,9 +101,18 @@ void TreeScaleFunction::update( void )
     }
     
     // tip nodes have pre-set ages
+    // NOTE: should be able to rescale with v* tree.getAge(i) under new setup...
     for (size_t i = 0; i < tree.getNumberOfTips(); i++)
     {
         tree.setAge(i, tipAges[i]);
+    }
+    
+    for (size_t i = 0; i < tree.getNumberOfNodes(); i++)
+    {
+        if (tree.getBranchLength(i) < 0.0) {
+            
+            std::cout << "TreeScale has negative brlen\n";
+        }
     }
     
     *value = tree;
@@ -117,7 +126,7 @@ void TreeScaleFunction::swapParameterInternal(const DagNode *oldP, const DagNode
     if (oldP == tau)
     {
         tau = static_cast<const TypedDagNode<TimeTree>* >( newP );
-//        *value = tau->getValue();
+        *value = tau->getValue();
     }
     else if (oldP == scale)
     {
