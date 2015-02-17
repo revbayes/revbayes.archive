@@ -30,8 +30,6 @@ TreeScaleFunction::TreeScaleFunction(const TypedDagNode<TimeTree> *t, const Type
     }
     scaleLimit = maxAge;
     
-    *value = tau->getValue();
-    
     update();
 }
 
@@ -76,46 +74,37 @@ void TreeScaleFunction::touch(DagNode *toucher)
     //delegate to base class
     TypedFunction< TimeTree >::touch( toucher );
     
-    if ( toucher == scale )
-    {
-        const std::set<size_t> &touchedIndices = toucher->getTouchedElementIndices();
-        touchedNodeIndices.insert(touchedIndices.begin(), touchedIndices.end());
-    }
-    
 }
 
 
 void TreeScaleFunction::update( void )
 {
-    TimeTree tree = tau->getValue();
-    
-    // update newick string
-    tree.getRoot().flagNewickRecomputation();
+    (*value) = tau->getValue();
     
     const double &v = scale->getValue();
     
-    // internal node ages are scaled
-    for (size_t i = tree.getNumberOfTips(); i < tree.getNumberOfNodes(); i++)
-    {
-        tree.setAge(i, v * tree.getAge(i));
-    }
-    
     // tip nodes have pre-set ages
     // NOTE: should be able to rescale with v* tree.getAge(i) under new setup...
-    for (size_t i = 0; i < tree.getNumberOfTips(); i++)
+    for (size_t i = 0; i < (*value).getNumberOfTips(); i++)
     {
-        tree.setAge(i, tipAges[i]);
+        (*value).setAge(i, tipAges[i]);
+    }    
+    
+    // internal node ages are scaled
+    for (size_t i = (*value).getNumberOfTips(); i < (*value).getNumberOfNodes(); i++)
+    {
+        (*value).setAge(i, v * tau->getValue().getAge(i));
     }
     
-//    for (size_t i = 0; i < tree.getNumberOfNodes(); i++)
-//    {
-//        if (tree.getBranchLength(i) < 0.0) {
-//            
-//            ; //std::cout << "TreeScale has negative brlen\n";
+//    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); i++) {
+//        if ((*value).getBranchLength(i) < 0.0) {
+//            std::cout << "TreeScale has negative brlen\n";
 //        }
 //    }
     
-    *value = tree;
+    // update newick string
+    (*value).getRoot().flagNewickRecomputation();
+    
 }
 
 
@@ -126,7 +115,6 @@ void TreeScaleFunction::swapParameterInternal(const DagNode *oldP, const DagNode
     if (oldP == tau)
     {
         tau = static_cast<const TypedDagNode<TimeTree>* >( newP );
-        *value = tau->getValue();
     }
     else if (oldP == scale)
     {

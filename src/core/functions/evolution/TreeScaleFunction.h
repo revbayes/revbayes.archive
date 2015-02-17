@@ -42,7 +42,6 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         scale;
         std::vector<double>                                 tipAges;
         double                                              scaleLimit;
-        std::set<size_t>                                    touchedNodeIndices;
     };
     
 }

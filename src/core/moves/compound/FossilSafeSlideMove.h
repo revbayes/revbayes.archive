@@ -79,6 +79,7 @@ namespace RevBayesCore {
             bool                                    changed;
             double                                  lambda;
             double                                  storedValue;
+            std::vector<double>                     storedTipAges;
             double                                  tol;
         
     };

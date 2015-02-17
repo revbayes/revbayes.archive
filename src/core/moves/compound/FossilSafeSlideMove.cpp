@@ -19,10 +19,13 @@ using namespace RevBayesCore;
 FossilSafeSlideMove::FossilSafeSlideMove(std::vector<DagNode*> n, std::vector<double> ta, double l, double w, bool t) : MoveOld( n, w, t ),
     lambda(l),
     tipAges(ta),
-    tol(1E-4)
+    tol(1E-4),
+    storedValue(1.0)
 {
     tree   = static_cast< StochasticNode<TimeTree>* >( n[0] );
     scaler = static_cast< ContinuousStochasticNode* >( n[1] ) ;
+    
+    storedTipAges = std::vector<double>( tree->getValue().getNumberOfTips(), 0.0 );
     
     for (size_t i = 0; i < tipAges.size(); i++)
     {
@@ -46,6 +49,8 @@ void FossilSafeSlideMove::acceptMove( void ) {
     changed = false;
 
     // do stuff ...
+    tree->touch();
+
 }
 
 /* Clone object */
@@ -90,22 +95,22 @@ double FossilSafeSlideMove::doMove( void ) {
 
     val = newVal;
     scaler->setValue(val);
-//    scaler->touch();
+    
     TimeTree& t = tree->getValue();
-    double rescale = val / storedValue;
+    double rescale = storedValue / val;
 
     bool failed = false;
     std::vector<TopologyNode*> nodes = t.getNodes();
-    
+   
     for (size_t i = 0; i < fossilIdx.size(); i++)
     {
         const size_t nodeIdx = nodes[ fossilIdx[i] ]->getIndex();
-        double a = nodes[ nodeIdx ]->getAge() * rescale;
-        t.setAge(nodeIdx, a);
-
+        storedTipAges[nodeIdx] = t.getAge(nodeIdx);
+        t.setAge( nodeIdx, tipAges[nodeIdx] / val );
         if ( tipAges[ nodeIdx ] > nodes[ nodeIdx ]->getParent().getAge() * val )
         {
             // reject: rescaled tree has negative branch lengths!
+            // std::cout << "reject, negative brlen\n";
             failed = true;
         }
     }
@@ -173,18 +178,18 @@ void FossilSafeSlideMove::rejectMove( void )
     // delegate to the derived class. The derived class needs to restore the value(s).
 
     // undo the proposal
-    double rescale = storedValue / scaler->getValue();
+//    double rescale = scaler->getValue() / storedValue;
     scaler->setValue(storedValue);
 
     TimeTree& t = tree->getValue();
     std::vector<TopologyNode*> nodes = t.getNodes();
+    
     for (size_t i = 0; i < fossilIdx.size(); i++)
     {
         const size_t nodeIdx = nodes[ fossilIdx[i] ]->getIndex();
-        double a = nodes[ nodeIdx ]->getAge() * rescale;
-        t.setAge(nodeIdx, a);
+        t.setAge(nodeIdx, storedTipAges[nodeIdx]);
     }
-    
+
     // touch the node
     tree->touch();
     scaler->touch();
