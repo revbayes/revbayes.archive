@@ -10,10 +10,11 @@
 #
 ################################################################################
 
-nTraits <- 3
-kappa <- 0.1
-df <- nTraits + 2
-covdim = nTraits
+nTraits <- 3;
+kappa <- 0.1;
+df <- nTraits + 2;
+covdim = nTraits;
 
 
-R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df)
+R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
+R.lnProbability();
