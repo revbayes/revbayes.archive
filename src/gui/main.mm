@@ -1,4 +1,5 @@
-#include "RbClient.h"
+#define __ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES 0
+
 #include "RevLanguageMain.h"
 #include "Parser.h"
 #include "Workspace.h"
