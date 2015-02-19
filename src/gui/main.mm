@@ -13,10 +13,10 @@ int main(int argc, char *argv[]) {
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;
     int argIndex = 1;
-    while (argIndex < argc)
-        {
-        sourceFiles.push_back(std::string(argv[argIndex++]));
-        }
+//    while (argIndex < argc)
+//        {
+//        sourceFiles.push_back(std::string(argv[argIndex++]));
+//        }
     
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain();
