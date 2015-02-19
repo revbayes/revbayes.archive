@@ -7,7 +7,6 @@
 #include "AminoAcidState.h"
 #include "CharacterState.h"
 #include "AbstractCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "DnaState.h"
 #include "Parser.h"
 #include "AbstractCharacterData.h"
@@ -246,36 +245,37 @@
         [m addTaxonName:taxonName];
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
-        for (size_t j=0; j<cd.getNumberOfCharacters(i); j++)
+        for (size_t j=0; j<cd.getNumberOfCharacters(); j++)
             {
-            const RevBayesCore::CharacterState& theChar = td.getCharacter(j);
-            RbDataCell* cell = [[RbDataCell alloc] init];
-            [cell setDataType:[m dataType]];
-            if ( [m dataType] != CONTINUOUS )
-                {
-                unsigned int x = (unsigned int)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
-                NSNumber* n = [NSNumber numberWithUnsignedInt:x];
-                [cell setVal:n];
-                [cell setIsDiscrete:YES];
-                [cell setNumStates:((int)theChar.getNumberOfStates())];
-                if ( theChar.isAmbiguous() == true )
-                    [cell setIsAmbig:YES];
-                if (theChar.isGapState() == true)
-                    [cell setIsGapState:YES];
-                else
-                    [cell setIsGapState:NO];
-                }
-            else 
-                {
-                double x = static_cast<const RevBayesCore::ContinuousCharacterState &>(theChar).getMean();
-                NSNumber* n = [NSNumber numberWithDouble:x];
-                [cell setVal:n];
-                [cell setIsDiscrete:NO];
-                [cell setNumStates:0];
-                }
-            [cell setRow:i];
-            [cell setColumn:j];
-            [rbTaxonData addObservation:cell];
+                // Sebastian: This code needs to be fixed!!!
+//            const RevBayesCore::CharacterState& theChar = td.getCharacter();
+//            RbDataCell* cell = [[RbDataCell alloc] init];
+//            [cell setDataType:[m dataType]];
+//            if ( [m dataType] != CONTINUOUS )
+//                {
+//                unsigned int x = (unsigned int)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
+//                NSNumber* n = [NSNumber numberWithUnsignedInt:x];
+//                [cell setVal:n];
+//                [cell setIsDiscrete:YES];
+//                [cell setNumStates:((int)theChar.getNumberOfStates())];
+//                if ( theChar.isAmbiguous() == true )
+//                    [cell setIsAmbig:YES];
+//                if (theChar.isGapState() == true)
+//                    [cell setIsGapState:YES];
+//                else
+//                    [cell setIsGapState:NO];
+//                }
+//            else 
+//                {
+//                double x = static_cast<const RevBayesCore::ContinuousCharacterState &>(theChar).getMean();
+//                NSNumber* n = [NSNumber numberWithDouble:x];
+//                [cell setVal:n];
+//                [cell setIsDiscrete:NO];
+//                [cell setNumStates:0];
+//                }
+//            [cell setRow:i];
+//            [cell setColumn:j];
+//            [rbTaxonData addObservation:cell];
             }
         [m addTaxonData:rbTaxonData];
         }
