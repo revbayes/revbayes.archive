@@ -432,6 +432,7 @@
 #include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
 #include "Func_varianceCovarianceMatrix.h"
+#include "Func_decomposedVarianceCovarianceMatrix.h"
 
 
 /** Initialize global workspace */
@@ -1175,7 +1176,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnDiscretizeGamma",      new Func_discretizeGamma( )   );
 
         addFunction( "fnVarCovar",             new Func_varianceCovarianceMatrix( )   );
-        
+        addFunction( "fnDecompVarCovar",       new Func_decomposedVarianceCovarianceMatrix( )   );
+
         ///////////////////////////////////////////////////////////////////////////
         /* Add distribution functions (using help classes in folder "functions") */
         ///////////////////////////////////////////////////////////////////////////

@@ -3,9 +3,9 @@
 
 using namespace RevBayesCore;
 
-VarianceCovarianceFunction::VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *sd, const TypedDagNode< RbVector<double> > *ce) : TypedFunction<MatrixReal>( new MatrixReal(sd->getValue().size()) ),
+VarianceCovarianceFunction::VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *sd, const TypedDagNode< RbVector<double> > *cc) : TypedFunction<MatrixReal>( new MatrixReal(sd->getValue().size()) ),
     standardDeviations( sd ),
-    correlationCoefficients( ce )
+    correlationCoefficients( cc )
 {
 
     // check dimensions here
@@ -43,6 +43,7 @@ void VarianceCovarianceFunction::update(void) {
             {
             (*value)[i][j] = s[i] * s[j] * p[k];
             (*value)[j][i] = s[i] * s[j] * p[k];
+            k++;
             }
         }
 }

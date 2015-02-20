@@ -45,7 +45,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector< double > >*        simplex;
+        const TypedDagNode< RbVector< double > >*           simplex;
         const TypedDagNode< double >*                       factor;
         const TypedDagNode< int >*                          index;
     };

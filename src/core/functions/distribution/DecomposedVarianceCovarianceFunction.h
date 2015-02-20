@@ -20,8 +20,8 @@
 
 
 
-#ifndef VarianceCovarianceFunction_H
-#define VarianceCovarianceFunction_H
+#ifndef DecomposedVarianceCovarianceFunction_H
+#define DecomposedVarianceCovarianceFunction_H
 
 #include "RbVector.h"
 #include "MatrixReal.h"
@@ -32,14 +32,14 @@
 
 namespace RevBayesCore {
     
-    class VarianceCovarianceFunction : public TypedFunction<MatrixReal> {
+    class DecomposedVarianceCovarianceFunction : public TypedFunction<MatrixReal> {
         
     public:
-        VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *sd, const TypedDagNode< RbVector<double> > *cc);
-        virtual                                            ~VarianceCovarianceFunction(void);                                //!< Virtual destructor
+        DecomposedVarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *sd, const TypedDagNode< MatrixReal > *cc);
+        virtual                                            ~DecomposedVarianceCovarianceFunction(void);                                //!< Virtual destructor
         
         // public member functions
-        VarianceCovarianceFunction*                         clone(void) const;                                               //!< Create an independent clone
+        DecomposedVarianceCovarianceFunction*               clone(void) const;                                               //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -50,7 +50,7 @@ namespace RevBayesCore {
         // members
         
         const TypedDagNode< RbVector<double> >*             standardDeviations;
-        const TypedDagNode< RbVector<double> >*             correlationCoefficients;
+        const TypedDagNode< MatrixReal >*                   correlationCoefficients;
         
     };
     
