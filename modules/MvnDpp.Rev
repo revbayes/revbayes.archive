@@ -15,6 +15,9 @@ kappa <- 0.1;
 df <- nTraits + 2;
 covdim = nTraits;
 
-
 R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
 R.lnProbability();
+
+s <- v(1,2,3)
+
+V := fnDecompVarCovar(s, R);
