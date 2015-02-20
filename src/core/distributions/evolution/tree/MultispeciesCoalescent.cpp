@@ -1,4 +1,3 @@
-
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "MultispeciesCoalescent.h"
@@ -55,18 +54,8 @@ MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,
 }
 
 
-
-MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) : TypedDistribution<TimeTree>( v ),
-taxa( v.taxa ),
-speciesTree( v.speciesTree ),
-Nes (v.Nes),
-Ne( v.Ne ),
-numTaxa( v.numTaxa ),
-logTreeTopologyProb( v.logTreeTopologyProb ){
-}
-
-
-MultispeciesCoalescent::~MultispeciesCoalescent() {
+MultispeciesCoalescent::~MultispeciesCoalescent()
+{
     
 }
 
@@ -109,7 +98,8 @@ void MultispeciesCoalescent::attachTimes(TimeTree *psi, std::vector<TopologyNode
 }
 
 
-void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
+void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
+{
     
     if (tips.size() < numTaxa)
     {
@@ -143,13 +133,15 @@ void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &t
 }
 
 
-MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const {
+MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const
+{
     
     return new MultispeciesCoalescent( *this );
 }
 
 
-double MultispeciesCoalescent::computeLnProbability( void ) {
+double MultispeciesCoalescent::computeLnProbability( void )
+{
     
     // variable declarations and initialization
     double lnProbCoal = 0;
@@ -645,7 +637,8 @@ void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe)
 
 
 
-void MultispeciesCoalescent::simulateTree( void ) {
+void MultispeciesCoalescent::simulateTree( void )
+{
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -795,9 +788,6 @@ void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const Da
     else if ( oldP == speciesTree)
     {
         speciesTree = static_cast<const TypedDagNode< TimeTree >* >( newP );
-        
-
-        
     }
     
 }
