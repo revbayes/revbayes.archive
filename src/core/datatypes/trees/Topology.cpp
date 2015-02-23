@@ -280,7 +280,8 @@ const TopologyNode& Topology::getInteriorNode( size_t indx ) const {
 }
 
 
-TopologyNode& Topology::getRoot( void ) {
+TopologyNode& Topology::getRoot( void )
+{
     
     return *root;
 }
