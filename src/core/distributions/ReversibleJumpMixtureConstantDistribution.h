@@ -109,7 +109,15 @@ double RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::com
     double lnProb;
     if ( index == 0 )
     {
-        lnProb = log( probability->getValue() );
+        if ( *this->value != constValue->getValue() )
+        {
+            lnProb = RbConstants::Double::neginf;
+        }
+        else
+        {
+            lnProb = log( probability->getValue() );
+        }
+        
     }
     else
     {
