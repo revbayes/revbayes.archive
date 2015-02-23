@@ -121,7 +121,7 @@ double RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::com
     }
     else
     {
-        lnProb = log( probability->getValue() );
+        lnProb = log( 1.0 - probability->getValue() );
         baseDistribution->setValue( *this->value );
         lnProb += baseDistribution->computeLnProbability();
         
