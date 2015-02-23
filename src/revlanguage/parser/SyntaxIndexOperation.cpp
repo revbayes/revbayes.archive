@@ -19,7 +19,8 @@ SyntaxIndexOperation::SyntaxIndexOperation(SyntaxElement* var, SyntaxElement* in
 
 
 /** Deep copy constructor */
-SyntaxIndexOperation::SyntaxIndexOperation(const SyntaxIndexOperation& x) : SyntaxElement(x) {
+SyntaxIndexOperation::SyntaxIndexOperation(const SyntaxIndexOperation& x) : SyntaxElement(x)
+{
 
     if ( x.baseVariable != NULL )
     {
@@ -52,7 +53,8 @@ SyntaxIndexOperation::~SyntaxIndexOperation()
 
 
 /** Assignment operator */
-SyntaxIndexOperation& SyntaxIndexOperation::operator=(const SyntaxIndexOperation& x) {
+SyntaxIndexOperation& SyntaxIndexOperation::operator=(const SyntaxIndexOperation& x)
+{
 
     if (&x != this)
     {
