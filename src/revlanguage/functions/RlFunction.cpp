@@ -664,16 +664,16 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
         /* Skip if already matched */
         if ( taken[i] )
+        {
             continue;
-
+        }
+        
         /* Find first empty slot and try to fit argument there */
         for (size_t j=0; j<nRules; j++) 
         {
 
             if ( filled[j] == false &&
-                ( (!theRules[j].isEllipsis() && passedArgs[i].getLabel().size() == 0) ||
-                 (theRules[j].isEllipsis()) )
-                )
+                 ( (!theRules[j].isEllipsis() && passedArgs[i].getLabel().size() == 0) || (theRules[j].isEllipsis()) ) )
             {
                 
                 Argument &arg = const_cast<Argument&>(passedArgs[i]);
