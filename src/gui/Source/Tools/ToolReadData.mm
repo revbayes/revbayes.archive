@@ -4,6 +4,7 @@
 #include <string>
 #include "CharacterState.h"
 #include "AbstractCharacterData.h"
+#include "ModelVector.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
@@ -335,7 +336,7 @@
     // formatted string to the parser
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- readDiscreteCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
+    std::string line = variableName + " = readDiscreteCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -355,20 +356,19 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::WorkspaceVector<RevLanguage::AbstractDiscreteCharacterData> *dnc = dynamic_cast<const RevLanguage::WorkspaceVector<RevLanguage::AbstractDiscreteCharacterData> *>( &dv );
+    const RevLanguage::ModelVector<RevLanguage::AbstractDiscreteCharacterData> *dnc = dynamic_cast<const RevLanguage::ModelVector<RevLanguage::AbstractDiscreteCharacterData> *>( &dv );
 
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const RevLanguage::AbstractDiscreteCharacterData *rlan = &(*dnc)[i];
+            const RevBayesCore::AbstractDiscreteCharacterData *an = &(*dnc)[i];
             RbData* newMatrix = NULL;
             
             // DNA
             if ( NULL == newMatrix )
                 {
-                const RevBayesCore::AbstractDiscreteCharacterData *an = &(rlan->getValue()) ;
                 const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( an );
                 if ( cd != NULL )
                     {
@@ -380,7 +380,6 @@
             // RNA
             if ( NULL == newMatrix ) 
                 {
-                const RevBayesCore::AbstractDiscreteCharacterData *an = &(rlan->getValue()) ;
                 const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( an );
                 if ( cd != NULL )
                     {
@@ -392,7 +391,6 @@
             // Amino-Acid
             if ( NULL == newMatrix ) 
                 {
-                const RevBayesCore::AbstractDiscreteCharacterData *an = &(rlan->getValue()) ;
                 const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( an );
                 if ( cd != NULL )
                     {

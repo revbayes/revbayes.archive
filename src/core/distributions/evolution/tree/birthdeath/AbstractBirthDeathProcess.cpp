@@ -79,10 +79,10 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
  * \param[in]     times         
  * \param[in]     T      
  */
-void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T) 
+void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
 {
     
-    if (index < numTaxa-1) 
+    if (index < times->size() )
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -506,29 +506,47 @@ void AbstractBirthDeathProcess::simulateTree( void )
     // now simulate the speciation times
     // first, get the time of the origin
 	double t_or = 0.0;
+    size_t numInitialSpecies = 1;
     if ( startsAtRoot == true )
     {
         t_or = rootAge->getValue();
+        psi->setAge(root->getIndex(), t_or);
+        numInitialSpecies = 2;
     }
     else
     {
         t_or = origin->getValue();
     }
     
-    // draw a time for each speciation event condition on the time of the process
-    std::vector<double> *times = simSpeciations(numTaxa-1, t_or);
-    
     nodes.clear();
-    nodes.push_back( root );
-    attachTimes(psi, nodes, 0, times, t_or);
+    
+    if ( numInitialSpecies < numTaxa)
+    {
+        // draw a time for each speciation event condition on the time of the process
+        std::vector<double> *times = simSpeciations(numTaxa-numInitialSpecies, t_or);
+        
+        if ( startsAtRoot )
+        {
+            nodes.push_back( &root->getChild(0) );
+            nodes.push_back( &root->getChild(1) );
+            attachTimes(psi, nodes, 0, times, t_or);
+        }
+        else
+        {
+            nodes.push_back( root );
+            attachTimes(psi, nodes, 0, times, t_or);
+        }
+    
+    
+        delete times;
+    }
+    
     // \todo Why are we doing this? (Sebastian)
     for (size_t i = 0; i < numTaxa; ++i) 
     {
         TopologyNode& node = tau->getTipNode(i);
         psi->setAge( node.getIndex(), 0.0 );
     }
-    
-    delete times;
     
     // reset the listeners
     const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
