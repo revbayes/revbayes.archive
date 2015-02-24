@@ -324,11 +324,12 @@ double RateMatrix_Pomo::computeEntryFromMoranProcessWithSelection(size_t state1,
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Pomo::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Pomo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
    // std::cout << "In calculateTransitionProbabilities: "<< t <<std::endl;
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+    double t = rate * (startAge - endAge);
     computeExponentialMatrixByRepeatedSquaring(t, P);
     
 /*    for (size_t i = 0 ; i<58; ++i) {

@@ -38,7 +38,7 @@ namespace RevBayesCore {
         virtual                             ~RateMatrix_Tamura92(void);                                                              //!< Destructor
         
         // RateMatrix functions
-        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_Tamura92*                clone(void) const;
         void                                setGC(double f);
         void                                setKappa(double k);
