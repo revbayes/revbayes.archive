@@ -238,6 +238,7 @@
 #include "Dist_wishart.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_decomposedInverseWishart.h"
+#include "Process_OrnsteinUhlenbeck.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
@@ -433,6 +434,7 @@
 #include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
 #include "Func_varianceCovarianceMatrix.h"
+#include "Func_decomposedVarianceCovarianceMatrix.h"
 
 
 /** Initialize global workspace */
@@ -750,7 +752,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // LogUniform distribution   
         addDistribution( "dnLogUniform",    new Dist_logUniform() );
         
-        // LogUniform distribution
+        // Uniform distribution with normal distributed bounds
         addDistribution( "dnSoftBoundUniformNormal",    new Dist_SoftBoundUniformNormal() );
         
         // uniform distribution
@@ -788,6 +790,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
         addDistribution( "dnMixture",       new Dist_mixture<RateMatrix>() );
+        
+        // Ornstein-Uhlenbeck process
+        addDistribution( "dnOrnsteinUhlenbeck", new OrnsteinUhlenbeckProcess() );
+        addDistribution( "dnOU",                new OrnsteinUhlenbeckProcess() );
         
         // mixture distribution
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
@@ -1177,7 +1183,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnDiscretizeGamma",      new Func_discretizeGamma( )   );
 
         addFunction( "fnVarCovar",             new Func_varianceCovarianceMatrix( )   );
-        
+        addFunction( "fnDecompVarCovar",       new Func_decomposedVarianceCovarianceMatrix( )   );
+
         ///////////////////////////////////////////////////////////////////////////
         /* Add distribution functions (using help classes in folder "functions") */
         ///////////////////////////////////////////////////////////////////////////

@@ -90,6 +90,7 @@ namespace RevBayesCore {
 
 #include "RbConstants.h"
 #include "RbOptions.h"
+#include "RbMathLogic.h"
 #include "TypedDistribution.h"
 
 
@@ -291,6 +292,12 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
         {
             lnProb = 0.0;
         }
+        
+//        if ( RbMath::isAComputableNumber(lnProb) == false )
+//        {
+//            std::cerr << "Could not compute lnProb:\t" << lnProb << std::endl;
+//            distribution->computeLnProbability();
+//        }
         
         // reset flag
         needsProbabilityRecalculation = false;

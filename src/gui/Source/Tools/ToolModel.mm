@@ -295,8 +295,15 @@
             {
             // it's a variable!
             std::cout << "Variable: " << (it)->first << std::endl;
-            std::cout << "   " << varPtr->getGuiVariableName() << std::endl;
-            std::cout << "   " << varPtr->getGuiLatexSymbol() << std::endl;
+            std::cout << "Ptr:      " << varPtr << std::endl;
+            std::cout << "Type:     " << varPtr->getType() << std::endl;
+
+            if ((it)->first[(it)->first.size()-1] == ']')
+                {
+                std::cout << "   xxxx:   \"" << &varPtr[0] << "\"" << std::endl;
+                }
+            std::cout << "   Name:   \"" << varPtr->getGuiVariableName() << "\"" << std::endl;
+            std::cout << "   Symbol: \"" << varPtr->getGuiLatexSymbol()  << "\"" << std::endl;
             }
         }
 
@@ -325,7 +332,7 @@
                 {
                 // it's a distribution!
                 std::cout << "Distribution: " << (it)->first << std::endl;
-                std::cout << "   " << distPtr->getGuiDistributionName() << std::endl;
+                std::cout << "   Name: \"" << distPtr->getGuiDistributionName() << "\"" << std::endl;
                 }
             }
        }
