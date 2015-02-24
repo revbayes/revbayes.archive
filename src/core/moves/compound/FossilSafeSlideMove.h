@@ -19,36 +19,6 @@
 
 namespace RevBayesCore {
     
-//    class FossilSafeSlideMove : public CompoundMove {
-//        
-//    public:
-//        FossilSafeSlideMove( std::vector<DagNode*> n, double l, bool t, double w);                                                  //!<  constructor
-//        
-//        // Basic utility functions
-//        FossilSafeSlideMove*                    clone(void) const;                                                                  //!< Clone object
-//        void                                    swapNode(DagNode *oldN, DagNode *newN);
-//        
-//    protected:
-//        const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-//        double                                  performCompoundMove(void);                                                          //!< Perform move
-//        void                                    printParameterSummary(std::ostream &o) const;
-//        void                                    rejectCompoundMove(void);
-//        void                                    tune(void);
-//        
-//    private:
-//        
-//        // member variables
-//        StochasticNode<TimeTree>*               tree;
-//        ContinuousStochasticNode*               scaler;
-//
-//        // tuning parameter
-//        double                                  lambda;
-//        
-//        // stored objects to undo proposal
-//		double									storedValue;
-//        
-//    };
-//
     class FossilSafeSlideMove : public MoveOld {
         public:
             FossilSafeSlideMove(std::vector<DagNode*> n, std::vector<double> ta, double lambda, double w, bool autoTune = false);     //!< constructor
