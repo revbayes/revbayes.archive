@@ -146,9 +146,9 @@ void RateMatrix_FreeK::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_FreeK::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
-    
+    double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )
     {
 		tiProbsEigens(t, P);

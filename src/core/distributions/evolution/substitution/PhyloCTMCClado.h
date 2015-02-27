@@ -55,16 +55,16 @@ namespace RevBayesCore {
         virtual void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
         // the likelihoods
-        double*                                                             cladoPartialLikelihoods;
-		double*																cladoMarginalLikelihoods;
+        double*                                             cladoPartialLikelihoods;
+		double*												cladoMarginalLikelihoods;
 
         // offsets for nodes
-        size_t                                                              cladoActiveLikelihoodOffset;
-        size_t                                                              cladoNodeOffset;
-        size_t                                                              cladoMixtureOffset;
-        size_t                                                              cladoSiteOffset;
-        size_t                                                              cladoNodeOffsetMarginal;
-        size_t                                                              cladoSiteOffsetMarginal;
+        size_t                                              cladoActiveLikelihoodOffset;
+        size_t                                              cladoNodeOffset;
+        size_t                                              cladoMixtureOffset;
+        size_t                                              cladoSiteOffset;
+        size_t                                              cladoNodeOffsetMarginal;
+        size_t                                              cladoSiteOffsetMarginal;
 
         
     private:
@@ -190,62 +190,161 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>* RevBayesCore::PhyloCTMCClado<c
 template<class charType, class treeType>
 void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
-    
     // get the root frequencies
     const std::vector<double> &f                    = this->getRootFrequencies();
     std::vector<double>::const_iterator f_end       = f.end();
     std::vector<double>::const_iterator f_begin     = f.begin();
+
+    // get cladogenesis values
+    const MatrixReal& cp = ( branchHeterogeneousCladogenesis
+                            ? heterogeneousCladogenesisMatrices->getValue()[root]
+                            : homogeneousCladogenesisMatrix->getValue() );
     
+    
+    // get cladogenesis event map (sparse transition probability matrix)
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    
+    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
+    //
     // get the pointers to the partial likelihoods of the left and right subtree
-    double* p              = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
+    double* p_node         = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
     const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]  * this->activeLikelihoodOffset + left  * this->nodeOffset;
     const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right] * this->activeLikelihoodOffset + right * this->nodeOffset;
+    double*         p_clado_node  = this->cladoPartialLikelihoods + this->activeLikelihood[root]*this->cladoActiveLikelihoodOffset + root*this->cladoNodeOffset;
     
-    // create a vector for the per mixture likelihoods
-    // we need this vector to sum over the different mixture likelihoods
-    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
-    
-    // get pointers the likelihood for both subtrees
-    double*   p_mixture          = p;
-    const double*   p_mixture_left     = p_left;
-    const double*   p_mixture_right    = p_right;
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
+        // the transition probability matrix for this mixture category
+        const double*    tp_begin                = this->transitionProbMatrices[mixture].theMatrix;
         
-        // get pointers to the likelihood for this mixture category
-        double*   p_site_mixture          = p_mixture;
-        const double*   p_site_mixture_left     = p_mixture_left;
-        const double*   p_site_mixture_right    = p_mixture_right;
-        // iterate over all sites
-        for (size_t site = 0; site < this->numPatterns; ++site)
+        // get the pointers to the likelihood for this mixture category
+        size_t offset = mixture*this->mixtureOffset;
+        double*          p_site_mixture          = p_node + offset;
+        double*          p_clado_site_mixture    = p_clado_node + mixture * this->cladoMixtureOffset;
+        const double*    p_site_mixture_left     = p_left + offset;
+        const double*    p_site_mixture_right    = p_right + offset;
+        
+        // compute the per site probabilities
+        for (size_t site = 0; site < this->numPatterns ; ++site)
         {
-            // get the pointer to the stationary frequencies
-            std::vector<double>::const_iterator f_j             = f_begin;
-            // get the pointers to the likelihoods for this site and mixture category
-            double* p_site_j        = p_site_mixture;
-            const double* p_site_left_j   = p_site_mixture_left;
-            const double* p_site_right_j  = p_site_mixture_right;
-            // iterate over all starting states
-            for (; f_j != f_end; ++f_j)
+//            // get the pointers for this mixture category and this site
+//            const double*       tp_a    = tp_begin;
+//            
+            // start state at older end of branch
+            for (size_t c0 = 0; c0 < this->numChars; ++c0)
             {
-                // add the probability of starting from this state
-                *p_site_j = *p_site_left_j * *p_site_right_j * *f_j;
                 
-                // increment pointers
-                ++p_site_j; ++p_site_left_j; ++p_site_right_j;
+                // variable to marginalizing over ana+clado events
+                double sum_ana = 0.0;
+                           
+                /**/
+                // first compute clado probs at younger end of branch
+                std::map<std::vector<unsigned>, double>::iterator it;
+                size_t old_c1 = 0;
+                double sum_clado = 0.0;
+                for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+                {
+                    // sparse elements from map
+                    const std::vector<unsigned>& idx = it->first;
+                    const size_t c1 = idx[0];
+                    const size_t c2 = idx[1];
+                    const size_t c3 = idx[2];
+                    
+                    // if key's ancestral state changes, update the resp. partial likelihood
+                    if (c1 != old_c1)
+                    {
+                        p_clado_site_mixture[c1] = sum_clado;
+                        sum_ana += sum_clado;
+                        sum_clado = 0.0;
+                    }
+                    
+                    const double pl = p_site_mixture_left[c2];
+                    const double pr = p_site_mixture_right[c3];
+                    const double pcl = it->second;
+                    sum_clado += pl * pr * pcl;
+                    
+                    old_c1 = c1;
+                }
+                
+                // store the likelihood for this starting state
+                p_site_mixture[c0] = sum_ana * f[c0];
             }
             
             // increment the pointers to the next site
-            p_site_mixture+=this->siteOffset; p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset;
+            p_site_mixture_left  += this->siteOffset;
+            p_site_mixture_right += this->siteOffset;
+            p_site_mixture       += this->siteOffset;
+            p_clado_site_mixture += this->cladoSiteOffset;
             
         } // end-for over all sites (=patterns)
         
-        // increment the pointers to the next mixture category
-        p_mixture+=this->mixtureOffset; p_mixture_left+=this->mixtureOffset; p_mixture_right+=this->mixtureOffset;
-        
-    } // end-for over all mixtures (=rate categories)
+    } // end-for over all mixtures (=rate-categories)
     
+//    // get cladogenesis event map (sparse transition probability matrix)
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+//    
+//    // get the root frequencies
+//    const std::vector<double> &f                    = this->getRootFrequencies();
+//    std::vector<double>::const_iterator f_end       = f.end();
+//    std::vector<double>::const_iterator f_begin     = f.begin();
+//    
+//    // get the pointers to the partial likelihoods of the left and right subtree
+//    double* p              = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
+//    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]  * this->activeLikelihoodOffset + left  * this->nodeOffset;
+//    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right] * this->activeLikelihoodOffset + right * this->nodeOffset;
+//    
+//    // create a vector for the per mixture likelihoods
+//    // we need this vector to sum over the different mixture likelihoods
+//    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
+//    
+//    // get pointers the likelihood for both subtrees
+//    double*   p_mixture          = p;
+//    const double*   p_mixture_left     = p_left;
+//    const double*   p_mixture_right    = p_right;
+//    // iterate over all mixture categories
+//    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+//    {
+//        
+//        // get pointers to the likelihood for this mixture category
+//        double*   p_site_mixture          = p_mixture;
+//        const double*   p_site_mixture_left     = p_mixture_left;
+//        const double*   p_site_mixture_right    = p_mixture_right;
+//        // iterate over all sites
+//        for (size_t site = 0; site < this->numPatterns; ++site)
+//        {
+//            // get the pointer to the stationary frequencies
+//            std::vector<double>::const_iterator f_j             = f_begin;
+//            // get the pointers to the likelihoods for this site and mixture category
+//            double* p_site_j        = p_site_mixture;
+//            const double* p_site_left_j   = p_site_mixture_left;
+//            const double* p_site_right_j  = p_site_mixture_right;
+//            // iterate over all starting states
+//            for (; f_j != f_end; ++f_j)
+//            {
+//                // add the probability of starting from this state
+//                *p_site_j = *p_site_left_j * *p_site_right_j * *f_j;
+//                
+//                // increment pointers
+//                ++p_site_j; ++p_site_left_j; ++p_site_right_j;
+//            }
+//            
+//            // increment the pointers to the next site
+//            p_site_mixture+=this->siteOffset; p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset;
+//            
+//        } // end-for over all sites (=patterns)
+//        
+//        // increment the pointers to the next mixture category
+//        p_mixture+=this->mixtureOffset; p_mixture_left+=this->mixtureOffset; p_mixture_right+=this->mixtureOffset;
+//        
+//    } // end-for over all mixtures (=rate categories)
+//    
     
 }
 
