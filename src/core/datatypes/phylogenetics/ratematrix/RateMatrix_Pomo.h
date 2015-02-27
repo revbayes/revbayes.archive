@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
         // RateMatrix functions
         double                          averageRate(void) const;
-        void                            calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_Pomo*                clone(void) const;
         const std::vector<double>&      getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
 

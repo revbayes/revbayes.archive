@@ -170,6 +170,7 @@
 #include "Move_TreeScale.h"
 #include "Move_WeightedNodeTimeSlide.h"
 #include "Move_FossilSafeSlide.h"
+#include "Move_FossilSafeScale.h"
 
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
@@ -605,6 +606,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvSubtreePruneRegraft",     new Move_SPRNonclock() );
         addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
         addTypeWithConstructor("mvFossilSafeSlide",         new Move_FossilSafeSlide() );
+        addTypeWithConstructor("mvFossilSafeScale",         new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
