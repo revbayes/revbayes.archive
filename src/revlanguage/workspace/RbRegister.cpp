@@ -294,6 +294,7 @@
 #include "Func_mrcaIndex.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
+#include "Func_simTree.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
@@ -655,6 +656,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 //        addDistribution( "dnBDP",                       new Dist_bdp() );
         AddDistribution<TimeTree>("BDP", new Dist_bdp());
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
+        addDistribution( "dnBirthDeath",                new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
         
         // constant rate birth-death process with serially sampled tips
@@ -859,6 +861,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );
         addFunction( "pomoStateConvert",            new Func_pomoStateConverter() );
         addFunction( "pomoRF",                      new Func_pomoRootFrequencies() );
+        addFunction( "simTree",                     new Func_simTree()                  );
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
