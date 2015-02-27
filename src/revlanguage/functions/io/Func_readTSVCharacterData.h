@@ -29,13 +29,13 @@ namespace RevLanguage {
         
     public:
         // Basic utility functions
-        Func_readTSVCharacterData*             clone(void) const;                                                //!< Clone the object
+        Func_readTSVCharacterData*  clone(void) const;                                                      //!< Clone the object
         static const std::string&   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RevPtr<RevVariable>            execute(void);                                                          //!< Execute function
+        RevPtr<RevVariable>         execute(void);                                                          //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
         

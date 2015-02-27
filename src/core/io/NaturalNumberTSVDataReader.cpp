@@ -1,17 +1,3 @@
-/**
- * @file
- * This file contains the implementation of the NaturalNumberTSVDataReader class.
- * For reading in positive integer character data in tab separated files.
- *
- * @brief Implementation of the NaturalNumberTSVDataReader.
- *
- * (c) Copyright 2014- under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- */
-
-
 #include "NaturalNumberTSVDataReader.h"
 #include "RbFileManager.h"
 
