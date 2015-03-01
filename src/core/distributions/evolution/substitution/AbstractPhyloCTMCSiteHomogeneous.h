@@ -82,6 +82,7 @@ namespace RevBayesCore {
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
+        virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
         void																updateMarginalNodeLikelihoods(void);
         void                                                                setValue(AbstractDiscreteCharacterData *v);                                                 //!< Set the current value, e.g. attach an observation (clamp)
@@ -947,9 +948,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::drawJoi
                 sum += p[k];
                 
                 // increment the pointers to the next state for (site,rate)
-//                p_site_mixture_j       += this->siteOffset;
-//                p_left_site_mixture_j  += this->siteOffset;
-//                p_right_site_mixture_j += this->siteOffset;
                 p_site_mixture_j++;
                 p_left_site_mixture_j++;
                 p_right_site_mixture_j++;
@@ -997,6 +995,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::drawJoi
         // recurse towards tips
         if (!children[i]->isTip())
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        else
+            tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
     }
 }
 
@@ -1025,7 +1025,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
     const double*   p_right_site     = p_right;
     
     // sample characters conditioned on start states, going to end states
-    std::cout << node.getIndex() << " ";
     std::vector<double> p(this->numChars, 0.0);
     for (size_t i = 0; i < this->numSites; i++)
     {
@@ -1060,8 +1059,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
         }
 
         // sample char from p
-        std::cout << " " << sum << " ";
-        // create the character
         charType c;
         c.setToFirstState();
         double u = rng->uniform01() * sum;
@@ -1071,13 +1068,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
             if (u < 0.0)
             {
                 endStates[nodeIndex][i] = c;
-                std::cout << c.getStringValue();
                 break;
             }
             c++;
         }
     }
-    std::cout << "\n";
     
     // recurse
     std::vector<TopologyNode*> children = node.getChildren();
@@ -1089,7 +1084,85 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
         // recurse towards tips
         if (!children[i]->isTip())
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        else
+            tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
     }
+}
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates)
+{
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    // get working variables
+    size_t nodeIndex = node.getIndex();
+    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
+    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+
+    
+    // get transition probabilities
+    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    
+    // get the pointers to the partial likelihoods and the marginal likelihoods
+    const double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    
+    // get pointers the likelihood for both subtrees
+    const double* p_site = p_node;
+    
+    // sample characters conditioned on start states, going to end states
+    std::vector<double> p(this->numChars, 0.0);
+    for (size_t i = 0; i < this->numSites; i++)
+    {
+        charType c;
+        c.setToFirstState();
+        for (size_t j = 0; j < char_node[i]; j++)
+            c++;
+        endStates[nodeIndex][i] = c;
+    }
+    
+        /*
+         
+         
+        size_t cat = sampledSiteRates[i];
+        size_t k = startStates[nodeIndex][i].getStateIndex();
+        
+        // sum to sample
+        double sum = 0.0;
+        
+		// if the matrix is compressed use the pattern for this site
+        size_t pattern = i;
+		if (compressed) {
+			pattern = sitePattern[i];
+		}
+        
+        // get ptr to first mixture cat for site
+        const double* p_site_mixture_j = p_node  + cat * this->mixtureOffset + pattern * this->siteOffset;
+        
+        // iterate over possible end states for each site given start state
+        for (size_t j = 0; j < this->numChars; j++)
+        {
+            double tp_kj = this->transitionProbMatrices[cat][k][j];
+            p[j] = tp_kj * *p_site_mixture_j;
+            sum += p[j];
+            p_site_mixture_j++;
+        }
+        
+        // sample char from p
+        charType c;
+        c.setToFirstState();
+        double u = rng->uniform01() * sum;
+        for (size_t state = 0; state < this->numChars; state++)
+        {
+            u -= p[state];
+            if (u < 0.0)
+            {
+                endStates[nodeIndex][i] = c;
+                break;
+            }
+            c++;
+        }
+         */
+    // no further recursion
 }
 
 template<class charType, class treeType>
