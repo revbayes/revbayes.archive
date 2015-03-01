@@ -963,25 +963,28 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::drawJoi
         } // end-for over all mixtures (=rate categories)
 
         // sample char from p
+        bool stop = false;
         double u = rng->uniform01() * sum;
         for (size_t mixture = 0; mixture < this->numSiteRates; mixture++)
         {
             c.setToFirstState();
             for (size_t state = 0; state < this->numChars; state++)
             {
-                u -= p[this->numChars*mixture + state];
+                size_t k = this->numChars * mixture + state;
+                u -= p[k];
                 if (u < 0.0)
                 {
                     startStates[root.getIndex()][i] = c;
                     sampledSiteRates[i] = mixture;
+                    stop = true;
                     break;
                 }
                 c++;
             }
+            if (stop) break;
         }
         
-        startStates[root.getIndex()][i] = c;
-        endStates[root.getIndex()][i] = c;
+        endStates[nodeIndex][i] = startStates[nodeIndex][i];
     }
     
     // recurse
@@ -1022,15 +1025,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
     const double*   p_right_site     = p_right;
     
     // sample characters conditioned on start states, going to end states
+    std::cout << node.getIndex() << " ";
     std::vector<double> p(this->numChars, 0.0);
     for (size_t i = 0; i < this->numSites; i++)
     {
         size_t cat = sampledSiteRates[i];
         size_t k = startStates[nodeIndex][i].getStateIndex();
         
-        // create the character
-        charType c;
-        c.setToFirstState();
         
         // sum to sample
         double sum = 0.0;
@@ -1051,6 +1052,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
         {
             double tp_kj = this->transitionProbMatrices[cat][k][j];
             p[j] = tp_kj * *p_left_site_mixture_j * *p_right_site_mixture_j;
+            sum += p[j];
             
 //            p_site_mixture_j++;
             p_left_site_mixture_j++;
@@ -1058,18 +1060,24 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
         }
 
         // sample char from p
+        std::cout << " " << sum << " ";
+        // create the character
+        charType c;
+        c.setToFirstState();
         double u = rng->uniform01() * sum;
         for (size_t state = 0; state < this->numChars; state++)
         {
             u -= p[state];
             if (u < 0.0)
             {
-                startStates[nodeIndex][i] = c;
+                endStates[nodeIndex][i] = c;
+                std::cout << c.getStringValue();
                 break;
             }
             c++;
         }
     }
+    std::cout << "\n";
     
     // recurse
     std::vector<TopologyNode*> children = node.getChildren();

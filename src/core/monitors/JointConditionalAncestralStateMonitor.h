@@ -103,7 +103,7 @@ tree( t ),
 ctmc( ch ),
 stochasticNodesOnly( false ),
 excludeTips( true ),
-includeCladogenesis( false )
+includeCladogenesis( true )
 {
 	
 	nodes.push_back( tree );
@@ -207,6 +207,8 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
         const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
 		for (int i = 0; i < nds.size(); i++)
 		{
+            size_t nodeIndex = nds[i]->getIndex();
+            
             // start states
             if (includeCladogenesis)
             {
@@ -214,11 +216,11 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
                 outStream << separator;
 
                 // print out ancestral states....
-                for (int j = 0; j < startStates[nds[i]->getIndex()].size(); j++)
+                for (int j = 0; j < startStates[nodeIndex].size(); j++)
                 {
                     if (j != 0)
                         outStream << ",";
-                    outStream << startStates[ nds[i]->getIndex() ][j].getStringValue();
+                    outStream << startStates[nodeIndex][j].getStringValue();
                 }
             }
             
@@ -226,11 +228,11 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
             if ( !(nds[i]->isTip() && excludeTips) )
             {
                 outStream << separator;
-                for (int j = 0; j < endStates[nds[i]->getIndex()].size(); j++)
+                for (int j = 0; j < endStates[nodeIndex].size(); j++)
                 {
                     if (j != 0)
                         outStream << ",";
-                    outStream << endStates[ nds[i]->getIndex() ][j].getStringValue();
+                    outStream << endStates[nodeIndex][j].getStringValue();
                 }
             }
         }
@@ -277,17 +279,18 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::printHeader
 	for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
     {
 		TopologyNode* nd = nodes[i];
+        size_t nodeIndex = nd->getIndex();
 		if (includeCladogenesis)
         {
             outStream << separator;
-            outStream << "start_" << nd->getIndex();
+            outStream << "start_" << nodeIndex;
         }
         
         // end states
         if ( !(nd->isTip() && excludeTips) )
         {
 			outStream << separator;
-			outStream << "end_" << nd->getIndex();
+			outStream << "end_" << nodeIndex;
 		}
     }
     outStream << std::endl;
