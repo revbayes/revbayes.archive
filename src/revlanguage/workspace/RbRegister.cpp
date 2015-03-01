@@ -114,6 +114,7 @@
 
 /* Compound Moves on Real Values */
 #include "Move_ScalerUpDown.h"
+#include "Move_SliderUpDown.h"
 
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
@@ -540,7 +541,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		
 		// compound moves on real values
         addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
-                
+        addTypeWithConstructor("mvSliderUpDown",        new Move_SliderUpDown() );
+        
         /* Moves on integer values */
         addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
         addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
