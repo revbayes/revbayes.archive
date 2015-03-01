@@ -54,7 +54,7 @@ const ArgumentRules& Func_discretizeGamma::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "shape"   , RealPos::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "rate"    , RealPos::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "num_cats", Integer::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "numCats", Integer::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "median"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
