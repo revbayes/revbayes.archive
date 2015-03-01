@@ -45,7 +45,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-		JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
+		JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss);                                  //!< Constructor
 		
         JointConditionalAncestralStateMonitor(const JointConditionalAncestralStateMonitor &m);
         virtual ~JointConditionalAncestralStateMonitor(void);
@@ -74,8 +74,8 @@ namespace RevBayesCore {
 		TypedDagNode<treeType>*             tree;
 		StochasticNode<AbstractDiscreteCharacterData>*                            ctmc;
 		bool                                stochasticNodesOnly;
-        bool                                excludeTips;
-        bool                                includeCladogenesis;
+        bool                                withTips;
+        bool                                withStartStates;
     };
     
 }
@@ -94,7 +94,7 @@ using namespace RevBayesCore;
 
 /* Constructor */
 template<class characterType, class treeType>
-JointConditionalAncestralStateMonitor<characterType, treeType>::JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
+JointConditionalAncestralStateMonitor<characterType, treeType>::JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
 outStream(),
 filename( fname ),
 separator( del ),
@@ -102,8 +102,8 @@ append( false ),
 tree( t ),
 ctmc( ch ),
 stochasticNodesOnly( false ),
-excludeTips( true ),
-includeCladogenesis( true )
+withTips( wt ),
+withStartStates( wss )
 {
 	
 	nodes.push_back( tree );
@@ -127,8 +127,8 @@ append( m.append ),
 tree( m.tree ),
 ctmc( m.ctmc ),
 stochasticNodesOnly( m.stochasticNodesOnly ),
-excludeTips( m.excludeTips ),
-includeCladogenesis( m.includeCladogenesis )
+withTips( m.withTips ),
+withStartStates( m.withStartStates )
 {
     if (m.outStream.is_open())
     {
@@ -210,7 +210,7 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
             size_t nodeIndex = nds[i]->getIndex();
             
             // start states
-            if (includeCladogenesis)
+            if (withStartStates)
             {
                 // add a separator before every new element
                 outStream << separator;
@@ -225,7 +225,7 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
             }
             
             // end states
-            if ( !(nds[i]->isTip() && excludeTips) )
+            if ( withTips || !nds[i]->isTip() )
             {
                 outStream << separator;
                 for (int j = 0; j < endStates[nodeIndex].size(); j++)
@@ -280,14 +280,14 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::printHeader
     {
 		TopologyNode* nd = nodes[i];
         size_t nodeIndex = nd->getIndex();
-		if (includeCladogenesis)
+		if (withStartStates)
         {
             outStream << separator;
             outStream << "start_" << nodeIndex;
         }
         
         // end states
-        if ( !(nd->isTip() && excludeTips) )
+        if ( withTips || !nd->isTip() )
         {
 			outStream << separator;
 			outStream << "end_" << nodeIndex;

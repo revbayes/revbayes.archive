@@ -46,6 +46,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   separator;
         RevPtr<const RevVariable>                   append;
 		RevPtr<const RevVariable>                   monitorType;
+        RevPtr<const RevVariable>                   withTips;
+        RevPtr<const RevVariable>                   withStartStates;
     };
     
 }
@@ -100,18 +102,20 @@ void Mntr_JointConditionalAncestralState<treeType>::constructInternalObject( voi
     RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* >(ctmc_tdn);
 
 	bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool                                wt      = static_cast<const RlBoolean &>( withTips->getRevObject() ).getValue();
+    bool                                wss     = static_cast<const RlBoolean &>( withStartStates->getRevObject() ).getValue();
 	std::string							character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
     
 	delete value;
 	if (character == "NaturalNumbers") {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep);
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
 		m->setAppend( ap );
 		value = m;
 		
 	} else if (character == "DNA") {
 		RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState, typename treeType::valueType> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep);
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
 		m->setAppend( ap );
 		value = m;
 		
@@ -159,6 +163,8 @@ const MemberRules& Mntr_JointConditionalAncestralState<treeType>::getParameterRu
         asMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         asMonitorMemberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         asMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("withTips"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("withStartStates"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;
     }
@@ -221,6 +227,15 @@ void Mntr_JointConditionalAncestralState<treeType>::setConstParameter(const std:
     {
         append = var;
     }
+    else if ( name == "withTips" )
+    {
+        withTips = var;
+    }
+    else if ( name == "withStartStates" )
+    {
+        withStartStates = var;
+    }
+
     else
     {
         Monitor::setConstParameter(name, var);
