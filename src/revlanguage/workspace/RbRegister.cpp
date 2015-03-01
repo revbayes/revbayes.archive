@@ -93,6 +93,7 @@
 /* Monitor types (in folder "monitors) */
 #include "RlMonitor.h"
 #include "Mntr_AncestralState.h"
+#include "Mntr_JointConditionalAncestralState.h"
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
@@ -514,6 +515,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
 		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<TimeTree>());
 		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<BranchLengthTree>());
+        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState<TimeTree>());
+        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState<BranchLengthTree>());
         addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
         addTypeWithConstructor("mnFile",                new Mntr_File());
         addTypeWithConstructor("mnModel",               new Mntr_Model());
