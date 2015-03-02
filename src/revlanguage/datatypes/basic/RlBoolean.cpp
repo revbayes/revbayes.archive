@@ -12,28 +12,24 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-RlBoolean::RlBoolean(void) : ModelObject<unsigned int>() {
+RlBoolean::RlBoolean(void) : ModelObject<RevBayesCore::Boolean>()
+{
 
     setGuiVariableName("Boolean");
     setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
-RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<unsigned int> *v) : ModelObject<unsigned int>( v ) {
+RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<RevBayesCore::Boolean> *v) : ModelObject<RevBayesCore::Boolean>( v )
+{
     
     setGuiVariableName("Boolean");
     setGuiLatexSymbol("B");
 }
 
 /** Construct from bool */
-RlBoolean::RlBoolean(unsigned int v) : ModelObject<unsigned int>( new unsigned(v) ) {
-    
-    setGuiVariableName("Boolean");
-    setGuiLatexSymbol("B");
-}
-
-/** Construct from bool */
-RlBoolean::RlBoolean(bool v) : ModelObject<unsigned int>( new unsigned(v) ) {
+RlBoolean::RlBoolean(bool v) : ModelObject<RevBayesCore::Boolean>( new RevBayesCore::Boolean(v) )
+{
 
     setGuiVariableName("Boolean");
     setGuiLatexSymbol("B");

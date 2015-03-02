@@ -527,8 +527,19 @@ void AbstractBirthDeathProcess::simulateTree( void )
         
         if ( startsAtRoot )
         {
-            nodes.push_back( &root->getChild(0) );
-            nodes.push_back( &root->getChild(1) );
+            // add a left child
+            TopologyNode* leftChild = &root->getChild(0);
+            if ( !leftChild->isTip() )
+            {
+                nodes.push_back(leftChild);
+            }
+            
+            // add a right child
+            TopologyNode* rightChild = &root->getChild(1);
+            if ( !rightChild->isTip() )
+            {
+                nodes.push_back(rightChild);
+            }
             attachTimes(psi, nodes, 0, times, t_or);
         }
         else

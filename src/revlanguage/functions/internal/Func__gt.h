@@ -31,14 +31,14 @@ namespace RevLanguage {
         Func__gt();
         
         // Basic utility functions
-        Func__gt*                                   clone(void) const;                                          //!< Clone the object
-        static const std::string&                   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func__gt*                                               clone(void) const;                                          //!< Clone the object
+        static const std::string&                               getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                         getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        RevBayesCore::TypedFunction<unsigned int>*  createFunction(void) const;                                 //!< Create a function object
-        const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
+        RevBayesCore::TypedFunction<RevBayesCore::Boolean>*     createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                                    getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -56,13 +56,15 @@ namespace RevLanguage {
 
 
 template <typename leftValType, typename rightValType>
-RevLanguage::Func__gt<leftValType,rightValType>::Func__gt() : TypedFunction<RlBoolean>() {
+RevLanguage::Func__gt<leftValType,rightValType>::Func__gt() : TypedFunction<RlBoolean>()
+{
     
 }
 
 /* Clone object */
 template <typename leftValType, typename rightValType>
-RevLanguage::Func__gt<leftValType,rightValType>* RevLanguage::Func__gt<leftValType,rightValType>::clone( void ) const {
+RevLanguage::Func__gt<leftValType,rightValType>* RevLanguage::Func__gt<leftValType,rightValType>::clone( void ) const
+{
     
     return new Func__gt<leftValType,rightValType>( *this );
 }
@@ -70,7 +72,7 @@ RevLanguage::Func__gt<leftValType,rightValType>* RevLanguage::Func__gt<leftValTy
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename leftValType, typename rightValType>
-RevBayesCore::TypedFunction<unsigned int>* RevLanguage::Func__gt<leftValType,rightValType>::createFunction( void ) const
+RevBayesCore::TypedFunction<RevBayesCore::Boolean>* RevLanguage::Func__gt<leftValType,rightValType>::createFunction( void ) const
 {
     
     const RevBayesCore::TypedDagNode<typename leftValType::valueType>* leftVal = static_cast<const leftValType &>( args[0].getVariable()->getRevObject() ).getDagNode();
