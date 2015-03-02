@@ -87,6 +87,11 @@ void NaturalNumbersState::operator++( int i ) {
 	
 }
 
+void NaturalNumbersState::operator+=( int i ) {
+    
+    state += i;
+	
+}
 
 void NaturalNumbersState::operator--( void ) {
     
@@ -98,6 +103,12 @@ void NaturalNumbersState::operator--( void ) {
 void NaturalNumbersState::operator--( int i ) {
     
     state -= 1;
+    
+}
+
+void NaturalNumbersState::operator-=( int i ) {
+    
+    state -= i;
     
 }
 

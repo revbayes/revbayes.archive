@@ -35,8 +35,10 @@ namespace RevBayesCore {
         bool                            operator<(const CharacterState& d) const;           //!< Less than
         void                            operator++();                                       //!< Increment
         void                            operator++(int i);                                  //!< Increment
+        void                            operator+=(int i);                                  //!< Increment
         void                            operator--();                                       //!< Decrement
         void                            operator--(int i);                                  //!< Decrement
+        void                            operator-=(int i);                                  //!< Decrement
         
         NaturalNumbersState*               clone(void) const;									//!< Get a copy of this object
         

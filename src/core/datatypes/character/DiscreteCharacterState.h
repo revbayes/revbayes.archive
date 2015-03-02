@@ -32,8 +32,10 @@ namespace RevBayesCore {
         virtual bool                            operator!=(const CharacterState& x) const = 0;      //!< Inequality
         virtual void                            operator++() = 0;                                   //!< Increment
         virtual void                            operator++(int i) = 0;                              //!< Increment
+        virtual void                            operator+=(int i) = 0;                              //!< Increment
         virtual void                            operator--() = 0;                                   //!< Decrement
         virtual void                            operator--(int i) = 0;                              //!< Decrement
+        virtual void                            operator-=(int i) = 0;                              //!< Decrement
  
         virtual DiscreteCharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
 
