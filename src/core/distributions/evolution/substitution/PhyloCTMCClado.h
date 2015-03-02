@@ -33,6 +33,9 @@ namespace RevBayesCore {
         // public member functions
         PhyloCTMCClado*                                     clone(void) const;                                                                          //!< Create an independent clone
         virtual std::vector<charType>						drawAncestralStatesForNode(const TopologyNode &n);
+        virtual void                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
+        virtual void                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
+
         void                                                setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
         void                                                setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal> >* r);
         void                                                setCladogenesisTimes(const TypedDagNode< RbVector< RbVector< double > > >* rm);
@@ -851,6 +854,256 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType, treeType>::drawAnce
     delete marginals;
     
 	return ancestralSeq;
+}
+
+
+/**
+ * Draw a vector of ancestral states from the joint-conditional distribution of states.
+ */
+template<class charType, class treeType>
+void RevBayesCore::PhyloCTMCClado<charType, treeType>::drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates)
+{
+    
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    const TopologyNode &root = this->tau->getValue().getRoot();
+    size_t nodeIndex = root.getIndex();
+    size_t right = root.getChild(0).getIndex();
+    size_t left = root.getChild(1).getIndex();
+    
+    // get working variables
+    const std::vector<double> &f = this->getRootFrequencies();
+    std::vector<double> siteProbVector(1,1.0);
+    if (this->siteRatesProbs != NULL)
+        siteProbVector = this->siteRatesProbs->getValue();
+    
+    // get cladogenesis values
+    const MatrixReal& cp = ( branchHeterogeneousCladogenesis
+                            ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
+                            : homogeneousCladogenesisMatrix->getValue() );
+    
+    
+    // get cladogenesis event map (sparse transition probability matrix)
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> sampleProbs;
+    std::map<std::vector<unsigned>, double>::iterator it_s;
+    std::map<std::vector<unsigned>, double>::iterator it_p;
+    
+    // get the pointers to the partial likelihoods and the marginal likelihoods
+    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
+    const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
+    
+    // get pointers the likelihood for both subtrees
+    const double*   p_site           = p_node;
+    const double*   p_left_site      = p_left;
+    const double*   p_right_site     = p_right;
+    
+    
+    // sample root states
+//    std::vector<double> p( this->numSiteRates*this->numChars, 0.0);
+    std::vector<size_t> sampledSiteRates(this->numSites,0);
+    for (size_t i = 0; i < this->numSites; i++)
+    {
+        // sum to sample
+        double sum = 0.0;
+        
+		// if the matrix is compressed use the pattern for this site
+        size_t pattern = i;
+		if (this->compressed) {
+			pattern = this->sitePattern[i];
+		}
+        
+        // get ptr to first mixture cat for site
+        p_site          = p_node  + pattern * this->siteOffset;
+        p_left_site     = p_left  + pattern * this->siteOffset;
+        p_right_site    = p_right + pattern * this->siteOffset;
+        
+        // iterate over all mixture categories
+        for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+        {
+            // get pointers to the likelihood for this mixture category
+            const double* p_site_mixture_j       = p_site;
+            const double* p_left_site_mixture_j  = p_left_site;
+            const double* p_right_site_mixture_j = p_right_site;
+            
+            // iterate over possible end-anagenesis states for each site given start-anagenesis state
+            for (it_p = eventMapProbs.begin(); it_p != eventMapProbs.end(); it_p++)
+            {
+                // triplet of (A,L,R) states
+                const std::vector<unsigned>& v = it_p->first;
+                
+                p_site_mixture_j       = p_site       + v[0];
+                p_left_site_mixture_j  = p_left_site  + v[1];
+                p_right_site_mixture_j = p_right_site + v[2];
+                
+                size_t k = this->numChars*mixture + v[0];
+                std::vector<unsigned> key = it_p->first;
+                key.push_back(mixture);
+                sampleProbs[ key ] = *p_site_mixture_j * *p_left_site_mixture_j * *p_right_site_mixture_j * f[v[0]] * siteProbVector[mixture] * it_p->second;
+                sum += sampleProbs[ key ];
+                
+                // increment the pointers to the next state for (site,rate)
+            }
+            
+            // increment the pointers to the next mixture category for given site
+            p_site       += this->mixtureOffset;
+            p_left_site  += this->mixtureOffset;
+            p_right_site += this->mixtureOffset;
+            
+        } // end-for over all mixtures (=rate categories)
+        
+        // sample char from p
+        bool stop = false;
+        charType ca, cl, cr;
+        
+        double u = rng->uniform01() * sum;
+        
+        for (it_s = sampleProbs.begin(); it_s != sampleProbs.end(); it_s++)
+        {
+            u -= it_s->second;
+            if (u < 0.0)
+            {
+                const std::vector<unsigned>& v = it_s->first;
+                ca += v[0];
+                cl += v[1];
+                cr += v[2];
+                endStates[nodeIndex][i] = ca;
+                startStates[nodeIndex][i] = ca;
+                startStates[left][i] = cl;
+                startStates[right][i] = cr;
+                sampledSiteRates[i] = v[3];
+                stop = true;
+                break;
+            }
+        }
+    }
+    
+    // recurse
+    std::vector<TopologyNode*> children = root.getChildren();
+    for (size_t i = 0; i < children.size(); i++)
+    {        
+        // recurse towards tips
+        if (!children[i]->isTip())
+            recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        else
+            AbstractPhyloCTMCSiteHomogeneous<charType,treeType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+    }
+}
+
+template<class charType, class treeType>
+void RevBayesCore::PhyloCTMCClado<charType, treeType>::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates)
+{
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    // get working variables
+    size_t nodeIndex = node.getIndex();
+    size_t left = node.getChild(0).getIndex();
+    size_t right = node.getChild(1).getIndex();
+    //    size_t parentIndex = node.getParent().getIndex();
+    
+    // get cladogenesis values
+    const MatrixReal& cp = ( branchHeterogeneousCladogenesis
+                            ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex]
+                            : homogeneousCladogenesisMatrix->getValue() );
+    
+    
+    // get cladogenesis event map (sparse transition probability matrix)
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> sampleProbs;
+    std::map<std::vector<unsigned>, double>::iterator it_s;
+    std::map<std::vector<unsigned>, double>::iterator it_p;
+    
+    // get transition probabilities
+    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    
+    // get the pointers to the partial likelihoods and the marginal likelihoods
+    //    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
+    const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
+    
+    // get pointers the likelihood for both subtrees
+    //    const double*   p_site           = p_node;
+    const double*   p_left_site      = p_left;
+    const double*   p_right_site     = p_right;
+    
+    // sample characters conditioned on start states, going to end states
+    std::vector<double> p(this->numChars, 0.0);
+    for (size_t i = 0; i < this->numSites; i++)
+    {
+        size_t cat = sampledSiteRates[i];
+        size_t k = startStates[nodeIndex][i].getStateIndex();
+        
+        // sum to sample
+        double sum = 0.0;
+        
+		// if the matrix is compressed use the pattern for this site
+        size_t pattern = i;
+		if (this->compressed) {
+			pattern = this->sitePattern[i];
+		}
+
+        const double* p_left_site_mixture  = p_left  + cat * this->mixtureOffset + pattern * this->siteOffset;
+        const double* p_right_site_mixture = p_right + cat * this->mixtureOffset + pattern * this->siteOffset;
+        
+        // iterate over possible end-anagenesis states for each site given start-anagenesis state        
+        for (it_p = eventMapProbs.begin(); it_p != eventMapProbs.end(); it_p++)
+        {
+            // triplet of (A,L,R) states
+            const std::vector<unsigned>& v = it_p->first;
+            
+            const double* p_left_site_mixture_j  = p_left_site_mixture  + v[1];
+            const double* p_right_site_mixture_j = p_right_site_mixture + v[2];
+            
+            // anagenesis prob
+            size_t j = v[0];
+            double tp_kj = this->transitionProbMatrices[cat][k][j];
+            
+            // anagenesis + cladogenesis prob
+            sampleProbs[ it_p->first ] = it_p->second * tp_kj * *p_left_site_mixture_j * *p_right_site_mixture_j;
+            sum += sampleProbs[ it_p->first ];
+            
+        }
+        
+        // sample char from p
+        charType ca, cl, cr;
+        ca.setToFirstState();
+        cl.setToFirstState();
+        cr.setToFirstState();
+        double u = rng->uniform01() * sum;
+        for (it_s = sampleProbs.begin(); it_s != sampleProbs.end(); it_s++)
+        {
+            u -= it_s->second;
+            if (u < 0.0)
+            {
+                const std::vector<unsigned>& v = it_s->first;
+                ca += v[0];
+                cl += v[1];
+                cr += v[2];
+                endStates[nodeIndex][i] = ca;
+                startStates[left][i] = cl;
+                startStates[right][i] = cr;
+                break;
+            }
+        }
+    }
+    
+    // recurse
+    std::vector<TopologyNode*> children = node.getChildren();
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        // recurse towards tips
+        if (!children[i]->isTip())
+            recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        else
+            AbstractPhyloCTMCSiteHomogeneous<charType,treeType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+    }
 }
 
 template<class charType, class treeType>
