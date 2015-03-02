@@ -89,6 +89,11 @@ void AminoAcidState::operator++( int i )
     ++stateIndex;
 }
 
+void AminoAcidState::operator+=( int i )
+{
+    state <<= i;
+    stateIndex += i;
+}
 
 void AminoAcidState::operator--( void )
 {
@@ -103,6 +108,11 @@ void AminoAcidState::operator--( int i )
     --stateIndex;
 }
 
+void AminoAcidState::operator-=( int i )
+{
+    state >>= i;
+    stateIndex -= i;
+}
 
 void AminoAcidState::addState(char symbol)
 {

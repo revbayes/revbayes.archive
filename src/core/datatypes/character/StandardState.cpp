@@ -95,6 +95,10 @@ void StandardState::operator++( int i )
     state <<= 1;
 }
 
+void StandardState::operator+=( int i )
+{
+    state <<= i;
+}
 
 void StandardState::operator--( void )
 {
@@ -107,6 +111,10 @@ void StandardState::operator--( int i )
     state >>= 1;
 }
 
+void StandardState::operator-=( int i )
+{
+    state >>= i;
+}
 
 void StandardState::addState(char symbol) {
     state |= computeState( symbol );

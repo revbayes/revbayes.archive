@@ -97,6 +97,12 @@ void PomoState::operator++( int i ) {
     
 }
 
+void PomoState::operator+=( int i ) {
+    
+    state += i;
+    
+}
+
 
 void PomoState::operator--( void ) {
     
@@ -111,6 +117,11 @@ void PomoState::operator--( int i ) {
     
 }
 
+void PomoState::operator-=( int i ) {
+    
+    state -= i;
+    
+}
 
 void PomoState::addState(std::string symbol) {
     
