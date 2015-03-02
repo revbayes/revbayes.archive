@@ -1,6 +1,7 @@
 #ifndef IfElseFunction_H
 #define IfElseFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -10,17 +11,17 @@ namespace RevBayesCore {
     class IfElseFunction : public TypedFunction<valueType> {
         
     public:
-        IfElseFunction(const TypedDagNode<unsigned int> *c, const TypedDagNode<valueType> *a, const TypedDagNode<valueType> *b);
+        IfElseFunction(const TypedDagNode<Boolean> *c, const TypedDagNode<valueType> *a, const TypedDagNode<valueType> *b);
         
         IfElseFunction*                         clone(void) const;                                                  //!< Create a clon.
         void                                    update(void);                                                       //!< Recompute the value
         
     protected:
-        void                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
+        void                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Implementation of swaping parameters
         
     private:
         
-        const TypedDagNode<unsigned int>*       condition;
+        const TypedDagNode<Boolean>*            condition;
         const TypedDagNode<valueType>*          a;
         const TypedDagNode<valueType>*          b;
         
@@ -30,7 +31,7 @@ namespace RevBayesCore {
 
 
 template<class valType>
-RevBayesCore::IfElseFunction<valType>::IfElseFunction(const TypedDagNode<unsigned int> *c, const TypedDagNode<valType> *l, const TypedDagNode<valType> *r) : TypedFunction<valType>( new valType() ),
+RevBayesCore::IfElseFunction<valType>::IfElseFunction(const TypedDagNode<Boolean> *c, const TypedDagNode<valType> *l, const TypedDagNode<valType> *r) : TypedFunction<valType>( new valType() ),
     condition( c ),
     a( l ),
     b( r )
@@ -56,7 +57,7 @@ void RevBayesCore::IfElseFunction<valType>::swapParameterInternal(const DagNode 
     
     if ( oldP == condition)
     {
-        condition = static_cast<const TypedDagNode<unsigned int>* >( newP );
+        condition = static_cast<const TypedDagNode<Boolean>* >( newP );
     }
     
     if (oldP == a)

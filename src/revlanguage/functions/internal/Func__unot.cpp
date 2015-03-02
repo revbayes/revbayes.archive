@@ -29,10 +29,10 @@ Func__unot* Func__unot::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction<unsigned int>* Func__unot::createFunction( void ) const
+RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func__unot::createFunction( void ) const
 {
     
-    const RevBayesCore::TypedDagNode<unsigned int>* val = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* val = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::LogicalUnotFunction *func = new RevBayesCore::LogicalUnotFunction( val );
     

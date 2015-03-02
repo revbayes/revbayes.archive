@@ -22,6 +22,7 @@
 #ifndef NotEqualFunction_H
 #define NotEqualFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 
 #include <vector>
@@ -29,7 +30,7 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class NotEqualFunction : public TypedFunction<unsigned int> {
+    class NotEqualFunction : public TypedFunction<Boolean> {
         
     public:
         NotEqualFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
@@ -53,7 +54,7 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::NotEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::NotEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<Boolean>( new Boolean(false) ),
     left( l ),
     right( r )
 {
@@ -74,13 +75,15 @@ RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::~NotEqualFunction(
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::NotEqualFunction<leftValueType,rightValueType>* RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::clone( void ) const {
+RevBayesCore::NotEqualFunction<leftValueType,rightValueType>* RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::clone( void ) const
+{
     return new NotEqualFunction<leftValueType,rightValueType>( *this );
 }
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::update( void ) {
+void RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::update( void )
+{
     
     *this->value = (left->getValue() != right->getValue());
     
@@ -89,12 +92,15 @@ void RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::update( void 
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::NotEqualFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    if ( oldP == left ) {
+    if ( oldP == left )
+    {
         left = static_cast<const TypedDagNode<leftValueType>* >( newP );
     }
-    if ( oldP == right ) {
+    if ( oldP == right )
+    {
         right = static_cast<const TypedDagNode<rightValueType>* >( newP );
     }
     
