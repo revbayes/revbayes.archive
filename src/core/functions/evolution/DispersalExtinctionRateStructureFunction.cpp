@@ -15,13 +15,15 @@
 
 using namespace RevBayesCore;
 
-DispersalExtinctionRateStructureFunction::DispersalExtinctionRateStructureFunction(const TypedDagNode<RbVector<RbVector<double> > >* dr, TypedDagNode<RbVector<double> >* er) : TypedFunction<RbVector<double> >( new RbVector<double>() ),
+DispersalExtinctionRateStructureFunction::DispersalExtinctionRateStructureFunction(const TypedDagNode<RbVector<RbVector<double> > >* dr, TypedDagNode<RbVector<double> >* er, TypedDagNode<int>* rs) : TypedFunction<RbVector<double> >( new RbVector<double>() ),
     dispersalRates( dr ),
-    extinctionRates( er )
+    extinctionRates( er ),
+    maxRangeSize(rs)
 {
     // add the lambda parameter as a parent
     addParameter( dispersalRates );
     addParameter( extinctionRates );
+    addParameter( maxRangeSize );
     
     numCharacters = extinctionRates->getValue().size();
     numStates = (int)(pow(2,numCharacters));
@@ -160,6 +162,11 @@ void DispersalExtinctionRateStructureFunction::update( void )
     int offset = 0;
     for (size_t i = 1; i < transitions.size(); i++)
     {
+        int n = 0;
+        for (size_t j = 0; j < bits[i].size(); j++)
+            n += bits[i][j];
+        bool maxSize = n >= maxRangeSize->getValue();
+        
 //        for (size_t j = 0; j < bits[i].size(); j++)
 //            std::cout << bits[i][j];
 //        std::cout << " : ";
@@ -173,7 +180,7 @@ void DispersalExtinctionRateStructureFunction::update( void )
                 v = er[ transitionAreas[i][j][0] ];
             }
             // dispersal
-            else if (lossOrGain[i][j] == 1)
+            else if (lossOrGain[i][j] == 1 && !maxSize)
             {
                 for (size_t k = 0; k < transitionAreas[i][j].size(); k++)
                 {
@@ -215,5 +222,9 @@ void DispersalExtinctionRateStructureFunction::swapParameterInternal(const DagNo
     else if (oldP == extinctionRates)
     {
         extinctionRates = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    else if (oldP == maxRangeSize)
+    {
+        maxRangeSize = static_cast<const TypedDagNode<int>* >( newP );
     }
 }
