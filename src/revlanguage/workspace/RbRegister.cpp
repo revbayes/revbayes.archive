@@ -333,6 +333,7 @@
 
 /* Cladogeneic state prob function */
 #include "Func_cladoProbs.h"
+#include "Func_structureDispersalExtinction.h"
 
 /* Inference functions (in folder "functions/inference") */
 #include "Func_Mcmc.h"
@@ -902,6 +903,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
         addFunction( "fnCladoProbs", new Func_cladoProbs() );
+        addFunction( "fnStructureDispersalExtinction", new Func_structureDispersalExtinction() );
 
     
         /* Inference functions (in folder "functions/inference") */
