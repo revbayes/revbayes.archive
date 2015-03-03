@@ -89,6 +89,11 @@ void RnaState::operator++( int i )
     ++stateIndex;
 }
 
+void RnaState::operator+=( int i )
+{
+    state <<= i;
+    stateIndex += i;
+}
 
 void RnaState::operator--( void )
 {
@@ -103,6 +108,11 @@ void RnaState::operator--( int i )
     --stateIndex;
 }
 
+void RnaState::operator-=( int i )
+{
+    state >>= i;
+    stateIndex -= i;
+}
 
 void RnaState::addState(char symbol) {
     state |= computeState( symbol );

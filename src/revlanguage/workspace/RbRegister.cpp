@@ -382,6 +382,7 @@
 #include "Func_ancestralStateTree.h"
 #include "Func_annotateHPDAges.h"
 #include "Func_consensusTree.h"
+#include "Func_convertToPhylowood.h"
 #include "Func_mapTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
@@ -1056,6 +1057,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addFunction( "annotateHPDAges",             new Func_annotateHPDAges<TimeTree>()    );
 		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
 		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
+        addFunction( "convertToPhylowood",          new Func_convertToPhylowood<TimeTree>() );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()            );
         addFunction( "module",                      new Func_module()                       );
