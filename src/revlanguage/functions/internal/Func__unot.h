@@ -29,14 +29,14 @@ namespace RevLanguage {
         Func__unot();
         
         // Basic utility functions
-        Func__unot*                                 clone(void) const;                                          //!< Clone the object
-        static const std::string&                   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func__unot*                                             clone(void) const;                                          //!< Clone the object
+        static const std::string&                               getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                         getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        RevBayesCore::TypedFunction<unsigned int>*  createFunction(void) const;                                 //!< Create internal function object
-        const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
+        RevBayesCore::TypedFunction<RevBayesCore::Boolean>*     createFunction(void) const;                                 //!< Create internal function object
+        const ArgumentRules&                                    getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     

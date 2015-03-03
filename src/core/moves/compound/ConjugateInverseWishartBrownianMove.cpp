@@ -199,6 +199,12 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
     
     size_t nnodes = children.size();
     
+    if (nnodes != test) {
+        std::cerr << "non matching number of children\n";
+        exit(1);
+    }
+    
+    double logp1 = sigma->getLnProbability();
     double logs1 = sigma->getLnProbability();
     for (std::vector<StochasticNode<RbVector<double> > *>::const_iterator it = children.begin(); it != children.end(); ++it)
     {
@@ -218,6 +224,7 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
     sigma->keep();
 
     
+    double logp2 = sigma->getLnProbability();
     double logs2 = sigma->getLnProbability();
     for (std::vector<StochasticNode<RbVector<double> > *>::const_iterator it = children.begin(); it != children.end(); ++it)
     {
@@ -232,9 +239,15 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
     
     double alpha = logs2 - logs1 + backward - forward;
     
+    
     if ( fabs(alpha - 0.0) > 1E-8 )
     {
         std::cerr << "oooohh" << std::endl;
+        std::cerr << alpha << '\n';
+        std::cerr << backward << '\t' << forward << '\t' << backward - forward << '\n';
+        std::cerr << logs1 << '\t' << logs2 << '\t' << logs2 - logs1 << '\n';
+        std::cerr << logp1 << '\t' << logp2 << '\n';
+        exit(1);
     }
     // log hastings ratio
     // should cancel out the ratio of probabilities of the final and initial configuration

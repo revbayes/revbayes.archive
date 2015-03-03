@@ -93,6 +93,11 @@ void AbstractFileMonitor::monitor(unsigned long gen)
     
     outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
     
+    if ( nodes[0]->getName() != "pi" && nodes[0]->getName() != "tau" )
+    {
+//        std::cerr << "Strange first node:\t\t" << nodes[0]->getName() << std::endl;
+    }
+    
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     

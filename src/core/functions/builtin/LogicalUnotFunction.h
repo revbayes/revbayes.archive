@@ -22,6 +22,7 @@
 #ifndef LogicalUnotFunction_H
 #define LogicalUnotFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -29,23 +30,23 @@
 
 namespace RevBayesCore {
     
-    class LogicalUnotFunction : public TypedFunction<unsigned int> {
+    class LogicalUnotFunction : public TypedFunction<Boolean> {
         
     public:
-        LogicalUnotFunction(const TypedDagNode<unsigned int> * l);
-        virtual                                            ~LogicalUnotFunction(void);                                                       //!< Virtual destructor
+        LogicalUnotFunction(const TypedDagNode<Boolean> * l);
+        virtual                            ~LogicalUnotFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
-        LogicalUnotFunction*                                clone(void) const;                                                          //!< Create an independent clone
-        void                                                update(void);
+        LogicalUnotFunction*                clone(void) const;                                                          //!< Create an independent clone
+        void                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
+        void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
         
     private:
         
         // members
-        const TypedDagNode<unsigned int>*                   left;
+        const TypedDagNode<Boolean>*        left;
         
     };
     
