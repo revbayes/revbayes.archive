@@ -63,6 +63,16 @@ void MaxTimeStoppingRule::runStarted( void )
 
 
 /**
+ * Set the number of runs/replicates.
+ * Here we don't have anything to do.
+ */
+void MaxTimeStoppingRule::setNumberOfRuns(size_t n)
+{
+    // do nothing
+}
+
+
+/**
  * Should we stop now?
  * Yes, if the current time is larger or equal to the maximum allowed time.
  */
@@ -71,5 +81,11 @@ bool MaxTimeStoppingRule::stop( size_t g )
     // compute the used time
     double timeUsed = time(NULL) - startTime;
     
-    return timeUsed >= maxTime;
+    bool passed = timeUsed >= maxTime;
+//    if ( passed )
+//    {
+//        std::cerr << "Reached maximum time!" << std::endl;
+//    }
+    
+    return passed;
 }

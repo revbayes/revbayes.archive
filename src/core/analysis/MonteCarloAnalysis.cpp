@@ -228,6 +228,7 @@ void MonteCarloAnalysis::run( RbVector<StoppingRule> rules )
     // reset the stopping rules
     for (size_t i=0; i<rules.size(); ++i)
     {
+        rules[i].setNumberOfRuns( replicates );
         rules[i].runStarted();
     }
 

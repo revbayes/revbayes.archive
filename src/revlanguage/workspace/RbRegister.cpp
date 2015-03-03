@@ -87,6 +87,7 @@
 /// Stopping Rules ///
 #include "RlMaxIterationStoppingRule.h"
 #include "RlMaxTimeStoppingRule.h"
+#include "RlMinEssStoppingRule.h"
 
 /// Monitors ///
 
@@ -509,6 +510,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
         addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
         addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
+        addTypeWithConstructor( "srMinESS",             new MinEssStoppingRule()   );
         
 
         ////////////////////////////////////////////////////////////////////////////////

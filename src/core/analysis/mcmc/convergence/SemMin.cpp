@@ -15,13 +15,28 @@
 using namespace RevBayesCore;
 using namespace std;
 
-SemMin::SemMin() {
+SemMin::SemMin()
+{
     blockSize = 10;
 }
 
-SemMin::SemMin(size_t b) {
+SemMin::SemMin(size_t b)
+{
     this->blockSize     = b;
 }
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ *
+ * \return A new copy of myself
+ */
+SemMin* SemMin::clone( void ) const
+{
+    
+    return new SemMin( *this );
+}
+
 
 size_t SemMin::estimateBurnin(const std::vector<double>& values) {
     // init
