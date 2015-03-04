@@ -1,6 +1,7 @@
 #include "AbstractTaxonData.h"
 #include "CharacterState.h"
 #include "NexusWriter.h"
+#include "RbFileManager.h"
 
 using namespace RevBayesCore;
 
@@ -34,6 +35,8 @@ void NexusWriter::closeStream( void )
  */
 void NexusWriter::openStream( void ) 
 {
+    RbFileManager f = RbFileManager(fileName);
+    f.createDirectoryForFile();
     
     // open the stream to the file
     outStream.open( fileName.c_str(), std::fstream::out );
