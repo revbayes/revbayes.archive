@@ -387,9 +387,9 @@
 #include "Func_mapTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
+#include "Func_readCharacterDataDelimited.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
-#include "Func_readTSVCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"
@@ -868,8 +868,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "concatenate",                 new Func_concatenate()              );
         addFunction( "concat",                      new Func_concatenate()              );
         addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
-        addFunction( "maximumTree",                 new Func_maximumTree()             );
-        addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );
+        addFunction( "maximumTree",                 new Func_maximumTree()              );
+        addFunction( "mrcaIndex",                   new Func_mrcaIndex()                );
         addFunction( "pomoStateConvert",            new Func_pomoStateConverter() );
         addFunction( "pomoRF",                      new Func_pomoRootFrequencies() );
         addFunction( "simTree",                     new Func_simTree()                  );
@@ -1074,7 +1074,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "readTrace",                   new Func_readTrace()                    );
         addFunction( "readTrees",                   new Func_readTrees()                    );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
-		addFunction( "readTSVCharacterData",        new Func_readTSVCharacterData()         );
+		addFunction( "readCharacterDataDelimited",  new Func_readCharacterDataDelimited()   );
         addFunction( "source",                      new Func_source()                       );
         addFunction( "write",                       new Func_write()                        );
         addFunction( "writeFasta",                  new Func_writeFasta()                   );
