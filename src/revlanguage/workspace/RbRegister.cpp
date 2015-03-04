@@ -390,6 +390,7 @@
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
 #include "Func_readTSVCharacterData.h"
+#include "Func_readTSVBitsetData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"
@@ -1075,6 +1076,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "readTrees",                   new Func_readTrees()                    );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
 		addFunction( "readTSVCharacterData",        new Func_readTSVCharacterData()         );
+        addFunction( "readTSVBitsetData",           new Func_readTSVBitsetData()            );
         addFunction( "source",                      new Func_source()                       );
         addFunction( "write",                       new Func_write()                        );
         addFunction( "writeFasta",                  new Func_writeFasta()                   );
