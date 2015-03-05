@@ -18,7 +18,7 @@ namespace RevBayesCore {
     class PhylowoodConverter {
         
     public:
-        PhylowoodConverter(const std::string &sfn, const std::string &tfn, const std::string &gfn, const std::string &pfn, double b);
+        PhylowoodConverter(const std::string &sfn, const std::string &tfn, const std::string &gfn, const std::string &pfn, double b, const std::string& ct);
         ~PhylowoodConverter(void);
         void                                        convert(void);
         
@@ -43,6 +43,7 @@ namespace RevBayesCore {
         std::string treeFilename;
         std::string geoFilename;
         std::string phwFilename;
+        std::string chartype;
     
         double burn;
         size_t numNodes;
