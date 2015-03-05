@@ -390,7 +390,6 @@
 #include "Func_readCharacterDataDelimited.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
-#include "Func_readTSVBitsetData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"
@@ -712,10 +711,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnBeta",          new Dist_beta() );
         
         // bimodal normal distribution
-        addDistribution( "dnBimodalNorm",   new Dist_bimodalNorm() );
+        addDistribution( "dnBimodalNormal",     new Dist_bimodalNorm() );
         
         // bimodal lognormal distribution
-        addDistribution( "dnBimodalLnorm",  new Dist_bimodalLnorm() );
+        addDistribution( "dnBimodalLognormal",  new Dist_bimodalLnorm() );
         
         // categorical distribution
         addDistribution( "dnCat",           new Dist_categorical() );
@@ -1076,7 +1075,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "readTrees",                   new Func_readTrees()                    );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
 		addFunction( "readCharacterDataDelimited",  new Func_readCharacterDataDelimited()   );
-//        addFunction( "readTSVBitsetData",           new Func_readTSVBitsetData()            );
         addFunction( "source",                      new Func_source()                       );
         addFunction( "write",                       new Func_write()                        );
         addFunction( "writeFasta",                  new Func_writeFasta()                   );
