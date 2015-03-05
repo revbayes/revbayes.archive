@@ -19,6 +19,7 @@
 #ifndef ConstantPopulationCoalescent_H
 #define ConstantPopulationCoalescent_H
 
+#include "Taxon.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -30,8 +31,7 @@ namespace RevBayesCore {
     class ConstantPopulationCoalescent : public TypedDistribution<TimeTree> {
         
     public:
-        ConstantPopulationCoalescent(const TypedDagNode<double> *N, size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
-        ConstantPopulationCoalescent(const ConstantPopulationCoalescent &n);                                                                                          //!< Copy constructor
+        ConstantPopulationCoalescent(const TypedDagNode<double> *N, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
         virtual                                            ~ConstantPopulationCoalescent(void);                                                                    //!< Virtual destructor
         
         // public member functions
@@ -55,7 +55,7 @@ namespace RevBayesCore {
         std::vector<Clade>                                  constraints;
         const TypedDagNode<double>*                         Ne;
         size_t                                              numTaxa;
-        std::vector<std::string>                            taxonNames;
+        std::vector<Taxon>                                  taxa;                                                                                         //!< Taxon names that will be attached to new simulated trees.
         double                                              logTreeTopologyProb;
         
     };
