@@ -85,8 +85,8 @@ unsigned CladogenicStateFunction::bitsToState( const std::vector<unsigned>& b )
     unsigned n = 0;
     for (int i = 0; i < b.size(); i++)
     {
-        unsigned j = numCharacters - i - 1;
-        n += b[i] * pow(numStates, j);
+//        unsigned j = numCharacters - i - 1;
+        n += b[i] * pow(numStates, i);
     }
     return n;
 }
@@ -107,7 +107,8 @@ void CladogenicStateFunction::buildBits( void )
     for (size_t i = 0; i < numIntStates; i++) {
         std::vector<unsigned> b(numCharacters, 0);
         unsigned v = i;
-        for (int j = numCharacters - 1; j >= 0; j--)
+//        for (int j = numCharacters - 1; j >= 0; j--)
+        for (int j = 0; j < numCharacters; j++)
         {
             b[j] = v % numStates;
             v /= numStates;
