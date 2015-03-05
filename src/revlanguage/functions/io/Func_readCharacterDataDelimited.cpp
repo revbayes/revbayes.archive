@@ -24,6 +24,29 @@ Func_readCharacterDataDelimited* Func_readCharacterDataDelimited::clone( void ) 
 }
 
 
+std::string Func_readCharacterDataDelimited::bitToState(const std::string &s)
+{
+    
+    std::stringstream ss;
+    char* ptr;
+    long parsed = strtol(s.c_str(), &ptr, 2);
+    
+    if (parsed > RbConstants::Integer::max)
+    {
+        throw RbException("ERROR: readTSVBitsetData token " + s + " too large to store as NaturalNumber");
+    }
+    
+    if (s.find_first_not_of("01") != std::string::npos)
+    {
+        throw RbException("ERROR: readTSVBitsetData token " + s + " contains non-binary characters");
+    }
+    
+    ss << parsed;
+    
+    return ss.str();
+}
+
+
 /** Execute function */
 RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
 {
@@ -63,6 +86,47 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
             // add DiscreteTaxonData to the matrix of NaturalNumbers states
             coreStates->addTaxonData( coreSeq );
         
+        }
+        
+        // put coreNaturalNumbers matrix into rev language level matrix
+        DiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new DiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+        
+        return new RevVariable( rlCoreStates );
+        
+    }
+    else if (dt == "Bitset")
+    {
+    
+        // setup a matrix of NaturalNumbers states
+        RevBayesCore::DiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::DiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
+        
+        // get data from file
+        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
+        
+        // loop through data and get each NaturalNumbers value
+        for (size_t i = 0; i < tsv_data->getData().size(); ++i)
+        {
+            
+            // now put core state into DiscreteTaxonData
+            RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState> coreSeq = RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState>(tsv_data->getNames()[i]);
+            
+            // get count from data
+            const std::vector<std::string> &data = tsv_data->getData()[i];
+            
+            for (size_t j= 0; j < data.size(); ++j)
+            {
+                // make the core state
+                std::string d = data[j];
+                std::reverse(d.begin(), d.end());
+                d = bitToState( d );
+                RevBayesCore::NaturalNumbersState coreState = RevBayesCore::NaturalNumbersState(  );
+                
+                coreSeq.addCharacter( coreState );
+            }
+            
+            // add DiscreteTaxonData to the matrix of NaturalNumbers states
+            coreStates->addTaxonData( coreSeq );
+            
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix

@@ -37,7 +37,8 @@ namespace RevLanguage {
         const TypeSpec&                     getReturnType(void) const;                                              //!< Get type of return value
         
     private:
-        
+        std::string                         bitToState(const std::string &s);
+
     };
     
 }
