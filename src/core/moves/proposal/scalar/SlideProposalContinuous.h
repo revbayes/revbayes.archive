@@ -1,5 +1,5 @@
-#ifndef SlideProposal_H
-#define SlideProposal_H
+#ifndef SlideProposalContinuous_H
+#define SlideProposalContinuous_H
 
 #include <set>
 #include <string>
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class SlideProposal : public Proposal {
+    class SlideProposalContinuous : public Proposal {
         
     public:
-        SlideProposal( StochasticNode<double> *n, double l);                                                                      //!<  constructor
+        SlideProposalContinuous( ContinuousStochasticNode *n, double l);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
-        SlideProposal*                          clone(void) const;                                                                  //!< Clone object
+        SlideProposalContinuous*                clone(void) const;                                                                  //!< Clone object
         double                                  doProposal(void);                                                                   //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -43,7 +43,7 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<double>*                 variable;                                                                           //!< The variable the Proposal is working on
+        ContinuousStochasticNode*               variable;                                                                           //!< The variable the Proposal is working on
         double                                  storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                                  lambda;                                                                             //!< The value we propose.
     };
