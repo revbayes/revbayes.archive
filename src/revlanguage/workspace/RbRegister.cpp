@@ -204,6 +204,7 @@
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
+#include "Dist_Coalescent.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
@@ -685,7 +686,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnYuleDivDep",                new Dist_divDepYuleProcess() );
         addDistribution( "dnYuleDiversityDependent",    new Dist_divDepYuleProcess() );
         
-        // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
+        // coalescent (constant population sizes)
+        addDistribution( "dnCoalescent",                new Dist_Coalescent() );
+
+        // multispecies coalescent (per branch constant population sizes)
         addDistribution( "dnCoalMultiSpeciesConst",     new Dist_constPopMultispCoal() );
         addDistribution( "dnCoalMSConst",               new Dist_constPopMultispCoal() );
 
