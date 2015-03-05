@@ -204,6 +204,7 @@
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
+#include "Dist_Coalescent.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
@@ -334,7 +335,8 @@
 
 /* Cladogeneic state prob function */
 #include "Func_cladoProbs.h"
-#include "Func_structureDispersalExtinction.h"
+#include "Func_DECRates.h"
+#include "Func_DECRoot.h"
 
 /* Inference functions (in folder "functions/inference") */
 #include "Func_Mcmc.h"
@@ -683,7 +685,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnYuleDivDep",                new Dist_divDepYuleProcess() );
         addDistribution( "dnYuleDiversityDependent",    new Dist_divDepYuleProcess() );
         
-        // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
+        // coalescent (constant population sizes)
+        addDistribution( "dnCoalescent",                new Dist_Coalescent() );
+
+        // multispecies coalescent (per branch constant population sizes)
         addDistribution( "dnCoalMultiSpeciesConst",     new Dist_constPopMultispCoal() );
         addDistribution( "dnCoalMSConst",               new Dist_constPopMultispCoal() );
 
@@ -905,7 +910,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
         addFunction( "fnCladoProbs", new Func_cladoProbs() );
-        addFunction( "fnStructureDispersalExtinction", new Func_structureDispersalExtinction() );
+        addFunction( "fnDECRates", new Func_DECRates() );
+        addFunction( "fnDECRoot", new Func_DECRoot() );
 
     
         /* Inference functions (in folder "functions/inference") */
