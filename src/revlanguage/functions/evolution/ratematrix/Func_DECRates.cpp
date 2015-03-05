@@ -1,5 +1,5 @@
 //
-//  Func_structureDispersalExtinction.cpp
+//  Func_DECRates.cpp
 //  revbayes-proj
 //
 //  Created by Michael Landis on 3/3/15.
@@ -7,7 +7,7 @@
 //
 
 #include "DispersalExtinctionRateStructureFunction.h"
-#include "Func_structureDispersalExtinction.h"
+#include "Func_DECRates.h"
 #include "Natural.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"
@@ -22,21 +22,21 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_structureDispersalExtinction::Func_structureDispersalExtinction( void ) : TypedFunction<ModelVector<RealPos> >( )
+Func_DECRates::Func_DECRates( void ) : TypedFunction<ModelVector<RealPos> >( )
 {
     
 }
 
 
 /** Clone object */
-Func_structureDispersalExtinction* Func_structureDispersalExtinction::clone( void ) const
+Func_DECRates* Func_DECRates::clone( void ) const
 {
     
-    return new Func_structureDispersalExtinction( *this );
+    return new Func_DECRates( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_structureDispersalExtinction::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_DECRates::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* dr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -55,7 +55,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_structureDis
 
 
 /* Get argument rules */
-const ArgumentRules& Func_structureDispersalExtinction::getArgumentRules( void ) const {
+const ArgumentRules& Func_DECRates::getArgumentRules( void ) const {
     
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -74,15 +74,15 @@ const ArgumentRules& Func_structureDispersalExtinction::getArgumentRules( void )
 }
 
 
-const std::string& Func_structureDispersalExtinction::getClassType(void) {
+const std::string& Func_DECRates::getClassType(void) {
     
-    static std::string revType = "Func_structureDispersalExtinction";
+    static std::string revType = "Func_DECRates";
     
 	return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_structureDispersalExtinction::getClassTypeSpec(void) {
+const TypeSpec& Func_DECRates::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -90,7 +90,7 @@ const TypeSpec& Func_structureDispersalExtinction::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_structureDispersalExtinction::getTypeSpec( void ) const {
+const TypeSpec& Func_DECRates::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

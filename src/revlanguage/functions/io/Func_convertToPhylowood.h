@@ -82,8 +82,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_convertToPhylowo
     const std::string& geoFilename   = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
     const std::string& phwFilename   = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
     double burn = static_cast<const Probability&>( args[4].getVariable()->getRevObject() ).getValue();
+    const std::string& chartype      = static_cast<const RlString&>( args[5].getVariable()->getRevObject() ).getValue();
     
-    RevBayesCore::PhylowoodConverter phw(stateFilename, treeFilename, geoFilename, phwFilename, burn);
+    RevBayesCore::PhylowoodConverter phw(stateFilename, treeFilename, geoFilename, phwFilename, burn, chartype);
 //    RevBayesCore::PhylowoodConverter phw;
 	
     return NULL;
@@ -105,6 +106,11 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_convertToPhylowood<treeType>
         argumentRules.push_back( new ArgumentRule( "geofile",   RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "outfile",   RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
 		argumentRules.push_back( new ArgumentRule( "burnin",    Probability::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        
+        std::vector<std::string> options;
+        options.push_back( "area" );
+        options.push_back( "range" );
+        argumentRules.push_back( new OptionRule( "type", new RlString("area"), options ) );
         rulesSet = true;
     }
     
