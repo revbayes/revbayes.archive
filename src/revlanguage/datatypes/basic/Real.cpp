@@ -136,7 +136,8 @@ Real* Real::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RevObject* Real::convertTo( const TypeSpec& type ) const {
+RevObject* Real::convertTo( const TypeSpec& type ) const
+{
 
     if ( type == RlBoolean::getClassTypeSpec() )
         return new RlBoolean(dagNode->getValue() == 0.0);
