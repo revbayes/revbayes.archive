@@ -24,12 +24,13 @@
 
 using namespace RevBayesCore;
 
-RevBayesCore::PhylowoodConverter::PhylowoodConverter(const std::string &sfn, const std::string &tfn, const std::string &gfn, const std::string &pfn, double b) :
+RevBayesCore::PhylowoodConverter::PhylowoodConverter(const std::string &sfn, const std::string &tfn, const std::string &gfn, const std::string &pfn, double b, const std::string& ct) :
     stateFilename(sfn),
     treeFilename(tfn),
     geoFilename(gfn),
     phwFilename(pfn),
-    burn(b)
+    burn(b),
+    chartype(ct)
 {
     
     convert();
@@ -46,8 +47,17 @@ void PhylowoodConverter::convert(void) {
     // get atlas info
     TimeAtlasDataReader* tadr = new TimeAtlasDataReader(geoFilename);
     atlas = new TimeAtlas(tadr);
-    numStates = pow(2, atlas->getNumAreas());
-    numCharacters = atlas->getNumAreas();
+    if (chartype == "range")
+    {
+        numStates = pow(2, atlas->getNumAreas());
+        numCharacters = atlas->getNumAreas();
+        makeBits();
+    }
+    else if (chartype == "area") {
+        numStates = atlas->getNumAreas();
+        numCharacters = 1;
+    }
+
     numEpochs = atlas->getNumEpochs();
     
     // get tree info
@@ -60,7 +70,6 @@ void PhylowoodConverter::convert(void) {
     
     // get state info
     dat = new DelimitedDataReader(stateFilename);
-    makeBits();
     makeMarginalAreaProbs();
     
     std::string s = buildPhylowoodString();
@@ -230,6 +239,7 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                 continue;
             }
             
+            // header
             if (i == 0)
             {
                 std::vector<unsigned> tmp(2);
@@ -247,11 +257,14 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                 
                 idx.push_back(tmp);
             }
-            else
+            
+            // range-encoded states (e.g. 3 -> 1100, 5 -> 1010, etc.)
+            else if (chartype == "range")
             {
                 // get node, state, and bits for i,j cell in tab-delimited file
                 size_t nodeIdx = idx[j][1];
                 unsigned stateIdx = std::atoi(stateChars[i][j].c_str());
+
                 const std::vector<unsigned>& b = bits[stateIdx];
                 
                 // start
@@ -267,6 +280,23 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                     {
                         marginalEndProbs[nodeIdx][k] += b[k];
                     }
+                }
+            }
+            
+            // area-encoded states (e.g. 3 -> 3, 5 -> 5, etc.)
+            else if (chartype == "area")
+            {
+                // get node, state, and bits for i,j cell in tab-delimited file
+                size_t nodeIdx = idx[j][1];
+                unsigned stateIdx = std::atoi(stateChars[i][j].c_str());
+
+                // start
+                if (idx[j][0] == 0) {
+                    marginalStartProbs[nodeIdx][stateIdx] += 1;
+                }
+                // end
+                else if (idx[j][0] == 1) {
+                    marginalEndProbs[nodeIdx][stateIdx] += 1;
                 }
             }
         }
@@ -285,7 +315,6 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
 
 void PhylowoodConverter::makeBits(void)
 {
-    size_t numStates = (int)(pow(2,numCharacters));
     bits = std::vector<std::vector<unsigned> >(numStates, std::vector<unsigned>(numCharacters, 0));
     for (size_t i = 1; i < numStates; i++)
     {

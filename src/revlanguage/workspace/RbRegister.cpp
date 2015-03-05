@@ -334,6 +334,8 @@
 
 /* Cladogeneic state prob function */
 #include "Func_cladoProbs.h"
+#include "Func_DECRates.h"
+#include "Func_DECRoot.h"
 
 /* Inference functions (in folder "functions/inference") */
 #include "Func_Mcmc.h"
@@ -389,6 +391,7 @@
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
 #include "Func_readTSVCharacterData.h"
+#include "Func_readTSVBitsetData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"
@@ -904,6 +907,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
         addFunction( "fnCladoProbs", new Func_cladoProbs() );
+        addFunction( "fnDECRates", new Func_DECRates() );
+        addFunction( "fnDECRoot", new Func_DECRoot() );
 
     
         /* Inference functions (in folder "functions/inference") */
@@ -1073,6 +1078,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "readTrees",                   new Func_readTrees()                    );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
 		addFunction( "readTSVCharacterData",        new Func_readTSVCharacterData()         );
+        addFunction( "readTSVBitsetData",           new Func_readTSVBitsetData()            );
         addFunction( "source",                      new Func_source()                       );
         addFunction( "write",                       new Func_write()                        );
         addFunction( "writeFasta",                  new Func_writeFasta()                   );
