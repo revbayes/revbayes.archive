@@ -10,14 +10,25 @@
 #
 ################################################################################
 
-nTraits <- 3;
+x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes.nex");
+
+nTraits <- x.nchar();
 kappa <- 0.1;
 df <- nTraits + 2;
 covdim = nTraits;
 
+for (i in 1:nTraits) {
+   mu[i] ~ dnNormal(0.0, 1.0);
+}
+
+for (i in 1:nTraits) {
+   sigma[i] ~ dnLognormal(0.0, 1.0);
+}
+
 R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
-R.lnProbability();
 
-s <- v(1,2,3)
+V := fnDecompVarCovar(sigma, R);
 
-V := fnDecompVarCovar(s, R);
+for (i in 1:x.ntax()) {
+	x ~ dnMultivariateNormal(mu, V, 1);
+}

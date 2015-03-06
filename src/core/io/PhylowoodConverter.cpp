@@ -49,7 +49,7 @@ void PhylowoodConverter::convert(void) {
     atlas = new TimeAtlas(tadr);
     if (chartype == "range")
     {
-        numStates = pow(2, atlas->getNumAreas());
+        numStates = pow(2.0, (double)atlas->getNumAreas());
         numCharacters = atlas->getNumAreas();
         makeBits();
     }

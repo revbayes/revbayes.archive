@@ -20,6 +20,7 @@
 #include "ConstructorFunction.h"
 #include "Environment.h"
 #include "FunctionTable.h"
+#include "RlContainer.h"
 #include "RlMove.h"
 #include "RlDistribution.h"
 #include "RevObject.h"
@@ -304,6 +305,12 @@
                 }
             std::cout << "   Name:   \"" << varPtr->getGuiVariableName() << "\"" << std::endl;
             std::cout << "   Symbol: \"" << varPtr->getGuiLatexSymbol()  << "\"" << std::endl;
+
+            RevLanguage::Container* containerPtr = dynamic_cast<RevLanguage::Container*>(it->second);
+            if (containerPtr != NULL)
+                {
+                std::cout << "   It's a container!" << std::endl;
+                }
             }
         }
 
