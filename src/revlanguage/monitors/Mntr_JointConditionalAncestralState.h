@@ -70,6 +70,10 @@ namespace RevLanguage {
 #include "TypeSpec.h"
 #include "NaturalNumbersState.h"
 #include "DnaState.h"
+#include "StandardState.h"
+#include "RnaState.h"
+#include "AminoAcidState.h"
+#include "PomoState.h"
 
 using namespace RevLanguage;
 
@@ -107,20 +111,39 @@ void Mntr_JointConditionalAncestralState<treeType>::constructInternalObject( voi
 	std::string							character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
     
 	delete value;
-	if (character == "NaturalNumbers") {
-        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+	if (character == "AA" || character == "Protein") {
+		RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::AminoAcidState, typename treeType::valueType> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::AminoAcidState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
 		m->setAppend( ap );
 		value = m;
-		
 	} else if (character == "DNA") {
 		RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState, typename treeType::valueType> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
 		m->setAppend( ap );
 		value = m;
-		
-	} else {
-		throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, DNA" );
+	} else if (character == "NaturalNumbers") {
+        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+		m->setAppend( ap );
+		value = m;
+	} else if (character == "Pomo") {
+		RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState, typename treeType::valueType> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+		m->setAppend( ap );
+		value = m;
+	} else if (character == "RNA") {
+		RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState, typename treeType::valueType> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+		m->setAppend( ap );
+		value = m;
+	} else if (character == "Standard") {
+		RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState, typename treeType::valueType> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState, typename treeType::valueType>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+		m->setAppend( ap );
+		value = m;
+	}
+    else {
+		throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard" );
 	}
 }
 
