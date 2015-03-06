@@ -119,7 +119,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
                 std::string d = data[j];
                 std::reverse(d.begin(), d.end());
                 d = bitToState( d );
-                RevBayesCore::NaturalNumbersState coreState = RevBayesCore::NaturalNumbersState(  );
+                RevBayesCore::NaturalNumbersState coreState = RevBayesCore::NaturalNumbersState( d );
                 
                 coreSeq.addCharacter( coreState );
             }
