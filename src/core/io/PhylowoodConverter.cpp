@@ -24,13 +24,14 @@
 
 using namespace RevBayesCore;
 
-RevBayesCore::PhylowoodConverter::PhylowoodConverter(const std::string &sfn, const std::string &tfn, const std::string &gfn, const std::string &pfn, double b, const std::string& ct) :
+RevBayesCore::PhylowoodConverter::PhylowoodConverter(const std::string &sfn, const std::string &tfn, const std::string &gfn, const std::string &pfn, double b, const std::string& ct, const std::string& bt) :
     stateFilename(sfn),
     treeFilename(tfn),
     geoFilename(gfn),
     phwFilename(pfn),
     burn(b),
-    chartype(ct)
+    chartype(ct),
+    bgtype(bt)
 {
     
     convert();
@@ -47,15 +48,14 @@ void PhylowoodConverter::convert(void) {
     // get atlas info
     TimeAtlasDataReader* tadr = new TimeAtlasDataReader(geoFilename);
     atlas = new TimeAtlas(tadr);
-    if (chartype == "range")
+    numAreas = atlas->getNumAreas();
+    if (bgtype == "Range")
     {
-        numStates = pow(2, atlas->getNumAreas());
-        numCharacters = atlas->getNumAreas();
+        numStates = std::pow(2, (double)atlas->getNumAreas());
         makeBits();
     }
-    else if (chartype == "area") {
+    else if (bgtype == "Area") {
         numStates = atlas->getNumAreas();
-        numCharacters = 1;
     }
 
     numEpochs = atlas->getNumEpochs();
@@ -134,7 +134,7 @@ std::string PhylowoodConverter::buildPhylowoodString(void)
     nhxStrm << "\tminareaval\t0.15\n";
     nhxStrm << "\tareacolors black\n";
     nhxStrm << "\tareatypes";
-    for (unsigned i = 0; i < numCharacters; i++)
+    for (unsigned i = 0; i < numAreas; i++)
         nhxStrm << " 1";
     nhxStrm << "\n";
     nhxStrm << "\tareanames Default\n";
@@ -157,10 +157,10 @@ std::string PhylowoodConverter::buildPhylowoodString(void)
     
     // geo block
     nhxStrm << "Begin geo;\n";
-    nhxStrm << "\tDimensions ngeo=" << numCharacters << ";\n";
+    nhxStrm << "\tDimensions ngeo=" << numAreas << ";\n";
     nhxStrm << "\tCoords\n";
     
-    for (unsigned i = 0; i < numCharacters; i++)
+    for (unsigned i = 0; i < numAreas; i++)
     {
         double lat = atlas->getAreas()[numEpochs-1][i]->getLatitude();
         double lon = atlas->getAreas()[numEpochs-1][i]->getLongitude();
@@ -198,7 +198,7 @@ std::string PhylowoodConverter::buildPhylowoodString(void)
     nhxStrm << "End;\n";
     
 //    std::cout << "[";
-//    for (size_t i = 0; i < numCharacters; i++)
+//    for (size_t i = 0; i < numAreas; i++)
 //    {
 //        if (i != 0)
 //            std::cout << ",";
@@ -215,14 +215,15 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
     // read data
     std::vector<std::vector<std::string> > stateChars = dat->getChars();
     size_t numSamples = stateChars.size() - 1;
+    std::string standardStates = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 
     // get state counts/node
     marginalStartProbs.resize(numNodes);
     marginalEndProbs.resize(numNodes);
     for (size_t i = 0; i < numNodes; i++)
     {
-        marginalStartProbs[i].resize(numCharacters, 0.0);
-        marginalEndProbs[i].resize(numCharacters, 0.0);
+        marginalStartProbs[i].resize(numAreas, 0.0);
+        marginalEndProbs[i].resize(numAreas, 0.0);
     }
 
     // get data
@@ -258,13 +259,17 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                 idx.push_back(tmp);
             }
             
-            // range-encoded states (e.g. 3 -> 1100, 5 -> 1010, etc.)
-            else if (chartype == "range")
+            // range-encoded states (e.g. 3 -> 1100, 1 -> 1000, etc.)
+            else if (bgtype == "Range")
             {
                 // get node, state, and bits for i,j cell in tab-delimited file
                 size_t nodeIdx = idx[j][1];
-                unsigned stateIdx = std::atoi(stateChars[i][j].c_str());
-
+                unsigned stateIdx = 0;
+                if (chartype == "NaturalNumbers")
+                    stateIdx = std::atoi(stateChars[i][j].c_str());
+                else if (chartype == "Standard")
+                    stateIdx = standardStates.find( stateChars[i][j] );
+                
                 const std::vector<unsigned>& b = bits[stateIdx];
                 
                 // start
@@ -283,12 +288,16 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                 }
             }
             
-            // area-encoded states (e.g. 3 -> 3, 5 -> 5, etc.)
-            else if (chartype == "area")
+            // area-encoded states (e.g. 3 -> 0001, 1 -> 1000, etc.)
+            else if (bgtype == "Area")
             {
                 // get node, state, and bits for i,j cell in tab-delimited file
                 size_t nodeIdx = idx[j][1];
-                unsigned stateIdx = std::atoi(stateChars[i][j].c_str());
+                unsigned stateIdx = 0;
+                if (chartype == "NaturalNumbers")
+                    stateIdx = std::atoi(stateChars[i][j].c_str());
+                else if (chartype == "Standard")
+                    stateIdx = standardStates.find( stateChars[i][j] );
 
                 // start
                 if (idx[j][0] == 0) {
@@ -315,11 +324,11 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
 
 void PhylowoodConverter::makeBits(void)
 {
-    bits = std::vector<std::vector<unsigned> >(numStates, std::vector<unsigned>(numCharacters, 0));
+    bits = std::vector<std::vector<unsigned> >(numStates, std::vector<unsigned>(numAreas, 0));
     for (size_t i = 1; i < numStates; i++)
     {
         size_t n = i;
-        for (size_t j = 0; j < numCharacters; j++)
+        for (size_t j = 0; j < numAreas; j++)
         {
             bits[i][j] = n % 2;
             n /= 2;
