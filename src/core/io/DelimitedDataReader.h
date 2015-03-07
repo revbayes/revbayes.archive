@@ -24,10 +24,12 @@ namespace RevBayesCore {
     class DelimitedDataReader {
         
     public:
-        DelimitedDataReader(const std::string &fn, char d='\t');
-        void                                                readData(void);
+        DelimitedDataReader(const std::string &fn, char d='\t', size_t ns=0);
+        
+        void                                                readData( size_t ls);
         const std::vector<std::vector<std::string> >&       getChars(void);
-
+        const std::string&                                  getFilename(void);
+        
     
     protected:
         

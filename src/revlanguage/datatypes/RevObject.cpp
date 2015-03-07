@@ -59,14 +59,16 @@ RevObject* RevObject::add(const RevObject &rhs) const
 
 
 /** The default implementation does nothing because we don't have an internal object */
-void RevObject::constructInternalObject( void ) {
+void RevObject::constructInternalObject( void )
+{
     // nothing to do
 }
 
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const {
+RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const
+{
         
     throw RbException("Failed conversion from type '" + getType() + "' to type '" + typeSpec.getType() + "'" );
     
