@@ -43,11 +43,11 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                          mean1;
-        RevPtr<const RevVariable>                          mean2;
-        RevPtr<const RevVariable>                          sd1;
-        RevPtr<const RevVariable>                          sd2;
-        RevPtr<const RevVariable>                          prob;
+        RevPtr<const RevVariable>                       mean1;
+        RevPtr<const RevVariable>                       mean2;
+        RevPtr<const RevVariable>                       sd1;
+        RevPtr<const RevVariable>                       sd2;
+        RevPtr<const RevVariable>                       prob;
         
     };
     

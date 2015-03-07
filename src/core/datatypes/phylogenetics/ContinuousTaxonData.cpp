@@ -195,6 +195,10 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::Cont
     o << x.getTaxonName() << ":" << std::endl;
     for (size_t i = 0; i < x.getNumberOfCharacters(); ++i) 
     {
+        if ( i > 0 )
+        {
+            o << ", ";
+        }
         o << x[i];
     }
     o << std::endl;

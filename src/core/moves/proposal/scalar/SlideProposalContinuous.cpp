@@ -1,4 +1,4 @@
-#include "SlideProposal.h"
+#include "SlideProposalContinuous.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SlideProposal::SlideProposal( StochasticNode<double> *n, double l) : Proposal(),
+SlideProposalContinuous::SlideProposalContinuous( ContinuousStochasticNode *n, double l) : Proposal(),
     variable( n ),
     storedValue( 0.0 ),
     lambda( l )
@@ -30,7 +30,7 @@ SlideProposal::SlideProposal( StochasticNode<double> *n, double l) : Proposal(),
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void SlideProposal::cleanProposal( void )
+void SlideProposalContinuous::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -41,10 +41,10 @@ void SlideProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-SlideProposal* SlideProposal::clone( void ) const
+SlideProposalContinuous* SlideProposalContinuous::clone( void ) const
 {
     
-    return new SlideProposal( *this );
+    return new SlideProposalContinuous( *this );
 }
 
 
@@ -53,7 +53,7 @@ SlideProposal* SlideProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& SlideProposal::getProposalName( void ) const
+const std::string& SlideProposalContinuous::getProposalName( void ) const
 {
     static std::string name = "Sliding";
     
@@ -71,7 +71,7 @@ const std::string& SlideProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double SlideProposal::doProposal( void )
+double SlideProposalContinuous::doProposal( void )
 {
     
     // Get random number generator
@@ -82,10 +82,33 @@ double SlideProposal::doProposal( void )
     // copy value
     storedValue = val;
     
+    double min = variable->getMin();
+    double max = variable->getMax();
+        
+    double size = max - min;
+    
     double u      = rng->uniform01();
     double delta  = ( lambda * ( u - 0.5 ) );
     
+    if ( fabs(delta) > 2.0*size )
+    {
+        delta -= floor(delta / (2.0*size)) * (2.0*size);
+    }
     double newVal = val + delta;
+    
+    /* reflect the new value */
+    do {
+        if ( newVal < min )
+        {
+            newVal = 2.0 * min - newVal;
+        }
+        else if ( newVal > max )
+        {
+            newVal = 2.0 * max - newVal;
+        }
+    } while ( newVal < min || newVal > max );
+    
+    // FIXME: not the most efficient way of handling multiple reflections :-P
     
     val = newVal;
     
@@ -97,7 +120,7 @@ double SlideProposal::doProposal( void )
 /**
  *
  */
-void SlideProposal::prepareProposal( void )
+void SlideProposalContinuous::prepareProposal( void )
 {
     
 }
@@ -111,7 +134,7 @@ void SlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SlideProposal::printParameterSummary(std::ostream &o) const
+void SlideProposalContinuous::printParameterSummary(std::ostream &o) const
 {
     
     o << "delta = " << lambda;
@@ -126,7 +149,7 @@ void SlideProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void SlideProposal::undoProposal( void )
+void SlideProposalContinuous::undoProposal( void )
 {
     // swap current value and stored value
     variable->setValue( new double(storedValue) );
@@ -140,7 +163,7 @@ void SlideProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void SlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void SlideProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
@@ -155,7 +178,7 @@ void SlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void SlideProposal::tune( double rate )
+void SlideProposalContinuous::tune( double rate )
 {
     
     if ( rate > 0.44 )
