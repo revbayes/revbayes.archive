@@ -1,5 +1,6 @@
 #include "MaxTimeStoppingRule.h"
 
+#include <time.h>
 
 using namespace RevBayesCore;
 
