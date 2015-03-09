@@ -115,9 +115,9 @@ bool MinEssStoppingRule::stop( size_t g )
     
         size_t maxBurnin = 0;
     
-        for ( size_t i = 0; i < data.size(); ++i)
+        for ( size_t j = 0; j < data.size(); ++j)
         {
-            Trace &t = data[i];
+            Trace &t = data[j];
             const std::vector<double> &v = t.getValues();
             size_t b = burninEst->estimateBurnin( v );
             if ( maxBurnin < b )
@@ -128,9 +128,9 @@ bool MinEssStoppingRule::stop( size_t g )
     
         EssTest essTest = EssTest( minEss );
         
-        for ( size_t i = 0; i < data.size(); ++i)
+        for ( size_t j = 0; j < data.size(); ++j)
         {
-            RevBayesCore::Trace &t = data[i];
+            RevBayesCore::Trace &t = data[j];
             const std::vector<double> &v = t.getValues();
             t.setBurnin( maxBurnin );
             t.computeStatistics();
