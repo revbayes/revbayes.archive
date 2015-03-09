@@ -34,7 +34,8 @@ namespace RevBayesCore {
 
         // pure virtual methods you have to overwrite
         virtual double                      averageRate(void) const = 0;                                                                //!< Calculate the average rate
-        virtual void                        calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const = 0;       //!< Calculate the transition probabilities for the rate matrix
+        virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixrate matrix
+        virtual void                        calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;
         virtual RateMatrix*                 clone(void) const = 0;
         virtual const std::vector<double>&  getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
         virtual void                        rescaleToAverageRate(double r) = 0;                                                         //!< Rescale the rate matrix such that the average rate is "r"

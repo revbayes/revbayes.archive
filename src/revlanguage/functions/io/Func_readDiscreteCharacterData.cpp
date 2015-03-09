@@ -40,16 +40,16 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
 {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
+    const std::string& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     bool returnAsVector = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
     
     // check that the file/path name has been correctly specified
-    RevBayesCore::RbFileManager myFileManager( fn.getValue() );
+    RevBayesCore::RbFileManager myFileManager( fn );
     if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
     {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
-        throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
+        throw RbException("Could not find file or path with name \"" + fn + "\"");
     }
         
     // set up a vector of strings containing the name or names of the files to be read
@@ -178,22 +178,22 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
         std::stringstream o2;
         if ( numFilesRead == 0 )
         {
-            o2 << "Failed to read any files from directory '" << fn.getValue() << "'";
+            o2 << "Failed to read any files from directory '" << fn << "'";
         }
         else if ( numFilesRead == 1 )
         {
             if ( m->size() == 1 )
             {
-                o2 << "Successfully read one file with one character matrix from directory '" << fn.getValue() << "'";
+                o2 << "Successfully read one file with one character matrix from directory '" << fn << "'";
             }
             else
             {
-                o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
+                o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn << "'";
             }
         }
         else
         {
-            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
+            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn << "'";
         }
         RBOUT(o2.str());
         std::set<std::string> myWarnings = reader.getWarnings();
@@ -224,12 +224,16 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
             }
             
         }
+
+        // set the return value
+        retVal = m;
+
     }
     else
     {
         if (m->size() == 1)
         {
-            RBOUT("Successfully read one character matrix from file '" + fn.getValue() + "'");
+            RBOUT("Successfully read one character matrix from file '" + fn + "'");
 
             // set the return value
             if ( returnAsVector == false )
@@ -245,7 +249,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
         else if (m->size() > 1)
         {
             std::stringstream o3;
-            o3 << "Successfully read " << m->size() << " character matrices from file '" << fn.getValue() << "'";
+            o3 << "Successfully read " << m->size() << " character matrices from file '" << fn << "'";
             RBOUT(o3.str());
             
             // set the return value
@@ -257,7 +261,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
             if ( myWarnings.size() > 0 )
             {
                 std::stringstream o3;
-                o3 << "Error reading file '" << fn.getValue() << "'";
+                o3 << "Error reading file '" << fn << "'";
                 RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
                 {

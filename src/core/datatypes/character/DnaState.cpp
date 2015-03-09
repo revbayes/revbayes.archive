@@ -104,6 +104,12 @@ void DnaState::operator++( int i ) {
 
 }
 
+void DnaState::operator+=( int i ) {
+    
+    state <<= i;
+    stateIndex += i;
+    
+}
 
 void DnaState::operator--( void ) {
     
@@ -121,6 +127,13 @@ void DnaState::operator--( int i )
 
 }
 
+void DnaState::operator-=( int i )
+{
+    
+    state >>= i;
+    stateIndex -= i;
+    
+}
 
 void DnaState::addState(char symbol) {
 

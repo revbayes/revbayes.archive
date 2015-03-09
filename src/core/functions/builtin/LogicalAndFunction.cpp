@@ -2,7 +2,7 @@
 
 using namespace RevBayesCore;
 
-LogicalAndFunction::LogicalAndFunction(const TypedDagNode<unsigned int> *l, const TypedDagNode<unsigned int> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+LogicalAndFunction::LogicalAndFunction(const TypedDagNode<Boolean> *l, const TypedDagNode<Boolean> *r) : TypedFunction<Boolean>( new Boolean(false) ),
     left( l ),
     right( r )
 {
@@ -14,18 +14,21 @@ LogicalAndFunction::LogicalAndFunction(const TypedDagNode<unsigned int> *l, cons
 }
 
 
-LogicalAndFunction::~LogicalAndFunction( void ) {
+LogicalAndFunction::~LogicalAndFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-LogicalAndFunction* LogicalAndFunction::clone( void ) const {
+LogicalAndFunction* LogicalAndFunction::clone( void ) const
+{
     return new LogicalAndFunction( *this );
 }
 
 
-void LogicalAndFunction::update( void ) {
+void LogicalAndFunction::update( void )
+{
     
     *this->value = (left->getValue() && right->getValue());
     
@@ -33,13 +36,16 @@ void LogicalAndFunction::update( void ) {
 
 
 
-void LogicalAndFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void LogicalAndFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    if ( oldP == left ) {
-        left = static_cast<const TypedDagNode<unsigned int>* >( newP );
+    if ( oldP == left )
+    {
+        left = static_cast<const TypedDagNode<Boolean>* >( newP );
     }
-    if ( oldP == right ) {
-        right = static_cast<const TypedDagNode<unsigned int>* >( newP );
+    if ( oldP == right )
+    {
+        right = static_cast<const TypedDagNode<Boolean>* >( newP );
     }
     
 }

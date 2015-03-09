@@ -15,21 +15,20 @@
 using namespace RevBayesCore;
 
 ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double>       *N,
-                                                           size_t                           nTaxa,
-                                                           const std::vector<std::string>   &tn,
+                                                           const std::vector<Taxon>         &tn,
                                                            const std::vector<Clade>         &c) :
     TypedDistribution<TimeTree>( NULL ),
     constraints( c ),
     Ne( N ),
-    numTaxa( nTaxa ),
-    taxonNames( tn )
+    numTaxa( tn.size() ),
+    taxa( tn )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( Ne );
     
-    double lnFact = RbMath::lnFactorial( int(nTaxa) );
+    double lnFact = RbMath::lnFactorial( int(numTaxa) );
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     
@@ -38,16 +37,8 @@ ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<do
 
 
 
-ConstantPopulationCoalescent::ConstantPopulationCoalescent(const ConstantPopulationCoalescent &v) :
-    TypedDistribution<TimeTree>( v ),
-    Ne( v.Ne ),
-    numTaxa( v.numTaxa ),
-    taxonNames( v.taxonNames ),
-    logTreeTopologyProb( v.logTreeTopologyProb ) {
-}
-
-
-ConstantPopulationCoalescent::~ConstantPopulationCoalescent() {
+ConstantPopulationCoalescent::~ConstantPopulationCoalescent()
+{
     
 }
 
@@ -87,10 +78,12 @@ void ConstantPopulationCoalescent::attachTimes(TimeTree *psi, std::vector<Topolo
         // recursive call to this function
         attachTimes(psi, tips, index+1, times);
     }
+    
 }
 
 
-void ConstantPopulationCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
+void ConstantPopulationCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
+{
     
     if (tips.size() < numTaxa) 
     {
@@ -121,16 +114,19 @@ void ConstantPopulationCoalescent::buildRandomBinaryTree(std::vector<TopologyNod
         // recursive call to this function
         buildRandomBinaryTree(tips);
     }
+    
 }
 
 
-ConstantPopulationCoalescent* ConstantPopulationCoalescent::clone( void ) const {
+ConstantPopulationCoalescent* ConstantPopulationCoalescent::clone( void ) const
+{
     
     return new ConstantPopulationCoalescent( *this );
 }
 
 
-double ConstantPopulationCoalescent::computeLnProbability( void ) {
+double ConstantPopulationCoalescent::computeLnProbability( void )
+{
     
     // variable declarations and initialization
     double lnProbTimes = 0;
@@ -162,12 +158,13 @@ double ConstantPopulationCoalescent::computeLnProbability( void ) {
         lnProbTimes += log( nPairs * 2.0 / theta ) - nPairs * 2.0 / theta * ages[i] ;
     }
         
-    return lnProbTimes; // + logTreeTopologyProb;
+    return lnProbTimes + logTreeTopologyProb;
     
 }
 
 
-bool ConstantPopulationCoalescent::matchesConstraints( void ) {
+bool ConstantPopulationCoalescent::matchesConstraints( void )
+{
     
     const TopologyNode &root = value->getRoot();
     
@@ -184,7 +181,8 @@ bool ConstantPopulationCoalescent::matchesConstraints( void ) {
 
 
 
-void ConstantPopulationCoalescent::redrawValue( void ) {
+void ConstantPopulationCoalescent::redrawValue( void )
+{
     
     simulateTree();
     
@@ -194,7 +192,8 @@ void ConstantPopulationCoalescent::redrawValue( void ) {
 
 
 
-void ConstantPopulationCoalescent::simulateTree( void ) {
+void ConstantPopulationCoalescent::simulateTree( void )
+{
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
@@ -225,8 +224,9 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
         nodes.erase(nodes.begin()+long(index));
         
         // set name
-        std::string& name = taxonNames[i];
+        const std::string& name = taxa[i].getName();
         node->setName(name);
+        node->setSpeciesName(taxa[i].getSpeciesName());
     }
     
     // initialize the topology by setting the root
@@ -261,12 +261,14 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
     nodes.push_back( root );
     attachTimes(psi, nodes, 0, coalescentTimes);
 //    psi->setAge( root->getIndex(), coalescentTimes[coalescentTimes.size()-1] );
-    for (size_t i = 0; i < numTaxa; ++i) {
+    for (size_t i = 0; i < numTaxa; ++i)
+    {
         TopologyNode& node = tau->getTipNode(i);
         psi->setAge( node.getIndex(), 0.0 );
     }
     
     // finally store the new value
+    delete value;
     value = psi;
     
 }

@@ -40,6 +40,11 @@ RateMatrix& RateMatrix::assign(const Assignable &m)
     }
 }
 
+void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix &P) const
+{
+    calculateTransitionProbabilities(t, 0.0, 1.0, P);
+}
+
 size_t RateMatrix::getNumberOfStates( void ) const
 {
     return numStates;

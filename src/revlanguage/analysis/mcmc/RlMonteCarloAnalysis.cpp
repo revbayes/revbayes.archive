@@ -46,7 +46,8 @@ MonteCarloAnalysis::MonteCarloAnalysis(RevBayesCore::MonteCarloAnalysis *m) : Wo
 
 
 /** Clone object */
-MonteCarloAnalysis* MonteCarloAnalysis::clone(void) const {
+MonteCarloAnalysis* MonteCarloAnalysis::clone(void) const
+{
     
     return new MonteCarloAnalysis(*this);
 }
@@ -78,7 +79,8 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         // get the member with give index
         if ( args[0].getVariable()->getRevObject().isType( Natural::getClassTypeSpec() ) )
         {
-            int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+            int currentGen = int(value->getCurrentGeneration());
+            int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
             bool prior = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
             if ( prior == true )
             {

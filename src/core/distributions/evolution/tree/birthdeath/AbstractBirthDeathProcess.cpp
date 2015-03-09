@@ -79,10 +79,10 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
  * \param[in]     times         
  * \param[in]     T      
  */
-void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T) 
+void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
 {
     
-    if (index < numTaxa-1) 
+    if (index < times->size() )
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -519,14 +519,35 @@ void AbstractBirthDeathProcess::simulateTree( void )
     }
     
     nodes.clear();
-    nodes.push_back( root );
     
     if ( numInitialSpecies < numTaxa)
     {
         // draw a time for each speciation event condition on the time of the process
         std::vector<double> *times = simSpeciations(numTaxa-numInitialSpecies, t_or);
+        
+        if ( startsAtRoot )
+        {
+            // add a left child
+            TopologyNode* leftChild = &root->getChild(0);
+            if ( !leftChild->isTip() )
+            {
+                nodes.push_back(leftChild);
+            }
+            
+            // add a right child
+            TopologyNode* rightChild = &root->getChild(1);
+            if ( !rightChild->isTip() )
+            {
+                nodes.push_back(rightChild);
+            }
+            attachTimes(psi, nodes, 0, times, t_or);
+        }
+        else
+        {
+            nodes.push_back( root );
+            attachTimes(psi, nodes, 0, times, t_or);
+        }
     
-        attachTimes(psi, nodes, 0, times, t_or);
     
         delete times;
     }

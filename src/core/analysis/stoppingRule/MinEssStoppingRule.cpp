@@ -1,12 +1,30 @@
+#include "EssTest.h"
 #include "MinEssStoppingRule.h"
+#include "RbFileManager.h"
+#include "StringUtilities.h"
+#include "TraceContinuousReader.h"
 
 
 using namespace RevBayesCore;
 
 
-MinEssStoppingRule::MinEssStoppingRule(double m, size_t f) : StoppingRule(),
+MinEssStoppingRule::MinEssStoppingRule(double m, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : StoppingRule(),
+    burninEst( be ),
+    checkFrequency( f ),
+    filename( fn ),
     minEss( m ),
-    checkFrequency( f )
+    numReplicates( 1 )
+{
+    
+}
+
+
+MinEssStoppingRule::MinEssStoppingRule(const MinEssStoppingRule &sr) : StoppingRule(),
+    burninEst( sr.burninEst->clone() ),
+    checkFrequency( sr.checkFrequency ),
+    filename( sr.filename ),
+    minEss( sr.minEss ),
+    numReplicates( sr.numReplicates )
 {
     
 }
@@ -16,6 +34,7 @@ MinEssStoppingRule::MinEssStoppingRule(double m, size_t f) : StoppingRule(),
 MinEssStoppingRule::~MinEssStoppingRule()
 {
     
+    delete burninEst;
 }
 
 
@@ -62,11 +81,70 @@ void MinEssStoppingRule::runStarted( void )
 
 
 /**
+ * Set the number of runs/replicates.
+ * Here we need to adjust the files from which we read in.
+ */
+void MinEssStoppingRule::setNumberOfRuns(size_t n)
+{
+    numReplicates = n;
+}
+
+
+/**
  * Should we stop now?
  * Yes, if the minimum ESS is larger than the provided threshold.
  */
 bool MinEssStoppingRule::stop( size_t g )
 {
     
-    return 1000 >= minEss;
+    bool passed = true;
+    
+    for ( size_t i = 1; i <= numReplicates; ++i)
+    {
+        std::string fn = filename;
+        if ( numReplicates > 1 )
+        {
+            RbFileManager fm = RbFileManager(filename);
+            fn = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_run_" + StringUtilities::to_string(i) + "." + fm.getFileExtension();
+        }
+        
+        TraceContinuousReader reader = TraceContinuousReader( fn );
+    
+        // get the vector of traces from the reader
+        std::vector<Trace> &data = reader.getTraces();
+    
+        size_t maxBurnin = 0;
+    
+        for ( size_t i = 0; i < data.size(); ++i)
+        {
+            Trace &t = data[i];
+            const std::vector<double> &v = t.getValues();
+            size_t b = burninEst->estimateBurnin( v );
+            if ( maxBurnin < b )
+            {
+                maxBurnin = b;
+            }
+        }
+    
+        EssTest essTest = EssTest( minEss );
+        
+        for ( size_t i = 0; i < data.size(); ++i)
+        {
+            RevBayesCore::Trace &t = data[i];
+            const std::vector<double> &v = t.getValues();
+            t.setBurnin( maxBurnin );
+            t.computeStatistics();
+        
+            passed &= essTest.assessConvergenceSingleChain( v, maxBurnin );
+        }
+        
+    }
+    
+//    if ( passed )
+//    {
+//        std::cerr << "Reached minimum ESS!" << std::endl;
+//    }
+    
+    
+    return passed;
 }

@@ -245,6 +245,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 
         NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
         NSPoint tempP = iRect.origin;
+        //NSRect glyphRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
         NSRect glyphRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
         iRect.size = glyphRect.size;
         iRect.size.height *= 1.25;

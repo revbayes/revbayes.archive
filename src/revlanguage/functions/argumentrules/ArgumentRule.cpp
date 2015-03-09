@@ -275,7 +275,7 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
         return -1;
     }
     
-    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || theVar->getRevObject().isConstant() )
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == "constant") )
     {
         once = true;
     }

@@ -116,7 +116,8 @@ double TimeTree::getTreeLength(void) const {
 }
 
 
-void TimeTree::resizeElementVectors(size_t n) {
+void TimeTree::resizeElementVectors(size_t n)
+{
     // remove all elements
     ages.clear();
 //    times.clear();

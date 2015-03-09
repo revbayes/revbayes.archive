@@ -749,18 +749,22 @@ const std::vector<TopologyNode*>& TopologyNode::getChildren( void ) const
 
 
 /** Loop over children and get their indices */
-std::vector<int> TopologyNode::getChildrenIndices() const {
+std::vector<int> TopologyNode::getChildrenIndices() const
+{
     
     std::vector<int> temp;
     
     for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ )
+    {
         temp.push_back( int( (*i)->getIndex() ) );
+    }
     
     return temp;
 }
 
 
-size_t TopologyNode::getIndex( void ) const {
+size_t TopologyNode::getIndex( void ) const
+{
     
     return index;
 }

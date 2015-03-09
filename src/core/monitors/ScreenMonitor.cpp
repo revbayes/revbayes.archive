@@ -25,6 +25,7 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include <time.h>
 
 using namespace RevBayesCore;
 

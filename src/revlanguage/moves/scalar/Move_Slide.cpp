@@ -9,6 +9,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "SlideProposal.h"
+#include "SlideProposalContinuous.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -54,17 +55,28 @@ void Move_Slide::constructInternalObject( void )
     // we free the memory first
     delete value;
     
+    RevBayesCore::Proposal *p = NULL;
+    
     // now allocate a new sliding move
     double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
+    RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
+    if ( n != NULL )
+    {
+        p = new RevBayesCore::SlideProposalContinuous(n,d);
+    }
+    else
+    {
+        RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
+        p = new RevBayesCore::SlideProposal(n2,d);
+        
+    }
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
     // finally create the internal move object
     //    value = new RevBayesCore::Move_Slide(n, d, t, w);
     
-    RevBayesCore::Proposal *p = new RevBayesCore::SlideProposal(n,d);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
 }
