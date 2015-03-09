@@ -89,8 +89,9 @@ void RateMatrix_Empirical::calculateCijk(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Empirical::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Empirical::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
     
+    double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )
 		tiProbsEigens(t, P);
 	else

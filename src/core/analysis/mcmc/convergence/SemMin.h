@@ -20,12 +20,12 @@ namespace RevBayesCore {
         SemMin();
         SemMin(std::size_t blockSize);
     
-        // implementen functions from convergence diagnostic
+        SemMin*         clone(void) const;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         std::size_t     estimateBurnin(const std::vector<double>& values);
     
     private:
     
-        std::size_t      blockSize;                                                                                          //!< first window
+        std::size_t      blockSize;                                                     //!< first window
     
     };
     

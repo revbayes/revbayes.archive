@@ -1,6 +1,7 @@
 #include "AbstractDiscreteTaxonData.h"
 #include "CharacterState.h"
 #include "FastaWriter.h"
+#include "RbFileManager.h"
 
 using namespace RevBayesCore;
 
@@ -27,6 +28,9 @@ void FastaWriter::writeData(std::string const &fileName, const AbstractDiscreteC
     
     // the filestream object
     std::fstream outStream;
+    
+    RbFileManager f = RbFileManager(fileName);
+    f.createDirectoryForFile();
     
     // open the stream to the file
     outStream.open( fileName.c_str(), std::fstream::out );

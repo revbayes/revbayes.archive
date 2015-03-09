@@ -32,6 +32,7 @@ namespace RevBayesCore {
         MaxIterationStoppingRule*                           clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         bool                                                isConvergenceRule(void) const;                              //!< No, this is a threshold rule.
         void                                                runStarted(void);                                           //!< The run just started. Here we do not need to do anything.
+        void                                                setNumberOfRuns(size_t n);                                  //!< Set how many runs/replicates there are.
         bool                                                stop(size_t g);                                             //!< Should we stop now?
         
     private:

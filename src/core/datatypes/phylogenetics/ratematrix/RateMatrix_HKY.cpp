@@ -26,7 +26,9 @@ RateMatrix_HKY::~RateMatrix_HKY(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+    
+    double t = rate * (startAge - endAge);
     
     // notation:
     double pi_A = stationaryFreqs[0];

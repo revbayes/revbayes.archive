@@ -26,8 +26,9 @@ RateMatrix_Tamura92::~RateMatrix_Tamura92(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Tamura92::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Tamura92::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
     
+    double t = rate * (startAge - endAge);
     // notation:
     double pi_A = (1-gc)/2;
     double pi_C = gc/2;

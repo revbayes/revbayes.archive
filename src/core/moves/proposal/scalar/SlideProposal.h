@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class SlideProposal : public Proposal {
         
     public:
-        SlideProposal( ContinuousStochasticNode *n, double l);                                                                      //!<  constructor
+        SlideProposal( StochasticNode<double> *n, double l);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
@@ -43,7 +43,7 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        ContinuousStochasticNode*               variable;                                                                           //!< The variable the Proposal is working on
+        StochasticNode<double>*                 variable;                                                                           //!< The variable the Proposal is working on
         double                                  storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                                  lambda;                                                                             //!< The value we propose.
     };

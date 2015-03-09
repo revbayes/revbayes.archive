@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SlideProposal::SlideProposal( ContinuousStochasticNode *n, double l) : Proposal(),
+SlideProposal::SlideProposal( StochasticNode<double> *n, double l) : Proposal(),
     variable( n ),
     storedValue( 0.0 ),
     lambda( l )
@@ -82,32 +82,10 @@ double SlideProposal::doProposal( void )
     // copy value
     storedValue = val;
     
-    double min = variable->getMin();
-    double max = variable->getMax();
-    double size = max - min;
-    
     double u      = rng->uniform01();
     double delta  = ( lambda * ( u - 0.5 ) );
     
-    if ( fabs(delta) > 2.0*size )
-    {
-        delta -= floor(delta / (2.0*size)) * (2.0*size);
-    }
     double newVal = val + delta;
-    
-    /* reflect the new value */
-    do {
-        if ( newVal < min )
-        {
-            newVal = 2.0 * min - newVal;
-        }
-        else if ( newVal > max )
-        {
-            newVal = 2.0 * max - newVal;
-        }
-    } while ( newVal < min || newVal > max );
-    
-    // FIXME: not the most efficient way of handling multiple reflections :-P
     
     val = newVal;
     

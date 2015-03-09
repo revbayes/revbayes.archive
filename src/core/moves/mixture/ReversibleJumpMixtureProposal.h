@@ -165,46 +165,6 @@ double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::doProposal( voi
         v = d.getValue();
     }
     
-//    // now we need to check if we add a jump a remove one
-//    if ( storedIndex == 0 )
-//    {
-//        // add a jump
-//        d.setCurrentIndex( 1 );
-//        
-//        // get the base distribution
-//        TypedDistribution<mixtureType> &baseDistribution = d.getBaseDistribution();
-//        
-//        // draw a new value from the base distribution
-//        baseDistribution.redrawValue();
-//        
-//        // get the new value
-//        const mixtureType& newVal = baseDistribution.getValue();
-//        
-//        // set the value
-//        v = newVal;
-//        
-//        // store the proposal ratio
-//        lnHastingsratio = - baseDistribution.computeLnProbability();
-//        
-//    }
-//    else
-//    {
-//        // remove the jump
-//        d.setCurrentIndex( 0 );
-//        
-//        // get the base distribution
-//        TypedDistribution<mixtureType> &baseDistribution = d.getBaseDistribution();
-//        
-//        // we need to set the value of the value distribution so that we can compute the log probability density
-//        baseDistribution.setValue( storedValue );
-//        
-//        // store the proposal ratio
-//        lnHastingsratio = baseDistribution.computeLnProbability();
-//        
-//        // set the value
-//        v = d.getConstantValue();
-//    }
-    
     return lnHastingsratio;
 }
 

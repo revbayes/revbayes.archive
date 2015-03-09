@@ -167,6 +167,13 @@ MonteCarloAnalysis* MonteCarloAnalysis::clone( void ) const
 }
 
 
+size_t MonteCarloAnalysis::getCurrentGeneration( void ) const
+{
+    
+    return runs[0]->getCurrentGeneration();
+}
+
+
 /**
  * Print out a summary of the current performance.
  */
@@ -221,6 +228,7 @@ void MonteCarloAnalysis::run( RbVector<StoppingRule> rules )
     // reset the stopping rules
     for (size_t i=0; i<rules.size(); ++i)
     {
+        rules[i].setNumberOfRuns( replicates );
         rules[i].runStarted();
     }
 

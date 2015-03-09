@@ -101,6 +101,7 @@ void ModelMonitor::setModel(Model *m)
     // reset the DAG nodes that should be monitored
     resetDagNodes();
     
+    sortNodesByName();
 }
 
 

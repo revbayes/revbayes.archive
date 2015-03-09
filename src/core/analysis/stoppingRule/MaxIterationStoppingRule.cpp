@@ -61,10 +61,26 @@ void MaxIterationStoppingRule::runStarted( void )
 
 
 /**
+ * Set the number of runs/replicates.
+ * Here we don't have anything to do.
+ */
+void MaxIterationStoppingRule::setNumberOfRuns(size_t n)
+{
+    // do nothing
+}
+
+
+/**
  * Should we stop now?
  * Yes, if the current iteration number is larger or equal to the maximum iteration number.
  */
 bool MaxIterationStoppingRule::stop( size_t g )
 {
-    return g >= maxGenerations;
+    bool passed = g >= maxGenerations;
+//    if ( passed )
+//    {
+//        std::cerr << "Reached maximum iterations!" << std::endl;
+//    }
+    
+    return passed;
 }

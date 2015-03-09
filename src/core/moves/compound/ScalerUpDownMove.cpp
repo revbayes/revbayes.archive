@@ -42,17 +42,20 @@ double ScalerUpDownMove::performCompoundMove( void ) {
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    double& sv1 = scalerVal1->getValue();
-    double& sv2 = scalerVal2->getValue();
-	
-	double u = rng->uniform01();
-	double c = exp( scaleFactor * (u - 0.5) );
+    double sv1 = scalerVal1->getValue();
+    double sv2 = scalerVal2->getValue();
 
     storedSV1 = sv1;
     storedSV2 = sv2;
     
+	double u = rng->uniform01();
+	double c = exp( scaleFactor * (u - 0.5) );
+    
     sv1 *= c;
     sv2 /= c;
+    
+    scalerVal1->setValue(sv1);
+    scalerVal2->setValue(sv2);
 	
 //	double pr = (1.0 - 1.0 - 2.0) * log(c);
 	return 0.0;
@@ -67,11 +70,13 @@ void ScalerUpDownMove::printParameterSummary(std::ostream &o) const {
 void ScalerUpDownMove::rejectCompoundMove( void ) {
 	
     // undo the proposal
-	double& sv1 = scalerVal1->getValue();
-	double& sv2 = scalerVal2->getValue();
+//	double& sv1 = scalerVal1->getValue();
+//	double& sv2 = scalerVal2->getValue();
 
-	sv1 = storedSV1;
-	sv2 = storedSV2;
+//	sv1 = storedSV1;
+//	sv2 = storedSV2;
+    scalerVal1->setValue(storedSV1);
+    scalerVal2->setValue(storedSV2);
 	
 }
 
