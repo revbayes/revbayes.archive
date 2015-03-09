@@ -1,5 +1,5 @@
-#include "GelmanRubinTest.h"
-#include "GelmanRubinStoppingRule.h"
+#include "StationarityTest.h"
+#include "StationarityStoppingRule.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "StringUtilities.h"
@@ -9,15 +9,15 @@
 using namespace RevBayesCore;
 
 
-GelmanRubinStoppingRule::GelmanRubinStoppingRule(double m, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : AbstractConvergenceStoppingRule(fn, f, be),
-    R( m )
+StationarityStoppingRule::StationarityStoppingRule(double p, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : AbstractConvergenceStoppingRule(fn, f, be),
+    prob( p )
 {
     
 }
 
 
 
-GelmanRubinStoppingRule::~GelmanRubinStoppingRule()
+StationarityStoppingRule::~StationarityStoppingRule()
 {
     
 }
@@ -30,10 +30,10 @@ GelmanRubinStoppingRule::~GelmanRubinStoppingRule()
  *
  * \return A new copy of myself
  */
-GelmanRubinStoppingRule* GelmanRubinStoppingRule::clone( void ) const
+StationarityStoppingRule* StationarityStoppingRule::clone( void ) const
 {
     
-    return new GelmanRubinStoppingRule( *this );
+    return new StationarityStoppingRule( *this );
 }
 
 
@@ -41,13 +41,13 @@ GelmanRubinStoppingRule* GelmanRubinStoppingRule::clone( void ) const
  * Set the number of runs/replicates.
  * Here we need to adjust the files from which we read in.
  */
-void GelmanRubinStoppingRule::setNumberOfRuns(size_t n)
+void StationarityStoppingRule::setNumberOfRuns(size_t n)
 {
     numReplicates = n;
     
     if ( n < 2 )
     {
-        throw RbException("You need at least two replicates for the Gelman-Rubin convergence statistic.");
+        throw RbException("You need at least two replicates for the Stationarity between runs convergence statistic.");
     }
 }
 
@@ -57,7 +57,7 @@ void GelmanRubinStoppingRule::setNumberOfRuns(size_t n)
  * Yes, if the ratio of the variance of samples between chains over the variance of samples withing chains
  * is smaller than the provided threshold.
  */
-bool GelmanRubinStoppingRule::stop( size_t g )
+bool StationarityStoppingRule::stop( size_t g )
 {
     
     bool passed = true;
@@ -114,7 +114,7 @@ bool GelmanRubinStoppingRule::stop( size_t g )
             
             std::vector<double> &valueVector = valueMatrix[i-1];
             
-//            valueVector.insert(valueVector.begin(), v.begin()+maxBurnin, v.end());
+            //            valueVector.insert(valueVector.begin(), v.begin()+maxBurnin, v.end());
             valueVector.insert(valueVector.begin(), v.begin(), v.end());
             
             // get the matrix of values for the j-th parameter
@@ -133,24 +133,23 @@ bool GelmanRubinStoppingRule::stop( size_t g )
     
     
     
-    GelmanRubinTest grTest = GelmanRubinTest( R );
+    StationarityTest sTest = StationarityTest( numReplicates, prob );
     for ( size_t i = 0; i < values.size(); ++i)
     {
         const std::vector< std::vector<double> > &v = values[i];
         
-        passed &= grTest.assessConvergenceMultipleChains(v, burnins[i]);
+        passed &= sTest.assessConvergenceMultipleChains(v, burnins[i]);
     }
     
     
     if ( passed )
     {
-        std::cerr << "Passed Gelman-Rubin!" << std::endl;
+        std::cerr << "Passed Stationarity!" << std::endl;
     }
     else
     {
-        std::cerr << "Failed Gelman-Rubin!" << std::endl;
+        std::cerr << "Failed Stationarity!" << std::endl;
     }
-
     
     
     return passed;
