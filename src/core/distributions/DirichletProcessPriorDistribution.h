@@ -141,7 +141,7 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     
     // reset the lnProb and set it to log( alpha^K )
 	
-//	return 0.0;
+	return 0.0;
     
     // we should update the restaurant vector before we do the computations. (Sebastian)
     createRestaurantVectors();
