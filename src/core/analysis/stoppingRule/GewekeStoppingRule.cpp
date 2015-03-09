@@ -87,11 +87,6 @@ bool GewekeStoppingRule::stop( size_t g )
         
     }
     
-    if ( passed )
-    {
-        std::cerr << "Passed Geweke!" << std::endl;
-    }
-    
     
     return passed;
 }
