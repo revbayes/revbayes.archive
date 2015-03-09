@@ -234,7 +234,8 @@ const std::vector<TypeSpec>& ArgumentRule::getArgumentTypeSpec(void) const
 
 
 
-const RevVariable& ArgumentRule::getDefaultVariable( void ) const {
+const RevVariable& ArgumentRule::getDefaultVariable( void ) const
+{
     
     if ( defaultVar == NULL ) 
     {
@@ -252,7 +253,8 @@ ArgumentRule::EvaluationType ArgumentRule::getEvaluationType( void ) const
 }
 
 
-bool ArgumentRule::hasDefault(void) const {
+bool ArgumentRule::hasDefault(void) const
+{
     
     return hasDefaultVal;
 }
@@ -261,7 +263,7 @@ bool ArgumentRule::hasDefault(void) const {
 /**
  * Test if argument is valid. The boolean flag 'once' is used to signal whether the argument matching
  * is done in a static or a dynamic context. If the rule is constant, then the argument matching
- * is done in a static context (evaluate-x§once context) regardless of the setting of the once flag.
+ * is done in a static context (evaluate-once context) regardless of the setting of the once flag.
  * If the argument is constant, we try type promotion if permitted by the variable required type.
  *
  * @todo See the TODOs for fitArgument(...)
