@@ -444,6 +444,7 @@
 #include "Func_dppMeanFromConc.h"
 #include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
+#include "Func_stirling.h"
 #include "Func_varianceCovarianceMatrix.h"
 #include "Func_decomposedVarianceCovarianceMatrix.h"
 
@@ -1189,6 +1190,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		// some helper statistics for the DPP distribution
         addFunction("fnDPPConcFromMean",  new Func_dppConcFromMean( )     );
         addFunction("fnDPPMeanFromConc",  new Func_dppMeanFromConc( )  );
+        addFunction("fnStirling",  new Func_stirling( )     );
 		
 		// count the number of unique elements in vector
         addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Real>( )  );
