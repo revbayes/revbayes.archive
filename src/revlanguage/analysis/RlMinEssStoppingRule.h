@@ -2,7 +2,7 @@
 #define RlMinEssStoppingRule_H
 
 #include "FileMonitor.h"
-#include "RlStoppingRule.h"
+#include "RlAbstractConvergenceStoppingRule.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -22,7 +22,7 @@ namespace RevLanguage {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2015-01-12, version 1.0
      */
-    class MinEssStoppingRule : public StoppingRule {
+    class MinEssStoppingRule : public AbstractConvergenceStoppingRule {
         
     public:
         
@@ -41,9 +41,6 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                   burninMethod;
-        RevPtr<const RevVariable>                   filename;
-        RevPtr<const RevVariable>                   frequency;
         RevPtr<const RevVariable>                   minEss;
         
     };

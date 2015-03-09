@@ -88,7 +88,8 @@ RevLanguage::WorkspaceToCoreWrapperObject<rbType>::WorkspaceToCoreWrapperObject(
 
 
 template <typename rbType>
-RevLanguage::WorkspaceToCoreWrapperObject<rbType>::~WorkspaceToCoreWrapperObject() {
+RevLanguage::WorkspaceToCoreWrapperObject<rbType>::~WorkspaceToCoreWrapperObject()
+{
     
     delete value;
 }
