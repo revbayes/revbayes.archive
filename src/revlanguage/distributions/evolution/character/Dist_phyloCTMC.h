@@ -91,8 +91,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
-    std::string dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    StringUtilities::toLower(dt);
+    const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getDagNode();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
@@ -115,7 +114,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
     }
 	
-    if ( dt == "dna" )
+    if ( dt == "DNA" ) 
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType> *dist =
             new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n, ambig);
@@ -172,7 +171,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         
         d = dist;
     } 
-    else if ( dt == "rna" )
+    else if ( dt == "RNA" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n, ambig);
         
@@ -226,7 +225,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
 
         d = dist;
     }
-    else if ( dt == "aa" || dt == "protein" )
+    else if ( dt == "AA" || dt == "Protein" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState, typename treeType::valueType>(tau, 20, true, n, ambig);
         
@@ -280,7 +279,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         
         d = dist;
     }
-    else if ( dt == "pomo" )
+    else if ( dt == "Pomo" )
     {
         
         // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
@@ -349,7 +348,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         
         d = dist;
     }
-    else if ( dt == "standard" )
+    else if ( dt == "Standard" )
     {
         // we get the number of states from the rates matrix
         // set the rate matrix
@@ -417,7 +416,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         
         d = dist;
     }
-	else if ( dt == "naturalnumbers" )
+	else if ( dt == "NaturalNumbers" )
     {
         // we get the number of states from the rates matrix
         size_t nChars = 1;
