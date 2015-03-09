@@ -251,7 +251,7 @@ void MonteCarloAnalysis::run( RbVector<StoppingRule> rules )
         converged = true;
         size_t numConvergenceRules = 0;
         // do the stopping test
-        for (size_t i=0; i<rules.size(); ++i)
+        for (size_t i=0; i<rules.size() && converged; ++i)
         {
             
             if ( rules[i].isConvergenceRule() )

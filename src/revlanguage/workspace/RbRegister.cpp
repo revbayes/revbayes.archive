@@ -90,6 +90,7 @@
 #include "RlMinEssStoppingRule.h"
 #include "RlGelmanRubinStoppingRule.h"
 #include "RlGewekeStoppingRule.h"
+#include "RlStationarityStoppingRule.h"
 
 /// Monitors ///
 
@@ -519,6 +520,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
         addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
         addTypeWithConstructor( "srMinESS",             new MinEssStoppingRule()   );
+        addTypeWithConstructor( "srStationarity",       new StationarityStoppingRule()   );
         
 
         ////////////////////////////////////////////////////////////////////////////////
