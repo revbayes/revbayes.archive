@@ -9,23 +9,8 @@
 using namespace RevBayesCore;
 
 
-GelmanRubinStoppingRule::GelmanRubinStoppingRule(double m, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : StoppingRule(),
-    burninEst( be ),
-    checkFrequency( f ),
-    filename( fn ),
-    R( m ),
-    numReplicates( 1 )
-{
-    
-}
-
-
-GelmanRubinStoppingRule::GelmanRubinStoppingRule(const GelmanRubinStoppingRule &sr) : StoppingRule(),
-    burninEst( sr.burninEst->clone() ),
-    checkFrequency( sr.checkFrequency ),
-    filename( sr.filename ),
-    R( sr.R ),
-    numReplicates( sr.numReplicates )
+GelmanRubinStoppingRule::GelmanRubinStoppingRule(double m, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : AbstractConvergenceStoppingRule(fn, f, be),
+    R( m )
 {
     
 }
@@ -35,19 +20,8 @@ GelmanRubinStoppingRule::GelmanRubinStoppingRule(const GelmanRubinStoppingRule &
 GelmanRubinStoppingRule::~GelmanRubinStoppingRule()
 {
     
-    delete burninEst;
 }
 
-
-/**
- * Should we check at the given iteration for convergence?
- * Only for given iteration because this is a time consuming test.
- */
-bool GelmanRubinStoppingRule::checkAtIteration(size_t g) const
-{
-    // test if the iteration matches the pre-specified frequency
-    return (g % checkFrequency) == 0;
-}
 
 
 /**
@@ -60,24 +34,6 @@ GelmanRubinStoppingRule* GelmanRubinStoppingRule::clone( void ) const
 {
     
     return new GelmanRubinStoppingRule( *this );
-}
-
-
-/**
- * Is this a stopping rule? Yes!
- */
-bool GelmanRubinStoppingRule::isConvergenceRule( void ) const
-{
-    return true;
-}
-
-
-/**
- * The run just started. For this rule we do not need to do anything.
- */
-void GelmanRubinStoppingRule::runStarted( void )
-{
-    // nothing to do
 }
 
 
@@ -160,10 +116,6 @@ bool GelmanRubinStoppingRule::stop( size_t g )
             
 //            valueVector.insert(valueVector.begin(), v.begin()+maxBurnin, v.end());
             valueVector.insert(valueVector.begin(), v.begin(), v.end());
-//            for (size_t k = 0; k < v.size(); ++k)
-//            {
-//                valueVector.push_back( v[k] );
-//            }
             
             // get the matrix of values for the j-th parameter
             if ( j >= burnins.size() )

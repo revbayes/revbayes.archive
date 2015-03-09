@@ -89,6 +89,7 @@
 #include "RlMaxTimeStoppingRule.h"
 #include "RlMinEssStoppingRule.h"
 #include "RlGelmanRubinStoppingRule.h"
+#include "RlGewekeStoppingRule.h"
 
 /// Monitors ///
 
@@ -514,6 +515,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
         addTypeWithConstructor( "srGelmanRubin",        new GelmanRubinStoppingRule()   );
+        addTypeWithConstructor( "srGeweke",             new GewekeStoppingRule()   );
         addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
         addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
         addTypeWithConstructor( "srMinESS",             new MinEssStoppingRule()   );
