@@ -15,22 +15,42 @@
 #include <cmath>
 #include <typeinfo>
 
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 using namespace RevBayesCore;
 
 PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn) : Cloneable( ),
+    activePID( 0 ),
     filename( fn ),
-    sampler( m ),
+    numProcesses( 1 ),
+    pid( 0 ),
     powers(),
+    processActive( true ),
+    sampler( m ),
     sampleFreq( 100 )
 {
+    
+#ifdef RB_MPI
+    numProcesses = MPI::COMM_WORLD.Get_size();
+    pid = MPI::COMM_WORLD.Get_rank();
+#endif
+    
+    processActive = (pid == activePID);
     
 }
 
 
 PowerPosteriorAnalysis::PowerPosteriorAnalysis(const PowerPosteriorAnalysis &a) : Cloneable( a ),
+    activePID( a.activePID ),
     filename( a.filename ),
-    sampler( a.sampler->clone() ),
+    numProcesses( a.numProcesses ),
+    pid( a.pid ),
     powers( a.powers ),
+    processActive( a.processActive ),
+    sampler( a.sampler->clone() ),
     sampleFreq( a.sampleFreq )
 {
     
@@ -56,11 +76,14 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
         // free the sampler
         delete sampler;
         
-        filename = a.filename;
-        powers   = a.powers;
-        sampleFreq = a.sampleFreq;
-        // create replicate Monte Carlo samplers
-        sampler = a.sampler->clone();
+        activePID       = a.activePID;
+        filename        = a.filename;
+        numProcesses    = a.numProcesses;
+        pid             = a.pid;
+        powers          = a.powers;
+        processActive   = a.processActive;
+        sampler         = a.sampler->clone();
+        sampleFreq      = a.sampleFreq;
         
     }
     
@@ -79,31 +102,38 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     // reset the counters for the move schedules
     sampler->reset();
     
-    // Let user know what we are doing
-    std::stringstream ss;
-    ss << "\n";
-    ss << "Running burn-in phase of Power Posterior sampler for " << generations << " iterations.\n";
+    if ( processActive )
+    {
+        // Let user know what we are doing
+        std::stringstream ss;
+        ss << "\n";
+        ss << "Running burn-in phase of Power Posterior sampler for " << generations << " iterations.\n";
 //    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
-    ss << sampler->getStrategyDescription();
-    std::cout << ss.str() << std::endl;
+        ss << sampler->getStrategyDescription();
+        std::cout << ss.str() << std::endl;
     
-    // Print progress bar (68 characters wide)
-    std::cout << std::endl;
-    std::cout << "Progress:" << std::endl;
-    std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-    std::cout.flush();
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
     
     
     // Run the chain
     size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        size_t progress = 68 * (double) k / (double) generations;
-        if ( progress > numStars )
+        if ( processActive )
         {
-            for ( ;  numStars < progress; ++numStars )
-                std::cout << "*";
-            std::cout.flush();
+            size_t progress = 68 * (double) k / (double) generations;
+            if ( progress > numStars )
+            {
+                for ( ;  numStars < progress; ++numStars )
+                    std::cout << "*";
+                
+                std::cout.flush();
+            }
         }
         
         sampler->nextCycle(false);
@@ -118,7 +148,11 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
         
     }
     
-    std::cout << std::endl;
+    
+    if ( processActive )
+    {
+        std::cout << std::endl;
+    }
     
 }
 
@@ -133,18 +167,35 @@ PowerPosteriorAnalysis* PowerPosteriorAnalysis::clone( void ) const
 
 void PowerPosteriorAnalysis::runAll(size_t gen)
 {
-    std::cout << std::endl;
-    std::cout << "Running power posterior analysis ..." << std::endl;
+    
+    // print some information to the screen but only if we are the active process
+    if ( processActive )
+    {
+        std::cout << std::endl;
+        std::cout << "Running power posterior analysis ..." << std::endl;
+    }
     
     /* Run the chain */
     for (size_t i = 0; i < powers.size(); ++i)
     {
     
-        // run the i-th stone
-        runStone(i, gen);
+        if ( i % numProcesses == pid)
+        {
+            // run the i-th stone
+            runStone(i, gen);
+        }
+        
     }
     
-    summarizeStones();
+#ifdef RB_MPI
+    // wait until all chains complete
+    MPI::COMM_WORLD.Barrier();
+#endif
+    if ( processActive )
+    {
+        summarizeStones();
+    }
+    
 }
 
 
@@ -192,14 +243,16 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
     /* Run the chain */
-    double p = powers[idx];
-    std::cout << "Step ";
-    for (size_t d = size_t( ceil( log10( idx+1.1 ) ) ); d < digits; d++ )
+    if ( processActive )
     {
-        std::cout << " ";
+        std::cout << "Step ";
+        for (size_t d = size_t( ceil( log10( idx+1.1 ) ) ); d < digits; d++ )
+        {
+            std::cout << " ";
+        }
+        std::cout << (idx+1) << " / " << powers.size();
+        std::cout << "\t\t";
     }
-    std::cout << (idx+1) << " / " << powers.size();
-    std::cout << "\t\t";
     
     // set the power of this sampler
     sampler->setLikelihoodHeat( powers[idx] );
@@ -210,15 +263,19 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     sampler->startMonitors();
     sampler->monitor(0);
     
+    double p = powers[idx];
     for (size_t k=1; k<=gen; k++)
     {
-            
-        if ( k % printInterval == 0 )
+        
+        if ( processActive )
         {
-            std::cout << "**";
-            std::cout.flush();
+            if ( k % printInterval == 0 )
+            {
+                std::cout << "**";
+                std::cout.flush();
+            }
         }
-            
+        
         sampler->nextCycle( true );
 
         // Monitor
@@ -233,9 +290,12 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
         }
             
     }
-        
-    std::cout << std::endl;
-        
+    
+    if ( processActive )
+    {
+        std::cout << std::endl;
+    }
+    
     outStream.close();
     
     

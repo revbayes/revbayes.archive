@@ -21,6 +21,10 @@
 #include <sstream>
 #include <typeinfo>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 using namespace RevBayesCore;
 
 
@@ -34,9 +38,20 @@ using namespace RevBayesCore;
  * \param[in]    mons The vector of monitors.
  */
 MonteCarloSampler::MonteCarloSampler(void) :
-    generation(0)
+    activePID(0),
+    generation(0),
+    numProcesses(1),
+    pid(0),
+    processActive( true )
 {
-
+    
+#ifdef RB_MPI
+    //    numProcesses = MPI::COMM_WORLD.Get_size();
+    pid = MPI::COMM_WORLD.Get_rank();
+#endif
+    
+    processActive = (pid == activePID);
+    
 }
 
 
@@ -55,6 +70,24 @@ MonteCarloSampler::~MonteCarloSampler(void)
 size_t MonteCarloSampler::getCurrentGeneration( void ) const
 {
     return generation;
+}
+
+
+
+void MonteCarloSampler::setActive(bool tf)
+{
+    
+    processActive = tf;
+    if ( processActive )
+    {
+        activePID = pid;
+    }
+    
+}
+
+void MonteCarloSampler::setNumberOfProcesses(size_t n)
+{
+    numProcesses = n;
 }
 
 
