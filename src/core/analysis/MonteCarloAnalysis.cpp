@@ -1,6 +1,11 @@
 #include "MonteCarloAnalysis.h"
 #include "RlUserInterface.h"
 
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 using namespace RevBayesCore;
 
 
@@ -10,8 +15,20 @@ using namespace RevBayesCore;
  * \param[in]    m    The monte carlo sampler.
  */
 MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneable(),
-    replicates( r )
+    activePID( 0 ),
+    numProcesses( 1 ),
+    pid( 0 ),
+    processActive( true ),
+    replicates( r ),
+    runs()
 {
+    
+#ifdef RB_MPI
+    numProcesses = MPI::COMM_WORLD.Get_size();
+    pid = MPI::COMM_WORLD.Get_rank();
+#endif
+    
+    processActive = (pid == activePID);
     
     // add a clone of the original sampler to our vector of runs
     runs.push_back( m );
@@ -30,17 +47,33 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
         }
     }
     
+    
+    
+#ifdef RB_MPI
+    size_t numProcessesPerReplicate = numProcesses / replicates;
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        runs[i]->setReplicateIndex( i+1 );
+        runs[i]->setActive( true );
+        runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
+    }
+#endif
+    
 }
 
 
-MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &m) : Cloneable(),
-replicates( m.replicates )
+MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(),
+    activePID( a.activePID ),
+    numProcesses( a.numProcesses ),
+    pid( a.pid ),
+    processActive( a.processActive ),
+    replicates( a.replicates )
 {
     
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < replicates; ++i)
     {
-        runs.push_back( m.runs[i]->clone() );
+        runs.push_back( a.runs[i]->clone() );
     }
     
 }
@@ -69,10 +102,10 @@ MonteCarloAnalysis::~MonteCarloAnalysis(void)
  * Overloaded assignment operator.
  * We need to keep track of the MonteCarloSamplers
  */
-MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &m)
+MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
 {
     
-    if ( this != &m )
+    if ( this != &a )
     {
         
         // free the runs
@@ -82,11 +115,15 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &m)
             delete sampler;
         }
         
-        replicates = m.replicates;
+        activePID       = a.activePID;
+        numProcesses    = a.numProcesses;
+        pid             = a.pid;
+        processActive   = a.processActive;
+        replicates      = a.replicates;
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < replicates; ++i)
         {
-            runs.push_back( m.runs[i]->clone() );
+            runs.push_back( a.runs[i]->clone() );
         }
 
     }

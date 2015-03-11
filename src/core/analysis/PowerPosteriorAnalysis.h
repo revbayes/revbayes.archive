@@ -26,33 +26,31 @@ namespace RevBayesCore {
     public:
         PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn);
         PowerPosteriorAnalysis(const PowerPosteriorAnalysis &a);
-        virtual                                            ~PowerPosteriorAnalysis(void);                               //!< Virtual destructor
+        virtual                                ~PowerPosteriorAnalysis(void);                               //!< Virtual destructor
         
-        PowerPosteriorAnalysis&                             operator=(const PowerPosteriorAnalysis &a);
+        PowerPosteriorAnalysis&                 operator=(const PowerPosteriorAnalysis &a);
         
         // public methods
-        PowerPosteriorAnalysis*                             clone(void) const;
-        void                                                burnin(size_t g, size_t ti);
-        void                                                runAll(size_t g);
-        void                                                runStone(size_t idx, size_t g);
-        void                                                summarizeStones(void);
-        void                                                setPowers(const std::vector<double> &p);
-        void                                                setSampleFreq(size_t sf);
+        PowerPosteriorAnalysis*                 clone(void) const;
+        void                                    burnin(size_t g, size_t ti);
+        void                                    runAll(size_t g);
+        void                                    runStone(size_t idx, size_t g);
+        void                                    summarizeStones(void);
+        void                                    setPowers(const std::vector<double> &p);
+        void                                    setSampleFreq(size_t sf);
         
     private:
         
         // members
-        std::string                                         filename;
-//        unsigned long                                       generation;
-//        Model                                               model;
-//        RbVector<Monitor>                                   monitors;
-//        RbVector<Move>                                      moves;
-        MonteCarloSampler*                                  sampler;
-        std::vector<double>                                 powers;
-        size_t                                              sampleFreq;
-//        MoveSchedule*                                       schedule;
-//        std::string                                         scheduleType;                                         //!< Type of move schedule to be used
-        
+        size_t                                  activePID;
+        std::string                             filename;
+        size_t                                  numProcesses;
+        size_t                                  pid;
+        std::vector<double>                     powers;
+        bool                                    processActive;
+        MonteCarloSampler*                      sampler;
+        size_t                                  sampleFreq;
+
     };
     
 }
