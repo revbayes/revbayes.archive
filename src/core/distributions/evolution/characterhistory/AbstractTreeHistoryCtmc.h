@@ -228,7 +228,8 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 
 
 template<class charType, class treeType>
-computeNodeProbability{
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node)
+{
     size_t nodeIndex = node.getIndex();
     if (!dirtyNodes[nodeIndex])
         return;
