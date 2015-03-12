@@ -5,6 +5,7 @@
 #include "Dist_BirthDeathMultiRate.h"
 #include "ModelVector.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -21,7 +22,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Dist_BirthDeathMultiRate::Dist_BirthDeathMultiRate() : BirthDeathProcess()
+Dist_BirthDeathMultiRate::Dist_BirthDeathMultiRate() : TypedDistribution<TimeTree>()
 {
     
 }
@@ -49,7 +50,7 @@ Dist_BirthDeathMultiRate* Dist_BirthDeathMultiRate::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::ConstantRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistribution( void ) const
+RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistribution( void ) const
 {
     
     // get the parameters
@@ -67,13 +68,15 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDis
         ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     }
     // speciation rate
-    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s       = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
-    RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* e       = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
+    // rate matrix
+    RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* q      = static_cast<const RateMatrix &>( Q->getRevObject() ).getDagNode();
+    // root frequencies
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p       = static_cast<const Simplex &>( pi->getRevObject() ).getDagNode();
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
-    // sampling strategy
-    const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
@@ -87,7 +90,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDis
         taxa.push_back( RevBayesCore::Taxon( names[i] ) );
     }
     // create the internal distribution object
-    RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, cond, taxa, c);
+    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(o, ra, s, e, q, p, r, cond, taxa, c);
     
     return d;
 }
@@ -139,14 +142,24 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
     
     if ( !rulesSet )
     {
+        memberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rho"     , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         
         memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "mu"    , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE) );
         memberRules.push_back( new ArgumentRule( "Q"     , RateMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "pi"    , Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
+        std::vector<std::string> optionsCondition;
+        optionsCondition.push_back( "time" );
+        optionsCondition.push_back( "survival" );
+        memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition ) );
+        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        
         // add the rules from the base class
-        const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
+        const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
@@ -199,8 +212,32 @@ void Dist_BirthDeathMultiRate::setConstParameter(const std::string& name, const 
     {
         pi = var;
     }
+    else if ( name == "origin" )
+    {
+        origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
+    }
+    else if ( name == "rho" )
+    {
+        rho = var;
+    }
+    else if ( name == "names" )
+    {
+        taxonNames = var;
+    }
+    else if ( name == "constraints" )
+    {
+        constraints = var;
+    }
+    else if ( name == "condition" )
+    {
+        condition = var;
+    }
     else {
-        BirthDeathProcess::setConstParameter(name, var);
+        TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
 }
