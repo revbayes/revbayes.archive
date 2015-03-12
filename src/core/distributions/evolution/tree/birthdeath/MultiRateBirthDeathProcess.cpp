@@ -233,6 +233,7 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     
     double samplingProbability = rho->getValue();
     size_t numCats = lambda->getValue().size();
+    state_type initialState;
     for (size_t i=0; i<numCats; ++i)
     {
         initialState[i] = 1.0 - samplingProbability;
@@ -240,12 +241,11 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     }
     
     BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue());
-    double beginAge = node.getAge();
-    double endAge = node.getParent().getAge();
-    boost::numeric::odeint::integrate( ode , initialState , beginAge , endAge , 0.01 );
+    boost::numeric::odeint::integrate( ode , initialState , start , end , 0.01 );
     
     
     double prob = 0.0;
+    const RbVector<double> &freqs = pi->getValue();
     for (size_t i=0; i<numCats; ++i)
     {
         //        initialState[i] = leftStates[i];
