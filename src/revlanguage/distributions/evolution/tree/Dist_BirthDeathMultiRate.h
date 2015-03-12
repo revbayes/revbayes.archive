@@ -17,10 +17,10 @@ namespace RevLanguage {
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-01-26, version 1.0
+     * @since 2015-03-11, version 1.0
      *
      */
-    class Dist_BirthDeathMultiRate :  public BirthDeathProcess {
+    class Dist_BirthDeathMultiRate : public TypedDistribution<TimeTree> {
         
     public:
         Dist_BirthDeathMultiRate( void );
@@ -34,7 +34,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::ConstantRateBirthDeathProcess*    createDistribution(void) const;
+        RevBayesCore::MultiRateBirthDeathProcess*       createDistribution(void) const;
         
     protected:
         
@@ -43,6 +43,12 @@ namespace RevLanguage {
         
     private:
         
+        RevPtr<const RevVariable>                       origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                       rootAge;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                       rho;                                                                                //!< The sampling probability of a species at present
+        RevPtr<const RevVariable>                       condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
+        RevPtr<const RevVariable>                       taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const RevVariable>                       constraints;                                                                        //!< Topological constraints that will be used for calibrations
         RevPtr<const RevVariable>                       lambda;                                                                                 //!< The speciation rate
         RevPtr<const RevVariable>                       mu;                                                                                     //!< The extinction rate
         RevPtr<const RevVariable>                       Q;                                                                                 //!< The speciation rate
