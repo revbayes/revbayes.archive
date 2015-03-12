@@ -411,6 +411,7 @@
 #include "Func_diagonalMatrix.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
+#include "Func_lnProbability.h"
 #include "Func_hyperbolicTangent.h"
 #include "Func_ln.h"
 #include "Func_log.h"
@@ -1163,6 +1164,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // mean function
         addFunction( "var",       new Func_variance()  );
+        
+        // get ln Probability function
+        addFunction( "fnLnProbability", new Func_lnProbability() );
 
         
         
