@@ -207,6 +207,7 @@
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
+#include "Dist_BirthDeathMultiRate.h"
 #include "Dist_Coalescent.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
@@ -678,6 +679,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
         addDistribution( "dnBirthDeath",                new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
+        
+        addDistribution( "dnBirthDeathMulti",        new Dist_BirthDeathMultiRate() );
         
         // constant rate birth-death process with serially sampled tips
         addDistribution( "dnBDPSerial",                 new Dist_serialBDP() );
