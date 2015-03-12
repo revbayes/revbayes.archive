@@ -49,7 +49,7 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
     activeLikelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
     changedNodes( std::vector<bool>(2*tn.size()-1, false) ),
     dirtyNodes( std::vector<bool>(2*tn.size()-1, true) ),
-    nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,state_type())) )
+    nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda->getValue().size(),0))) )
 {
     
     addParameter( lambda );
@@ -143,7 +143,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
         // mark as computed
         dirtyNodes[nodeIndex] = false;
         
-        state_type initialState;
+        state_type initialState = std::vector<double>(2*lambda->getValue().size(),0);
         if ( node.isTip() )
         {
             // this is a tip node
@@ -186,7 +186,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
         BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
-        boost::numeric::odeint::integrate( ode , initialState , beginAge , endAge , 0.01 );
+        boost::numeric::odeint::integrate( ode , initialState , beginAge , endAge , 0.0001 );
         
         // store the states
         nodeStates[nodeIndex][activeLikelihood[nodeIndex]] = initialState;
@@ -233,7 +233,7 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     
     double samplingProbability = rho->getValue();
     size_t numCats = lambda->getValue().size();
-    state_type initialState;
+    state_type initialState = std::vector<double>(2*numCats,0);
     for (size_t i=0; i<numCats; ++i)
     {
         initialState[i] = 1.0 - samplingProbability;

@@ -7,7 +7,8 @@
 #include <vector>
 #include <boost/array.hpp>
 
-typedef boost::array< double , 4 > state_type;
+//typedef boost::array< double , 4 > state_type;
+typedef std::vector< double > state_type;
 
 namespace RevBayesCore {
     
