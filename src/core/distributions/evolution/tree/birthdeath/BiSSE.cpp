@@ -3,11 +3,12 @@
 using namespace RevBayesCore;
 
 
-BiSSE::BiSSE( const std::vector<double> &l, const std::vector<double> &m, const RateMatrix* q ) :
+BiSSE::BiSSE( const std::vector<double> &l, const std::vector<double> &m, const RateMatrix* q, double r ) :
     lambda( l ),
     mu( m ),
     numCategories( l.size() ),
-    Q( q )
+    Q( q ),
+    rate( r )
 {
     
 }
@@ -30,7 +31,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                noEventRate += (*Q)[i][j];
+                noEventRate += (*Q)[i][j]*rate;
             }
         }
         dxdt[i] -= noEventRate*x[i];
@@ -61,7 +62,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i+numCategories] += (*Q)[i][j]*x[j+numCategories];
+                dxdt[i+numCategories] += (*Q)[i][j]*rate*x[j+numCategories];
             }
         }
         

@@ -29,7 +29,7 @@ namespace RevBayesCore {
     public:
         MultiRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
                             const TypedDagNode<RbVector<double> >* l, const TypedDagNode<RbVector<double> >* m, const TypedDagNode<RateMatrix>* q,
-                            const TypedDagNode< RbVector< double > >* p,
+                            const TypedDagNode< double >* r, const TypedDagNode< RbVector< double > >* p,
                             const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
         
         // pure virtual member functions
@@ -51,13 +51,16 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*              mu;
         const TypedDagNode< RbVector< double > >*           pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
         const TypedDagNode<RateMatrix>*                     Q;
+        const TypedDagNode<double>*                         rate;                                                                                                //!< Sampling probability of each species.
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
 
         std::vector<size_t>                                 activeLikelihood;
         mutable std::vector<bool>                           changedNodes;
         mutable std::vector<bool>                           dirtyNodes;
         mutable std::vector<std::vector<state_type> >       nodeStates;
-        
+        size_t                                              numRateCategories;
+        mutable std::vector<std::vector<double> >           scalingFactors;
+        mutable double                                      totalScaling;
     };
     
 }
