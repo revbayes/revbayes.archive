@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         
-        BiSSE( const std::vector<double> &l, const std::vector<double> &m, const RateMatrix* q);
+        BiSSE( const std::vector<double> &l, const std::vector<double> &m, const RateMatrix* q, double r);
         
         void operator() ( const state_type &x , state_type &dxdt , const double t );
         
@@ -39,6 +39,7 @@ namespace RevBayesCore {
         std::vector<double>         mu;
         size_t                      numCategories;
         const RateMatrix*           Q;
+        double                      rate;
 
         
     };

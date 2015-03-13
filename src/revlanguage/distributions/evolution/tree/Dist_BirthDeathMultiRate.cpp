@@ -73,6 +73,8 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* e       = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
     // rate matrix
     RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* q      = static_cast<const RateMatrix &>( Q->getRevObject() ).getDagNode();
+    // rate
+    RevBayesCore::TypedDagNode<double>* rat      = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
     // root frequencies
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p       = static_cast<const Simplex &>( pi->getRevObject() ).getDagNode();
     // sampling probability
@@ -90,7 +92,7 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
         taxa.push_back( RevBayesCore::Taxon( names[i] ) );
     }
     // create the internal distribution object
-    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(o, ra, s, e, q, p, r, cond, taxa, c);
+    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(o, ra, s, e, q, rat, p, r, cond, taxa, c);
     
     return d;
 }
@@ -149,6 +151,7 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "mu"    , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE) );
         memberRules.push_back( new ArgumentRule( "Q"     , RateMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "rate"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "pi"    , Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         std::vector<std::string> optionsCondition;
@@ -207,6 +210,10 @@ void Dist_BirthDeathMultiRate::setConstParameter(const std::string& name, const 
     else if ( name == "Q" )
     {
         Q = var;
+    }
+    else if ( name == "rate" )
+    {
+        rate = var;
     }
     else if ( name == "pi" )
     {

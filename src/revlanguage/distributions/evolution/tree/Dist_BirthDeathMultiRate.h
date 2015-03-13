@@ -52,6 +52,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       lambda;                                                                                 //!< The speciation rate
         RevPtr<const RevVariable>                       mu;                                                                                     //!< The extinction rate
         RevPtr<const RevVariable>                       Q;                                                                                 //!< The speciation rate
+        RevPtr<const RevVariable>                       rate;                                                                                 //!< The speciation rate
         RevPtr<const RevVariable>                       pi;                                                                                 //!< The speciation rate
         
     };
