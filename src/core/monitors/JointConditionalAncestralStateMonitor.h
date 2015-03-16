@@ -194,6 +194,10 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
         outStream << gen;
 
         // get variables
+        TypedDistribution<valueType> *dist = static_cast<>( &ctmc->getDistribution() );
+        AncestralStateReconstructable<valueType> *ra = static_cast<>( &ctmc->getDistribution() );
+        
+        
 		AbstractPhyloCTMCSiteHomogeneous<characterType, treeType> *dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType, treeType>* >( &ctmc->getDistribution() );
         size_t numSites = dist->getValue().getNumberOfCharacters();
         size_t numNodes = tree->getValue().getNumberOfNodes();
