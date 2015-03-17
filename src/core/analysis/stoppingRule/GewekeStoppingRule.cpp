@@ -1,5 +1,5 @@
-#include "EssTest.h"
-#include "MinEssStoppingRule.h"
+#include "GewekeTest.h"
+#include "GewekeStoppingRule.h"
 #include "RbFileManager.h"
 #include "StringUtilities.h"
 #include "TraceContinuousReader.h"
@@ -8,15 +8,17 @@
 using namespace RevBayesCore;
 
 
-MinEssStoppingRule::MinEssStoppingRule(double m, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : AbstractConvergenceStoppingRule(fn, f, be),
-    minEss( m )
+GewekeStoppingRule::GewekeStoppingRule(double a, double f1, double f2, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : AbstractConvergenceStoppingRule(fn, f, be),
+    alpha( a ),
+    frac1( f1 ),
+    frac2( f2 )
 {
     
 }
 
 
 
-MinEssStoppingRule::~MinEssStoppingRule()
+GewekeStoppingRule::~GewekeStoppingRule()
 {
     
 }
@@ -28,10 +30,10 @@ MinEssStoppingRule::~MinEssStoppingRule()
  *
  * \return A new copy of myself
  */
-MinEssStoppingRule* MinEssStoppingRule::clone( void ) const
+GewekeStoppingRule* GewekeStoppingRule::clone( void ) const
 {
     
-    return new MinEssStoppingRule( *this );
+    return new GewekeStoppingRule( *this );
 }
 
 
@@ -39,7 +41,7 @@ MinEssStoppingRule* MinEssStoppingRule::clone( void ) const
  * Should we stop now?
  * Yes, if the minimum ESS is larger than the provided threshold.
  */
-bool MinEssStoppingRule::stop( size_t g )
+bool GewekeStoppingRule::stop( size_t g )
 {
     
     bool passed = true;
@@ -54,12 +56,12 @@ bool MinEssStoppingRule::stop( size_t g )
         }
         
         TraceContinuousReader reader = TraceContinuousReader( fn );
-    
+        
         // get the vector of traces from the reader
         std::vector<Trace> &data = reader.getTraces();
-    
+        
         size_t maxBurnin = 0;
-    
+        
         for ( size_t j = 0; j < data.size(); ++j)
         {
             Trace &t = data[j];
@@ -70,8 +72,8 @@ bool MinEssStoppingRule::stop( size_t g )
                 maxBurnin = b;
             }
         }
-    
-        EssTest essTest = EssTest( minEss );
+        
+        GewekeTest gTest = GewekeTest( alpha, frac1, frac2 );
         
         for ( size_t j = 0; j < data.size(); ++j)
         {
@@ -79,19 +81,19 @@ bool MinEssStoppingRule::stop( size_t g )
             const std::vector<double> &v = t.getValues();
             t.setBurnin( maxBurnin );
             t.computeStatistics();
-        
-            passed &= essTest.assessConvergenceSingleChain( v, maxBurnin );
+            
+            passed &= gTest.assessConvergenceSingleChain( v, maxBurnin );
         }
         
     }
     
     if ( passed )
     {
-        std::cerr << "Passed ESS!" << std::endl;
+        std::cerr << "Passed Geweke!" << std::endl;
     }
     else
     {
-        std::cerr << "Failed ESS!" << std::endl;
+        std::cerr << "Failed Geweke!" << std::endl;
     }
     
     

@@ -191,9 +191,8 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
     if (gen % printgen == 0)
     {
         // print the iteration number first
-        outStream << gen;
-
-        // get variables
+        outStream << gen;        
+        
 		AbstractPhyloCTMCSiteHomogeneous<characterType, treeType> *dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType, treeType>* >( &ctmc->getDistribution() );
         size_t numSites = dist->getValue().getNumberOfCharacters();
         size_t numNodes = tree->getValue().getNumberOfNodes();

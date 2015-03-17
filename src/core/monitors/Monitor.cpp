@@ -3,6 +3,7 @@
 #include "DagNode.h"
 #include "Monitor.h"
 #include "RbException.h"
+#include "StringUtilities.h"
 
 #include <algorithm>
 
@@ -222,8 +223,10 @@ void Monitor::sortNodesByName( void )
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         DagNode *node = *it;
-        nodesMap.insert( std::pair<std::string,DagNode*>(node->getName(),node) );
-        names.push_back(node->getName());
+        std::string name = node->getName();
+        StringUtilities::toLower(name);
+        nodesMap.insert( std::pair<std::string,DagNode*>(name,node) );
+        names.push_back(name);
     }
     
     nodes.clear();
