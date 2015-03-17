@@ -311,6 +311,7 @@
 #include "Func_chromosomes.h"
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
+#include "Func_DECRateMatrix.h"
 #include "Func_f81.h"
 #include "Func_FreeBinary.h"
 #include "Func_FreeK.h"
@@ -889,6 +890,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnChromosomes", new Func_chromosomes());
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
+        addFunction( "fnDECRateMatrix", new Func_DECRateMatrix() );
         addFunction( "fnF81",      new Func_f81()     );
         addFunction( "fnFreeBinary", new Func_FreeBinary() );
         addFunction( "fnFreeK",    new Func_FreeK()   );
