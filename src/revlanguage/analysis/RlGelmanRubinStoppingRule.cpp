@@ -1,9 +1,9 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "MinEssStoppingRule.h"
+#include "GelmanRubinStoppingRule.h"
 #include "OptionRule.h"
-#include "RlMinEssStoppingRule.h"
+#include "RlGelmanRubinStoppingRule.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RlString.h"
@@ -16,7 +16,7 @@ using namespace RevLanguage;
  * Default constructor.
  * Create the default instance.
  */
-MinEssStoppingRule::MinEssStoppingRule(void) : AbstractConvergenceStoppingRule()
+GelmanRubinStoppingRule::GelmanRubinStoppingRule(void) : AbstractConvergenceStoppingRule()
 {
     
 }
@@ -25,41 +25,40 @@ MinEssStoppingRule::MinEssStoppingRule(void) : AbstractConvergenceStoppingRule()
 /**
  * Clone object
  */
-MinEssStoppingRule* MinEssStoppingRule::clone(void) const
+GelmanRubinStoppingRule* GelmanRubinStoppingRule::clone(void) const
 {
     
-    return new MinEssStoppingRule(*this);
+    return new GelmanRubinStoppingRule(*this);
 }
 
 
-void MinEssStoppingRule::constructInternalObject( void )
+void GelmanRubinStoppingRule::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
     // now allocate a new stopping rule
-    double min = static_cast<const RealPos &>( minEss->getRevObject() ).getValue();
+    double r = static_cast<const RealPos &>( R->getRevObject() ).getValue();
     int fq = static_cast<const Natural &>( frequency->getRevObject() ).getValue();
     const std::string &fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     
     RevBayesCore::BurninEstimatorContinuous *burninEst = constructBurninEstimator();
     
-    value = new RevBayesCore::MinEssStoppingRule(min, fn, size_t(fq), burninEst);
-
+    value = new RevBayesCore::GelmanRubinStoppingRule(r, fn, size_t(fq), burninEst);
 }
 
 
 /** Get Rev type of object */
-const std::string& MinEssStoppingRule::getClassType(void)
+const std::string& GelmanRubinStoppingRule::getClassType(void)
 {
     
-    static std::string revType = "MinEssStoppingRule";
+    static std::string revType = "GelmanRubinStoppingRule";
     
     return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& MinEssStoppingRule::getClassTypeSpec(void)
+const TypeSpec& GelmanRubinStoppingRule::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
@@ -70,7 +69,7 @@ const TypeSpec& MinEssStoppingRule::getClassTypeSpec(void)
 
 
 /** Return member rules */
-const MemberRules& MinEssStoppingRule::getParameterRules(void) const
+const MemberRules& GelmanRubinStoppingRule::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -79,13 +78,12 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "minEss"   , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "R"        , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
-
-
+        
         rulesSet = true;
     }
     
@@ -93,7 +91,7 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& MinEssStoppingRule::getTypeSpec( void ) const
+const TypeSpec& GelmanRubinStoppingRule::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -103,20 +101,20 @@ const TypeSpec& MinEssStoppingRule::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void MinEssStoppingRule::printValue(std::ostream &o) const
+void GelmanRubinStoppingRule::printValue(std::ostream &o) const
 {
     
-    o << "MinEssStoppingRule";
+    o << "GelmanRubinStoppingRule";
 }
 
 
 /** Set a member variable */
-void MinEssStoppingRule::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void GelmanRubinStoppingRule::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "minEss" )
+    if ( name == "R" )
     {
-        minEss = var;
+        R = var;
     }
     else
     {

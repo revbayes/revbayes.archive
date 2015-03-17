@@ -21,6 +21,7 @@
 #include "RbFileManager.h"
 #include "StringUtilities.h"
 
+#include <cstdlib> //includes std::atof
 #include <iostream>
 #include <string>
 #include <sys/stat.h>

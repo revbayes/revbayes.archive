@@ -88,6 +88,9 @@
 #include "RlMaxIterationStoppingRule.h"
 #include "RlMaxTimeStoppingRule.h"
 #include "RlMinEssStoppingRule.h"
+#include "RlGelmanRubinStoppingRule.h"
+#include "RlGewekeStoppingRule.h"
+#include "RlStationarityStoppingRule.h"
 
 /// Monitors ///
 
@@ -204,6 +207,7 @@
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
+#include "Dist_BirthDeathMultiRate.h"
 #include "Dist_Coalescent.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
@@ -443,6 +447,7 @@
 #include "Func_dppMeanFromConc.h"
 #include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
+#include "Func_stirling.h"
 #include "Func_varianceCovarianceMatrix.h"
 #include "Func_decomposedVarianceCovarianceMatrix.h"
 
@@ -514,9 +519,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
+        addTypeWithConstructor( "srGelmanRubin",        new GelmanRubinStoppingRule()   );
+        addTypeWithConstructor( "srGeweke",             new GewekeStoppingRule()   );
         addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
         addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
         addTypeWithConstructor( "srMinESS",             new MinEssStoppingRule()   );
+        addTypeWithConstructor( "srStationarity",       new StationarityStoppingRule()   );
         
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -673,6 +681,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
         addDistribution( "dnBirthDeath",                new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
+        
+        addDistribution( "dnBirthDeathMulti",        new Dist_BirthDeathMultiRate() );
         
         // constant rate birth-death process with serially sampled tips
         addDistribution( "dnBDPSerial",                 new Dist_serialBDP() );
@@ -1189,6 +1199,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		// some helper statistics for the DPP distribution
         addFunction("fnDPPConcFromMean",  new Func_dppConcFromMean( )     );
         addFunction("fnDPPMeanFromConc",  new Func_dppMeanFromConc( )  );
+        addFunction("fnStirling",  new Func_stirling( )     );
 		
 		// count the number of unique elements in vector
         addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Real>( )  );

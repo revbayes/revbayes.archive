@@ -57,9 +57,7 @@ namespace RevBayesCore {
         void                                    updateChainState(size_t j);
         double                                  computeBeta(double d, size_t i);                    // incremental temperature schedule
         
-        size_t                                  pid;
         size_t                                  numChains;
-        size_t                                  numProcesses;
         std::vector<size_t>                     heatRanks;
         std::vector<std::vector<size_t> >       chainsPerProcess;
         std::vector<size_t>                     processPerChain;
@@ -70,9 +68,8 @@ namespace RevBayesCore {
         size_t                                  currentGeneration;
         size_t                                  swapInterval;
         
-        size_t                                  activeChainIndex;               // index of coldest chain, i.e. which one samples the posterior
-        bool                                    processActive;
-        double                                  delta;                          // delta-T, temperature increment for computeBeta
+        size_t                                  activeChainIndex;                                   // index of coldest chain, i.e. which one samples the posterior
+        double                                  delta;                                              // delta-T, temperature increment for computeBeta
         
         unsigned long                           generation;
         unsigned long                           numAttemptedSwaps;
