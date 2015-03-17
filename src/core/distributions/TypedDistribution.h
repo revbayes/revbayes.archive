@@ -55,8 +55,8 @@ namespace RevBayesCore {
         void                            setStochasticNode(StochasticNode<valueType> *n);                            //!< Set the stochastic node holding this distribution
         
         // virtual methods
-        virtual void                    setValue(valueType *v);                                                     //!< Set the current value, e.g. attach an observation (clamp)
-        virtual void                    setValue(const valueType &v);                                               //!< Set the current value, e.g. attach an observation (clamp)
+        virtual void                    setValue(valueType *v, bool f=false);                                       //!< Set the current value, e.g. attach an observation (clamp)
+//        virtual void                    setValue(const valueType &v);                                               //!< Set the current value, e.g. attach an observation (clamp)
         
         // pure virtual public methods
         virtual TypedDistribution*      clone(void) const = 0;                                                      //!< Clone the distribution
@@ -151,7 +151,8 @@ const valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) cons
 
 
 template <class valueType>
-RevBayesCore::StochasticNode<valueType>* RevBayesCore::TypedDistribution<valueType>::getStochasticNode( void ) {
+RevBayesCore::StochasticNode<valueType>* RevBayesCore::TypedDistribution<valueType>::getStochasticNode( void )
+{
     
     return dagNode;
 }
@@ -164,7 +165,7 @@ void RevBayesCore::TypedDistribution<valueType>::setStochasticNode( StochasticNo
 }
 
 template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v )
+void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v, bool force )
 {
     
     // free memory
@@ -174,17 +175,6 @@ void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v )
     }
     
     value = v;
-    
-}
-
-template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setValue( const valueType &v )
-{
-    
-    // free memory
-    delete value;
-    
-    value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v );
     
 }
 
