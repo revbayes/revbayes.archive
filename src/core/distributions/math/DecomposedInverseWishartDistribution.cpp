@@ -109,7 +109,7 @@ void DecomposedInverseWishartDistribution::redrawValue(void)
     RandomNumberGenerator* rng = GLOBAL_RNG;
     if ( kappa != NULL )
         {
-        setValue( RbStatistics::DecomposedInverseWishart::rv(getValue().getDim(), df->getValue(), *rng) );
+        setValue( RbStatistics::DecomposedInverseWishart::rv(getValue().getDim(), df->getValue(), *rng).clone() );
         }
     else
         {

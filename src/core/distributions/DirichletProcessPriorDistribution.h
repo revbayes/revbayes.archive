@@ -71,6 +71,7 @@ namespace RevBayesCore {
     
 }
 
+#include "Cloner.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbMathCombinatorialFunctions.h"
@@ -163,7 +164,7 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
 		lnProb += RbMath::lnFactorial( numCustomerPerTable[i] - 1 );
         
         // we also need to multiply with the probability of the value for this table
-        baseDistribution->setValue( valuePerTable[i] );
+        baseDistribution->setValue( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone(valuePerTable[i]) );
         lnProb += baseDistribution->computeLnProbability();
     }
     

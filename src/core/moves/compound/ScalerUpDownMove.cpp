@@ -54,8 +54,8 @@ double ScalerUpDownMove::performCompoundMove( void ) {
     sv1 *= c;
     sv2 /= c;
     
-    scalerVal1->setValue(sv1);
-    scalerVal2->setValue(sv2);
+    scalerVal1->setValue( new double(sv1) );
+    scalerVal2->setValue( new double(sv2) );
 	
 //	double pr = (1.0 - 1.0 - 2.0) * log(c);
 	return 0.0;
@@ -75,8 +75,8 @@ void ScalerUpDownMove::rejectCompoundMove( void ) {
 
 //	sv1 = storedSV1;
 //	sv2 = storedSV2;
-    scalerVal1->setValue(storedSV1);
-    scalerVal2->setValue(storedSV2);
+    scalerVal1->setValue( new double(storedSV1) );
+    scalerVal2->setValue( new double(storedSV2) );
 	
 }
 

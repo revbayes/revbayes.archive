@@ -61,7 +61,6 @@ namespace RevBayesCore {
         virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setClamped(bool tf);                                                        //!< Set directly the flag whether this node is clamped.
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
-        virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
@@ -518,21 +517,6 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forc
     
 }
 
-
-template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool forceTouch)
-{
-    
-    // set the value
-    distribution->setValue( val );
-    
-    if ( forceTouch )
-    {
-        // touch this node for probability recalculation
-        this->touch();
-    }
-    
-}
 
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)
