@@ -155,12 +155,10 @@ void AbstractRateMatrix::rescaleToAverageRate(double r)
     double scaleFactor = r / curAve;
     for (size_t i=0; i<numStates; i++)
     {
-        
         for (size_t j=0; j<numStates; j++)
         {
             (*theRateMatrix)[i][j] *= scaleFactor;
         }
-        
     }
     
     // set flags

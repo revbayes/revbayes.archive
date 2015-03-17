@@ -1356,12 +1356,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
         // add the character to the sequence
         root.addCharacter( c );
     }
+    // recursively simulate the sequences
+    root.setTaxonName( "Root" );
     
     // recursively simulate the sequences
     simulate( tau->getValue().getRoot(), taxa, perSiteRates );
     
     // add the taxon data to the character data
-    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i) 
+//    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
     {
         this->value->addTaxonData( taxa[i] );
     }
@@ -1664,6 +1667,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulat
         else 
         {
             // recursively simulate the sequences
+            std::stringstream ss;
+            ss << "Node" << child.getIndex();
+            taxon.setTaxonName( ss.str() );
             simulate( child, taxa, perSiteRates );
         }
         
