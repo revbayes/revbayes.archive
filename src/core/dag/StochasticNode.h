@@ -507,7 +507,7 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch)
 {
     // set the value
-    distribution->setValue( val );
+    distribution->setValue( val, true );
     
     if ( forceTouch )
     {
