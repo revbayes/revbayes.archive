@@ -70,8 +70,8 @@ namespace RevBayesCore {
 
         
         bool                                                chainActive;
-        double                                              chainPosteriorHeat;
         double                                              chainLikelihoodHeat;
+        double                                              chainPosteriorHeat;
         size_t                                              chainIdx;
         Model                                               model;
         RbVector<Monitor>                                   monitors;

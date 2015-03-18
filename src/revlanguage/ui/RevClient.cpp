@@ -167,7 +167,8 @@ void completeOnTab(const char *buf, linenoiseCompletions *lc)
 
         // special hack: for some reason, baseVariable is only set by the parser when there is no trailing characters after the dot
         // find position of right most dot
-        size_t dotPosition = cmd.rfind(".");
+        // Sebastian: Currently unused
+//        size_t dotPosition = cmd.rfind(".");
 
         if (pi.functionName != "")
         {
@@ -309,7 +310,7 @@ void RevClient::startInterpretor( void )
     while (true)
     {
         
-        char *line;
+        char *line = NULL;
         
         // set prompt
         if (result == 0 || result == 2)
