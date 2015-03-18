@@ -37,7 +37,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfCategories(void) const;
         void                                                redrawValue(void);
         void                                                setCurrentIndex(size_t i);
-        void                                                setValue(mixtureType *v);
+        void                                                setValue(mixtureType *v, bool f=false);
         
         // special handling of state changes
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
@@ -231,7 +231,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagN
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType *v)
+void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType *v, bool force)
 {
     
     const RbVector<mixtureType> &vals = parameterValues->getValue();
@@ -245,7 +245,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType *v)
     }
     
     // delegate class
-    TypedDistribution<mixtureType>::setValue( v );
+    TypedDistribution<mixtureType>::setValue( v, force );
 }
 
 
