@@ -122,7 +122,7 @@ double RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::com
     else
     {
         lnProb = log( 1.0 - probability->getValue() );
-        baseDistribution->setValue( this->value );
+        baseDistribution->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone(*this->value) );
         lnProb += baseDistribution->computeLnProbability();
         
     }
@@ -196,13 +196,13 @@ mixtureType* RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType
     if ( u < probability->getValue() )
     {
         index = 0;
-        return new mixtureType( constValue->getValue() );
+        return Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( constValue->getValue() );
     }
     else
     {
         index = 1;
         baseDistribution->redrawValue();
-        return new mixtureType( baseDistribution->getValue() );
+        return Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( baseDistribution->getValue() );
     }
     
 }
@@ -226,13 +226,13 @@ void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::redra
     if (i == 0)
     {
         index = 0;
-        this->value = new mixtureType( constValue->getValue() );
+        this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( constValue->getValue() );
     }
     else
     {
         index = 1;
         baseDistribution->redrawValue();
-        this->value = new mixtureType( baseDistribution->getValue() );
+        this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( baseDistribution->getValue() );
     }
 }
 
@@ -285,7 +285,7 @@ void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::setVa
         else
         {
             index = 1;
-            baseDistribution->setValue( v );
+            baseDistribution->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( *v ) );
             this->value = v;
         }
     
