@@ -151,7 +151,8 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
 	//int ne = numElements;
     double lnProb = log( concentration->getValue() ) * nt;
     
-    if ( concentrationHasChanged == true ){
+    if ( concentrationHasChanged == true )
+    {
         computeDenominator();
     }
 	
@@ -159,7 +160,8 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
 	
 //	lnProb += log(sn);
     
-    for (int i = 0; i < nt; ++i){
+    for (int i = 0; i < nt; ++i)
+    {
 		// compute the probability of having n_i customers per at table i
 		lnProb += RbMath::lnFactorial( numCustomerPerTable[i] - 1 );
         

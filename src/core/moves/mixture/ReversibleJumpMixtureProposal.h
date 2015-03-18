@@ -206,7 +206,7 @@ template <class mixtureType>
 void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::undoProposal( void )
 {
     // swap current value and stored value
-    variable->setValue( storedValue );
+    variable->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( storedValue ) );
     
     // also reset the index
     ReversibleJumpMixtureConstantDistribution<mixtureType> &d = static_cast< ReversibleJumpMixtureConstantDistribution<mixtureType>& >( variable->getDistribution() );
