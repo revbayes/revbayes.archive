@@ -50,6 +50,27 @@ void StringUtilities::fillWithSpaces(std::string &s, int l, bool left)
     
 }
 
+/**
+ * Fill this string with spaces so that it has the required length.
+ * Either fill the spaces on the right if left aligned (true)
+ * or on the left if right aligned.
+ */
+void StringUtilities::formatFixedWidth(std::string &s, int l, bool left)
+{
+    
+    if ( s.length() > l )
+    {
+        if ( l > 2)
+        {
+            s = s.substr(0, l-2);
+        }
+        
+        s += "..";
+    }
+    
+    fillWithSpaces(s, l, left);
+}
+
 
 /**
  * Wraps text so that each line doesn't exceeds column width.
