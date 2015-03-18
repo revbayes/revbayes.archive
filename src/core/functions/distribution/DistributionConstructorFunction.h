@@ -61,19 +61,22 @@ RevBayesCore::DistributionConstructorFunction<valueType>::DistributionConstructo
 }
 
 template <class valueType>
-RevBayesCore::DistributionConstructorFunction<valueType>::~DistributionConstructorFunction(void) {
+RevBayesCore::DistributionConstructorFunction<valueType>::~DistributionConstructorFunction(void)
+ß{
     delete dist;
 }
 
 
 template <class valueType>
-RevBayesCore::DistributionConstructorFunction<valueType>* RevBayesCore::DistributionConstructorFunction<valueType>::clone( void ) const {
+RevBayesCore::DistributionConstructorFunction<valueType>* RevBayesCore::DistributionConstructorFunction<valueType>::clone( void ) const
+{
     return new DistributionConstructorFunction<valueType>(*this);
 }
 
 
 template <class valueType>
-void RevBayesCore::DistributionConstructorFunction<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::DistributionConstructorFunction<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
 //    if (oldP == x) {
 //        x = static_cast<const TypedDagNode<valueType>* >( newP );
 //    }
@@ -83,7 +86,8 @@ void RevBayesCore::DistributionConstructorFunction<valueType>::swapParameterInte
 }
 
 template <class valueType>
-void RevBayesCore::DistributionConstructorFunction<valueType>::update( void ) {
+void RevBayesCore::DistributionConstructorFunction<valueType>::update( void )
+{
 //    dist->setValue( new valueType(x->getValue()) );
 //    *value = dist->computeLnProbability();
 }
