@@ -76,7 +76,8 @@ void ExtendedNewickTreeMonitor::swapNode(DagNode *oldN, DagNode *newN)
     else if ( nodeVar != NULL )
     {
         // error catching
-        if ( nodeVariables.find(nodeVar) == nodeVariables.end() ) {
+        if ( nodeVariables.find(nodeVar) == nodeVariables.end() )
+        {
             throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this extended newick monitor because the monitor doesn't hold this DAG node.");
         }
         

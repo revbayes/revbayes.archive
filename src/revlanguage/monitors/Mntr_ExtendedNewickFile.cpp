@@ -17,6 +17,8 @@
 
 using namespace RevLanguage;
 
+
+
 Mntr_ExtendedNewickFile::Mntr_ExtendedNewickFile(void) : Monitor()
 {
     
@@ -42,7 +44,8 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     std::set<RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> > *> n;
-    for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
+    {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
@@ -54,7 +57,8 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Mntr_ExtendedNewickFile::getClassType(void) { 
+const std::string& Mntr_ExtendedNewickFile::getClassType(void)
+{
     
     static std::string revType = "Mntr_ExtendedNewickFile";
     
@@ -62,7 +66,8 @@ const std::string& Mntr_ExtendedNewickFile::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void) { 
+const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
@@ -72,32 +77,34 @@ const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const {
+const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const
+{
     
-    static MemberRules Mntr_ExtendedNewickFileMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
     
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("filename", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("tree"    , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString(" ") ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("filename", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("tree"    , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        memberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString(" ") ) );
+        memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         
         rulesSet = true;
     }
     
-    return Mntr_ExtendedNewickFileMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */
-const TypeSpec& Mntr_ExtendedNewickFile::getTypeSpec( void ) const {
+const TypeSpec& Mntr_ExtendedNewickFile::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -106,7 +113,8 @@ const TypeSpec& Mntr_ExtendedNewickFile::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Mntr_ExtendedNewickFile::printValue(std::ostream &o) const {
+void Mntr_ExtendedNewickFile::printValue(std::ostream &o) const
+{
     
     o << "Mntr_ExtendedNewickFile";
 }
@@ -115,31 +123,40 @@ void Mntr_ExtendedNewickFile::printValue(std::ostream &o) const {
 /** Set a member variable */
 void Mntr_ExtendedNewickFile::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "" ) {
+    if ( name == "" )
+    {
         vars.insert( var );
     }
-    else if ( name == "filename" ) {
+    else if ( name == "filename" )
+    {
         filename = var;
     }
-    else if ( name == "tree" ) {
+    else if ( name == "tree" )
+    {
         tree = var;
     }
-    else if ( name == "separator" ) {
+    else if ( name == "separator" )
+    {
         separator = var;
     }
-    else if ( name == "printgen" ) {
+    else if ( name == "printgen" )
+    {
         printgen = var;
     }
-    else if ( name == "prior" ) {
+    else if ( name == "prior" )
+    {
         prior = var;
     }
-    else if ( name == "posterior" ) {
+    else if ( name == "posterior" )
+    {
         posterior = var;
     }
-    else if ( name == "likelihood" ) {
+    else if ( name == "likelihood" )
+    {
         likelihood = var;
     }
-    else {
+    else
+    {
         RevObject::setConstParameter(name, var);
     }
 }
