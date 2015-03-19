@@ -47,7 +47,8 @@ namespace RevBayesCore {
         treeType*                                                               map(int burnin = -1);
 		treeType*																conTree(double cutoff, int burnin = -1);
         treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin = -1);
-		void                                                                    annotateHPDAges(treeType &inputTree, double hpd = 0.95, int b = -1 );
+        void                                                                    annotate(treeType &inputTree, int b = -1 );
+        void                                                                    annotateHPDAges(treeType &inputTree, double hpd = 0.95, int b = -1 );
         void                                                                    printTreeSummary(std::ostream& o);
         void                                                                    printCladeSummary(void);
 		void                                                                    summarizeClades(int burnin = -1);
@@ -55,6 +56,9 @@ namespace RevBayesCore {
 		void                                                                    summarizeTrees(int burnin = -1);
         
     private:
+        void                                                                    annotateContinuous(treeType &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, int b = -1 );
+        void                                                                    annotateDiscrete(treeType &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, int b = -1 );
+        
 		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
 		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c);
 		Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c);
@@ -762,8 +766,10 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
                 
                 // get AncestralStateTrace for this node
                 AncestralStateTrace ancestralstate_trace;
-                for (size_t k = 0; k < ancestralstate_traces.size(); k++) {
-                    if (ancestralstate_traces[k].getParameterName() == boost::lexical_cast<std::string>(sampleCladeIndex)) {
+                for (size_t k = 0; k < ancestralstate_traces.size(); k++)
+                {
+                    if (ancestralstate_traces[k].getParameterName() == boost::lexical_cast<std::string>(sampleCladeIndex))
+                    {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
                     }
@@ -775,17 +781,22 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
                 
                 bool state_found = false;
                 int k = 0;
-                for (; k < pp[j].size(); k++) {
-                    if (states[j][k] == ancestralstate) {
+                for (; k < pp[j].size(); k++)
+                {
+                    if (states[j][k] == ancestralstate)
+                    {
                         state_found = true;
                         break;
                     }
                 }
                 // update the pp and states vectors
-                if (!state_found) {
+                if (!state_found)
+                {
                     pp[j].push_back(weight);
                     states[j].push_back(ancestralstate);
-                } else {
+                }
+                else
+                {
                     pp[j][k] += weight;
                 }
             }
@@ -794,15 +805,19 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
     // find the 3 most probable ancestral states for each node and add them to the tree as parameters
     std::vector<std::string*> best_states;
     std::vector<double> posteriors;
-    for (int i = 0; i < input_nodes.size(); i++) {
+    for (int i = 0; i < input_nodes.size(); i++)
+    {
         
-        if ( input_nodes[i]->isTip() ) {
+        if ( input_nodes[i]->isTip() )
+        {
             
             std::string *s = new std::string("{}");
             best_states.push_back(s);
             posteriors.push_back(1.0);
             
-        } else {
+        }
+        else
+        {
             
             double state1_pp = 0.0; 
             double state2_pp = 0.0; 
@@ -815,21 +830,27 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
             std::string state3 = "";
             
             // loop through all states for this node
-            for (int j = 0; j < pp[i].size(); j++) {
+            for (int j = 0; j < pp[i].size(); j++)
+            {
                 total_node_pp += pp[i][j];
-                if (pp[i][j] > state1_pp) {
+                if (pp[i][j] > state1_pp)
+                {
                     state3_pp = state2_pp;
                     state2_pp = state1_pp;
                     state1_pp = pp[i][j];
                     state3 = state2;
                     state2 = state1;
                     state1 = states[i][j];
-                } else if (pp[i][j] > state2_pp) {
+                }
+                else if (pp[i][j] > state2_pp)
+                {
                     state3_pp = state2_pp;
                     state2_pp = pp[i][j];
                     state3 = state2;
                     state2 = states[i][j];
-                } else if (pp[i][j] > state3_pp) {
+                }
+                else if (pp[i][j] > state3_pp)
+                {
                     state3_pp = pp[i][j];
                     state3 = states[i][j];
                 }
@@ -839,23 +860,30 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
             
 			std::string final_state = "{";
 			bool states = false;
-			if (state1_pp > 0.0001) {
+			if (state1_pp > 0.0001)
+            {
 				final_state += state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
 				states = true;
-				if (state2_pp > 0.0001) {
+				if (state2_pp > 0.0001)
+                {
 					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
-					if (state3_pp > 0.0001) {
+					if (state3_pp > 0.0001)
+                    {
 						final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
-						if (other_pp > 0.0001) {
+						if (other_pp > 0.0001)
+                        {
 							final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
 						} 
 					}
 				}
 			}
-			if (1.0-total_node_pp > 0.0001) {
+			if (1.0-total_node_pp > 0.0001)
+            {
 				if (states)
+                {
 					final_state += ",";
-				final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+                }
+                final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
 			} 
 			final_state += "}";
             
@@ -864,6 +892,7 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
             best_states.push_back(s);
         }
     }
+    
     finalInputTree->clearNodeParameters();
     //finalInputTree.addNodeParameter("posterior",posteriors,true);
     finalInputTree->addNodeParameter("ancestralstates",best_states,true);
@@ -872,6 +901,369 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
 	
     return finalInputTree;
 }
+
+
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
+{
+    
+    treeType *sample_tree = trace.objectAt( 0 );
+    const std::vector<std::string> &nodeParameters = sample_tree->getRoot().getNodeParameters();
+    for (size_t i = 0; i < nodeParameters.size(); ++i)
+    {
+        
+        std::string tmp = nodeParameters[i];
+        if ( tmp[0] == '&')
+        {
+            tmp = tmp.substr(1,tmp.size());
+        }
+        std::vector<std::string> pair;
+        StringUtilities::stringSplit(tmp, "=", pair);
+        
+        if ( pair[0] == "index" ) continue;
+        
+        if ( StringUtilities::isNumber( pair[1] ) )
+        {
+            annotateContinuous(tree, pair[0], i, 0.95, b);
+        }
+        else
+        {
+            annotateDiscrete(tree, pair[0], i, 3, b);
+        }
+        
+    }
+    
+}
+
+
+
+/*
+ * this method calculates the MAP ancestral character states for the nodes on the input_tree
+ */
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const std::string &n, size_t paramIndex, size_t num, int b )
+{
+    setBurnin(b);
+    
+    std::stringstream ss;
+    ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
+    RBOUT(ss.str());
+    
+    RBOUT("Calculating ancestral state posteriors...\n");
+    
+    // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
+    const std::vector<TopologyNode*> &input_nodes = tree.getNodes();
+    std::vector<std::map<std::string, Sample<std::string> > > stateAbsencePresence(input_nodes.size(), std::map<std::string, Sample<std::string> >());
+//    std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
+//    std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
+    
+//    double weight = 1.0 / (trace.size()-burnin);
+    
+    // loop through all trees in tree trace
+    for (size_t i = burnin; i < trace.size(); i++)
+    {
+        treeType *sample_tree = trace.objectAt( i );
+        const TopologyNode& sample_root = sample_tree->getRoot();
+        
+        // loop through all nodes in inputTree
+        for (size_t j = 0; j < input_nodes.size(); j++)
+        {
+            
+            if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
+            {
+                // if the inputTree node is also in the sample tree
+                // we get the ancestral character state from the ancestral state trace
+                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+                
+                const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
+                
+                std::string tmp = sample_node.getNodeParameters()[paramIndex];
+                if ( tmp[0] == '&')
+                {
+                    tmp = tmp.substr(1,tmp.size());
+                }
+                std::vector<std::string> pair;
+                StringUtilities::stringSplit(tmp, "=", pair);
+                
+                const std::string &state = pair[1];
+                
+                std::map<std::string, Sample<std::string> >::iterator entry = stateAbsencePresence[j].find( state );
+                
+                if ( entry == stateAbsencePresence[i].end() )
+                {
+                    Sample<std::string> stateSample = Sample<std::string>(state, 0);
+                    if (i > burnin)
+                    {
+                        stateSample.setTrace(std::vector<double>(i - burnin, 0.0));
+                    }
+                    else
+                    {
+                        stateSample.setTrace(std::vector<double>());
+                    }
+                    stateAbsencePresence[j].insert(std::pair<std::string, Sample<std::string> >(state, stateSample));
+                }
+                
+                
+                for (std::map<std::string, Sample<std::string> >::iterator it=stateAbsencePresence[j].begin(); it!=stateAbsencePresence[i].end(); ++it )
+                {
+
+                    const Sample<std::string> &s = it->second;
+                    if ( s.getValue() == state )
+                    {
+                        it->second.addObservation( true );
+                    }
+                    else
+                    {
+                        it->second.addObservation( false );
+                    }
+                    
+                } // end loop over all samples for this node
+                
+            } // end if the sampled tree contained this clade
+            
+        } // end loop over all nodes in the tree
+        
+    } // end loop over each iteration in the trace
+    
+    
+    std::vector<double> posteriors;
+    for (int i = 0; i < input_nodes.size(); i++)
+    {
+        
+        TopologyNode &node = *input_nodes[i];
+        if ( node.isTip() )
+        {
+            node.addNodeParameter(n,"{}");
+            
+        }
+        else
+        {
+
+            // collect the samples
+            std::vector<Sample<std::string> > stateSamples;
+            for (std::map<std::string, Sample<std::string> >::iterator it = stateAbsencePresence[i].begin(); it != stateAbsencePresence[i].end(); ++it)
+            {
+                it->second.computeStatistics();
+                cladeSamples.push_back(it->second);
+            }
+    
+            // sort the samples by frequency
+            sort(cladeSamples.begin(), cladeSamples.end());
+            
+            double total_node_pp = 0.0;
+            std::string final_state = "{";
+            for (size_t j = 0; j < num; ++j)
+            {
+                if ( total_node_pp > 0.9999 ) continue;
+                
+                if (j > 0)
+                {
+                    final_state += ",";
+                }
+                
+                double pp = cladeSamples[j].getFrequency() / double(cladeSamples[j].getSampleSize());
+                final_state += cladeSamples[j].getValue() + "=" + boost::lexical_cast<std::string>(pp+0.0000001).substr(0,6);
+                total_node_pp += pp;
+
+            }
+//            bool states = false;
+//            if (1.0-total_node_pp > 0.0001)
+//            {
+//                if (states)
+//                {
+//                    final_state += ",";
+//                }
+//                final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+//            }
+            final_state += "}";
+            
+            // make parameter string for this node
+            node.addNodeParameter(n,final_state);
+        }
+    }
+    
+    //finalInputTree.addNodeParameter("posterior",posteriors,true);
+//    finalInputTree->addNodeParameter("ancestralstates",best_states,true);
+    
+    RBOUT("Done.\n");
+    
+}
+
+
+/*
+ * this method calculates the MAP ancestral character states for the nodes on the input_tree
+ */
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, const std::string &n, size_t paramIndex, double hpd, int b )
+{
+    setBurnin(b);
+    
+    std::stringstream ss;
+    ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
+    RBOUT(ss.str());
+    
+    RBOUT("Calculating ancestral state posteriors...\n");
+    
+    // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
+    const std::vector<TopologyNode*> &input_nodes = tree.getNodes();
+//    std::vector<std::map<std::string, Sample<std::string> > > stateAbsencePresence(input_nodes.size(), std::map<std::string, Sample<std::string> >());
+    std::vector<std::vector<double> > samples(input_nodes.size(),std::vector<double>());
+    //    std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
+    
+    //    double weight = 1.0 / (trace.size()-burnin);
+    
+    // loop through all trees in tree trace
+    for (size_t i = burnin; i < trace.size(); i++)
+    {
+        treeType *sample_tree = trace.objectAt( i );
+        const TopologyNode& sample_root = sample_tree->getRoot();
+        
+        // loop through all nodes in inputTree
+        for (size_t j = 0; j < input_nodes.size(); j++)
+        {
+            
+            if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
+            {
+                // if the inputTree node is also in the sample tree
+                // we get the ancestral character state from the ancestral state trace
+                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+                
+                const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
+                
+                std::string tmp = sample_node.getNodeParameters()[paramIndex];
+                if ( tmp[0] == '&')
+                {
+                    tmp = tmp.substr(1,tmp.size());
+                }
+                std::vector<std::string> pair;
+                StringUtilities::stringSplit(tmp, "=", pair);
+                
+                double state = atof(pair[1].c_str());
+                
+                std::vector<double> &entries = samples[j];
+                entries.push_back( state );
+                
+            } // end if the sampled tree contained this clade
+            
+        } // end loop over all nodes in the tree
+        
+    } // end loop over each iteration in the trace
+    
+    
+    std::vector<double> posteriors;
+    for (int i = 0; i < input_nodes.size(); i++)
+    {
+        
+        TopologyNode &node = *input_nodes[i];
+        if ( node.isTip() )
+        {
+            node.addNodeParameter(n+"_range","{}");
+//            node.addNodeParameter(n+,"0.0");
+            
+        }
+        else
+        {
+            
+            // collect the samples
+            std::vector<double> stateSamples = samples[i];
+            
+            // sort the samples by frequency
+            sort(stateSamples.begin(), stateSamples.end());
+            
+            
+            size_t interval_start = (hpd/2.0) * stateSamples.size();
+            size_t interval_median = 0.5 * stateSamples.size();
+            size_t interval_end = (1.0-hpd/2.0) * stateSamples.size();
+            interval_end = (interval_end >= stateSamples.size() ? stateSamples.size()-1 : interval_end);
+            double lower = stateSamples[interval_start];
+            double median = stateSamples[interval_median];
+            double upper = stateSamples[interval_end];
+            
+            // make node age annotation
+            std::string param = "{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
+                                                + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}";
+
+            // make parameter string for this node
+            node.addNodeParameter(n+"_range",param);
+            
+            // make parameter string for this node
+            node.addNodeParameter(n,median);
+        }
+    }
+    
+    //finalInputTree.addNodeParameter("posterior",posteriors,true);
+    //    finalInputTree->addNodeParameter("ancestralstates",best_states,true);
+    
+    RBOUT("Done.\n");
+    
+}
+
+
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double hpd, int b )
+{
+    setBurnin(b);
+    
+    std::stringstream ss;
+    ss << "Compiling " << hpd * 100 << "% HPD node ages from " << trace.size() << " total trees in tree trace, using a burnin of " << burnin << " trees.\n";
+    RBOUT(ss.str());
+    
+    RBOUT("Calculating clade frequencies...\n");
+    
+    summarizeClades(b);
+    
+    const std::vector<TopologyNode*> &nodes = tree.getNodes();
+    std::vector<std::string*> node_intervals(nodes.size());
+    
+    RBOUT("Calculating node age intervals...\n");
+    
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        // first get all the node ages for this node and sort them
+        std::vector<std::string> taxa;
+        nodes[i]->getTaxaStringVector(taxa);
+        Clade c(taxa, 0.0); // clade age not used here
+        const std::string &cladeName = c.toString();
+        std::map<std::string, std::vector<double> >::iterator entry_clade_age = cladeAges.find( cladeName );
+        
+        // check that there is this clade
+        // we may have ommited tip ages ...
+        if ( entry_clade_age == cladeAges.end() ) continue;
+        
+        std::vector<double> branch_lengths = entry_clade_age->second;
+        std::sort(branch_lengths.begin(), branch_lengths.end());
+        
+        size_t total_branch_lengths = branch_lengths.size();
+        double min_range = std::numeric_limits<double>::max();
+        
+        size_t interval_start = 0;
+        int interval_size = (int)(hpd * (double)total_branch_lengths);
+        
+        // find the smallest interval that contains x% of the samples
+        for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
+        {
+            double temp_lower = branch_lengths[j];
+            double temp_upper = branch_lengths[j + interval_size - 1];
+            double temp_range = abs(temp_upper - temp_lower);
+            if (temp_range < min_range)
+            {
+                min_range = temp_range;
+                interval_start = j;
+            }
+        }
+        double lower = branch_lengths[interval_start];
+        double upper = branch_lengths[interval_start + interval_size - 1];
+        
+        // make node age annotation
+        node_intervals[i] = new std::string("{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
+                                            + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}");
+    }	
+    
+    std::string label = "height_" + boost::lexical_cast<std::string>( (int)(hpd * 100) ) + "%_HPD";
+    tree.addNodeParameter(label, node_intervals, true);
+    
+}
+
 
 template <class treeType>
 RevBayesCore::Clade RevBayesCore::TreeSummary<treeType>::fillConditionalClades(const RevBayesCore::TopologyNode &n, std::vector<RevBayesCore::ConditionalClade> &condClades, std::vector<RevBayesCore::Clade> &clades)
@@ -1495,72 +1887,6 @@ RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsens
 	}
     
 	return(root);
-}
-
-
-template <class treeType>
-void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double hpd, int b )
-{   
-    setBurnin(b);
-	
-	std::stringstream ss;
-	ss << "Compiling " << hpd * 100 << "% HPD node ages from " << trace.size() << " total trees in tree trace, using a burnin of " << burnin << " trees.\n";
-	RBOUT(ss.str());
-    
-	RBOUT("Calculating clade frequencies...\n");
-	
-	summarizeClades(b);
-	
-    const std::vector<TopologyNode*> &nodes = tree.getNodes();
-    std::vector<std::string*> node_intervals(nodes.size());
-	
-	RBOUT("Calculating node age intervals...\n");
-	
-	for (size_t i = 0; i < nodes.size(); i++)
-	{
-		// first get all the node ages for this node and sort them
-		std::vector<std::string> taxa;
-		nodes[i]->getTaxaStringVector(taxa);
-		Clade c(taxa, 0.0); // clade age not used here
-        const std::string &cladeName = c.toString();
-        std::map<std::string, std::vector<double> >::iterator entry_clade_age = cladeAges.find( cladeName );
-        
-        // check that there is this clade
-        // we may have ommited tip ages ...
-        if ( entry_clade_age == cladeAges.end() ) continue;
-        
-		std::vector<double> branch_lengths = entry_clade_age->second;
-		std::sort(branch_lengths.begin(), branch_lengths.end());
-		
-		size_t total_branch_lengths = branch_lengths.size();
-		double min_range = std::numeric_limits<double>::max();
-		
-		size_t interval_start = 0;
-		int interval_size = (int)(hpd * (double)total_branch_lengths);
-		
-		// find the smallest interval that contains x% of the samples
-		for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
-        {
-			double temp_lower = branch_lengths[j];
-			double temp_upper = branch_lengths[j + interval_size - 1];
-			double temp_range = abs(temp_upper - temp_lower);
-			if (temp_range < min_range)
-            {
-				min_range = temp_range;
-				interval_start = j;
-			}
-		}
-		double lower = branch_lengths[interval_start];
-		double upper = branch_lengths[interval_start + interval_size - 1];
-		
-		// make node age annotation
-		node_intervals[i] = new std::string("{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
-		                        + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}");
-	}	
-	
-	std::string label = "height_" + boost::lexical_cast<std::string>( (int)(hpd * 100) ) + "%_HPD";
-    tree.addNodeParameter(label, node_intervals, true);
-	
 }
 
 
