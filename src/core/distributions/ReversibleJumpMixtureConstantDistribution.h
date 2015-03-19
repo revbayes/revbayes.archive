@@ -40,7 +40,7 @@ namespace RevBayesCore {
         void                                                redrawValue(void);
         void                                                redrawValueByIndex(int i);
         void                                                setCurrentIndex(size_t i);
-        void                                                setValue(const mixtureType &v);
+        void                                                setValue(mixtureType *v, bool f=false);
         
     
     protected:
@@ -122,7 +122,7 @@ double RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::com
     else
     {
         lnProb = log( 1.0 - probability->getValue() );
-        baseDistribution->setValue( *this->value );
+        baseDistribution->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone(*this->value) );
         lnProb += baseDistribution->computeLnProbability();
         
     }
@@ -196,13 +196,13 @@ mixtureType* RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType
     if ( u < probability->getValue() )
     {
         index = 0;
-        return new mixtureType( constValue->getValue() );
+        return Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( constValue->getValue() );
     }
     else
     {
         index = 1;
         baseDistribution->redrawValue();
-        return new mixtureType( baseDistribution->getValue() );
+        return Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( baseDistribution->getValue() );
     }
     
 }
@@ -226,13 +226,13 @@ void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::redra
     if (i == 0)
     {
         index = 0;
-        this->value = new mixtureType( constValue->getValue() );
+        this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( constValue->getValue() );
     }
     else
     {
         index = 1;
         baseDistribution->redrawValue();
-        this->value = new mixtureType( baseDistribution->getValue() );
+        this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( baseDistribution->getValue() );
     }
 }
 
@@ -265,19 +265,30 @@ void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::swapP
 
 
 template <class mixtureType>
-void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::setValue(mixtureType const &v)
+void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::setValue(mixtureType *v, bool force)
 {
     
     delete this->value;
     
-    if (index == 0)
+    if ( force == false )
     {
-        this->value = new mixtureType( constValue->getValue() );
+        this->value = v;
     }
     else
     {
-        baseDistribution->setValue( v );
-        this->value = new mixtureType( v );
+        
+        if ( *v == constValue->getValue() )
+        {
+            index = 0;
+            this->value = v;
+        }
+        else
+        {
+            index = 1;
+            baseDistribution->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( *v ) );
+            this->value = v;
+        }
+    
     }
     //throw RbException("Cannot set the value of a reversible jump mixture distribution because we don't know which distribution the value should come from.");
 }

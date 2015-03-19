@@ -106,7 +106,7 @@ void ScreenMonitor::monitor(unsigned long gen)
             
             // set cycle column width
             int cycleWidth = floor( log10( numCycles ) ) + 1;
-            cycleWidth = 5 > cycleWidth ? 5 : cycleWidth;
+            cycleWidth = 9 > cycleWidth ? 9 : cycleWidth;
 
             // print the cycle number
             ss << gen;
@@ -234,7 +234,7 @@ void ScreenMonitor::printHeader( void )
         // print one column for the iteration number
         std::string header = "Iter";
 
-        int width = 5;
+        int width = 9;
     
         int numWidth = int( log10( numCycles ) ) + 1;
         width = width > numWidth ? width : numWidth;

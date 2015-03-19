@@ -84,6 +84,9 @@ RevBayesCore::PhyloBrownianProcessREML<treeType>::PhyloBrownianProcessREML(const
     this->tau->getValue().getTreeChangeEventHandler().addListener( this );
     this->tau->incrementReferenceCount();
     
+    // we need to reset the contrasts
+    this->resetValue();
+    
 }
 
 
