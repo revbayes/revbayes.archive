@@ -33,7 +33,8 @@ namespace StringUtilities {
     std::string                 getStringWithDeletedLastPathComponent(const std::string& s);                        //!< Convert the file contents to a string
     std::string                 getLastPathComponent(const std::string& s);                                         //!< Find the last component of a file path
     bool                        isFormattingChar(char c) ;
-    bool                        isNumber(const std::string& s);                                                     //!< Checks if a RlString is a number
+    bool                        isIntegerNumber(const std::string& s);                                              //!< Checks if a string is an integer number
+    bool                        isNumber(const std::string& s);                                                     //!< Checks if a string is a number
     std::string                 oneLiner(const std::string& input, size_t maxLen);                                  //!< Get a one-liner of specified length
     void                        replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr);
     void                        stringSplit(const std::string &str, const std::string &delim, std::vector<std::string>& results); //!< Split a string into pieces

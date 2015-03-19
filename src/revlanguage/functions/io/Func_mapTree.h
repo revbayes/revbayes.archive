@@ -93,6 +93,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType
     
     // get the tree with x% HPD node ages
     summary.annotateHPDAges(*tree, x, burnin);
+    
+    // get the tree with x% HPD node ages
+    summary.annotate(*tree, burnin);
 
     
     if ( filename != "" )
