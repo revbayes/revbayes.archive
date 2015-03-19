@@ -288,7 +288,8 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             
             
             // removing comments
-            if (line[0] == '#') {
+            if (line[0] == '#')
+            {
                 continue;
             }
             
@@ -306,7 +307,8 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
                 {
                     
                     std::string parmName = columns[j];
-                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior") {
+                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior")
+                    {
                         continue;
                     }
                     index = j;

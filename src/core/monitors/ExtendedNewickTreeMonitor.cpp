@@ -7,7 +7,8 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+    isNodeParameter( np ),
     tree( t )
 {
     
@@ -15,13 +16,14 @@ ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, 
 
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< RbVector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+    isNodeParameter( np ),
     tree( t ),
     nodeVariables( n )
 {
 //    this->nodes.insert( tree );
     
-    for (std::set<TypedDagNode< RbVector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
+    for (std::set<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
         this->nodes.push_back( *it );
     }
@@ -42,10 +44,31 @@ void ExtendedNewickTreeMonitor::monitorVariables(unsigned long gen)
     
     outStream << separator;
     
-    tree->getValue().clearBranchParameters();
-    for (std::set<TypedDagNode< RbVector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
+    tree->getValue().clearParameters();
+    for (std::set<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
-        tree->getValue().addBranchParameter((*it)->getName(), (*it)->getValue(), false);
+        const std::string &name = (*it)->getName();
+//        Container *c = dynamic_cast<Container *>( (*it)->getValue() );
+        size_t numParams = (*it)->getNumberOfElements();
+
+        std::stringstream ss;
+        (*it)->printValueElements(ss,"\t");
+        std::string concatenatedValues = ss.str();
+        std::vector<std::string> values;
+        StringUtilities::stringSplit(concatenatedValues, "\t", values);
+        for (size_t i = 0; i < numParams; ++i)
+        {
+            TopologyNode &node = tree->getValue().getNode( i );
+            if ( isNodeParameter == true )
+            {
+                node.addNodeParameter( name, values[i]);
+            }
+            else
+            {
+                node.addBranchParameter( name, values[i]);
+            }
+            
+        }
     }
             
     outStream << tree->getValue();

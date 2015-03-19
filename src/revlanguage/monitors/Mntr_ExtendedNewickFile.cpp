@@ -43,16 +43,17 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    std::set<RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> > *> n;
+    std::set<RevBayesCore::DagNode*> n;
     for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
+        RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
         n.insert( node );
     }
+    bool np = static_cast<const RlBoolean &>( isNodeParameter->getRevObject() ).getValue();
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
-    value = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, size_t(g), fn, sep, pp, l, pr);
+    value = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, np, size_t(g), fn, sep, pp, l, pr);
 }
 
 
@@ -89,6 +90,7 @@ const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("filename", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         memberRules.push_back( new ArgumentRule("tree"    , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("isNodeParameter" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         memberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString(" ") ) );
         memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
@@ -134,6 +136,10 @@ void Mntr_ExtendedNewickFile::setConstParameter(const std::string& name, const R
     else if ( name == "tree" )
     {
         tree = var;
+    }
+    else if ( name == "isNodeParameter" )
+    {
+        isNodeParameter = var;
     }
     else if ( name == "separator" )
     {
