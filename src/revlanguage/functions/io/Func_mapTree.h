@@ -78,8 +78,11 @@ RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone(
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType>::execute( void )
+{
     
+    // get the x% hpd
+    double x = 0.95;
     
     const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
     const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
@@ -88,7 +91,12 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType
     RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
     typename treeType::valueType* tree = summary.map(burnin);
     
-    if ( filename != "" ) {        
+    // get the tree with x% HPD node ages
+    summary.annotateHPDAges(*tree, x, burnin);
+
+    
+    if ( filename != "" )
+    {
         
         RevBayesCore::NexusWriter writer(filename);
         writer.openStream();
