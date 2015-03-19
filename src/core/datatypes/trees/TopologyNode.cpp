@@ -710,6 +710,16 @@ double TopologyNode::getBranchLength( void ) const
 }
 
 
+/*
+ * Get the branch parameters.
+ */
+const std::vector<std::string>& TopologyNode::getBranchParameters( void ) const
+{
+    
+    return branchComments;
+}
+
+
 /**
  * Get the index of a clade
  */
@@ -857,6 +867,16 @@ const std::string& TopologyNode::getName( void ) const
 {
     
     return taxon.getName();
+}
+
+
+/*
+ * Get the node parameters.
+ */
+const std::vector<std::string>& TopologyNode::getNodeParameters( void ) const
+{
+    
+    return nodeComments;
 }
 
 
