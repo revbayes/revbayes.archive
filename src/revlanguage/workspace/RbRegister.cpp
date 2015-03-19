@@ -680,7 +680,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnBirthDeath",                new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
         
-        addDistribution( "dnBirthDeathMulti",        new Dist_BirthDeathMultiRate() );
+        addDistribution( "dnBirthDeathMulti",           new Dist_BirthDeathMultiRate() );
         
         // constant rate birth-death process with serially sampled tips
         addDistribution( "dnBDPSerial",                 new Dist_serialBDP() );
