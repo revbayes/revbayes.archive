@@ -83,6 +83,7 @@ namespace RevBayesCore {
         bool                                        containsClade(const Clade &c, bool strict) const;
         void                                        flagNewickRecomputation(void);                                                      //!< Flag the newick string for recomputation
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
+        const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
         size_t                                      getCladeIndex(const TopologyNode* c) const;
         const TopologyNode&                         getChild(size_t i) const;                                                           //!< Returns the i-th child
@@ -92,6 +93,7 @@ namespace RevBayesCore {
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
+        const std::vector<std::string>&             getNodeParameters(void) const;                                                        //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
         
