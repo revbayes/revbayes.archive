@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class Mcmcmc : public MonteCarloSampler {
         
     public:
-        Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1);
+        Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT="random", size_t nc=4, size_t si=100, double dt=0.1);
         Mcmcmc(const Mcmcmc &m);
         virtual                                ~Mcmcmc(void);                                       //!< Virtual destructor
         
@@ -41,6 +41,7 @@ namespace RevBayesCore {
         void                                    printOperatorSummary(void) const;
         void                                    reset(void);                                        //!< Reset the sampler for a new run.
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
+        void                                    setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
         void                                    setReplicateIndex(size_t i);                        //!< Set the index for this replication.
         void                                    setStoneIndex(size_t i);                            //!< Set the index for this replication.
         void                                    startMonitors(void);                                //!< Start the monitors
@@ -70,6 +71,9 @@ namespace RevBayesCore {
         
         size_t                                  activeChainIndex;                                   // index of coldest chain, i.e. which one samples the posterior
         double                                  delta;                                              // delta-T, temperature increment for computeBeta
+        
+        
+        Mcmc*                                   baseChain;
         
         unsigned long                           generation;
         unsigned long                           numAttemptedSwaps;
