@@ -102,12 +102,12 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMap& x) {
     return o;
 }
 
-const RateMatrix* RateMap::getHomogeneousRateMatrix(void) const
+const RateGenerator* RateMap::getHomogeneousRateMatrix(void) const
 {
     return homogeneousRateMatrix;
 }
 
-void RateMap::setHomogeneousRateMatrix(const RateMatrix* r)
+void RateMap::setHomogeneousRateMatrix(const RateGenerator* r)
 {
     branchHeterogeneousRateMatrices = false;
     
@@ -117,12 +117,12 @@ void RateMap::setHomogeneousRateMatrix(const RateMatrix* r)
     homogeneousRateMatrix = r->clone();
 }
 
-const RbVector<RateMatrix>& RateMap::getHeterogeneousRateMatrices(void) const
+const RbVector<RateGenerator>& RateMap::getHeterogeneousRateMatrices(void) const
 {
     return heterogeneousRateMatrices;
 }
 
-void RateMap::setHeterogeneousRateMatrices(const RbVector<RateMatrix>& r)
+void RateMap::setHeterogeneousRateMatrices(const RbVector<RateGenerator>& r)
 {
     branchHeterogeneousRateMatrices = true;
     heterogeneousRateMatrices = r;
@@ -163,7 +163,7 @@ void RateMap::setHeterogeneousClockRates(const std::vector<double> &r)
 
 void RateMap::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P) const
 {
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
@@ -180,7 +180,7 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
 
 void RateMap::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx) const
 {
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
@@ -206,13 +206,13 @@ double RateMap::getRate(const TopologyNode& node, std::vector<CharacterEvent*> f
     unsigned toState = to->getState();
     
     double rate = 0.0;
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
-    rate = (*rm)[fromState][toState];
+    rate = rm->getRate(fromState, toState, age, 1.0);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -227,13 +227,13 @@ double RateMap::getSiteRate(const TopologyNode& node, CharacterEvent* from, Char
 {
     
     double rate = 0.0;
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
-    rate = (*rm)[from->getState()][to->getState()];
+    rate = rm->getRate(from->getState(), to->getState(), age, 1.0);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -247,13 +247,13 @@ double RateMap::getSiteRate(const TopologyNode& node, unsigned from, unsigned to
 {
     
     double rate = 0.0;
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
-    rate = (*rm)[from][to];
+    rate = rm->getRate(from, to, age, 1.0);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -279,7 +279,7 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     
     
     // get rate matrix
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
@@ -290,7 +290,7 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     for (size_t i = 0; i < numStates; i++)
     {
 //        std::cout << i << " "<< counts[i] << "\n";
-        sum += -(*rm)[i][i] * counts[i];
+        sum += -rm->getRate(i, i, age, 1.0) * counts[i];
     }
     
     // apply rate for branch

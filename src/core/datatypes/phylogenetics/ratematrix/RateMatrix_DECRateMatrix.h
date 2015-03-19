@@ -42,7 +42,7 @@ namespace RevBayesCore {
         void                                setExtirpationRates(const std::vector<double>& er);                                     //!< Directly set extirpation rates
         void                                setRangeSize(const std::vector<double>& rs);                                     //!< Directly set range size simplex
 
-        void                                updateMatrix(void);
+        void                                update(void);
         
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse

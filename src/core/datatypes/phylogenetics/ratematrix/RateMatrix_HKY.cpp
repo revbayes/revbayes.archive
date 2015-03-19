@@ -13,7 +13,7 @@ RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 ){
     
     kappa = 1.0;
     
-    updateMatrix();
+    update();
     
 }
 
@@ -90,7 +90,7 @@ void RateMatrix_HKY::setKappa( double k ) {
 }
 
 
-void RateMatrix_HKY::updateMatrix( void ) {
+void RateMatrix_HKY::update( void ) {
     
     if ( needsUpdate ) 
     {

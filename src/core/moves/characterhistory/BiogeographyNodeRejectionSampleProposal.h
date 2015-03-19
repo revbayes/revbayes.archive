@@ -357,7 +357,7 @@ template<class charType, class treeType>
 double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    const std::vector<BranchHistory*>& histories = p->getHistories();
+//    const std::vector<BranchHistory*>& histories = p->getHistories();
 
     proposedLnProb = 0.0;
 

@@ -18,7 +18,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_gtr::Func_gtr( void ) : TypedFunction<RateMatrix>( ) {
+Func_gtr::Func_gtr( void ) : TypedFunction<RateGenerator>( ) {
     
 }
 
@@ -30,7 +30,7 @@ Func_gtr* Func_gtr::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_gtr::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_gtr::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

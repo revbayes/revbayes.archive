@@ -70,7 +70,7 @@ double FossilSafeScaleMove::doMove( void ) {
     double min = scaler->getMin();
     double max = scaler->getMax();
     
-    double size = max - min;
+//    double size = max - min;
     
     double u      = std::exp( lambda * (rng->uniform01() - 0.5));
     double newVal = val * u;
@@ -79,7 +79,7 @@ double FossilSafeScaleMove::doMove( void ) {
     scaler->setValue(val);
     
     TimeTree& t = tree->getValue();
-    double rescale = storedValue / val;
+//    double rescale = storedValue / val;
     
     bool failed = false;
     std::vector<TopologyNode*> nodes = t.getNodes();

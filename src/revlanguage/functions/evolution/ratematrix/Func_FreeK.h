@@ -34,7 +34,7 @@
 
 namespace RevLanguage {
     
-    class Func_FreeK :  public TypedFunction<RateMatrix> {
+    class Func_FreeK :  public TypedFunction<RateGenerator> {
         
     public:
         Func_FreeK( void );
@@ -46,7 +46,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >*        createFunction(void) const;                                                                  //!< Execute function
+        RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >*     createFunction(void) const;                                                                  //!< Execute function
         const ArgumentRules&                                            getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };

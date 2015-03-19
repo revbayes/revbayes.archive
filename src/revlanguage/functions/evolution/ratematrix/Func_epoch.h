@@ -1,21 +1,16 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage F81 function, which
- * is used to create deterministic variable associated with the F81 function.
- *
- * @brief Declaration and implementation of Func_f81
- *
- * (c) Copyright under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
+//
+//  Func_epoch.h
+//  revbayes-proj
+//
+//  Created by Michael Landis on 3/17/15.
+//  Copyright (c) 2015 Michael Landis. All rights reserved.
+//
 
+#ifndef __revbayes_proj__Func_epoch__
+#define __revbayes_proj__Func_epoch__
 
-#ifndef Func_f81_H
-#define Func_f81_H
-
+#include "RateGenerator.h"
+#include "ModelVector.h"
 #include "RlRateMatrix.h"
 #include "RlTypedFunction.h"
 
@@ -24,13 +19,13 @@
 
 namespace RevLanguage {
     
-    class Func_f81 : public TypedFunction<RateGenerator> {
+    class Func_epoch : public TypedFunction<RateGenerator> {
         
     public:
-        Func_f81( void );
+        Func_epoch( void );
         
         // Basic utility functions
-        Func_f81*                                                       clone(void) const;                                                              //!< Clone the object
+        Func_epoch*                                                     clone(void) const;                                                              //!< Clone the object
         static const std::string&                                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -43,4 +38,4 @@ namespace RevLanguage {
     
 }
 
-#endif
+#endif /* defined(__revbayes_proj__Func_epoch__) */

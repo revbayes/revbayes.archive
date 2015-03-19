@@ -12,7 +12,7 @@
 
 using namespace RevBayesCore;
 
-FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, const TypedDagNode< RbVector<double> > *sf) : TypedFunction<RateMatrix>( new RateMatrix_FreeK(sf->getValue().size()) ), transitionRates( tr ), stationaryFrequencies( sf ) {
+FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, const TypedDagNode< RbVector<double> > *sf) : TypedFunction<RateGenerator>( new RateMatrix_FreeK(sf->getValue().size()) ), transitionRates( tr ), stationaryFrequencies( sf ) {
     
     // add the rate and frequency parameters as parents
     addParameter( transitionRates );
@@ -42,7 +42,7 @@ void FreeKRateMatrixFunction::update( void ) {
     static_cast< RateMatrix_FreeK* >(value)->setTransitionRates(r);
     static_cast< RateMatrix_FreeK* >(value)->setStationaryFrequencies(f);
     
-    value->updateMatrix();
+    value->update();
 }
 
 

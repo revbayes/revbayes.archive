@@ -316,6 +316,7 @@
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_DECRateMatrix.h"
+#include "Func_epoch.h"
 #include "Func_f81.h"
 #include "Func_FreeBinary.h"
 #include "Func_FreeK.h"
@@ -475,7 +476,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<Taxon,5>::addTypeToWorkspace( *this, new Taxon() );
         
         
-        AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
+        AddWorkspaceVectorType<RateGenerator,5>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
@@ -598,7 +599,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateMatrix>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateGenerator>( ) );
         
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Real>( ) );
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<RealPos>( ) );
@@ -669,7 +670,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloCTMC",                 new Dist_phyloCTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
-        addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
+//        addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
         addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<TimeTree>() );
         addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<BranchLengthTree>() );
         
@@ -817,7 +818,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnMixture",       new Dist_mixture<Natural>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
-        addDistribution( "dnMixture",       new Dist_mixture<RateMatrix>() );
+        addDistribution( "dnMixture",       new Dist_mixture<RateGenerator>() );
         
         // Ornstein-Uhlenbeck process
         addDistribution( "dnOrnsteinUhlenbeck", new OrnsteinUhlenbeckProcess() );
@@ -830,7 +831,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        //addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
+        //addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateGenerator>() );
         // aliases
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RealPos>() );
@@ -838,7 +839,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        //addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
+        //addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateGenerator>() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -901,6 +902,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
         addFunction( "fnDECRateMatrix", new Func_DECRateMatrix() );
+        addFunction( "fnEpoch",    new Func_epoch() );
         addFunction( "fnF81",      new Func_f81()     );
         addFunction( "fnFreeBinary", new Func_FreeBinary() );
         addFunction( "fnFreeK",    new Func_FreeK()   );

@@ -19,7 +19,7 @@ AbstractRateMatrix::AbstractRateMatrix(size_t n) : RateMatrix(n),
 {
     
     // I cannot call a pure virtual function from the constructor (Sebastian)
-    //    updateMatrix();
+    //    update();
 }
 
 
@@ -60,28 +60,28 @@ AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
     return *this;
 }
 
-/** Index operator (const) */
-const std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) const {
-    
-    if ( i >= numStates )
-    {
-        throw RbException( "Index to RateMatrix[][] out of bounds" );
-    }
-    
-    return (*theRateMatrix)[i];
-}
-
-
-/** Index operator */
-std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) {
-    
-    if ( i >= numStates )
-    {
-        throw RbException( "Index to RateMatrix[][] out of bounds" );
-    }
-    
-    return (*theRateMatrix)[i];
-}
+///** Index operator (const) */
+//const std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) const {
+//    
+//    if ( i >= numStates )
+//    {
+//        throw RbException( "Index to RateMatrix[][] out of bounds" );
+//    }
+//    
+//    return (*theRateMatrix)[i];
+//}
+//
+//
+///** Index operator */
+//std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) {
+//    
+//    if ( i >= numStates )
+//    {
+//        throw RbException( "Index to RateMatrix[][] out of bounds" );
+//    }
+//    
+//    return (*theRateMatrix)[i];
+//}
 
 
 //std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::begin( void ) const
@@ -141,9 +141,33 @@ bool AbstractRateMatrix::checkTimeReversibity(double tolerance)
 }
 
 
-size_t AbstractRateMatrix::getNumberOfStates( void ) const
+//size_t AbstractRateMatrix::getNumberOfStates( void ) const
+//{
+//    return numStates;
+//}
+
+
+
+double AbstractRateMatrix::getRate(size_t from, size_t to, double rate) const
 {
-    return numStates;
+    if ( from >= numStates || to > numStates )
+    {
+        throw RbException( "Index to RateMatrix.getRate() out of bounds" );
+    }
+    
+    return (*theRateMatrix)[from][to] * rate;
+}
+
+
+
+double AbstractRateMatrix::getRate(size_t from, size_t to, double age, double rate) const
+{
+    if ( from >= numStates || to > numStates )
+    {
+        throw RbException( "Index to RateMatrix.getRate() out of bounds" );
+    }
+
+    return (*theRateMatrix)[from][to] * rate;
 }
 
 
@@ -192,8 +216,8 @@ void AbstractRateMatrix::setDiagonal(void)
 
 
 
-size_t AbstractRateMatrix::size( void ) const
-{
-    return numStates;
-}
+//size_t AbstractRateMatrix::size( void ) const
+//{
+//    return numStates;
+//}
 
