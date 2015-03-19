@@ -36,12 +36,12 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
-        AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                           //!< Copy constructor
-        virtual                                                            ~AbstractTreeHistoryCtmc(void);                                   //!< Virtual destructor
+        AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                              //!< Copy constructor
+        virtual                                                            ~AbstractTreeHistoryCtmc(void);                                      //!< Virtual destructor
         
         // public member functions
         // pure virtual
-        virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
+        virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                              //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
         virtual void                                                        drawInitValue(void) = 0;
         virtual void                                                        initializeTipValues(void) = 0;
@@ -51,14 +51,14 @@ namespace RevBayesCore {
         
         // non-virtual
         double                                                              computeLnProbability(void);
-        void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
+        void                                                                fireTreeChangeEvent(const TopologyNode &n);                         //!< The tree has changed and we want to know which part.
         BranchHistory&                                                      getHistory(const TopologyNode& nd);
         const BranchHistory&                                                getHistory(const TopologyNode& nd) const;
         std::vector<BranchHistory*>                                         getHistories(void);
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
-        void                                                                setValue(AbstractDiscreteCharacterData *v);                         //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setValue(AbstractDiscreteCharacterData *v, bool f=false);           //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                setTipProbs(const AbstractCharacterData* tp);
         
         virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
@@ -451,10 +451,11 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistories(con
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractDiscreteCharacterData *v) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractDiscreteCharacterData *v, bool force)
+{
     
     // delegate to the parent class
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
+    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v, force);
 
     
     drawInitValue();

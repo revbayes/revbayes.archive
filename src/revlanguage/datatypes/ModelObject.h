@@ -465,7 +465,8 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
 
 
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
+void RevLanguage::ModelObject<rbType>::setValue(rbType *x)
+{
     
     RevBayesCore::ConstantNode<rbType>* newNode;
     

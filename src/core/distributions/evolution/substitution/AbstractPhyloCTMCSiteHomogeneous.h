@@ -85,7 +85,7 @@ namespace RevBayesCore {
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
         void																updateMarginalNodeLikelihoods(void);
-        void                                                                setValue(AbstractDiscreteCharacterData *v);                                                 //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setValue(AbstractDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
         
@@ -1597,11 +1597,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValue(AbstractDiscreteCharacterData *v)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValue(AbstractDiscreteCharacterData *v, bool force)
 {
     
     // delegate to the parent class
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
+    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v, force);
     
     // reset the number of sites
     this->numSites = v->getNumberOfIncludedCharacters();

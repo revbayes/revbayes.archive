@@ -94,7 +94,7 @@ double FossilSafeSlideMove::doMove( void ) {
     } while ( newVal < min || newVal > max );
 
     val = newVal;
-    scaler->setValue(val);
+    scaler->setValue( new double(val) );
     
     TimeTree& t = tree->getValue();
 //    double rescale = storedValue / val;
@@ -179,7 +179,7 @@ void FossilSafeSlideMove::rejectMove( void )
 
     // undo the proposal
 //    double rescale = scaler->getValue() / storedValue;
-    scaler->setValue(storedValue);
+    scaler->setValue( new double(storedValue) );
 
     TimeTree& t = tree->getValue();
     std::vector<TopologyNode*> nodes = t.getNodes();

@@ -197,7 +197,7 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
             std::string n = ss.str();
             if ( l > 0)
             {
-                StringUtilities::fillWithSpaces(n, l, left);
+                StringUtilities::formatFixedWidth(n, l, left);
             }
             o << n;
         }
@@ -207,7 +207,7 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
         std::string n = getName();
         if ( l > 0 )
         {
-            StringUtilities::fillWithSpaces(n, l, left);
+            StringUtilities::formatFixedWidth(n, l, left);
         }
         o << n;
     }
