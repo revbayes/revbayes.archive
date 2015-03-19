@@ -16,7 +16,7 @@ using namespace RevBayesCore;
 DECRateMatrixFunction::DECRateMatrixFunction(   const TypedDagNode< RbVector<RbVector<double> > > *dr,
                                                 const TypedDagNode< RbVector<double> > *er,
                                                 const TypedDagNode< RbVector<double> > *rs)
-: TypedFunction<RateMatrix>( new RateMatrix_DECRateMatrix( (size_t)(std::pow(2,er->getValue().size()))) ),
+: TypedFunction<RateGenerator>( new RateMatrix_DECRateMatrix( (size_t)(std::pow(2,er->getValue().size()))) ),
     dispersalRates( dr ),
     extirpationRates( er ),
     rangeSize( rs )
@@ -52,7 +52,7 @@ void DECRateMatrixFunction::update( void ) {
     static_cast< RateMatrix_DECRateMatrix* >(value)->setDispersalRates(dr);
     static_cast< RateMatrix_DECRateMatrix* >(value)->setExtirpationRates(er);
     static_cast< RateMatrix_DECRateMatrix* >(value)->setRangeSize(rs);
-    value->updateMatrix();
+    value->update();
 }
 
 

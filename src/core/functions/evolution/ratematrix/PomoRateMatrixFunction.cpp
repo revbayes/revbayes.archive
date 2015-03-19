@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mr->getValue(), sc->getValue()) ),
+PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateGenerator>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mr->getValue(), sc->getValue()) ),
     populationSize( ps ),
     mutationRates( mr ),
     selectionCoefficients ( sc )
@@ -21,7 +21,7 @@ PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, co
 
 
  //MJL 140822: caused compile error
-PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mm->getValue(), sc->getValue()) ), populationSize( ps ), mutationMatrix( mm ), selectionCoefficients ( sc ) {
+PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< RbVector<double>  > *sc) : TypedFunction<RateGenerator>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mm->getValue(), sc->getValue()) ), populationSize( ps ), mutationMatrix( mm ), selectionCoefficients ( sc ) {
     useMutationMatrix = true;
     // add the lambda parameter as a parent
     addParameter( populationSize );
@@ -63,7 +63,7 @@ void PomoRateMatrixFunction::update( void )
     // set the base frequencies
     static_cast< RateMatrix_Pomo* >(value)->setMutationRates( r );
     static_cast< RateMatrix_Pomo* >(value)->setSelectionCoefficients( s );
-    static_cast< RateMatrix_Pomo* >(value)->updateMatrix();
+    static_cast< RateMatrix_Pomo* >(value)->update();
     
 }
 
@@ -84,20 +84,23 @@ void PomoRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Da
 }
 
 
-std::vector<double> PomoRateMatrixFunction::setMutationRates(const RateMatrix& mm) {
+std::vector<double> PomoRateMatrixFunction::setMutationRates(const RateGenerator& mm) {
+    
+    double age = 0.0;
+    double rate = 1.0;
     std::vector<double> r;
-    r.push_back( mm[0][1] );
-    r.push_back( mm[0][2] );
-    r.push_back( mm[0][3] );
-    r.push_back( mm[1][0] );
-    r.push_back( mm[1][2] );
-    r.push_back( mm[1][3] );
-    r.push_back( mm[2][0] );
-    r.push_back( mm[2][1] );
-    r.push_back( mm[2][3] );
-    r.push_back( mm[3][0] );
-    r.push_back( mm[3][1] );
-    r.push_back( mm[3][2] );
+    r.push_back( mm.getRate(0,1,age,rate) );
+    r.push_back( mm.getRate(0,2,age,rate) );
+    r.push_back( mm.getRate(0,3,age,rate) );
+    r.push_back( mm.getRate(1,0,age,rate) );
+    r.push_back( mm.getRate(1,2,age,rate) );
+    r.push_back( mm.getRate(1,3,age,rate) );
+    r.push_back( mm.getRate(2,0,age,rate) );
+    r.push_back( mm.getRate(2,1,age,rate) );
+    r.push_back( mm.getRate(2,3,age,rate) );
+    r.push_back( mm.getRate(3,0,age,rate) );
+    r.push_back( mm.getRate(3,1,age,rate) );
+    r.push_back( mm.getRate(3,2,age,rate) );
     return r;
 }
 

@@ -48,6 +48,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                      tree;
         RevPtr<const RevVariable>                      delta;
+        RevPtr<const RevVariable>                      offset;
         RevPtr<const RevVariable>                      tune;
         
     };

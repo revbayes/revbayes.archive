@@ -46,7 +46,7 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n) : GeneralRateMatrix
         }
     }
     
-    updateMatrix();
+    update();
 }
 
 
@@ -426,7 +426,7 @@ void RateMatrix_DECRateMatrix::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_DECRateMatrix::updateMatrix( void ) {
+void RateMatrix_DECRateMatrix::update( void ) {
     
     if ( needsUpdate )
     {

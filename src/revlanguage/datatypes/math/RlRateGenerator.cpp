@@ -1,4 +1,10 @@
-#include "RlRateMatrix.h"
+//
+//  RlRateGenerator.cpp
+//  revbayes-proj
+//
+//  Created by Michael Landis on 3/17/15.
+//  Copyright (c) 2015 Michael Landis. All rights reserved.
+//
 
 #include "ArgumentRule.h"
 #include "ModelVector.h"
@@ -6,12 +12,13 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
+#include "RlRateGenerator.h"
 
 using namespace RevLanguage;
 
-RateMatrix::RateMatrix(void) : RateGenerator()
+RateGenerator::RateGenerator(void) : ModelObject<RevBayesCore::RateGenerator>()
 {
-
+    
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -21,13 +28,13 @@ RateMatrix::RateMatrix(void) : RateGenerator()
     // add method for call "x[]" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-
+    
 }
 
 
-RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : RateGenerator( v.clone() )
+RateGenerator::RateGenerator( const RevBayesCore::RateGenerator &v) : ModelObject<RevBayesCore::RateGenerator>( v.clone() )
 {
-
+    
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -37,13 +44,13 @@ RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : RateGenerator( v.cl
     // add method for call "x[]" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-
+    
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : RateGenerator( v )
+RateGenerator::RateGenerator( RevBayesCore::RateGenerator *v) : ModelObject<RevBayesCore::RateGenerator>( v )
 {
-
+    
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -53,13 +60,13 @@ RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : RateGenerator( v )
     // add method for call "x[]" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-
+    
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator> *m) : RateGenerator( m )
+RateGenerator::RateGenerator( RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator> *m) : ModelObject<RevBayesCore::RateGenerator>( m )
 {
-
+    
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -69,26 +76,24 @@ RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator> 
     // add method for call "x[]" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-
+    
 }
 
 
-RateMatrix* RateMatrix::clone() const {
-    return new RateMatrix( *this );
+RateGenerator* RateGenerator::clone() const {
+    return new RateGenerator( *this );
 }
 
 
 /* Map calls to member methods */
-RevPtr<RevVariable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> RateGenerator::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "[]")
     {
-        found = true;
-
-        
-        throw RbException("Currently deprecated. Blame Michael (or Sebastian)!");
-        // get the member with give index
+//        found = true;
+//        
+//        // get the member with give index
 //        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
 //        
 //        if (this->dagNode->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
@@ -102,40 +107,43 @@ RevPtr<RevVariable> RateMatrix::executeMethod(std::string const &name, const std
 //        }
 //        
 //        return new RevVariable( new ModelVector<Real>( elementVector ) );
+        found = true;
+        
+        int n = 0; //(int)this->dagNode->getValue().getNumberOfStates();
+        return new RevVariable( new Natural(n) );
     }
     else if (name == "size")
     {
         found = true;
         
-        int n = (int)this->dagNode->getValue().getNumberOfStates();
+        int n = 0; //(int)this->dagNode->getValue().getNumberOfStates();
         return new RevVariable( new Natural(n) );
     }
     
-    return RateGenerator::executeMethod( name, args, found );
+    return ModelObject<RevBayesCore::RateGenerator>::executeMethod( name, args, found );
 }
 
 
 /* Get Rev type of object */
-const std::string& RateMatrix::getClassType(void) {
+const std::string& RateGenerator::getClassType(void) {
     
-    static std::string revType = "RateMatrix";
+    static std::string revType = "RateGenerator";
     
-	return revType; 
+	return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& RateMatrix::getClassTypeSpec(void) {
+const TypeSpec& RateGenerator::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return revTypeSpec;
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
-const TypeSpec& RateMatrix::getTypeSpec(void) const {
+const TypeSpec& RateGenerator::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
 }
-

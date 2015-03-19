@@ -135,7 +135,7 @@ void GeneralRateMatrix::calculateStationaryFrequencies(void)
 }
 
 
-void GeneralRateMatrix::updateMatrix( void ) {
+void GeneralRateMatrix::update( void ) {
     
     if ( needsUpdate ) 
     {

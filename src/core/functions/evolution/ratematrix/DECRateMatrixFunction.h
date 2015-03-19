@@ -17,7 +17,7 @@
 
 namespace RevBayesCore {
     
-    class DECRateMatrixFunction : public TypedFunction<RateMatrix> {
+    class DECRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
         DECRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *dr, const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *rs);

@@ -23,7 +23,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateMatrix>( ) {
+Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateGenerator>( ) {
     
 }
 
@@ -35,7 +35,7 @@ Func_DECRateMatrix* Func_DECRateMatrix::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_DECRateMatrix::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* dr;

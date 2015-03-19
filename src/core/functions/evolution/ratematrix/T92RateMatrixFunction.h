@@ -30,7 +30,7 @@
 
 namespace RevBayesCore {
     
-    class T92RateMatrixFunction : public TypedFunction<RateMatrix> {
+    class T92RateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
         T92RateMatrixFunction(const TypedDagNode<double > *eqGc, const TypedDagNode< double > *tstv);

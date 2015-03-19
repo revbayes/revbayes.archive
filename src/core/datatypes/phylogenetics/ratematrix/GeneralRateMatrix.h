@@ -41,7 +41,7 @@ namespace RevBayesCore {
         bool                                isTimeReversible(void);                                                                     //!< Return whether the rate matrix is time reversible
         void                                setTransitionRates(const std::vector<double> &tr);
         void                                setStationaryFrequencies(const std::vector<double>& f);                                     //!< Directly set the stationary frequencies
-        virtual void                        updateMatrix(void);                                                                         //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
+        virtual void                        update(void);                                                                         //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
     protected:
         

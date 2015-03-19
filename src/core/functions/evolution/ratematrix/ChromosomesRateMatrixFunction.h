@@ -24,7 +24,7 @@
 
 namespace RevBayesCore {
     
-    class ChromosomesRateMatrixFunction : public TypedFunction<RateMatrix> {
+    class ChromosomesRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
         ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l);

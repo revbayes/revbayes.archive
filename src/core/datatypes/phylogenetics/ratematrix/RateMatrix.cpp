@@ -10,8 +10,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix::RateMatrix(size_t n) :
-    numStates( n )
+RateMatrix::RateMatrix(size_t n) : RateGenerator(n)
 {
 
 }
@@ -78,7 +77,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix& x) {
         {
             if (j != 0)
                 o << ", ";
-            o << x[i][j];
+            o << x.getRate( i, j);
         }
         o <<  " ]";
         

@@ -25,7 +25,7 @@ PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< RbV
 }
 
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< int > *ps): TypedFunction< RbVector<double> > ( new RbVector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationMatrix( mm ), populationSize(ps)  {
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< int > *ps): TypedFunction< RbVector<double> > ( new RbVector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationMatrix( mm ), populationSize(ps)  {
     useMutationMatrix = true;
     for (size_t i = 0; i < 4+6* (populationSize->getValue()-1); ++i) {
         static_cast< std::vector<double>* >(value)->push_back(0.0);
@@ -127,20 +127,22 @@ void PomoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, con
 
 
 
-std::vector<double> PomoRootFrequenciesFunction::setMutationRates(const RateMatrix& mm) {
+std::vector<double> PomoRootFrequenciesFunction::setMutationRates(const RateGenerator& mm) {
+    double age = 0.0;
+    double rate = 1.0;
     std::vector<double> r;
-    r.push_back( mm[0][1] );
-    r.push_back( mm[0][2] );
-    r.push_back( mm[0][3] );
-    r.push_back( mm[1][0] );
-    r.push_back( mm[1][2] );
-    r.push_back( mm[1][3] );
-    r.push_back( mm[2][0] );
-    r.push_back( mm[2][1] );
-    r.push_back( mm[2][3] );
-    r.push_back( mm[3][0] );
-    r.push_back( mm[3][1] );
-    r.push_back( mm[3][2] );
+    r.push_back( mm.getRate(0,1,age,rate) );
+    r.push_back( mm.getRate(0,2,age,rate) );
+    r.push_back( mm.getRate(0,3,age,rate) );
+    r.push_back( mm.getRate(1,0,age,rate) );
+    r.push_back( mm.getRate(1,2,age,rate) );
+    r.push_back( mm.getRate(1,3,age,rate) );
+    r.push_back( mm.getRate(2,0,age,rate) );
+    r.push_back( mm.getRate(2,1,age,rate) );
+    r.push_back( mm.getRate(2,3,age,rate) );
+    r.push_back( mm.getRate(3,0,age,rate) );
+    r.push_back( mm.getRate(3,1,age,rate) );
+    r.push_back( mm.getRate(3,2,age,rate) );
     return r;
 }
 

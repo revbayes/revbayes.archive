@@ -19,7 +19,7 @@ CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<do
     numCharacters(nc),
     numStates(2),
     numIntStates(pow(numStates,nc)),
-    numEventTypes( ep->getValue().size() + 1 )
+    numEventTypes( (unsigned)ep->getValue().size() + 1 )
 {
     // add the lambda parameter as a parent
     addParameter( eventProbs );
@@ -106,7 +106,7 @@ void CladogenicStateFunction::buildBits( void )
     bits.resize(numIntStates);
     for (size_t i = 0; i < numIntStates; i++) {
         std::vector<unsigned> b(numCharacters, 0);
-        unsigned v = i;
+        size_t v = i;
 //        for (int j = numCharacters - 1; j >= 0; j--)
         for (int j = 0; j < numCharacters; j++)
         {
@@ -120,15 +120,12 @@ void CladogenicStateFunction::buildBits( void )
 }
 
 void CladogenicStateFunction::buildEventMap( void ) {
-    
-    int allopatricEvent = 0;
-    int sympatricEvent = 1;
-    
+        
     eventMapCounts.resize(numIntStates, std::vector<unsigned>(numEventTypes, 0));
     
     // get L,R states per A state
     std::vector<unsigned> idx(3);
-    for (size_t i = 0; i < numIntStates; i++) {
+    for (unsigned i = 0; i < numIntStates; i++) {
         
         idx[0] = i;
         
@@ -138,7 +135,7 @@ void CladogenicStateFunction::buildEventMap( void ) {
         // get on bits for A
         const std::vector<unsigned>& ba = bits[i];
         std::vector<unsigned> on;
-        for (size_t j = 0; j < ba.size(); j++)
+        for (unsigned j = 0; j < ba.size(); j++)
         {
             if (ba[j] == 1)
                 on.push_back(j);
@@ -272,7 +269,7 @@ void CladogenicStateFunction::update( void )
     
     // get the information from the arguments for reading the file
     const std::vector<double>& ep = eventProbs->getValue();
-    const std::vector<double>& er = eventRates->getValue();
+//    const std::vector<double>& er = eventRates->getValue();
     
     // normalize tx probs
     std::vector<double> z( numIntStates, 0.0 );
