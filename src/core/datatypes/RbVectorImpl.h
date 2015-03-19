@@ -99,6 +99,14 @@ namespace RevBayesCore {
         virtual RbVectorImpl<valueType, 1>*                 clone(void) const = 0;                                                                      //!< Create an independent clone
         
         // public (stl-like) vector functions
+        RbVectorImpl<valueType, 1>&                         operator=(const RbVectorImpl<valueType, 1> &v) {
+            if ( this != &v ) {
+                clear();
+                size_t n=v.size();
+                for (size_t i = 0; i < n; ++i) values.push_back( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v[i] ) );
+            }
+            return *this;
+        }
         valueType&                                          operator[](size_t i) { return *values[i]; }
         const valueType&                                    operator[](size_t i) const { return *values[i]; }
         bool                                                operator==(const RbVectorImpl<valueType,1>& x) const { return values == x.values; }                              //!< Equals operator

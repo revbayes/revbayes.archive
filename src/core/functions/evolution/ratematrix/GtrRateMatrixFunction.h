@@ -31,7 +31,7 @@
 
 namespace RevBayesCore {
     
-    class GtrRateMatrixFunction : public TypedFunction<RateMatrix> {
+    class GtrRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
         GtrRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf);

@@ -22,17 +22,16 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     replicates( r ),
     runs()
 {
-    
+
 #ifdef RB_MPI
     numProcesses = MPI::COMM_WORLD.Get_size();
     pid = MPI::COMM_WORLD.Get_rank();
 #endif
-    
+
     processActive = (pid == activePID);
     
     // add a clone of the original sampler to our vector of runs
     runs.push_back( m );
-    
     if ( replicates > 1 )
     {
         // create replicate Monte Carlo samplers
@@ -48,12 +47,15 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     }
     
     
-    
 #ifdef RB_MPI
+    // @mlandis: Note to self. Mcmcmc fails in this loop.
     size_t numProcessesPerReplicate = numProcesses / replicates;
     for (size_t i = 0; i < replicates; ++i)
     {
-        runs[i]->setReplicateIndex( i+1 );
+        if ( replicates > 1 )
+        {
+            runs[i]->setReplicateIndex( i+1 );
+        }
         runs[i]->setActive( true );
         runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
     }

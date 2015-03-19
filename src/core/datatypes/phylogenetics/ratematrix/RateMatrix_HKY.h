@@ -41,7 +41,7 @@ namespace RevBayesCore {
         void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_HKY*                     clone(void) const;
         void                                setKappa(double k);
-        void                                updateMatrix(void);
+        void                                update(void);
 
     private:
         double                              kappa;

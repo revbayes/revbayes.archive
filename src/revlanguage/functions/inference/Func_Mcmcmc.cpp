@@ -41,7 +41,7 @@ RevPtr<RevVariable> Func_Mcmcmc::execute( void )
     int                                                     nreps   = static_cast<const Natural &>( args[7].getVariable()->getRevObject() ).getValue();
     RevBayesCore::Mcmcmc *m = new RevBayesCore::Mcmcmc(mdl, mvs, mntr, sched, nchains, si, delta);
 //    m->setScheduleType( sched );
-    
+
     RevBayesCore::MonteCarloAnalysis *a = new RevBayesCore::MonteCarloAnalysis(m,nreps);
     
     return new RevVariable( new MonteCarloAnalysis( a ) );

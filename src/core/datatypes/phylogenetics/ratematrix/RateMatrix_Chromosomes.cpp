@@ -32,7 +32,7 @@ RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n
     setLambda_l(1.0);
     setDelta_l(1.0);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -204,7 +204,7 @@ void RateMatrix_Chromosomes::setDelta_l( double d ) {
 }
 
 
-void RateMatrix_Chromosomes::updateMatrix( void ) {
+void RateMatrix_Chromosomes::update( void ) {
     
     if ( needsUpdate )
     {

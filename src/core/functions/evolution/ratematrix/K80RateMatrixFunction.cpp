@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-K80RateMatrixFunction::K80RateMatrixFunction(const TypedDagNode<double> *k) : TypedFunction<RateMatrix>( new RateMatrix_Kimura80() ),
+K80RateMatrixFunction::K80RateMatrixFunction(const TypedDagNode<double> *k) : TypedFunction<RateGenerator>( new RateMatrix_Kimura80() ),
     kappa( k )
 {
     // add the lambda parameter as a parent
@@ -35,7 +35,7 @@ void K80RateMatrixFunction::update( void )
     // set the base frequencies
     static_cast< RateMatrix_Kimura80* >(value)->setKappa( k );
     
-    value->updateMatrix();
+    value->update();
 }
 
 

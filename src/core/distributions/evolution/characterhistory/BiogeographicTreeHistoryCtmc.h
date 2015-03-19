@@ -1411,8 +1411,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
         std::vector<CharacterEvent*> parentState;
         for (size_t i = 0; i < this->numSites; i++)
         {
-            double r01 = rm->getSiteRate(nodeIndex, 0, 1, i, node.getAge());
-            double r10 = rm->getSiteRate(nodeIndex, 1, 0, i, node.getAge());
+            double r01 = rm->getSiteRate(nodeIndex, 0, 1, (unsigned)i, node.getAge());
+            double r10 = rm->getSiteRate(nodeIndex, 1, 0, (unsigned)i, node.getAge());
             double pi1 = r01 / (r01 + r10);
 
             unsigned s = 0;
