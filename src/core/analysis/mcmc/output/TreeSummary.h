@@ -47,7 +47,7 @@ namespace RevBayesCore {
         treeType*                                                               map(int burnin = -1);
 		treeType*																conTree(double cutoff, int burnin = -1);
         treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin = -1);
-		treeType*                                                               annotateHPDAges(const treeType &inputTree, double hpd = 0.95, int b = -1 );
+		void                                                                    annotateHPDAges(treeType &inputTree, double hpd = 0.95, int b = -1 );
         void                                                                    printTreeSummary(std::ostream& o);
         void                                                                    printCladeSummary(void);
 		void                                                                    summarizeClades(int burnin = -1);
@@ -1027,7 +1027,16 @@ void RevBayesCore::TreeSummary<treeType>::summarizeClades(int b)
                     cladeSample.setTrace(std::vector<double>());
                 }
                 cladeAbsencePresence.insert(std::pair<std::string, Sample<std::string> >(cladeString, cladeSample));
+                
+                // create a new entry for the age of the clade
+                std::vector<double> tempAgeVec;
+                cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
             }
+            
+            // store the age for this clade
+            std::map<std::string, std::vector<double> >::iterator entry_age = cladeAges.find(cladeString);
+            entry_age->second.push_back(c.getAge());
+          
         }
         
         for (std::map<std::string, Sample<std::string> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
@@ -1490,7 +1499,7 @@ RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsens
 
 
 template <class treeType>
-treeType* RevBayesCore::TreeSummary<treeType>::annotateHPDAges(const treeType &inputTree, double hpd, int b )
+void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double hpd, int b )
 {   
     setBurnin(b);
 	
@@ -1499,11 +1508,14 @@ treeType* RevBayesCore::TreeSummary<treeType>::annotateHPDAges(const treeType &i
 	RBOUT(ss.str());
     
 	RBOUT("Calculating clade frequencies...\n");
+    
+    std::cerr << cladeAges.size() << std::endl;
 	
 	summarizeClades(b);
+    
+    std::cerr << cladeAges.size() << std::endl;
 	
-    treeType &finalTree = const_cast<treeType&>(inputTree);
-    const std::vector<TopologyNode*> &nodes = finalTree.getNodes();
+    const std::vector<TopologyNode*> &nodes = tree.getNodes();
     std::vector<std::string*> node_intervals(nodes.size());
 	
 	RBOUT("Calculating node age intervals...\n");
@@ -1514,17 +1526,25 @@ treeType* RevBayesCore::TreeSummary<treeType>::annotateHPDAges(const treeType &i
 		std::vector<std::string> taxa;
 		nodes[i]->getTaxaStringVector(taxa);
 		Clade c(taxa, 0.0); // clade age not used here
-		std::vector<double> branch_lengths = cladeAges.find(c.toString())->second;
+        const std::string &cladeName = c.toString();
+        std::map<std::string, std::vector<double> >::iterator entry_clade_age = cladeAges.find( cladeName );
+        
+        // check that there is this clade
+        // we may have ommited tip ages ...
+        if ( entry_clade_age == cladeAges.end() ) continue;
+        
+		std::vector<double> branch_lengths = entry_clade_age->second;
 		std::sort(branch_lengths.begin(), branch_lengths.end());
 		
 		size_t total_branch_lengths = branch_lengths.size();
 		double min_range = std::numeric_limits<double>::max();
 		
-		int interval_start = 0;
+		size_t interval_start = 0;
 		int interval_size = (int)(hpd * (double)total_branch_lengths);
 		
 		// find the smallest interval that contains x% of the samples
-		for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++) {
+		for (size_t j = 0; j <= (total_branch_lengths - interval_size); j++)
+        {
 			double temp_lower = branch_lengths[j];
 			double temp_upper = branch_lengths[j + interval_size - 1];
 			double temp_range = abs(temp_upper - temp_lower);
@@ -1542,11 +1562,9 @@ treeType* RevBayesCore::TreeSummary<treeType>::annotateHPDAges(const treeType &i
 	}	
 	
 	std::string label = "height_" + boost::lexical_cast<std::string>( (int)(hpd * 100) ) + "%_HPD";
-    finalTree.addNodeParameter(label, node_intervals, true);
+    tree.addNodeParameter(label, node_intervals, true);
 	
 	RBOUT("Done.\n");
-	
-    return &finalTree;
 	
 }
 
