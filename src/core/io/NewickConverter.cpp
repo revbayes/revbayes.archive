@@ -10,18 +10,21 @@
 
 using namespace RevBayesCore;
 
-NewickConverter::NewickConverter() {
+NewickConverter::NewickConverter()
+{
 
 }
 
 
-NewickConverter::~NewickConverter() {
+NewickConverter::~NewickConverter()
+{
     
 }
 
 
 
-BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
+BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n)
+{
     
     // create and allocate the tree object
     BranchLengthTree *t = new BranchLengthTree();
@@ -42,10 +45,13 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     {
         // check for EOF
         int c_int = ss.get();
-        if (c_int != EOF) {
+        if (c_int != EOF)
+        {
             c = char( c_int );
             if ( c != ' ')
+            {
                 trimmed += c;
+            }
         }
     }
 	
@@ -216,16 +222,21 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                     paramValue += char( ss.get() );
                 }
                 
-				if (paramName=="index") {
+				if (paramName == "index")
+                {
 					
                     childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
 					
-                } else if (paramName=="species") {
+                }
+                else if (paramName=="species")
+                {
 					
 					// \todo: Needs implementation
                     childNode->setSpeciesName(paramValue);
                 
-				} else {
+				}
+                else
+                {
 					
                     childNode->addNodeParameter(paramName, paramValue);
                 }

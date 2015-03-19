@@ -1508,12 +1508,8 @@ void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double
 	RBOUT(ss.str());
     
 	RBOUT("Calculating clade frequencies...\n");
-    
-    std::cerr << cladeAges.size() << std::endl;
 	
 	summarizeClades(b);
-    
-    std::cerr << cladeAges.size() << std::endl;
 	
     const std::vector<TopologyNode*> &nodes = tree.getNodes();
     std::vector<std::string*> node_intervals(nodes.size());
@@ -1548,7 +1544,8 @@ void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double
 			double temp_lower = branch_lengths[j];
 			double temp_upper = branch_lengths[j + interval_size - 1];
 			double temp_range = abs(temp_upper - temp_lower);
-			if (temp_range < min_range) {
+			if (temp_range < min_range)
+            {
 				min_range = temp_range;
 				interval_start = j;
 			}
@@ -1563,8 +1560,6 @@ void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double
 	
 	std::string label = "height_" + boost::lexical_cast<std::string>( (int)(hpd * 100) ) + "%_HPD";
     tree.addNodeParameter(label, node_intervals, true);
-	
-	RBOUT("Done.\n");
 	
 }
 
