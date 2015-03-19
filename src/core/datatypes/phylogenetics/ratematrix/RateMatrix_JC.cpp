@@ -82,7 +82,7 @@ RateMatrix_JC* RateMatrix_JC::clone( void ) const {
 }
 
 
-void RateMatrix_JC::updateMatrix( void ) {
+void RateMatrix_JC::update( void ) {
     // nothing to do
 }
 

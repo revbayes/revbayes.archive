@@ -72,7 +72,7 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     // extinction rate
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* e       = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
     // rate matrix
-    RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* q      = static_cast<const RateMatrix &>( Q->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q      = static_cast<const RateGenerator &>( Q->getRevObject() ).getDagNode();
     // rate
     RevBayesCore::TypedDagNode<double>* rat      = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
     // root frequencies
@@ -150,7 +150,7 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
         
         memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "mu"    , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE) );
-        memberRules.push_back( new ArgumentRule( "Q"     , RateMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "Q"     , RateGenerator::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "rate"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "pi"    , Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         

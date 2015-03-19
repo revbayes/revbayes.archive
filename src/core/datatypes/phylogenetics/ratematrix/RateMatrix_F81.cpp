@@ -31,7 +31,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_F81::RateMatrix_F81(size_t n) : TimeReversibleRateMatrix( n ){
     
-    updateMatrix();
+    update();
 }
 
 
@@ -74,7 +74,7 @@ RateMatrix_F81* RateMatrix_F81::clone( void ) const {
 }
 
 
-void RateMatrix_F81::updateMatrix( void ) {
+void RateMatrix_F81::update( void ) {
     
     if ( needsUpdate ) 
     {

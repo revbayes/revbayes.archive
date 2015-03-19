@@ -61,7 +61,7 @@ const TypeSpec& Func_vt::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_vt::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
     return returnTypeSpec;
 }

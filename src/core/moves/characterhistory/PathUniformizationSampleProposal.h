@@ -197,19 +197,20 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
     
      // get sampling RateMatrix
 //    const RateMap& rm = qmap->getValue();
-    const RateMatrix& rm = *(qmap->getValue().getHomogeneousRateMatrix());
+    const RateGenerator& rm = *(qmap->getValue().getHomogeneousRateMatrix());
     double clockRate = qmap->getValue().getHomogeneousClockRate();
     
     // stepwise events
     double t = 0.0;
     double dt = 0.0;
+    double age = 0.0;
     
     // sum of rates away from parent sequence state
     double sr = 0.0;
     for (size_t i = 0; i < currState.size(); i++)
     {
         unsigned fromState = currState[i]->getState();
-        sr += -rm[fromState][fromState] * clockRate;
+        sr += -rm.getRate(fromState,fromState,age,clockRate);
     }
     
     // get transition probs for proposal
@@ -222,7 +223,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
         // rates for next event
         unsigned fromState = currState[ idx ]->getState();  // k
         unsigned toState = (*it_h)->getState();             // j
-        double tr = rm[fromState][toState] * clockRate;                 // Q[k][j]
+        double tr = rm.getRate(fromState,toState,age,clockRate);                 // Q[k][j]
         
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
@@ -232,7 +233,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::compu
         t += dt;
         
         // update sum of rates
-        sr += (rm[fromState][fromState] - rm[toState][toState]) * clockRate;
+        sr += (rm.getRate(fromState,fromState,age,1.0) - rm.getRate(toState,toState,age,1.0)) * clockRate;
     }
     
     // lnL for final non-event
@@ -289,18 +290,19 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
     // get rate matrix info
 
 //    RateMatrix& rm = const_cast<RateMatrix&>( qmap->getValue() );
-//    rm.updateMatrix();
+//    rm.update();
 //    rm.calculateTransitionProbabilities(branchLength, tpCtmc);
 
 //    const RateMap& rm = qmap->getValue();
-    const RateMatrix& rm = *(qmap->getValue().getHomogeneousRateMatrix());
+    const RateGenerator& rm = *(qmap->getValue().getHomogeneousRateMatrix());
     rm.calculateTransitionProbabilities(branchLength, tpCtmc);
     
+    double age = 0.0;
     double domRate = 0.0;
     for (size_t i = 0; i < rm.size(); i++)
     {
-        if (-rm[i][i] > domRate)
-            domRate = -rm[i][i];
+        if (-rm.getRate(i,i,age,1.0) > domRate)
+            domRate = -rm.getRate(i,i,age,1.0);
     }
     
     MatrixReal unifQ(numStates, numStates);
@@ -309,7 +311,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType, treeType>::doPro
         unifQ[i][i] = 1.0;
         for (size_t j = 0; j < numStates; j++)
         {
-            unifQ[i][j] += rm[i][j]/domRate;
+            unifQ[i][j] += rm.getRate(i,j,age,1.0/domRate);
         }
     }
     

@@ -15,7 +15,7 @@
 
 using namespace RevBayesCore;
 
-Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT, size_t nc, size_t si, double dt) : MonteCarloSampler( ),
+Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt) : MonteCarloSampler( ),
     numChains(nc),
     scheduleType(sT),
     currentGeneration(0),
@@ -41,6 +41,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monit
     processPerChain.resize(numChains);
     
     // assign chains to processors, instantiate Mcmc objects
+    baseChain = new Mcmc(m, mv, mn);
     for (size_t i = 0, j = 0; i < numChains; i++, j++)
     {
         // all chains know heat-order and chain-processor schedules
@@ -61,7 +62,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monit
             double b = computeBeta(delta,i);
             
             // create chains
-            Mcmc* oneChain = new Mcmc(m, moves, mons);
+            Mcmc* oneChain = new Mcmc( *oneChain );
             oneChain->setScheduleType( scheduleType );
             oneChain->setChainActive( i == 0 );
             oneChain->setChainPosteriorHeat( b );
@@ -81,7 +82,7 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     
     delta               = m.delta;
     numChains           = m.numChains;
-    
+    numProcesses        = m.numProcesses;
     heatRanks           = m.heatRanks;
     swapInterval        = m.swapInterval;
     activeChainIndex    = m.activeChainIndex;
@@ -103,6 +104,7 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     {
         size_t k    = m.chainsPerProcess[pid-activePID][i];
         chains[k]   = m.chains[k]->clone();
+        std::cout << pid << " copy ctor " << i << " " << chains[k] << "\n";
     }
     
     chainValues         = m.chainValues;
@@ -110,6 +112,7 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     processPerChain     = m.processPerChain;
     
     currentGeneration   = m.currentGeneration;
+    baseChain           = m.baseChain;
     
 }
 
@@ -279,10 +282,71 @@ void Mcmcmc::setLikelihoodHeat(double h)
     
 }
 
+void Mcmcmc::setNumberOfProcesses(size_t n)
+{
+    MonteCarloSampler::setNumberOfProcesses(n);    
+    
+    
+    // @MJL: Note to self. The ctor assumes numProcesses==1, so all chains are assigned to that processor.
+    // After cloning all chains across processors, you will then want to thin out the chains as needed.
+    // This should behave much like the old Mcmcmc ctor code, except it cannot assume a fresh object state.
+    
+    // only use a many processes as we have chains
+    if (numChains < numProcesses)
+    {
+        numProcesses = numChains;
+    }
+        
+    // initialize container sizes
+    for (size_t i = 0; i < chains.size(); i++)
+    {
+        delete chains[i];
+    }
+    chains.resize(numChains);
+    chainsPerProcess.resize(numProcesses);
+    chainValues.resize(numChains, 0.0);
+    chainHeats.resize(numChains, 0.0);
+    processPerChain.resize(numChains);
+    
+    // assign chains to processors, instantiate Mcmc objects
+    for (size_t i = 0, j = 0; i < numChains; i++, j++)
+    {
+        // all chains know heat-order and chain-processor schedules
+        heatRanks.push_back(i);
+        if (j >= numProcesses)
+        {
+            j = j % numProcesses;
+        }
+        
+        chainsPerProcess[j].push_back(i);
+        processPerChain[i] = j;
+        
+        // add chain to pid's chain vector (smaller memory footprint)
+        if (j == pid-activePID)
+        {
+            
+            // get chain heat
+            double b = computeBeta(delta,i);
+            
+            // create chains
+            Mcmc* oneChain = new Mcmc( *baseChain );
+            oneChain->setScheduleType( scheduleType );
+            oneChain->setChainActive( i == 0 );
+            oneChain->setChainPosteriorHeat( b );
+            oneChain->setChainIndex( i );
+            chains[i] = oneChain;
+        }
+        else
+        {
+            chains[i] = NULL;
+        }
+    }
+    
+}
+
 
 void Mcmcmc::setReplicateIndex(size_t index)
 {
-    
     for (size_t i = 0; i < chainsPerProcess[pid-activePID].size(); i++)
     {
         chains[ chainsPerProcess[pid-activePID][i] ]->setReplicateIndex(index);

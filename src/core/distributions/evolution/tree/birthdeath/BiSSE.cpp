@@ -3,7 +3,7 @@
 using namespace RevBayesCore;
 
 
-BiSSE::BiSSE( const std::vector<double> &l, const std::vector<double> &m, const RateMatrix* q, double r ) :
+BiSSE::BiSSE( const std::vector<double> &l, const std::vector<double> &m, const RateGenerator* q, double r ) :
     lambda( l ),
     mu( m ),
     numCategories( l.size() ),
@@ -16,7 +16,7 @@ BiSSE::BiSSE( const std::vector<double> &l, const std::vector<double> &m, const 
 
 void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
 {
-
+    double age = 0.0;
     for (size_t i=0; i<numCategories; ++i)
     {
         
@@ -31,7 +31,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                noEventRate += (*Q)[i][j]*rate;
+                noEventRate += Q->getRate(i,j,age,rate);
             }
         }
         dxdt[i] -= noEventRate*x[i];
@@ -44,7 +44,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i] += (*Q)[i][j]*x[j];
+                dxdt[i] += Q->getRate(i,j,age,rate)*x[j];
             }
         }
         
@@ -62,7 +62,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i+numCategories] += (*Q)[i][j]*rate*x[j+numCategories];
+                dxdt[i+numCategories] += Q->getRate(i,j,age,rate)*x[j+numCategories];
             }
         }
         

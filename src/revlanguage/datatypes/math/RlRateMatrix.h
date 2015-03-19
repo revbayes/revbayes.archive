@@ -18,7 +18,7 @@
 #ifndef RlRateMatrix_H
 #define RlRateMatrix_H
 
-#include "ModelObject.h"
+#include "RlRateGenerator.h"
 #include "RateMatrix.h"
 #include "TypedDagNode.h"
 
@@ -27,14 +27,14 @@
 
 namespace RevLanguage {
     
-    class RateMatrix : public ModelObject<RevBayesCore::RateMatrix> {
+    class RateMatrix : public RateGenerator {
         
     public:
         
         RateMatrix(void);                                                                                                           //!< Default constructor
         RateMatrix(const RevBayesCore::RateMatrix& m);                                                                              //!< Default constructor
         RateMatrix(RevBayesCore::RateMatrix *m);                                                                                    //!< Default constructor
-        RateMatrix(RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *d);                                                                                                        //!< Default constructor
+        RateMatrix(RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator> *d);                                                                                                        //!< Default constructor
         
         // Basic utility functions
         RateMatrix*                         clone(void) const;                                                                      //!< Clone object

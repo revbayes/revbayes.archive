@@ -16,7 +16,7 @@ using namespace RevBayesCore;
 
 GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap(ns, nc) )
 {
-    homogeneousRateMatrix               = new ConstantNode<RateMatrix>("homogeneousRateMatrix", new RateMatrix_JC(ns));
+    homogeneousRateMatrix               = new ConstantNode<RateGenerator>("homogeneousRateMatrix", new RateMatrix_JC(ns));
     heterogeneousRateMatrices           = NULL;
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
@@ -62,12 +62,12 @@ void GeneralRateMapFunction::update( void ) {
     // set the gainLossRate
     if (branchHeterogeneousRateMatrices)
     {
-        const RbVector<RateMatrix>& rm = heterogeneousRateMatrices->getValue();
+        const RbVector<RateGenerator>& rm = heterogeneousRateMatrices->getValue();
         static_cast<RateMap*>(value)->setHeterogeneousRateMatrices(rm);
     }
     else
     {
-        const RateMatrix& rm = homogeneousRateMatrix->getValue();
+        const RateGenerator& rm = homogeneousRateMatrix->getValue();
         static_cast<RateMap*>(value)->setHomogeneousRateMatrix(&rm);
     }
     
@@ -85,7 +85,7 @@ void GeneralRateMapFunction::update( void ) {
     value->updateMap();
 }
 
-void GeneralRateMapFunction::setRateMatrix(const TypedDagNode<RateMatrix>* r)
+void GeneralRateMapFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
 {
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -168,11 +168,11 @@ void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const Da
 {
     if (oldP == homogeneousRateMatrix)
     {
-        homogeneousRateMatrix = static_cast<const TypedDagNode<RateMatrix>* >( newP );
+        homogeneousRateMatrix = static_cast<const TypedDagNode<RateGenerator>* >( newP );
     }
     else if (oldP == heterogeneousRateMatrices)
     {
-        heterogeneousRateMatrices = static_cast<const TypedDagNode<RbVector<RateMatrix> >* >( newP );
+        heterogeneousRateMatrices = static_cast<const TypedDagNode<RbVector<RateGenerator> >* >( newP );
     }
     else if (oldP == homogeneousClockRate)
     {

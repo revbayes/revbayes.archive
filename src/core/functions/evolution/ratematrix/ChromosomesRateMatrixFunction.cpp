@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l) : TypedFunction<RateMatrix>( new RateMatrix_Chromosomes(n->getValue()) ), lambda( l ), delta( d ), rho( r ), mu( m ), lambda_l( l_l ), delta_l( d_l ) {
+ChromosomesRateMatrixFunction::ChromosomesRateMatrixFunction(const TypedDagNode<int> *n, const TypedDagNode<double> *l, const TypedDagNode<double> *d, const TypedDagNode<double> *r, const TypedDagNode<double> *m, const TypedDagNode<double> *l_l, const TypedDagNode<double> *d_l) : TypedFunction<RateGenerator>( new RateMatrix_Chromosomes(n->getValue()) ), lambda( l ), delta( d ), rho( r ), mu( m ), lambda_l( l_l ), delta_l( d_l ) {
 
     addParameter( lambda );
     addParameter( delta );
@@ -58,7 +58,7 @@ void ChromosomesRateMatrixFunction::update( void ) {
     static_cast< RateMatrix_Chromosomes* >(value)->setLambda_l( la_l );
     static_cast< RateMatrix_Chromosomes* >(value)->setDelta_l( de_l );
 
-    static_cast< RateMatrix_Chromosomes* >(value)->updateMatrix();
+    static_cast< RateMatrix_Chromosomes* >(value)->update();
     
 }
 

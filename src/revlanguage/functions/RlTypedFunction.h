@@ -84,7 +84,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::TypedFunction<valueTy
 {
     
     RevBayesCore::TypedFunction<typename valueType::valueType>* d = createFunction();
-    RevBayesCore::DeterministicNode<typename valueType::valueType>* rv  = new DeterministicNode<typename valueType::valueType>("", d, this->clone());
+    RevBayesCore::DeterministicNode<typename valueType::valueType>* rv;
+    rv = new DeterministicNode<typename valueType::valueType>("", d, this->clone());
     
     return new RevVariable( new valueType(rv) );
 }

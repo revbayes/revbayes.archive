@@ -22,7 +22,7 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), m
         mu.push_back(temp);
         s.push_back(1.0);
     }
-    updateMatrix();
+    update();
 }
 
 /** Construct rate matrix with n states, virtual population size, mutation rates, selection coefficients */
@@ -34,11 +34,11 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<d
     }
     setMutationRates(mr);
     setSelectionCoefficients(sc);
-    updateMatrix();
+    update();
 }
 
 /** Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i) {
         mu.push_back(temp);
@@ -46,7 +46,7 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &
     }
     setMutationRates(mm);
     setSelectionCoefficients(sc);
-    updateMatrix();
+    update();
 }
 
 
@@ -398,7 +398,7 @@ const std::vector<double>& RateMatrix_Pomo::getStationaryFrequencies( void ) con
 }
 
 
-void RateMatrix_Pomo::updateMatrix( void ) {
+void RateMatrix_Pomo::update( void ) {
     
     if ( needsUpdate )
     {
@@ -426,20 +426,22 @@ void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr) {
 }
 
 
-void RateMatrix_Pomo::setMutationRates(const RateMatrix& mm) {
+void RateMatrix_Pomo::setMutationRates(const RateGenerator& mm) {
     
-    mu[0][1] = mm[0][1];
-    mu[0][2] = mm[0][2];
-    mu[0][3] = mm[0][3];
-    mu[1][0] = mm[1][0];
-    mu[1][2] = mm[1][2];
-    mu[1][3] = mm[1][3];
-    mu[2][0] = mm[2][0];
-    mu[2][1] = mm[2][1];
-    mu[2][3] = mm[2][3];
-    mu[3][0] = mm[3][0];
-    mu[3][1] = mm[3][1];
-    mu[3][2] = mm[3][2];
+    double age = 0.0;
+    double rate = 1.0;
+    mu[0][1] = mm.getRate(0,1,age,rate);
+    mu[0][2] = mm.getRate(0,2,age,rate);
+    mu[0][3] = mm.getRate(0,3,age,rate);
+    mu[1][0] = mm.getRate(1,0,age,rate);
+    mu[1][2] = mm.getRate(1,2,age,rate);
+    mu[1][3] = mm.getRate(1,3,age,rate);
+    mu[2][0] = mm.getRate(2,0,age,rate);
+    mu[2][1] = mm.getRate(2,1,age,rate);
+    mu[2][3] = mm.getRate(2,3,age,rate);
+    mu[3][0] = mm.getRate(3,0,age,rate);
+    mu[3][1] = mm.getRate(3,1,age,rate);
+    mu[3][2] = mm.getRate(3,2,age,rate);
 }
 
 
