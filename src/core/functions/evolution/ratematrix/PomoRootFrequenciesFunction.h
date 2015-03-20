@@ -36,12 +36,12 @@ namespace RevBayesCore {
     public:
         PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< int > *ps);
         
-        PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode< RbVector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< int > *ps);
 
         virtual                                            ~PomoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        PomoRootFrequenciesFunction*                              clone(void) const;                                                              //!< Create an independent clone
+        PomoRootFrequenciesFunction*                        clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -53,12 +53,12 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector<double> >*             fixedNucleotideRootFrequencies;
         const TypedDagNode< double >*                       frequencyOfPolymorphismsAtTheRoot;
         const TypedDagNode< RbVector<double> >*             mutationRates;
-        const TypedDagNode< RateMatrix >*                   mutationMatrix;
+        const TypedDagNode< RateGenerator >*                   mutationMatrix;
         const TypedDagNode< int >*                          populationSize;
         bool                                                useMutationMatrix;
 
         // Private member functions
-        std::vector<double> setMutationRates(const RateMatrix& mm) ;
+        std::vector<double> setMutationRates(const RateGenerator& mm) ;
 
         
     };

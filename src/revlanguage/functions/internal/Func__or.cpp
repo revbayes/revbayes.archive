@@ -23,17 +23,18 @@ Func__or::Func__or() : TypedFunction<RlBoolean>() {
 }
 
 /* Clone object */
-Func__or* Func__or::clone( void ) const {
+Func__or* Func__or::clone( void ) const
+{
     
     return new Func__or( *this );
 }
 
 
-RevBayesCore::TypedFunction<unsigned int>* Func__or::createFunction( void ) const
+RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func__or::createFunction( void ) const
 {
     
-    const RevBayesCore::TypedDagNode<unsigned int>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
-    const RevBayesCore::TypedDagNode<unsigned int>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::LogicalOrFunction *func = new RevBayesCore::LogicalOrFunction( leftVal, rightVal );
 

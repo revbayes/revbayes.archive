@@ -20,7 +20,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_jc::Func_jc( void ) : TypedFunction<RateMatrix>( ) {
+Func_jc::Func_jc( void ) : TypedFunction<RateGenerator>( ) {
     
 }
 
@@ -32,7 +32,7 @@ Func_jc* Func_jc::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_jc::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_jc::createFunction( void ) const
 {
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();

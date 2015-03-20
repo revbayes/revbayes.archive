@@ -1,3 +1,5 @@
+#define __ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES 0
+
 #import "GuiTree.h"
 #import "InOutlet.h"
 #import "Node.h"

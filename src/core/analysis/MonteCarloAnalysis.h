@@ -34,14 +34,19 @@ namespace RevBayesCore {
         // public methods
         MonteCarloAnalysis*                                 clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                burnin(size_t g, size_t ti);
+        size_t                                              getCurrentGeneration(void) const;                           //!< Get the current generations number
         void                                                printPerformanceSummary(void) const;
         void                                                run(RbVector<StoppingRule> r);
         void                                                runPriorSampler(RbVector<StoppingRule> r);
 
     protected:
         
-        std::vector<MonteCarloSampler*>                     runs;
+        size_t                                              activePID;
+        size_t                                              numProcesses;
+        size_t                                              pid;
+        bool                                                processActive;
         size_t                                              replicates;
+        std::vector<MonteCarloSampler*>                     runs;
         
     };
     

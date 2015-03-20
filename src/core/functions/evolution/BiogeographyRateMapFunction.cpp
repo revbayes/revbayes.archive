@@ -8,16 +8,17 @@
 
 #include "BiogeographyRateMapFunction.h"
 #include "ConstantNode.h"
+#include "RateGenerator.h"
 #include "RateMatrix_JC.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe) : TypedFunction<RateMap>( new RateMap_Biogeography( nc, fe ) )
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe, unsigned mrs) : TypedFunction<RateMap>( new RateMap_Biogeography( nc, fe, mrs ) )
 {
 //    homogeneousGainLossRates            = new ConstantNode<RbVector<double> >("homogeneousGainLossRates", new RbVector<double>(2,0.5));
 //    heterogeneousGainLossRates          = NULL;
-    homogeneousRateMatrix               = new ConstantNode<RateMatrix>("homogeneousRateMatrix", new RateMatrix_JC(2));
+    homogeneousRateMatrix               = new ConstantNode<RateGenerator>("homogeneousRateMatrix", new RateMatrix_JC(2));
     heterogeneousRateMatrices           = NULL;
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
@@ -55,12 +56,12 @@ void BiogeographyRateMapFunction::update( void ) {
     if (branchHeterogeneousRateMatrices)
     {
         // Disabled for now due to ostream errors...
-        const RbVector<RateMatrix>& rm = heterogeneousRateMatrices->getValue();
+        const RbVector<RateGenerator>& rm = heterogeneousRateMatrices->getValue();
         static_cast< RateMap_Biogeography* >(value)->setHeterogeneousRateMatrices(rm);
     }
     else
     {
-        const RateMatrix& rm = homogeneousRateMatrix->getValue();
+        const RateGenerator& rm = homogeneousRateMatrix->getValue();
         static_cast< RateMap_Biogeography* >(value)->setHomogeneousRateMatrix(&rm);
     }
 
@@ -91,7 +92,7 @@ void BiogeographyRateMapFunction::update( void ) {
     value->updateMap();
 }
 
-void BiogeographyRateMapFunction::setRateMatrix(const TypedDagNode<RateMatrix>* r)
+void BiogeographyRateMapFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
 {
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -193,11 +194,11 @@ void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, con
 {
     if (oldP == homogeneousRateMatrix)
     {
-        homogeneousRateMatrix = static_cast<const TypedDagNode<RateMatrix>* >( newP );
+        homogeneousRateMatrix = static_cast<const TypedDagNode<RateGenerator>* >( newP );
     }
     else if (oldP == heterogeneousRateMatrices)
     {
-        heterogeneousRateMatrices = static_cast<const TypedDagNode<RbVector<RateMatrix> >* >( newP );
+        heterogeneousRateMatrices = static_cast<const TypedDagNode<RbVector<RateGenerator> >* >( newP );
     }
     else if (oldP == homogeneousClockRate)
     {

@@ -37,7 +37,6 @@ namespace RevBayesCore {
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
-    protected:
         // pure virtual helper functions
         virtual double                                      lnSpeciationRate(double t) const = 0;                                                               //!< Get the log-transformed speciation rate at time t.
         virtual double                                      rateIntegral(double t_low, double t_high) const = 0;                                                //!< Compute the rate integral.

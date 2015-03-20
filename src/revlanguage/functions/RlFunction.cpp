@@ -640,11 +640,15 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
             }
         }
 
-//        if (nMatches > 1)
-//            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
-//        else if (nMatches < 1)
-//            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
-
+        if (nMatches > 1)
+        {
+            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
+        }
+        else if (nMatches < 1)
+        {
+            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
+        }
+        
         if ( nMatches == 1)
         {
             pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
@@ -664,16 +668,16 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
         /* Skip if already matched */
         if ( taken[i] )
+        {
             continue;
-
+        }
+        
         /* Find first empty slot and try to fit argument there */
         for (size_t j=0; j<nRules; j++) 
         {
 
             if ( filled[j] == false &&
-                ( (!theRules[j].isEllipsis() && passedArgs[i].getLabel().size() == 0) ||
-                 (theRules[j].isEllipsis()) )
-                )
+                 ( (!theRules[j].isEllipsis() && passedArgs[i].getLabel().size() == 0) || (theRules[j].isEllipsis()) ) )
             {
                 
                 Argument &arg = const_cast<Argument&>(passedArgs[i]);

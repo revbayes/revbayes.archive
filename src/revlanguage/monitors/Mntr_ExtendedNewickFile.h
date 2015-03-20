@@ -49,6 +49,7 @@ namespace RevLanguage {
         std::set<RevPtr<const RevVariable> >        vars;
         RevPtr<const RevVariable>                   filename;
         RevPtr<const RevVariable>                   tree;
+        RevPtr<const RevVariable>                   isNodeParameter;
         RevPtr<const RevVariable>                   printgen;
         RevPtr<const RevVariable>                   separator;
         RevPtr<const RevVariable>                   prior;

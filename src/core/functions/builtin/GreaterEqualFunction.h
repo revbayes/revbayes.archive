@@ -22,6 +22,7 @@
 #ifndef GreaterEqualFunction_H
 #define GreaterEqualFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 
 #include <vector>
@@ -29,7 +30,7 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class GreaterEqualFunction : public TypedFunction<unsigned int> {
+    class GreaterEqualFunction : public TypedFunction<Boolean> {
         
     public:
         GreaterEqualFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
@@ -53,7 +54,7 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::GreaterEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::GreaterEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<Boolean>( new Boolean(false) ),
     left( l ),
     right( r )
 {
@@ -93,10 +94,12 @@ void RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::update( v
 template <class leftValueType, class rightValueType>
 void RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    if ( oldP == left ) {
+    if ( oldP == left )
+    {
         left = static_cast<const TypedDagNode<leftValueType>* >( newP );
     }
-    if ( oldP == right ) {
+    if ( oldP == right )
+    {
         right = static_cast<const TypedDagNode<rightValueType>* >( newP );
     }
     

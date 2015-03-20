@@ -18,22 +18,24 @@
 
 using namespace RevLanguage;
 
-Func__and::Func__and() : TypedFunction<RlBoolean>() {
+Func__and::Func__and() : TypedFunction<RlBoolean>()
+{
     
 }
 
 /* Clone object */
-Func__and* Func__and::clone( void ) const {
+Func__and* Func__and::clone( void ) const
+{
     
     return new Func__and( *this );
 }
 
 
-RevBayesCore::TypedFunction<unsigned int>* Func__and::createFunction( void ) const
+RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func__and::createFunction( void ) const
 {
     
-    const RevBayesCore::TypedDagNode<unsigned int>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
-    const RevBayesCore::TypedDagNode<unsigned int>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::LogicalAndFunction *func = new RevBayesCore::LogicalAndFunction( leftVal, rightVal );
     

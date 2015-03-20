@@ -11,7 +11,7 @@
 
 //#include "CountRateModifier.h"
 #include "GeographyRateModifier.h"
-#include "RateMatrix.h"
+#include "RateGenerator.h"
 #include "RateMap_Biogeography.h"
 #include "RbVector.h"
 #include "TimeTree.h"
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class BiogeographyRateMapFunction : public TypedFunction<RateMap> {
         
     public:
-        BiogeographyRateMapFunction(size_t nc, bool fe=true);                                                                                             // pass in geography object??
+        BiogeographyRateMapFunction(size_t nc, bool fe=true, unsigned mrs=0);                                                                                             // pass in geography object??
         virtual                                            ~BiogeographyRateMapFunction(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -37,7 +37,7 @@ namespace RevBayesCore {
         void                                                setGeographyRateModifier(const TypedDagNode<GeographyRateModifier>* drm);
 //        void                                                setCountRateModifier(const TypedDagNode<double>* rsrm);
         void                                                setGainLossRates(const TypedDagNode< RbVector<double> >* glr);
-        void                                                setRateMatrix(const TypedDagNode<RateMatrix>* rm);
+        void                                                setRateMatrix(const TypedDagNode<RateGenerator>* rm);
         void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                update(void);
         
@@ -49,12 +49,12 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
         const TypedDagNode< RbVector< double > >*           heterogeneousClockRates;
-        const TypedDagNode<RateMatrix>*                     homogeneousRateMatrix;
-        const TypedDagNode<RbVector<RateMatrix> >*          heterogeneousRateMatrices;
+        const TypedDagNode<RateGenerator>*                  homogeneousRateMatrix;
+        const TypedDagNode<RbVector<RateGenerator> >*       heterogeneousRateMatrices;
 
-        const TypedDagNode<GeographyRateModifier>*              geographyRateModifier;
-//      const TypedDagNode<CountRateModifier>*                  countRateModifier;
-        const TypedDagNode<TimeTree>*                           tau;
+        const TypedDagNode<GeographyRateModifier>*          geographyRateModifier;
+//      const TypedDagNode<CountRateModifier>*              countRateModifier;
+        const TypedDagNode<TimeTree>*                       tau;
         const TypedDagNode< RbVector<double> >*             rootFrequencies;
         
         // geography epochs

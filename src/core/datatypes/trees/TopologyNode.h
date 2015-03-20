@@ -65,12 +65,16 @@ namespace RevBayesCore {
         bool                                        equals(const TopologyNode& node) const;                                             //!< Test whether this is the same node
         
         // public methods
-        void                                        addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
+        void                                        addBranchParameter(const std::string &n, double p);
+        void                                        addBranchParameter(const std::string &n, const std::string &p);
+        void                                        addBranchParameters(const std::string &n, const std::vector<double> &p, bool io);
+        void                                        addBranchParameters(const std::string &n, const std::vector<std::string> &p, bool io);
         void                                        addChild(TopologyNode* c, bool enforceNewickRecomp = true);                         //!< Adds a child node
         void                                        addNodeParameter(const std::string &n, double p);
         void                                        addNodeParameter(const std::string &n, const std::string &p);
-        void                                        addParameter(const std::string &n, const std::vector<double> &p, bool io);
-		void                                        addParameter(const std::string &n, const std::vector<std::string*> &p, bool io);
+        void                                        addNodeParameters(const std::string &n, const std::vector<double> &p, bool io);
+		void                                        addNodeParameters(const std::string &n, const std::vector<std::string*> &p, bool io);
+        void                                        clearParameters(void);                                                              //!< Clear the node and branch parameters
         void                                        clearBranchParameters(void);
 		void                                        clearNodeParameters(void);
         virtual const std::string&                  computeNewick(void);                                                                //!< Compute the newick string for this clade
@@ -79,6 +83,7 @@ namespace RevBayesCore {
         bool                                        containsClade(const Clade &c, bool strict) const;
         void                                        flagNewickRecomputation(void);                                                      //!< Flag the newick string for recomputation
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
+        const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
         size_t                                      getCladeIndex(const TopologyNode* c) const;
         const TopologyNode&                         getChild(size_t i) const;                                                           //!< Returns the i-th child
@@ -88,11 +93,12 @@ namespace RevBayesCore {
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
+        const std::vector<std::string>&             getNodeParameters(void) const;                                                        //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
         
-        std::string                                 getNodeField(std::string key) const;
-        size_t                                      getNodeFieldNumber() const;
+//        std::string                                 getNodeField(std::string key) const;
+//        size_t                                      getNodeFieldNumber() const;
         
         //!< Get the number of nodes contained in this subtree.
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
@@ -137,7 +143,7 @@ namespace RevBayesCore {
         std::vector<std::string>                    nodeComments;
         std::vector<std::string>                    branchComments;
         
-        std::map<std::string,std::string>           nodeFields;
+//        std::map<std::string,std::string>           nodeFields;
 //        std::map<std::string,std::string>           branchFields;
         
     };

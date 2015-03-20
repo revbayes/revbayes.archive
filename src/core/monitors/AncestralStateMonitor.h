@@ -206,6 +206,13 @@ void AncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen)
 				// site1,site2,site3
 				
 				std::vector<characterType> ancestralStates = dist->drawAncestralStatesForNode( *the_node );
+                
+                bool hasCladogenicStates = false; // dist->hasCladogenicStates();
+                std::vector<characterType> cladogenicStates;
+                if (hasCladogenicStates)
+                {
+                    ; // cladogenicStates = dist->drawCladogenicStatesForNode( *the_node );
+                }
 				
 				// print out ancestral states....
 				for (int j = 0; j < ancestralStates.size(); j++)

@@ -7,6 +7,7 @@
 //
 
 #include "Func_cladoProbs.h"
+#include "ConstantNode.h"
 #include "CladogenicStateFunction.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -34,15 +35,15 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_cladoProbs::create
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    unsigned nc = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
-    unsigned ns = static_cast<const Natural &>( this->args[3].getVariable()->getRevObject() ).getValue();
+//    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    unsigned nc = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    unsigned ns = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     
 //    if ( er->getValue().size() != (bf->getValue().size() * (bf->getValue().size()-1) / 2.0) )
 //    {
 //        throw RbException("The dimension betwee the base frequencies and the substitution rates does not match.");
 //    }
-    
+    RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
     RevBayesCore::CladogenicStateFunction* f = new RevBayesCore::CladogenicStateFunction( ep, er, nc, ns );
     
     return f;
@@ -59,9 +60,9 @@ const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const {
     {
         
         argumentRules.push_back( new ArgumentRule( "eventProbs", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "eventRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numCharacters", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+//        argumentRules.push_back( new ArgumentRule( "eventRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "numCharacters", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

@@ -19,7 +19,7 @@ RateMatrix_Empirical::RateMatrix_Empirical(size_t n) : TimeReversibleRateMatrix(
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -89,8 +89,9 @@ void RateMatrix_Empirical::calculateCijk(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Empirical::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Empirical::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
     
+    double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )
 		tiProbsEigens(t, P);
 	else
@@ -169,7 +170,7 @@ void RateMatrix_Empirical::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_Empirical::updateMatrix( void ) {
+void RateMatrix_Empirical::update( void ) {
     
 }
 

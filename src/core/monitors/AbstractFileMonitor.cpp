@@ -11,6 +11,7 @@ using namespace RevBayesCore;
 AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
     outStream(),
     filename( fname ),
+    workingFileName( fname ),
     replicateIndex( 0 ),
     separator( del ),
     posterior( pp ),
@@ -92,6 +93,11 @@ void AbstractFileMonitor::monitor(unsigned long gen)
 {
     
     outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
+    
+//    if ( nodes[0]->getName() != "pi" && nodes[0]->getName() != "tau" )
+//    {
+//        std::cerr << "Strange first node:\t\t" << nodes[0]->getName() << std::endl;
+//    }
     
     // get the printing frequency
     unsigned long samplingFrequency = printgen;

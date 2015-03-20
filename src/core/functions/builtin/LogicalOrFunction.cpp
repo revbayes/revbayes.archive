@@ -2,7 +2,7 @@
 
 using namespace RevBayesCore;
 
-LogicalOrFunction::LogicalOrFunction(const TypedDagNode<unsigned int> *l, const TypedDagNode<unsigned int> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+LogicalOrFunction::LogicalOrFunction(const TypedDagNode<Boolean> *l, const TypedDagNode<Boolean> *r) : TypedFunction<Boolean>( new Boolean(false) ),
     left( l ),
     right( r )
 {
@@ -36,15 +36,16 @@ void LogicalOrFunction::update( void )
 
 
 
-void LogicalOrFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void LogicalOrFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if ( oldP == left )
     {
-        left = static_cast<const TypedDagNode<unsigned int>* >( newP );
+        left = static_cast<const TypedDagNode<Boolean>* >( newP );
     }
     if ( oldP == right )
     {
-        right = static_cast<const TypedDagNode<unsigned int>* >( newP );
+        right = static_cast<const TypedDagNode<Boolean>* >( newP );
     }
     
 }

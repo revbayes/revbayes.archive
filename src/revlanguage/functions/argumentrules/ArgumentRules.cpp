@@ -56,7 +56,8 @@ ArgumentRules& ArgumentRules::operator=(const ArgumentRules &a) {
         clear();
         
         // get a copy of the argument rules
-        for (std::vector<ArgumentRule*>::const_iterator it = a.rules.begin(); it != a.rules.end(); it++) {
+        for (std::vector<ArgumentRule*>::const_iterator it = a.rules.begin(); it != a.rules.end(); it++)
+        {
             rules.push_back( (*it)->clone() );
         }
     }
@@ -65,19 +66,23 @@ ArgumentRules& ArgumentRules::operator=(const ArgumentRules &a) {
 }
 
 
-const ArgumentRule& ArgumentRules::operator[](size_t index) const {
+const ArgumentRule& ArgumentRules::operator[](size_t index) const
+{
     return *rules[index];
 }
 
 
-ArgumentRule& ArgumentRules::operator[](size_t index) {
+ArgumentRule& ArgumentRules::operator[](size_t index)
+{
     return *rules[index];
 }
 
 
-void ArgumentRules::clear(void) {
+void ArgumentRules::clear(void)
+{
     // delete the argument rules
-    for (std::vector<ArgumentRule*>::iterator it = rules.begin(); it != rules.end(); it++) {
+    for (std::vector<ArgumentRule*>::iterator it = rules.begin(); it != rules.end(); it++)
+    {
         ArgumentRule* theRule = (*it);
         delete theRule;
     }

@@ -1,7 +1,7 @@
 #ifndef MinEssStoppingRule_H
 #define MinEssStoppingRule_H
 
-#include "StoppingRule.h"
+#include "AbstractConvergenceStoppingRule.h"
 
 #include <vector>
 
@@ -19,29 +19,24 @@ namespace RevBayesCore {
      * @since Version 1.0, 2015-01-12
      *
      */
-    class MinEssStoppingRule : public StoppingRule {
+    class MinEssStoppingRule : public AbstractConvergenceStoppingRule {
         
     public:
-        MinEssStoppingRule(double m, size_t f);
+        MinEssStoppingRule(double m, const std::string &fn, size_t fq, BurninEstimatorContinuous *be);
         virtual                                            ~MinEssStoppingRule(void);                                   //!< Virtual destructor
         
-        
         // public methods
-        bool                                                checkAtIteration(size_t g) const;                           //!< Should we check for convergence at the given iteration?
         MinEssStoppingRule*                                 clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
-        bool                                                isConvergenceRule(void) const;                              //!< No, this is a threshold rule.
-        void                                                runStarted(void);                                           //!< The run just started. Here we do not need to do anything.
         bool                                                stop(size_t g);                                             //!< Should we stop now?
         
     private:
         
-        size_t                                              checkFrequency;                                             //!< The frequency for checking for convergence
         double                                              minEss;                                                     //!< The minimum ESS threshold
         
     };
     
     // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const MinEssStoppingRule& x);                 //!< Overloaded output operator
+    std::ostream&                               operator<<(std::ostream& o, const MinEssStoppingRule& x);               //!< Overloaded output operator
     
 }
 

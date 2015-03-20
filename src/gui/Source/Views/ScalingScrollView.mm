@@ -66,7 +66,9 @@ static float _NSScaleMenuFontSize = 10.0;
         id curItem;
  
         // create it
-        _scalePopUpButton = [[NSPopUpButton allocWithZone:[self zone]] initWithFrame:NSMakeRect(0.0, 0.0, 1.0, 1.0) pullsDown:NO];
+        //_scalePopUpButton = [[NSPopUpButton allocWithZone:[self zone]] initWithFrame:NSMakeRect(0.0, 0.0, 1.0, 1.0) pullsDown:NO];
+        _scalePopUpButton = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0.0, 0.0, 1.0, 1.0) pullsDown:NO];
+        
         [(NSPopUpButtonCell*)[_scalePopUpButton cell] setBezelStyle:NSShadowlessSquareBezelStyle];
         [[_scalePopUpButton cell] setArrowPosition:NSPopUpArrowAtBottom];
         
@@ -97,7 +99,7 @@ static float _NSScaleMenuFontSize = 10.0;
  
         // put it in the scrollview
         [self addSubview:_scalePopUpButton];
-        [_scalePopUpButton release];
+        //[_scalePopUpButton release];
 		}
 }
  

@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_k80::Func_k80( void ) : TypedFunction<RateMatrix>( )
+Func_k80::Func_k80( void ) : TypedFunction<RateGenerator>( )
 {
     
 }
@@ -25,7 +25,7 @@ Func_k80* Func_k80::clone( void ) const
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_k80::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_k80::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

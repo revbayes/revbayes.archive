@@ -19,6 +19,8 @@ GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n
     state = st;
     latitude = lat;
     longitude = lon;
+    latlon.push_back(lat);
+    latlon.push_back(lon);
     altitude = alt;
     adjacentAreas = aa;
     reachableAreas = ra;
@@ -34,6 +36,7 @@ GeographicArea::GeographicArea(const GeographicArea& g)
         name = g.name;
         latitude = g.latitude;
         longitude = g.longitude;
+        latlon = g.latlon;
         altitude = g.altitude;
         size = g.size;
         dispersalValues = g.dispersalValues;
@@ -58,6 +61,7 @@ GeographicArea& GeographicArea::operator=(const GeographicArea &g)
         name = g.name;
         latitude = g.latitude;
         longitude = g.longitude;
+        latlon = g.latlon;
         altitude = g.altitude;
         size = g.size;
         dispersalValues = g.dispersalValues;
@@ -99,6 +103,11 @@ double GeographicArea::getLatitude(void)
 double GeographicArea::getLongitude(void)
 {
     return longitude;
+}
+
+const std::vector<double>& GeographicArea::getLatlon(void)
+{
+    return latlon;
 }
 
 double GeographicArea::getAltitude(void)

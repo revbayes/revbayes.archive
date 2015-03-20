@@ -3,6 +3,7 @@
 #include "DagNode.h"
 #include "Monitor.h"
 #include "RbException.h"
+#include "StringUtilities.h"
 
 #include <algorithm>
 
@@ -45,6 +46,8 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
         // tell the node that we have a reference to it (avoids deletion)
         theNode->incrementReferenceCount();
     }
+    
+    sortNodesByName();
     
 }
 
@@ -91,7 +94,8 @@ Monitor::~Monitor( void )
 }
 
 
-Monitor& Monitor::operator=(const Monitor &i) {
+Monitor& Monitor::operator=(const Monitor &i)
+{
     
     // check for self-assignment
     if ( &i != this )
@@ -151,21 +155,29 @@ void Monitor::printHeader(void)
 }
 
 
-const std::vector<DagNode*>& Monitor::getDagNodes( void ) const {
+const std::vector<DagNode*>& Monitor::getDagNodes( void ) const
+{
     
     return nodes;
 }
 
 
-void Monitor::setDagNodes( const std::set<DagNode *> &args) 
-{
-    
-    for (std::set<DagNode*>::iterator it = args.begin(); it != args.end(); it++)
-        nodes.push_back(*it);
-}
+//void Monitor::setDagNodes( const std::set<DagNode *> &args) 
+//{
+//    
+//    for (std::set<DagNode*>::iterator it = args.begin(); it != args.end(); it++)
+//    {
+//        nodes.push_back(*it);
+//    }
+//    
+//    sortNodesByName();
+//}
 
-void Monitor::setDagNodes( const std::vector<DagNode *> &args) {
+void Monitor::setDagNodes( const std::vector<DagNode *> &args)
+{
     nodes = args;
+    
+    sortNodesByName();
 
 }
 
@@ -197,6 +209,35 @@ void Monitor::setReplicateIndex(size_t idx)
 void Monitor::setStoneIndex(size_t idx)
 {
     // nothing to do here
+}
+
+
+/**
+ * Sort the nodes by name so that the order is guaranteed of replicated runs.
+ */
+void Monitor::sortNodesByName( void )
+{
+    
+    std::vector<std::string> names;
+    std::map<std::string,DagNode*> nodesMap;
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        DagNode *node = *it;
+        std::string name = node->getName();
+        StringUtilities::toLower(name);
+        nodesMap.insert( std::pair<std::string,DagNode*>(name,node) );
+        names.push_back(name);
+    }
+    
+    nodes.clear();
+    std::sort (names.begin(), names.end());
+    
+    for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it)
+    {
+        DagNode *node = nodesMap[*it];
+        nodes.push_back( node );
+    }
+    
 }
 
 
@@ -232,7 +273,8 @@ void Monitor::reset(size_t numCycles)
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const Monitor& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Monitor& x)
+{
     o << "Monitor";
     
     return o;

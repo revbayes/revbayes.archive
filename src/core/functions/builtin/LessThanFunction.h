@@ -22,6 +22,7 @@
 #ifndef LessThanFunction_H
 #define LessThanFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 
 #include <vector>
@@ -29,7 +30,7 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class LessThanFunction : public TypedFunction<unsigned int> {
+    class LessThanFunction : public TypedFunction<Boolean> {
         
     public:
         LessThanFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
@@ -53,7 +54,7 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessThanFunction<leftValueType,rightValueType>::LessThanFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+RevBayesCore::LessThanFunction<leftValueType,rightValueType>::LessThanFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<Boolean>( new Boolean(false) ),
     left( l ),
     right( r )
 {

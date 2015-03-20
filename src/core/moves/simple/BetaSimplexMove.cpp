@@ -88,18 +88,21 @@ double BetaSimplexMove::performSimpleMove( void )
 }
 
 
-void BetaSimplexMove::printParameterSummary(std::ostream &o) const {
+void BetaSimplexMove::printParameterSummary(std::ostream &o) const
+{
     o << "alpha = " << alpha;
 }
 
 
-void BetaSimplexMove::rejectSimpleMove( void ) {
+void BetaSimplexMove::rejectSimpleMove( void )
+{
     // swap current value and stored value
     variable->setValue( new double(storedValue) );
 }
 
 
-void BetaSimplexMove::swapNode(DagNode *oldN, DagNode *newN) {
+void BetaSimplexMove::swapNode(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
     SimpleMove::swapNode(oldN, newN);
     

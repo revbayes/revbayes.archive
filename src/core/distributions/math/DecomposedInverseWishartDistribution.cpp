@@ -11,7 +11,7 @@
 #include "RbConstants.h"
 #include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
-#include "DistributionInverseWishart.h"
+#include "DistributionDecomposedInverseWishart.h"
 
 using namespace RevBayesCore;
 
@@ -99,24 +99,7 @@ void DecomposedInverseWishartDistribution::swapParameterInternal(const DagNode *
 
 double DecomposedInverseWishartDistribution::computeLnProbability(void)  {
     
-    double ret = 0.0;
-    if (sigma0)
-        {
-        ret = RbStatistics::InverseWishart::lnPdf(sigma0->getValue(),df->getValue(),getValue());
-        }
-    else if (kappaVector)
-        {
-        ret = RbStatistics::InverseWishart::lnPdf(kappaVector->getValue(),df->getValue(),getValue());        
-        }
-    else if (kappa)
-        {
-        ret = RbStatistics::InverseWishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
-        }
-    else
-        {
-        std::cerr << "error in inverse wishart: no parameter\n";
-        throw(0);
-        }
+    double ret = RbStatistics::DecomposedInverseWishart::lnPdf(df->getValue(), getValue());
     return ret;
 }
 
@@ -124,21 +107,13 @@ void DecomposedInverseWishartDistribution::redrawValue(void)
 {
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    if ( sigma0 != NULL )
+    if ( kappa != NULL )
         {
-        setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng) );
-        }
-    else if ( kappaVector != NULL )
-        {
-        setValue( RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng) );
-        }
-    else if ( kappa != NULL )
-        {
-        setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng) );
+        setValue( RbStatistics::DecomposedInverseWishart::rv(getValue().getDim(), df->getValue(), *rng).clone() );
         }
     else
         {
-        throw RbException("error in inverse wishart: no parameter\n");
+        throw RbException("error in decomposed inverse wishart: no parameter\n");
         }
 
 }

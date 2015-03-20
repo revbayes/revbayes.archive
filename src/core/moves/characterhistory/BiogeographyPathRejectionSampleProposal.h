@@ -64,6 +64,7 @@ namespace RevBayesCore {
         unsigned                                    getEpochIndex(double age) const;
         std::vector<double>                         epochs;
         bool                                        useAreaAdjacency;
+        bool                                        useTail;
         
     };
 }
@@ -77,6 +78,10 @@ RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::Bioge
     const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
     epochs = rm.getEpochs();
     useAreaAdjacency = false;
+    
+    const BiogeographicTreeHistoryCtmc<charType,treeType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
+    
+    useTail = p.getUseTail();
 }
 
 //template<class charType, class treeType>
@@ -103,7 +108,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
         counts[i] = 0;
     this->fillStateCounts(currState, counts);
     
-    if (nd.isRoot())
+    if (nd.isRoot() && !useTail)
         return 0.0;
   
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
@@ -111,7 +116,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     
     
     double branchLength = nd.getBranchLength();
-    double currAge = (nd.isRoot() ? 1e10 : nd.getParent().getAge());
+    double currAge = (nd.isRoot() ? nd.getAge()*5 : nd.getParent().getAge());
     double endAge = nd.getAge();
     const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(this->qmap->getValue());
     
@@ -125,7 +130,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     double dt = 0.0;
     double da = 0.0;
     
-    bool debug = !true;
+//    bool debug = !true;
 
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
@@ -143,8 +148,6 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
             // waiting factor
             double sr = rm.getSumOfRates(nd, currState, counts, currAge);
             lnP += -sr * (currAge - epochEndAge);
-            
-            if (debug) std::cout << "epoch " << lnP << " " << currAge  << " "  << epochIdx << " da=" << currAge-epochEndAge << " ...  ... " << sr << "\n";
             
             // if before branch end, advance epoch
             if (endAge < epochEndAge)
@@ -164,7 +167,6 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
         double tr = rm.getSiteRate(nd, currState[ evt->getIndex() ], evt, currAge);
         double sr = rm.getSumOfRates(nd, currState, counts, currAge);
         lnP += -(sr * da) + log(tr);
-        if (debug) std::cout << "event " << lnP << " " << currAge  << " "  << epochIdx << " da=" << da << " " << s << " " << tr << " " << sr << "\n";
         
         // update counts
         counts[currState[idx]->getState()] -= 1;
@@ -195,8 +197,6 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     }
     double sr = rm.getSumOfRates(nd, currState, counts, currAge);
     lnP += -sr * (currAge - endAge);
-    if (debug) std::cout << currAge << " " << endAge << "\n";
-    if (debug) std::cout << "wait2 " << lnP << " " << currAge  << " " << epochIdx << " da=" << currAge-endAge << " ...  ... " << sr << "\n";
 
     return lnP;
 }
@@ -223,13 +223,15 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     double branchLength = this->node->getBranchLength();
     if (this->node->isRoot())
     {
-        return 0.0;
-        branchLength = this->node->getAge() * 5; //1e10;//2*tree.getTreeLength();
+        if (!useTail)
+            return 0.0;
+        else
+            branchLength = this->node->getAge() * (5-1); //1e10;//2*tree.getTreeLength();
     }
     
     // get epoch variables
 //    double startAge = this->node->getParent().getAge();
-    double startAge = (!this->node->isRoot() ? this->node->getParent().getAge() : 1e10);
+    double startAge = (this->node->isRoot() ? this->node->getAge() * 5 : this->node->getParent().getAge());
 //    double endAge = this->node->getAge();
     
     // clear characters

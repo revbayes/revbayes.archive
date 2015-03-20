@@ -54,6 +54,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   posterior;
         RevPtr<const RevVariable>                   likelihood;
         RevPtr<const RevVariable>                   append;
+
     };
     
 }
