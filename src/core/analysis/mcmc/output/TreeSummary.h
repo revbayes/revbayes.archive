@@ -56,8 +56,8 @@ namespace RevBayesCore {
 		void                                                                    summarizeTrees(int burnin = -1);
         
     private:
-        void                                                                    annotateContinuous(treeType &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, int b = -1 );
-        void                                                                    annotateDiscrete(treeType &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, int b = -1 );
+        void                                                                    annotateContinuous(treeType &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, int b = -1, bool np=true );
+        void                                                                    annotateDiscrete(treeType &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, int b = -1, bool np=true );
         
 		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
 		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c);
@@ -907,7 +907,11 @@ template <class treeType>
 void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
 {
     
+    RBOUT("Annotating tree ...");
+    
     treeType *sample_tree = trace.objectAt( 0 );
+    
+    // first we annotate the node parameters
     const std::vector<std::string> &nodeParameters = sample_tree->getRoot().getNodeParameters();
     for (size_t i = 0; i < nodeParameters.size(); ++i)
     {
@@ -924,11 +928,37 @@ void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
         
         if ( StringUtilities::isNumber( pair[1] ) )
         {
-            annotateContinuous(tree, pair[0], i, 0.95, b);
+            annotateContinuous(tree, pair[0], i, 0.95, b, true);
         }
         else
         {
-            annotateDiscrete(tree, pair[0], i, 3, b);
+            annotateDiscrete(tree, pair[0], i, 3, b, true);
+        }
+        
+    }
+    
+    // then we annotate the branch parameters
+    const std::vector<std::string> &branchParameters = sample_tree->getRoot().getBranchParameters();
+    for (size_t i = 0; i < branchParameters.size(); ++i)
+    {
+        
+        std::string tmp = branchParameters[i];
+        if ( tmp[0] == '&')
+        {
+            tmp = tmp.substr(1,tmp.size());
+        }
+        std::vector<std::string> pair;
+        StringUtilities::stringSplit(tmp, "=", pair);
+        
+        if ( pair[0] == "index" ) continue;
+        
+        if ( StringUtilities::isNumber( pair[1] ) )
+        {
+            annotateContinuous(tree, pair[0], i, 0.95, b, false);
+        }
+        else
+        {
+            annotateDiscrete(tree, pair[0], i, 3, b, false);
         }
         
     }
@@ -941,23 +971,17 @@ void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
 template <class treeType>
-void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const std::string &n, size_t paramIndex, size_t num, int b )
+void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const std::string &n, size_t paramIndex, size_t num, int b, bool isNodeParameter )
 {
+    
     setBurnin(b);
-    
-    std::stringstream ss;
-    ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
-    RBOUT(ss.str());
-    
-    RBOUT("Calculating ancestral state posteriors...\n");
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     const std::vector<TopologyNode*> &input_nodes = tree.getNodes();
     std::vector<std::map<std::string, Sample<std::string> > > stateAbsencePresence(input_nodes.size(), std::map<std::string, Sample<std::string> >());
-//    std::vector<std::vector<double> > pp(input_nodes.size(),std::vector<double>());
-//    std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
     
-//    double weight = 1.0 / (trace.size()-burnin);
+    bool interiorOnly = true;
+    bool tipsChecked = false;
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); i++)
@@ -968,22 +992,74 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
         // loop through all nodes in inputTree
         for (size_t j = 0; j < input_nodes.size(); j++)
         {
+            TopologyNode *node = input_nodes[j];
             
-            if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
+            if ( node->isTip() == true )
+            {
+                if ( tipsChecked == false )
+                {
+                    
+                    tipsChecked = true;
+                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    
+                    const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
+                    
+                    std::vector<std::string> params = sample_node.getNodeParameters();
+                    
+                    // check if this parameter exists
+                    if ( params.size() > paramIndex )
+                    {
+                    
+                        std::string tmp = params[paramIndex];
+                        if ( tmp[0] == '&')
+                        {
+                            tmp = tmp.substr(1,tmp.size());
+                        }
+                        std::vector<std::string> pair;
+                        StringUtilities::stringSplit(tmp, "=", pair);
+                    
+                        // check if this parameter has the correct name
+                        interiorOnly = pair[0] != n;
+                    }
+
+                    
+                }
+                
+                if ( interiorOnly == true )
+                {
+                    continue;
+                }
+            }
+            
+            if ( sample_root.containsClade(node, true) )
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+                size_t sampleCladeIndex = sample_root.getCladeIndex( node );
                 
                 const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
                 
-                std::string tmp = sample_node.getNodeParameters()[paramIndex];
+                std::vector<std::string> params = sample_node.getNodeParameters();
+                
+                // check if this parameter exists
+                if ( params.size() <= paramIndex )
+                {
+                    throw RbException("Too few parameter for this tree during the tree annotation.");
+                }
+                
+                std::string tmp = params[paramIndex];
                 if ( tmp[0] == '&')
                 {
                     tmp = tmp.substr(1,tmp.size());
                 }
                 std::vector<std::string> pair;
                 StringUtilities::stringSplit(tmp, "=", pair);
+                
+                // check if this parameter has the correct name
+                if ( pair[0] != n )
+                {
+                    throw RbException("The parameter for this tree doesn't match during the tree annotation.");
+                }
                 
                 const std::string &state = pair[1];
                 
@@ -1031,10 +1107,9 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
     {
         
         TopologyNode &node = *input_nodes[i];
-        if ( node.isTip() )
+        if ( node.isTip() && isNodeParameter == true )
         {
             node.addNodeParameter(n,"{}");
-            
         }
         else
         {
@@ -1066,26 +1141,20 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                 total_node_pp += pp;
 
             }
-//            bool states = false;
-//            if (1.0-total_node_pp > 0.0001)
-//            {
-//                if (states)
-//                {
-//                    final_state += ",";
-//                }
-//                final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
-//            }
+            
             final_state += "}";
             
             // make parameter string for this node
-            node.addNodeParameter(n,final_state);
+            if ( isNodeParameter == true )
+            {
+                node.addNodeParameter(n,final_state);
+            }
+            else
+            {
+                node.addBranchParameter(n,final_state);
+            }
         }
     }
-    
-    //finalInputTree.addNodeParameter("posterior",posteriors,true);
-//    finalInputTree->addNodeParameter("ancestralstates",best_states,true);
-    
-    RBOUT("Done.\n");
     
 }
 
@@ -1094,23 +1163,17 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
 template <class treeType>
-void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, const std::string &n, size_t paramIndex, double hpd, int b )
+void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, const std::string &n, size_t paramIndex, double hpd, int b, bool isNodeParameter )
 {
     setBurnin(b);
     
-    std::stringstream ss;
-    ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
-    RBOUT(ss.str());
-    
-    RBOUT("Calculating ancestral state posteriors...\n");
-    
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     const std::vector<TopologyNode*> &input_nodes = tree.getNodes();
-//    std::vector<std::map<std::string, Sample<std::string> > > stateAbsencePresence(input_nodes.size(), std::map<std::string, Sample<std::string> >());
     std::vector<std::vector<double> > samples(input_nodes.size(),std::vector<double>());
-    //    std::vector<std::vector<std::string> > states(input_nodes.size(),std::vector<std::string>());
     
-    //    double weight = 1.0 / (trace.size()-burnin);
+    // flag if only interior nodes are used
+    bool interiorOnly = true;
+    bool tipsChecked = false;
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); i++)
@@ -1121,22 +1184,74 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
         // loop through all nodes in inputTree
         for (size_t j = 0; j < input_nodes.size(); j++)
         {
+            TopologyNode *node = input_nodes[j];
+            if ( node->isTip() == true )
+            {
+                if ( tipsChecked == false )
+                {
+                    
+                    tipsChecked = true;
+                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    
+                    const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
+                    
+                    std::vector<std::string> params = sample_node.getNodeParameters();
+                    
+                    // check if this parameter exists
+                    if ( params.size() > paramIndex )
+                    {
+                        
+                        std::string tmp = params[paramIndex];
+                        if ( tmp[0] == '&')
+                        {
+                            tmp = tmp.substr(1,tmp.size());
+                        }
+                        std::vector<std::string> pair;
+                        StringUtilities::stringSplit(tmp, "=", pair);
+                        
+                        // check if this parameter has the correct name
+                        interiorOnly = pair[0] != n;
+                    }
+                    
+                    
+                }
+                
+                if ( interiorOnly == true )
+                {
+                    continue;
+                }
+            }
             
-            if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
+            if ( sample_root.containsClade(node, true) )
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+                size_t sampleCladeIndex = sample_root.getCladeIndex( node );
                 
                 const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
                 
-                std::string tmp = sample_node.getNodeParameters()[paramIndex];
+                
+                std::vector<std::string> params = sample_node.getNodeParameters();
+                
+                // check if this parameter exists
+                if ( params.size() <= paramIndex )
+                {
+                    throw RbException("Too few parameter for this tree during the tree annotation.");
+                }
+                
+                std::string tmp = params[paramIndex];
                 if ( tmp[0] == '&')
                 {
                     tmp = tmp.substr(1,tmp.size());
                 }
                 std::vector<std::string> pair;
                 StringUtilities::stringSplit(tmp, "=", pair);
+                
+                // check if this parameter has the correct name
+                if ( pair[0] != n )
+                {
+                    throw RbException("The parameter for this tree doesn't match during the tree annotation.");
+                }
                 
                 double state = atof(pair[1].c_str());
                 
@@ -1155,13 +1270,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
     {
         
         TopologyNode &node = *input_nodes[i];
-        if ( node.isTip() )
-        {
-            node.addNodeParameter(n+"_range","{}");
-//            node.addNodeParameter(n+,"0.0");
-            
-        }
-        else
+        if ( node.isTip() == false || interiorOnly == false )
         {
             
             // collect the samples
@@ -1183,18 +1292,26 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
             std::string param = "{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
                                                 + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}";
 
-            // make parameter string for this node
-            node.addNodeParameter(n+"_range",param);
+            if ( isNodeParameter == true )
+            {
+                // make parameter string for this node
+                node.addNodeParameter(n+"_range",param);
             
-            // make parameter string for this node
-            node.addNodeParameter(n,median);
+                // make parameter string for this node
+                node.addNodeParameter(n,median);
+            }
+            else
+            {
+                
+                // make parameter string for this node
+                node.addBranchParameter(n+"_range",param);
+                
+                // make parameter string for this node
+                node.addBranchParameter(n,median);
+            }
         }
     }
     
-    //finalInputTree.addNodeParameter("posterior",posteriors,true);
-    //    finalInputTree->addNodeParameter("ancestralstates",best_states,true);
-    
-    RBOUT("Done.\n");
     
 }
 

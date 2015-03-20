@@ -70,7 +70,8 @@ namespace RevLanguage {
 
 /** Clone object */
 template <typename treeType>
-RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone( void ) const {
+RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone( void ) const
+{
     
     return new Func_mapTree( *this );
 }
