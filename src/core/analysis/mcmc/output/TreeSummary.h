@@ -147,7 +147,6 @@ namespace RevBayesCore {
 		ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
 		RBOUT(ss.str());
 		
-		RBOUT("Calculating clade and tree frequencies...\n");
         summarizeConditionalClades( b );
 		summarizeTrees( b );
         
@@ -202,8 +201,6 @@ namespace RevBayesCore {
         
         bestTree->addNodeParameter("posterior",pp,true);
 		
-        RBOUT("Done.\n");
-		
         return bestTree;
     }
     
@@ -216,7 +213,6 @@ namespace RevBayesCore {
 		ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
 		RBOUT(ss.str());
 		
-		RBOUT("Calculating clade and tree frequencies...\n");
         summarizeConditionalClades( b );
 		summarizeTrees( b );
         
@@ -303,8 +299,6 @@ namespace RevBayesCore {
             }
         }
 		
-        RBOUT("Done.\n");
-		
         return bestTimeTree;
     }
     
@@ -319,7 +313,6 @@ namespace RevBayesCore {
 		RBOUT(ss.str());
         
 		//fill in clades, use all above 50% to resolve the bush with the consensus partitions
-		RBOUT("Calculating clade frequencies...\n");
 		summarizeClades(b);		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
         
 		//set up variables for consensus tree assembly
@@ -369,7 +362,6 @@ namespace RevBayesCore {
 			consensusTree->setBranchLength(p, medianBranchLengths[p]);
 		}
 		consensusTree->addNodeParameter("posterior", pp, true);
-		RBOUT("Done.\n");
         
 		return consensusTree;
 	}
@@ -385,7 +377,6 @@ namespace RevBayesCore {
 		RBOUT(ss.str());
         
 		//fill in clades, use all above 50% to resolve the bush with the consensus partitions
-		RBOUT("Calculating clade frequencies...\n");
 		summarizeClades(b);		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
         
 		//set up variables for consensus tree assembly
@@ -416,8 +407,6 @@ namespace RevBayesCore {
 		{
 			consensusTree->setAge(x, ages[x]);
 		}
-        
-		RBOUT("Done.\n");
         
 		return consensusTree;
 	}
@@ -661,8 +650,6 @@ namespace RevBayesCore {
         finalInputTree->clearNodeParameters();
         //finalInputTree.addNodeParameter("posterior",posteriors,true);
         finalInputTree->addNodeParameter("ancestralstates",best_states,true);
-		
-		RBOUT("Done.\n");
         
         return finalInputTree;
     }
@@ -896,8 +883,6 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
     finalInputTree->clearNodeParameters();
     //finalInputTree.addNodeParameter("posterior",posteriors,true);
     finalInputTree->addNodeParameter("ancestralstates",best_states,true);
-	
-	RBOUT("Done.\n");
 	
     return finalInputTree;
 }
@@ -1325,14 +1310,12 @@ void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double
     ss << "Compiling " << hpd * 100 << "% HPD node ages from " << trace.size() << " total trees in tree trace, using a burnin of " << burnin << " trees.\n";
     RBOUT(ss.str());
     
-    RBOUT("Calculating clade frequencies...\n");
     
     summarizeClades(b);
     
     const std::vector<TopologyNode*> &nodes = tree.getNodes();
     std::vector<std::string*> node_intervals(nodes.size());
     
-    RBOUT("Calculating node age intervals...\n");
     
     for (size_t i = 0; i < nodes.size(); i++)
     {
