@@ -57,6 +57,7 @@ namespace RevBayesCore {
         // helper functions
         void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, 
                                                                         const std::vector<double> *times, double T);
+        void                                                buildConstraintBinaryTree(std::vector<TopologyNode *> &tips);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         std::vector<double>*                                divergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.

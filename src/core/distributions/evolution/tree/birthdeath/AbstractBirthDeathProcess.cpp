@@ -119,7 +119,55 @@ void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyN
 }
 
 
-void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
+void AbstractBirthDeathProcess::buildConstraintBinaryTree(std::vector<TopologyNode*> &nodes)
+{
+    
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    size_t nodeIndex = nodes.size();
+    
+    while (nodes.size() > 1)
+    {
+        
+        // randomly draw one node from the list of nodes
+        size_t indexLeft = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
+        
+        // get the node from the list
+        TopologyNode* left = nodes.at(indexLeft);
+        
+        // remove the randomly drawn node from the list
+        nodes.erase(nodes.begin()+long(indexLeft));
+        
+        // randomly draw a second node from the list of nodes
+        size_t indexRight = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
+        
+        // get the node from the list
+        TopologyNode* right = nodes.at(indexRight);
+        
+        // remove the randomly drawn node from the list
+        nodes.erase(nodes.begin()+long(indexRight));
+        
+        // create the parent node
+        TopologyNode* parent = new TopologyNode(nodeIndex);
+        
+        // add both children
+        parent->addChild(left);
+        left->setParent(parent);
+        parent->addChild(right);
+        right->setParent(parent);
+        
+        // add the new parent to the list of nodes
+        nodes.push_back(parent);
+        
+        // increase the node index counter
+        ++nodeIndex;
+    }
+}
+
+
+void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
+{
     
     if (tips.size() < numTaxa) 
     {
@@ -473,35 +521,25 @@ void AbstractBirthDeathProcess::simulateTree( void )
     // internally we treat unrooted topologies the same as rooted
     tau->setRooted( true );
     
-    TopologyNode* root = new TopologyNode();
     std::vector<TopologyNode* > nodes;
-    nodes.push_back(root);
-    
-    // recursively build the tree
-    buildRandomBinaryTree(nodes);
     
     // set tip names
     for (size_t i=0; i<numTaxa; i++) 
     {
-        size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
+        size_t index = i;
         
-        // get the node from the list
-        TopologyNode* node = nodes.at(index);
-        
-        // remove the randomly drawn node from the list
-        nodes.erase( nodes.begin()+long(index) );
+        // create the node from the list
+        TopologyNode* node = new TopologyNode(index);
         
         // set name
         const std::string& name = taxa[i].getName();
         node->setName(name);
         node->setSpeciesName(taxa[i].getSpeciesName());
+        
+        // add the node to the list
+        nodes.push_back( node );
+        
     }
-    
-    // initialize the topology by setting the root
-    tau->setRoot(root);
-    
-    // connect the tree with the topology
-    psi->setTopology( tau, true );
     
     // now simulate the speciation times
     // first, get the time of the origin
@@ -510,7 +548,6 @@ void AbstractBirthDeathProcess::simulateTree( void )
     if ( startsAtRoot == true )
     {
         t_or = rootAge->getValue();
-        psi->setAge(root->getIndex(), t_or);
         numInitialSpecies = 2;
     }
     else
@@ -518,46 +555,47 @@ void AbstractBirthDeathProcess::simulateTree( void )
         t_or = origin->getValue();
     }
     
+    
+    // draw a time for each speciation event condition on the time of the process
+    std::vector<double> *times = simSpeciations(numTaxa-numInitialSpecies, t_or);
+    
+    // recursively build the tree
+    buildConstraintBinaryTree(nodes);
+    
+    TopologyNode *root = nodes[0];
+    
+    // initialize the topology by setting the root
+    tau->setRoot(root);
+    
+    // connect the tree with the topology
+    psi->setTopology( tau, true );
+    
     nodes.clear();
     
-    if ( numInitialSpecies < numTaxa)
+    
+    // We need to tell the tree the ages because the nodes do not store this information
+    for (size_t i = 0; i < (2*numTaxa-numInitialSpecies); ++i)
     {
-        // draw a time for each speciation event condition on the time of the process
-        std::vector<double> *times = simSpeciations(numTaxa-numInitialSpecies, t_or);
-        
-        if ( startsAtRoot )
+        TopologyNode& node = tau->getNode(i);
+        if ( node.isTip() )
         {
-            // add a left child
-            TopologyNode* leftChild = &root->getChild(0);
-            if ( !leftChild->isTip() )
-            {
-                nodes.push_back(leftChild);
-            }
-            
-            // add a right child
-            TopologyNode* rightChild = &root->getChild(1);
-            if ( !rightChild->isTip() )
-            {
-                nodes.push_back(rightChild);
-            }
-            attachTimes(psi, nodes, 0, times, t_or);
+            // we should use here the provided ages instead
+            psi->setAge( i, 0.0 );
         }
         else
         {
-            nodes.push_back( root );
-            attachTimes(psi, nodes, 0, times, t_or);
+            psi->setAge( i, (*times)[i-numTaxa] );
         }
-    
-    
-        delete times;
     }
     
-    // \todo Why are we doing this? (Sebastian)
-    for (size_t i = 0; i < numTaxa; ++i) 
+    // we may also need to set the root age (if it wasn't randomly drawn)
+    if ( startsAtRoot == true )
     {
-        TopologyNode& node = tau->getTipNode(i);
-        psi->setAge( node.getIndex(), 0.0 );
+        psi->setAge(root->getIndex(), t_or);
     }
+    
+    // free the memory for the times.
+    delete times;
     
     // reset the listeners
     const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
