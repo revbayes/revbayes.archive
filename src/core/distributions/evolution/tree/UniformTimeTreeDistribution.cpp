@@ -3,6 +3,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "Topology.h"
 #include "UniformTimeTreeDistribution.h"
@@ -229,6 +230,43 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
     
 }
 
+void UniformTimeTreeDistribution::getAffected(std::set<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+{
+    
+    if ( affecter == originTime)
+    {
+        dagNode->getAffectedNodes( affected );
+    }
+    
+}
+
+/**
+ * Keep the current value and reset some internal flags. Nothing to do here.
+ */
+void UniformTimeTreeDistribution::keepSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == originTime )
+    {
+        dagNode->keepAffected();
+    }
+    
+}
+
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void UniformTimeTreeDistribution::restoreSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == originTime )
+    {
+        value->setAge(value->getRoot().getIndex(), originTime->getValue() );
+        dagNode->restoreAffected();
+    }
+    
+}
 
 /** Swap a parameter of the distribution */
 void UniformTimeTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
@@ -237,4 +275,19 @@ void UniformTimeTreeDistribution::swapParameterInternal( const DagNode *oldP, co
     {
         originTime = static_cast<const TypedDagNode<double>* >( newP );
     }
+}
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void UniformTimeTreeDistribution::touchSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == originTime )
+    {
+        value->setAge(value->getRoot().getIndex(), originTime->getValue() );
+        dagNode->touchAffected();
+    }
+    
 }

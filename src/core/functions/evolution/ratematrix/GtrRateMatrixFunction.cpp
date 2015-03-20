@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf) : TypedFunction<RateMatrix>( new RateMatrix_GTR(bf->getValue().size()) ), exchangeabilityRates( er ), baseFrequencies( bf ) {
+GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf) : TypedFunction<RateGenerator>( new RateMatrix_GTR(bf->getValue().size()) ), exchangeabilityRates( er ), baseFrequencies( bf ) {
     // add the lambda parameter as a parent
     addParameter( baseFrequencies );
     addParameter( exchangeabilityRates );
@@ -35,7 +35,7 @@ void GtrRateMatrixFunction::update( void )
     static_cast< RateMatrix_GTR* >(value)->setStationaryFrequencies( f );
     static_cast< RateMatrix_GTR* >(value)->setExchangeabilityRates( r );
     
-    value->updateMatrix();
+    value->update();
     
 }
 

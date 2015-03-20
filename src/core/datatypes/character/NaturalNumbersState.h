@@ -26,19 +26,21 @@ namespace RevBayesCore {
     class NaturalNumbersState : public DiscreteCharacterState {
         
     public:
-        NaturalNumbersState(void);                                     //!< Default constructor
-        NaturalNumbersState(const NaturalNumbersState& s);                //!< Copy constructor
-        NaturalNumbersState(std::string s);                            //!< Constructor with an observation
+        NaturalNumbersState(void);                                                          //!< Default constructor
+        NaturalNumbersState(const NaturalNumbersState& s);                                  //!< Copy constructor
+        NaturalNumbersState(const std::string &s);                                          //!< Constructor with an observation
         
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality
         bool                            operator<(const CharacterState& d) const;           //!< Less than
         void                            operator++();                                       //!< Increment
         void                            operator++(int i);                                  //!< Increment
+        void                            operator+=(int i);                                  //!< Increment
         void                            operator--();                                       //!< Decrement
         void                            operator--(int i);                                  //!< Decrement
+        void                            operator-=(int i);                                  //!< Decrement
         
-        NaturalNumbersState*               clone(void) const;									//!< Get a copy of this object
+        NaturalNumbersState*               clone(void) const;                               //!< Get a copy of this object
         
         // Discrete character observation functions
         void                            addState(std::string symbol);                       //!< Add a character state to the set of character states

@@ -27,7 +27,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ){
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -146,9 +146,9 @@ void RateMatrix_FreeK::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_FreeK::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
-    
+    double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )
     {
 		tiProbsEigens(t, P);
@@ -239,7 +239,7 @@ void RateMatrix_FreeK::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_FreeK::updateMatrix( void ) {
+void RateMatrix_FreeK::update( void ) {
     
     if ( needsUpdate )
     {

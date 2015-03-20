@@ -219,7 +219,7 @@ std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(
     // get the parameters
     double birth = lambda->getValue();
     double death = mu->getValue();
-    double p     = psi->getValue();
+    //double p     = psi->getValue();
     double r     = rho->getValue();
     
     std::vector<double>* times = new std::vector<double>(n, 0.0);

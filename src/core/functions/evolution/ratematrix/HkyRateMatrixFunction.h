@@ -22,7 +22,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2014-07-04
      *
      */
-    class HkyRateMatrixFunction : public TypedFunction<RateMatrix> {
+    class HkyRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
         HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode< RbVector<double> > *bf);

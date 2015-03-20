@@ -116,7 +116,8 @@ double TimeTree::getTreeLength(void) const {
 }
 
 
-void TimeTree::resizeElementVectors(size_t n) {
+void TimeTree::resizeElementVectors(size_t n)
+{
     // remove all elements
     ages.clear();
 //    times.clear();
@@ -144,6 +145,7 @@ void TimeTree::setAge(size_t idx, double a)
     
     // flag the newick string as invalid
     const std::vector<TopologyNode*> &children = n.getChildren();
+    topology->getNode(idx).flagNewickRecomputation();
     for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
     {
         (*it)->flagNewickRecomputation();
@@ -154,6 +156,7 @@ void TimeTree::setAge(size_t idx, double a)
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const TimeTree& x) {
+    
     o << x.getNewickRepresentation();
     
     return o;

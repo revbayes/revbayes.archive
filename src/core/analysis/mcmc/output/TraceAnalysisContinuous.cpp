@@ -9,6 +9,7 @@
 #include "TraceAnalysisContinuous.h"
 #include "DistributionNormal.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 #include <math.h>
@@ -106,7 +107,7 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
 void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t b)
 {
     // if we have not yet calculated the mean, do this now
-    if (mean == RbConstants::Double::max)
+    if ( RbMath::isAComputableNumber(mean) == false )
     {
         analyseMean(values,b);
     }

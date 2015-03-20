@@ -61,7 +61,6 @@ namespace RevBayesCore {
         virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setClamped(bool tf);                                                        //!< Set directly the flag whether this node is clamped.
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
-        virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
@@ -90,6 +89,7 @@ namespace RevBayesCore {
 
 #include "RbConstants.h"
 #include "RbOptions.h"
+#include "RbMathLogic.h"
 #include "TypedDistribution.h"
 
 
@@ -291,6 +291,12 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
         {
             lnProb = 0.0;
         }
+        
+//        if ( RbMath::isAComputableNumber(lnProb) == false )
+//        {
+//            std::cerr << "Could not compute lnProb:\t" << lnProb << std::endl;
+//            distribution->computeLnProbability();
+//        }
         
         // reset flag
         needsProbabilityRecalculation = false;
@@ -501,7 +507,7 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch)
 {
     // set the value
-    distribution->setValue( val );
+    distribution->setValue( val, true );
     
     if ( forceTouch )
     {
@@ -511,21 +517,6 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forc
     
 }
 
-
-template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(const valueType &val, bool forceTouch)
-{
-    
-    // set the value
-    distribution->setValue( val );
-    
-    if ( forceTouch )
-    {
-        // touch this node for probability recalculation
-        this->touch();
-    }
-    
-}
 
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)

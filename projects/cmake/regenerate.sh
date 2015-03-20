@@ -7,6 +7,7 @@ echo $HERE
 # set default values
 boost="true"
 mavericks="false"
+mac_universal="false"
 win="false"
 mpi="false"
 
@@ -22,11 +23,12 @@ cmake .
 make
 
 Command line options are:
--h | -help                  : print this help and exit.
--boost      <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
--mavericks  <true|false>    : set to true if you are building on a OS X - Mavericks system. Defaults to false.
--win        <true|false>    : set to true if you are building on a Windows system. Defaults to false.
--mpi        <true|false>    : set to true if you want to build the MPI version. Defaults to false.
+-h | -help                      : print this help and exit.
+-boost          <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
+-mac_universal  <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
+-mavericks      <true|false>    : set to true if you are building on a OS X - Mavericks system. Defaults to false.
+-win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
+-mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
 '
 exit
 fi
@@ -50,7 +52,7 @@ cd ../../boost_1_55_0
 rm ./project-config.jam*  # clean up from previous runs
 ./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
 
-if [ "$mavericks" = "true" ]
+if [ "$mavericks" = "true" || "$mac_universal" = "true" ]
 then
 ./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++ -lpthread"
 else
@@ -89,14 +91,18 @@ if ! test -z $DEBUG_REVBAYES
 then
 	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
 	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
-else
-if [ "$mavericks" = "true" ]
+elif [ "$mac_universal" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -msse -msse2 -msse3 -stdlib=libc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mmacosx-version-min=10.6 -Wall -msse -msse2 -msse3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
+'  >> "$HERE/CMakeLists.txt"
+elif [ "$mavericks" = "true" ]
+then
+echo '
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -msse -msse2 -msse3 -stdlib=libstdc++")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -Wall")
 '  >> "$HERE/CMakeLists.txt"
-
 elif [ "$win" = "true" ]
 then
 echo '
@@ -105,10 +111,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread -static")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
-fi
 fi
 
 if [ "$mpi" = "true" ]

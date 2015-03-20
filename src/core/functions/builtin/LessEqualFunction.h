@@ -22,6 +22,7 @@
 #ifndef LessEqualFunction_H
 #define LessEqualFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 
 #include <vector>
@@ -29,7 +30,7 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class LessEqualFunction : public TypedFunction<unsigned int> {
+    class LessEqualFunction : public TypedFunction<Boolean> {
         
     public:
         LessEqualFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
@@ -53,7 +54,7 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::LessEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<unsigned int>( new unsigned(false) ),
+RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::LessEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<Boolean>( new Boolean(false) ),
     left( l ),
     right( r )
 {
@@ -66,7 +67,8 @@ RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::LessEqualFunction
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::~LessEqualFunction( void ) {
+RevBayesCore::LessEqualFunction<leftValueType,rightValueType>::~LessEqualFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 

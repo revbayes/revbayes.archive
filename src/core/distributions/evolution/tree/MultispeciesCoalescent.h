@@ -32,7 +32,6 @@ namespace RevBayesCore {
         
     public:
         MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::vector<Taxon> &t);
-        MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                                //!< Copy constructor
         virtual                                            ~MultispeciesCoalescent(void);                                                                       //!< Virtual destructor
         
         // public member functions

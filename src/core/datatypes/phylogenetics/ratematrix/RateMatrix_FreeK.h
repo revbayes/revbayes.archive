@@ -30,10 +30,10 @@ namespace RevBayesCore {
         
         // RateMatrix functions
         double                              averageRate(void) const;
-        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_FreeK*                   clone(void) const;
         void                                fillRateMatrix(void);
-        void                                updateMatrix(void);
+        void                                update(void);
         
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse

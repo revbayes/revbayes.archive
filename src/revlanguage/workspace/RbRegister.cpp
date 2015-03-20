@@ -87,12 +87,17 @@
 /// Stopping Rules ///
 #include "RlMaxIterationStoppingRule.h"
 #include "RlMaxTimeStoppingRule.h"
+#include "RlMinEssStoppingRule.h"
+#include "RlGelmanRubinStoppingRule.h"
+#include "RlGewekeStoppingRule.h"
+#include "RlStationarityStoppingRule.h"
 
 /// Monitors ///
 
 /* Monitor types (in folder "monitors) */
 #include "RlMonitor.h"
 #include "Mntr_AncestralState.h"
+#include "Mntr_JointConditionalAncestralState.h"
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
@@ -113,6 +118,7 @@
 
 /* Compound Moves on Real Values */
 #include "Move_ScalerUpDown.h"
+#include "Move_SliderUpDown.h"
 
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
@@ -169,6 +175,8 @@
 #include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
 #include "Move_WeightedNodeTimeSlide.h"
+#include "Move_FossilSafeSlide.h"
+#include "Move_FossilSafeScale.h"
 
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
@@ -199,6 +207,8 @@
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
+#include "Dist_BirthDeathMultiRate.h"
+#include "Dist_Coalescent.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
@@ -236,6 +246,7 @@
 #include "Dist_wishart.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_decomposedInverseWishart.h"
+#include "Process_OrnsteinUhlenbeck.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
@@ -292,9 +303,11 @@
 #include "Func_mrcaIndex.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
+#include "Func_simTree.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
+#include "Func_treeScale.h"
 
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
@@ -302,6 +315,8 @@
 #include "Func_chromosomes.h"
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
+#include "Func_DECRateMatrix.h"
+#include "Func_epoch.h"
 #include "Func_f81.h"
 #include "Func_FreeBinary.h"
 #include "Func_FreeK.h"
@@ -326,6 +341,8 @@
 
 /* Cladogeneic state prob function */
 #include "Func_cladoProbs.h"
+#include "Func_DECRates.h"
+#include "Func_DECRoot.h"
 
 /* Inference functions (in folder "functions/inference") */
 #include "Func_Mcmc.h"
@@ -374,12 +391,13 @@
 #include "Func_ancestralStateTree.h"
 #include "Func_annotateHPDAges.h"
 #include "Func_consensusTree.h"
+#include "Func_convertToPhylowood.h"
 #include "Func_mapTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
+#include "Func_readCharacterDataDelimited.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
-#include "Func_readTSVCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"
@@ -399,6 +417,7 @@
 #include "Func_diagonalMatrix.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
+#include "Func_lnProbability.h"
 #include "Func_hyperbolicTangent.h"
 #include "Func_ln.h"
 #include "Func_log.h"
@@ -429,7 +448,9 @@
 #include "Func_dppMeanFromConc.h"
 #include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
+#include "Func_stirling.h"
 #include "Func_varianceCovarianceMatrix.h"
+#include "Func_decomposedVarianceCovarianceMatrix.h"
 
 
 /** Initialize global workspace */
@@ -455,7 +476,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         AddWorkspaceVectorType<Taxon,5>::addTypeToWorkspace( *this, new Taxon() );
         
         
-        AddWorkspaceVectorType<RateMatrix,5>::addTypeToWorkspace( *this, new RateMatrix() );
+        AddWorkspaceVectorType<RateGenerator,5>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
@@ -499,8 +520,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
+        addTypeWithConstructor( "srGelmanRubin",        new GelmanRubinStoppingRule()   );
+        addTypeWithConstructor( "srGeweke",             new GewekeStoppingRule()   );
         addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
         addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
+        addTypeWithConstructor( "srMinESS",             new MinEssStoppingRule()   );
+        addTypeWithConstructor( "srStationarity",       new StationarityStoppingRule()   );
         
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -509,6 +534,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
 		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<TimeTree>());
 		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<BranchLengthTree>());
+        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState<TimeTree>());
+        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState<BranchLengthTree>());
         addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
         addTypeWithConstructor("mnFile",                new Mntr_File());
         addTypeWithConstructor("mnModel",               new Mntr_Model());
@@ -531,7 +558,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		
 		// compound moves on real values
         addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
-                
+        addTypeWithConstructor("mvSliderUpDown",        new Move_SliderUpDown() );
+        
         /* Moves on integer values */
         addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
         addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
@@ -571,7 +599,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateMatrix>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateGenerator>( ) );
         
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Real>( ) );
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<RealPos>( ) );
@@ -599,6 +627,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvSPR",                     new Move_SPRNonclock() );
         addTypeWithConstructor("mvSubtreePruneRegraft",     new Move_SPRNonclock() );
         addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
+        addTypeWithConstructor("mvFossilSafeSlide",         new Move_FossilSafeSlide() );
+        addTypeWithConstructor("mvFossilSafeScale",         new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
@@ -640,7 +670,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnPhyloCTMC",                 new Dist_phyloCTMC<BranchLengthTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
         addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
-        addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
+//        addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
         addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<TimeTree>() );
         addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<BranchLengthTree>() );
         
@@ -650,7 +680,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 //        addDistribution( "dnBDP",                       new Dist_bdp() );
         AddDistribution<TimeTree>("BDP", new Dist_bdp());
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
+        addDistribution( "dnBirthDeath",                new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
+        
+        addDistribution( "dnBirthDeathMulti",           new Dist_BirthDeathMultiRate() );
         
         // constant rate birth-death process with serially sampled tips
         addDistribution( "dnBDPSerial",                 new Dist_serialBDP() );
@@ -665,7 +698,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnYuleDivDep",                new Dist_divDepYuleProcess() );
         addDistribution( "dnYuleDiversityDependent",    new Dist_divDepYuleProcess() );
         
-        // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
+        // coalescent (constant population sizes)
+        addDistribution( "dnCoalescent",                new Dist_Coalescent() );
+
+        // multispecies coalescent (per branch constant population sizes)
         addDistribution( "dnCoalMultiSpeciesConst",     new Dist_constPopMultispCoal() );
         addDistribution( "dnCoalMSConst",               new Dist_constPopMultispCoal() );
 
@@ -693,10 +729,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnBeta",          new Dist_beta() );
         
         // bimodal normal distribution
-        addDistribution( "dnBimodalNorm",   new Dist_bimodalNorm() );
+        addDistribution( "dnBimodalNormal",     new Dist_bimodalNorm() );
         
         // bimodal lognormal distribution
-        addDistribution( "dnBimodalLnorm",  new Dist_bimodalLnorm() );
+        addDistribution( "dnBimodalLognormal",  new Dist_bimodalLnorm() );
         
         // categorical distribution
         addDistribution( "dnCat",           new Dist_categorical() );
@@ -745,7 +781,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // LogUniform distribution   
         addDistribution( "dnLogUniform",    new Dist_logUniform() );
         
-        // LogUniform distribution
+        // Uniform distribution with normal distributed bounds
         addDistribution( "dnSoftBoundUniformNormal",    new Dist_SoftBoundUniformNormal() );
         
         // uniform distribution
@@ -782,7 +818,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnMixture",       new Dist_mixture<Natural>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
 		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
-        addDistribution( "dnMixture",       new Dist_mixture<RateMatrix>() );
+        addDistribution( "dnMixture",       new Dist_mixture<RateGenerator>() );
+        
+        // Ornstein-Uhlenbeck process
+        addDistribution( "dnOrnsteinUhlenbeck", new OrnsteinUhlenbeckProcess() );
+        addDistribution( "dnOU",                new OrnsteinUhlenbeckProcess() );
         
         // mixture distribution
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
@@ -791,7 +831,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        //addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
+        //addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateGenerator>() );
         // aliases
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RealPos>() );
@@ -799,7 +839,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        //addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateMatrix>() );
+        //addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateGenerator>() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -846,19 +886,23 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "concatenate",                 new Func_concatenate()              );
         addFunction( "concat",                      new Func_concatenate()              );
         addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
-        addFunction( "maximumTree",                 new Func_maximumTree()             );
-        addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );
+        addFunction( "maximumTree",                 new Func_maximumTree()              );
+        addFunction( "mrcaIndex",                   new Func_mrcaIndex()                );
         addFunction( "pomoStateConvert",            new Func_pomoStateConverter() );
         addFunction( "pomoRF",                      new Func_pomoRootFrequencies() );
+        addFunction( "simTree",                     new Func_simTree()                  );
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
+        addFunction( "treeScale",                   new Func_treeScale()                );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "fnBlosum62", new Func_blosum62());
         addFunction( "fnChromosomes", new Func_chromosomes());
         addFunction( "fnCpRev",    new Func_cpRev()   );
         addFunction( "fnDayhoff",  new Func_dayhoff() );
+        addFunction( "fnDECRateMatrix", new Func_DECRateMatrix() );
+        addFunction( "fnEpoch",    new Func_epoch() );
         addFunction( "fnF81",      new Func_f81()     );
         addFunction( "fnFreeBinary", new Func_FreeBinary() );
         addFunction( "fnFreeK",    new Func_FreeK()   );
@@ -881,6 +925,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
         addFunction( "fnCladoProbs", new Func_cladoProbs() );
+        addFunction( "fnDECRates", new Func_DECRates() );
+        addFunction( "fnDECRoot", new Func_DECRoot() );
 
     
         /* Inference functions (in folder "functions/inference") */
@@ -1034,6 +1080,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addFunction( "annotateHPDAges",             new Func_annotateHPDAges<TimeTree>()    );
 		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
 		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
+        addFunction( "convertToPhylowood",          new Func_convertToPhylowood<TimeTree>() );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()            );
         addFunction( "module",                      new Func_module()                       );
@@ -1048,7 +1095,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "readTrace",                   new Func_readTrace()                    );
         addFunction( "readTrees",                   new Func_readTrees()                    );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
-		addFunction( "readTSVCharacterData",        new Func_readTSVCharacterData()         );
+		addFunction( "readCharacterDataDelimited",  new Func_readCharacterDataDelimited()   );
         addFunction( "source",                      new Func_source()                       );
         addFunction( "write",                       new Func_write()                        );
         addFunction( "writeFasta",                  new Func_writeFasta()                   );
@@ -1131,6 +1178,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // mean function
         addFunction( "var",       new Func_variance()  );
+        
+        // get ln Probability function
+        addFunction( "fnLnProbability", new Func_lnProbability() );
 
         
         
@@ -1151,6 +1201,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		// some helper statistics for the DPP distribution
         addFunction("fnDPPConcFromMean",  new Func_dppConcFromMean( )     );
         addFunction("fnDPPMeanFromConc",  new Func_dppMeanFromConc( )  );
+        addFunction("fnStirling",  new Func_stirling( )     );
 		
 		// count the number of unique elements in vector
         addFunction("fnNumUniqueInVector",  new Func_numUniqueInVector<Real>( )  );
@@ -1171,7 +1222,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "fnDiscretizeGamma",      new Func_discretizeGamma( )   );
 
         addFunction( "fnVarCovar",             new Func_varianceCovarianceMatrix( )   );
-        
+        addFunction( "fnDecompVarCovar",       new Func_decomposedVarianceCovarianceMatrix( )   );
+
         ///////////////////////////////////////////////////////////////////////////
         /* Add distribution functions (using help classes in folder "functions") */
         ///////////////////////////////////////////////////////////////////////////

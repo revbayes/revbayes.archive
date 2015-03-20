@@ -10,8 +10,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix::RateMatrix(size_t n) :
-    numStates( n )
+RateMatrix::RateMatrix(size_t n) : RateGenerator(n)
 {
 
 }
@@ -38,6 +37,11 @@ RateMatrix& RateMatrix::assign(const Assignable &m)
     {
         throw RbException("Could not assign rate matrix.");
     }
+}
+
+void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix &P) const
+{
+    calculateTransitionProbabilities(t, 0.0, 1.0, P);
 }
 
 size_t RateMatrix::getNumberOfStates( void ) const
@@ -73,7 +77,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix& x) {
         {
             if (j != 0)
                 o << ", ";
-            o << x[i][j];
+            o << x.getRate( i, j);
         }
         o <<  " ]";
         

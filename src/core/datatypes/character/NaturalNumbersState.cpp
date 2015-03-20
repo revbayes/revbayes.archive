@@ -23,20 +23,25 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-NaturalNumbersState::NaturalNumbersState(void) : DiscreteCharacterState(), state( 0 ) {
+NaturalNumbersState::NaturalNumbersState(void) : DiscreteCharacterState(),
+    state( 0 )
+{
     // default state = 0
 }
 
 
 
 /** Copy constructor */
-NaturalNumbersState::NaturalNumbersState(const NaturalNumbersState& s) : DiscreteCharacterState(), state( s.state ) {
+NaturalNumbersState::NaturalNumbersState(const NaturalNumbersState& s) : DiscreteCharacterState(),
+    state( s.state )
+{
     
 }
 
 
 /** Constructor that sets the observation */
-NaturalNumbersState::NaturalNumbersState(std::string s) : DiscreteCharacterState() {
+NaturalNumbersState::NaturalNumbersState(const std::string &s) : DiscreteCharacterState()
+{
     setState(s);
 }
 
@@ -87,6 +92,11 @@ void NaturalNumbersState::operator++( int i ) {
 	
 }
 
+void NaturalNumbersState::operator+=( int i ) {
+    
+    state += i;
+	
+}
 
 void NaturalNumbersState::operator--( void ) {
     
@@ -95,80 +105,106 @@ void NaturalNumbersState::operator--( void ) {
 }
 
 
-void NaturalNumbersState::operator--( int i ) {
+void NaturalNumbersState::operator--( int i )
+{
     
     state -= 1;
     
 }
 
+void NaturalNumbersState::operator-=( int i )
+{
+    
+    state -= i;
+    
+}
 
-void NaturalNumbersState::addState(std::string symbol) {
+
+void NaturalNumbersState::addState(std::string symbol)
+{
     
     state = computeState( symbol );
     
 }
 
-void NaturalNumbersState::addState(char symbol) {
+void NaturalNumbersState::addState(char symbol)
+{
     
     state = computeState( boost::lexical_cast<std::string>( symbol )  );
 }
 
 
-NaturalNumbersState* NaturalNumbersState::clone( void ) const {
+NaturalNumbersState* NaturalNumbersState::clone( void ) const
+{
     
     return new NaturalNumbersState( *this );
 }
 
 
-int NaturalNumbersState::computeState(std::string symbol) const {
+int NaturalNumbersState::computeState(std::string symbol) const
+{
 	
 	if (symbol == "-" || symbol == "?")
+    {
 		return -1;
-	else
-		try {
+    }
+    else
+    {
+		try
+        {
 			return boost::lexical_cast<int>( symbol );
-		} catch( boost::bad_lexical_cast const& ) {
+		}
+        catch( boost::bad_lexical_cast const& )
+        {
 			throw RbException( "NaturalNumbers state was not valid integer." );
 		}
+    }
 }
 
 
-std::string NaturalNumbersState::getDatatype( void ) const {
+std::string NaturalNumbersState::getDatatype( void ) const
+{
     
     return "NaturalNumbers";
 }
 
 
-unsigned int NaturalNumbersState::getNumberObservedStates(void) const  {
+unsigned int NaturalNumbersState::getNumberObservedStates(void) const
+{
     
 	// currently this always return 1 because we only allow one observation per tip
 	return 1;
 }
 
 
-size_t NaturalNumbersState::getNumberOfStates( void ) const {
+size_t NaturalNumbersState::getNumberOfStates( void ) const
+{
     
 	return RevBayesCore::g_MAX_NAT_NUM_STATES;
 }
 
 
-unsigned long NaturalNumbersState::getState( void ) const {
+unsigned long NaturalNumbersState::getState( void ) const
+{
     return (int)state;
 }
 
 
-size_t  NaturalNumbersState::getStateIndex(void) const {
+size_t  NaturalNumbersState::getStateIndex(void) const
+{
     return (size_t)state;
 }
 
 
-const std::string& NaturalNumbersState::getStateLabels( void ) const {
+const std::string& NaturalNumbersState::getStateLabels( void ) const
+{
 	
     return boost::lexical_cast<std::string>(state);
 	
 }
 
-std::string NaturalNumbersState::getStringValue(void) const  {
+std::string NaturalNumbersState::getStringValue(void) const
+{
     
 	return boost::lexical_cast<std::string>(state);
 	

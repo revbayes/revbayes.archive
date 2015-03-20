@@ -70,6 +70,7 @@ double CompoundMove::performMove( double &probRatio ) {
         }
     }
     
+    // remove proposal nodes from affectedNodes to avoid double-counting
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
 //        if ( nodes.find(oldN) == nodes.end() ) {

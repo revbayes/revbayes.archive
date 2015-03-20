@@ -35,7 +35,7 @@ double RbStatistics::CompoundPoissonNormal::pdf(double lambda, double mu, double
     for (size_t n = 1; n < 1e6; n++)
     {
         old_p = new_p;
-        double a = RbStatistics::Poisson::pdf(lambda, n);
+        double a = RbStatistics::Poisson::pdf(lambda, (int)n);
         double b = RbStatistics::Normal::pdf(mu, sqrt(n * sigma * sigma), x);
         new_p = a * b;
         p += new_p;

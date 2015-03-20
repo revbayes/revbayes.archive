@@ -32,7 +32,7 @@ RateMatrix_Chromosomes::RateMatrix_Chromosomes(size_t n) : AbstractRateMatrix( n
     setLambda_l(1.0);
     setDelta_l(1.0);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -78,12 +78,13 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Chromosomes::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Chromosomes::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
 	
 	// Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003)
+    double t = rate * (startAge - endAge);
     computeExponentialMatrixByRepeatedSquaring(t, P);
     
     return;
@@ -203,7 +204,7 @@ void RateMatrix_Chromosomes::setDelta_l( double d ) {
 }
 
 
-void RateMatrix_Chromosomes::updateMatrix( void ) {
+void RateMatrix_Chromosomes::update( void ) {
     
     if ( needsUpdate )
     {

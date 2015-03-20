@@ -13,7 +13,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_FreeK::Func_FreeK( void ) : TypedFunction<RateMatrix>( )
+Func_FreeK::Func_FreeK( void ) : TypedFunction<RateGenerator>( )
 {
     
 }
@@ -27,7 +27,7 @@ Func_FreeK* Func_FreeK::clone( void ) const
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_FreeK::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_FreeK::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

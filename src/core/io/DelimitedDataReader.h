@@ -24,17 +24,14 @@ namespace RevBayesCore {
     class DelimitedDataReader {
         
     public:
+        DelimitedDataReader(const std::string &fn, char d='\t', size_t ns=0);
         
-        
-    protected:
-        // protected constructor to disallow construction
-        DelimitedDataReader(const std::string &fn, char d='\t');
-
-        
-        // protected methods only callable for derived classes
-        void                                                readData(void);
+        void                                                readData( size_t ls);
         const std::vector<std::vector<std::string> >&       getChars(void);
-
+        const std::string&                                  getFilename(void);
+        
+    
+    protected:
         
         // protected member only accessible for derived classes
         std::string                                         filename;

@@ -322,32 +322,36 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     
     
-    //    // redraw parameters for inactive chains in pMC^3 team
-    //    if (chainActive == false)
-    //    {
-    //        for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
-    //        {
-    //
-    //            if ( !(*i)->isClamped() && (*i)->isStochastic() )
-    //            {
-    //
-    //                (*i)->redraw();
-    //
-    //            }
-    //            else if ( (*i)->isClamped() )
-    //            {
-    //                // make sure that the clamped node also recompute their probabilities
-    //                (*i)->touch();
-    //            }
-    //
-    //        }
-    //    }
+    // redraw parameters for inactive chains in pMC^3 team
+    if (chainActive == false)
+    {
+        for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
+        {
+            
+            if ( !(*i)->isClamped() && (*i)->isStochastic() )
+            {
+    
+                (*i)->redraw();
+                (*i)->reInitialized();
+    
+            }
+            else if ( (*i)->isClamped() )
+            {
+                // make sure that the clamped node also recompute their probabilities
+                (*i)->touch();
+            }
+    
+        }
+    }
     
     int numTries    = 0;
     int maxNumTries = 100;
     double lnProbability = 0.0;
     for ( ; numTries < maxNumTries; numTries ++ )
     {
+        // a flag if we failed to find a valid starting value
+        bool failed = false;
+        
         lnProbability = 0.0;
         for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
         {
@@ -364,6 +368,9 @@ void Mcmc::initializeSampler( bool priorOnly )
                 ss << std::endl;
                 RBOUT( ss.str() );
                 
+                // set the flag
+                failed = true;
+                
                 break;
             }
             lnProbability += lnProb;
@@ -376,7 +383,7 @@ void Mcmc::initializeSampler( bool priorOnly )
             (*i)->keep();
         }
         
-        if ( !RbMath::isAComputableNumber( lnProbability ) )
+        if ( failed == true )
         {
             std::cerr << "Drawing new initial states ... " << std::endl;
             for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)

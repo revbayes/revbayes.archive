@@ -35,7 +35,7 @@ namespace RevBayesCore {
     class VarianceCovarianceFunction : public TypedFunction<MatrixReal> {
         
     public:
-        VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf);
+        VarianceCovarianceFunction(const TypedDagNode< RbVector<double> > *sd, const TypedDagNode< RbVector<double> > *cc);
         virtual                                            ~VarianceCovarianceFunction(void);                                //!< Virtual destructor
         
         // public member functions

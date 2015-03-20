@@ -84,6 +84,9 @@ RevBayesCore::PhyloBrownianProcessREML<treeType>::PhyloBrownianProcessREML(const
     this->tau->getValue().getTreeChangeEventHandler().addListener( this );
     this->tau->incrementReferenceCount();
     
+    // we need to reset the contrasts
+    this->resetValue();
+    
 }
 
 
@@ -269,7 +272,6 @@ void RevBayesCore::PhyloBrownianProcessREML<treeType>::recursiveComputeLnProbabi
         this->contrastUncertainty[this->activeLikelihood[nodeIndex]][nodeIndex] = (t_left*t_right) / (t_left+t_right);
         
         double stdev = sqrt(t_left+t_right);
-//        double stdev = t_left+t_right;
         for (int i=0; i<this->numSites; i++)
         {
             

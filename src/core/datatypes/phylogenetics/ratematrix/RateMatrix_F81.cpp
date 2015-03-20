@@ -31,7 +31,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_F81::RateMatrix_F81(size_t n) : TimeReversibleRateMatrix( n ){
     
-    updateMatrix();
+    update();
 }
 
 
@@ -43,9 +43,10 @@ RateMatrix_F81::~RateMatrix_F81(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_F81::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_F81::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
     
     // compute auxilliary variables
+    double t = rate * (startAge - endAge);
     double tmp = 1.0;
 	for (size_t i=0; i<numStates; i++) tmp -= stationaryFreqs[i]*stationaryFreqs[i];
     double beta = 1.0 / tmp; 
@@ -73,7 +74,7 @@ RateMatrix_F81* RateMatrix_F81::clone( void ) const {
 }
 
 
-void RateMatrix_F81::updateMatrix( void ) {
+void RateMatrix_F81::update( void ) {
     
     if ( needsUpdate ) 
     {

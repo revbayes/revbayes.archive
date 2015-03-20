@@ -32,10 +32,10 @@ namespace RevBayesCore {
         
         // RateMatrix functions
         double                          averageRate(void) const;
-        void                            calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_Chromosomes*         clone(void) const;
         const std::vector<double>&      getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in this model I don't know them
-        void                            updateMatrix(void);
+        void                            update(void);
         void                            setLambda(double l);
         void                            setDelta(double d);
         void                            setRho(double r);

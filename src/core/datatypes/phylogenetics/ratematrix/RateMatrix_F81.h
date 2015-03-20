@@ -34,9 +34,9 @@ namespace RevBayesCore {
         virtual                             ~RateMatrix_F81(void);                                                              //!< Destructor
         
         // RateMatrix functions
-        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_F81*                     clone(void) const;
-        void                                updateMatrix(void);
+        void                                update(void);
 
     private:
         

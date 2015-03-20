@@ -55,7 +55,10 @@ RateMatrix_JC::~RateMatrix_JC(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_JC::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_JC::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+    
+    
+    double t = rate * (startAge - endAge);
     
     // calculate the transition probabilities
     double bf = 1.0 / numStates;
@@ -79,7 +82,7 @@ RateMatrix_JC* RateMatrix_JC::clone( void ) const {
 }
 
 
-void RateMatrix_JC::updateMatrix( void ) {
+void RateMatrix_JC::update( void ) {
     // nothing to do
 }
 
