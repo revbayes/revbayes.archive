@@ -25,7 +25,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n) : GeneralRateMatrix( n ),
     numStates(n),
-    numCharacters(std::round(std::log2(n))),
+    numCharacters(round(log2(n))),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
     extirpationRates( std::vector<double>(numCharacters, 1.0/n) ),
     rangeSize( std::vector<double>(numCharacters+1, 1.0/n) )

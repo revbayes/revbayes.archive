@@ -88,7 +88,12 @@ namespace RevLanguage {
         bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
         const TypeTable&        getTypeTable(void) const;                                                   //!< Get the type table
-        void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
+        void                    initializeTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
+		void                    initializeMonitorGlobalWorkspace(void);                                     //!< Initialize global workspace for monitors
+		void                    initializeMoveGlobalWorkspace(void);                                        //!< Initialize global workspace for moves
+		void					initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
+		void                    initializeFuncGlobalWorkspace(void);                                        //!< Initialize global workspace for functions (fnXXX)
+		void                    initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
         RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
         
         static Workspace& globalWorkspace(void) //!< Get global workspace
