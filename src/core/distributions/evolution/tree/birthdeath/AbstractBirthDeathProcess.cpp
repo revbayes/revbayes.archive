@@ -66,68 +66,115 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
 
 
 
-/**
- * Randomly attach the times to a tree topology.
- * This function works by randomly picking a node from the set of tips,
- * setting its time to times[index], increment the index,
- * adding the two children (if they are not actual tips) to the set of tips,
- * and recursively calling this function again.
- *
- * \param[in]     psi        The tree topology (needed to call setAge).
- * \param[in]     tips       The vector of tips
- * \param[in]     index   
- * \param[in]     times         
- * \param[in]     T      
- */
-void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
-{
-    
-    if (index < times->size() )
-    {
-        // Get the rng
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        // randomly draw one node from the list of tips
-        size_t tip_index = size_t( floor(rng->uniform01()*tips.size()) );
-        
-        // get the node from the list
-        TopologyNode* parent = tips.at(tip_index);
-        psi->setAge( parent->getIndex(), T - (*times)[index] );
-        
-        // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+ long(tip_index) );
-        
-        // add a left child
-        TopologyNode* leftChild = &parent->getChild(0);
-        if ( !leftChild->isTip() ) 
-        {
-            tips.push_back(leftChild);
-        }
-        
-        // add a right child
-        TopologyNode* rightChild = &parent->getChild(1);
-        if ( !rightChild->isTip() ) 
-        {
-            tips.push_back(rightChild);
-        }
-        
-        // recursive call to this function
-        attachTimes(psi, tips, index+1, times, T);
-    }
-    
-    // no return value
-}
+///**
+// * Randomly attach the times to a tree topology.
+// * This function works by randomly picking a node from the set of tips,
+// * setting its time to times[index], increment the index,
+// * adding the two children (if they are not actual tips) to the set of tips,
+// * and recursively calling this function again.
+// *
+// * \param[in]     psi        The tree topology (needed to call setAge).
+// * \param[in]     tips       The vector of tips
+// * \param[in]     index   
+// * \param[in]     times         
+// * \param[in]     T      
+// */
+//void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
+//{
+//    
+//    if (index < times->size() )
+//    {
+//        // Get the rng
+//        RandomNumberGenerator* rng = GLOBAL_RNG;
+//        
+//        // randomly draw one node from the list of tips
+//        size_t tip_index = size_t( floor(rng->uniform01()*tips.size()) );
+//        
+//        // get the node from the list
+//        TopologyNode* parent = tips.at(tip_index);
+//        psi->setAge( parent->getIndex(), T - (*times)[index] );
+//        
+//        // remove the randomly drawn node from the list
+//        tips.erase(tips.begin()+ long(tip_index) );
+//        
+//        // add a left child
+//        TopologyNode* leftChild = &parent->getChild(0);
+//        if ( !leftChild->isTip() ) 
+//        {
+//            tips.push_back(leftChild);
+//        }
+//        
+//        // add a right child
+//        TopologyNode* rightChild = &parent->getChild(1);
+//        if ( !rightChild->isTip() ) 
+//        {
+//            tips.push_back(rightChild);
+//        }
+//        
+//        // recursive call to this function
+//        attachTimes(psi, tips, index+1, times, T);
+//    }
+//    
+//    // no return value
+//}
 
 
-void AbstractBirthDeathProcess::buildConstraintBinaryTree(std::vector<TopologyNode*> &nodes)
+std::vector<double> AbstractBirthDeathProcess::buildConstraintBinaryTree(std::vector<TopologyNode*> &nodes)
 {
+    // create a vector for the node ages
+    std::vector<double> ages;
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     size_t nodeIndex = nodes.size();
+    size_t remainingNodes = nodes.size();
     
-    while (nodes.size() > 1)
+    // we need a sorted vector of constraints, starting with the smallest
+    std::vector<Clade> sortedClades = constraints;
+
+    // create a clade that contains all species
+//    Clade allSpecies = Clade(taxa);
+//    sortedClades.push_back(allSpecies);
+    
+    // next sort the clades
+    std::sort(sortedClades.begin(),sortedClades.end());
+    
+    // create the size of number of exclusive nodes per clade
+    std::vector<size_t> taxaPerClade;
+    
+    // to do so we need all the taxon names first
+    std::vector<std::vector<std::string> > taxonNamesPerClade;
+    for (size_t i = 0; i < sortedClades.size(); ++i)
+    {
+        const Clade &c = sortedClades[i];
+        taxonNamesPerClade.push_back( c.getTaxonNames() );
+    }
+    
+    
+    for (size_t i = 0; i < sortedClades.size(); ++i)
+    {
+        std::vector<std::string> &names_i = taxonNamesPerClade[i];
+        for (size_t j = i+1; j < sortedClades.size(); ++j)
+        {
+            
+            std::vector<std::string> &names_j = taxonNamesPerClade[j];
+            
+            for (size_t k = 0; k < names_i.size(); ++k)
+            {
+                
+                std::vector<std::string>::iterator it = std::find(names_j.begin(), names_j.end(), names_i[k]);
+                if ( it != names_j.end() )
+                {
+                    names_j.erase( it );
+                }
+                
+            }
+        }
+    }
+    
+    
+    while (remainingNodes > 1)
     {
         
         // randomly draw one node from the list of nodes
@@ -162,43 +209,48 @@ void AbstractBirthDeathProcess::buildConstraintBinaryTree(std::vector<TopologyNo
         
         // increase the node index counter
         ++nodeIndex;
+        
+        // decrement the remaining nodes counter
+        --remainingNodes;
     }
-}
-
-
-void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
-{
     
-    if (tips.size() < numTaxa) 
-    {
-        // Get the rng
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        // randomly draw one node from the list of tips
-        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-        
-        // get the node from the list
-        TopologyNode* parent = tips.at(index);
-        
-        // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+long(index));
-        
-        // add a left child
-        TopologyNode* leftChild = new TopologyNode(0);
-        parent->addChild(leftChild);
-        leftChild->setParent(parent);
-        tips.push_back(leftChild);
-        
-        // add a right child
-        TopologyNode* rightChild = new TopologyNode(0);
-        parent->addChild(rightChild);
-        rightChild->setParent(parent);
-        tips.push_back(rightChild);
-        
-        // recursive call to this function
-        buildRandomBinaryTree(tips);
-    }
+    return ages;
 }
+
+
+//void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
+//{
+//    
+//    if (tips.size() < numTaxa) 
+//    {
+//        // Get the rng
+//        RandomNumberGenerator* rng = GLOBAL_RNG;
+//        
+//        // randomly draw one node from the list of tips
+//        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
+//        
+//        // get the node from the list
+//        TopologyNode* parent = tips.at(index);
+//        
+//        // remove the randomly drawn node from the list
+//        tips.erase(tips.begin()+long(index));
+//        
+//        // add a left child
+//        TopologyNode* leftChild = new TopologyNode(0);
+//        parent->addChild(leftChild);
+//        leftChild->setParent(parent);
+//        tips.push_back(leftChild);
+//        
+//        // add a right child
+//        TopologyNode* rightChild = new TopologyNode(0);
+//        parent->addChild(rightChild);
+//        rightChild->setParent(parent);
+//        tips.push_back(rightChild);
+//        
+//        // recursive call to this function
+//        buildRandomBinaryTree(tips);
+//    }
+//}
 
 
 /**
@@ -508,9 +560,6 @@ void AbstractBirthDeathProcess::redrawValue( void )
  */
 void AbstractBirthDeathProcess::simulateTree( void ) 
 {
-    
-    // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // the time tree object (topology + times)
     TimeTree *psi = new TimeTree();
