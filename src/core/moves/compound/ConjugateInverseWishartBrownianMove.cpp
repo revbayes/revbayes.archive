@@ -6,6 +6,7 @@
 #include "ConjugateInverseWishartBrownianMove.h"
 
 #include <cmath>
+#include <iomanip>
 
 using namespace RevBayesCore;
 
