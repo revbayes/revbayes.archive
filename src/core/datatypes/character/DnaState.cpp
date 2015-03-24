@@ -198,13 +198,15 @@ unsigned int DnaState::computeState(char symbol) const {
 }
 
 
-std::string DnaState::getDatatype( void ) const {
+std::string DnaState::getDatatype( void ) const
+{
     
     return "DNA";
 }
 
 
-unsigned int DnaState::getNumberObservedStates(void) const  {
+unsigned int DnaState::getNumberObservedStates(void) const
+{
     
     char v = state;     // count the number of bits set in v
     char c;             // c accumulates the total bits set in v
@@ -242,15 +244,17 @@ size_t DnaState::getStateIndex( void ) const
     return stateIndex;
 }
 
-const std::string& DnaState::getStateLabels( void ) const {
+const std::string& DnaState::getStateLabels( void ) const
+{
     
     static std::string labels = "ACGT";
     
     return labels;
 }
 
-std::string DnaState::getStringValue(void) const  {
-    
+std::string DnaState::getStringValue(void) const
+{
+        
     switch ( state ) 
     {
         case 0x0:
@@ -293,19 +297,22 @@ std::string DnaState::getStringValue(void) const  {
 
 
 
-bool DnaState::isAmbiguous( void ) const {
+bool DnaState::isAmbiguous( void ) const
+{
     
     return getNumberObservedStates() > 1;
 }
 
 
-bool DnaState::isGapState( void ) const {
+bool DnaState::isGapState( void ) const
+{
     
     return state == 0x0;
 }
 
 
-void DnaState::setGapState(bool tf) {
+void DnaState::setGapState(bool tf)
+{
         
     if ( tf ) 
     {

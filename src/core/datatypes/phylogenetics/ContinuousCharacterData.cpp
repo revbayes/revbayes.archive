@@ -624,6 +624,21 @@ bool ContinuousCharacterData::isTaxonExcluded(const std::string& s) const
 }
 
 
+/**
+ * Remove all the excluded character.
+ *
+ */
+void ContinuousCharacterData::removeExludedCharacters( void )
+{
+    
+    for (std::map<std::string, ContinuousTaxonData>::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
+    {
+        it->second.removeCharacters( deletedCharacters );
+    }
+    
+}
+
+
 /** 
  * Restore a character. We simply do not mark the character as excluded anymore.
  *
