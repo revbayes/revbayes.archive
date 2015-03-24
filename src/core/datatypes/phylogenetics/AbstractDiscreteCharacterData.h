@@ -72,6 +72,7 @@ namespace RevBayesCore {
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         virtual bool                                isTaxonExcluded(size_t i) const = 0;                                        //!< Is the taxon excluded
         virtual bool                                isTaxonExcluded(const std::string& s) const = 0;                            //!< Is the taxon excluded
+        virtual void                                removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters
         virtual void                                restoreCharacter(size_t i) = 0;                                             //!< Restore character
         virtual void                                restoreTaxon(size_t i) = 0;                                                 //!< Restore taxon
         virtual void                                restoreTaxon(const std::string& s) = 0;                                     //!< Restore taxon
