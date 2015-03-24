@@ -181,25 +181,30 @@ std::vector<std::string> Topology::getSpeciesNames() const
 /* fill the nodes vector by a phylogenetic traversal recursively starting with this node.
  * The tips fill the slots 0,...,n-1 followed by the internal nodes and then the root.
  */
-void Topology::fillNodesByPhylogeneticTraversal(TopologyNode* node) {
+void Topology::fillNodesByPhylogeneticTraversal(TopologyNode* node)
+{
     
     // now call this function recursively for all your children
-    for (size_t i=0; i<node->getNumberOfChildren(); i++) {
+    for (size_t i=0; i<node->getNumberOfChildren(); i++)
+    {
         fillNodesByPhylogeneticTraversal(&node->getChild(i));
     }
     
-    if (node->isTip()) {
+    if (node->isTip())
+    {
         // all the tips go to the beginning
         nodes.insert(nodes.begin(), node);
     } 
-    else {
+    else
+    {
         // this is phylogenetic ordering so the internal nodes come last
         nodes.push_back(node);
     }
 }
 
 
-const std::string& Topology::getNewickRepresentation( void ) const {
+const std::string& Topology::getNewickRepresentation( void ) const
+{
     
     return root->computeNewick();
 }
@@ -354,7 +359,8 @@ void Topology::setRooted(bool tf) {
 
 
 
-void Topology::setRoot( TopologyNode* r) {
+void Topology::setRoot( TopologyNode* r, bool resetIndex )
+{
     
     // set the root
     root = r;
@@ -364,9 +370,13 @@ void Topology::setRoot( TopologyNode* r) {
     // bootstrap all nodes from the root and add the in a pre-order traversal
     // fillNodesByPreorderTraversal(r);
     fillNodesByPhylogeneticTraversal(r);
-    for (unsigned int i = 0; i < nodes.size(); ++i)
+    
+    if ( resetIndex == true )
     {
-        nodes[i]->setIndex(i);
+        for (unsigned int i = 0; i < nodes.size(); ++i)
+        {
+            nodes[i]->setIndex(i);
+        }
     }
     
     numNodes = nodes.size();
@@ -412,12 +422,16 @@ void Topology::reindexNodes() {
 
 // method to order nodes by their existing index
 // used when reading in tree with existing node indexes we need to keep
-void Topology::orderNodesByIndex() {
+void Topology::orderNodesByIndex()
+{
 	
 	std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(numNodes);
-	for (int i = 0; i < numNodes; i++) {
-		for (int j = 0; j < numNodes; j++) {
-			if (i == nodes[j]->getIndex()) {
+	for (int i = 0; i < numNodes; i++)
+    {
+		for (int j = 0; j < numNodes; j++)
+        {
+			if (i == nodes[j]->getIndex())
+            {
 				nodes_copy[i] = nodes[j];
 			}
 		}

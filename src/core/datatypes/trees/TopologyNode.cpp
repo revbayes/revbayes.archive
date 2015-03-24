@@ -1062,7 +1062,8 @@ bool TopologyNode::isTip( void ) const {
 
 
 /** Remove all children. We need to call intelligently the destructor here. */
-void TopologyNode::removeAllChildren(void) {
+void TopologyNode::removeAllChildren(void)
+{
     
     // empty the children vector
     while (children.size() > 0)
@@ -1085,7 +1086,8 @@ void TopologyNode::removeAllChildren(void) {
 
 
 /** Remove a child from the vector of children */
-void TopologyNode::removeChild(TopologyNode* c, bool forceNewickRecomp) {
+void TopologyNode::removeChild(TopologyNode* c, bool forceNewickRecomp)
+{
     
     std::vector<TopologyNode* >::iterator it = find(children.begin(), children.end(), c);
     if ( it != children.end() )

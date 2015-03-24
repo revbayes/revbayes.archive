@@ -178,19 +178,19 @@ std::vector<double> AbstractBirthDeathProcess::buildConstraintBinaryTree(std::ve
     {
         
         // randomly draw one node from the list of nodes
-        size_t indexLeft = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
+        size_t indexLeft = static_cast<size_t>( floor(rng->uniform01()*double(nodes.size()) ) );
         
         // get the node from the list
-        TopologyNode* left = nodes.at(indexLeft);
+        TopologyNode* left = nodes[indexLeft];
         
         // remove the randomly drawn node from the list
         nodes.erase(nodes.begin()+long(indexLeft));
         
         // randomly draw a second node from the list of nodes
-        size_t indexRight = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
+        size_t indexRight = static_cast<size_t>( floor(rng->uniform01()*double(nodes.size()) ) );
         
         // get the node from the list
-        TopologyNode* right = nodes.at(indexRight);
+        TopologyNode* right = nodes[indexRight];
         
         // remove the randomly drawn node from the list
         nodes.erase(nodes.begin()+long(indexRight));
@@ -561,6 +561,9 @@ void AbstractBirthDeathProcess::redrawValue( void )
 void AbstractBirthDeathProcess::simulateTree( void ) 
 {
     
+    // get the global instance of the random number generator
+    RandomNumberGenerator *rng = GLOBAL_RNG;
+    
     // the time tree object (topology + times)
     TimeTree *psi = new TimeTree();
     
@@ -614,13 +617,14 @@ void AbstractBirthDeathProcess::simulateTree( void )
     TopologyNode *root = nodes[0];
     
     // initialize the topology by setting the root
-    tau->setRoot(root);
+    tau->setRoot(root, false);
+
+    tau->orderNodesByIndex();
     
     // connect the tree with the topology
     psi->setTopology( tau, true );
     
     nodes.clear();
-    
     
     // We need to tell the tree the ages because the nodes do not store this information
     for (size_t i = 0; i < (2*numTaxa-numInitialSpecies); ++i)
@@ -634,6 +638,16 @@ void AbstractBirthDeathProcess::simulateTree( void )
         else
         {
             psi->setAge( i, (*times)[i-numTaxa] );
+            
+//            if ( rng->uniform01() < 0.5 )
+//            {
+//                TopologyNode *left = &node.getChild(0);
+//                TopologyNode *right = &node.getChild(1);
+//                node.removeChild( left );
+//                node.removeChild( right );
+//                node.addChild( right );
+//                node.addChild( left );
+//            }
         }
     }
     
