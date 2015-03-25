@@ -275,7 +275,8 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                aaState.setState('n');
+                aaState.setState('?');
+                aaState.setMissingState(true);
             }
             else
             {
@@ -490,7 +491,8 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                dnaState.setState('N');
+                dnaState.setState('?');
+                dnaState.setMissingState(true);
             }
             else
             {
@@ -599,7 +601,8 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                rnaState.setState('N');
+                rnaState.setState('?');
+                rnaState.setMissingState(true);
             }
             else
             {
@@ -716,7 +719,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                stdState.setMissing();
+                stdState.setMissingState(true);
             }
             else
                 for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
