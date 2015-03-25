@@ -25,14 +25,6 @@ AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
 }
 
 
-/** Copy constructor */
-AminoAcidState::AminoAcidState(const AminoAcidState& s) : DiscreteCharacterState() {
-    
-    state = s.state;
-    stateIndex = s.stateIndex;
-}
-
-
 /** Constructor that sets the observation */
 AminoAcidState::AminoAcidState(char s) : DiscreteCharacterState() {
     
@@ -213,7 +205,18 @@ const std::string& AminoAcidState::getStateLabels( void ) const {
     return stateLabels;
 }
 
-std::string AminoAcidState::getStringValue(void) const  {
+std::string AminoAcidState::getStringValue(void) const
+{
+    
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
     
     switch ( state ) {
         case 0x00000:
@@ -265,26 +268,13 @@ std::string AminoAcidState::getStringValue(void) const  {
 }
 
 
-bool AminoAcidState::isAmbiguous( void ) const {
+bool AminoAcidState::isAmbiguous( void ) const
+{
     return getNumberObservedStates() > 1;
 }
 
-
-bool AminoAcidState::isGapState( void ) const {
-    return state == 0x0;
-}
-
-
-void AminoAcidState::setGapState(bool tf) {
-    if ( tf ) {
-        state  = computeState('-');
-    }
-    else {
-        state = computeState('?');
-    }
-}
-
-void AminoAcidState::setState(size_t pos, bool val) {
+void AminoAcidState::setState(size_t pos, bool val)
+{
     
     unsigned x = (unsigned)val << pos;
     
@@ -294,7 +284,8 @@ void AminoAcidState::setState(size_t pos, bool val) {
 }
 
 
-void AminoAcidState::setState(char symbol) {
+void AminoAcidState::setState(char symbol)
+{
     state = computeState( symbol );
     
     switch ( state )
@@ -324,7 +315,8 @@ void AminoAcidState::setState(char symbol) {
 }
 
 
-void AminoAcidState::setToFirstState( void ) {
+void AminoAcidState::setToFirstState( void )
+{
     state = 0x1;
     stateIndex = 0;
 }

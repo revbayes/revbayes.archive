@@ -36,12 +36,6 @@ PomoState::PomoState(unsigned int vps): DiscreteCharacterState(), state( 0xFF ),
 }
 
 
-/** Copy constructor */
-PomoState::PomoState(const PomoState& s) : DiscreteCharacterState(), state( s.state ), virtualPopulationSize ( s.virtualPopulationSize ) {
-    
-}
-
-
 /** Constructor that sets the observation */
 PomoState::PomoState(std::string s) : DiscreteCharacterState() {
     
@@ -271,6 +265,16 @@ const std::string& PomoState::getStateLabels( void ) const {
 
 std::string PomoState::getStringValue(void) const  {
     
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
+    
     int stepSize = 100 / virtualPopulationSize - 1;
     if (state < 5) {
         switch ( state )
@@ -312,28 +316,10 @@ std::string PomoState::getStringValue(void) const  {
 
 
 
-bool PomoState::isAmbiguous( void ) const {
+bool PomoState::isAmbiguous( void ) const
+{
     
     return getNumberObservedStates() > 1;
-}
-
-
-bool PomoState::isGapState( void ) const {
-    
-    return state == 0x0;
-}
-
-
-void PomoState::setGapState(bool tf) {
-    
-    if ( tf )
-    {
-        state = 0x0;
-    }
-    else
-    {
-        state = 0xF;
-    }
 }
 
 

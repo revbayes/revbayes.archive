@@ -444,15 +444,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
                 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
-                if ( treatAmbiguousAsGaps && c.isAmbiguous() )
+                if ( treatAmbiguousAsGaps && (c.isAmbiguous() || c.isMissingState()) )
                 {
                     c.setGapState( true );
                 }
-                else if ( treatUnknownAsGap && c.getNumberOfStates() == c.getNumberObservedStates() )
+                else if ( treatUnknownAsGap && (c.getNumberOfStates() == c.getNumberObservedStates() || c.isMissingState()) )
                 {
                     c.setGapState( true );
                 }
-                else if ( !c.isGapState() && c.isAmbiguous() )
+                else if ( !c.isGapState() && (c.isAmbiguous() || c.isMissingState()) )
                 {
                     ambiguousCharacters = true;
                     break;
