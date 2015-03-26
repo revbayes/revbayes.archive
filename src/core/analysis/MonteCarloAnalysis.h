@@ -41,8 +41,12 @@ namespace RevBayesCore {
 
     protected:
         
-        std::vector<MonteCarloSampler*>                     runs;
+        size_t                                              activePID;
+        size_t                                              numProcesses;
+        size_t                                              pid;
+        bool                                                processActive;
         size_t                                              replicates;
+        std::vector<MonteCarloSampler*>                     runs;
         
     };
     

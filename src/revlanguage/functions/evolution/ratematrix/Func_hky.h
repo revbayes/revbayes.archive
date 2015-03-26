@@ -21,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-08-14, version 1.0
      *
      */
-    class Func_hky : public TypedFunction<RateMatrix> {
+    class Func_hky : public TypedFunction<RateGenerator> {
         
     public:
         Func_hky( void );
@@ -33,7 +33,7 @@ namespace RevLanguage {
         const TypeSpec&                                                     getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
     
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >*            createFunction(void) const;                                                     //!< Create a function object
+        RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >*         createFunction(void) const;                                                     //!< Create a function object
         const ArgumentRules&                                                getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };

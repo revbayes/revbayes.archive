@@ -75,13 +75,14 @@ RevLanguage::Func_annotateHPDAges<treeType>* RevLanguage::Func_annotateHPDAges<t
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_annotateHPDAges<treeType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_annotateHPDAges<treeType>::execute( void )
+{
     
 	// get the x% hpd
 	double x = static_cast<const Probability &>(args[0].getVariable()->getRevObject()).getValue();
 	
 	// get the input tree
-	const treeType& it = static_cast<const treeType&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+	typename treeType::valueType* tree = static_cast<const treeType&>( this->args[1].getVariable()->getRevObject() ).getValue().clone();
 	
 	// get the  tree trace
     const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[2].getVariable()->getRevObject() );
@@ -96,10 +97,11 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_annotateHPDAges<
 	RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
 	
 	// get the tree with x% HPD node ages
-	typename treeType::valueType* tree = summary.annotateHPDAges(it.getValue(), x, burnin);
+	summary.annotateHPDAges(*tree, x, burnin);
 	
 	// return the tree
-    if ( filename != "" ) {        
+    if ( filename != "" )
+    {
         
         RevBayesCore::NexusWriter writer(filename);
         writer.openStream();

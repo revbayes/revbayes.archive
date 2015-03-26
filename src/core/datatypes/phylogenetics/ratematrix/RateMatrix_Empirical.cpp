@@ -19,7 +19,7 @@ RateMatrix_Empirical::RateMatrix_Empirical(size_t n) : TimeReversibleRateMatrix(
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -170,7 +170,7 @@ void RateMatrix_Empirical::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_Empirical::updateMatrix( void ) {
+void RateMatrix_Empirical::update( void ) {
     
 }
 

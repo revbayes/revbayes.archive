@@ -42,7 +42,7 @@ namespace RevBayesCore {
         RateMatrix_Tamura92*                clone(void) const;
         void                                setGC(double f);
         void                                setKappa(double k);
-        void                                updateMatrix(void);
+        void                                update(void);
         
     private:
         double                              kappa;

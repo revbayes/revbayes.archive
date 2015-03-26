@@ -130,7 +130,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     double dt = 0.0;
     double da = 0.0;
     
-    bool debug = !true;
+//    bool debug = !true;
 
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {

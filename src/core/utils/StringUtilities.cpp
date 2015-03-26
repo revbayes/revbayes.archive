@@ -50,6 +50,27 @@ void StringUtilities::fillWithSpaces(std::string &s, int l, bool left)
     
 }
 
+/**
+ * Fill this string with spaces so that it has the required length.
+ * Either fill the spaces on the right if left aligned (true)
+ * or on the left if right aligned.
+ */
+void StringUtilities::formatFixedWidth(std::string &s, int l, bool left)
+{
+    
+    if ( s.length() > l )
+    {
+        if ( l > 2)
+        {
+            s = s.substr(0, l-2);
+        }
+        
+        s += "..";
+    }
+    
+    fillWithSpaces(s, l, left);
+}
+
 
 /**
  * Wraps text so that each line doesn't exceeds column width.
@@ -260,11 +281,29 @@ bool StringUtilities::isFormattingChar(char c)
 
 
 /** Determine if the string s represents a number */
-bool StringUtilities::isNumber(const std::string& s) {
+bool StringUtilities::isIntegerNumber(const std::string& s)
+{
+    
+    if ( isNumber(s) )
+    {
+        std::size_t found = s.find('.');
+        if (found != std::string::npos)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+/** Determine if the string s represents a number */
+bool StringUtilities::isNumber(const std::string& s)
+{
 
     for (size_t i=0; i<s.size(); i++)
     {
-        if (!isdigit(s[i]))
+        if (!isdigit(s[i]) && s[i] != '.' && s[i] != '-' && s[i] != '+')
         {
             return false;
         }

@@ -34,8 +34,8 @@ namespace RevBayesCore {
         // set parameters
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< RevBayesCore::RbVector< double > > *r);
-        void                                                setRateMatrix(const TypedDagNode<RateMatrix>* rm);
-//        void                                                setRateMatrix(const TypedDagNode<RbVector<RateMatrix> > >* rm);
+        void                                                setRateMatrix(const TypedDagNode<RateGenerator>* rm);
+//        void                                                setRateMatrix(const TypedDagNode<RbVector<RateGenerator> > >* rm);
         void                                                setRootFrequencies(const TypedDagNode< RevBayesCore::RbVector< double > > *f);
         void                                                update(void);
         
@@ -47,8 +47,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< double >*                               homogeneousClockRate;
         const TypedDagNode< RevBayesCore::RbVector< double > >*     heterogeneousClockRates;
-        const TypedDagNode<RateMatrix>*                             homogeneousRateMatrix;
-        const TypedDagNode<RbVector<RateMatrix> >*                  heterogeneousRateMatrices;
+        const TypedDagNode<RateGenerator>*                             homogeneousRateMatrix;
+        const TypedDagNode<RbVector<RateGenerator> >*                  heterogeneousRateMatrices;
 //        const TypedDagNode<TimeTree>*                               tau;
         const TypedDagNode<RevBayesCore::RbVector<double> >*        rootFrequencies;
         

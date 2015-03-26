@@ -31,11 +31,11 @@
 
 namespace RevBayesCore {
     
-    class PomoRateMatrixFunction : public TypedFunction<RateMatrix> {
+    class PomoRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
         PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc);
-        PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< RbVector<double>  > *sc);
+        PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< RbVector<double>  > *sc);
 
         virtual                                            ~PomoRateMatrixFunction(void);                                                    //!< Virtual destructor
         
@@ -52,12 +52,12 @@ namespace RevBayesCore {
 
         const TypedDagNode< int >*                          populationSize;
         const TypedDagNode< RbVector<double> >*             mutationRates;
-        const TypedDagNode< RateMatrix >*                   mutationMatrix;
+        const TypedDagNode< RateGenerator >*                mutationMatrix;
         const TypedDagNode< RbVector<double> >*             selectionCoefficients;
         bool                                                useMutationMatrix;
         
         // private member functions
-        std::vector<double> setMutationRates(const RateMatrix& mm);
+        std::vector<double> setMutationRates(const RateGenerator& mm);
 
     };
     

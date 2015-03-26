@@ -84,8 +84,8 @@ double SliderUpDownMove::performCompoundMove( void ) {
         
     } while ( nv1 < min1 || nv1 > max1 || nv2 < min2 || nv2 > max2);
     
-    sliderVal1->setValue(nv1);
-    sliderVal2->setValue(nv2);
+    sliderVal1->setValue( new double(nv1) );
+    sliderVal2->setValue( new double(nv2) );
 	
 	return 0.0;
 }
@@ -99,8 +99,8 @@ void SliderUpDownMove::printParameterSummary(std::ostream &o) const {
 void SliderUpDownMove::rejectCompoundMove( void ) {
 	
     // undo the proposal
-    sliderVal1->setValue(storedSV1);
-    sliderVal2->setValue(storedSV2);
+    sliderVal1->setValue( new double(storedSV1) );
+    sliderVal2->setValue( new double(storedSV2) );
 	
 }
 
@@ -118,16 +118,16 @@ void SliderUpDownMove::swapNode(DagNode *oldN, DagNode *newN) {
 
 void SliderUpDownMove::tune( void ){
     
-	if(0){
-		double rate = numAccepted / double(numTried);
-		double target = 0.234;
-		if ( rate > target ){
-			slideFactor *= (1.0 + ((rate-target)/(1.0 - target) ));
-		}
-		else{
-			slideFactor /= (2.0 - rate/target );
-		}
-	}
+//	if(0){
+//		double rate = numAccepted / double(numTried);
+//		double target = 0.234;
+//		if ( rate > target ){
+//			slideFactor *= (1.0 + ((rate-target)/(1.0 - target) ));
+//		}
+//		else{
+//			slideFactor /= (2.0 - rate/target );
+//		}
+//	}
 }
 
 

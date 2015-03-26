@@ -8,23 +8,8 @@
 using namespace RevBayesCore;
 
 
-MinEssStoppingRule::MinEssStoppingRule(double m, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : StoppingRule(),
-    burninEst( be ),
-    checkFrequency( f ),
-    filename( fn ),
-    minEss( m ),
-    numReplicates( 1 )
-{
-    
-}
-
-
-MinEssStoppingRule::MinEssStoppingRule(const MinEssStoppingRule &sr) : StoppingRule(),
-    burninEst( sr.burninEst->clone() ),
-    checkFrequency( sr.checkFrequency ),
-    filename( sr.filename ),
-    minEss( sr.minEss ),
-    numReplicates( sr.numReplicates )
+MinEssStoppingRule::MinEssStoppingRule(double m, const std::string &fn, size_t f, BurninEstimatorContinuous *be) : AbstractConvergenceStoppingRule(fn, f, be),
+    minEss( m )
 {
     
 }
@@ -34,18 +19,6 @@ MinEssStoppingRule::MinEssStoppingRule(const MinEssStoppingRule &sr) : StoppingR
 MinEssStoppingRule::~MinEssStoppingRule()
 {
     
-    delete burninEst;
-}
-
-
-/**
- * Should we check at the given iteration for convergence?
- * Only for given iteration because this is a time consuming test.
- */
-bool MinEssStoppingRule::checkAtIteration(size_t g) const
-{
-    // test if the iteration matches the pre-specified frequency
-    return (g % checkFrequency) == 0;
 }
 
 
@@ -59,34 +32,6 @@ MinEssStoppingRule* MinEssStoppingRule::clone( void ) const
 {
     
     return new MinEssStoppingRule( *this );
-}
-
-
-/**
- * Is this a stopping rule? Yes!
- */
-bool MinEssStoppingRule::isConvergenceRule( void ) const
-{
-    return true;
-}
-
-
-/**
- * The run just started. For this rule we do not need to do anything.
- */
-void MinEssStoppingRule::runStarted( void )
-{
-    // nothing to do
-}
-
-
-/**
- * Set the number of runs/replicates.
- * Here we need to adjust the files from which we read in.
- */
-void MinEssStoppingRule::setNumberOfRuns(size_t n)
-{
-    numReplicates = n;
 }
 
 
@@ -115,9 +60,9 @@ bool MinEssStoppingRule::stop( size_t g )
     
         size_t maxBurnin = 0;
     
-        for ( size_t i = 0; i < data.size(); ++i)
+        for ( size_t j = 0; j < data.size(); ++j)
         {
-            Trace &t = data[i];
+            Trace &t = data[j];
             const std::vector<double> &v = t.getValues();
             size_t b = burninEst->estimateBurnin( v );
             if ( maxBurnin < b )
@@ -128,9 +73,9 @@ bool MinEssStoppingRule::stop( size_t g )
     
         EssTest essTest = EssTest( minEss );
         
-        for ( size_t i = 0; i < data.size(); ++i)
+        for ( size_t j = 0; j < data.size(); ++j)
         {
-            RevBayesCore::Trace &t = data[i];
+            RevBayesCore::Trace &t = data[j];
             const std::vector<double> &v = t.getValues();
             t.setBurnin( maxBurnin );
             t.computeStatistics();
@@ -140,10 +85,14 @@ bool MinEssStoppingRule::stop( size_t g )
         
     }
     
-//    if ( passed )
-//    {
-//        std::cerr << "Reached minimum ESS!" << std::endl;
-//    }
+    if ( passed )
+    {
+        std::cerr << "Passed ESS!" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Failed ESS!" << std::endl;
+    }
     
     
     return passed;

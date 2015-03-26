@@ -28,16 +28,19 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    methods.addFunction("epochs",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
+    methods.addFunction("epochTimes",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
     
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
-    std::vector<std::string> optionsElements;
-    optionsElements.push_back( "off-diagonal" );
-    optionsElements.push_back( "diagonal" );
-    optionsElements.push_back( "upper" );
-    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
-    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("getEpochValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
+    std::vector<std::string> optionsValue;
+    optionsValue.push_back( "dispersal" );
+    optionsValue.push_back( "extinction" );
+    optionsValue.push_back( "latlon" );
+    optionsValue.push_back( "altitude" );
+    optionsValue.push_back( "size" );
+    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue ) );
+    //    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
+    //    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction("getValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
 
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
@@ -58,16 +61,19 @@ atlas(v)
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    methods.addFunction("epochs",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
+    methods.addFunction("epochTimes",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
     
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
-    std::vector<std::string> optionsElements;
-    optionsElements.push_back( "off-diagonal" );
-    optionsElements.push_back( "diagonal" );
-    optionsElements.push_back( "upper" );
-    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
-    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("getEpochValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
+    std::vector<std::string> optionsValue;
+    optionsValue.push_back( "dispersal" );
+    optionsValue.push_back( "extinction" );
+    optionsValue.push_back( "latlon" );
+    optionsValue.push_back( "altitude" );
+    optionsValue.push_back( "size" );
+    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue ) );
+    //    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
+    //    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction("getValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
 
     
     // Add method for call "size" as a function
@@ -89,16 +95,19 @@ atlas(&m->getValue())
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
     methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    methods.addFunction("epochs",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
+    methods.addFunction("epochTimes",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
 
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
-    std::vector<std::string> optionsElements;
-    optionsElements.push_back( "off-diagonal" );
-    optionsElements.push_back( "diagonal" );
-    optionsElements.push_back( "upper" );
-    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
-    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("getEpochValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
+    std::vector<std::string> optionsValue;
+    optionsValue.push_back( "dispersal" );
+    optionsValue.push_back( "extinction" );
+    optionsValue.push_back( "latlon" );
+    optionsValue.push_back( "altitude" );
+    optionsValue.push_back( "size" );
+    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue ) );
+//    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
+//    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction("getValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
@@ -141,49 +150,38 @@ RevPtr<RevVariable> RlAtlas::executeMethod(std::string const &name, const std::v
         }
         return new RevVariable( n );
     }
-    else if (name == "epochs")
+    else if (name == "epochTimes")
     {
         found = true;
         ModelVector<RealPos> *n = new ModelVector<RealPos>( this->dagNode->getValue().getEpochs() );
         return new RevVariable( n );
     }
-    else if (name == "getEpochValues")
+    else if (name == "getValues")
     {
         found = true;
         
         // get the member with give index
-        std::string elements = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-        bool symmetric = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
-
-        std::vector<std::vector<RevBayesCore::GeographicArea*> > areas = this->dagNode->getValue().getAreas();
-        
-//        ModelVector<ModelVector<RealPos> > *f = new ModelVector<ModelVector<RealPos> >();
-        ModelVector< Simplex > *f = new ModelVector<Simplex>();
+        std::string value = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        std::vector<std::vector<RevBayesCore::GeographicArea*> > areas = this->dagNode->getValue().getAreas();        
+        ModelVector<ModelVector<ModelVector<Real > > > *f = new ModelVector<ModelVector<ModelVector<Real > > >();
         for (size_t i = 0; i < areas.size(); i++)
         {
-            RevBayesCore::RbVector<double> v;
+            RevBayesCore::RbVector<RevBayesCore::RbVector<double> > v;
             for (size_t j = 0; j < areas[i].size(); j++)
             {
-                std::vector<double> a = areas[i][j]->getDispersalValues();
-                if (elements == "diagonal")
-                {
-                    v.push_back(a[j]);
-                    continue;
-                }
-                for (size_t k = 0; k < areas[i].size(); k++)
-                {
-                    if (j == k && elements == "upper")
-                        v.push_back(a[k]);
-                    
-                    if (j < k || symmetric)
-                    {
-                        v.push_back(a[k]);
-                    }
-                }
+                if (value == "dispersal")
+                    v.push_back(areas[i][j]->getDispersalValues());
+                else if (value == "extinction")
+                    v.push_back(areas[i][j]->getExtinctionValues());
+                else if (value == "latlon")
+                    v.push_back(areas[i][j]->getLatlon());
+                else if (value == "altitude")
+                    v.push_back( RevBayesCore::RbVector<double>(1, areas[i][j]->getAltitude()) );
+                else if (value == "size")
+                    v.push_back( RevBayesCore::RbVector<double>(1, areas[i][j]->getSize()) );
             }
-            f->push_back( Simplex(v) );
+            f->push_back( ModelVector<ModelVector<Real> >(v) );
         }
-        
         return new RevVariable(f);
     }
     
