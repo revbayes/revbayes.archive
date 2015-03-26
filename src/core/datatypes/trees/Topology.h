@@ -65,7 +65,6 @@ namespace RevBayesCore {
         bool                                                isRooted(void) const;                                                   //!< Get a pointer to the root node of the Tree
         void                                                removeTree(Tree *t);                                                    //!< Remove a tree user
         void                                                setRoot(TopologyNode* r, bool resetIndex=true);                         //!< Set the root and bootstrap the Tree from it
-		void                                                setRootNoReIndexing(TopologyNode* r);
         void                                                setRooted(bool tf);
         void                                                orderNodesByIndex();
 		void                                                reindexNodes();
