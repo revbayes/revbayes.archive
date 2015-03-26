@@ -35,7 +35,6 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
         ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
         
         // basic methods
