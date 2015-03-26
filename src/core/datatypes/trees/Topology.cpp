@@ -390,27 +390,10 @@ void Topology::setRoot( TopologyNode* r, bool resetIndex )
 }
 
 
-// used when reading in tree with existing node indexes we need to keep
-void Topology::setRootNoReIndexing( TopologyNode* r) {
-    
-    // set the root
-    root = r;
-	
-    nodes.clear();
-	fillNodesByPhylogeneticTraversal(r);
-	numNodes = nodes.size();
-    
-    // Set the tree pointer of the nodes
-    if ( treesUsingThisTopology.empty() )
-        root->setTree( NULL );
-    else
-        root->setTree( *treesUsingThisTopology.begin() );
-    
-}
-
 // method to reindex nodes by their order
 // necessary to keep track of branch lengths
-void Topology::reindexNodes() {
+void Topology::reindexNodes()
+{
 	
     for (unsigned int i = 0; i < nodes.size(); ++i)
     {
