@@ -108,7 +108,7 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
     TopologyNode *root = createNode( trimmed, nodes, brlens );
 	
     // set up the tree keeping the existing indexes
-	tau->setRootNoReIndexing( root );
+	tau->setRoot( root, false );
 	
 	// order the nodes
 	tau->orderNodesByIndex();
