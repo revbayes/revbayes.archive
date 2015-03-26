@@ -13,7 +13,7 @@ RateMatrix_Kimura80::RateMatrix_Kimura80(void) : TimeReversibleRateMatrix( 4 ){
     
     kappa = 1.0;
     
-    updateMatrix();
+    update();
     
 }
 
@@ -79,7 +79,7 @@ void RateMatrix_Kimura80::setKappa( double k ) {
 }
 
 
-void RateMatrix_Kimura80::updateMatrix( void ) {
+void RateMatrix_Kimura80::update( void ) {
     
     if ( needsUpdate )
     {

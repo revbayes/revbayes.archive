@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateMatrix>( ) {
+Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateGenerator>( ) {
     
 }
 
@@ -33,7 +33,7 @@ Func_FreeBinary* Func_FreeBinary::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_FreeBinary::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_FreeBinary::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

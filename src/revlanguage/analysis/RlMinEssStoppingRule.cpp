@@ -1,14 +1,12 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "EssMax.h"
 #include "MinEssStoppingRule.h"
 #include "OptionRule.h"
 #include "RlMinEssStoppingRule.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RlString.h"
-#include "SemMin.h"
 #include "TypeSpec.h"
 
 
@@ -18,7 +16,7 @@ using namespace RevLanguage;
  * Default constructor.
  * Create the default instance.
  */
-MinEssStoppingRule::MinEssStoppingRule(void) : StoppingRule()
+MinEssStoppingRule::MinEssStoppingRule(void) : AbstractConvergenceStoppingRule()
 {
     
 }
@@ -43,24 +41,11 @@ void MinEssStoppingRule::constructInternalObject( void )
     double min = static_cast<const RealPos &>( minEss->getRevObject() ).getValue();
     int fq = static_cast<const Natural &>( frequency->getRevObject() ).getValue();
     const std::string &fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
-    const std::string &bm = static_cast<const RlString &>( burninMethod->getRevObject() ).getValue();
     
-    RevBayesCore::BurninEstimatorContinuous *burninEst = NULL;
-    
-    if ( bm == "ESS" )
-    {
-        burninEst = new RevBayesCore::EssMax();
-    }
-    else if ( bm == "SEM" )
-    {
-        burninEst = new RevBayesCore::SemMin();
-    }
-    else
-    {
-        throw RbException("Unknown burnin estimation method");
-    }
+    RevBayesCore::BurninEstimatorContinuous *burninEst = constructBurninEstimator();
     
     value = new RevBayesCore::MinEssStoppingRule(min, fn, size_t(fq), burninEst);
+
 }
 
 
@@ -77,7 +62,7 @@ const std::string& MinEssStoppingRule::getClassType(void)
 const TypeSpec& MinEssStoppingRule::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( StoppingRule::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
@@ -95,15 +80,11 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
     {
         
         memberRules.push_back( new ArgumentRule( "minEss"   , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule( "frequency", Natural::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
         
-        std::vector<std::string> bMethods;
-        bMethods.push_back( "ESS" );
-        bMethods.push_back( "SEM" );
-//        optionsUnits.push_back( "fixed" );
-        memberRules.push_back( new OptionRule( "burninMethod", new RlString("ESS"), bMethods ) );
-        
+        /* Inherit weight from Move, put it after variable */
+        const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+
 
         rulesSet = true;
     }
@@ -133,25 +114,13 @@ void MinEssStoppingRule::printValue(std::ostream &o) const
 void MinEssStoppingRule::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "burninMethod" )
-    {
-        burninMethod = var;
-    }
-    else if ( name == "filename" )
-    {
-        filename = var;
-    }
-    else if ( name == "frequency" )
-    {
-        frequency = var;
-    }
-    else if ( name == "minEss" )
+    if ( name == "minEss" )
     {
         minEss = var;
     }
     else
     {
-        StoppingRule::setConstParameter(name, var);
+        AbstractConvergenceStoppingRule::setConstParameter(name, var);
     }
     
 }

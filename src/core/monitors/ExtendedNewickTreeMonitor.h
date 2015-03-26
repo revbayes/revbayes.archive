@@ -35,8 +35,8 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< RbVector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
+        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
+        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
         
         // basic methods
         ExtendedNewickTreeMonitor*          clone(void) const;                                                  //!< Clone the object
@@ -50,8 +50,9 @@ namespace RevBayesCore {
         
     private:        
         // parameters
+        bool                                isNodeParameter;
         TypedDagNode<TimeTree>*             tree;
-        std::set<TypedDagNode< RbVector<double> > *>                 nodeVariables;
+        std::set<DagNode*>                  nodeVariables;
         
     };
     

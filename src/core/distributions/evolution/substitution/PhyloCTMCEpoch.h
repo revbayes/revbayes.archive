@@ -76,7 +76,7 @@ RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBay
 {
     epochTimes = new ConstantNode< RbVector< double > >("epochTimes", new RbVector<double>(1, 0.0) );
     epochClockRates = new ConstantNode< RbVector< double > >("epochClockRates", new RbVector<double>(1, 1.0) );
-    epochRateMatrices = new ConstantNode< RbVector< RateMatrix> >("epochRateMatrices", new RbVector<RateMatrix>( 1, RateMatrix_JC( nChars )));
+    epochRateMatrices = new ConstantNode< RbVector< RateGenerator> >("epochRateMatrices", new RbVector<RateGenerator>( 1, RateMatrix_JC( nChars )));
     
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters

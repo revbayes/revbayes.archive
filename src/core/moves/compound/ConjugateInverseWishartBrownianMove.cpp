@@ -6,6 +6,7 @@
 #include "ConjugateInverseWishartBrownianMove.h"
 
 #include <cmath>
+#include <iomanip>
 
 using namespace RevBayesCore;
 
@@ -218,7 +219,7 @@ void ConjugateInverseWishartBrownianMove::performMove( double lHeat, double pHea
 //    sigma->getValue().touch();
     
     // resample sigma based on new sufficient statistics
-    sigma->setValue( RbStatistics::InverseWishart::rv(A, nnodes + df->getValue(), *rng) );
+    sigma->setValue( RbStatistics::InverseWishart::rv(A, nnodes + df->getValue(), *rng).clone() );
 
     sigma->touch();
     sigma->keep();

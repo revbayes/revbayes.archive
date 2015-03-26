@@ -71,6 +71,7 @@ namespace RevBayesCore {
     
 }
 
+#include "Cloner.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbMathCombinatorialFunctions.h"
@@ -150,19 +151,21 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
 	int ne = numElements;
     double lnProb = log( concentration->getValue() ) * nt;
     
-    if ( concentrationHasChanged == true ){
+    if ( concentrationHasChanged == true )
+    {
         computeDenominator();
     }
 	
 	
 	lnProb += RbMath::lnStirlingFirst(ne, nt);
     
-    for (int i = 0; i < nt; ++i){
+    for (int i = 0; i < nt; ++i)
+    {
 		// compute the probability of having n_i customers per at table i
 		lnProb += RbMath::lnFactorial( numCustomerPerTable[i] - 1 );
         
         // we also need to multiply with the probability of the value for this table
-        baseDistribution->setValue( valuePerTable[i] );
+        baseDistribution->setValue( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone(valuePerTable[i]) );
         lnProb += baseDistribution->computeLnProbability();
     }
     

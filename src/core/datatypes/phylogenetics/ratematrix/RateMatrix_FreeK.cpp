@@ -27,7 +27,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ){
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -239,7 +239,7 @@ void RateMatrix_FreeK::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_FreeK::updateMatrix( void ) {
+void RateMatrix_FreeK::update( void ) {
     
     if ( needsUpdate )
     {

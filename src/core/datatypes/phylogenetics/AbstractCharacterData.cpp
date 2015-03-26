@@ -14,7 +14,9 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterD
     o << s.str();
     
     for ( size_t i = 0; i < s.str().length() - 1; ++i )
+    {
         o << "=";
+    }
     o << std::endl;
 
     o << "Origination:                   " << x.getFileName() << std::endl;

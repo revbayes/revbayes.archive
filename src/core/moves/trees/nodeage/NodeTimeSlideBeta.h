@@ -32,7 +32,7 @@ namespace RevBayesCore {
     class NodeTimeSlideBeta : public SimpleMove {
         
     public:
-        NodeTimeSlideBeta( StochasticNode<TimeTree> *n, double delta, bool t, double weight);                                                         //!<  constructor
+        NodeTimeSlideBeta( StochasticNode<TimeTree> *n, double delta, double o, bool t, double weight);                                                         //!<  constructor
         
         // Basic utility functions
         NodeTimeSlideBeta*              clone(void) const;                                                                  //!< Clone object
@@ -50,6 +50,7 @@ namespace RevBayesCore {
         // member variables
         StochasticNode<TimeTree>*       variable;
         double                          delta;
+        double                          offset;
         
         // stored objects to undo proposal
         TopologyNode*                   storedNode;

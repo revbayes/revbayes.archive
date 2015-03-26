@@ -28,12 +28,13 @@ namespace RevLanguage {
 class OptionRule : public ArgumentRule {
 
     public:
-        OptionRule(const std::string& argName, const std::vector<std::string>& optVals);                                //!< Constructor of rule without default value
-        OptionRule(const std::string& argName, RlString* defVal, const std::vector<std::string>& optVals);              //!< Constructor of rule with default value
+        OptionRule(const std::string& argName, const std::vector<std::string>& optVals);                                        //!< Constructor of rule without default value
+        OptionRule(const std::string& argName, RlString* defVal, const std::vector<std::string>& optVals);                      //!< Constructor of rule with default value
 
         // Basic utility functions
-        OptionRule*                         clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
+        OptionRule*                         clone(void) const;                                                                  //!< Clone object
         const std::vector<std::string>&     getOptions(void) const;                                                             //!< Get the options
+        virtual double                      isArgumentValid(Argument &arg, bool once) const;                                    //!< Is var a valid argument?
         void                                printValue(std::ostream& o) const;                                                  //!< Print value for user
 
     protected:

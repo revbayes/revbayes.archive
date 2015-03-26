@@ -40,9 +40,10 @@ void Move_NodeTimeSlideBeta::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
+    double o = static_cast<const RealPos &>( offset->getRevObject() ).getValue();
     bool tu = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    value = new RevBayesCore::NodeTimeSlideBeta(t, d, tu, w);
+    value = new RevBayesCore::NodeTimeSlideBeta(t, d, o, tu, w);
 }
 
 
@@ -76,6 +77,7 @@ const MemberRules& Move_NodeTimeSlideBeta::getParameterRules(void) const
         
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
+        memberRules.push_back( new ArgumentRule( "offset"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 2.0 ) ) );
         memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
 
         
@@ -122,6 +124,10 @@ void Move_NodeTimeSlideBeta::setConstParameter(const std::string& name, const Re
     else if ( name == "delta" )
     {
         delta = var;
+    }
+    else if ( name == "offset" )
+    {
+        offset = var;
     }
     else if ( name == "tune" )
     {

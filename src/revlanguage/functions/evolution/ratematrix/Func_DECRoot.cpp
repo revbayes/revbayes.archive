@@ -18,6 +18,7 @@
 #include "TransitionProbabilityMatrix.h"
 #include "TypedDagNode.h"
 #include <vector>
+#include <cmath>
 
 using namespace RevLanguage;
 
@@ -40,7 +41,18 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_DECRoot::cre
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rf = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<int>* rs = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rs = NULL;
+    if ( this->args[1].getVariable() != NULL && this->args[1].getVariable()->getRevObject() != RevNullObject::getInstance()) {
+        rs = static_cast<const Simplex&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    }
+    else {
+        size_t n = log2(rf->getValue().size()) + 1;
+        double p = 1.0 / n;
+        rs = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("", new RevBayesCore::RbVector<double>(n,p));
+    }
+    
+//    RevBayesCore::TypedDagNode<int>* mrs = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::DispersalExtinctionRootStructureFunction* f = new RevBayesCore::DispersalExtinctionRootStructureFunction( rf,rs );
     
@@ -58,7 +70,8 @@ const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         argumentRules.push_back( new ArgumentRule( "rootFreqs", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(RbConstants::Integer::max) ) );
+        argumentRules.push_back( new ArgumentRule( "rangeSize", Simplex::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+//        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(RbConstants::Integer::max) ) );
         
         rulesSet = true;
     }

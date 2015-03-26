@@ -409,8 +409,48 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
+    {
+        std::cerr << "Could not read in data matrix of type DNA because the nexus files says the type is:" << std::endl;
+        switch ( charblock->GetDataType() )
+        {
+            case 1:
+                std::cerr << "Standard" << std::endl;
+                break;
+                
+            case 2:
+                std::cerr << "DNA" << std::endl;
+                break;
+                
+            case 3:
+                std::cerr << "RNA" << std::endl;
+                break;
+                
+            case 4:
+                std::cerr << "Nucleotide" << std::endl;
+                break;
+                
+            case 5:
+                std::cerr << "Protein" << std::endl;
+                break;
+                
+            case 6:
+                std::cerr << "Continuous" << std::endl;
+                break;
+                
+            case 7:
+                std::cerr << "Codon" << std::endl;
+                break;
+                
+            case 8:
+                std::cerr << "Mixed" << std::endl;
+                break;
+                
+            default:
+                std::cerr << "Unknown" << std::endl;
+                break;
+        }
         return NULL;
-    
+    }
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)

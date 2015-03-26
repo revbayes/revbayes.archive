@@ -25,7 +25,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_chromosomes::Func_chromosomes( void ) : TypedFunction<RateMatrix>( ) {
+Func_chromosomes::Func_chromosomes( void ) : TypedFunction<RateGenerator>( ) {
     
 }
 
@@ -37,7 +37,7 @@ Func_chromosomes* Func_chromosomes::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMatrix >* Func_chromosomes::createFunction( void ) const {
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_chromosomes::createFunction( void ) const {
     
     
     RevBayesCore::TypedDagNode< int >* n           = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getDagNode();

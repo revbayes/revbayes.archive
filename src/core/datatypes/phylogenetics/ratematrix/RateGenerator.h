@@ -32,7 +32,11 @@ namespace RevBayesCore {
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
         virtual void                        calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;                        //!< Calculate the transition probabilities for the rate matrix
 
+        virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                 //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
+        
         virtual RateGenerator*              clone(void) const = 0;
+        
+        virtual void                        update(void) {};
         
         // public methods
         size_t                              getNumberOfStates(void) const;                                                                           //!< Return the number of states
@@ -47,5 +51,8 @@ namespace RevBayesCore {
 
         
     };
+    
+    std::ostream&                       operator<<(std::ostream& o, const RateGenerator& x);                                           //!< Overloaded output operator
+
 };
 #endif /* defined(__revbayes_proj__RateGenerator__) */

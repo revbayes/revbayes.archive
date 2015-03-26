@@ -42,7 +42,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_pomoRootFr
     
     RevBayesCore::TypedDagNode< double >* rpp = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix >* q = static_cast<const RateMatrix &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator >* q = static_cast<const RateGenerator &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
 
@@ -65,7 +65,7 @@ const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const {
 
         argumentRules.push_back( new ArgumentRule( "root_base_frequencies"       , Simplex::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "root_polymorphism_proportion", Real::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE) );
-        argumentRules.push_back( new ArgumentRule( "mutation_rate_matrix"        , RateMatrix::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "mutation_rate_matrix"        , RateGenerator::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "virtualNe"                   , Natural::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE) );
         
         rulesSet = true;

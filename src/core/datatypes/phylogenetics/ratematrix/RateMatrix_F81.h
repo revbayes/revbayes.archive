@@ -36,7 +36,7 @@ namespace RevBayesCore {
         // RateMatrix functions
         void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_F81*                     clone(void) const;
-        void                                updateMatrix(void);
+        void                                update(void);
 
     private:
         

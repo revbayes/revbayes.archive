@@ -9,24 +9,27 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 ){
+RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 )
+{
     
     kappa = 1.0;
     
-    updateMatrix();
+    update();
     
 }
 
 
 /** Destructor */
-RateMatrix_HKY::~RateMatrix_HKY(void) {
+RateMatrix_HKY::~RateMatrix_HKY(void)
+{
     
 }
 
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
     
     double t = rate * (startAge - endAge);
     
@@ -74,13 +77,15 @@ void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double en
 }
 
 
-RateMatrix_HKY* RateMatrix_HKY::clone( void ) const {
+RateMatrix_HKY* RateMatrix_HKY::clone( void ) const
+{
     
     return new RateMatrix_HKY( *this );
 }
 
 
-void RateMatrix_HKY::setKappa( double k ) {
+void RateMatrix_HKY::setKappa( double k )
+{
     
     kappa = k;
     
@@ -90,7 +95,8 @@ void RateMatrix_HKY::setKappa( double k ) {
 }
 
 
-void RateMatrix_HKY::updateMatrix( void ) {
+void RateMatrix_HKY::update( void )
+{
     
     if ( needsUpdate ) 
     {

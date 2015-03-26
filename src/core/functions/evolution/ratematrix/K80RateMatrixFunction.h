@@ -22,7 +22,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2014-11-18
      *
      */
-    class K80RateMatrixFunction : public TypedFunction<RateMatrix> {
+    class K80RateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
         K80RateMatrixFunction(const TypedDagNode<double> *k);
