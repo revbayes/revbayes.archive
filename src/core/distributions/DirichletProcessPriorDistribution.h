@@ -127,7 +127,7 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeDenomina
         denominator += log( cp + i );
     }
     
-//    concentrationHasChanged = false;
+    concentrationHasChanged = false;
 }
 
 
@@ -147,16 +147,15 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     createRestaurantVectors();
 	
 	int nt = numTables;
-	//int ne = numElements;
+	int ne = numElements;
     double lnProb = log( concentration->getValue() ) * nt;
     
     if ( concentrationHasChanged == true ){
         computeDenominator();
     }
 	
-//	int sn = RbMath::stirlingFirst(ne, nt);
 	
-//	lnProb += log(sn);
+	lnProb += RbMath::lnStirlingFirst(ne, nt);
     
     for (int i = 0; i < nt; ++i){
 		// compute the probability of having n_i customers per at table i
