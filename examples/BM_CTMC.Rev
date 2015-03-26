@@ -1,0 +1,211 @@
+mi = 0
+
+# read the data 
+contData <- readContinuousCharacterData("data/primates_lhtlog.nex")
+
+contData.excludeCharacter(5:11)
+nTraits <- contData.nchar()
+
+
+# read the sequence data
+# the readCharacter function returns a vector of matrices. We just take the first one
+seqData <- readDiscreteCharacterData("data/primates_cytb.nex")
+
+# get some useful variables from the data
+numTips = seqData.ntaxa()
+names = seqData.names()
+numNodes = numTips * 2 - 1
+
+######### 
+# tree  
+#########
+
+# create a birth death process, leading to a tree whose tips match the taxon names given by the dataset
+
+diversification ~ dnLognormal(0,1)
+turnover ~ dnGamma(4,4)
+
+speciation := diversification + turnover
+extinction := turnover
+
+
+# rescaling moves on speciation and extinction rates
+moves[++mi] = mvScale(diversification, lambda=1, tune=true, weight=3.0)
+moves[++mi] = mvScale(turnover, lambda=1, tune=true, weight=3.0)
+
+sampling_fraction <- 23 / 270     # 23 out of the ~ 270 primate species
+
+psi ~ dnBDP(lambda=speciation, mu=extinction, rho=sampling_fraction, rootAge=75, nTaxa=numTips, names=names)
+
+# moves on the tree: only relative dates
+moves[++mi] = mvSubtreeScale(psi, weight=5.0)
+moves[++mi] = mvNodeTimeSlideUniform(psi, weight=10.0)
+
+# we also move the tree topology
+# and integrate over the posterior induced by the sequence data
+moves[++mi] = mvNNI(psi, weight=5.0)
+moves[++mi] = mvFNPR(psi, weight=5.0)
+
+
+######### 
+# rate and trait evolution
+#########
+
+# covariance matrix of dimension nTraits + 2
+# first entry will be log of substitution rate
+# then all other entries will stand for the life-history traits
+
+# covariance matrix is inverse Wishart of parameters kappa * Identity and df = nTraits+3 degrees of freedom
+# where kappa is itself a scaling factor
+
+#kappa ~ dnLogUniform(min=0.001,max=1000)
+logkappa ~ dnUniform(-5,5)
+logkappa.setValue(0)
+kappa := 10^(logkappa)
+
+# moves on kappa
+moves[++mi] = mvSlide(logkappa, delta=0.1, tune=true, weight=3.0)
+
+df <- nTraits+4
+covdim <- nTraits+2
+
+sigma ~ dnInvWishart(dim=covdim, kappa=kappa, df=df)
+#sigma <- diag(covdim)
+
+# conjugate Gibbs move on covariance matrix
+#moves[++mi] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+moves[++mi] = mvSymmetricMatrixElementSlide(sigma, lambda=1.0, weight=1) 
+
+# the value of log body mass at the root
+for (i in 1:nTraits) {
+   rootvalue[i] ~ dnUniform(-1,1)
+   moves[++mi] = mvSlide(rootvalue[i],delta=10,tune=true,weight=2) 
+}
+# the fixed root values for the BM of the branch rates and the GC content
+rootvalue[nTraits+1] <- 0
+rootvalue[nTraits+2] <- 0
+
+nodevalues[numNodes] := rootvalue + 0.0 # quirky workaround because of current issue with reference nodes
+
+
+# univariate Brownian process along the tree
+# parameterized by sigma
+for (i in (numNodes-1):(numTips+1) ) {
+  nodevalues[i] ~ dnMVNormal( nodevalues[psi.parent(i)], precision=sigma, scale=sqrt(psi.branchLength(i)) )
+#  nodevalues[i] ~ dnMVNormal( nodevalues[psi.parent(i)], covariance=sigma, scale=sqrt(psi.branchLength(i)) )
+
+  # moves on the Brownian process
+  moves[++mi] = mvVectorSingleElementSliding( nodevalues[i], lambda=0.01, tune=true ,weight=20) 
+}
+
+for (i in numTips:1 ) {
+  nodevalues[i] ~ dnMVNormal( nodevalues[psi.parent(i)], precision=sigma, scale=sqrt(psi.branchLength(i)) )
+#  nodevalues[i] ~ dnMVNormal( nodevalues[psi.parent(i)], covariance=sigma, scale=sqrt(psi.branchLength(i)) )
+
+  # moves on the Brownian process
+  moves[++mi] = mvVectorSingleElementSliding( nodevalues[i], lambda=0.01, tune=true ,weight=20)
+
+  # condition Brownian model on quantitative trait data (second column of the dataset)
+  for (j in 1:nTraits) {
+    nodevalues[i].clampAt(j,contData.getTaxon(psi.nodeName(i))[j])
+  }
+}
+
+
+######### 
+# substitution process
+#########
+
+logGlobalBranchRate ~ dnUniform(-8,4)
+logGlobalBranchRate.setValue( log(0.015,base=10) )
+globalBranchRate := 10^(logGlobalBranchRate)
+moves[++mi] = mvSlide(logGlobalBranchRate, delta=1.0, tune=true, weight=2.0)
+
+#logGlobalGC ~ dnUniform(-8,4)
+#globalGC := 10^(logGlobalGC)
+#moves[++mi] = mvSlide(logGlobalGC, delta=0.01, tune=true, weight=2.0)
+
+# equilibrium frequencies 
+bf <- v(1,1,1,1)
+pi ~ dnDirichlet(bf)
+
+# moves on pi
+moves[++mi] = mvSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
+
+# the transition / transversion ratio
+logtstv ~ dnUniform(-4,4)
+tstv := exp( logtstv )
+
+# a move on transition transversion rate
+moves[++mi] = mvSlide(logtstv, delta=0.001, tune=true, weight=3.0)
+
+# nTraits+1 component of the Brownian model gives the *log* of the substitution rate
+for (i in 1:numNodes) {
+  nodeRates[i] := exp( nodevalues[i][nTraits+1] )
+}
+# now we compute the node values as the mean of the parent and child node values
+for (i in 1:(numNodes-1)) {
+  branchRates[i] := globalBranchRate * (nodeRates[i] + nodeRates[psi.parent(i)]) / 2.0
+}
+
+# nTraits+2 component of the Brownian model gives the *logit* of the equilibrium GC content
+# thus GC = tanh(X_2(t)), where X is the Brownian motion
+# tanh is the hyperbolic tangent: tanh(x) = exp(x) / (1 + exp(x))
+for (i in 1:numNodes) {
+  nodeGC[i] := tanh( nodevalues[i][nTraits+2] )
+}
+# now we compute the node values as the mean of the parent and child node values
+for (i in 1:(numNodes-1)) {
+  branchGC[i] :=  (nodeGC[i] + nodeGC[psi.parent(i)]) / 2.0
+
+  # each branch has its own substitution matrix, which is a T92 matrix
+  # defined by a transition/transversion ratio and an equilibrium GC
+  # so, we use branchGC, which gives a GC for each branch
+  # we combine it with the global ts/tv ratio
+  branchMatrices[i] := fnT92(kappa=tstv, gc=Probability(branchGC[i]))
+  branchMatrices[i] := fnT92(kappa=tstv, gc=0.5)
+}
+
+
+# create the sequence evolution model
+seq ~ dnPhyloCTMC(tree=psi, Q=branchMatrices, rootFrequencies=pi, branchRates=branchRates, type="DNA")
+#seq ~ dnPhyloCTMC(tree=psi, Q=fnHKY(pi,tstv), rootFrequencies=pi, type="DNA")
+
+# condition on sequence alignment
+seq.clamp(seqData)
+
+
+
+# create the model
+mymodel = model(sigma)
+
+# on screen, we will monitor only the correlation coefficient and the mean value of each trait
+monitors[1] = mnScreen(printgen=10000, speciation, extinction)
+
+# a model monitor
+monitors[2] = mnModel(filename="output/primates_MVN_GC.log", printgen=10, separator = TAB)
+
+# a file monitor for the branch rates
+monitors[3] = mnFile(filename="output/primates_MVN_GC_branchRates.log", printgen=10, separator = TAB, logGlobalBranchRate, globalBranchRate, branchRates)
+
+# a file monitor for the GC content
+monitors[4] = mnFile(filename="output/primates_joint.log", printgen=10, separator = TAB, branchGC)
+#monitors[4] = mnFile(filename="output/primates_MVN_GC_content.log", printgen=10, separator = TAB, logGlobalGC, globalGC, branchGC)
+ 
+mymcmc = mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=5000, tuningInterval=250)
+
+mymcmc.run(50000)
+
+mymcmc.operatorSummary()
+
+
+
+
+treetrace = readTreeTrace("output/primates_joint.trees", "clock")
+treetrace.summarize()
+
+map = mapTree( file="primates_joint.tree", treetrace )
+
+
