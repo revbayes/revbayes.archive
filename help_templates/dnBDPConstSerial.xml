@@ -10,14 +10,16 @@
 
         <name>dnBDPConstSerial</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>dnBDPSerial</alias>
+        <alias>dnBirthDeathConstantSerial</alias>
 
-        <title>Some title you want to give this function</title>
+        <title>The constant-rate birth-death process with serial sampling</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+                The serially sampled constant-rate birth-death process specifies a probability distribution on time trees with non-contemporaneous tips. The birth (speciation) and death (extinction)
+                rates are assumed to be constant over time. Unlike some implementations, this process does not constrain the birth rate to be larger than the death
+                rate. 
             </p>
         </description>
     
@@ -34,7 +36,7 @@
                 <label>origin</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The time the process started (origin time).</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>NULL</defaultValue>
             </argument>
@@ -42,7 +44,7 @@
                 <label>rootAge</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The age of the most-recent-common ancestor of the clade (root time).</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>NULL</defaultValue>
             </argument>
@@ -50,14 +52,14 @@
                 <label>lambda</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Birth (speciation) rate.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>mu</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Death (extinction) rate.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>0</defaultValue>
             </argument>
@@ -65,7 +67,7 @@
                 <label>psi</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The rate of sampling tips before the present.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>0</defaultValue>
             </argument>
@@ -73,7 +75,7 @@
                 <label>rho</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The probability of sampling an extant taxon.</description>
                 <valueType>Probability</valueType>
                 <defaultValue>0</defaultValue>
             </argument>
@@ -81,7 +83,7 @@
                 <label>timeSinceLastSample</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The amount of time since the last sampled tip.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>0</defaultValue>
             </argument>
@@ -89,7 +91,7 @@
                 <label>condition</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The condition of the process. For details, see below</description>
                 <valueType>String</valueType>
                 <option>"time"</option>
                 <option>"survival"</option>
@@ -100,14 +102,14 @@
                 <label>names</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The taxon labels that will be applied to the simulated tree.</description>
                 <valueType>String[]</valueType>
             </argument>
             <argument>
                 <label>constraints</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The topological constraints applied to the tree, i.e., conditioning on monphyly of a given clade.</description>
                 <valueType>Clade[]</valueType>
                 <defaultValue>[  ]</defaultValue>
             </argument>
