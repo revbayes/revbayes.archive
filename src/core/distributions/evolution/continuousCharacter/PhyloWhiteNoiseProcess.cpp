@@ -155,7 +155,7 @@ void PhyloWhiteNoiseProcess::restoreSpecialization( DagNode *restorer ) {
 */
 
 
-//void PhyloWhiteNoiseProcess::touchSpecialization( DagNode *toucher ) {
+//void PhyloWhiteNoiseProcess::touchSpecialization( DagNode *toucher, bool touchAll ) {
     // if the root val has changed, then we need to change the corresponding value in our vector and downpass the touch
 /*
  if ( rootVal == toucher ) {

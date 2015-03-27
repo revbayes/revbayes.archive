@@ -619,7 +619,7 @@ void AbstractBirthDeathProcess::swapParameterInternal( const DagNode *oldP, cons
  * Touch the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void AbstractBirthDeathProcess::touchSpecialization(DagNode *affecter)
+void AbstractBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
     if ( affecter == rootAge )

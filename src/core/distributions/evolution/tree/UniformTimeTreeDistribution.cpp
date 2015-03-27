@@ -281,7 +281,7 @@ void UniformTimeTreeDistribution::swapParameterInternal( const DagNode *oldP, co
  * Touch the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void UniformTimeTreeDistribution::touchSpecialization(DagNode *affecter)
+void UniformTimeTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
     if ( affecter == originTime )
