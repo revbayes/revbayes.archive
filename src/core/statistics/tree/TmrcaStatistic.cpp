@@ -12,7 +12,7 @@
 
 using namespace RevBayesCore;
 
-TmrcaStatistic::TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c) : TypedFunction<double>( new double(0.0) ), tree( t ), clade( c ), index( RbConstants::Size_t::nan ) {
+TmrcaStatistic::TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c, const bool s) : TypedFunction<double>( new double(0.0) ), tree( t ), clade( c ), stemAge( s ), index( RbConstants::Size_t::nan ) {
     // add the tree parameter as a parent
     addParameter( tree );
     
@@ -98,8 +98,18 @@ void TmrcaStatistic::update( void ) {
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
     
-    double tmrca = tree->getValue().getAge(index);
-    *value = tmrca;
+    if ( stemAge )
+    {
+        size_t parentIndex = tree->getValue().getNode(index).getParent().getIndex();
+        double tmrca = tree->getValue().getAge(parentIndex);
+        *value = tmrca;
+    }
+    else
+    {
+        double tmrca = tree->getValue().getAge(index);
+        *value = tmrca;
+    }
+    
 }
 
 
