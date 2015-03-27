@@ -911,7 +911,7 @@ void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
         
         if ( pair[0] == "index" ) continue;
         
-        if ( StringUtilities::isNumber( pair[1] ) )
+        if ( StringUtilities::isNumber( pair[1] ) && !StringUtilities::isIntegerNumber( pair[1] ) )
         {
             annotateContinuous(tree, pair[0], i, 0.95, b, true);
         }

@@ -59,7 +59,7 @@ namespace RevBayesCore {
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
-        virtual void                                        touchMe(DagNode *toucher);                                                  //!< Touch myself and tell affected nodes value is reset
+        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                                  //!< Touch myself and tell affected nodes value is reset
         
     private:
         TypedFunction<valueType>*                           function;
@@ -423,7 +423,7 @@ void RevBayesCore::DeterministicNode<valueType>::swapParent( const RevBayesCore:
  *       it to be set correctly might well fail.
  */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher )
+void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
     
     // To be on the safe side, we set the touched flag here, but the flag is not used by this class and may not
@@ -439,7 +439,7 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher )
     needsUpdate = true;
     
     // Dispatch the touch message to downstream nodes
-    this->touchAffected();
+    this->touchAffected( touchAll );
 }
 
 

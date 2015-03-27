@@ -42,7 +42,7 @@ namespace RevBayesCore {
         // special handling of state changes
         void                                                    keepSpecialization(DagNode* affecter);
         void                                                    restoreSpecialization(DagNode *restorer);
-        void                                                    touchSpecialization(DagNode *toucher);
+        void                                                    touchSpecialization(DagNode *toucher, bool touchAll);
         
     private:
         // helper methods

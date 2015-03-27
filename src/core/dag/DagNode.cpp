@@ -921,27 +921,27 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
  * Since the DAG node was touched and possibly changed, we tell affected DAG nodes that they too have been touched
  * and need to update their value.
  */
-void DagNode::touch()
+void DagNode::touch(bool touchAll)
 {
 
     // first touch myself
-    touchMe( this );
+    touchMe( this, touchAll );
     
     // next, touch all my children
-    touchAffected();
+    touchAffected( touchAll );
 }
 
 
 /**
  * Tell affected variable nodes to touch themselves (i.e. that they've been touched).
  */
-void DagNode::touchAffected()
+void DagNode::touchAffected(bool touchAll)
 {
 
     // touch all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-        (*i)->touchMe( this );
+        (*i)->touchMe( this, touchAll );
     }
     
 }

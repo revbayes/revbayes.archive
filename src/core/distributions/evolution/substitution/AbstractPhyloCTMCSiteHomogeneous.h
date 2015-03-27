@@ -115,7 +115,7 @@ namespace RevBayesCore {
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                                        touchSpecialization(DagNode *toucher);
+        virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         // pure virtual methods
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
@@ -2130,9 +2130,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapPar
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
+{
     
-    bool touchAll = false;
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == heterogeneousClockRates )

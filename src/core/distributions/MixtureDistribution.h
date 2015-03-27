@@ -43,7 +43,7 @@ namespace RevBayesCore {
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
         void                                                keepSpecialization(DagNode* affecter);
         void                                                restoreSpecialization(DagNode *restorer);
-        void                                                touchSpecialization(DagNode *toucher);
+        void                                                touchSpecialization(DagNode *toucher, bool touchAll);
         
     protected:
         // Parameter management functions
@@ -250,7 +250,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType *v, bo
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher )
+void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher, bool touchAll )
 {
     // only do this when the toucher was our parameters
     if ( toucher == parameterValues )

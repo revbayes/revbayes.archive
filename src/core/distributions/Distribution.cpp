@@ -211,17 +211,17 @@ void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
 
 
 /* Method stub: override for specialized treatment. */
-void Distribution::touch( DagNode *toucher )
+void Distribution::touch( DagNode *toucher, bool touchAll )
 {
     // do some general stuff for all distributions ...
     
     // delegate to specialization
-    touchSpecialization( toucher );
+    touchSpecialization( toucher, touchAll );
 }
 
 
 /* Method stub: override for specialized treatment. */
-void Distribution::touchSpecialization( DagNode *toucher )
+void Distribution::touchSpecialization( DagNode *toucher, bool touchAll )
 {
     // do nothing
 }
