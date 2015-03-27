@@ -1,6 +1,7 @@
 #include "Clade.h"
 #include "Func_tmrca.h"
 #include "ModelVector.h"
+#include "RlBoolean.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RealPos.h"
@@ -29,7 +30,8 @@ RevBayesCore::TypedFunction<double>* Func_tmrca::createFunction( void ) const
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
-    RevBayesCore::TmrcaStatistic* f = new RevBayesCore::TmrcaStatistic( tau, c );
+    bool stemAge = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::TmrcaStatistic* f = new RevBayesCore::TmrcaStatistic( tau, c, stemAge );
     
     return f;
 }
@@ -47,7 +49,7 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
-        
+        argumentRules.push_back( new ArgumentRule( "stemAge", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
