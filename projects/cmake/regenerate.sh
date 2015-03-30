@@ -56,7 +56,7 @@ if [ "$mavericks" = "true" || "$mac_universal" = "true" ]
 then
 ./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
 else
-./b2 link=static cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+./b2 link=static
 fi
 
 else
@@ -111,7 +111,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -static -stdlib=libstdc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -static")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 fi
