@@ -33,7 +33,7 @@ namespace RevBayesCore {
     class TmrcaStatistic : public TypedFunction<double> {
         
     public:
-        TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c);                                                                                   //!< Default constructor
+        TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c, const bool s);                                                                                   //!< Default constructor
         virtual                                    ~TmrcaStatistic(void);                                                                  //!< Destructor
                 
         // Basic utility functions
@@ -50,6 +50,7 @@ namespace RevBayesCore {
         const TypedDagNode<TimeTree>*               tree;
         Clade                                       clade;
         bool                                        initialized;
+        bool                                        stemAge;
         size_t                                      index;
         size_t                                      taxaCount;
     };
