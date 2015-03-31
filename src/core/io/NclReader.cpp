@@ -127,7 +127,7 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
                         for (size_t j = 0; j < nSets; ++j)
                         {
                             const NxsUnsignedSet *set = assumption->GetCharSet(names[j]);
-                            AbstractCharacterData *m_tmp = m->clone();
+                            HomologousCharacterData *m_tmp = dynamic_cast<HomologousCharacterData *>(m)->clone();
                             m_tmp->excludeAllCharacters();
                             for (std::set<unsigned>::iterator k = set->begin(); k != set->end(); k++)
                             {
@@ -1667,10 +1667,11 @@ std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename
 
 
 /** Set excluded characters and taxa */
-void NclReader::setExcluded( const NxsCharactersBlock* charblock, AbstractCharacterData* cMat ) const {
+void NclReader::setExcluded( const NxsCharactersBlock* charblock, HomologousCharacterData* cMat ) const {
     
     // Set excluded taxa
-    for (unsigned int origTaxIndex=0; origTaxIndex<charblock->GetNTax(); origTaxIndex++ ) {
+    for (unsigned int origTaxIndex=0; origTaxIndex<charblock->GetNTax(); origTaxIndex++ )
+    {
 		if ( !charblock->IsActiveTaxon( origTaxIndex ) )
             cMat->excludeTaxon( origTaxIndex );
     }
