@@ -1142,7 +1142,8 @@ void TopologyNode::setIndex( size_t idx) {
     
 }
 
-void TopologyNode::setName(std::string const &n) {
+void TopologyNode::setName(std::string const &n)
+{
     
     taxon.setName( n );
     

@@ -66,7 +66,8 @@ RevBayesCore::EmpiricalTreeMove<treeType>* RevBayesCore::EmpiricalTreeMove<treeT
 
 
 template <class treeType>
-const std::string& RevBayesCore::EmpiricalTreeMove<treeType>::getMoveName( void ) const {
+const std::string& RevBayesCore::EmpiricalTreeMove<treeType>::getMoveName( void ) const
+{
     static std::string name = "EmpiricalTreeMove";
     
     return name;
