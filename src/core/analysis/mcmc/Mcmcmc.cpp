@@ -503,8 +503,8 @@ void Mcmcmc::synchronizeValues(void)
         std::cout << "\n" << pid << " Mcmcmc::synchronizeValues() Sent!\n";
 #endif
     }
-#endif
     MPI::COMM_WORLD.Barrier();
+#endif
     
 //    if ( processActive == true )
     if (activePID == pid)
@@ -556,7 +556,10 @@ void Mcmcmc::synchronizeValues(void)
 #endif
         }
     }
+    
+#ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
+#endif
     
 #ifdef DEBUG_MPI_MCA
     std::cout << "\n" << pid << " Mcmcmc::synchronizeValues() end\n";
@@ -600,9 +603,9 @@ void Mcmcmc::synchronizeHeats(void)
 #ifdef DEBUG_MPI_MCA
         std::cout << "\n" << pid << " Mcmcmc::synchronizeHeats() Sent!\n";
 #endif
-    }
-#endif
+    }    
     MPI::COMM_WORLD.Barrier();
+#endif
     
     if ( activePID == pid )
     {
@@ -647,7 +650,9 @@ void Mcmcmc::synchronizeHeats(void)
             
         }
     }
+#ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
+#endif
     
 #ifdef DEBUG_MPI_MCA
     std::cout << "\n" << pid << " Mcmcmc::synchronizeHeats() end\n";
@@ -666,7 +671,9 @@ void Mcmcmc::swapChains(void)
     {
         return;
     }
+#ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
+#endif
     
     // send all chain values to pid 0
     synchronizeValues();
