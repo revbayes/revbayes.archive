@@ -6,24 +6,21 @@
 
 using namespace RevBayesCore;
 
-/* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
-    tree( t )
-{
-    
-}
-
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< RbVector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+    isNodeParameter( np ),
     tree( t ),
     nodeVariables( n )
 {
 //    this->nodes.insert( tree );
     
-    for (std::set<TypedDagNode< RbVector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
+    for (std::set<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
         this->nodes.push_back( *it );
+        
+        // tell the node that we have a reference to it (avoids deletion)
+        (*it)->incrementReferenceCount();
     }
 }
 
@@ -42,10 +39,31 @@ void ExtendedNewickTreeMonitor::monitorVariables(unsigned long gen)
     
     outStream << separator;
     
-    tree->getValue().clearBranchParameters();
-    for (std::set<TypedDagNode< RbVector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
+    tree->getValue().clearParameters();
+    for (std::set<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
-        tree->getValue().addBranchParameter((*it)->getName(), (*it)->getValue(), false);
+        const std::string &name = (*it)->getName();
+//        Container *c = dynamic_cast<Container *>( (*it)->getValue() );
+        size_t numParams = (*it)->getNumberOfElements();
+
+        std::stringstream ss;
+        (*it)->printValueElements(ss,"\t");
+        std::string concatenatedValues = ss.str();
+        std::vector<std::string> values;
+        StringUtilities::stringSplit(concatenatedValues, "\t", values);
+        for (size_t i = 0; i < numParams; ++i)
+        {
+            TopologyNode &node = tree->getValue().getNode( i );
+            if ( isNodeParameter == true )
+            {
+                node.addNodeParameter( name, values[i]);
+            }
+            else
+            {
+                node.addBranchParameter( name, values[i]);
+            }
+            
+        }
     }
             
     outStream << tree->getValue();
@@ -76,7 +94,8 @@ void ExtendedNewickTreeMonitor::swapNode(DagNode *oldN, DagNode *newN)
     else if ( nodeVar != NULL )
     {
         // error catching
-        if ( nodeVariables.find(nodeVar) == nodeVariables.end() ) {
+        if ( nodeVariables.find(nodeVar) == nodeVariables.end() )
+        {
             throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this extended newick monitor because the monitor doesn't hold this DAG node.");
         }
         

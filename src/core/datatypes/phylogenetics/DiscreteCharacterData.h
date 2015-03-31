@@ -77,6 +77,7 @@ namespace RevBayesCore {
         bool                                                isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
         bool                                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                                isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
+        void                                                removeExludedCharacters(void);                                              //!< Remove all the excluded characters
         void                                                restoreCharacter(size_t i);                                                 //!< Restore character
         void                                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                                restoreTaxon(const std::string& s);                                         //!< Restore taxon
@@ -1092,6 +1093,24 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::numMissAmbig(void) const
     }
     
     return nma;
+}
+
+
+/**
+ * Remove all the excluded character.
+ *
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::removeExludedCharacters( void )
+{
+    
+    for (typename std::map<std::string, DiscreteTaxonData<charType> >::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
+    {
+        it->second.removeCharacters( deletedCharacters );
+    }
+    
+    deletedCharacters.clear();
+    
 }
 
 

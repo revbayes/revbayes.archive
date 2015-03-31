@@ -71,32 +71,35 @@ void ModuleSystem::loadModules(const std::string &dir)
     fMngr.setFilePath( dir );
     if (fMngr.testDirectory() == false)
     {
-        throw RbException("Warning: Cannot find directory containing modules. No modules are available. Path = " + dir);
+//        throw RbException("Warning: Cannot find directory containing modules. No modules are available. Path = " + dir);
     }
-    
-    // get the files contained in the directory
-    
-    // gather all text files in dir, filtered by '.ext'
-    std::string ext = "Rev";
-    std::vector<std::string> files;
-    std::vector<std::string> fileNames;
-    fMngr.setStringWithNamesOfFilesInDirectory( files );
-    for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); ++it)
+    else
     {
-        RevBayesCore::RbFileManager tmpFM = RevBayesCore::RbFileManager( *it );
-        if ( tmpFM.getFileExtension() == ext) {
-            fileNames.push_back( *it );
+        // get the files contained in the directory
+    
+        // gather all text files in dir, filtered by '.ext'
+        std::string ext = "Rev";
+        std::vector<std::string> files;
+        std::vector<std::string> fileNames;
+        fMngr.setStringWithNamesOfFilesInDirectory( files );
+        for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); ++it)
+        {
+            RevBayesCore::RbFileManager tmpFM = RevBayesCore::RbFileManager( *it );
+            if ( tmpFM.getFileExtension() == ext)
+            {
+                fileNames.push_back( *it );
+            }
         }
-    }
     
-    for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
-    {
-        Module m = Module(*it);
-        RevBayesCore::RbFileManager tmp = RevBayesCore::RbFileManager( *it );
-        std::string name = tmp.getFileNameWithoutExtension();
-        modules.insert( std::pair<std::string, Module>(name,m) );
-    }
+        for (std::vector<std::string>::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
+        {
+            Module m = Module(*it);
+            RevBayesCore::RbFileManager tmp = RevBayesCore::RbFileManager( *it );
+            std::string name = tmp.getFileNameWithoutExtension();
+            modules.insert( std::pair<std::string, Module>(name,m) );
+        }
     
+    }
     
 }
 

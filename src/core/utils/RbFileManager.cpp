@@ -501,7 +501,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
     bool isDPresent = isDirectoryPresent(s);
     bool isFPresent = isFilePresent(s);
     
-    if (isDPresent == true && isFPresent == false)
+    if ( s.length() > 0 && isDPresent == true && isFPresent == false)
     {
         fileName = "";
         int location = (int)s.find_last_of( pathSeparator );

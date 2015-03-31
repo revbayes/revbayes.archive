@@ -42,7 +42,7 @@ namespace RevBayesCore {
         void                                                    getAffected(std::set<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
         void                                                    keepSpecialization(DagNode* affecter);
         void                                                    restoreSpecialization(DagNode *restorer);
-        void                                                    touchSpecialization(DagNode *toucher);
+        void                                                    touchSpecialization(DagNode *toucher, bool touchAll);
         */
         
     protected:

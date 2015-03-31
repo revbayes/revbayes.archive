@@ -69,7 +69,7 @@ const TypeSpec& Func_blosum62::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_blosum62::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
     return returnTypeSpec;
 }

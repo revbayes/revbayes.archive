@@ -34,12 +34,15 @@ namespace RevBayesCore {
     class TransitionProbabilityMatrix;
     
     class RateMatrix_Pomo : public AbstractRateMatrix {
-        
+    
     public:
+        
+        using RateMatrix::getRate;
+        
         RateMatrix_Pomo(size_t n);                                                  //!< Construct rate matrix with n states
         RateMatrix_Pomo(size_t n,  const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
         
-        RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
+        RateMatrix_Pomo(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
         virtual                         ~RateMatrix_Pomo(void);                     //!< Destructor
         
         // RateMatrix functions
@@ -48,9 +51,9 @@ namespace RevBayesCore {
         RateMatrix_Pomo*                clone(void) const;
         const std::vector<double>&      getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
 
-        void                            updateMatrix(void);
+        void                            update(void);
         void setMutationRates(const std::vector<double>& mr);
-        void setMutationRates(const RateMatrix& mm);
+        void setMutationRates(const RateGenerator& mm);
         void setSelectionCoefficients(const std::vector<double>& sc);
         
         

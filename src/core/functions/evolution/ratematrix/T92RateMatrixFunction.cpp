@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-T92RateMatrixFunction::T92RateMatrixFunction(const TypedDagNode< double > *eqGc, const TypedDagNode< double > *tstv) : TypedFunction<RateMatrix>( new RateMatrix_Tamura92( ) ),
+T92RateMatrixFunction::T92RateMatrixFunction(const TypedDagNode< double > *eqGc, const TypedDagNode< double > *tstv) : TypedFunction<RateGenerator>( new RateMatrix_Tamura92( ) ),
     equilibriumGc( eqGc ),
     transitionTransversionRate( tstv )
 {
@@ -40,7 +40,7 @@ void T92RateMatrixFunction::update( void )
     static_cast< RateMatrix_Tamura92* >(value)->setGC( gc );
     static_cast< RateMatrix_Tamura92* >(value)->setKappa( k );
     
-    value->updateMatrix();
+    value->update();
 
 }
 

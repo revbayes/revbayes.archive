@@ -39,7 +39,7 @@ namespace RevBayesCore {
         void                                                                resetValue( void );
         virtual void                                                        restoreSpecialization(DagNode *restorer);
         double                                                              sumRootLikelihood(void);
-        virtual void                                                        touchSpecialization(DagNode *toucher);
+        virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
 
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
@@ -83,6 +83,9 @@ RevBayesCore::PhyloBrownianProcessREML<treeType>::PhyloBrownianProcessREML(const
     // We don'e want tau to die before we die, or it can't remove us as listener
     this->tau->getValue().getTreeChangeEventHandler().addListener( this );
     this->tau->incrementReferenceCount();
+    
+    // we need to reset the contrasts
+    this->resetValue();
     
 }
 
@@ -437,10 +440,8 @@ double RevBayesCore::PhyloBrownianProcessREML<treeType>::sumRootLikelihood( void
 
 
 template<class treeType>
-void RevBayesCore::PhyloBrownianProcessREML<treeType>::touchSpecialization( DagNode* affecter )
+void RevBayesCore::PhyloBrownianProcessREML<treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
 {
-    
-    bool touchAll = false;
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == this->heterogeneousClockRates )

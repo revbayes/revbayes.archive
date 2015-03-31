@@ -39,7 +39,7 @@ RateMatrix_GTR::RateMatrix_GTR(size_t n) : TimeReversibleRateMatrix( n )
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -234,7 +234,7 @@ void RateMatrix_GTR::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_GTR::updateMatrix( void ) {
+void RateMatrix_GTR::update( void ) {
     
     if ( needsUpdate ) 
     {

@@ -13,7 +13,7 @@ RateMatrix_Tamura92::RateMatrix_Tamura92(void) : TimeReversibleRateMatrix( 4 ){
     
     kappa = 1.0;
     
-    updateMatrix();
+    update();
     
 }
 
@@ -100,7 +100,7 @@ void RateMatrix_Tamura92::setGC(double f)
 }
 
 
-void RateMatrix_Tamura92::updateMatrix( void ) {
+void RateMatrix_Tamura92::update( void ) {
     
     if ( needsUpdate )
     {

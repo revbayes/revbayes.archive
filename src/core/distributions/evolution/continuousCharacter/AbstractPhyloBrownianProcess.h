@@ -35,7 +35,7 @@ namespace RevBayesCore {
         virtual double                                                      computeLnProbability(void) = 0;
         
         // non-virtual
-        void                                                                setValue(ContinuousCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setValue(ContinuousCharacterData *v, bool f=false);                                     //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
         
@@ -217,11 +217,11 @@ void RevBayesCore::AbstractPhyloBrownianProcess<treeType>::resetValue( void )
 
 
 template<class treeType>
-void RevBayesCore::AbstractPhyloBrownianProcess<treeType>::setValue(ContinuousCharacterData *v)
+void RevBayesCore::AbstractPhyloBrownianProcess<treeType>::setValue(ContinuousCharacterData *v, bool force)
 {
     
     // delegate to the parent class
-    TypedDistribution< ContinuousCharacterData >::setValue(v);
+    TypedDistribution< ContinuousCharacterData >::setValue(v, force);
     
     // reset the number of sites
     this->numSites = v->getNumberOfIncludedCharacters();

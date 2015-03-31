@@ -20,7 +20,7 @@ namespace RevBayesCore {
     class DispersalExtinctionRootStructureFunction : public TypedFunction<RbVector<double> > {
         
     public:
-        DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<int>* rs);
+        DispersalExtinctionRootStructureFunction(TypedDagNode<RbVector<double> >* rf, TypedDagNode<RbVector<double> >* rs);
         virtual                                            ~DispersalExtinctionRootStructureFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -40,7 +40,8 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<RbVector<double> >*              rootFrequencies;
-        const TypedDagNode<int>*                            maxRangeSize;
+        const TypedDagNode<RbVector<double> >*              rangeSize;
+//        const TypedDagNode<int>*                            maxRangeSize;
         
         std::vector<std::vector<unsigned> >                 bits;
         std::map<std::vector<unsigned>, unsigned>           inverseBits;

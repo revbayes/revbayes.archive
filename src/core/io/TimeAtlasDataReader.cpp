@@ -107,8 +107,6 @@ void TimeAtlasDataReader::readJson(void)
                     }
                 }
          
-                ;
-                
                 std::vector<double> extinctionValues;
                 if (node_areas.second.find("extinctionValues") != node_areas.second.not_found())
                 {

@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-NodeTimeSlideBeta::NodeTimeSlideBeta(StochasticNode<TimeTree> *v, double d, bool t, double w) : SimpleMove( v, w, t), variable( v ), delta( d ) {
+NodeTimeSlideBeta::NodeTimeSlideBeta(StochasticNode<TimeTree> *v, double d, double o, bool t, double w) : SimpleMove( v, w, t), variable( v ), delta( d ), offset( o ) {
     
 }
 
@@ -70,15 +70,15 @@ double NodeTimeSlideBeta::performSimpleMove( void ) {
     
     // draw new ages and compute the hastings ratio at the same time
     double m = (my_age-child_Age) / (parent_age-child_Age);
-    double a = delta * m + 1.0;
-    double b = delta * (1.0-m) + 1.0;
+    double a = delta * m + offset;
+    double b = delta * (1.0-m) + offset;
     double new_m = RbStatistics::Beta::rv(a, b, *rng);
     double my_new_age = (parent_age-child_Age) * new_m + child_Age;
     
     // compute the Hastings ratio
     double forward = RbStatistics::Beta::lnPdf(a, b, new_m);
-    double new_a = delta * new_m + 1.0;
-    double new_b = delta * (1.0-new_m) + 1.0;
+    double new_a = delta * new_m + offset;
+    double new_b = delta * (1.0-new_m) + offset;
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
     
     // set the age

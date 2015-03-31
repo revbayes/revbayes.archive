@@ -39,7 +39,7 @@ namespace RevBayesCore {
         void                                                                resetValue( void );
         virtual void                                                        restoreSpecialization(DagNode *restorer);
         double                                                              sumRootLikelihood(void);
-        virtual void                                                        touchSpecialization(DagNode *toucher);
+        virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
        
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
@@ -352,10 +352,8 @@ double RevBayesCore::PhyloBrownianProcessMVN<treeType>::sumRootLikelihood( void 
 
 
 template<class treeType>
-void RevBayesCore::PhyloBrownianProcessMVN<treeType>::touchSpecialization( DagNode* affecter )
+void RevBayesCore::PhyloBrownianProcessMVN<treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
 {
-    
-    bool touchAll = false;
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == homogeneousRootState )

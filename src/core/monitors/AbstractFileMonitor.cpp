@@ -11,6 +11,7 @@ using namespace RevBayesCore;
 AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
     outStream(),
     filename( fname ),
+    workingFileName( fname ),
     replicateIndex( 0 ),
     separator( del ),
     posterior( pp ),
