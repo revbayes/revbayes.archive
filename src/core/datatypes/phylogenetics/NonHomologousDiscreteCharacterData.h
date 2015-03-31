@@ -45,9 +45,9 @@ namespace RevBayesCore {
         void                                                addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                                addTaxonData(const AbstractDiscreteTaxonData &obs);                         //!< Add discrete taxon data
         void                                                addTaxonData(const DiscreteTaxonData<charType> &obs);                       //!< Add taxon data
-        NonHomologousDiscreteCharacterData&                 concatenate(const NonHomologousDiscreteCharacterData &d);                                //!< Concatenate data matrices
         NonHomologousDiscreteCharacterData&                 concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
-        NonHomologousDiscreteCharacterData&                 concatenate(const NonHomologousCharacterData &d);                        //!< Concatenate data matrices
+        NonHomologousDiscreteCharacterData&                 concatenate(const NonHomologousCharacterData &d);                           //!< Concatenate data matrices
+        NonHomologousDiscreteCharacterData&                 concatenate(const NonHomologousDiscreteCharacterData &d);                   //!< Concatenate data matrices
         void                                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                                excludeTaxon(const std::string& s);                                         //!< Exclude taxon
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
@@ -195,8 +195,6 @@ RevBayesCore::NonHomologousDiscreteCharacterData<charType>& RevBayesCore::NonHom
 template<class charType>
 RevBayesCore::NonHomologousDiscreteCharacterData<charType>& RevBayesCore::NonHomologousDiscreteCharacterData<charType>::concatenate(const NonHomologousDiscreteCharacterData<charType> &obsd)
 {
-    
-    size_t sequenceLength = getNumberOfCharacters();
     
     // check if both have the same number of taxa
     if ( sequenceNames.size() != obsd.getNumberOfTaxa() )
