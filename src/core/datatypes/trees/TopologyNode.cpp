@@ -47,15 +47,15 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
 
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
-parent( NULL ),
-tree( NULL ),
-taxon(n),
-index(indx),
-interiorNode( false ),
-rootNode( true ),
-tipNode( true ),
-newick(""),
-newickNeedsRefreshing( true )
+    parent( NULL ),
+    tree( NULL ),
+    taxon(n),
+    index(indx),
+    interiorNode( false ),
+    rootNode( true ),
+    tipNode( true ),
+    newick(""),
+    newickNeedsRefreshing( true )
 {
 }
 
@@ -106,7 +106,8 @@ TopologyNode::~TopologyNode(void)
 }
 
 
-TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
+TopologyNode& TopologyNode::operator=(const TopologyNode &n)
+{
     
     if (this == &n)
     {
@@ -880,14 +881,6 @@ const std::vector<std::string>& TopologyNode::getNodeParameters( void ) const
 }
 
 
-//size_t TopologyNode::getNodeFieldNumber() const
-//{
-//    
-//    return nodeFields.size();
-//    
-//}
-
-
 size_t TopologyNode::getNumberOfChildren( void ) const
 {
     
@@ -1039,7 +1032,8 @@ double TopologyNode::getTmrca(const TopologyNode &n) const {
 }
 
 
-void TopologyNode::initiateFlaggingForNewickRecomputation( void ) {
+void TopologyNode::initiateFlaggingForNewickRecomputation( void )
+{
     
     for (size_t i = 0; i < getNumberOfChildren(); ++i)
     {
@@ -1049,13 +1043,22 @@ void TopologyNode::initiateFlaggingForNewickRecomputation( void ) {
 }
 
 
-bool TopologyNode::isRoot( void ) const {
+bool TopologyNode::isInternal( void ) const
+{
+    
+    return interiorNode;
+}
+
+
+bool TopologyNode::isRoot( void ) const
+{
     
     return parent == NULL;
 }
 
 
-bool TopologyNode::isTip( void ) const {
+bool TopologyNode::isTip( void ) const
+{
     
     return tipNode;
 }
@@ -1153,7 +1156,8 @@ void TopologyNode::setName(std::string const &n)
 }
 
 //SK
-void TopologyNode::setNodeType(bool tip, bool root, bool interior) {
+void TopologyNode::setNodeType(bool tip, bool root, bool interior)
+{
 	
 	tipNode = tip;
 	rootNode = root;
@@ -1161,7 +1165,8 @@ void TopologyNode::setNodeType(bool tip, bool root, bool interior) {
     
 }
 
-void TopologyNode::setSpeciesName(std::string const &n) {
+void TopologyNode::setSpeciesName(std::string const &n)
+{
     
     taxon.setSpeciesName( n );
     
