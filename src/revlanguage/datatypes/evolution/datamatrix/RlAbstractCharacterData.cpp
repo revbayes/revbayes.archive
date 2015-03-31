@@ -21,29 +21,14 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     
     MethodTable methods = MethodTable();
     
-    ArgumentRules* ncharArgRules               = new ArgumentRules();
     ArgumentRules* namesArgRules               = new ArgumentRules();
     ArgumentRules* ntaxaArgRules               = new ArgumentRules();
-    ArgumentRules* excludeallArgRules          = new ArgumentRules();
-    ArgumentRules* includeallArgRules          = new ArgumentRules();
-    ArgumentRules* excludecharArgRules         = new ArgumentRules();
-    ArgumentRules* excludecharArgRules2        = new ArgumentRules();
-    ArgumentRules* includecharArgRules         = new ArgumentRules();
-    ArgumentRules* includecharArgRules2        = new ArgumentRules();
     ArgumentRules* showdataArgRules            = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules          = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules2         = new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules        = new ArgumentRules();
     
     
-    excludecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    excludecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    includecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    includecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
     removeTaxaArgRules->push_back(         new ArgumentRule(""           , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
     removeTaxaArgRules2->push_back(        new ArgumentRule(""           , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
     setTaxonNameArgRules->push_back(       new ArgumentRule("current"    , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
@@ -51,15 +36,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("nchar",               new MemberProcedure(Natural::getClassTypeSpec(),               ncharArgRules           ) );
     
     methods.addFunction("ntaxa",               new MemberProcedure(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
-    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules        ) );
-    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules2       ) );
-    methods.addFunction("excludeAll",          new MemberProcedure(RlUtils::Void,        excludeallArgRules         ) );
-    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,        includecharArgRules        ) );
-    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,        includecharArgRules2       ) );
-    methods.addFunction("includeAll",          new MemberProcedure(RlUtils::Void,        includeallArgRules         ) );
     methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
     methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
@@ -81,86 +59,6 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return new RevVariable( new RlString( charDataObject->getDatatype() ) );
     }
-    else if (name == "excludeCharacter")
-    {
-        found = true;
-        
-        const RevObject& argument = args[0].getVariable()->getRevObject();
-        if ( argument.isType( Natural::getClassTypeSpec() ) ) 
-        {
-            size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
-            // remember that we internally store the character indeces from 0 to n-1
-            // but externally represent it as 1 to n
-            charDataObject->excludeCharacter( n-1 );
-        }
-        else if ( argument.isType( ModelVector<Natural>::getClassTypeSpec() ) ) 
-        {
-            const ModelVector<Natural>& x = static_cast<const ModelVector<Natural>&>( argument );
-            RevBayesCore::AbstractCharacterData &v = *charDataObject;
-            for ( size_t i=0; i<x.size(); i++ )
-            {
-                // remember that we internally store the character indeces from 0 to n-1
-                // but externally represent it as 1 to n
-                v.excludeCharacter( size_t(x[i])-1 );
-            }
-        }
-        return NULL;
-    }
-    else if (name == "excludeAll")
-    {
-        found = true;
-        
-        RevBayesCore::AbstractCharacterData &v = *charDataObject;
-        size_t nChars = v.getNumberOfCharacters();
-        
-        for (size_t i = 0; i < nChars; i++)
-        {
-            v.excludeCharacter(i);
-        }
-        
-        return NULL;
-    }
-    else if (name == "includeCharacter")
-    {
-        found = true;
-        
-        const RevObject& argument = args[0].getVariable()->getRevObject();
-        if ( argument.isType( Natural::getClassTypeSpec() ) )
-        {
-            size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
-            // remember that we internally store the character indeces from 0 to n-1
-            // but externally represent it as 1 to n
-            charDataObject->includeCharacter( n-1 );
-        }
-        else if ( argument.isType( ModelVector<Natural>::getClassTypeSpec() ) )
-        {
-            const ModelVector<Natural>& x = static_cast<const ModelVector<Natural>&>( argument );
-            RevBayesCore::AbstractCharacterData &v = *charDataObject;
-            for ( size_t i=0; i<x.size(); i++ )
-            {
-                // remember that we internally store the character indeces from 0 to n-1
-                // but externally represent it as 1 to n
-                v.includeCharacter( size_t(x[i])-1 );
-            }
-        }
-        
-        return NULL;
-    }
-    else if (name == "includeAll")
-    {
-        found = true;
-        
-        RevBayesCore::AbstractCharacterData &v = *charDataObject;
-        size_t nChars = v.getNumberOfCharacters();
-        
-        for (size_t i = 0; i < nChars; i++)
-        {
-            v.includeCharacter(i);
-        }
-        
-        return NULL;
-        
-    }
     else if (name == "names")
     {
         found = true;
@@ -172,14 +70,6 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         }
         
         return new RevVariable( n );
-    }
-    else if (name == "nchar") 
-    {
-        found = true;
-        
-        Natural *numChar = new Natural( charDataObject->getNumberOfIncludedCharacters() );
- 
-        return new RevVariable( numChar );
     }
     else if (name == "ntaxa") 
     {

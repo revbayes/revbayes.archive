@@ -30,15 +30,6 @@ DnaState::DnaState(void) : DiscreteCharacterState(),
 }
 
 
-/** Copy constructor */
-DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(),
-    state( s.state ),
-    stateIndex( s.stateIndex )
-{
-    
-}
-
-
 /** Constructor that sets the observation */
 DnaState::DnaState(char s) : DiscreteCharacterState() {
     
@@ -149,12 +140,8 @@ DnaState* DnaState::clone( void ) const {
 }
 
 
-unsigned int DnaState::computeState(char symbol) const {
-    
-    if ( symbol == '?')
-    {
-        throw RbException( "Unknown char" );
-    }
+unsigned int DnaState::computeState(char symbol) const
+{
     
     symbol = char( toupper( symbol ) );
     switch ( symbol )
@@ -198,13 +185,15 @@ unsigned int DnaState::computeState(char symbol) const {
 }
 
 
-std::string DnaState::getDatatype( void ) const {
+std::string DnaState::getDatatype( void ) const
+{
     
     return "DNA";
 }
 
 
-unsigned int DnaState::getNumberObservedStates(void) const  {
+unsigned int DnaState::getNumberObservedStates(void) const
+{
     
     char v = state;     // count the number of bits set in v
     char c;             // c accumulates the total bits set in v
@@ -242,16 +231,28 @@ size_t DnaState::getStateIndex( void ) const
     return stateIndex;
 }
 
-const std::string& DnaState::getStateLabels( void ) const {
+const std::string& DnaState::getStateLabels( void ) const
+{
     
     static std::string labels = "ACGT";
     
     return labels;
 }
 
-std::string DnaState::getStringValue(void) const  {
+std::string DnaState::getStringValue(void) const
+{
     
-    switch ( state ) 
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
+    
+    switch ( state )
     {
         case 0x0:
             return "-";
@@ -293,32 +294,15 @@ std::string DnaState::getStringValue(void) const  {
 
 
 
-bool DnaState::isAmbiguous( void ) const {
+bool DnaState::isAmbiguous( void ) const
+{
     
     return getNumberObservedStates() > 1;
 }
 
 
-bool DnaState::isGapState( void ) const {
-    
-    return state == 0x0;
-}
-
-
-void DnaState::setGapState(bool tf) {
-        
-    if ( tf ) 
-    {
-        state = 0x0;
-    }
-    else 
-    {
-        state = 0xF;
-    }
-}
-
-
-void DnaState::setState(size_t pos, bool val) {
+void DnaState::setState(size_t pos, bool val)
+{
     
     state &= val << pos;
     stateIndex = (unsigned)pos;

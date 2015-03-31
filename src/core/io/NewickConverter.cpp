@@ -108,7 +108,7 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
     TopologyNode *root = createNode( trimmed, nodes, brlens );
 	
     // set up the tree keeping the existing indexes
-	tau->setRootNoReIndexing( root );
+	tau->setRoot( root, false );
 	
 	// order the nodes
 	tau->orderNodesByIndex();
@@ -117,7 +117,8 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
     t->setTopology( tau, true );
 	
     // set the branch lengths
-    for (size_t i = 0; i < nodes.size(); ++i) {
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
 		t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
     }
 	
@@ -256,7 +257,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         {
             ss.ignore();
             std::string time = "";
-            while ( ss.good() && (c = char( ss.peek( ) ) ) != ';' && c != ','  && c != ')')
+            while ( ss.good() && (c = char( ss.peek( ) ) ) != ';' && c != ',' && c != ')' && c != '[' )
             {
                 time += char( ss.get() );
             }
@@ -273,6 +274,68 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             nodes.push_back( childNode );
             brlens.push_back( 0.0 );
         }
+        
+        // read the optional branch parameters
+        if ( char( ss.peek() ) == '[' )
+        {
+            
+            do
+            {
+                
+                ss.ignore();
+                
+                // ignore the '&' before parameter name
+                if ( char( ss.peek() ) == '&')
+                {
+                    ss.ignore();
+                }
+                
+                // read the parameter name
+                std::string paramName = "";
+                while ( ss.good() && (c = char( ss.peek() )) != '=' && c != ',')
+                {
+                    paramName += char( ss.get() );
+                }
+                
+                // ignore the equal sign between parameter name and value
+                if ( char( ss.peek() ) == '=')
+                {
+                    ss.ignore();
+                }
+                
+                // read the parameter name
+                std::string paramValue = "";
+                while ( ss.good() && (c = char( ss.peek() )) != ']' && c != ',' && c != ':')
+                {
+                    paramValue += char( ss.get() );
+                }
+                
+                if (paramName=="index")
+                {
+                    
+                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+                    
+                }
+                else if (paramName=="species")
+                {
+                    
+                    // \todo: Needs implementation
+                    childNode->setSpeciesName(paramValue);
+                    
+                }
+                else
+                {
+                    
+                    childNode->addBranchParameter(paramName, paramValue);
+                }
+                
+                
+            } while ( (c = char( ss.peek() )) != ']' );
+            
+            ss.ignore();
+            
+        }
+        
         
         // skip comma
         if ( char( ss.peek() ) == ',' )
@@ -328,16 +391,20 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 paramValue += char( ss.get() );
             }
 			
-			if (paramName=="index") {
+			if (paramName=="index")
+            {
 				
 				node->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
 				
-			} else if (paramName=="species") {
+			} else if (paramName=="species")
+            {
 				
 				// \todo: Needs implementation
                 node->setSpeciesName(paramValue);
 				
-            } else {
+            }
+            else
+            {
 				
                 node->addNodeParameter(paramName, paramValue);
             }
@@ -353,12 +420,12 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         
     }
     
-    // read the optinal  branch length
+    // read the optinal branch length
     if ( char( ss.peek() ) == ':' )
     {
         ss.ignore();
         std::string time = "";
-        while ( ss.good() && (c = char( ss.peek() )) != ';' && c != ',')
+        while ( ss.good() && (c = char( ss.peek() )) != ';' && c != ',' && c != '[' )
         {
             time += char( ss.get() );
         }
@@ -377,16 +444,79 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     }
     
     
+    
+    // read the optional branch parameters
+    if ( char( ss.peek() ) == '[' )
+    {
+        
+        do
+        {
+            
+            ss.ignore();
+            
+            // ignore the '&' before parameter name
+            if ( char( ss.peek() ) == '&')
+            {
+                ss.ignore();
+            }
+            
+            // read the parameter name
+            std::string paramName = "";
+            while ( ss.good() && (c = char( ss.peek() )) != '=' && c != ',')
+            {
+                paramName += char( ss.get() );
+            }
+            
+            // ignore the equal sign between parameter name and value
+            if ( char( ss.peek() ) == '=')
+            {
+                ss.ignore();
+            }
+            
+            // read the parameter name
+            std::string paramValue = "";
+            while ( ss.good() && (c = char( ss.peek() )) != ']' && c != ',' && c != ':')
+            {
+                paramValue += char( ss.get() );
+            }
+            
+            if (paramName=="index")
+            {
+                
+                node->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+                
+            }
+            else if (paramName=="species")
+            {
+                
+                // \todo: Needs implementation
+                node->setSpeciesName(paramValue);
+                
+            }
+            else
+            {
+                
+                node->addBranchParameter(paramName, paramValue);
+            }
+            
+            
+        } while ( (c = char( ss.peek() )) != ']' );
+        
+        ss.ignore();
+        
+    }
+    
+    
     return node;
 }
 
 
 //AdmixtureTree* NewickConverter::getAdmixtureTreeFromNewick(std::string const &n)
 //{
-//    
+//
 //    // create and allocate the tree object
 //    AdmixtureTree *t = new AdmixtureTree();
-//    
+//
 //    std::vector<TopologyNode*> nodes;
 //    std::vector<double> brlens;
 //    

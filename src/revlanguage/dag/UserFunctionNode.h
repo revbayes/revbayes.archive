@@ -51,7 +51,7 @@ namespace RevLanguage {
         void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
         void                                    keepMe(RevBayesCore::DagNode* affecter);                                                    //!< Keep value of this and affected nodes
         void                                    restoreMe(RevBayesCore::DagNode *restorer);                                                 //!< Restore value of this nodes
-        void                                    touchMe(RevBayesCore::DagNode *toucher);                                                    //!< Touch myself and tell affected nodes value is reset
+        void                                    touchMe(RevBayesCore::DagNode *toucher, bool touchAll);                                                    //!< Touch myself and tell affected nodes value is reset
         
     private:
         UserFunction*                           userFunction;                                                       //!< The user function used to compute the value
@@ -461,14 +461,14 @@ void UserFunctionNode<rlType>::swapParent(const RevBayesCore::DagNode* oldParent
  * so that the touch propagates correctly regardless of the starting DAG state.
  */
 template<typename rlType>
-void UserFunctionNode<rlType>::touchMe( RevBayesCore::DagNode* toucher )
+void UserFunctionNode<rlType>::touchMe( RevBayesCore::DagNode* toucher, bool touchAll )
 {
     
     // Touch myself
     this->touched = true;
     
     // Dispatch the touch message to downstream nodes
-    this->touchAffected();
+    this->touchAffected( touchAll );
 }
 
 

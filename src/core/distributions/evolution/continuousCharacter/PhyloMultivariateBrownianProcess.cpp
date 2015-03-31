@@ -213,7 +213,8 @@ void PhyloMultivariateBrownianProcess::flagNodes()
     }
 }
 
-void PhyloMultivariateBrownianProcess::touchSpecialization( DagNode *toucher ) {
+void PhyloMultivariateBrownianProcess::touchSpecialization( DagNode *toucher, bool touchAll )
+{
     
     if ( toucher == sigma ) {
         // should recompute the probability of all nodes

@@ -31,14 +31,6 @@ NaturalNumbersState::NaturalNumbersState(void) : DiscreteCharacterState(),
 
 
 
-/** Copy constructor */
-NaturalNumbersState::NaturalNumbersState(const NaturalNumbersState& s) : DiscreteCharacterState(),
-    state( s.state )
-{
-    
-}
-
-
 /** Constructor that sets the observation */
 NaturalNumbersState::NaturalNumbersState(const std::string &s) : DiscreteCharacterState()
 {
@@ -206,38 +198,26 @@ const std::string& NaturalNumbersState::getStateLabels( void ) const
 std::string NaturalNumbersState::getStringValue(void) const
 {
     
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
+    
 	return boost::lexical_cast<std::string>(state);
 	
 }
 
 
 
-bool NaturalNumbersState::isAmbiguous( void ) const {
+bool NaturalNumbersState::isAmbiguous( void ) const
+{
     
     return getNumberObservedStates() > 1;
-}
-
-
-bool NaturalNumbersState::isGapState( void ) const {
-    
-	if (state == -1)
-		return true;
-	else
-		return false;
-	
-}
-
-
-void NaturalNumbersState::setGapState(bool tf) {
-    
-    if ( tf )
-    {
-        state = RevBayesCore::g_MAX_NAT_NUM_STATES + 1;
-    }
-    else
-    {
-        state = -1;
-    }
 }
 
 

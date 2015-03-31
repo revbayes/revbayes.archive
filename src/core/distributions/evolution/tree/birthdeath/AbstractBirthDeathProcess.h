@@ -26,18 +26,18 @@ namespace RevBayesCore {
         
     public:
         AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
-                                  const std::vector<Taxon> &tn, const std::vector<Clade> &c);        
+                                  const std::vector<Taxon> &tn, const std::vector<Clade> &c);
         
         // pure virtual member functions
         virtual AbstractBirthDeathProcess*                  clone(void) const = 0;                                                                              //!< Create an independent clone
         
-                
+        
         // public member functions you may want to override
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
-
         
-    protected:  
+        
+    protected:
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
         virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const = 0;                                                  //!< Simulate n speciation events.
@@ -48,24 +48,23 @@ namespace RevBayesCore {
         virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
         virtual void                                        keepSpecialization(DagNode* affecter);
         virtual void                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                        touchSpecialization(DagNode *toucher);
-
+        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
+        
         // Parameter management functions. You need to override both if you have additional parameters
         virtual void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
-
+        
         
         // helper functions
-//        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, 
-//                                                                        const std::vector<double> *times, double T);
-        std::vector<double>                                 buildConstraintBinaryTree(std::vector<TopologyNode *> &tips);
-//        void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
+        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index,
+                                                                        const std::vector<double> *times, double T);
+        void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         std::vector<double>*                                divergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
         std::vector<double>*                                getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
         bool                                                matchesConstraints(void);
         void                                                simulateTree(void);
-
+        
         // members
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.

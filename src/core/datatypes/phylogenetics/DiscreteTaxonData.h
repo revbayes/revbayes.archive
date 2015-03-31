@@ -31,6 +31,7 @@ namespace RevBayesCore {
         charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
+        void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
         
@@ -279,6 +280,36 @@ const std::string& RevBayesCore::DiscreteTaxonData<charType>::getTaxonName(void)
 {
     
     return taxonName;
+}
+
+
+/**
+ * Remove characters.
+ *
+ */
+template<class charType>
+void RevBayesCore::DiscreteTaxonData<charType>::removeCharacters(const std::set<size_t> &idx)
+{
+    
+//    size_t alreadyRemoved = 0;
+//    for (std::set<size_t>::const_iterator it = idx.begin(); it != idx.end(); ++it)
+//    {
+//        size_t index = *it - alreadyRemoved;
+//        sequence.erase(sequence.begin() + index);
+//        ++alreadyRemoved;
+//    }
+    
+    std::vector<charType> included;
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        if ( idx.find(i) == idx.end() )
+        {
+            included.push_back( sequence[i] );
+        }
+    }
+    
+    sequence = included;
+        
 }
 
 

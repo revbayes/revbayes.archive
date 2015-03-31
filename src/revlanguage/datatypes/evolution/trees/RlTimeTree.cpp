@@ -22,6 +22,10 @@ TimeTree::TimeTree(void) : ModelObject<RevBayesCore::TimeTree>()
     isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
     
+    ArgumentRules* isInternalArgRules = new ArgumentRules();
+    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
+    
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(), nnodesArgRules ) );
     
@@ -64,6 +68,10 @@ TimeTree::TimeTree(RevBayesCore::TimeTree *t) : ModelObject<RevBayesCore::TimeTr
     ArgumentRules* isRootArgRules = new ArgumentRules();
     isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
+    
+    ArgumentRules* isInternalArgRules = new ArgumentRules();
+    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
     
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
@@ -108,6 +116,10 @@ TimeTree::TimeTree(const RevBayesCore::TimeTree &t) : ModelObject<RevBayesCore::
     isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
     
+    ArgumentRules* isInternalArgRules = new ArgumentRules();
+    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
+    
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(), nnodesArgRules   ) );
     
@@ -150,6 +162,10 @@ TimeTree::TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n) : Mode
     ArgumentRules* isRootArgRules = new ArgumentRules();
     isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
+    
+    ArgumentRules* isInternalArgRules = new ArgumentRules();
+    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
     
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(), nnodesArgRules   ) );
@@ -208,6 +224,15 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         bool tf = this->dagNode->getValue().getNode((size_t)index).isRoot();
         return new RevVariable( new RlBoolean( tf ) );
     }
+    else if (name == "isInternal")
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        
+        bool tf = this->dagNode->getValue().getNode((size_t)index).isInternal();
+        return new RevVariable( new RlBoolean( tf ) );
+    }
     else if (name == "nnodes")
     {
         found = true;
@@ -253,7 +278,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
 
 
 /** Get Rev type of object */
-const std::string& TimeTree::getClassType(void) { 
+const std::string& TimeTree::getClassType(void)
+{
     
     static std::string revType = "TimeTree";
     
@@ -261,7 +287,8 @@ const std::string& TimeTree::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& TimeTree::getClassTypeSpec(void) { 
+const TypeSpec& TimeTree::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -270,7 +297,8 @@ const TypeSpec& TimeTree::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& TimeTree::getTypeSpec( void ) const {
+const TypeSpec& TimeTree::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

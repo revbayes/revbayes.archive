@@ -245,7 +245,7 @@
         [m addTaxonName:taxonName];
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
-        for (size_t j=0; j<cd.getNumberOfCharacters(); j++)
+        for (size_t j=0; j<td.getNumberOfCharacters(); j++)
             {
             // Sebastian: This code needs to be fixed!!!
             RbDataCell* cell = [[RbDataCell alloc] init];

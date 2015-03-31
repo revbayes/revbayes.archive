@@ -32,19 +32,24 @@ using namespace RevBayesCore;
 
 
 /* Default constructor */
-BranchLengthTree::BranchLengthTree(void) : Tree() {
+BranchLengthTree::BranchLengthTree(void) : Tree()
+{
     
 }
 
 
 /* Destructor */
-BranchLengthTree::~BranchLengthTree(void) {
+BranchLengthTree::~BranchLengthTree(void)
+{
+    
 }
 
 
-BranchLengthTree& BranchLengthTree::operator=(const BranchLengthTree &t) {
+BranchLengthTree& BranchLengthTree::operator=(const BranchLengthTree &t)
+{
     
-    if (this != &t) {
+    if (this != &t)
+    {
         Tree::operator=(t);
         
         branchLengths      = t.branchLengths;

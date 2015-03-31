@@ -39,11 +39,6 @@ StandardState::StandardState(const std::string& s, const std::string &l) : Discr
     setState(s);
 }
 
-/** Copy constructor */
-StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), labels( s.labels ), state( s.state ) {
-    
-}
-
 
 /** Equals comparison */
 bool StandardState::operator==(const CharacterState& x) const {
@@ -207,7 +202,18 @@ const std::string& StandardState::getStateLabels( void ) const {
     return labels;
 }
 
-std::string StandardState::getStringValue(void) const  {
+std::string StandardState::getStringValue(void) const
+{
+    
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
     
     std::string val = "";
     size_t size = labels.size();
@@ -226,31 +232,6 @@ std::string StandardState::getStringValue(void) const  {
 
 bool StandardState::isAmbiguous( void ) const {
     return getNumberObservedStates() > 1;
-}
-
-
-bool StandardState::isGapState( void ) const {
-    size_t max = 0;
-    return state == (max-1);
-//    return state == 0x0;
-}
-
-void StandardState::setMissing() {
-    state = setFirstNBitsOn(labels.size());
-}
-
-void StandardState::setGapState(bool tf) {
-    size_t max = 0;
-    if ( tf ) {
-        state = max - 1;
-    }
-    else {
-        state = max - 1;
-        for (size_t i = 0; i < labels.size(); ++i) {
-            state <<= 1;
-            state |= 1;
-        }
-    }
 }
 
 

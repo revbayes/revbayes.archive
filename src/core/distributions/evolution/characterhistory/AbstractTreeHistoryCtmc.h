@@ -59,7 +59,7 @@ namespace RevBayesCore {
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
         void                                                                setValue(AbstractDiscreteCharacterData *v, bool f=false);           //!< Set the current value, e.g. attach an observation (clamp)
-        void                                                                setTipProbs(const AbstractCharacterData* tp);
+        void                                                                setTipProbs(const HomologousCharacterData* tp);
         
         virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
         virtual const std::vector<std::vector<double> >&                    getTipProbs(void);
@@ -78,7 +78,7 @@ namespace RevBayesCore {
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                                        touchSpecialization(DagNode *toucher);
+        virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         // pure virtual methods
         virtual double                                                      computeRootLikelihood(const TopologyNode &nd) = 0;
@@ -313,7 +313,7 @@ const std::vector<double>& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeT
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(const HomologousCharacterData* tp)
 {
 
     tipProbs.clear();
@@ -518,7 +518,8 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameterInt
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
+{
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if (affecter == this->dagNode)

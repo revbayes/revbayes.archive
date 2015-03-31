@@ -45,7 +45,7 @@ namespace RevBayesCore {
         virtual void                            reInitialized( void );                                                  //!< The model was re-initialized
         void                                    restore(DagNode *restorer);
         void                                    swapParameter(const DagNode *oldP, const DagNode *newP);                //!< Exchange the parameter
-        void                                    touch(DagNode *toucher );
+        void                                    touch(DagNode *toucher, bool touchAll);
         
         // pure virtual public methods
         virtual Distribution*                   clone(void) const = 0;                                                  //!< Clone the distribution
@@ -60,7 +60,7 @@ namespace RevBayesCore {
         // keep specialization for derived classes
         virtual void                            keepSpecialization(DagNode* affecter);
         virtual void                            restoreSpecialization(DagNode *restorer);
-        virtual void                            touchSpecialization(DagNode *toucher);
+        virtual void                            touchSpecialization(DagNode *toucher, bool touchAll);
         
         // swap parameter methods for internal use of derived classes
         void                                    addParameter(const DagNode* p);                                         //!< add a parameter to the function

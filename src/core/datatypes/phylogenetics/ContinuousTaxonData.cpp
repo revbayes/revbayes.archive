@@ -167,6 +167,23 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
 
 
 /**
+ * Remove characters.
+ *
+ */
+void ContinuousTaxonData::removeCharacters(const std::set<size_t> &idx)
+{
+    
+    size_t alreadyRemoved = 0;
+    for (std::set<size_t>::const_iterator it = idx.begin(); it != idx.end(); ++it)
+    {
+        size_t index = *it + alreadyRemoved;
+        sequence.erase(sequence.begin() + index);
+        ++alreadyRemoved;
+    }
+}
+
+
+/**
  * Set the name of the taxon.
  *
  * \param[in]    tn    The new name of the taxon.

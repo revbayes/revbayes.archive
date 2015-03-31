@@ -6,14 +6,6 @@
 
 using namespace RevBayesCore;
 
-/* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
-    isNodeParameter( np ),
-    tree( t )
-{
-    
-}
-
 
 /* Constructor */
 ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
@@ -26,6 +18,9 @@ ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, 
     for (std::set<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
         this->nodes.push_back( *it );
+        
+        // tell the node that we have a reference to it (avoids deletion)
+        (*it)->incrementReferenceCount();
     }
 }
 

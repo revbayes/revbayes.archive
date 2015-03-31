@@ -11,7 +11,6 @@
     Node*             root;
     int               numberOfTaxa;
 	NSString*         info;
-
 }
 
 @property (nonatomic)        BOOL      initializedDownPass;
