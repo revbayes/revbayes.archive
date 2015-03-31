@@ -13,7 +13,7 @@ using namespace RevLanguage;
 
 AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
     ModelObject<RevBayesCore::AbstractDiscreteCharacterData>(),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
@@ -41,7 +41,7 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
 
 AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::AbstractDiscreteCharacterData *d) :
     ModelObject<RevBayesCore::AbstractDiscreteCharacterData>( d ),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
@@ -75,7 +75,7 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Abst
 
 AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore::AbstractDiscreteCharacterData &d) :
     ModelObject<RevBayesCore::AbstractDiscreteCharacterData>( d.clone() ),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
@@ -109,7 +109,7 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore
 
 AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData> *d) :
     ModelObject<RevBayesCore::AbstractDiscreteCharacterData>( d ),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
@@ -327,7 +327,7 @@ const std::string& AbstractDiscreteCharacterData::getClassType(void)
 const TypeSpec& AbstractDiscreteCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
