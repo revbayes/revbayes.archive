@@ -47,9 +47,7 @@ namespace RevBayesCore {
         virtual size_t                          getNumberOfStates(void) const = 0;                  //!< Get the number of discrete states for the character
         virtual unsigned long                   getState(void) const = 0;                           //!< Get the discrete observation
         virtual size_t                          getStateIndex(void) const = 0;                      //!< Get the state index
-        virtual bool                            isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
         virtual bool                            isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
-        virtual void                            setGapState(bool tf) = 0;                           //!< Set whether this is a gapped character
         virtual void                            setToFirstState(void) = 0;                          //!< Set this character state to the first (lowest) possible state
         virtual void                            setState(char symbol) = 0;                          //!< Set the discrete observation
         virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation

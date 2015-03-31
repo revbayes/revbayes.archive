@@ -98,8 +98,8 @@ namespace RevBayesCore {
         void                                                        setParentNamePrefix(const std::string &p);
         virtual void                                                setPriorOnly(bool tf);                                                                      //!< Set whether we want to have the probability of the prior only.
         virtual void                                                swapParent(const DagNode *oldP, const DagNode *newP);                                       //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
-        void                                                        touch(void);
-        virtual void                                                touchAffected(void);                                                                        //!< Touch affected nodes (flag for recalculation)
+        void                                                        touch(bool touchAll=false);
+        virtual void                                                touchAffected(bool touchAll=false);                                                                        //!< Touch affected nodes (flag for recalculation)
 
         
     protected:
@@ -111,7 +111,7 @@ namespace RevBayesCore {
         virtual void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter) = 0;                          //!< get affected nodes
         virtual void                                                keepMe(DagNode* affecter) = 0;                                                              //!< Keep value of myself
         virtual void                                                restoreMe(DagNode *restorer) = 0;                                                           //!< Restore value of this nodes
-        virtual void                                                touchMe(DagNode *toucher) = 0;                                                              //!< Touch myself (flag for recalculation)
+        virtual void                                                touchMe(DagNode *toucher, bool touchAll) = 0;                                                              //!< Touch myself (flag for recalculation)
     
         // helper functions
         void                                                        getPrintableChildren(std::set<DagNode*> &c) const;

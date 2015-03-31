@@ -2,6 +2,7 @@
 #define AbstractTaxonData_H
 
 #include <string>
+#include <set>
 
 namespace RevBayesCore {
     
@@ -28,6 +29,7 @@ namespace RevBayesCore {
         virtual AbstractTaxonData&              concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
         virtual size_t                          getNumberOfCharacters(void) const = 0;                              //!< How many characters
         virtual const std::string&              getTaxonName(void) const = 0;                                       //!< Return the name of the character vector
+        virtual void                            removeCharacters(const std::set<size_t> &i) = 0;                    //!< Remove all the characters with a given index
         virtual void                            setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
     
     protected:

@@ -911,7 +911,7 @@ void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
         
         if ( pair[0] == "index" ) continue;
         
-        if ( StringUtilities::isNumber( pair[1] ) )
+        if ( StringUtilities::isNumber( pair[1] ) && !StringUtilities::isIntegerNumber( pair[1] ) )
         {
             annotateContinuous(tree, pair[0], i, 0.95, b, true);
         }
@@ -923,7 +923,19 @@ void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
     }
     
     // then we annotate the branch parameters
-    const std::vector<std::string> &branchParameters = sample_tree->getRoot().getBranchParameters();
+    const std::vector<std::string> &leftBranchParameters = sample_tree->getRoot().getChild(0).getBranchParameters();
+    const std::vector<std::string> &rightBranchParameters = sample_tree->getRoot().getChild(1).getBranchParameters();
+    
+    std::vector<std::string> branchParameters;
+    if ( leftBranchParameters.size() > rightBranchParameters.size() )
+    {
+        branchParameters = leftBranchParameters;
+    }
+    else
+    {
+        branchParameters = rightBranchParameters;
+    }
+    
     for (size_t i = 0; i < branchParameters.size(); ++i)
     {
         
@@ -967,6 +979,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
     
     bool interiorOnly = true;
     bool tipsChecked = false;
+//    bool useRoot = true;
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); i++)
@@ -989,7 +1002,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                     
                     const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
                     
-                    std::vector<std::string> params = sample_node.getNodeParameters();
+                    std::vector<std::string> params;
+                    if ( isNodeParameter == true )
+                    {
+                        params = sample_node.getNodeParameters();
+                    }
+                    else
+                    {
+                        params = sample_node.getBranchParameters();
+                    }
                     
                     // check if this parameter exists
                     if ( params.size() > paramIndex )
@@ -1024,7 +1045,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                 
                 const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
                 
-                std::vector<std::string> params = sample_node.getNodeParameters();
+                std::vector<std::string> params;
+                if ( isNodeParameter == true )
+                {
+                    params = sample_node.getNodeParameters();
+                }
+                else
+                {
+                    params = sample_node.getBranchParameters();
+                }
                 
                 // check if this parameter exists
                 if ( params.size() <= paramIndex )
@@ -1157,8 +1186,10 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
     std::vector<std::vector<double> > samples(input_nodes.size(),std::vector<double>());
     
     // flag if only interior nodes are used
-    bool interiorOnly = true;
+    bool interiorOnly = false;
     bool tipsChecked = false;
+    bool rootChecked = false;
+    bool useRoot = true;
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); i++)
@@ -1180,7 +1211,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
                     
                     const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
                     
-                    std::vector<std::string> params = sample_node.getNodeParameters();
+                    std::vector<std::string> params;
+                    if ( isNodeParameter == true )
+                    {
+                        params = sample_node.getNodeParameters();
+                    }
+                    else
+                    {
+                        params = sample_node.getBranchParameters();
+                    }
                     
                     // check if this parameter exists
                     if ( params.size() > paramIndex )
@@ -1197,6 +1236,10 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
                         // check if this parameter has the correct name
                         interiorOnly = pair[0] != n;
                     }
+                    else
+                    {
+                        interiorOnly = true;
+                    }
                     
                     
                 }
@@ -1207,6 +1250,57 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
                 }
             }
             
+            if ( node->isRoot() == true )
+            {
+                if ( rootChecked == false )
+                {
+                    
+                    rootChecked = true;
+                    
+                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    
+                    const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
+                    
+                    std::vector<std::string> params;
+                    if ( isNodeParameter == true )
+                    {
+                        params = sample_node.getNodeParameters();
+                    }
+                    else
+                    {
+                        params = sample_node.getBranchParameters();
+                    }
+                    
+                    // check if this parameter exists
+                    if ( params.size() > paramIndex )
+                    {
+                        
+                        std::string tmp = params[paramIndex];
+                        if ( tmp[0] == '&')
+                        {
+                            tmp = tmp.substr(1,tmp.size());
+                        }
+                        std::vector<std::string> pair;
+                        StringUtilities::stringSplit(tmp, "=", pair);
+                        
+                        // check if this parameter has the correct name
+                        useRoot = pair[0] == n;
+                    }
+                    else
+                    {
+                        useRoot = false;
+                    }
+                    
+                    
+                }
+                
+                if ( useRoot == false )
+                {
+                    continue;
+                }
+
+            }
+            
             if ( sample_root.containsClade(node, true) )
             {
                 // if the inputTree node is also in the sample tree
@@ -1215,8 +1309,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
                 
                 const TopologyNode &sample_node = sample_tree->getNode( sampleCladeIndex );
                 
-                
-                std::vector<std::string> params = sample_node.getNodeParameters();
+                std::vector<std::string> params;
+                if ( isNodeParameter == true )
+                {
+                    params = sample_node.getNodeParameters();
+                }
+                else
+                {
+                    params = sample_node.getBranchParameters();
+                }
                 
                 // check if this parameter exists
                 if ( params.size() <= paramIndex )
@@ -1255,7 +1356,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
     {
         
         TopologyNode &node = *input_nodes[i];
-        if ( node.isTip() == false || interiorOnly == false )
+        if ( ( node.isTip() == false || interiorOnly == false ) && ( node.isRoot() == false || useRoot == true ) )
         {
             
             // collect the samples

@@ -73,7 +73,7 @@ namespace RevBayesCore {
         virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
         virtual void                                        keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        virtual void                                        touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
+        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                                  //!< Tell affected nodes value is reset
         
         // protected members
         bool                                                clamped;
@@ -558,7 +558,7 @@ void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::Da
 
 /** touch this node for recalculation */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
+void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
     
     if (!this->touched)
@@ -569,10 +569,10 @@ void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
     needsProbabilityRecalculation = true;
     
     // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
-    distribution->touch( toucher );
+    distribution->touch( toucher, touchAll );
     
     // delegate call
-    DynamicNode<valueType>::touchMe( toucher );
+    DynamicNode<valueType>::touchMe( toucher, touchAll );
 }
 
 

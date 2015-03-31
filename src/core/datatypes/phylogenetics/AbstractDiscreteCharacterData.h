@@ -5,7 +5,7 @@
 #include "CharacterState.h"
 #include "DiscreteCharacterState.h"
 #include "AbstractDiscreteTaxonData.h"
-#include "AbstractTaxonData.h"
+#include "HomologousCharacterData.h"
 #include "MatrixReal.h"
 
 #include <string>
@@ -28,7 +28,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-02-16, version 1.0
      */
-    class AbstractDiscreteCharacterData : public AbstractCharacterData {
+    class AbstractDiscreteCharacterData : public HomologousCharacterData {
         
     public:    
         virtual                                    ~AbstractDiscreteCharacterData(void) {}
@@ -46,6 +46,7 @@ namespace RevBayesCore {
         virtual void                                addTaxonData(const AbstractTaxonData &obs) = 0;                             //!< Add taxon data
         virtual void                                addTaxonData(const AbstractDiscreteTaxonData &obs) = 0;                     //!< Add taxon data of discrete characters
         virtual AbstractDiscreteCharacterData&      concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate data matrices
+        virtual AbstractDiscreteCharacterData&      concatenate(const HomologousCharacterData &d) = 0;                          //!< Concatenate data matrices
         virtual AbstractDiscreteCharacterData&      concatenate(const AbstractDiscreteCharacterData &d) = 0;                    //!< Concatenate data matrices
         virtual MatrixReal                          computeStateFrequencies(void) const = 0;                                    //!< Compute the state frequencies for this character data object
         virtual void                                excludeCharacter(size_t i) = 0;                                             //!< Exclude character
@@ -72,6 +73,7 @@ namespace RevBayesCore {
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         virtual bool                                isTaxonExcluded(size_t i) const = 0;                                        //!< Is the taxon excluded
         virtual bool                                isTaxonExcluded(const std::string& s) const = 0;                            //!< Is the taxon excluded
+        virtual void                                removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters
         virtual void                                restoreCharacter(size_t i) = 0;                                             //!< Restore character
         virtual void                                restoreTaxon(size_t i) = 0;                                                 //!< Restore taxon
         virtual void                                restoreTaxon(const std::string& s) = 0;                                     //!< Restore taxon

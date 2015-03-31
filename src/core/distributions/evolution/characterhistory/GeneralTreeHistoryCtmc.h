@@ -71,7 +71,7 @@ namespace RevBayesCore {
         virtual const std::vector<double>&                  getRootFrequencies(void);
         // (not needed)        void                         keepSpecialization(DagNode* affecter);
         // (not needed)        void                         restoreSpecialization(DagNode *restorer);
-        virtual void                                        touchSpecialization(DagNode *toucher);
+        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         
     private:
@@ -866,7 +866,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameterInte
 }
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
+{
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == rootFrequencies || affecter == rootFrequencies )
@@ -877,7 +878,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecializati
     }
     else
     {
-        AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
+        AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter, touchAll );
     }
     
 }
