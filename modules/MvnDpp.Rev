@@ -29,6 +29,6 @@ R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
 
 V := fnDecompVarCovar(sigma, R);
 
-for (i in 1:x.ntax()) {
+for (i in 1:x.ntaxa()) {
 	x ~ dnMultivariateNormal(mu, V, 1);
 }

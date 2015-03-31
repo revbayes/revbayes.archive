@@ -258,7 +258,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
         iOffset[i].x -= glyphRect.origin.x;
         iOffset[i].y += tempP.y;
         iOffset[i].x += (iRect.size.width  - glyphRect.size.width)  * 0.5 + iRect.size.width * 0.02;
-        iOffset[i].y += (iRect.size.height - glyphRect.size.height) * 0.5 + iRect.size.width * 0.04;
+        iOffset[i].y += (iRect.size.height - glyphRect.size.height) * 0.5 - iRect.size.width * 0.32;
         informationRect[i] = iRect;
         }
 }
