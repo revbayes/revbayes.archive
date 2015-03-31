@@ -42,6 +42,7 @@ namespace RevBayesCore {
         virtual MonteCarloSampler*              clone(void) const = 0;
 //        virtual void                            run(size_t g) = 0;
         virtual double                          getModelLnProbability(void) = 0;
+        virtual size_t                          getReplicateIndex(void) const;
         virtual std::string                     getStrategyDescription(void) const = 0;             //!< Get the discription of the strategy used for this sampler.
         virtual void                            initializeSampler(bool priorOnly=false) = 0;        //!< Initialize objects for mcmc sampling
         virtual void                            monitor(unsigned long g) = 0;
@@ -58,7 +59,7 @@ namespace RevBayesCore {
         // public methods
         size_t                                  getCurrentGeneration(void) const;                   //!< Get the current generations number
         virtual void                            setActive(bool tf);                                 //!< Set if the the sampler is active or inactive
-        virtual void                            setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
+        virtual void                            setNumberOfProcesses(size_t i, size_t offset=0);                     //!< Set the number of processes for this replication.
         //        void                                    initializeMonitors(void);                         //!< Assign model and mcmc ptrs to monitors
 //        void                                    redrawChainState(void);
         
@@ -70,6 +71,7 @@ namespace RevBayesCore {
         size_t                                  numProcesses;
         size_t                                  pid;
         bool                                    processActive;
+        size_t                                  replicateIndex;
         
     };
 
