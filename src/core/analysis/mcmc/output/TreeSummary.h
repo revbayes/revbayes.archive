@@ -979,7 +979,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
     
     bool interiorOnly = true;
     bool tipsChecked = false;
-    bool useRoot = true;
+//    bool useRoot = true;
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); i++)
