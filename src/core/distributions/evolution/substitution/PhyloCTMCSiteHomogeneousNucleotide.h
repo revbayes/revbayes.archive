@@ -343,28 +343,28 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
             sum += p2 * tp_begin[2];
             sum += p3 * tp_begin[3];
             
-            p_site_mixture[0] = sum * scalingFactor;
+            p_site_mixture[0] = sum;
             
             sum = p0 * tp_begin[4];
             sum += p1 * tp_begin[5];
             sum += p2 * tp_begin[6];
             sum += p3 * tp_begin[7];
             
-            p_site_mixture[1] = sum * scalingFactor;
+            p_site_mixture[1] = sum;
             
             sum = p0 * tp_begin[8];
             sum += p1 * tp_begin[9];
             sum += p2 * tp_begin[10];
             sum += p3 * tp_begin[11];
             
-            p_site_mixture[2] = sum * scalingFactor;
+            p_site_mixture[2] = sum;
             
             sum = p0 * tp_begin[12];
             sum += p1 * tp_begin[13];
             sum += p2 * tp_begin[14];
             sum += p3 * tp_begin[15];
             
-            p_site_mixture[3] = sum * scalingFactor;
+            p_site_mixture[3] = sum;
 
 #           endif
             
