@@ -32,19 +32,24 @@ using namespace RevBayesCore;
 
 
 /* Default constructor */
-BranchLengthTree::BranchLengthTree(void) : Tree() {
+BranchLengthTree::BranchLengthTree(void) : Tree()
+{
     
 }
 
 
 /* Destructor */
-BranchLengthTree::~BranchLengthTree(void) {
+BranchLengthTree::~BranchLengthTree(void)
+{
+    
 }
 
 
-BranchLengthTree& BranchLengthTree::operator=(const BranchLengthTree &t) {
+BranchLengthTree& BranchLengthTree::operator=(const BranchLengthTree &t)
+{
     
-    if (this != &t) {
+    if (this != &t)
+    {
         Tree::operator=(t);
         
         branchLengths      = t.branchLengths;
@@ -65,24 +70,25 @@ BranchLengthTree* BranchLengthTree::clone(void) const {
 
 double BranchLengthTree::getAge(size_t idx) const {
     
-    const TopologyNode &n = topology->getNode( idx );
+    // BranchLengthTree always returns 0.0 as age
+    return 0.0;
     
-    if ( n.isTip() )
-    {
-        return 0;
-    }
-    else
-    {
-        double max = 0;
-        
-        for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
-        {
-            const TopologyNode &c = n.getChild( i );
-            max = fmax(max, c.getAge() + c.getBranchLength());
-        }
-        
-        return max;
-    }
+//    if ( n.isTip() )
+//    {
+//        return 0;
+//    }
+//    else
+//    {
+//        double max = 0;
+//        
+//        for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
+//        {
+//            const TopologyNode &c = n.getChild( i );
+//            max = fmax(max, c.getAge() + c.getBranchLength());
+//        }
+//        
+//        return max;
+//    }
 }
 
 

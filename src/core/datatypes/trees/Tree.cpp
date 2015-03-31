@@ -140,7 +140,7 @@ bool Tree::operator<=(const Tree &t) const
 void Tree::addBranchParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly)
 {
     
-    getRoot().addBranchParameter(name,parameters,internalOnly);
+    getRoot().addBranchParameters(name,parameters,internalOnly);
     
 }
 
@@ -148,19 +148,27 @@ void Tree::addBranchParameter(std::string const &name, const std::vector<double>
 void Tree::addNodeParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly)
 {
     
-    getRoot().addParameter(name,parameters,internalOnly);
+    getRoot().addNodeParameters(name,parameters,internalOnly);
     
 }
 
 void Tree::addNodeParameter(std::string const &name, const std::vector<std::string*> &parameters, bool internalOnly)
 {
     
-    getRoot().addParameter(name,parameters,internalOnly);
+    getRoot().addNodeParameters(name,parameters,internalOnly);
     
 }
 
 
-void Tree::clearBranchParameters()
+void Tree::clearParameters( void )
+{
+    
+    clearNodeParameters();
+    clearBranchParameters();
+    
+}
+
+void Tree::clearBranchParameters( void )
 {
     
     getRoot().clearBranchParameters();
@@ -168,7 +176,7 @@ void Tree::clearBranchParameters()
 }
 
 
-void Tree::clearNodeParameters()
+void Tree::clearNodeParameters( void )
 {
     
     getRoot().clearNodeParameters();

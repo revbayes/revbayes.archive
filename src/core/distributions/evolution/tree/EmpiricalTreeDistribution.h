@@ -106,14 +106,27 @@ RevBayesCore::EmpiricalTreeDistribution<treeType>* RevBayesCore::EmpiricalTreeDi
 
 
 template <typename treeType>
-void RevBayesCore::EmpiricalTreeDistribution<treeType>::redrawValue( void ) {
+void RevBayesCore::EmpiricalTreeDistribution<treeType>::redrawValue( void )
+{
 	
 	// draw a random tree
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	size_t total_tree_samples = trace.size();
 	current_tree_index = (size_t)( rng->uniform01() * (total_tree_samples - burnin) + burnin - 1 );
+    
+    // reset the listeners
+    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
+    
+    
+    treeType *psi = new treeType(*trace.objectAt(current_tree_index));
+    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
+    {
+        this->value->getTreeChangeEventHandler().removeListener( *it );
+        psi->getTreeChangeEventHandler().addListener( *it );
+    }
+    
 	delete this->value;
-	this->value = new treeType(*trace.objectAt(current_tree_index));
+	this->value = psi;
 	
 }
 
@@ -130,8 +143,19 @@ template <typename treeType>
 void RevBayesCore::EmpiricalTreeDistribution<treeType>::setCurrentTree( size_t index ) {
 
 	current_tree_index = index;
-	delete this->value;
-    this->value = new treeType(*trace.objectAt(index));
+    
+    // reset the listeners
+    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
+    
+    treeType *psi = new treeType(*trace.objectAt(current_tree_index));
+    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
+    {
+        this->value->getTreeChangeEventHandler().removeListener( *it );
+        psi->getTreeChangeEventHandler().addListener( *it );
+    }
+    
+    delete this->value;
+    this->value = psi;
 		
 }
 

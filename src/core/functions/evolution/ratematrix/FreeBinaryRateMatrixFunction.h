@@ -17,7 +17,7 @@
 
 namespace RevBayesCore {
     
-    class FreeBinaryRateMatrixFunction : public TypedFunction<RateMatrix> {
+    class FreeBinaryRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
         FreeBinaryRateMatrixFunction(const TypedDagNode< RbVector<double> > *bf);

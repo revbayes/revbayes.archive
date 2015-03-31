@@ -46,7 +46,7 @@ namespace RevBayesCore {
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        void                                                touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
+        void                                                touchMe(DagNode *toucher, bool touchAll);                                                  //!< Tell affected nodes value is reset
         
     private:
         // members
@@ -243,7 +243,7 @@ void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v)
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode *toucher )
+void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
     // nothing to do
 }

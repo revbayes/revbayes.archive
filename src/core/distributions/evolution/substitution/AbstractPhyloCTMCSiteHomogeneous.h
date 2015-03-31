@@ -4,8 +4,8 @@
 #include "AbstractDiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
-#include "RateMatrix.h"
 #include "RbVector.h"
+#include "RateGenerator.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
@@ -85,15 +85,15 @@ namespace RevBayesCore {
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
         void																updateMarginalNodeLikelihoods(void);
-        void                                                                setValue(AbstractDiscreteCharacterData *v);                                                 //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setValue(AbstractDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
         
         void                                                                setClockRate(const TypedDagNode< double > *r);
         void                                                                setClockRate(const TypedDagNode< RbVector< double > > *r);
         void                                                                setPInv(const TypedDagNode< double > *);
-        void                                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
-        void                                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
+        void                                                                setRateMatrix(const TypedDagNode< RateGenerator > *rm);
+        void                                                                setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm);
         void                                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
@@ -115,7 +115,7 @@ namespace RevBayesCore {
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                                        touchSpecialization(DagNode *toucher);
+        virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         // pure virtual methods
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
@@ -177,8 +177,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< double >*                                       homogeneousClockRate;
         const TypedDagNode< RbVector< double > >*                           heterogeneousClockRates;
-        const TypedDagNode< RateMatrix >*                                   homogeneousRateMatrix;
-        const TypedDagNode< RbVector< RateMatrix > >*                       heterogeneousRateMatrices;
+        const TypedDagNode< RateGenerator >*                                homogeneousRateMatrix;
+        const TypedDagNode< RbVector< RateGenerator > >*                    heterogeneousRateMatrices;
         const TypedDagNode< RbVector< double > >*                           rootFrequencies;
         const TypedDagNode< RbVector< double > >*                           siteRates;
         const TypedDagNode< RbVector< double > >*                           siteRatesProbs;
@@ -249,7 +249,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates     = NULL;
-    homogeneousRateMatrix       = new ConstantNode<RateMatrix>("rateMatrix", new RateMatrix_JC( numChars ) );
+    homogeneousRateMatrix       = new ConstantNode<RateGenerator>("rateMatrix", new RateMatrix_JC( numChars ) );
     heterogeneousRateMatrices   = NULL;
     rootFrequencies             = NULL;
     siteRates                   = NULL;
@@ -444,15 +444,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
                 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
-                if ( treatAmbiguousAsGaps && c.isAmbiguous() )
+                if ( treatAmbiguousAsGaps && (c.isAmbiguous() || c.isMissingState()) )
                 {
                     c.setGapState( true );
                 }
-                else if ( treatUnknownAsGap && c.getNumberOfStates() == c.getNumberObservedStates() )
+                else if ( treatUnknownAsGap && (c.getNumberOfStates() == c.getNumberObservedStates() || c.isMissingState()) )
                 {
                     c.setGapState( true );
                 }
-                else if ( !c.isGapState() && c.isAmbiguous() )
+                else if ( !c.isGapState() && (c.isAmbiguous() || c.isMissingState()) )
                 {
                     ambiguousCharacters = true;
                     break;
@@ -1224,7 +1224,16 @@ const std::vector<double>& RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charTy
     }
     else
     {
-        return homogeneousRateMatrix->getValue().getStationaryFrequencies();
+        const RateMatrix *rm = dynamic_cast<const RateMatrix *>(&homogeneousRateMatrix->getValue());
+        if ( rm != NULL )
+        {
+            return rm->getStationaryFrequencies();
+        }
+        else
+        {
+            throw RbException("If you want to use RateGenerators that are not RateMatrices then you need to specify the root frequencies directly.");
+        }
+        
     }
     
 }
@@ -1356,12 +1365,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
         // add the character to the sequence
         root.addCharacter( c );
     }
+    // recursively simulate the sequences
+    root.setTaxonName( "Root" );
     
     // recursively simulate the sequences
     simulate( tau->getValue().getRoot(), taxa, perSiteRates );
     
     // add the taxon data to the character data
-    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i) 
+//    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
     {
         this->value->addTaxonData( taxa[i] );
     }
@@ -1585,11 +1597,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValue(AbstractDiscreteCharacterData *v)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValue(AbstractDiscreteCharacterData *v, bool force)
 {
     
     // delegate to the parent class
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
+    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v, force);
     
     // reset the number of sites
     this->numSites = v->getNumberOfIncludedCharacters();
@@ -1664,6 +1676,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::simulat
         else 
         {
             // recursively simulate the sequences
+            std::stringstream ss;
+            ss << "Node" << child.getIndex();
+            taxon.setTaxonName( ss.str() );
             simulate( child, taxa, perSiteRates );
         }
         
@@ -1765,7 +1780,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setPInv
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRateMatrix(const TypedDagNode< RateGenerator > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -1796,7 +1811,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRate
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -2080,11 +2095,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapPar
     }
     else if (oldP == homogeneousRateMatrix)
     {
-        homogeneousRateMatrix = static_cast<const TypedDagNode< RateMatrix >* >( newP );
+        homogeneousRateMatrix = static_cast<const TypedDagNode< RateGenerator >* >( newP );
     }
     else if (oldP == heterogeneousRateMatrices)
     {
-        heterogeneousRateMatrices = static_cast<const TypedDagNode< RbVector< RateMatrix > >* >( newP );
+        heterogeneousRateMatrices = static_cast<const TypedDagNode< RbVector< RateGenerator > >* >( newP );
     }
     else if (oldP == rootFrequencies)
     {
@@ -2115,9 +2130,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapPar
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
+{
     
-    bool touchAll = false;
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == heterogeneousClockRates )
@@ -2215,7 +2230,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateT
 {
     
     // first, get the rate matrix for this branch
-    const RateMatrix *rm;
+    const RateGenerator *rm;
     if ( this->branchHeterogeneousSubstitutionMatrices == true )
     {
         rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
@@ -2226,29 +2241,33 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateT
     }
     
     // second, get the clock rate for the branch
-    double branchTime;
+    double rate;
     if ( this->branchHeterogeneousClockRates == true )
     {
-        branchTime = this->heterogeneousClockRates->getValue()[nodeIdx] * brlen;
+        rate = this->heterogeneousClockRates->getValue()[nodeIdx];
     }
     else
     {
-        branchTime = this->homogeneousClockRate->getValue() * brlen;
+        rate = this->homogeneousClockRate->getValue();
     }
     
-    
     // and finally compute the per site rate transition probability matrix
+    const TopologyNode* node = tau->getValue().getNodes()[nodeIdx];
+    if (node->isRoot()) throw RbException("ERROR: dnPhyloCTMC called updateTransitionProbabilities for the root node\n");
+    double endAge = node->getAge();
+    double startAge = endAge + node->getBranchLength();
+
     if ( this->rateVariationAcrossSites == true )
     {
         const std::vector<double> &r = this->siteRates->getValue();
         for (size_t i = 0; i < this->numSiteRates; ++i)
         {
-            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
+            rm->calculateTransitionProbabilities( startAge, endAge,  rate * r[i], this->transitionProbMatrices[i] );
         }
     }
     else
     {
-        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
+        rm->calculateTransitionProbabilities( startAge, endAge,  rate, this->transitionProbMatrices[0] );
     }
     
 }

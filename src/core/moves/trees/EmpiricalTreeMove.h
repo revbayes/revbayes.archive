@@ -66,7 +66,8 @@ RevBayesCore::EmpiricalTreeMove<treeType>* RevBayesCore::EmpiricalTreeMove<treeT
 
 
 template <class treeType>
-const std::string& RevBayesCore::EmpiricalTreeMove<treeType>::getMoveName( void ) const {
+const std::string& RevBayesCore::EmpiricalTreeMove<treeType>::getMoveName( void ) const
+{
     static std::string name = "EmpiricalTreeMove";
     
     return name;
@@ -86,12 +87,15 @@ double RevBayesCore::EmpiricalTreeMove<treeType>::performSimpleMove( void ) {
     // draw a new tree
     dist.redrawValue();
     
+    variable->touch( true );
+    
     return 0.0;
 }
 
 
 template <class treeType>
-void RevBayesCore::EmpiricalTreeMove<treeType>::rejectSimpleMove( void ) {
+void RevBayesCore::EmpiricalTreeMove<treeType>::rejectSimpleMove( void )
+{
 	
 	// reset to the old tree
     EmpiricalTreeDistribution<treeType>& dist = static_cast<EmpiricalTreeDistribution<treeType> &>( variable->getDistribution() );
@@ -101,7 +105,8 @@ void RevBayesCore::EmpiricalTreeMove<treeType>::rejectSimpleMove( void ) {
 
 
 template <class treeType>
-void RevBayesCore::EmpiricalTreeMove<treeType>::swapNode(DagNode *oldN, DagNode *newN) {
+void RevBayesCore::EmpiricalTreeMove<treeType>::swapNode(DagNode *oldN, DagNode *newN)
+{
     
     SimpleMove::swapNode(oldN, newN);
 

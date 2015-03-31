@@ -68,7 +68,7 @@ const TypeSpec& Func_wag::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_wag::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
     return returnTypeSpec;
 }

@@ -640,11 +640,15 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
             }
         }
 
-//        if (nMatches > 1)
-//            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
-//        else if (nMatches < 1)
-//            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
-
+        if (nMatches > 1)
+        {
+            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
+        }
+        else if (nMatches < 1)
+        {
+            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
+        }
+        
         if ( nMatches == 1)
         {
             pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
