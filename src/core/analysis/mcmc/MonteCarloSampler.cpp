@@ -80,7 +80,7 @@ void MonteCarloSampler::setActive(bool tf)
     processActive = tf;
     if ( processActive )
     {
-        activePID = pid;
+        activePID = 0; //pid;
     }
     
 }

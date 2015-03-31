@@ -48,7 +48,6 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     
     
 #ifdef RB_MPI
-    // @mlandis: Note to self. Mcmcmc fails in this loop.
     size_t numProcessesPerReplicate = numProcesses / replicates;
     for (size_t i = 0; i < replicates; ++i)
     {
@@ -77,7 +76,6 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(
     {
         runs.push_back( a.runs[i]->clone() );
     }
-    
 }
 
 
@@ -122,6 +120,7 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
         pid             = a.pid;
         processActive   = a.processActive;
         replicates      = a.replicates;
+        
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < replicates; ++i)
         {
