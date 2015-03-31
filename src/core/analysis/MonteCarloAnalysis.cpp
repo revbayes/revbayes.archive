@@ -27,7 +27,12 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     numProcesses = MPI::COMM_WORLD.Get_size();
     pid = MPI::COMM_WORLD.Get_rank();
 #endif
-
+    
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis ctor start\n";
+    std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis numProc " << numProcesses << "\n";
+#endif
+    
     processActive = (pid == activePID);
     
     // add a clone of the original sampler to our vector of runs
@@ -39,13 +44,12 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
         {
             runs.push_back( m->clone() );
         }
-        
-        for (size_t i = 0; i < replicates; ++i)
-        {
-            runs[i]->setReplicateIndex( i+1 );
-        }
+#ifdef DEBUG_MPI_MCA
+        std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis push clone\n";
+        std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis runs.size() " << runs.size() << "\n";
+#endif
     }
-    
+    std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis made replicates\n";
     
 #ifdef RB_MPI
     size_t numProcessesPerReplicate = numProcesses / replicates;
@@ -58,8 +62,15 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
         runs[i]->setActive( true );
         runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
     }
+#else
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        runs[i]->setReplicateIndex( i+1 );
+    }
 #endif
-    
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis ctor end\n";
+#endif
 }
 
 

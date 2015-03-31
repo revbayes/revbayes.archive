@@ -816,6 +816,7 @@ void Mcmc::setChainIndex(size_t x)
  */
 void Mcmc::setReplicateIndex(size_t idx)
 {
+    this->replicateIndex = idx;
     
     // tell each monitor
     for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
