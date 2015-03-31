@@ -42,7 +42,8 @@ MonteCarloSampler::MonteCarloSampler(void) :
     generation(0),
     numProcesses(1),
     pid(0),
-    processActive( true )
+    processActive( true ),
+    replicateIndex(0)
 {
     
 #ifdef RB_MPI
@@ -73,10 +74,19 @@ size_t MonteCarloSampler::getCurrentGeneration( void ) const
 }
 
 
+/**
+ * Get the replicate index for the sampler.
+ */
+size_t MonteCarloSampler::getReplicateIndex( void ) const
+{
+    return replicateIndex;
+}
 
 void MonteCarloSampler::setActive(bool tf)
 {
-    
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " MonteCarloSampler::setActive \n";
+#endif
     processActive = tf;
     if ( processActive )
     {
@@ -85,7 +95,7 @@ void MonteCarloSampler::setActive(bool tf)
     
 }
 
-void MonteCarloSampler::setNumberOfProcesses(size_t n)
+void MonteCarloSampler::setNumberOfProcesses(size_t n, size_t offset)
 {
     numProcesses = n;
 }
