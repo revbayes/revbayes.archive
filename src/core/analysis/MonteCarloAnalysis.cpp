@@ -49,7 +49,9 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
         std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis runs.size() " << runs.size() << "\n";
 #endif
     }
+#ifdef DEBUG_MPI_MCA
     std::cout << pid << " MonteCarloAnalysis::MonteCarloAnalysis made replicates\n";
+#endif
     
 #ifdef RB_MPI
     size_t numProcessesPerReplicate = numProcesses / replicates;
