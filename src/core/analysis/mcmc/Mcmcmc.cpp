@@ -498,7 +498,7 @@ void Mcmcmc::synchronizeValues(void)
 #ifdef DEBUG_MPI_MCA
         std::cout << "\n" << pid << " Mcmcmc::synchronizeValues() Sending!\n";
 #endif
-        MPI::COMM_WORLD.Send(&results, int(numChains), MPI::DOUBLE, activePID, 0);
+        MPI::COMM_WORLD.Send(&results, int(numChains), MPI::DOUBLE, (int)activePID, 0);
 #ifdef DEBUG_MPI_MCA
         std::cout << "\n" << pid << " Mcmcmc::synchronizeValues() Sent!\n";
 #endif
@@ -530,7 +530,7 @@ void Mcmcmc::synchronizeValues(void)
 #ifdef DEBUG_MPI_MCA
             std::cout << "\n" << pid << " Mcmcmc::synchronizeValues() Receiving from " << i << "...\n";
 #endif
-            MPI::COMM_WORLD.Recv(&tmp_results, int(numChains), MPI::DOUBLE, i, 0);
+            MPI::COMM_WORLD.Recv(&tmp_results, int(numChains), MPI::DOUBLE, (int)i, 0);
 #ifdef DEBUG_MPI_MCA
             std::cout << "\n" << pid << " Mcmcmc::synchronizeValues() Received from " << i << " !\n";
             for (size_t j = 0; j < numChains; j++)
@@ -599,7 +599,7 @@ void Mcmcmc::synchronizeHeats(void)
 #ifdef DEBUG_MPI_MCA
         std::cout << "\n" << pid << " Mcmcmc::synchronizeHeats() Sending! " << processActive << "\n";
 #endif
-        MPI::COMM_WORLD.Send(&heats, numChains, MPI::DOUBLE, activePID, 0);
+        MPI::COMM_WORLD.Send(&heats, (int)numChains, MPI::DOUBLE, (int)activePID, 0);
 #ifdef DEBUG_MPI_MCA
         std::cout << "\n" << pid << " Mcmcmc::synchronizeHeats() Sent!\n";
 #endif
@@ -624,7 +624,7 @@ void Mcmcmc::synchronizeHeats(void)
             std::cout << "\n" << pid << " Mcmcmc::synchronizeHeats() pre-Recv  " << i << "\n";
 #endif
             
-            MPI::COMM_WORLD.Recv(&tmp_heats, numChains, MPI::DOUBLE, i, 0);
+            MPI::COMM_WORLD.Recv(&tmp_heats, (int)numChains, MPI::DOUBLE, (int)i, 0);
             
 #ifdef DEBUG_MPI_MCA
             std::cout << "\n" << pid << " Mcmcmc::synchronizeHeats() post-Recv " << i << "\n";
@@ -888,14 +888,14 @@ void Mcmcmc::swapRandomChains(void)
     std::cout << pid << " pre-Bcast-j " << activePID << " " << j << " " << k << " " << "\n";
 #endif
     
-    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, activePID);
+    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)activePID);
     MPI::COMM_WORLD.Barrier();
     
 #ifdef DEBUG_MPI_MCA
     std::cout << pid << " pre-Bcast-k " << activePID << " " << j << " " << k << " " << "\n";
 #endif
     
-    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, activePID);
+    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)activePID);
     MPI::COMM_WORLD.Barrier();
 #endif
     

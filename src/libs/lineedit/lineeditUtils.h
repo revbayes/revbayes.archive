@@ -69,7 +69,7 @@ public:
         //startPos += rPos;
         FindLastInfo f;
         f.needle = lastMatch;
-        f.position = rPos;
+        f.position = (int)rPos;
         return f;
     }
     
@@ -115,7 +115,7 @@ public:
         std::string s = "";
         bool foundStart = false;
 
-        for (int i = cmd.size() - 1; i >= 0; i--) {
+        for (int i = (int)cmd.size() - 1; i >= 0; i--) {
             char c = cmd.at(i);
             if (!foundStart && isalpha(c)) {
                 foundStart = true;
