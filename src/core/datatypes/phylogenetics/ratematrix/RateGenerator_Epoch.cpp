@@ -107,7 +107,7 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
         // get next time, which is the next epoch or branch end
         if (nextAge < endAge)
             nextAge = endAge;
-        double dt = currAge - nextAge;
+//        double dt = currAge - nextAge;
         
         // first, get the rate matrix for this branch
         const RateGenerator& rg = epochRateGenerators[epochIdx];

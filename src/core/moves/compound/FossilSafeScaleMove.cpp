@@ -67,8 +67,8 @@ double FossilSafeScaleMove::doMove( void ) {
     double val = scaler->getValue();
     storedValue = val;
     
-    double min = scaler->getMin();
-    double max = scaler->getMax();
+//    double min = scaler->getMin();
+//    double max = scaler->getMax();
     
 //    double size = max - min;
     

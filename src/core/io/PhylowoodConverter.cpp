@@ -268,7 +268,7 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                 if (chartype == "NaturalNumbers")
                     stateIdx = std::atoi(stateChars[i][j].c_str());
                 else if (chartype == "Standard")
-                    stateIdx = standardStates.find( stateChars[i][j] );
+                    stateIdx = (unsigned)standardStates.find( stateChars[i][j] );
                 
                 const std::vector<unsigned>& b = bits[stateIdx];
                 
@@ -297,7 +297,7 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                 if (chartype == "NaturalNumbers")
                     stateIdx = std::atoi(stateChars[i][j].c_str());
                 else if (chartype == "Standard")
-                    stateIdx = standardStates.find( stateChars[i][j] );
+                    stateIdx = (unsigned)standardStates.find( stateChars[i][j] );
 
                 // start
                 if (idx[j][0] == 0) {

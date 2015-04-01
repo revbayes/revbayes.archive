@@ -74,7 +74,7 @@ void DispersalExtinctionRateStructureFunction::makeBits(void)
     }
     for (size_t i = 0; i < numStates; i++)
     {
-        inverseBits[ bits[i] ] = i;
+        inverseBits[ bits[i] ] = (unsigned)i;
     }
 }
 
@@ -111,14 +111,14 @@ void DispersalExtinctionRateStructureFunction::makeTransitions(void)
                 {
                     if (b[k]==1)
                     {
-                        a.push_back(k);
+                        a.push_back((unsigned)k);
                     }
                 }
             }
             // extinction events pushes only the lost area
             else
             {
-                a.push_back(j);
+                a.push_back((unsigned)j);
             }
             transitionAreas[i].push_back(a);
         }
@@ -189,7 +189,7 @@ void DispersalExtinctionRateStructureFunction::update( void )
             }
 
             // store value
-            offset = -i-1;
+            offset = (int)(-i-1);
             if (i > transitions[i][j]) // && lower)
             {
                 offset++;
