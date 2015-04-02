@@ -57,25 +57,6 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractChar
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd)
-{
-    std::cout << "IN ContinuousCharacterData::add" <<std::endl;
-    const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
-    if ( rhs == NULL )
-    {
-        throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
-    }
-    
-    
-    return concatenate( *rhs );
-}
-
-
-/**
- * Add another character data object to this character data object.
- *
- * \param[in]    obsd    The CharacterData object that should be added.
- */
 ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd)
 {
     

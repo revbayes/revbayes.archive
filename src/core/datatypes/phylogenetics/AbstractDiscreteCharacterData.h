@@ -5,7 +5,7 @@
 #include "CharacterState.h"
 #include "DiscreteCharacterState.h"
 #include "AbstractDiscreteTaxonData.h"
-#include "HomologousCharacterData.h"
+#include "AbstractTaxonData.h"
 #include "MatrixReal.h"
 
 #include <string>
@@ -28,7 +28,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-02-16, version 1.0
      */
-    class AbstractDiscreteCharacterData : public HomologousCharacterData {
+    class AbstractDiscreteCharacterData : public AbstractCharacterData {
         
     public:    
         virtual                                    ~AbstractDiscreteCharacterData(void) {}

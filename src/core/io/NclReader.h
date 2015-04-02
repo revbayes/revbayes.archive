@@ -93,7 +93,7 @@ namespace RevBayesCore {
         // methods for reading sequence alignments
         std::vector<AbstractCharacterData* >        convertFromNcl(const std::string& fileName);                                    //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices
         std::vector<AbstractCharacterData* >        readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);                          //!< Reads a single file using NCL
-        void                                        setExcluded(const NxsCharactersBlock* charblock, HomologousCharacterData* cMat ) const;       //!< Set excluded taxa and excluded characters
+        void                                        setExcluded(const NxsCharactersBlock* charblock, AbstractCharacterData* cMat ) const;       //!< Set excluded taxa and excluded characters
         
         // methods for reading trees
         void                                        constructBranchLengthTreefromNclRecursively(TopologyNode* tn, std::vector<TopologyNode*> &nodes, std::vector<double> &brlens, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL

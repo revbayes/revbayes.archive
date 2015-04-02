@@ -1,7 +1,7 @@
 #ifndef ContinuousCharacterData_H
 #define ContinuousCharacterData_H
 
-#include "HomologousCharacterData.h"
+#include "AbstractCharacterData.h"
 #include "ContinuousTaxonData.h"
 
 #include <map>
@@ -23,7 +23,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-02-16, version 1.0
      */
-    class ContinuousCharacterData : public HomologousCharacterData {
+    class ContinuousCharacterData : public AbstractCharacterData {
         
     public:
                                                         ContinuousCharacterData();                                                                                        //!< Default constructor
@@ -41,7 +41,6 @@ namespace RevBayesCore {
         void                                            addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                            addTaxonData(const ContinuousTaxonData &obs);                               //!< Add Continuous taxon data
         ContinuousCharacterData&                        concatenate(const ContinuousCharacterData &d);                              //!< Concatenate data matrices
-        ContinuousCharacterData&                        concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
         ContinuousCharacterData&                        concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
