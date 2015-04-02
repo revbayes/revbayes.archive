@@ -44,8 +44,7 @@ namespace RevBayesCore {
         
         // CharacterData functions
         virtual void                            addTaxonData(const AbstractTaxonData &obs) = 0;                                 //!< Add taxon data
-        virtual NonHomologousCharacterData&     concatenate(const AbstractCharacterData &d) = 0;                                //!< Concatenate two sequences
-        virtual NonHomologousCharacterData&     concatenate(const NonHomologousCharacterData &d) = 0;                                //!< Concatenate two sequences
+        virtual NonHomologousCharacterData&          concatenate(const NonHomologousCharacterData &d) = 0;                                //!< Concatenate two sequences
         //        virtual void                            excludeAllCharacters(void) = 0;                                                 //!< Exclude all characters
         //        virtual void                            excludeCharacter(size_t i) = 0;                                                 //!< Exclude character
         virtual void                            excludeTaxon(size_t i) = 0;                                                     //!< Exclude taxon
