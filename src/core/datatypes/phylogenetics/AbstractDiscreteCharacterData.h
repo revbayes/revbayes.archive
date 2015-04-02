@@ -46,7 +46,6 @@ namespace RevBayesCore {
         virtual void                                addTaxonData(const AbstractTaxonData &obs) = 0;                             //!< Add taxon data
         virtual void                                addTaxonData(const AbstractDiscreteTaxonData &obs) = 0;                     //!< Add taxon data of discrete characters
         virtual AbstractDiscreteCharacterData&      concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate data matrices
-        virtual AbstractDiscreteCharacterData&      concatenate(const HomologousCharacterData &d) = 0;                          //!< Concatenate data matrices
         virtual AbstractDiscreteCharacterData&      concatenate(const AbstractDiscreteCharacterData &d) = 0;                    //!< Concatenate data matrices
         virtual MatrixReal                          computeStateFrequencies(void) const = 0;                                    //!< Compute the state frequencies for this character data object
         virtual void                                excludeCharacter(size_t i) = 0;                                             //!< Exclude character
