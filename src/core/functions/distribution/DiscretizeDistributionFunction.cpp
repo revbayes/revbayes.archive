@@ -20,8 +20,8 @@ DiscretizeDistributionFunction::DiscretizeDistributionFunction(ContinuousDistrib
 
 
 DiscretizeDistributionFunction::DiscretizeDistributionFunction(const DiscretizeDistributionFunction &df) : TypedFunction< RbVector<double> >( df ),
-    dist( df.dist->clone() ),
-    numCats(df.numCats)
+    numCats(df.numCats),
+    dist( df.dist->clone() )
 {
     
 }
