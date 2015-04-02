@@ -243,12 +243,6 @@ RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::str
 
 
 
-void HomologousCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-{
-    AbstractCharacterData::setCharacterDataObject(o);
-}
-
-
 void HomologousCharacterData::setCharacterDataObject(RevBayesCore::HomologousCharacterData *o)
 {
     charDataObject = o;
