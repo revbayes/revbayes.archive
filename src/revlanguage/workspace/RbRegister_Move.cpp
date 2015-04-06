@@ -119,6 +119,8 @@
 /* Compound Moves on Real Values */
 #include "Move_ScalerUpDown.h"
 #include "Move_SliderUpDown.h"
+#include "Move_LevyJumpSum.h"
+#include "Move_LevyJump.h"
 
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
@@ -133,6 +135,7 @@
 #include "Move_VectorSingleElementScale.h"
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorScale.h"
+#include "Move_VectorSlide.h"
 
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementSlide.h"
@@ -473,6 +476,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 		// compound moves on real values
         addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
         addTypeWithConstructor("mvSliderUpDown",        new Move_SliderUpDown() );
+        addTypeWithConstructor("mvLevyJumpSum",         new Move_LevyJumpSum() );
+        addTypeWithConstructor("mvLevyJump",            new Move_LevyJump() );
         
         /* Moves on integer values */
         addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
@@ -486,6 +491,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on vectors of real values */
         addTypeWithConstructor("mvSingleElementScale",          new Move_SingleElementScale() );
         addTypeWithConstructor("mvVectorScale",                 new Move_VectorScale() );
+        addTypeWithConstructor("mvVectorSlide",                 new Move_VectorSlide() );
         addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
         addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
         
