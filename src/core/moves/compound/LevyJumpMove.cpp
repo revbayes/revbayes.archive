@@ -46,36 +46,29 @@ const std::string& LevyJumpMove::getMoveName( void ) const {
 /** Perform the move */
 double LevyJumpMove::performSimpleMove( void )
 {
+    // Gottardo and Rafferty 2009
+    
     
     // store variable for restoration
     double sv = variable->getValue();
     storedValue = sv;
-
+    
     // turn on/off variable
     double u = GLOBAL_RNG->uniform01();
     double p = 0.5;
-    double off = double( u > p );
-    
+
     // propose new value
-    double dv = RbStatistics::Normal::rv(0.0, delta, *GLOBAL_RNG);
-    double nv = off * (sv + dv);
+    double nv = RbStatistics::Normal::rv(sv, delta, *GLOBAL_RNG);
+    if (u < p)
+        nv = 0.0;
+
     variable->setValue( new double(nv) );
-    
+
     // MH ratio
-    double probFwd = 1.0;
-    double probRev = 1.0;
-    if (off == 0.0 && sv != 0.0)
-    {
-        probRev = 0 + (1-p)*RbStatistics::Normal::pdf(0.0, delta, sv);
-        probFwd = p + (1-p)*RbStatistics::Normal::pdf(sv, delta, 0.0);
-    }
-    if (off == 1.0 && sv == 0.0)
-    {
-        probRev = p + (1-p)*RbStatistics::Normal::pdf(nv, delta, sv);
-        probFwd = 0 + (1-p)*RbStatistics::Normal::pdf(sv, delta, nv);
-    }
+    double probFwd = p * (nv==0.0) + (1-p) * RbStatistics::Normal::pdf(sv, delta, nv) * (nv!=0.0);
+    double probRev = p * (sv==0.0) + (1-p) * RbStatistics::Normal::pdf(nv, delta, sv) * (sv!=0.0);
     
-	return log( probRev / probFwd );
+    return log( probRev / probFwd );
 }
 
 
