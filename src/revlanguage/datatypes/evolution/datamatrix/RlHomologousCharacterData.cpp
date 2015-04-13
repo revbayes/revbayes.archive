@@ -251,6 +251,8 @@ void HomologousCharacterData::setCharacterDataObject(RevBayesCore::AbstractChara
 
 void HomologousCharacterData::setCharacterDataObject(RevBayesCore::HomologousCharacterData *o)
 {
+    AbstractCharacterData::setCharacterDataObject(o);
+    
     charDataObject = o;
 }
 
