@@ -427,7 +427,7 @@ double ConditionalCladeProbabilityDistribution::p_bip(long int g_id) const
   if ( set_sizes.at(g_id)==1 or set_sizes.at(g_id)==numTaxons-1) Bip_count=numberOfObservedTrees;
 
     if ( alpha>0 )
-        return Bip_count / ( numberOfObservedTrees+alpha ) + ( alpha/numberOfPossibleTreeTopologies*Bi ( set_sizes.at ( g_id ) ) ) / ( numberOfObservedTrees+alpha );
+        return Bip_count / ( numberOfObservedTrees+alpha ) + ( alpha/numberOfPossibleTreeTopologies*Bi ( (int)set_sizes.at ( g_id ) ) ) / ( numberOfObservedTrees+alpha );
     else
         return Bip_count / numberOfObservedTrees;
     }
@@ -465,7 +465,7 @@ double ConditionalCladeProbabilityDistribution::p_dip(long int g_id,long int gp_
   if (set_sizes.at(g_id)==1 or set_sizes.at(g_id)==numTaxons-1) Bip_count=numberOfObservedTrees;
 
     if ( alpha>0 or beta>0 )
-        return ( Dip_count + ( alpha/numberOfObservedTrees*Tri ( set_sizes.at ( gp_id ),set_sizes.at ( gpp_id ) ) ) + beta_switch*beta/ ( pow ( 2.,set_sizes.at ( g_id )-1 )-1 ) ) / ( Bip_count + ( alpha/numberOfObservedTrees*Bi ( set_sizes.at ( g_id ) ) ) + beta_switch*beta );
+        return ( Dip_count + ( alpha/numberOfObservedTrees*Tri ( (int)set_sizes.at ( gp_id ),(int)set_sizes.at ( gpp_id ) ) ) + beta_switch*beta/ ( pow ( 2.,(int)set_sizes.at ( g_id )-1 )-1 ) ) / ( Bip_count + ( alpha/numberOfObservedTrees*Bi ( (int)set_sizes.at ( g_id ) ) ) + beta_switch*beta );
     else
         return Dip_count/Bip_count;
 }

@@ -21,7 +21,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe, unsigned mrs) : R
     distancePower = 0.0;
     maxRangeSize = mrs;
     if (mrs == 0 || mrs > nc)
-        mrs = nc;
+        mrs = (unsigned)nc;
 //    rootFrequencies = std::vector<double>(2,0.5);
     
     
@@ -307,7 +307,7 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
     double rate = 0.0;
     int s = to;
     
-    int pres = !s;
+//    int pres = !s;
 //    int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)

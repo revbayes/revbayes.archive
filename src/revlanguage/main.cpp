@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
         for (int i = 0; i < bsz; i++)
             buffer[i] = commandLine[i];
 #       ifdef RB_MPI
-        MPI::COMM_WORLD.Bcast(buffer, bsz, MPI_CHAR, 0);
+        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
 #       endif
         
         std::string tmp = std::string( buffer );
