@@ -47,9 +47,8 @@ namespace RevBayesCore {
         void                                                addTaxonData(const DiscreteTaxonData<charType> &obs);                       //!< Add taxon data
         MatrixReal                                          computeStateFrequencies(void) const;
         DiscreteCharacterData&                              concatenate(const DiscreteCharacterData &d);                                //!< Concatenate data matrices
-        DiscreteCharacterData&                              concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
-        DiscreteCharacterData&                              concatenate(const AbstractDiscreteCharacterData &d);                        //!< Concatenate data matrices
         DiscreteCharacterData&                              concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
+        DiscreteCharacterData&                              concatenate(const AbstractDiscreteCharacterData &d);                        //!< Concatenate data matrices
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
@@ -191,26 +190,6 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
  */
 template<class charType>
 RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const AbstractDiscreteCharacterData &obsd)
-{
-    
-    const DiscreteCharacterData<charType>* rhs = dynamic_cast<const DiscreteCharacterData<charType>* >( &obsd );
-    if ( rhs == NULL )
-    {
-        throw RbException("Adding wrong character data type into CharacterData!!!");
-    }
-    
-    
-    return concatenate( *rhs );
-}
-
-
-/**
- * Add another character data object to this character data object.
- *
- * \param[in]    obsd    The CharacterData object that should be added.
- */
-template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd)
 {
     
     const DiscreteCharacterData<charType>* rhs = dynamic_cast<const DiscreteCharacterData<charType>* >( &obsd );

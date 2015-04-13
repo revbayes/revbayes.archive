@@ -631,7 +631,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 break;
             uIdx++;
         }
-        unsigned uCladoState = uIdx + 1;
+        unsigned uCladoState = (unsigned)uIdx + 1;
         
         // keep track of range
         std::set<size_t> present;

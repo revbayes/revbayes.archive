@@ -853,7 +853,9 @@ void Mcmc::setScheduleType(const std::string &s)
 void Mcmc::startMonitors( void )
 {
     
+#ifdef DEBUG_MPI_MCA
     std::cout << "Mcmc::startMonitors start\n";
+#endif
     /* Open the output file and print headers */
     for (size_t i=0; i<monitors.size(); i++)
     {
@@ -873,7 +875,9 @@ void Mcmc::startMonitors( void )
             
         }
     }
+#ifdef DEBUG_MPI_MCA
     std::cout << "Mcmc::startMonitors end\n";
+#endif
     
 }
 

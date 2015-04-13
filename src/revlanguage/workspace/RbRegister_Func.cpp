@@ -437,6 +437,7 @@
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
 #include "Func_variance.h"
+#include "Func_vectorFlatten.h"
 
 
 /* Statistics functions (in folder "functions/statistics") */
@@ -697,6 +698,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         
         // mean function
         addFunction( "var",       new Func_variance()  );
+        
+        // vector flatten
+        addFunction( "vectorFlatten",   new Func_vectorFlatten() );
         
         // get ln Probability function
         addFunction( "fnLnProbability", new Func_lnProbability() );
