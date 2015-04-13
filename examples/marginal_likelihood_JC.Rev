@@ -33,15 +33,9 @@ mi = 0
 # Substitution Model #
 ######################
 
-pi_prior <- v(1,1,1,1) 
-pi ~ dnDirichlet(pi_prior)
-moves[++mi] = mvSimplexElementScale(pi, weight=1.0)
 
-
-kappa ~ dnLnorm(0.0,1.25)
-moves[++mi] = mvScale(kappa, weight=1.0)
-
-Q := fnHKY(kappa,pi)
+#### create the rate matrix ####
+Q <- fnJC(4) 
 
 
 
@@ -111,24 +105,21 @@ mymodel = model(Q)
 
 
 
+monitors[1] = mnModel(filename="output/primates_cytb_JC_posterior.log",printgen=10, separator = TAB)
+monitors[2] = mnFile(filename="output/primates_cytb_JC_posterior.trees",printgen=10, separator = TAB, phylogeny)
 
-monitors[1] = mnModel(filename="output/primates_cytb_HKY_posterior.log",printgen=10, separator = TAB)
-monitors[2] = mnFile(filename="output/primates_cytb_HKY_posterior.trees",printgen=10, separator = TAB, psi)
-monitors[3] = mnScreen(printgen=1000, diversification, turnover)
+### Compute power posterior distributions
+pow_p = powerPosterior(mymodel, moves, monitors, "output/pow_p_JC.out", cats=50, sampleFreq=10) 
+pow_p.burnin(generations=10000,tuningInterval=250)
+pow_p.run(generations=1000)  
 
-mymcmc = mcmc(mymodel, monitors, moves)
+### Use stepping-stone sampling to calculate marginal likelihoods
+ss = steppingStoneSampler(file="output/pow_p_JC.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss.marginal() 
 
-mymcmc.burnin(generations=10000,tuningInterval=1000)
-mymcmc.run(generations=30000)
-
-
-# Now, we will analyze the tree output.
-# Let us start by reading in the tree trace
-treetrace = readTreeTrace("output/primates_cytb_HKY_posterior.trees", treetype="clock")
-# and get the summary of the tree trace
-treetrace.summarize()
-
-mapTree(treetrace,"output/primates_cytb_HKY.tree")
+### Use path-sampling to calculate marginal likelihoods
+ps = pathSampler(file="output/pow_p_JC.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps.marginal() 
 
 # you may want to quit RevBayes now
 #q()
