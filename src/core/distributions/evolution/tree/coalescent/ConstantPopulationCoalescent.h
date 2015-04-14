@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the random variable class for constant population-size coalescent process.
- * This class is derived from the stochastic node and each instance will represent a random variable.
- *
- * @brief Declaration of the constant rate Birth-Death process class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
 #ifndef ConstantPopulationCoalescent_H
 #define ConstantPopulationCoalescent_H
 
@@ -28,6 +10,21 @@ namespace RevBayesCore {
     
     class Clade;
     
+    
+    
+    /**
+     * @brief Constant population size coalescent process.
+     *
+     *
+     * The constant population size coalescent process is the simplest available coalescent process.
+     * It contains only a single parameter NE, the population size.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-01-17, version 1.0
+     *
+     */
     class ConstantPopulationCoalescent : public AbstractCoalescent {
         
     public:

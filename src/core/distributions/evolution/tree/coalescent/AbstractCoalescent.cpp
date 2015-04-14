@@ -279,7 +279,7 @@ void AbstractCoalescent::simulateTree( void )
             nodes.push_back(rightChild);
         }
         
-        attachAges(psi, nodes, 0, times);
+        attachAges(psi, nodes, 1, times);
         
     }
     
