@@ -19,16 +19,16 @@
 #ifndef ConstantPopulationCoalescent_H
 #define ConstantPopulationCoalescent_H
 
+#include "AbstractCoalescent.h"
 #include "Taxon.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
-#include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
     class Clade;
     
-    class ConstantPopulationCoalescent : public TypedDistribution<TimeTree> {
+    class ConstantPopulationCoalescent : public AbstractCoalescent {
         
     public:
         ConstantPopulationCoalescent(const TypedDagNode<double> *N, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
@@ -36,27 +36,21 @@ namespace RevBayesCore {
         
         // public member functions
         ConstantPopulationCoalescent*                       clone(void) const;                                                                                  //!< Create an independent clone
-        double                                              computeLnProbability(void);
-        void                                                redrawValue(void);
 
     protected:
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
+        // derived helper functions
+        double                                              computeLnProbabilityTimes(void) const;                                                          //!< Compute the log-transformed probability of the current value.
+        std::vector<double>                                 simulateCoalescentTime(size_t n) const;                                                         //!< Simulate n coalescent events.
+
+        
     private:
         
-        // helper functions
-        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
-        void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
-        bool                                                matchesConstraints(void);
-        void                                                simulateTree(void);
         
         // members
-        std::vector<Clade>                                  constraints;
         const TypedDagNode<double>*                         Ne;
-        size_t                                              numTaxa;
-        std::vector<Taxon>                                  taxa;                                                                                         //!< Taxon names that will be attached to new simulated trees.
-        double                                              logTreeTopologyProb;
         
     };
     
