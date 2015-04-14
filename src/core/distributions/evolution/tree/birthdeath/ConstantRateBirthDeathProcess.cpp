@@ -26,15 +26,22 @@ ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<
 }
 
 
-
-ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ *
+ * \return A new copy of myself
+ */
+ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const
+{
     
     return new ConstantRateBirthDeathProcess( *this );
 }
 
 
 
-double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const {
+double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const
+{
     
     return log( speciation->getValue() );
 }
