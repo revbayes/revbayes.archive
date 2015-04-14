@@ -72,10 +72,25 @@ double ConstantPopulationCoalescent::computeLnProbabilityTimes( void ) const
     
     for (size_t i = 0; i < ages.size(); ++i) 
     {
+//        size_t j = numTaxa - i;
+//        double theta = 1.0 / (2.0*Ne->getValue());
+//        double nPairs = j * (j-1) / 2.0;
+//        lnProbTimes += log( nPairs * 2.0 / theta ) - nPairs * 2.0 / theta * ages[i] ;
+        
+        
         size_t j = numTaxa - i;
         double theta = 1.0 / (2.0*Ne->getValue());
         double nPairs = j * (j-1) / 2.0;
-        lnProbTimes += log( nPairs * 2.0 / theta ) - nPairs * 2.0 / theta * ages[i] ;
+        
+        double prevCoalescentTime = 0.0;
+        if ( i > 0 )
+        {
+            prevCoalescentTime = ages[i-1];
+        }
+        
+        double deltaAge = ages[i] - prevCoalescentTime;
+        
+        lnProbTimes += log( nPairs / theta ) - nPairs * deltaAge / theta ;
     }
     
     return lnProbTimes;

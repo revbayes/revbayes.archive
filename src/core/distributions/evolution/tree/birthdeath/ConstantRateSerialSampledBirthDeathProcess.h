@@ -12,9 +12,15 @@ namespace RevBayesCore {
      * @brief Constant-rate birth-death process with serially sampled tips.
      *
      *
-     * The diversity-dependent pure-birth process is a species tree distribution without extinction events.
-     * The speciation rate depends on the current diversity by the function:
-     * lambda = (1.0 - n/K) * lambda_0
+     * The constant rate birth-death process with serially sampled tips is an extension
+     * of the ordinary constant rate birth-death process. The process has four parameters:
+     * lambda := speciation rate
+     * mu     := extinction rate
+     * psi    := sampling rate
+     * rho    := sampling probability at present
+     * Note that at a sampling event the lineage also goes extinct afterwards.
+     * That means, there cannot be any ancestral samples. This may be realistic for virus evolution
+     * when a sampled strain will be contained.
      *
      *
      * @copyright Copyright 2009-
