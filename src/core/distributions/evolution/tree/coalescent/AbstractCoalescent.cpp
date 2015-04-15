@@ -36,13 +36,11 @@ AbstractCoalescent::AbstractCoalescent(const std::vector<Taxon> &tn, const std::
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
-    // but since the probability of the divergence times contains the factor (n-1)! we simply store
-    // 2^{n-1} / n!
+    // but this probability cancels with sum( choose(k,2) ) and thus we ommit the tree probability
+    // You need to make sure that we cancel this out in the probability of each coalescent time!!
     
-    double lnFact = RbMath::lnFactorial( int(numTaxa) );
-    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa );
-// (This is the tree prob for the birth-death)    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
-    
+    logTreeTopologyProb = 0.0;
+
 }
 
 
@@ -63,7 +61,7 @@ AbstractCoalescent::AbstractCoalescent(const std::vector<Taxon> &tn, const std::
 void AbstractCoalescent::attachAges(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &ages)
 {
     
-    if (index < ages.size() )
+    if ( index < ages.size() )
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -280,6 +278,8 @@ void AbstractCoalescent::simulateTree( void )
         }
         
         attachAges(psi, nodes, 1, times);
+        
+        psi->setAge(root->getIndex(), times[0]);
         
     }
     
