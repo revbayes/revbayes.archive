@@ -18,7 +18,8 @@ using namespace RevLanguage;
 
 
 /** default constructor */
-Func_decomposedVarianceCovarianceMatrix::Func_decomposedVarianceCovarianceMatrix(void) : TypedFunction<MatrixReal>() {
+Func_decomposedVarianceCovarianceMatrix::Func_decomposedVarianceCovarianceMatrix(void) : TypedFunction<MatrixRealSymmetric>()
+{
     
 }
 
