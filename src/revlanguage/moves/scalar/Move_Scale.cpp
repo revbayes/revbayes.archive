@@ -108,23 +108,23 @@ const TypeSpec& Move_Scale::getClassTypeSpec(void)
 const MemberRules& Move_Scale::getParameterRules(void) const 
 {
     
-    static MemberRules scalingMoveMemberRules;
+    static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x"     , RealPos::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , RealPos::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
     }
     
-    return scalingMoveMemberRules;
+    return moveMemberRules;
 }
 
 
