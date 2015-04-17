@@ -129,7 +129,7 @@ mymodel = model(Q)
 
 
 monitors[1] = mnModel(filename="output/primates_cytb_GTR_Gamma_posterior.log",printgen=10, separator = TAB)
-monitors[2] = mnFile(filename="output/primates_cytb_GTR_Gamma_posterior.trees",printgen=10, separator = TAB, phylogeny)
+monitors[2] = mnFile(filename="output/primates_cytb_GTR_Gamma_posterior.trees",printgen=10, separator = TAB, psi)
 
 ### Compute power posterior distributions
 pow_p = powerPosterior(mymodel, moves, monitors, "output/pow_p_GTR_Gamma.out", cats=50, sampleFreq=10) 
