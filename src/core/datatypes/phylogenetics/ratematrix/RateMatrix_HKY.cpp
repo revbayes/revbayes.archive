@@ -26,6 +26,26 @@ RateMatrix_HKY::~RateMatrix_HKY(void)
 }
 
 
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_HKY& RateMatrix_HKY::assign(const Assignable &m)
+{
+    
+    const RateMatrix_HKY *rm = dynamic_cast<const RateMatrix_HKY*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+}
+
+
 
 /** Calculate the transition probabilities */
 void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
