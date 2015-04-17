@@ -1,11 +1,3 @@
-//
-//  PathSampler.cpp
-//  RevBayes
-//
-//  Created by Sebastian Hoehna on 6/24/14.
-//  Copyright (c) 2014 hoehna. All rights reserved.
-//
-
 #include "PathSampler.h"
 
 #include <vector>
@@ -37,22 +29,29 @@ PathSampler* PathSampler::clone( void ) const
 
 double PathSampler::marginalLikelihood( void ) const
 {
-    
+    // create a vector for the mean log-likelihood values per power posterior
     std::vector<double> pathValues;
+    
+    // iterate over all powers
     for (size_t i = 0; i < powers.size(); ++i)
     {
-        
+        // compute the mean for this power
         double mean = 0.0;
+        
+        // get the number of samples for this power posterior analysis
         size_t samplesPerPath = likelihoodSamples[i].size();
         for (size_t j = 0; j < samplesPerPath; ++j)
         {
-            mean += likelihoodSamples[i][j] / samplesPerPath;
+            mean += likelihoodSamples[i][j];
         }
         
-        pathValues.push_back( mean );
+        // store the mean
+        pathValues.push_back( mean  / samplesPerPath );
         
     }
     
+    // now we can compute the marginal likelihood
+    // the method uses the trapezoidal rule for numerical integration
     double marginal = 0.0;
     for (size_t i = 0; i < pathValues.size()-1; ++i)
     {

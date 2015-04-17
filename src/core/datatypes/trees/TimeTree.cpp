@@ -31,7 +31,8 @@ TimeTree::TimeTree(void) : Tree() {
 
 
 /* Copy constructor */
-TimeTree::TimeTree(const TimeTree& t) : Tree( t ) {
+TimeTree::TimeTree(const TimeTree& t) : Tree( t )
+{
     
 //    times = t.times;
     ages  = t.ages;
@@ -40,14 +41,17 @@ TimeTree::TimeTree(const TimeTree& t) : Tree( t ) {
 
 
 /* Destructor */
-TimeTree::~TimeTree(void) {
+TimeTree::~TimeTree(void)
+{
     
 }
 
 
-TimeTree& TimeTree::operator=(const TimeTree &t) {
+TimeTree& TimeTree::operator=(const TimeTree &t)
+{
     
-    if (this != &t) {
+    if (this != &t)
+    {
         Tree::operator=(t);
         
         ages      = t.ages;
