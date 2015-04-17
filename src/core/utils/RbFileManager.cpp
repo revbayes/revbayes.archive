@@ -147,8 +147,9 @@ void RbFileManager::createDirectoryForFile( void )
     {
         directoryName += *it;
         
-        if ( isDirectoryPresent(directoryName) == false )
+        if ( isDirectoryPresent( directoryName ) == false )
         {
+            std::cerr << "Creating directory with name:\t" << directoryName << std::endl;
             makeDirectory( directoryName );
         }
         
@@ -290,14 +291,31 @@ bool RbFileManager::isDirectory( void ) const
 bool RbFileManager::isDirectoryPresent(const std::string &mp) const 
 {
 
-    if ( mp == "" ) 
-    {
-        return true;
-    }
+    // Sebastian (20150416): This was temporary code to solve the problem that sometimes this function errornously did see a directory.
+    // I keep it here for a bit as a reference if the problem re-occurs.
+//    if ( mp == "" )
+//    {
+//        return true;
+//    }
+//    
+//    struct stat info;
+//    
+//    if( stat( mp.c_str(), &info ) != 0)
+//    {
+//        return false;
+//    }
+//    else if(info.st_mode & S_IFDIR)
+//    {
+//        return true;
+//    }
+//    else
+//    {
+//        return false;
+//    }
     
     DIR* d = opendir( mp.c_str() );
 
-	if ( !d )
+	if ( d == NULL )
     {
 		return false;
     }
@@ -307,10 +325,14 @@ bool RbFileManager::isDirectoryPresent(const std::string &mp) const
     {
         if ( S_ISDIR(fInfo.st_mode) )
         {
+            closedir(d);
+
             return true;
         }
         else
         {
+            closedir(d);
+            
             return false;
         }
         
@@ -690,7 +712,8 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
 
 
 /** Tests whether the directory specified in the object is present */
-bool RbFileManager::testDirectory(void) {
+bool RbFileManager::testDirectory(void)
+{
 
 	return isDirectoryPresent(filePath);
 }
