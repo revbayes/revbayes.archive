@@ -17,19 +17,10 @@ namespace RevBayesCore {
         virtual                            ~RateMatrix(void);                                                                           //!< Destructor
 
         // overloaded operators
-//        virtual std::vector<double>&        operator[](size_t i) = 0;                                                           //!< Subscript operator
-//        virtual const std::vector<double>&  operator[](size_t i) const = 0;                                                     //!< Subscript operator (const)
-        
         virtual bool                        operator==(const RateMatrix &rm) const { return this == &rm; }
         virtual bool                        operator!=(const RateMatrix &rm) const { return !operator==(rm); }
         virtual bool                        operator<(const RateMatrix &rm) const { return this < &rm; }
         virtual bool                        operator<=(const RateMatrix &rm) const { return operator<(rm) || operator==(rm); }
-        
-//        virtual std::vector<std::vector<double> >::const_iterator       begin(void) const = 0;
-//        virtual std::vector<std::vector<double> >::iterator             begin(void) = 0;
-//        virtual std::vector<std::vector<double> >::const_iterator       end(void) const = 0;
-//        virtual std::vector<std::vector<double> >::iterator             end(void) = 0;
-
 
         // pure virtual methods you have to overwrite
         virtual double                      averageRate(void) const = 0;                                                                //!< Calculate the average rate
@@ -37,7 +28,7 @@ namespace RevBayesCore {
         virtual void                        calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;
         virtual RateMatrix*                 clone(void) const = 0;
         
-        virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;     //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
+        virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
         virtual double                      getRate(size_t from, size_t to, double rate=1.0) const = 0;
         virtual const std::vector<double>&  getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
         virtual void                        rescaleToAverageRate(double r) = 0;                                                         //!< Rescale the rate matrix such that the average rate is "r"
@@ -61,7 +52,7 @@ namespace RevBayesCore {
     };
 
     // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMatrix& x);                                           //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const RateMatrix& x);                                               //!< Overloaded output operator
 
 }
 

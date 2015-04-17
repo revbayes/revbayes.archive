@@ -24,7 +24,8 @@ RateMatrix_Empirical::RateMatrix_Empirical(size_t n) : TimeReversibleRateMatrix(
 
 
 /** Copy constructor */
-RateMatrix_Empirical::RateMatrix_Empirical(const RateMatrix_Empirical& m) : TimeReversibleRateMatrix( m ) {
+RateMatrix_Empirical::RateMatrix_Empirical(const RateMatrix_Empirical& m) : TimeReversibleRateMatrix( m )
+{
     
     theEigenSystem       = new EigenSystem( *m.theEigenSystem );
     c_ijk                = m.c_ijk;
@@ -35,15 +36,18 @@ RateMatrix_Empirical::RateMatrix_Empirical(const RateMatrix_Empirical& m) : Time
 
 
 /** Destructor */
-RateMatrix_Empirical::~RateMatrix_Empirical(void) {
+RateMatrix_Empirical::~RateMatrix_Empirical(void)
+{
     
     delete theEigenSystem;
 }
 
 
-RateMatrix_Empirical& RateMatrix_Empirical::operator=(const RateMatrix_Empirical &r) {
+RateMatrix_Empirical& RateMatrix_Empirical::operator=(const RateMatrix_Empirical &r)
+{
     
-    if (this != &r) {
+    if (this != &r)
+    {
         TimeReversibleRateMatrix::operator=( r );
         
         delete theEigenSystem;
@@ -56,6 +60,26 @@ RateMatrix_Empirical& RateMatrix_Empirical::operator=(const RateMatrix_Empirical
     }
     
     return *this;
+}
+
+
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_Empirical& RateMatrix_Empirical::assign(const Assignable &m)
+{
+    
+    const RateMatrix_Empirical *rm = dynamic_cast<const RateMatrix_Empirical*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 
