@@ -30,14 +30,13 @@ using namespace RevBayesCore;
  */
 AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
                                                      const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ),
-condition( cdt ),
-constraints( c ),
-origin( o ),
-rootAge( ra ),
-numTaxa( tn.size() ),
-taxa( tn ),
-startsAtRoot( origin == NULL )
-
+    condition( cdt ),
+    constraints( c ),
+    origin( o ),
+    rootAge( ra ),
+    numTaxa( tn.size() ),
+    taxa( tn ),
+    startsAtRoot( origin == NULL )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -119,7 +118,8 @@ void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyN
 }
 
 
-void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
+void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
+{
     
     if (tips.size() < numTaxa)
     {
