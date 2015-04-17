@@ -65,9 +65,13 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
         runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
     }
 #else
-    for (size_t i = 0; i < replicates; ++i)
+    // we only need to tell the MonteCarloSamplers which replicate index they are if there is more than one replicate
+    if ( replicates > 1 )
     {
-        runs[i]->setReplicateIndex( i+1 );
+        for (size_t i = 0; i < replicates; ++i)
+        {
+            runs[i]->setReplicateIndex( i+1 );
+        }
     }
 #endif
 #ifdef DEBUG_MPI_MCA
