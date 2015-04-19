@@ -76,107 +76,6 @@
 /* Taxon types (in folder "datatypes/evolution") */
 #include "RlTaxon.h"
 
-/* Inference types (in folder "analysis") */
-#include "RlBurninEstimationConvergenceAssessment.h"
-#include "RlModel.h"
-#include "RlPathSampler.h"
-#include "RlPowerPosteriorAnalysis.h"
-#include "RlSteppingStoneSampler.h"
-#include "RlAncestralStateTrace.h"
-
-/// Stopping Rules ///
-#include "RlMaxIterationStoppingRule.h"
-#include "RlMaxTimeStoppingRule.h"
-#include "RlMinEssStoppingRule.h"
-#include "RlGelmanRubinStoppingRule.h"
-#include "RlGewekeStoppingRule.h"
-#include "RlStationarityStoppingRule.h"
-
-/// Monitors ///
-
-/* Monitor types (in folder "monitors) */
-#include "RlMonitor.h"
-#include "Mntr_AncestralState.h"
-#include "Mntr_JointConditionalAncestralState.h"
-#include "Mntr_File.h"
-#include "Mntr_ExtendedNewickFile.h"
-#include "Mntr_Model.h"
-#include "Mntr_PosteriorPredictive.h"
-#include "Mntr_Screen.h"
-#include "Mntr_CharacterHistoryNewickFile.h"
-#include "Mntr_CharacterHistoryNhxFile.h"
-
-/// Moves ///
-
-/* Move types (in folder "datatypes/inference/moves") (grouped by parameter type) */
-#include "RlMove.h"
-
-/* Moves on real values */
-#include "Move_SliceSampling.h"
-#include "Move_Scale.h"
-#include "Move_Slide.h"
-
-/* Compound Moves on Real Values */
-#include "Move_ScalerUpDown.h"
-#include "Move_SliderUpDown.h"
-
-/* Moves on integer values */
-#include "Move_RandomGeometricWalk.h"
-#include "Move_RandomIntegerWalk.h"
-
-/* Moves on simplices */
-#include "Move_Simplex.h"
-#include "Move_SimplexSingleElementScale.h"
-
-/* Moves on real valued vectors */
-#include "Move_SingleElementScale.h"
-#include "Move_VectorSingleElementScale.h"
-#include "Move_VectorSingleElementSlide.h"
-#include "Move_VectorScale.h"
-
-/* Moves on real valued matrices */
-#include "Move_MatrixSingleElementSlide.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
-
-
-///* Moves on covariance matrices */
-#include "Move_MatrixRealSymmetricSlide.h"
-
-
-/* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-#include "Move_DPPScaleCatValsMove.h"
-#include "Move_DPPAllocateAuxGibbsMove.h"
-#include "Move_DPPGibbsConcentration.h"
-#include "Move_DPPScaleCatAllocateAux.h"
-#include "Move_MixtureAllocation.h"
-#include "Move_ReversibleJumpSwitchMove.h"
-
-/* Moves on character histories/data augmentation */
-#include "Move_NodeCharacterHistoryRejectionSample.h"
-#include "Move_PathCharacterHistoryRejectionSample.h"
-#include "Move_CharacterHistory.h"
-
-
-/* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
-
-/* Tree proposals (in folder "datatypes/inference/moves/tree") */
-#include "Move_EmpiricalTree.h"
-#include "Move_FNPR.h"
-#include "Move_GibbsPruneAndRegraft.h"
-#include "Move_NarrowExchange.h"
-#include "Move_NNIClock.h"
-#include "Move_NNINonclock.h"
-#include "Move_NodeTimeSlideUniform.h"
-#include "Move_NodeTimeSlideBeta.h"
-#include "Move_OriginTimeSlide.h"
-#include "Move_RateAgeBetaShift.h"
-#include "Move_RootTimeSlide.h"
-#include "Move_SubtreeScale.h"
-#include "Move_SPRNonclock.h"
-#include "Move_TreeScale.h"
-#include "Move_WeightedNodeTimeSlide.h"
-#include "Move_FossilSafeSlide.h"
-#include "Move_FossilSafeScale.h"
 
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
@@ -308,45 +207,6 @@
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
 #include "Func_treeScale.h"
-
-
-/* Rate matrix functions (in folder "functions/evolution/ratematrix") */
-#include "Func_blosum62.h"
-#include "Func_chromosomes.h"
-#include "Func_cpRev.h"
-#include "Func_dayhoff.h"
-#include "Func_DECRateMatrix.h"
-#include "Func_epoch.h"
-#include "Func_f81.h"
-#include "Func_FreeBinary.h"
-#include "Func_FreeK.h"
-#include "Func_gtr.h"
-#include "Func_hky.h"
-#include "Func_jc.h"
-#include "Func_jones.h"
-#include "Func_k80.h"
-#include "Func_mtRev.h"
-#include "Func_mtMam.h"
-#include "Func_pomo.h"
-#include "Func_rtRev.h"
-#include "Func_vt.h"
-#include "Func_t92.h"
-#include "Func_wag.h"
-
-
-/* Rate map functions (in folder "functions/evolution/ratemap") */
-#include "Func_biogeo_de.h"
-#include "Func_biogeo_grm.h"
-
-
-/* Cladogeneic state prob function */
-#include "Func_cladoProbs.h"
-#include "Func_DECRates.h"
-#include "Func_DECRoot.h"
-
-/* Inference functions (in folder "functions/inference") */
-#include "Func_Mcmc.h"
-#include "Func_Mcmcmc.h"
 
 
 /* Internal functions (in folder ("functions/internal") */
@@ -525,6 +385,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( "_RealPos[]2Real[]",           new Func__conversion<ModelVector<RealPos>, ModelVector<Real> >()            );
         addFunction( "_Probability[]2RealPos[]",    new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
         addFunction( "_Probability[]2Real[]",       new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
+        addFunction( "_Simplex2Real[]",             new Func__conversion<Simplex, ModelVector<Real> >()        );
         
         
 

@@ -1,6 +1,7 @@
 #ifndef MixtureDistribution_H
 #define MixtureDistribution_H
 
+#include "MemberObject.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
