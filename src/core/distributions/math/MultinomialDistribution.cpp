@@ -18,33 +18,35 @@ MultinomialDistribution::MultinomialDistribution(const TypedDagNode< RbVector<do
 }
 
 
-MultinomialDistribution::MultinomialDistribution(const MultinomialDistribution &m) : TypedDistribution< RbVector<int> >( m ), p( m.p ), n (m.n) {
+MultinomialDistribution::~MultinomialDistribution( void )
+{
+    // We don't delete the parameters, because they might be used somewhere else too.
+    // The model needs to do that!
 }
 
 
-MultinomialDistribution::~MultinomialDistribution( void ) {
-    // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
-}
 
-
-
-MultinomialDistribution* MultinomialDistribution::clone( void ) const {
+MultinomialDistribution* MultinomialDistribution::clone( void ) const
+{
     return new MultinomialDistribution( *this );
 }
 
 
-double MultinomialDistribution::computeLnProbability( void ) {
+double MultinomialDistribution::computeLnProbability( void )
+{
     return RbStatistics::Multinomial::lnPdf(p->getValue(), *value);
 }
 
 
-void MultinomialDistribution::redrawValue( void ) {
+void MultinomialDistribution::redrawValue( void )
+{
     *value = RbStatistics::Multinomial::rv(p->getValue(), size_t( n->getValue() ), *GLOBAL_RNG);
 }
 
 
 /** Swap a parameter of the distribution */
-void MultinomialDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void MultinomialDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == p)
     {
