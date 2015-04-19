@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RateMatrix_JC, which is
- * class that holds a rate matrix in RevBayes.
- *
- * @brief Implementation of RateMatrix_JC
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-12-11 14:46:24 +0100 (Tue, 11 Dec 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-08-27, version 1.0
- * @interface Mcmc
- * @package distributions
- *
- * $Id: RateMatrix_JC.cpp 1921 2012-12-11 13:46:24Z hoehna $
- */
-
 #include "RateMatrix_JC.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
@@ -48,8 +29,29 @@ RateMatrix_JC::RateMatrix_JC(size_t n) : TimeReversibleRateMatrix( n )
 
 
 /** Destructor */
-RateMatrix_JC::~RateMatrix_JC(void) {
+RateMatrix_JC::~RateMatrix_JC(void)
+{
     
+}
+
+
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_JC& RateMatrix_JC::assign(const Assignable &m)
+{
+    
+    const RateMatrix_JC *rm = dynamic_cast<const RateMatrix_JC*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 

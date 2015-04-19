@@ -36,7 +36,9 @@ CategoricalDistribution* CategoricalDistribution::clone( void ) const
 double CategoricalDistribution::computeLnProbability( void )
 {
     if ( *value > probs->getValue().size() || *value < 1 )
+    {
         return RbConstants::Double::neginf;
+    }
     
     return log( probs->getValue()[ *value - 1 ] );  // value is 1-offset
 }

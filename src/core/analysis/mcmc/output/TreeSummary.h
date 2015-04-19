@@ -1445,7 +1445,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double
         {
             double temp_lower = branch_lengths[j];
             double temp_upper = branch_lengths[j + interval_size - 1];
-            double temp_range = abs(temp_upper - temp_lower);
+            double temp_range = std::fabs(temp_upper - temp_lower);
             if (temp_range < min_range)
             {
                 min_range = temp_range;
