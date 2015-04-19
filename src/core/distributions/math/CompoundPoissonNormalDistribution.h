@@ -1,19 +1,26 @@
-//
-//  CompoundPoissonNormalDistribution.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 11/19/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__CompoundPoissonNormalDistribution__
-#define __revbayes_proj__CompoundPoissonNormalDistribution__
+#ifndef CompoundPoissonNormalDistribution_H
+#define CompoundPoissonNormalDistribution_H
 
 #include "TypedDagNode.h"
 #include "ContinuousDistribution.h"
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Compound Poisson Normal distribution class.
+     *
+     * The Compound Poisson Normal distribution represents a family of distributions
+     * on the real line. The Compound Poisson Normal distribution has 3 parameters:
+     *   rate  .. the rate of the Poisson process
+     *   mu    .. the mean of the normal distribution
+     *   sigma .. the variance of the normal distribution
+     * Instances of this class can be associated to stochastic variables.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Michael Landis)
+     * @since 2014-11-19, version 1.0
+     *
+     */
     class CompoundPoissonNormalDistribution : public ContinuousDistribution {
         
     public:

@@ -1,11 +1,3 @@
-//
-//  CompoundPoissonNormalDistribution.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 11/19/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "CompoundPoissonNormalDistribution.h"
 #include "DistributionCompoundPoissonNormal.h"
 #include "RandomNumberFactory.h"

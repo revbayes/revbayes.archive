@@ -1,10 +1,3 @@
-/* 
- * File:   DecomposedInverseInverseWishartDistribution.h
- * Author: nl
- *
- * Created on November 21, 2014
- */
-
 #ifndef DecomposedInverseWishartDistribution_H
 #define	DecomposedInverseWishartDistribution_H
 
@@ -19,6 +12,20 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Decomposed inverse Wishart distribution class.
+     *
+     * The Decomposed inverse Wishart distribution represents a family of distributions
+     * on the ... The decomposed inverse Wishart distribution has ?? parameters:
+     *   ??
+     *   ??
+     * Instances of this class can be associated to stochastic variables.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Nicolas Lartillot)
+     * @since 2014-11-21, version 1.0
+     *
+     */
     class DecomposedInverseWishartDistribution : public TypedDistribution<MatrixReal>   {
         
     public:

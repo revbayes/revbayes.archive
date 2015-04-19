@@ -1,7 +1,8 @@
-#ifndef Dist_binomial_H
-#define Dist_binomial_H
+#ifndef Dist_multinomial_H
+#define Dist_multinomial_H
 
-#include "BinomialDistribution.h"
+#include "MultinomialDistribution.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RlTypedDistribution.h"
@@ -9,28 +10,28 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the binomial distribution.
+     * The RevLanguage wrapper of the multinomial distribution.
      *
-     * The RevLanguage wrapper of the binomial distribution simply
+     * The RevLanguage wrapper of the multinomial distribution simply
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the BinomialDistribution for more details.
+     * See the MultinomialDistribution for more details.
      *
      *
      * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (John Huelsenbeck)
-     * @since 2014-08-25, version 1.0
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2015-04-19, version 1.0
      *
      */
-    class Dist_binomial :  public TypedDistribution<Natural> {
+    class Dist_multinomial :  public TypedDistribution< ModelVector<Natural> > {
         
     public:
-                                                        Dist_binomial(void);
-        virtual                                        ~Dist_binomial(void);
+        Dist_multinomial(void);
+        virtual                                        ~Dist_multinomial(void);
         
         // Basic utility functions
-        Dist_binomial*                                  clone(void) const;                                                              //!< Clone the object
+        Dist_multinomial*                               clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -39,7 +40,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::BinomialDistribution*             createDistribution(void) const;
+        RevBayesCore::MultinomialDistribution*          createDistribution(void) const;
         
     protected:
         
