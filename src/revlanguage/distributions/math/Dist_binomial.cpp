@@ -91,9 +91,13 @@ void Dist_binomial::printValue(std::ostream& o) const
     
     o << "Binomial(p=";
     if ( p != NULL )
+    {
         o << p->getName();
+    }
     else
+    {
         o << "?";
+    }
     o << ", n=";
     if ( n != NULL )
         o << n->getName();

@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RateMatrix_F81, which is
- * class that holds a rate matrix in RevBayes.
- *
- * @brief Implementation of RateMatrix_F81
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-12-11 14:46:24 +0100 (Tue, 11 Dec 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-08-27, version 1.0
- * @interface Mcmc
- * @package distributions
- *
- * $Id: RateMatrix_F81.cpp 1921 2012-12-11 13:46:24Z hoehna $
- */
-
 #include "EigenSystem.h"
 #include "MatrixReal.h"
 #include "RateMatrix_F81.h"
@@ -29,21 +10,44 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_F81::RateMatrix_F81(size_t n) : TimeReversibleRateMatrix( n ){
+RateMatrix_F81::RateMatrix_F81(size_t n) : TimeReversibleRateMatrix( n )
+{
     
     update();
 }
 
 
 /** Destructor */
-RateMatrix_F81::~RateMatrix_F81(void) {
+RateMatrix_F81::~RateMatrix_F81(void)
+{
     
+}
+
+
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_F81& RateMatrix_F81::assign(const Assignable &m)
+{
+    
+    const RateMatrix_F81 *rm = dynamic_cast<const RateMatrix_F81*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_F81::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_F81::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
     
     // compute auxilliary variables
     double t = rate * (startAge - endAge);

@@ -1021,8 +1021,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
     
     // get pointers the likelihood for both subtrees
 //    const double*   p_site           = p_node;
-    const double*   p_left_site      = p_left;
-    const double*   p_right_site     = p_right;
+//    const double*   p_left_site      = p_left;
+//    const double*   p_right_site     = p_right;
     
     // sample characters conditioned on start states, going to end states
     std::vector<double> p(this->numChars, 0.0);
@@ -1092,22 +1092,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates)
 {
-    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get working variables
     size_t nodeIndex = node.getIndex();
-    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
     const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
 
-    
     // get transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
-    
-    // get the pointers to the partial likelihoods and the marginal likelihoods
-    const double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
-    
-    // get pointers the likelihood for both subtrees
-    const double* p_site = p_node;
     
     // sample characters conditioned on start states, going to end states
     std::vector<double> p(this->numChars, 0.0);

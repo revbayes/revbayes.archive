@@ -34,11 +34,12 @@ namespace RevBayesCore {
     class RateMatrix_Tamura92 : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_Tamura92(void);                                                                                                   //!< Default constructor
-        virtual                             ~RateMatrix_Tamura92(void);                                                              //!< Destructor
+        RateMatrix_Tamura92(void);                                                                                                                                  //!< Default constructor
+        virtual                             ~RateMatrix_Tamura92(void);                                                                                             //!< Destructor
         
         // RateMatrix functions
-        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
+        virtual RateMatrix_Tamura92&        assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_Tamura92*                clone(void) const;
         void                                setGC(double f);
         void                                setKappa(double k);
