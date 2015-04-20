@@ -380,6 +380,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<Simplex>() );
         addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<ModelVector<Natural> >() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<TimeTree>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<BranchLengthTree>() );
         
         // aliases
         addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Real>() );
@@ -389,6 +391,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Probability>() );
         addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Simplex>() );
         addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<ModelVector<Natural> >() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<TimeTree>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<BranchLengthTree>() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
