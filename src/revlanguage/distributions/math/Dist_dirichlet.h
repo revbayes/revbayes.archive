@@ -23,7 +23,7 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class Dist_dirichlet :  public TypedDistribution<Simplex> {
+    class Dist_dirichlet : public TypedDistribution<Simplex> {
         
     public:
         Dist_dirichlet( void );

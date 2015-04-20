@@ -373,21 +373,22 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( "dnOU",                new OrnsteinUhlenbeckProcess() );
         
         // mixture distribution
-        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
-        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RealPos>() );
-        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Natural>() );
-        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
-        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
-        addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        //addDistribution( "dnReversibleJumpMixture",       new Dist_reversibleJumpMixtureConstant<RateGenerator>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<Real>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<RealPos>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<Natural>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<Integer>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<Probability>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<Simplex>() );
+        addDistribution( "dnReversibleJumpMixture",         new Dist_reversibleJumpMixtureConstant<ModelVector<Natural> >() );
+        
         // aliases
-        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Real>() );
-        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RealPos>() );
-        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Natural>() );
-        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Integer>() );
-        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Probability>() );
-        addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<Simplex>() );
-        //addDistribution( "dnRJMixture",       new Dist_reversibleJumpMixtureConstant<RateGenerator>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Real>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<RealPos>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Natural>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Integer>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Probability>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<Simplex>() );
+        addDistribution( "dnRJMixture",                     new Dist_reversibleJumpMixtureConstant<ModelVector<Natural> >() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
