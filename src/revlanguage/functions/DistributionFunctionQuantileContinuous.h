@@ -18,7 +18,6 @@
 
 #include "RlContinuousDistribution.h"
 #include "RlTypedFunction.h"
-#include "RlPositiveContinuousDistribution.h"
 
 #include <string>
 #include <vector>
@@ -28,7 +27,7 @@ namespace RevLanguage {
     class DistributionFunctionQuantileContinuous : public TypedFunction<Real> {
         
     public:
-        DistributionFunctionQuantileContinuous(ContinuousDistribution *d);    
+        DistributionFunctionQuantileContinuous(ContinuousDistribution *d);
         DistributionFunctionQuantileContinuous(const DistributionFunctionQuantileContinuous& obj);                                                                    //!< Copy constructor
         virtual ~DistributionFunctionQuantileContinuous(void);
         
