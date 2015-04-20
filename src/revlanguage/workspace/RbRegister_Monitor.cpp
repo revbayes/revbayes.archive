@@ -74,7 +74,8 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
 
     }
-    catch(RbException& rbException) {
+    catch(RbException& rbException)
+    {
         
         RBOUT("Caught an exception while initializing monitors in the workspace\n");
         std::ostringstream msg;

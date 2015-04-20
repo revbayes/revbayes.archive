@@ -43,6 +43,7 @@ namespace RevLanguage {
 #include "ConstantNode.h"
 #include "ModelVector.h"
 #include "NexusWriter.h"
+#include "OptionRule.h"
 #include "PhylowoodConverter.h"
 #include "Probability.h"
 #include "RbException.h"
