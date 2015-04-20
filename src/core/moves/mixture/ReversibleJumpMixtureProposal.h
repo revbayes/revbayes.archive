@@ -85,6 +85,7 @@ RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::ReversibleJumpMixtureP
 template <class mixtureType>
 void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::cleanProposal( void )
 {
+    
     delete storedValue;
 }
 
@@ -127,6 +128,7 @@ template <class mixtureType>
 double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::doProposal( void )
 {
     
+    
     mixtureType& v = variable->getValue();
     ReversibleJumpMixtureConstantDistribution<mixtureType> &d = static_cast< ReversibleJumpMixtureConstantDistribution<mixtureType>& >( variable->getDistribution() );
     
@@ -140,9 +142,6 @@ double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::doProposal( voi
     {
         // draw the new value
         d.redrawValueByIndex( 1 );
-        
-        // set the new value
-        v = d.getValue();
 
         // get the base distribution
         TypedDistribution<mixtureType> &baseDistribution = d.getBaseDistribution();
@@ -152,6 +151,7 @@ double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::doProposal( voi
     }
     else
     {
+        
         // get the base distribution
         TypedDistribution<mixtureType> &baseDistribution = d.getBaseDistribution();
     
@@ -160,9 +160,6 @@ double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::doProposal( voi
         
         // draw the new value
         d.redrawValueByIndex( 0 );
-        
-        // set the new value
-        v = d.getValue();
     }
     
     return lnHastingsratio;
@@ -205,6 +202,7 @@ void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::printParameterSum
 template <class mixtureType>
 void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::undoProposal( void )
 {
+    
     // swap current value and stored value
     variable->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( *storedValue ) );
     

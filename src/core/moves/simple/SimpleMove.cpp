@@ -30,13 +30,15 @@ void SimpleMove::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-void SimpleMove::acceptSimpleMove( void ) {
+void SimpleMove::acceptSimpleMove( void )
+{
     // do nothing
     
 }
 
 
-double SimpleMove::performMove( double &probRatio ) {
+double SimpleMove::performMove( double &probRatio )
+{
     
     if (changed) 
     {

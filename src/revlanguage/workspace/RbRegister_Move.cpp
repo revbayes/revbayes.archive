@@ -192,6 +192,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Probability>( ) );
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<BranchLengthTree>( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<TimeTree>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 		addTypeWithConstructor("mvEmpiricalTree",           new Move_EmpiricalTree<BranchLengthTree>() );
