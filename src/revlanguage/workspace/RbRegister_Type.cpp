@@ -171,20 +171,22 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addType( new MatrixReal()           );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
-        addTypeWithConstructor( "model",                  new Model()                                   );
-        addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
-        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
+        addTypeWithConstructor( "beca",                     new BurninEstimationConvergenceAssessment()     );
+        addTypeWithConstructor( "model",                    new Model()                                     );
+        addTypeWithConstructor( "pathSampler",              new PathSampler()                               );
+        addTypeWithConstructor( "powerPosterior",           new PowerPosteriorAnalysis()                    );
+        addTypeWithConstructor( "steppingStoneSampler",     new SteppingStoneSampler()                      );
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
-        addTypeWithConstructor( "srGelmanRubin",        new GelmanRubinStoppingRule()   );
-        addTypeWithConstructor( "srGeweke",             new GewekeStoppingRule()   );
-        addTypeWithConstructor( "srMaxIteration",       new MaxIterationStoppingRule()   );
-        addTypeWithConstructor( "srMaxTime",            new MaxTimeStoppingRule()   );
-        addTypeWithConstructor( "srMinESS",             new MinEssStoppingRule()   );
-        addTypeWithConstructor( "srStationarity",       new StationarityStoppingRule()   );
+        addTypeWithConstructor( "srGelmanRubin",            new GelmanRubinStoppingRule()                   );
+        addTypeWithConstructor( "srGeweke",                 new GewekeStoppingRule()                        );
+        addTypeWithConstructor( "srMaxIteration",           new MaxIterationStoppingRule()                  );
+        addTypeWithConstructor( "srMaxTime",                new MaxTimeStoppingRule()                       );
+        addTypeWithConstructor( "srMinESS",                 new MinEssStoppingRule()                        );
+        addTypeWithConstructor( "srStationarity",           new StationarityStoppingRule()                  );
     }
-    catch(RbException& rbException) {
+    catch(RbException& rbException)
+    {
         
         RBOUT("Caught an exception while initializing types in the workspace\n");
         std::ostringstream msg;

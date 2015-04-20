@@ -223,7 +223,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
 
     }
-    catch(RbException& rbException) {
+    catch(RbException& rbException)
+    {
         
         RBOUT("Caught an exception while initializing moves in the workspace\n");
         std::ostringstream msg;
