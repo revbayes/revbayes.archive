@@ -24,7 +24,7 @@ namespace RevLanguage {
      * @since 2015-04-19, version 1.0
      *
      */
-    class Dist_multinomial :  public TypedDistribution< ModelVector<Natural> > {
+    class Dist_multinomial : public TypedDistribution< ModelVector<Natural> > {
         
     public:
         Dist_multinomial(void);

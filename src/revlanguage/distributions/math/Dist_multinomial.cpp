@@ -54,7 +54,7 @@ const std::string& Dist_multinomial::getClassType(void)
 const TypeSpec& Dist_multinomial::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<Natural> >::getClassTypeSpec() ) );
     return revTypeSpec;
 }
 
