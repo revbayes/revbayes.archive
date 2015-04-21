@@ -149,7 +149,6 @@ void RbFileManager::createDirectoryForFile( void )
         
         if ( isDirectoryPresent( directoryName ) == false )
         {
-            std::cerr << "Creating directory with name:\t" << directoryName << std::endl;
             makeDirectory( directoryName );
         }
         

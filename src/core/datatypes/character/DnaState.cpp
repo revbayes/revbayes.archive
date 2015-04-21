@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of DnaState, which is
- * the base class for the DNA character data type in RevBayes.
- *
- * @brief Implementation of DnaState
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: DnaState.cpp 1568 2012-05-24 07:58:04Z hoehna $
- */
-
 #include "DnaState.h"
 #include "RbException.h"
 #include <assert.h>
@@ -31,7 +16,8 @@ DnaState::DnaState(void) : DiscreteCharacterState(),
 
 
 /** Constructor that sets the observation */
-DnaState::DnaState(char s) : DiscreteCharacterState() {
+DnaState::DnaState(char s) : DiscreteCharacterState()
+{
     
     assert( s <= 15 );
     
@@ -40,11 +26,13 @@ DnaState::DnaState(char s) : DiscreteCharacterState() {
 
 
 /** Equals comparison */
-bool DnaState::operator==(const CharacterState& x) const {
+bool DnaState::operator==(const CharacterState& x) const
+{
     
     const DnaState* derivedX = dynamic_cast<const DnaState*>( &x );
     
-    if (derivedX != NULL) {
+    if (derivedX != NULL)
+    {
         return derivedX->state == state;
     }
     
@@ -53,13 +41,15 @@ bool DnaState::operator==(const CharacterState& x) const {
 
 
 /** Not equals comparison */
-bool DnaState::operator!=(const CharacterState& x) const {
+bool DnaState::operator!=(const CharacterState& x) const
+{
     
     return !operator==(x);
 }
 
 
-bool DnaState::operator<(const CharacterState &x) const {
+bool DnaState::operator<(const CharacterState &x) const
+{
     
     const DnaState* derivedX = static_cast<const DnaState*>(&x);
     if ( derivedX != NULL ) 
@@ -80,7 +70,8 @@ bool DnaState::operator<(const CharacterState &x) const {
 }
 
 
-void DnaState::operator++( void ) {
+void DnaState::operator++( void )
+{
     
     state <<= 1;
     ++stateIndex;
@@ -88,21 +79,24 @@ void DnaState::operator++( void ) {
 }
 
 
-void DnaState::operator++( int i ) {
+void DnaState::operator++( int i )
+{
 
     state <<= 1;
     ++stateIndex;
 
 }
 
-void DnaState::operator+=( int i ) {
+void DnaState::operator+=( int i )
+{
     
     state <<= i;
     stateIndex += i;
     
 }
 
-void DnaState::operator--( void ) {
+void DnaState::operator--( void )
+{
     
     state >>= 1;
     --stateIndex;
@@ -126,7 +120,8 @@ void DnaState::operator-=( int i )
     
 }
 
-void DnaState::addState(char symbol) {
+void DnaState::addState(char symbol)
+{
 
     state |= computeState( symbol );
 
@@ -134,7 +129,8 @@ void DnaState::addState(char symbol) {
 
 
 
-DnaState* DnaState::clone( void ) const {
+DnaState* DnaState::clone( void ) const
+{
     
     return new DnaState( *this );
 }
