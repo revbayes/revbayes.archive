@@ -156,13 +156,15 @@ unsigned long StandardState::getState( void ) const {
     return state;
 }
 
-size_t indexOfOnBit(size_t bitrep) {
+size_t indexOfOnBit(size_t bitrep)
+{
     
     // zero-valued bitreps should not exist
     assert(bitrep > 0);
 
     // the ambiguous state is the max value for size_t
-    if ( (bitrep & (bitrep -1)) != 0) {
+    if ( (bitrep & (bitrep -1)) != 0)
+    {
         size_t max = 0;
         return max - 1;
     }
@@ -181,11 +183,13 @@ size_t indexOfOnBit(size_t bitrep) {
     
     return index;
 }
-size_t setFirstNBitsOn(size_t n) {
+size_t setFirstNBitsOn(size_t n)
+{
     assert(n <= 8*sizeof(size_t));
     size_t r = 0;
     size_t b = 1;
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i)
+    {
         r |= b;
         b <<= 1;
     }
@@ -193,11 +197,13 @@ size_t setFirstNBitsOn(size_t n) {
 }
 
 
-size_t StandardState::getStateIndex( void ) const {
+size_t StandardState::getStateIndex( void ) const
+{
     return indexOfOnBit(this->state);
 }
 
-const std::string& StandardState::getStateLabels( void ) const {
+const std::string& StandardState::getStateLabels( void ) const
+{
     
     return labels;
 }
