@@ -812,6 +812,9 @@ void Mcmcmc::swapRandomChains(void)
     // swap?
     bool accept = false;
     
+#ifdef RB_MPI
+    MPI::COMM_WORLD.Barrier();
+#endif
     if ( pid == activePID )
     {
         j = int(GLOBAL_RNG->uniform01() * numChains);
@@ -822,6 +825,11 @@ void Mcmcmc::swapRandomChains(void)
             }
             while(j == k);
         }
+#ifdef RB_MPI
+#ifdef DEBUG_MPI_MCA
+        std::cout << pid << " attempt swap chains " << j << " " << k << "\n";
+#endif
+#endif
         
         ++numAttemptedSwaps;
             
@@ -888,6 +896,7 @@ void Mcmcmc::swapRandomChains(void)
     std::cout << pid << " pre-Bcast-j " << activePID << " " << j << " " << k << " " << "\n";
 #endif
     
+    MPI::COMM_WORLD.Barrier();
     MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)activePID);
     MPI::COMM_WORLD.Barrier();
     
@@ -931,18 +940,33 @@ void Mcmcmc::updateChainState(size_t j)
 
 #ifdef DEBUG_MPI_MCA
     std::cout << pid << " Mcmcmc::updateChainState start\n";
+    MPI::COMM_WORLD.Barrier();
 #endif
     
 #ifdef RB_MPI
+    MPI::COMM_WORLD.Barrier();
     // update heat
-    if (pid == activePID)
+    std::cout << pid << " Mcmcmc::updateChainState send " << activePID << " " << processPerChain[j] << "\n";
+    if (pid == activePID && pid == processPerChain[j])
     {
+        ; // do nothing
+    }
+    else if (pid == activePID)
+    {
+        std::cout << pid << " wow1!!\n";
         MPI::COMM_WORLD.Send(&chainHeats[j], 1, MPI::DOUBLE, (int)processPerChain[j], 0);
     }
-    if (pid == processPerChain[j])
+    //MPI::COMM_WORLD.Barrier();
+    else if (pid == processPerChain[j])
     {
+        std::cout << pid << " wow2!!\n";
         MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, (int)activePID, 0);
     }
+    MPI::COMM_WORLD.Barrier();
+#endif
+
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " Mcmcmc::updateChainState heat\n";
     MPI::COMM_WORLD.Barrier();
 #endif
     
@@ -954,14 +978,24 @@ void Mcmcmc::updateChainState(size_t j)
     bool tf = activeChainIndex == j;
     
 #ifdef RB_MPI
-    if (pid == activePID)
+    MPI::COMM_WORLD.Barrier();
+    if (pid == activePID && pid == processPerChain[j])
+    {
+        ; // do nothing
+    }
+    else if (pid == activePID)
     {
         MPI::COMM_WORLD.Send(&tf, 1, MPI::BOOL, (int)processPerChain[j], 0);
     }
-    if (pid == processPerChain[j])
+    else if (pid == processPerChain[j])
     {
         MPI::COMM_WORLD.Recv(&tf, 1, MPI::BOOL, (int)activePID, 0);
     }
+    MPI::COMM_WORLD.Barrier();
+#endif
+
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " Mcmcmc::updateChainState activePID\n";
     MPI::COMM_WORLD.Barrier();
 #endif
     
@@ -972,6 +1006,7 @@ void Mcmcmc::updateChainState(size_t j)
     
 #ifdef DEBUG_MPI_MCA
     std::cout << pid << " Mcmcmc::updateChainState end\n";
+    MPI::COMM_WORLD.Barrier();
 #endif
     
 }
