@@ -9,7 +9,7 @@ boost="true"
 mavericks="false"
 mac_universal="false"
 win="false"
-mpi="false"
+mpi="true"
 
 
 # parse command line arguments
