@@ -18,19 +18,29 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include <ctime>
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
 
 using namespace RevBayesCore;
 
 /** Default constructor calling time to get the initial seeds */
 RandomNumberGenerator::RandomNumberGenerator(void) :
-    seed((unsigned int)( time(0) ) ),
-    rng(),
-    zeroone(rng)
+        seed((unsigned int)( time(0) ) ),
+        rng(),
+        zeroone(rng)
 {
 
 	unsigned int x  = (unsigned int)( time(0) );    
     rng.seed( x );
     zeroone = boost::uniform_01<boost::rand48>(rng);
+
+#ifdef RB_MPI
+    // cycle through pid random numbers
+    int pid = MPI::COMM_WORLD.Get_rank();
+    for (int i = 0; i < pid; i++)
+        zeroone();
+#endif
 
 }
 
