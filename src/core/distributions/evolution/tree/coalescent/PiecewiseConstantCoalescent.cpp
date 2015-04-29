@@ -107,7 +107,7 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
             
         } while ( !valid );
         
-        lnProbTimes += log( nPairs / theta ) - nPairs * deltaAge / theta ;
+        lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta ;
     }
     
     return lnProbTimes;
