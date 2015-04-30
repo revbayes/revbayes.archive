@@ -111,18 +111,41 @@ int RbMath::kchoose2(int k){
 }
 
 /*!
+ * This function returns the harmonic number of x=> sum_i=1^x(1/i)
+ *
+ * \brief Return sum_i=1^x(1/i)
+ * \param x The x value
+ * \return The harmonic number of x
+ */
+double RbMath::harmonicNumber(size_t n)
+{
+    
+    double hm = 0.0;
+    for (int i=1; i<=n; i++)
+    {
+        hm += 1.0/i;
+    }
+    
+    return (hm);
+}
+
+/*!
  * This function returns the factorial of x, x!
  *
  * \brief Return x!
  * \param x The x value
  * \return The factorial x!
  */
-double RbMath::factorial(int x) {
+double RbMath::factorial(int x)
+{
 
 	double fac = 1.0;
 	for (int i=1; i<=x; i++)
+    {
 		fac *= i;
-	return (fac);
+    }
+    
+    return (fac);
 }
 
 #define ODD(_K_) ((_K_) != 2 * floor((_K_) / 2.))
