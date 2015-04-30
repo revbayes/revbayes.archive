@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "F81RateMatrixFunction.h"
 #include "Func_f81.h"
 #include "RateMatrix_F81.h"
@@ -19,13 +11,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_f81::Func_f81( void ) : TypedFunction<RateGenerator>( ) {
+Func_f81::Func_f81( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_f81* Func_f81::clone( void ) const {
+Func_f81* Func_f81::clone( void ) const
+{
     
     return new Func_f81( *this );
 }
@@ -42,7 +36,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_f81::createFunc
 
 
 /* Get argument rules */
-const ArgumentRules& Func_f81::getArgumentRules( void ) const {
+const ArgumentRules& Func_f81::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -59,7 +54,8 @@ const ArgumentRules& Func_f81::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_f81::getClassType(void) { 
+const std::string& Func_f81::getClassType(void)
+{
     
     static std::string revType = "Func_f81";
     
@@ -67,7 +63,8 @@ const std::string& Func_f81::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_f81::getClassTypeSpec(void) { 
+const TypeSpec& Func_f81::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -75,7 +72,8 @@ const TypeSpec& Func_f81::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_f81::getTypeSpec( void ) const {
+const TypeSpec& Func_f81::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
