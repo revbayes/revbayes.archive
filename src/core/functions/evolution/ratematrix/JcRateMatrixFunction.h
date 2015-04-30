@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the GTR rate matrix function class.
- * This class is derived from the function class and is used to
- * compute the rate matrix of a general time reversible (GTR) Markov chain.
- *
- * @brief Declaration of the GTR rate matrix function.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-07-06, version 1.0
- * @interface Function
- *
- * $Id$
- */
-
-
-
 #ifndef JcRateMatrixFunction_H
 #define JcRateMatrixFunction_H
 
@@ -30,11 +9,24 @@
 
 namespace RevBayesCore {
     
+    
+    /**
+     * @brief JC rate matrix function.
+     *
+     * This function creates the JC rates matrix object by setting the number of states in the constructor.
+     * The rate matrix takes care of the setting of the actual rates and transition probabilities.
+     * In this case they are actually constant.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2014-07-04
+     *
+     */
     class JcRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
         JcRateMatrixFunction(size_t ns);
-        JcRateMatrixFunction(const JcRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~JcRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions

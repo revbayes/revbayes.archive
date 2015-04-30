@@ -1,32 +1,21 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "Func_jc.h"
 #include "JcRateMatrixFunction.h"
 #include "Natural.h"
 #include "RateMatrix_JC.h"
-#include "Real.h"
-#include "RealPos.h"
-#include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
-#include "RlSimplex.h"
-#include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_jc::Func_jc( void ) : TypedFunction<RateGenerator>( ) {
+Func_jc::Func_jc( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_jc* Func_jc::clone( void ) const {
+Func_jc* Func_jc::clone( void ) const
+{
     
     return new Func_jc( *this );
 }
@@ -43,7 +32,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_jc::createFunct
 
 
 /* Get argument rules */
-const ArgumentRules& Func_jc::getArgumentRules( void ) const {
+const ArgumentRules& Func_jc::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -60,7 +50,8 @@ const ArgumentRules& Func_jc::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_jc::getClassType(void) { 
+const std::string& Func_jc::getClassType(void)
+{
     
     static std::string revType = "Func_jc";
     
@@ -68,7 +59,8 @@ const std::string& Func_jc::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_jc::getClassTypeSpec(void) { 
+const TypeSpec& Func_jc::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -76,7 +68,8 @@ const TypeSpec& Func_jc::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_jc::getTypeSpec( void ) const {
+const TypeSpec& Func_jc::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -1,5 +1,5 @@
-#ifndef Func_jc_H
-#define Func_jc_H
+#ifndef Func_InfiniteSitesRateMatrix_H
+#define Func_InfiniteSitesRateMatrix_H
 
 #include "RlRateMatrix.h"
 #include "RlTypedFunction.h"
@@ -10,25 +10,25 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the JC rate matrix function.
+     * The RevLanguage wrapper of the infinite sites rate matrix function.
      *
-     * The RevLanguage wrapper of the JC rate matrix connects
-     * the variables/parameters of the function and creates the internal JcRateMatrixFunction object.
-     * Please read the JcRateMatrixFunction.h for more info.
+     * The RevLanguage wrapper of the InfiniteSites rate matrix connects
+     * the variables/parameters of the function and creates the internal InfiniteSitesRateMatrixFunction object.
+     * Please read the InfiniteSitesRateMatrixFunction.h for more info.
      *
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-08-14, version 1.0
+     * @since 2015-04-30, version 1.0
      *
      */
-    class Func_jc : public TypedFunction<RateGenerator> {
+    class Func_InfiniteSitesRateMatrix : public TypedFunction<RateGenerator> {
         
     public:
-        Func_jc( void );
+        Func_InfiniteSitesRateMatrix( void );
         
         // Basic utility functions
-        Func_jc*                                                        clone(void) const;                                                              //!< Clone the object
+        Func_InfiniteSitesRateMatrix*                                   clone(void) const;                                                              //!< Clone the object
         static const std::string&                                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
