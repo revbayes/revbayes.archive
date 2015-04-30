@@ -291,3 +291,22 @@ int RbMath::signedStirlingFirst(int n, int k) {
 	std::cout << v << std::endl;
 	return sign * (int)v;
 }
+
+/*!
+ * This function returns the harmonic number of x=> sum_i=1^x(1/i^2)
+ *
+ * \brief Return sum_i=1^x(1/i^2)
+ * \param x The x value
+ * \return The harmonic number of x
+ */
+double RbMath::squaredHarmonicNumber(size_t n)
+{
+    
+    double hm = 0.0;
+    for (int i=1; i<=n; i++)
+    {
+        hm += 1.0/(i*i);
+    }
+    
+    return (hm);
+}
