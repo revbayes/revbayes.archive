@@ -100,7 +100,7 @@
 #include "Func_workspaceVector.h"
 
 
-/* Functions related to evolution (in folder "functions/evolution") */
+/* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
 #include "Func_clade.h"
 #include "Func_concatenate.h"
@@ -116,7 +116,7 @@
 #include "Func_treeScale.h"
 
 
-/* Rate matrix functions (in folder "functions/evolution/ratematrix") */
+/* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
 #include "Func_cpRev.h"
@@ -139,6 +139,9 @@
 #include "Func_vt.h"
 #include "Func_t92.h"
 #include "Func_wag.h"
+
+/* Functions related to evolution (in folder "functions/popgen") */
+#include "Func_SegregatingSites.h"
 
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
@@ -296,13 +299,17 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "fnWAG",               new Func_wag()                      );
         
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
-        addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
-        addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
+        addFunction( "fnBiogeoDE",      new Func_biogeo_de() );
+        addFunction( "fnBiogeoGRM",     new Func_biogeo_grm() );
         
-        /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
-        addFunction( "fnCladoProbs", new Func_cladoProbs() );
-        addFunction( "fnDECRates", new Func_DECRates() );
-        addFunction( "fnDECRoot", new Func_DECRoot() );
+        /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */
+        addFunction( "fnCladoProbs",    new Func_cladoProbs() );
+        addFunction( "fnDECRates",      new Func_DECRates() );
+        addFunction( "fnDECRoot",       new Func_DECRoot() );
+        
+        
+        /* Population genetics functions (in folder "functions/popgen") */
+        addFunction( "fnSegregatingSites",  new Func_SegregatingSites() );
 
     
         /* Inference functions (in folder "functions/inference") */

@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage F81 function, which
- * is used to create deterministic variable associated with the F81 function.
- *
- * @brief Declaration and implementation of Func_f81
- *
- * (c) Copyright under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
-
 #ifndef Func_f81_H
 #define Func_f81_H
 
@@ -24,6 +9,20 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * The RevLanguage wrapper of the F81 rate matrix function.
+     *
+     * The RevLanguage wrapper of the F81 rate matrix connects
+     * the variables/parameters of the function and creates the internal F81RateMatrixFunction object.
+     * Please read the F81RateMatrixFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-08-14, version 1.0
+     *
+     */
     class Func_f81 : public TypedFunction<RateGenerator> {
         
     public:
