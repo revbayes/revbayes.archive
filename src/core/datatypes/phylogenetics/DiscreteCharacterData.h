@@ -63,6 +63,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         size_t                                              getNumberOfInvariantSites(void) const;                                      //!< Number of invariant sites
+        size_t                                              getNumberOfSegregatingSites(void) const;                                    //!< Compute the number of segregating sites
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                              getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
@@ -748,6 +749,22 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfInvariantSites(
     }
     
     return invSites;
+}
+
+
+/**
+ * Get the set of excluded character indices.
+ * We use the fact that the number of segregating sites is numSites - numInvariantSites.
+ *
+ * \return    The excluded character indices.
+ */
+template<class charType>
+size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfSegregatingSites(void) const
+{
+    const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(0);
+    size_t nc = firstTaxonData.getNumberOfCharacters();
+    
+    return nc - getNumberOfInvariantSites();
 }
 
 
