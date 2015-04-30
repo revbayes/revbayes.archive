@@ -9,11 +9,6 @@ JcRateMatrixFunction::JcRateMatrixFunction(size_t ns) : TypedFunction<RateGenera
 }
 
 
-JcRateMatrixFunction::JcRateMatrixFunction(const JcRateMatrixFunction &n) : TypedFunction<RateGenerator>( n ) {
-    // no need to add parameters, happens automatically
-}
-
-
 JcRateMatrixFunction::~JcRateMatrixFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }

@@ -128,6 +128,7 @@
 #include "Func_FreeK.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_InfiniteSitesRateMatrix.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_k80.h"
@@ -271,27 +272,28 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         ///////////////////////////////////////////
         
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
-        addFunction( "fnBlosum62", new Func_blosum62());
-        addFunction( "fnChromosomes", new Func_chromosomes());
-        addFunction( "fnCpRev",    new Func_cpRev()   );
-        addFunction( "fnDayhoff",  new Func_dayhoff() );
-        addFunction( "fnDECRateMatrix", new Func_DECRateMatrix() );
-        addFunction( "fnEpoch",    new Func_epoch() );
-        addFunction( "fnF81",      new Func_f81()     );
-        addFunction( "fnFreeBinary", new Func_FreeBinary() );
-        addFunction( "fnFreeK",    new Func_FreeK()   );
-        addFunction( "fnGTR",      new Func_gtr()     );
-        addFunction( "fnHKY",      new Func_hky()     );
-        addFunction( "fnJC",       new Func_jc()      );
-        addFunction( "fnJones",    new Func_jones()   );
-        addFunction( "fnK80",      new Func_k80()     );
-        addFunction( "fnMtMam",    new Func_mtMam()   );
-        addFunction( "fnMtRev",    new Func_mtRev()   );
-        addFunction( "fnPomo",     new Func_pomo()    );
-        addFunction( "fnRtRev",    new Func_rtRev()   );
-        addFunction( "fnT92",      new Func_t92()     );
-        addFunction( "fnVT",       new Func_vt()      );
-        addFunction( "fnWAG",      new Func_wag()     );
+        addFunction( "fnBlosum62",          new Func_blosum62()                 );
+        addFunction( "fnChromosomes",       new Func_chromosomes()              );
+        addFunction( "fnCpRev",             new Func_cpRev()                    );
+        addFunction( "fnDayhoff",           new Func_dayhoff()                  );
+        addFunction( "fnDECRateMatrix",     new Func_DECRateMatrix()            );
+        addFunction( "fnEpoch",             new Func_epoch()                    );
+        addFunction( "fnF81",               new Func_f81()                      );
+        addFunction( "fnFreeBinary",        new Func_FreeBinary()               );
+        addFunction( "fnFreeK",             new Func_FreeK()                    );
+        addFunction( "fnGTR",               new Func_gtr()                      );
+        addFunction( "fnHKY",               new Func_hky()                      );
+        addFunction( "fnInfiniteSites",     new Func_InfiniteSitesRateMatrix()  );
+        addFunction( "fnJC",                new Func_jc()                       );
+        addFunction( "fnJones",             new Func_jones()                    );
+        addFunction( "fnK80",               new Func_k80()                      );
+        addFunction( "fnMtMam",             new Func_mtMam()                    );
+        addFunction( "fnMtRev",             new Func_mtRev()                    );
+        addFunction( "fnPomo",              new Func_pomo()                     );
+        addFunction( "fnRtRev",             new Func_rtRev()                    );
+        addFunction( "fnT92",               new Func_t92()                      );
+        addFunction( "fnVT",                new Func_vt()                       );
+        addFunction( "fnWAG",               new Func_wag()                      );
         
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
         addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
