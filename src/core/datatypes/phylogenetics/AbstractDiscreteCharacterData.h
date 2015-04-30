@@ -58,6 +58,7 @@ namespace RevBayesCore {
         virtual const std::string&                  getFilePath(void) const = 0;                                                //!< Returns the name of the file path the data came from
         virtual size_t                              getIndexOfTaxon(const std::string &n) const = 0;                            //!< Get the index of the taxon with name 'n'.
         virtual size_t                              getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
+        virtual size_t                              getNumberOfSegregatingSites(void) const = 0;                                //!< Compute the number of segregating sites
         virtual size_t                              getNumberOfStates(void) const = 0;                                          //!< Get the number of states for the characters in this matrix
         virtual size_t                              getNumberOfIncludedTaxa(void) const = 0;                                    //!< Number of included taxa
         virtual size_t                              getNumberOfInvariantSites(void) const = 0;                                  //!< Number of invariant sites
