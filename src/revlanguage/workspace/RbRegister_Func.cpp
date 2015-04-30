@@ -143,6 +143,7 @@
 /* Functions related to evolution (in folder "functions/popgen") */
 #include "Func_SegregatingSites.h"
 #include "Func_TajimasPi.h"
+#include "Func_WattersonTheta.h"
 
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
@@ -312,6 +313,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         /* Population genetics functions (in folder "functions/popgen") */
         addFunction( "fnSegregatingSites",  new Func_SegregatingSites() );
         addFunction( "fnTajimasPi",         new Func_TajimasPi()        );
+        addFunction( "fnWattersonsTheta",   new Func_WattersonTheta()   );
 
     
         /* Inference functions (in folder "functions/inference") */
