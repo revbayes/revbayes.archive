@@ -142,6 +142,7 @@
 
 /* Functions related to evolution (in folder "functions/popgen") */
 #include "Func_SegregatingSites.h"
+#include "Func_TajimasD.h"
 #include "Func_TajimasPi.h"
 #include "Func_WattersonTheta.h"
 
@@ -312,6 +313,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         
         /* Population genetics functions (in folder "functions/popgen") */
         addFunction( "fnSegregatingSites",  new Func_SegregatingSites() );
+        addFunction( "fnTajimasD",          new Func_TajimasD()         );
         addFunction( "fnTajimasPi",         new Func_TajimasPi()        );
         addFunction( "fnWattersonsTheta",   new Func_WattersonTheta()   );
 
