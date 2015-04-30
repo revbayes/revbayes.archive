@@ -85,8 +85,6 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  * appropriate, we do type conversion or type promotion.
  *
  *
- * @todo We need to check whether workspace objects with member variables are
- *       modifiable by the user.
  *
  * @todo To conform to the old code we change the required type of the incoming
  *       variable wrapper here. We need to change this so that we do not change

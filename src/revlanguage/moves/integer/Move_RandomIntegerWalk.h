@@ -33,7 +33,7 @@ namespace RevLanguage {
         Move_RandomIntegerWalk(void);                                                                                                            //!< Default constructor
         
         // Basic utility functions
-        virtual Move_RandomIntegerWalk*              clone(void) const;                                                                          //!< Clone object
+        virtual Move_RandomIntegerWalk*             clone(void) const;                                                                          //!< Clone object
         void                                        constructInternalObject(void);                                                              //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                                         //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                     //!< Get class type spec
@@ -45,7 +45,7 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                          //!< The variable on which the move works
+        RevPtr<const RevVariable>                   x;                                                                                          //!< The variable on which the move works
         
     };
     

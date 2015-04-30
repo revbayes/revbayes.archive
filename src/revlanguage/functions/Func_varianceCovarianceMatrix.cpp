@@ -6,7 +6,6 @@
 //
 
 #include "Func_varianceCovarianceMatrix.h"
-#include "MatrixReal.h"
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -18,7 +17,7 @@ using namespace RevLanguage;
 
 
 /** default constructor */
-Func_varianceCovarianceMatrix::Func_varianceCovarianceMatrix(void) : TypedFunction<MatrixReal>()
+Func_varianceCovarianceMatrix::Func_varianceCovarianceMatrix(void) : TypedFunction<MatrixRealSymmetric>()
 {
     
 }

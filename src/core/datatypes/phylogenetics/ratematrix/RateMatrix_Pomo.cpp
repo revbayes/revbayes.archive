@@ -16,7 +16,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), matrixSize( n ){
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), matrixSize( n )
+{
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i) {
         mu.push_back(temp);
@@ -26,9 +27,11 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), m
 }
 
 /** Construct rate matrix with n states, virtual population size, mutation rates, selection coefficients */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
+{
     std::vector<double> temp (4, 0.0);
-    for (size_t i = 0; i<4 ; ++i) {
+    for (size_t i = 0; i<4 ; ++i)
+    {
         mu.push_back(temp);
         s.push_back(1.0);
     }
@@ -38,9 +41,11 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<d
 }
 
 /** Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
+{
     std::vector<double> temp (4, 0.0);
-    for (size_t i = 0; i<4 ; ++i) {
+    for (size_t i = 0; i<4 ; ++i)
+    {
         mu.push_back(temp);
         s.push_back(1.0);
     }
@@ -51,8 +56,29 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateGenerato
 
 
 /** Destructor */
-RateMatrix_Pomo::~RateMatrix_Pomo(void) {
+RateMatrix_Pomo::~RateMatrix_Pomo(void)
+{
     
+}
+
+
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_Pomo& RateMatrix_Pomo::assign(const Assignable &m)
+{
+    
+    const RateMatrix_Pomo *rm = dynamic_cast<const RateMatrix_Pomo*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 double RateMatrix_Pomo::averageRate(void) const

@@ -63,6 +63,7 @@ namespace RevLanguage {
 #include "Natural.h"
 #include "RbException.h"
 #include "RevObject.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlModel.h"
 #include "RlTimeTree.h"
 #include "RlBranchLengthTree.h"

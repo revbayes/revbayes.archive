@@ -1,4 +1,4 @@
 #!/bin/sh
 ./regenerate.sh -mavericks true
 cmake . -DCMAKE_BUILD_TYPE=release
-make 
+make -j 4

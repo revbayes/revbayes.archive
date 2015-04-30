@@ -16,23 +16,27 @@ DirichletDistribution::DirichletDistribution(const TypedDagNode< RbVector<double
 }
 
 
-DirichletDistribution::~DirichletDistribution( void ) {
+DirichletDistribution::~DirichletDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-DirichletDistribution* DirichletDistribution::clone( void ) const {
+DirichletDistribution* DirichletDistribution::clone( void ) const
+{
     return new DirichletDistribution( *this );
 }
 
 
-double DirichletDistribution::computeLnProbability( void ) {
+double DirichletDistribution::computeLnProbability( void )
+{
     return RbStatistics::Dirichlet::lnPdf(alpha->getValue(), *value);
 }
 
 
-void DirichletDistribution::redrawValue( void ) {
+void DirichletDistribution::redrawValue( void )
+{
     *value = RbStatistics::Dirichlet::rv(alpha->getValue(), *GLOBAL_RNG);
 }
 

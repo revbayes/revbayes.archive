@@ -36,20 +36,23 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::ChiSquare::pdf(double v, double x) {
+double RbStatistics::ChiSquare::pdf(double df, double x)
+{
     
 	double pdf;
 	if ( x < 0.0 )
-        {
+    {
 		pdf = 0.0;
-        }
+    }
 	else
-        {
-		double b = v / 2.0;
+    {
+		double b = df / 2.0;
 		pdf = exp( -0.5 * x ) * pow( x, ( b - 1.0 ) ) / ( pow( 2.0, b ) * RbMath::gamma( b ) );
-        }
-	return pdf;
+    }
+	
+    return pdf;
 }
+
 
 /*!
  * This function calculates the natural log of the probability density 
@@ -61,11 +64,13 @@ double RbStatistics::ChiSquare::pdf(double v, double x) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::ChiSquare::lnPdf(double v, double x) {
+double RbStatistics::ChiSquare::lnPdf(double df, double x)
+{
     
-	double b = v / 2.0;
+	double b = df / 2.0;
 	return ( -(b * log(2.0) + RbMath::lnGamma(b)) - b + (b - 1.0) * std::log(x) );
 }
+
 
 /*!
  * This function calculates the cumulative probability  
@@ -77,9 +82,10 @@ double RbStatistics::ChiSquare::lnPdf(double v, double x) {
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
-double RbStatistics::ChiSquare::cdf(double v, double x) {
+double RbStatistics::ChiSquare::cdf(double df, double x)
+{
     
-	return RbStatistics::Gamma::cdf( v / 2.0, 0.5, x );
+	return RbStatistics::Gamma::cdf( df / 2.0, 0.5, x );
 }
 
 
@@ -94,7 +100,8 @@ double RbStatistics::ChiSquare::cdf(double v, double x) {
  * \return Returns quantile value (or -1 if in error). 
  * \throws Does not throw an error.
  */
-double RbStatistics::ChiSquare::quantile(double prob, double v) {
+double RbStatistics::ChiSquare::quantile(double prob, double df)
+{
     
 //    return quantile_appr(prob, v, RbMath::lnGamma(v/2.0), true, false, 1E-16);
 	
@@ -102,19 +109,20 @@ double RbStatistics::ChiSquare::quantile(double prob, double v) {
 				xx, c, ch, a = 0.0, q = 0.0, p1 = 0.0, p2 = 0.0, t = 0.0, 
 				x = 0.0, b = 0.0, s1, s2, s3, s4, s5, s6;
 	
-	if (p < 0.000002 || p > 0.999998 || v <= 0.0) 
+	if (p < 0.000002 || p > 0.999998 || df <= 0.0)
 		return (-1.0);
-	g = RbMath::lnGamma(v/2.0);
-	xx = v/2.0;   
+    
+	g = RbMath::lnGamma(df/2.0);
+	xx = df/2.0;
 	c = xx - 1.0;
-	if (v >= -1.24*log(p)) 
+	if (df >= -1.24*log(p))
 		goto l1;
 	ch = pow((p * xx * exp(g + xx * aa)), 1.0/xx);
 	if (ch-e < 0) 
 		return (ch);
 	goto l4;
 	l1:
-		if (v > 0.32) 
+		if (df > 0.32)
 			goto l3;
 		ch = 0.4;   
 		a = log(1.0-p);
@@ -130,9 +138,9 @@ double RbStatistics::ChiSquare::quantile(double prob, double v) {
 			goto l2;
 	l3: 
 		x = RbStatistics::Normal::quantile(p);
-		p1 = 0.222222/v;   
-		ch = v*pow((x*sqrt(p1)+1.0-p1), 3.0);
-		if (ch > 2.2*v+6.0)  
+		p1 = 0.222222/df;
+		ch = df*pow((x*sqrt(p1)+1.0-p1), 3.0);
+		if (ch > 2.2*df+6.0)
 			ch = -2.0*(log(1.0-p)-c*log(0.5*ch)+g);
 	l4:
         double last_improv = q - ch;
@@ -159,32 +167,34 @@ double RbStatistics::ChiSquare::quantile(double prob, double v) {
 	
 }
 
-double RbStatistics::ChiSquare::rv(double v, RandomNumberGenerator& rng) {
+double RbStatistics::ChiSquare::rv(double df, RandomNumberGenerator& rng)
+{
     
 	/* Cast the degrees of freedom parameter as an integer. We will see
      if there is a decimal remainder later. */
-	int n = (int)(v);
+	int n = (int)(df);
 	
 	double x2;
-	if ( (double)(n) == v && n <= 100 )
-        {
+	if ( (double)(n) == df && n <= 100 )
+    {
 		/* If the degrees of freedom is an integer and less than 100, we
          generate our chi-square random variable by generating v
          standard normal random variables, squaring each, and taking the
          sum of the squared random variables. */
 		x2 = 0.0;
 		for (int i=0; i<n; i++)
-            {
+        {
 			double x = RbStatistics::Normal::rv(0.0, 1.0, rng);
 			x2 += x * x;
-            }
         }
+    }
 	else
-        {
+    {
 		/* Otherwise, we use the relationship of the chi-square to a gamma
          (it is a special case of the gamma) to generate the chi-square
          random variable. */
-		x2 = RbStatistics::Gamma::rv(v/2.0, 0.5, rng);
-        }
-	return x2;
+		x2 = RbStatistics::Gamma::rv(df/2.0, 0.5, rng);
+    }
+	
+    return x2;
 }

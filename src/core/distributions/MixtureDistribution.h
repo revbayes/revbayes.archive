@@ -1,6 +1,7 @@
 #ifndef MixtureDistribution_H
 #define MixtureDistribution_H
 
+#include "MemberObject.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -184,7 +185,7 @@ template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::redrawValue( void )
 {
 
-    *(this->value) = simulate();
+    Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), simulate() );
 
 }
 
@@ -193,12 +194,10 @@ template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
 {
 
-    delete this->value;
-
     index = i;
     const mixtureType &tmp = parameterValues->getValue()[i];
     
-    this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( tmp );
+    Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), tmp );
 }
 
 
@@ -224,7 +223,9 @@ void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagN
     // only do this when the toucher was our parameters
     if ( restorer == parameterValues )
     {
-        *this->value = parameterValues->getValue()[index];
+        const mixtureType &tmp = parameterValues->getValue()[index];
+        Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), tmp );
+
         this->dagNode->restoreAffected();
     }
 }
@@ -255,7 +256,9 @@ void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNod
     // only do this when the toucher was our parameters
     if ( toucher == parameterValues )
     {
-        *this->value = parameterValues->getValue()[index];
+        const mixtureType &tmp = parameterValues->getValue()[index];
+        Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), tmp );
+        
         this->dagNode->touchAffected();
     }
 }

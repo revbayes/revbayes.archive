@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the exponentially distributed random variable class.
- * This class is derived from the stochastic node and each instance will represent a random variable
- * from a normal distribution in the model graph.
- *
- * @brief Declaration of the stochastic DAG node base class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef ExponentialWithOffsetDistribution_H
 #define ExponentialWithOffsetDistribution_H
 
@@ -27,6 +6,21 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Exponential distribution with offset distribution class.
+     *
+     * The Exponential distribution with offset represents a family of distributions
+     * defined on the real number. The difference here is that the offset can result into negative observation. 
+     * The Exponential distribution has 2 parameters:
+     *   lambda .. the rate
+     *   offset .. the offset
+     * Instances of this class can be associated to stochastic variables.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2013-04-12, version 1.0
+     *
+     */
     class ExponentialWithOffsetDistribution : public ContinuousDistribution {
         
     public:

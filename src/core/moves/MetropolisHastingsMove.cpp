@@ -340,7 +340,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     const std::string &n = getMoveName();
     size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
     o << n;
-    for (size_t i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i)
+    {
         o << " ";
     }
     o << " ";
@@ -349,14 +350,16 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     const std::string &dn_name = (*nodes.begin())->getName();
     spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
     o << dn_name;
-    for (size_t i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i)
+    {
         o << " ";
     }
     o << " ";
     
     // print the weight
     int w_length = 4 - (int)log10(weight);
-    for (int i = 0; i < w_length; ++i) {
+    for (int i = 0; i < w_length; ++i)
+    {
         o << " ";
     }
     o << weight;
@@ -364,7 +367,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9 - (int)log10(numTried);
-    for (int i = 0; i < t_length; ++i) {
+    for (int i = 0; i < t_length; ++i)
+    {
         o << " ";
     }
     o << numTried;
@@ -374,7 +378,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     int a_length = 9;
     if (numAccepted > 0) a_length -= (int)log10(numAccepted);
     
-    for (int i = 0; i < a_length; ++i) {
+    for (int i = 0; i < a_length; ++i)
+    {
         o << " ";
     }
     o << numAccepted;
@@ -385,7 +390,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     if (numTried == 0) ratio = 0;
     int r_length = 5;
     
-    for (int i = 0; i < r_length; ++i) {
+    for (int i = 0; i < r_length; ++i)
+    {
         o << " ";
     }
     o << ratio;
@@ -463,11 +469,15 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
  * Tune the move to accept the desired acceptance ratio.
  * We only compute the acceptance ratio here and delegate the call to the proposal.
  */
-void MetropolisHastingsMove::tune( void ) {
+void MetropolisHastingsMove::tune( void )
+{
     
-    double rate = numAccepted / double(numTried);
+    if ( numTried > 2 )
+    {
+        double rate = numAccepted / double(numTried);
     
-    proposal->tune( rate );
+        proposal->tune( rate );
+    }
     
 }
 

@@ -23,7 +23,8 @@ RevVariable::RevVariable( const TypeSpec& ts, const std::string& n ) :
     isReferenceVar( false ),
     isVectorVar( false ),
     isWorkspaceVar( false ),
-    elementIndices()
+    elementIndices(),
+    referencedVariable( NULL )
 {
     
 }
@@ -39,7 +40,8 @@ RevVariable::RevVariable(RevObject *v, const std::string &n) :
     isReferenceVar( false ),
     isVectorVar( false ),
     isWorkspaceVar( false ),
-    elementIndices()
+    elementIndices(),
+    referencedVariable( NULL )
 {
     replaceRevObject( v );
 }
@@ -56,10 +58,9 @@ RevVariable::RevVariable(const RevPtr<RevVariable>& refVar, const std::string &n
     isReferenceVar( true ),
     isVectorVar( false ),
     isWorkspaceVar( false ),
-    elementIndices()
+    elementIndices(),
+    referencedVariable( refVar )
 {
-    
-    referencedVariable = refVar;
     
 }
 
@@ -75,8 +76,8 @@ RevVariable::RevVariable(const RevVariable &v) :
     isReferenceVar( v.isHiddenVar ),
     isVectorVar( v.isVectorVar ),
     isWorkspaceVar( v.isWorkspaceVar ),
-    referencedVariable( v.referencedVariable ),
-    elementIndices( v.elementIndices )
+    elementIndices( v.elementIndices ),
+    referencedVariable( v.referencedVariable )
 {
     
     if ( v.revObject != NULL )
@@ -117,8 +118,8 @@ RevVariable& RevVariable::operator=(const RevVariable &v)
         isReferenceVar      = v.isReferenceVar;
         isVectorVar         = v.isVectorVar;
         isWorkspaceVar      = v.isWorkspaceVar;
-        referencedVariable  = v.referencedVariable;
         elementIndices      = v.elementIndices;
+        referencedVariable  = v.referencedVariable;
         
         if ( isReferenceVar )
         {

@@ -92,8 +92,6 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
 void AbstractFileMonitor::monitor(unsigned long gen)
 {
     
-    outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
-    
 //    if ( nodes[0]->getName() != "pi" && nodes[0]->getName() != "tau" )
 //    {
 //        std::cerr << "Strange first node:\t\t" << nodes[0]->getName() << std::endl;
@@ -104,6 +102,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
     
     if (gen % samplingFrequency == 0)
     {
+        outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
+
         // print the iteration number first
         outStream << gen;
         
@@ -157,9 +157,10 @@ void AbstractFileMonitor::monitor(unsigned long gen)
         
         outStream << std::endl;
         
+        outStream.close();
+        
     }
     
-    outStream.close();
     
 }
 

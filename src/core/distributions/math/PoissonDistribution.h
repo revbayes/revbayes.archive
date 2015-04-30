@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Poisson distributed random variable class.
- * This class is derived from the stochastic node and each instance will represent a random variable
- * from a normal distribution in the model graph.
- *
- * @brief Declaration of the stochastic DAG node base class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef PoissonDistribution_H
 #define PoissonDistribution_H
 
@@ -27,6 +6,19 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Poisson distribution class.
+     *
+     * The Poisson distribution represents a family of distributions
+     * defined on the natural numbers. The Poisson distribution has 1 parameters:
+     *   lambda .. the rate
+     * Instances of this class can be associated to stochastic variables.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2013-04-12, version 1.0
+     *
+     */
     class PoissonDistribution : public TypedDistribution<int> {
         
     public:

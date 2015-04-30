@@ -1,9 +1,10 @@
 ################################################################################
 #
-# RevBayes Example: Bayesian inference of phylogeny using a Jukes-Cantor model
+# RevBayes Example: Bayesian inference of phylogeny using a general time reversible model
+#                   with gamma distributed rate variation among sites
 # 
-# This file: Runs the full MCMC on a single gene under the Jukes-Cantor 
-#            subsitution model using an unconstrained (unrooted) tree model.
+# This file: Runs the full MCMC on a single gene under the general time reversible 
+#            substitution model using a rooted (birth-death) tree model.
 #
 # authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
 #
@@ -21,9 +22,7 @@ data <- readDiscreteCharacterData("data/primates_cytb.nex")
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data.ntaxa()
-n_sites <- data.nchar()
 names <- data.names()
-n_branches <- 2 * n_species - 3
 
 # set my move index
 mi = 0
@@ -51,28 +50,34 @@ Q := fnHKY(kappa,pi)
 # Tree model #
 ##############
 
-#### Specify a uniform prior on the tree topology #### 
-topology ~ dnUniformTopology(names)
+# Specify a prior on the diversification and turnover rate
+diversification ~ dnGamma(5,1)
+turnover ~ dnGamma(5,1)
 
-# moves on the tree
-moves[++mi] = mvNNI(topology)
-moves[++mi] = mvSPR(topology)
+# now transform the diversification and turnover rates into speciation and extinction rates
+speciation := diversification + turnover
+extinction := turnover
 
+# specify a prior on the root age (our informed guess is about 75-80 mya)
+root ~ dnUniform(50.0,100.0)
 
-#### Specify a prior and moves on the branch lengths #### 
-# create a random variable for each branch length using a for loop
-for (i in 1:n_branches) {
-  # We use here the exponential distribution with rate 1.0 as the branch length prior
-  br_lens[i] ~ dnExponential(10.0)
-  
-  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
-  moves[++mi] = mvScale(br_lens[i]) 
-}
+sampling_fraction <- 23 / 450 # 23 out of the ~ 450 primate species
 
-TL := sum(br_lens)
+# create some moves that change the stochastic variables
+# all moves are sliding proposals but you could use scaling proposals for the rates too
+moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=1)
+moves[++mi] = mvSlide(turnover,delta=1,tune=true,weight=1)
+moves[++mi] = mvSlide(root,delta=1,tune=true,weight=1)
 
-# Build the tree by combining the topology with the branch length.
-phylogeny := treeAssembly(topology, br_lens)
+# construct a variable for the tree drawn from a birth death process
+psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=abs(root), rho=sampling_fraction, nTaxa=n_species, names=names )
+
+moves[++mi] = mvNarrow(psi, weight=5.0)
+moves[++mi] = mvNNI(psi, weight=1.0)
+moves[++mi] = mvFNPR(psi, weight=3.0)
+moves[++mi] = mvSubtreeScale(psi, weight=3.0)
+moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
+
 
 
 
@@ -82,9 +87,11 @@ phylogeny := treeAssembly(topology, br_lens)
 # PhyloCTMC Model #
 ###################
 
+# We use an empirical estimate of the clock rate which is 0.01 (=1%) per million years per site
+clockRate <- 0.01
 
 # the sequence evolution model
-seq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, type="DNA")
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)
@@ -106,8 +113,8 @@ mymodel = model(Q)
 
 
 monitors[1] = mnModel(filename="output/primates_cytb_HKY_posterior.log",printgen=10, separator = TAB)
-monitors[2] = mnFile(filename="output/primates_cytb_HKY_posterior.trees",printgen=10, separator = TAB, phylogeny)
-monitors[3] = mnScreen(printgen=1000, TL)
+monitors[2] = mnFile(filename="output/primates_cytb_HKY_posterior.trees",printgen=10, separator = TAB, psi)
+monitors[3] = mnScreen(printgen=1000, diversification, turnover)
 
 mymcmc = mcmc(mymodel, monitors, moves)
 
@@ -117,12 +124,12 @@ mymcmc.run(generations=30000)
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
-treetrace = readTreeTrace("output/primates_cytb_HKY_posterior.trees", treetype="non-clock")
+treetrace = readTreeTrace("output/primates_cytb_HKY_posterior.trees", treetype="clock")
 # and get the summary of the tree trace
 treetrace.summarize()
 
 mapTree(treetrace,"output/primates_cytb_HKY.tree")
 
 # you may want to quit RevBayes now
-q()
+#q()
 

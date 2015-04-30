@@ -19,6 +19,7 @@
 #define DistributionDirichlet_H
 
 #include <vector>
+#include "RbVector.h"
 
 namespace RevBayesCore {
     
@@ -30,7 +31,7 @@ namespace RevBayesCore {
         namespace Dirichlet {
             double                      pdf(const std::vector<double>& a, const std::vector<double>& z);        /*!< Dirichlet(a[]) probability density */
             double                      lnPdf(const std::vector<double>& a, const std::vector<double>& z);      /*!< Dirichlet(a[]) log_e probability density */
-            std::vector<double>         rv(const std::vector<double>& a, RandomNumberGenerator& rng);           /*!< Dirichlet(a[]) random variable */
+            RbVector<double>            rv(const std::vector<double>& a, RandomNumberGenerator& rng);           /*!< Dirichlet(a[]) random variable */
         }
     }
 }

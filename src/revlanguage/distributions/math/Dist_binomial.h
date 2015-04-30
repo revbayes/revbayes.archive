@@ -48,8 +48,8 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                           p;
-        RevPtr<const RevVariable>                           n;
+        RevPtr<const RevVariable>                       p;
+        RevPtr<const RevVariable>                       n;
     };
     
 }
