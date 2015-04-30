@@ -30,7 +30,7 @@ SegregatingSitesFunction* SegregatingSitesFunction::clone( void ) const
 void SegregatingSitesFunction::update( void )
 {
     
-    *value = int(alignment->getValue().getNumberOfSegregatingSites());
+    *value = int( alignment->getValue().getNumberOfSegregatingSites() );
 
 }
 
