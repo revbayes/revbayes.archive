@@ -63,6 +63,7 @@ namespace RevBayesCore {
         virtual size_t                              getNumberOfIncludedTaxa(void) const = 0;                                    //!< Number of included taxa
         virtual size_t                              getNumberOfInvariantSites(void) const = 0;                                  //!< Number of invariant sites
         virtual size_t                              getNumberOfTaxa(void) const = 0;                                            //!< Number of taxa
+        virtual double                              getPaiwiseSequenceDifference(void) const = 0;                               //!< Get the average pairwise sequence distance.
         virtual AbstractDiscreteTaxonData&          getTaxonData(size_t tn) = 0;                                                //!< Return a reference to a sequence in the character matrix
         virtual const AbstractDiscreteTaxonData&    getTaxonData(size_t tn) const = 0;                                          //!< Return a reference to a sequence in the character matrix
         virtual AbstractDiscreteTaxonData&          getTaxonData(const std::string &tn) = 0;                                    //!< Return a reference to a sequence in the character matrix

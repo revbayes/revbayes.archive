@@ -24,8 +24,8 @@ Func_SegregatingSites* Func_SegregatingSites::clone( void ) const
 RevBayesCore::TypedFunction< int >* Func_SegregatingSites::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData >* bf = static_cast<const AbstractDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::SegregatingSitesFunction* f = new RevBayesCore::SegregatingSitesFunction( bf );
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData >* d = static_cast<const AbstractDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::SegregatingSitesFunction* f = new RevBayesCore::SegregatingSitesFunction( d );
     
     return f;
 }

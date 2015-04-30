@@ -67,6 +67,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                              getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
+        double                                              getPaiwiseSequenceDifference(void) const;                                   //!< Get the average pairwise sequence distance.
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -653,7 +654,8 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfCharacters(void
  * \return    The total number of characters
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharacters(void) const {
+size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharacters(void) const
+{
     
     if (getNumberOfTaxa() > 0) 
     {
@@ -676,11 +678,15 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfStates(void) co
     
     // Get the first character in the matrix
     if ( getNumberOfTaxa() == 0 )
+    {
         return 0;
+    }
     
     const DiscreteTaxonData<charType>& sequence = getTaxonData( 0 );
     if ( sequence.getNumberOfCharacters() == 0 )
+    {
         return 0;
+    }
     
     return sequence[0].getNumberOfStates();
 }
@@ -765,6 +771,52 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfSegregatingSite
     size_t nc = firstTaxonData.getNumberOfCharacters();
     
     return nc - getNumberOfInvariantSites();
+}
+
+
+/**
+ * Get the set of excluded character indices.
+ *
+ * \return    The excluded character indices.
+ */
+template<class charType>
+double RevBayesCore::DiscreteCharacterData<charType>::getPaiwiseSequenceDifference(void) const
+{
+    double pairwiseDistance = 0.0;
+    size_t nt = this->getNumberOfIncludedTaxa();
+    
+    
+    for (size_t i=0; i<(nt-1); i++)
+    {
+        
+        const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(i);
+        size_t nc = firstTaxonData.getNumberOfCharacters();
+        
+        for (size_t j=i+1; j<nt; j++)
+        {
+            
+            const AbstractDiscreteTaxonData& secondTaxonData = this->getTaxonData(j);
+            double pd = 0.0;
+            
+            for (size_t k=0; k<nc; k++)
+            {
+                const DiscreteCharacterState& a = firstTaxonData[k];
+                const DiscreteCharacterState& b = secondTaxonData[k];
+                if (a != b)
+                {
+                    ++pd;
+                }
+            }
+        
+            pairwiseDistance += pd;
+            
+        } // end loop over all second taxa
+    
+    } // end loop over all first taxa
+    
+    pairwiseDistance *= 2.0 / (nt * (nt - 1.0 ) );
+    
+    return pairwiseDistance;
 }
 
 
