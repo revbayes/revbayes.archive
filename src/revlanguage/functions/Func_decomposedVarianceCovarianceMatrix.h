@@ -26,7 +26,7 @@
 
 namespace RevLanguage {
     
-    class Func_decomposedVarianceCovarianceMatrix : public TypedFunction<MatrixReal> {
+    class Func_decomposedVarianceCovarianceMatrix : public TypedFunction<MatrixRealSymmetric> {
         
     public:
         Func_decomposedVarianceCovarianceMatrix( void );

@@ -18,6 +18,7 @@ Dist_categorical::Dist_categorical() :
 
 Dist_categorical::~Dist_categorical()
 {
+    
 }
 
 
@@ -50,7 +51,7 @@ const std::string& Dist_categorical::getClassType( void )
 /* Get Rev type spec of class (static) */
 const TypeSpec& Dist_categorical::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Distribution::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
@@ -81,7 +82,8 @@ const TypeSpec& Dist_categorical::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_categorical::printValue(std::ostream& o) const {
+void Dist_categorical::printValue(std::ostream& o) const
+{
     
     o << "Categorical( p = ";
     if ( p != NULL )

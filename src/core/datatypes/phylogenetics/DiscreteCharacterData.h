@@ -354,7 +354,6 @@ RevBayesCore::MatrixReal RevBayesCore::DiscreteCharacterData<charType>::computeS
 {
     
     charType tmp;
-    std::string labels = tmp.getStateLabels();
     size_t alphabetSize = tmp.getNumberOfStates();
     size_t numSequences = this->sequenceNames.size();
     MatrixReal m(numSequences,alphabetSize);

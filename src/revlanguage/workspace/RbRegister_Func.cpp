@@ -56,127 +56,10 @@
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
-/* Evolution types (in folder "datatypes/evolution") */
-
-/* Character state types (in folder "datatypes/evolution/character") */
-#include "RlAminoAcidState.h"
-#include "RlDnaState.h"
-#include "RlRnaState.h"
-#include "RlStandardState.h"
-
-/* Character data types (in folder "datatypes/evolution/datamatrix") */
-#include "RlAbstractCharacterData.h"
-#include "RlDiscreteCharacterData.h"
-
-/* Tree types (in folder "datatypes/evolution/trees") */
-#include "RlClade.h"
-#include "RlRootedTripletDistribution.h"
-
 
 /* Taxon types (in folder "datatypes/evolution") */
 #include "RlTaxon.h"
 
-/* Inference types (in folder "analysis") */
-#include "RlBurninEstimationConvergenceAssessment.h"
-#include "RlModel.h"
-#include "RlPathSampler.h"
-#include "RlPowerPosteriorAnalysis.h"
-#include "RlSteppingStoneSampler.h"
-#include "RlAncestralStateTrace.h"
-
-/// Stopping Rules ///
-#include "RlMaxIterationStoppingRule.h"
-#include "RlMaxTimeStoppingRule.h"
-#include "RlMinEssStoppingRule.h"
-#include "RlGelmanRubinStoppingRule.h"
-#include "RlGewekeStoppingRule.h"
-#include "RlStationarityStoppingRule.h"
-
-/// Monitors ///
-
-/* Monitor types (in folder "monitors) */
-#include "RlMonitor.h"
-#include "Mntr_AncestralState.h"
-#include "Mntr_JointConditionalAncestralState.h"
-#include "Mntr_File.h"
-#include "Mntr_ExtendedNewickFile.h"
-#include "Mntr_Model.h"
-#include "Mntr_PosteriorPredictive.h"
-#include "Mntr_Screen.h"
-#include "Mntr_CharacterHistoryNewickFile.h"
-#include "Mntr_CharacterHistoryNhxFile.h"
-
-/// Moves ///
-
-/* Move types (in folder "datatypes/inference/moves") (grouped by parameter type) */
-#include "RlMove.h"
-
-/* Moves on real values */
-#include "Move_SliceSampling.h"
-#include "Move_Scale.h"
-#include "Move_Slide.h"
-
-/* Compound Moves on Real Values */
-#include "Move_ScalerUpDown.h"
-#include "Move_SliderUpDown.h"
-
-/* Moves on integer values */
-#include "Move_RandomGeometricWalk.h"
-#include "Move_RandomIntegerWalk.h"
-
-/* Moves on simplices */
-#include "Move_Simplex.h"
-#include "Move_SimplexSingleElementScale.h"
-
-/* Moves on real valued vectors */
-#include "Move_SingleElementScale.h"
-#include "Move_VectorSingleElementScale.h"
-#include "Move_VectorSingleElementSlide.h"
-#include "Move_VectorScale.h"
-
-/* Moves on real valued matrices */
-#include "Move_MatrixSingleElementSlide.h"
-#include "Move_ConjugateInverseWishartBrownian.h"
-
-
-///* Moves on covariance matrices */
-#include "Move_MatrixRealSymmetricSlide.h"
-
-
-/* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-#include "Move_DPPScaleCatValsMove.h"
-#include "Move_DPPAllocateAuxGibbsMove.h"
-#include "Move_DPPGibbsConcentration.h"
-#include "Move_DPPScaleCatAllocateAux.h"
-#include "Move_MixtureAllocation.h"
-#include "Move_ReversibleJumpSwitchMove.h"
-
-/* Moves on character histories/data augmentation */
-#include "Move_NodeCharacterHistoryRejectionSample.h"
-#include "Move_PathCharacterHistoryRejectionSample.h"
-#include "Move_CharacterHistory.h"
-
-
-/* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
-
-/* Tree proposals (in folder "datatypes/inference/moves/tree") */
-#include "Move_EmpiricalTree.h"
-#include "Move_FNPR.h"
-#include "Move_GibbsPruneAndRegraft.h"
-#include "Move_NarrowExchange.h"
-#include "Move_NNIClock.h"
-#include "Move_NNINonclock.h"
-#include "Move_NodeTimeSlideUniform.h"
-#include "Move_NodeTimeSlideBeta.h"
-#include "Move_OriginTimeSlide.h"
-#include "Move_RateAgeBetaShift.h"
-#include "Move_RootTimeSlide.h"
-#include "Move_SubtreeScale.h"
-#include "Move_SPRNonclock.h"
-#include "Move_TreeScale.h"
-#include "Move_WeightedNodeTimeSlide.h"
-#include "Move_FossilSafeSlide.h"
-#include "Move_FossilSafeScale.h"
 
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
@@ -184,83 +67,6 @@
 #include "RlRateMap.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
-
-/// Distributions ///
-
-/* Distribution types (in folder "distributions") */
-
-/* Character evolution models (in folder "distributions/evolution/character") */
-#include "Dist_phyloCTMC.h"
-#include "Dist_phyloDACTMC.h"
-#include "Dist_phyloCTMCEpoch.h"
-#include "Dist_phyloCTMCClado.h"
-
-/* Branch rate priors (in folder "distributions/evolution/tree") */
-
-/* Trait evolution models (in folder "distributions/evolution/branchrates") */
-#include "Dist_PhyloBrownian.h"
-#include "Dist_PhyloBrownianMVN.h"
-#include "Dist_PhyloBrownianREML.h"
-#include "Dist_PhyloOrnsteinUhlenbeck.h"
-#include "Dist_PhyloMvtBrownian.h"
-#include "Dist_PhyloWhiteNoise.h"
-
-/* Tree priors (in folder "distributions/evolution/tree") */
-#include "Dist_bdp.h"
-#include "Dist_BirthDeathMultiRate.h"
-#include "Dist_Coalescent.h"
-#include "Dist_constPopMultispCoal.h"
-#include "Dist_divDepYuleProcess.h"
-#include "Dist_empiricalTree.h"
-#include "Dist_serialBDP.h"
-#include "Dist_skySerialBDP.h"
-#include "Dist_skyFossilBDP.h"
-#include "Dist_uniformTimeTree.h"
-#include "Dist_uniformTopology.h"
-
-/* Distributions on simple variables (in folder "distributions/math") */
-#include "Dist_bernoulli.h"
-#include "Dist_beta.h"
-#include "Dist_bimodalLnorm.h"
-#include "Dist_bimodalNorm.h"
-#include "Dist_binomial.h"
-#include "Dist_categorical.h"
-#include "Dist_cppNormal.h"
-#include "Dist_dirichlet.h"
-#include "Dist_exponential.h"
-#include "Dist_exponentialOffset.h"
-#include "Dist_exponentialOffsetPositive.h"
-#include "Dist_gamma.h"
-#include "Dist_geom.h"
-#include "Dist_poisson.h"
-#include "Dist_lnorm.h"
-#include "Dist_lnormOffset.h"
-#include "Dist_lnormOffsetPositive.h"
-#include "Dist_logUniform.h"
-#include "Dist_multivariateNorm.h"
-#include "Dist_norm.h"
-#include "Dist_softBoundUniformNormal.h"
-#include "Dist_unif.h"
-#include "Dist_unifPositive.h"
-#include "Dist_unifProbability.h"
-#include "Dist_wishart.h"
-#include "Dist_inverseWishart.h"
-#include "Dist_decomposedInverseWishart.h"
-#include "Process_OrnsteinUhlenbeck.h"
-
-/* Mixture distributions (in folder "distributions/mixture") */
-#include "Dist_dpp.h"
-#include "Dist_mixture.h"
-#include "Dist_reversibleJumpMixtureConstant.h"
-
-/// Functions ///
-
-/* Helper functions for creating functions (in folder "functions") */
-#include "DistributionFunctionCdf.h"
-#include "DistributionFunctionPdf.h"
-#include "DistributionFunctionQuantileContinuous.h"
-#include "DistributionFunctionQuantilePositiveContinuous.h"
-#include "DistributionFunctionRv.h"
 
 
 /* Argument rules (in folder "functions/argumentrules") */
@@ -437,6 +243,7 @@
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
 #include "Func_variance.h"
+#include "Func_vectorFlatten.h"
 
 
 /* Statistics functions (in folder "functions/statistics") */
@@ -513,33 +320,41 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "_range",    new Func_range()  );
         
         // logical templated functions
-        addFunction( "_eq",       new Func__eq<             Integer,        Integer >()             );
-        addFunction( "_eq",       new Func__eq<                Real,           Real >()             );
-        addFunction( "_eq",       new Func__eq<             Integer,           Real >()             );
-        addFunction( "_eq",       new Func__eq<                Real,        Integer >()             );
-        addFunction( "_eq",       new Func__eq<           RlBoolean,      RlBoolean >()             );
-        addFunction( "_eq",       new Func__eq<           RlString,       RlString  >()             );
-        addFunction( "_ge",       new Func__ge<             Integer,        Integer >()             );
-        addFunction( "_ge",       new Func__ge<                Real,           Real >()             );
-        addFunction( "_ge",       new Func__ge<             Integer,           Real >()             );
-        addFunction( "_ge",       new Func__ge<                Real,        Integer >()             );
-        addFunction( "_ge",       new Func__ge<           RlBoolean,      RlBoolean >()             );
-        addFunction( "_gt",       new Func__gt<             Integer,        Integer >()             );
-        addFunction( "_gt",       new Func__gt<                Real,           Real >()             );
-        addFunction( "_gt",       new Func__gt<           RlBoolean,      RlBoolean >()             );
-        addFunction( "_le",       new Func__le<             Integer,        Integer >()             );
-        addFunction( "_le",       new Func__le<                Real,           Real >()             );
-        addFunction( "_le",       new Func__le<             Integer,           Real >()             );
-        addFunction( "_le",       new Func__le<                Real,        Integer >()             );
-        addFunction( "_le",       new Func__le<           RlBoolean,      RlBoolean >()             );
-        addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
-        addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
-        addFunction( "_lt",       new Func__lt<           RlBoolean,      RlBoolean >()             );
-        addFunction( "_ne",       new Func__ne<             Integer,        Integer >()             );
-        addFunction( "_ne",       new Func__ne<                Real,           Real >()             );
-        addFunction( "_ne",       new Func__ne<             Integer,           Real >()             );
-        addFunction( "_ne",       new Func__ne<                Real,        Integer >()             );
-        addFunction( "_ne",       new Func__ne<           RlBoolean,      RlBoolean >()             );
+        addFunction( "_eq",       new Func__eq<             Integer,          Integer >()             );
+        addFunction( "_eq",       new Func__eq<                Real,             Real >()             );
+        addFunction( "_eq",       new Func__eq<             Integer,             Real >()             );
+        addFunction( "_eq",       new Func__eq<                Real,          Integer >()             );
+        addFunction( "_eq",       new Func__eq<           RlBoolean,        RlBoolean >()             );
+        addFunction( "_eq",       new Func__eq<            RlString,         RlString >()             );
+        addFunction( "_eq",       new Func__eq<             Simplex,          Simplex >()             );
+        addFunction( "_eq",       new Func__eq<       RateGenerator,    RateGenerator >()             );
+        addFunction( "_eq",       new Func__eq<            TimeTree,         TimeTree >()             );
+        addFunction( "_eq",       new Func__eq<    BranchLengthTree, BranchLengthTree >()             );
+        addFunction( "_ge",       new Func__ge<             Integer,          Integer >()             );
+        addFunction( "_ge",       new Func__ge<                Real,             Real >()             );
+        addFunction( "_ge",       new Func__ge<             Integer,             Real >()             );
+        addFunction( "_ge",       new Func__ge<                Real,          Integer >()             );
+        addFunction( "_ge",       new Func__ge<           RlBoolean,        RlBoolean >()             );
+        addFunction( "_gt",       new Func__gt<             Integer,          Integer >()             );
+        addFunction( "_gt",       new Func__gt<                Real,             Real >()             );
+        addFunction( "_gt",       new Func__gt<           RlBoolean,        RlBoolean >()             );
+        addFunction( "_le",       new Func__le<             Integer,          Integer >()             );
+        addFunction( "_le",       new Func__le<                Real,             Real >()             );
+        addFunction( "_le",       new Func__le<             Integer,             Real >()             );
+        addFunction( "_le",       new Func__le<                Real,          Integer >()             );
+        addFunction( "_le",       new Func__le<           RlBoolean,        RlBoolean >()             );
+        addFunction( "_lt",       new Func__lt<             Integer,          Integer >()             );
+        addFunction( "_lt",       new Func__lt<                Real,             Real >()             );
+        addFunction( "_lt",       new Func__lt<           RlBoolean,        RlBoolean >()             );
+        addFunction( "_ne",       new Func__ne<             Integer,          Integer >()             );
+        addFunction( "_ne",       new Func__ne<                Real,             Real >()             );
+        addFunction( "_ne",       new Func__ne<             Integer,             Real >()             );
+        addFunction( "_ne",       new Func__ne<                Real,          Integer >()             );
+        addFunction( "_ne",       new Func__ne<           RlBoolean,        RlBoolean >()             );
+        addFunction( "_ne",       new Func__ne<       RateGenerator,    RateGenerator >()             );
+        addFunction( "_ne",       new Func__ne<             Simplex,          Simplex >()             );
+        addFunction( "_ne",       new Func__ne<            TimeTree,         TimeTree >()             );
+        addFunction( "_ne",       new Func__ne<    BranchLengthTree, BranchLengthTree >()             );
         
         // unary minus (e.g. -a)
         addFunction( "_uminus",   new Func__uminus<Integer, Integer>()  );
@@ -698,6 +513,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // mean function
         addFunction( "var",       new Func_variance()  );
         
+        // vector flatten
+        addFunction( "vectorFlatten",   new Func_vectorFlatten() );
+        
         // get ln Probability function
         addFunction( "fnLnProbability", new Func_lnProbability() );
 
@@ -710,9 +528,6 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         
         // MCMCMC constructor function
         addFunction( "mcmcmc",   new Func_Mcmcmc() );
-        
-        // power-posterior constructor function
-        addTypeWithConstructor( "powerPosterior",  new PowerPosteriorAnalysis() );
 
         
  		/* Statistics functions (in folder "functions/statistics") */
@@ -745,7 +560,8 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
 
     }
-    catch(RbException& rbException) {
+    catch(RbException& rbException)
+    {
         
         RBOUT("Caught an exception while initializing functions in the workspace\n");
         std::ostringstream msg;

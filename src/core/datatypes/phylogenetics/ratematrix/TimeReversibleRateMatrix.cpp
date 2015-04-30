@@ -25,6 +25,12 @@ TimeReversibleRateMatrix::~TimeReversibleRateMatrix(void)
     // nothing to do
 }
 
+
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
 TimeReversibleRateMatrix& TimeReversibleRateMatrix::assign(const Assignable &m)
 {
     

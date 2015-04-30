@@ -1,10 +1,3 @@
-/* 
- * File:   DecomposedInverseWishartDistribution.cpp
- * Author: nl
- * 
- * Created on December 2, 2014, 10:08
- */
-
 #include "DecomposedInverseWishartDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"

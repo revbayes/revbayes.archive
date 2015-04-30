@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the gamma distributed random variable class.
- * This class is derived from the stochastic node and each instance will represent a random variable
- * from a normal distribution in the model graph.
- *
- * @brief Declaration of the stochastic DAG node base class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef GammaDistribution_H
 #define GammaDistribution_H
 
@@ -27,6 +6,20 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Gamma distribution class.
+     *
+     * The Gamma distribution represents a family of distributions
+     * defined on the positive real numbers. The Gamma distribution has 2 parameters:
+     *   alpha
+     *   beta
+     * Instances of this class can be associated to stochastic variables.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2013-04-12, version 1.0
+     *
+     */
     class GammaDistribution : public ContinuousDistribution {
         
     public:

@@ -33,6 +33,7 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsValue;
     optionsValue.push_back( "dispersal" );
+    optionsValue.push_back( "dispersal-upper" );
     optionsValue.push_back( "extinction" );
     optionsValue.push_back( "latlon" );
     optionsValue.push_back( "altitude" );
@@ -66,6 +67,7 @@ atlas(v)
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsValue;
     optionsValue.push_back( "dispersal" );
+    optionsValue.push_back( "dispersal-upper" );
     optionsValue.push_back( "extinction" );
     optionsValue.push_back( "latlon" );
     optionsValue.push_back( "altitude" );
@@ -100,6 +102,7 @@ atlas(&m->getValue())
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsValue;
     optionsValue.push_back( "dispersal" );
+    optionsValue.push_back( "dispersal-upper" );
     optionsValue.push_back( "extinction" );
     optionsValue.push_back( "latlon" );
     optionsValue.push_back( "altitude" );
@@ -170,6 +173,8 @@ RevPtr<RevVariable> RlAtlas::executeMethod(std::string const &name, const std::v
             for (size_t j = 0; j < areas[i].size(); j++)
             {
                 if (value == "dispersal")
+                    v.push_back(areas[i][j]->getDispersalValues());
+                else if (value == "dispersal-upper")
                     v.push_back(areas[i][j]->getDispersalValues());
                 else if (value == "extinction")
                     v.push_back(areas[i][j]->getExtinctionValues());

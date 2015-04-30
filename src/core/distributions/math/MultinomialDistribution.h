@@ -1,13 +1,5 @@
-//
-//  MultinomialDistribution.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/6/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__MultinomialDistribution__
-#define __rb_mlandis__MultinomialDistribution__
+#ifndef MultinomialDistribution_H
+#define MultinomialDistribution_H
 
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -16,11 +8,24 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Multinomial distribution class.
+     *
+     * The Multinomial distribution represents a family of distributions
+     * defined on a vector of real number. The Multinomial distribution has 2 parameters:
+     *   n .. the number of tries
+     *   p .. the vector of category probabilities
+     * Instances of this class can be associated to stochastic variables.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Michael Landis)
+     * @since 2014-05-06, version 1.0
+     *
+     */
     class MultinomialDistribution : public TypedDistribution< RbVector<int> > {
         
     public:
         MultinomialDistribution(const TypedDagNode< RbVector<double> > *p, const TypedDagNode<int> *n);
-        MultinomialDistribution(const MultinomialDistribution &m);                                                                          //!< Copy constructor
         virtual                                            ~MultinomialDistribution(void);                                                //!< Virtual destructor
         
         // public member functions
@@ -42,4 +47,4 @@ namespace RevBayesCore {
 }
 
 
-#endif /* defined(__rb_mlandis__MultinomialDistribution__) */
+#endif

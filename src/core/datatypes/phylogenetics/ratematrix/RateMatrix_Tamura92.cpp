@@ -9,7 +9,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Tamura92::RateMatrix_Tamura92(void) : TimeReversibleRateMatrix( 4 ){
+RateMatrix_Tamura92::RateMatrix_Tamura92(void) : TimeReversibleRateMatrix( 4 )
+{
     
     kappa = 1.0;
     
@@ -19,8 +20,29 @@ RateMatrix_Tamura92::RateMatrix_Tamura92(void) : TimeReversibleRateMatrix( 4 ){
 
 
 /** Destructor */
-RateMatrix_Tamura92::~RateMatrix_Tamura92(void) {
+RateMatrix_Tamura92::~RateMatrix_Tamura92(void)
+{
     
+}
+
+
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_Tamura92& RateMatrix_Tamura92::assign(const Assignable &m)
+{
+    
+    const RateMatrix_Tamura92 *rm = dynamic_cast<const RateMatrix_Tamura92*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 

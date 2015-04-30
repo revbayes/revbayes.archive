@@ -13,7 +13,6 @@ namespace RevBayesCore {
     /**
      * @file
      * This file contains the declaration of the random variable class for constant rate birth-death process.
-     * This class is derived from the stochastic node and each instance will represent a random variable.
      *
      * @brief Declaration of the constant rate Birth-Death process class.
      *
