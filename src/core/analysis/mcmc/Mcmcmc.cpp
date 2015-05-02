@@ -1071,20 +1071,20 @@ void Mcmcmc::updateChainState(size_t j)
 #ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
     // update heat
+#ifdef DEBUG_MPI_MCA
     std::cout << pid << " Mcmcmc::updateChainState send " << activePID << " " << processPerChain[j] << "\n";
+#endif
     if (pid == activePID && pid == processPerChain[j])
     {
         ; // do nothing
     }
     else if (pid == activePID)
     {
-        std::cout << pid << " wow1!!\n";
         MPI::COMM_WORLD.Send(&chainHeats[j], 1, MPI::DOUBLE, (int)processPerChain[j], 0);
     }
     //MPI::COMM_WORLD.Barrier();
     else if (pid == processPerChain[j])
     {
-        std::cout << pid << " wow2!!\n";
         MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, (int)activePID, 0);
     }
     MPI::COMM_WORLD.Barrier();
@@ -1126,7 +1126,7 @@ void Mcmcmc::updateChainState(size_t j)
     
     if (pid == processPerChain[j])
     {
-        chains[j]->setChainActive(tf);
+        chains[j]->setChainActive( chainHeats[j] == 1.0 );
     }
     
 #ifdef DEBUG_MPI_MCA

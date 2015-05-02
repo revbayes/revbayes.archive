@@ -120,6 +120,7 @@ if [ "$mpi" = "true" ]
 then
 echo '
 add_definitions(-DRB_MPI)
+#add_definitions(-DDEBUG_MPI_MCA)
 # Require MPI for this project:
 find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
