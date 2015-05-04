@@ -37,6 +37,7 @@ namespace RevBayesCore {
         virtual DiscreteCharacterState&             getCharacter(size_t index) = 0;                                     //!< Get the character at position index (non-const to return non-const character)
         virtual size_t                              getNumberOfCharacters(void) const = 0;                              //!< How many characters
         virtual const std::string&                  getTaxonName(void) const = 0;                                       //!< Return the name of the character vector
+        virtual bool                                isCharacterResolved(size_t idx) const = 0;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual void                                setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
         
     protected:

@@ -166,6 +166,12 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
 }
 
 
+bool ContinuousTaxonData::isCharacterResolved(size_t idx) const {
+
+    return true;
+}
+
+
 /**
  * Remove characters.
  *

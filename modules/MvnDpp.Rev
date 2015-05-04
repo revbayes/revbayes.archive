@@ -29,6 +29,24 @@ R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
 
 V := fnDecompVarCovar(sigma, R);
 
+k <- 0;
+
 for (i in 1:x.ntaxa()) {
-	x ~ dnMultivariateNormal(mu, V, 1);
+	y[i] ~ dnMultivariateNormal(mu, V, 1);
+	for (j in 1:x.nchar()) {
+		if (x.isMissing(i,j) == TRUE)
+			moves[++k] = mvSlide(x[i][j],0.5);
+		else
+	   		y[i].clampAt(j,x[i][j]);
+	}
 }
+
+myModel = model(mu[1]);
+
+moves[++k] = mvVectorSlide(mu,0.1);
+moves[++k] = mvVectorScale(sigma);
+monitors[1] = mnScreen(printgen=1000, mu);
+monitors[2] = mnScreen(printgen=1000, sigma);
+
+mymcmc = mcmc(myModel, monitors, moves);
+mymcmc.run(10000);
