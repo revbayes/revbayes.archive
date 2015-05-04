@@ -102,11 +102,24 @@ ContinuousTaxonData& ContinuousTaxonData::concatenate(const ContinuousTaxonData 
  * 
  * \param[in]    newChar    The new character.
  */
-void ContinuousTaxonData::addCharacter( const double &newChar )
+void ContinuousTaxonData::addCharacter(const double &newChar)
 {
     
     sequence.push_back( newChar );
+    isResolved.push_back( true );
+}
+
+
+/**
+ * Push back a new character.
+ * 
+ * \param[in]    newChar    The new character.
+ */
+void ContinuousTaxonData::addCharacter(const double &newChar, const bool tf)
+{
     
+    sequence.push_back( newChar );
+    isResolved.push_back( tf );
 }
 
 
@@ -168,7 +181,11 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
 
 bool ContinuousTaxonData::isCharacterResolved(size_t idx) const {
 
-    return true;
+    if (idx <= isResolved.size())
+        {
+        throw RbException("Index out of bounds");
+        }
+    return isResolved[idx];
 }
 
 
