@@ -349,7 +349,11 @@ const std::string& RevBayesCore::DiscreteTaxonData<charType>::getTaxonName(void)
 template<class charType>
 bool RevBayesCore::DiscreteTaxonData<charType>::isCharacterResolved(size_t idx) const {
 
-    return true;
+    if (idx >= isResolved.size())
+        {
+        throw RbException("Index out of bounds");
+        }
+    return isResolved[idx];
 }
 
 
