@@ -579,6 +579,18 @@ bool ContinuousCharacterData::isCharacterExcluded(size_t i) const
 }
 
 
+bool ContinuousCharacterData::isCharacterResolved(size_t txIdx, size_t chIdx) const {
+
+    ContinuousTaxonData td = getTaxonData(txIdx);
+    return td.isCharacterResolved(chIdx);
+}
+
+bool ContinuousCharacterData::isCharacterResolved(const std::string &tn, size_t chIdx) const {
+
+    ContinuousTaxonData td = getTaxonData(tn);
+    return td.isCharacterResolved(chIdx);
+}
+
 /**
  * Is the homology established, i.e., is the character data object aligned?
  *

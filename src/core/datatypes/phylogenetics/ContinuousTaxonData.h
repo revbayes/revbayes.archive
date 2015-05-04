@@ -27,6 +27,7 @@ namespace RevBayesCore {
         double&                                 getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
+        bool                                    isCharacterResolved(size_t idx) const;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
@@ -34,6 +35,7 @@ namespace RevBayesCore {
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
         std::vector<double>                     sequence;
+        std::vector<bool>                       isResolved;
         
     };
     
