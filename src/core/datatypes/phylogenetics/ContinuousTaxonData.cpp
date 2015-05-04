@@ -181,7 +181,7 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
 
 bool ContinuousTaxonData::isCharacterResolved(size_t idx) const {
 
-    if (idx <= isResolved.size())
+    if (idx >= isResolved.size())
         {
         throw RbException("Index out of bounds");
         }

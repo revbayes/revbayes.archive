@@ -36,7 +36,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* removeTaxaArgRules          = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules2         = new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules        = new ArgumentRules();
-    
+    ArgumentRules* isResolvedArgRules          = new ArgumentRules();
     
     excludecharArgRules->push_back(        new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     excludecharArgRules2->push_back(       new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
@@ -48,22 +48,23 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     removeTaxaArgRules2->push_back(        new ArgumentRule(""           , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
     setTaxonNameArgRules->push_back(       new ArgumentRule("current"    , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
     setTaxonNameArgRules->push_back(       new ArgumentRule("new"        , RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE) );
-    
+    isResolvedArgRules->push_back(         new ArgumentRule("txIdx"      , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    isResolvedArgRules->push_back(         new ArgumentRule("chIdx"      , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("nchar",               new MemberProcedure(Natural::getClassTypeSpec(),               ncharArgRules           ) );
-    
-    methods.addFunction("ntaxa",               new MemberProcedure(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
-    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules        ) );
-    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules2       ) );
-    methods.addFunction("excludeAll",          new MemberProcedure(RlUtils::Void,        excludeallArgRules         ) );
-    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,        includecharArgRules        ) );
-    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,        includecharArgRules2       ) );
-    methods.addFunction("includeAll",          new MemberProcedure(RlUtils::Void,        includeallArgRules         ) );
-    methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
-    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
-    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
-    methods.addFunction("setTaxonName",        new MemberProcedure(RlUtils::Void,        setTaxonNameArgRules       ) );
+    methods.addFunction("nchar",               new MemberProcedure(Natural::getClassTypeSpec(),   ncharArgRules              ) );
+    methods.addFunction("ntaxa",               new MemberProcedure(Natural::getClassTypeSpec(),   ntaxaArgRules              ) );
+    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,                 excludecharArgRules        ) );
+    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,                 excludecharArgRules2       ) );
+    methods.addFunction("excludeAll",          new MemberProcedure(RlUtils::Void,                 excludeallArgRules         ) );
+    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,                 includecharArgRules        ) );
+    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,                 includecharArgRules2       ) );
+    methods.addFunction("includeAll",          new MemberProcedure(RlUtils::Void,                 includeallArgRules         ) );
+    methods.addFunction("show",                new MemberProcedure(RlUtils::Void,                 showdataArgRules           ) );
+    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,                 removeTaxaArgRules         ) );
+    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,                 removeTaxaArgRules2        ) );
+    methods.addFunction("setTaxonName",        new MemberProcedure(RlUtils::Void,                 setTaxonNameArgRules       ) );
+    methods.addFunction("isResolved",          new MemberProcedure(RlBoolean::getClassTypeSpec(), isResolvedArgRules         ) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
@@ -237,75 +238,20 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         }
         return NULL;
     }
-
-    //    else if (name == "nexcludedtaxa")
-    //    {
-    //        int n = (int)deletedTaxa.size();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "nexcludedchars")
-    //    {
-    //        int n = (int)deletedCharacters.size();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "nincludedtaxa")
-    //    {
-    //        int n = (int)(data.getNumberOfTaxa() - deletedTaxa.size());
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "nincludedchars")
-    //    {
-    //        int n = (int)(data.getNumberOfCharacters() - deletedCharacters.size());
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "excludedtaxa")
-    //    {
-    //        RlVector<std::string, RbString> *excludedTaxa = new RlVector<std::string, RbString>();
-    //        for (std::set<size_t>::iterator it = data.deletedTaxa.begin(); it != deletedTaxa.end(); it++)
-    //        {
-    //            const std::string& tn = getTaxonNameWithIndex(*it);
-    //            excludedTaxa->push_back( new RbString( tn ) );
-    //        }
-    //        return excludedTaxa;
-    //    }
-    //    else if (name == "excludedchars")
-    //    {
-    //        RlVector *excludedChars = new RlVector(Natural::getClassTypeSpec());
-    //        for (std::set<size_t>::iterator it = deletedCharacters.begin(); it != deletedCharacters.end(); it++)
-    //            excludedChars->push_back( new Natural(*it) );
-    //        return excludedChars;
-    //    }
-    //    else if (name == "includedtaxa")
-    //    {
-    //        RlVector *includedTaxa = new RlVector(RbString::getClassTypeSpec());
-    //        for (size_t i=0; i<getNumberOfTaxa(); i++)
-    //        {
-    //            if ( isTaxonExcluded(i) == false )
-    //                includedTaxa->push_back( new RbString( getTaxonNameWithIndex(i) ) );
-    //        }
-    //        return includedTaxa;
-    //    }
-    //    else if (name == "includedchars")
-    //    {
-    //        RlVector *includedChars = new RlVector(Natural::getClassTypeSpec());
-    //        for (size_t i=0; i<getNumberOfCharacters(); i++)
-    //        {
-    //            if ( isCharacterExcluded(i) == false )
-    //                includedChars->push_back( new Natural(i+1) );
-    //        }
-    //        return includedChars;
-    //    }
-    //    else if (name == "nconstantpatterns")
-    //    {
-    //        int n = (int)numConstantPatterns();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    //    else if (name == "ncharswithambiguity")
-    //    {
-    //        int n = (int)numMissAmbig();
-    //        return RevPtr<RevObject>( new Natural(n) );
-    //    }
-    else if (name == "show") 
+    else if (name == "isResolved")
+        {
+        found = true;
+        
+        const RevObject& argument1 = args[0].getVariable()->getRevObject();
+        const RevObject& argument2 = args[1].getVariable()->getRevObject();
+        size_t tIdx = size_t( static_cast<const Natural&>( argument1 ).getValue() );
+        size_t cIdx = size_t( static_cast<const Natural&>( argument2 ).getValue() );
+            // remember that we internally store the character indeces from 0 to n-1
+            // but externally represent it as 1 to n
+        bool tf = charDataObject->isCharacterResolved( tIdx-1, cIdx-1 );
+        return new RevVariable( new RlBoolean(tf) );
+        }
+    else if (name == "show")
     {
         found = true;
         

@@ -34,7 +34,7 @@ k <- 0;
 for (i in 1:x.ntaxa()) {
 	y[i] ~ dnMultivariateNormal(mu, V, 1);
 	for (j in 1:x.nchar()) {
-		if (x.isMissing(i,j) == TRUE)
+		if (x.isResolved(i,j) == TRUE)
 			moves[++k] = mvSlide(x[i][j],0.5);
 		else
 	   		y[i].clampAt(j,x[i][j]);
