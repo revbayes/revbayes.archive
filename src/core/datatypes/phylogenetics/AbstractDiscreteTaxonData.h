@@ -31,6 +31,8 @@ namespace RevBayesCore {
         // AbstractTaxonData functions
         virtual void                                addCharacter(const CharacterState &newChar ) = 0;                   //!< Push back a new character
         virtual void                                addCharacter(const DiscreteCharacterState &newChar ) = 0;           //!< Push back a new character
+        virtual void                                addCharacter(const CharacterState &newChar, bool tf) = 0;           //!< Push back a new character
+        virtual void                                addCharacter(const DiscreteCharacterState &newChar, bool tf) = 0;   //!< Push back a new character
         virtual AbstractDiscreteTaxonData&          concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
         virtual AbstractDiscreteTaxonData&          concatenate(const AbstractDiscreteTaxonData &d) = 0;                //!< Concatenate sequences
         virtual const DiscreteCharacterState&       getCharacter(size_t index) const = 0;                               //!< Get the character at position index

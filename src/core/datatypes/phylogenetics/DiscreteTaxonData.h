@@ -24,6 +24,9 @@ namespace RevBayesCore {
         void                                    addCharacter(const CharacterState &newChar );                       //!< Push back a new character
         void                                    addCharacter(const DiscreteCharacterState &newChar );               //!< Push back a new character
         void                                    addCharacter(const charType &newChar );                             //!< Push back a new character
+        void                                    addCharacter(const CharacterState &newChar, bool tf);               //!< Push back a new character
+        void                                    addCharacter(const DiscreteCharacterState &newChar, bool tf);       //!< Push back a new character
+        void                                    addCharacter(const charType &newChar, bool tf);                     //!< Push back a new character
         DiscreteTaxonData&                      concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
         DiscreteTaxonData&                      concatenate(const AbstractDiscreteTaxonData &d);                    //!< Concatenate sequences
         DiscreteTaxonData&                      concatenate(const DiscreteTaxonData &d);                            //!< Concatenate sequences
@@ -180,7 +183,6 @@ void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const CharacterSta
 #   endif
     
     addCharacter( static_cast<const charType &>(newChar) );
-    
 }
 
 
@@ -215,8 +217,64 @@ void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const charType &ne
 {
     
     sequence.push_back( newChar );
+    isResolved.push_back(true);
+}
+
+
+/**
+ * Push back a new character.
+ * 
+ * \param[in]    newChar    The new character.
+ */
+template<class charType>
+void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const CharacterState &newChar, bool tf )
+{
+    
+#   ifdef ASSERTIONS_ALL
+    if ( dynamic_cast<const charType&>( newChar ) == NULL ) 
+    {
+        throw RbException("Inserting wrong character type into TaxonData!!!");
+    }
+#   endif
+    
+    addCharacter( static_cast<const charType &>(newChar), tf );
+}
+
+
+/**
+ * Push back a new character.
+ * 
+ * \param[in]    newChar    The new character.
+ */
+template<class charType>
+void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const DiscreteCharacterState &newChar, bool tf )
+{
+    
+#   ifdef ASSERTIONS_ALL
+    if ( dynamic_cast<const charType&>( newChar ) == NULL ) 
+    {
+        throw RbException("Inserting wrong character type into TaxonData!!!");
+    }
+#   endif
+    
+    addCharacter( static_cast<const charType &>(newChar), tf );
     
 }
+
+
+/**
+ * Push back a new character.
+ * 
+ * \param[in]    newChar    The new character.
+ */
+template<class charType>
+void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const charType &newChar, bool tf )
+{
+    
+    sequence.push_back( newChar );
+    isResolved.push_back(tf);
+}
+
 
 
 /**
