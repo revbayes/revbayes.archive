@@ -35,6 +35,7 @@ namespace RevBayesCore {
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
         bool                                    isCharacterResolved(size_t idx) const;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
@@ -354,6 +355,27 @@ bool RevBayesCore::DiscreteTaxonData<charType>::isCharacterResolved(size_t idx) 
         throw RbException("Index out of bounds");
         }
     return isResolved[idx];
+}
+
+
+/**
+ * Determines whether the sequences completely missing.
+ *
+ * \return            True (missing) or false (observed).
+ */
+template<class charType>
+bool RevBayesCore::DiscreteTaxonData<charType>::isSequenceMissing( void ) const
+{
+    
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        if ( sequence[i].isMissingState() == false )
+        {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 
