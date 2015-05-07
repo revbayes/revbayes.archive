@@ -19,17 +19,20 @@ BetaDistribution::BetaDistribution(const TypedDagNode<double> *a, const TypedDag
 }
 
 
-BetaDistribution::~BetaDistribution( void ) {
+BetaDistribution::~BetaDistribution( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-double BetaDistribution::cdf( void ) const {
+double BetaDistribution::cdf( void ) const
+{
     return RbStatistics::Beta::cdf(alpha->getValue(), beta->getValue(), *value);
 }
 
 
-BetaDistribution* BetaDistribution::clone( void ) const {
+BetaDistribution* BetaDistribution::clone( void ) const
+{
     return new BetaDistribution( *this );
 }
 
@@ -47,22 +50,26 @@ double BetaDistribution::computeLnProbability( void )
 }
 
 
-double BetaDistribution::getMax( void ) const {
+double BetaDistribution::getMax( void ) const
+{
     return 1.0;
 }
 
 
-double BetaDistribution::getMin( void ) const {
+double BetaDistribution::getMin( void ) const
+{
     return 0.0;
 }
 
 
-double BetaDistribution::quantile(double p) const {
+double BetaDistribution::quantile(double p) const
+{
     return RbStatistics::Beta::quantile(alpha->getValue(), beta->getValue(), p);
 }
 
 
-void BetaDistribution::redrawValue( void ) {
+void BetaDistribution::redrawValue( void )
+{
     *value = RbStatistics::Beta::rv(alpha->getValue(), beta->getValue(), *GLOBAL_RNG);
 }
 
