@@ -270,6 +270,8 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
 
 void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
 {
+    AbstractCharacterData::setCharacterDataObject(o);
+    
     charDataObject = o;
 }
 
