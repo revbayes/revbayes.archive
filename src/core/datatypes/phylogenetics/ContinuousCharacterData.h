@@ -61,6 +61,7 @@ namespace RevBayesCore {
         const ContinuousTaxonData&                      getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
         const std::vector<std::string>&                 getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                              getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        double                                          getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
         void                                            includeCharacter(size_t i);                                                 //!< Include character
         void                                            includeTaxon(const std::string& s);                                         //!< Include taxon
         bool                                            isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded

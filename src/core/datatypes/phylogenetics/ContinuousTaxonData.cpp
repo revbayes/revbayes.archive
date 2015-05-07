@@ -169,6 +169,26 @@ size_t ContinuousTaxonData::getNumberOfCharacters(void) const
 
 
 /**
+ * Computes the percentage of the sequences that is missing.
+ *
+ * \return            Percentage of missing characters.
+ */
+double ContinuousTaxonData::getPercentageMissing( void ) const
+{
+    double numMissing = 0.0;
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        if ( sequence[i] == RbConstants::Double::nan )
+        {
+            ++numMissing;
+        }
+    }
+    
+    return numMissing / sequence.size();
+}
+
+
+/**
  * Get the name of the taxon.
  *
  * \return            The taxon's name.
@@ -180,7 +200,8 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
 }
 
 
-bool ContinuousTaxonData::isCharacterResolved(size_t idx) const {
+bool ContinuousTaxonData::isCharacterResolved(size_t idx) const
+{
 
     if (idx >= isResolved.size())
         {
