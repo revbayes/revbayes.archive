@@ -14,8 +14,8 @@ namespace RevLanguage {
 
         public:
             RlString(void);                                                                         //!< Default: empty RlString
-            RlString(int i);                                                                        //!< Constructor from int
-            RlString(double i);                                                                     //!< Constructor from double
+//            RlString(int i);                                                                        //!< Constructor from int
+//            RlString(double i);                                                                     //!< Constructor from double
             RlString(const std::string& v);                                                         //!< Constructor from RlString
             RlString(RevBayesCore::TypedDagNode<std::string> *x);                                   //!< Construct from DAG node
         
@@ -30,6 +30,8 @@ namespace RevLanguage {
             const TypeSpec&                 getTypeSpec(void) const;                                //!< Get language type of the object
             void                            printValue(std::ostream& o) const;                      //!< Print value (for user)
         
+        private:
+            void                            parseValue(void);
     };
     
 }

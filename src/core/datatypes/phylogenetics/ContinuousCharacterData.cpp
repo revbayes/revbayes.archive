@@ -379,6 +379,21 @@ size_t ContinuousCharacterData::getNumberOfIncludedTaxa(void) const
 
 }
 
+
+/**
+ * Get the percentage of missing characters n the sequences.
+ *
+ * \return    The percentage of missing characters.
+ */
+double ContinuousCharacterData::getPercentageMissing( const std::string &n ) const
+{
+    
+    ContinuousTaxonData td = getTaxonData(n);
+    
+    return td.getPercentageMissing();
+}
+
+
 /**
  * Get the taxon data object with index tn.
  *
@@ -539,6 +554,28 @@ void ContinuousCharacterData::includeCharacter(size_t i)
 }
 
 
+/**
+ * Include a taxon.
+ * Since we didn't actually deleted the taxon but marked it for exclusion
+ * we can now simply remove the flag.
+ *
+ * \param[in]    i    The name of the taxon that will be included.
+ */
+void ContinuousCharacterData::includeTaxon(const std::string &n)
+{
+    
+    for (size_t i = 0; i < getNumberOfTaxa(); i++)
+    {
+        if (n == sequenceNames[i] )
+        {
+            deletedTaxa.erase( i );
+            break;
+        }
+    }
+    
+}
+
+
 
 /** 
  * Get the index of the taxon with name s.
@@ -600,6 +637,20 @@ bool ContinuousCharacterData::isHomologyEstablished(void) const
 {
     
     return homologyEstablished;
+}
+
+
+/**
+ * Is the entire sequence missing, i.e., are all character '?'?
+ *
+ * \return     True/False whether the sequence is missing.
+ */
+bool ContinuousCharacterData::isSequenceMissing( const std::string &n ) const
+{
+    
+    ContinuousTaxonData td = getTaxonData(n);
+    
+    return td.isSequenceMissing();
 }
 
 
