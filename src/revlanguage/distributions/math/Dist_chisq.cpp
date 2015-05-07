@@ -1,6 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "chisqDistribution.h"
+#include "ChisqDistribution.h"
 #include "ContinuousStochasticNode.h"
 #include "Dist_chisq.h"
 #include "Natural.h"

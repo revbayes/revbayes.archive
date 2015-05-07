@@ -363,7 +363,7 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
-    {
+        {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
@@ -376,23 +376,26 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
         
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
-        {
+            {
             double contObs ;
+            bool isResolved = true;
             const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
             if ( x.size() > 0 )
-            {
+                {
                 contObs = x[0];
-            }
+                isResolved = true;
+                }
             else
-            {
+                {
                 contObs = RbConstants::Double::nan;
+                isResolved = false;
+                }
+            dataVec.addCharacter( contObs, isResolved );
             }
-            dataVec.addCharacter( contObs );
-        }
         
         // add sequence to character matrix
         cMat->addTaxonData( dataVec );
-    }
+        }
     
     setExcluded( charblock, cMat );
     
@@ -401,20 +404,19 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
 
 
 /** Create an object to hold aligned DNA data */
-DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
-{
+DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     
     if ( charblock == NULL )
-    {
+        {
         throw RbException("Trying to create an DNA matrix from a NULL pointer.");
-    }
+        }
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
-    {
+        {
         std::cerr << "Could not read in data matrix of type DNA because the nexus files says the type is:" << std::endl;
         switch ( charblock->GetDataType() )
-        {
+            {
             case 1:
                 std::cerr << "Standard" << std::endl;
                 break;
@@ -450,9 +452,10 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
             default:
                 std::cerr << "Unknown" << std::endl;
                 break;
-        }
+            }
         return NULL;
-    }
+        }
+    
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
@@ -468,7 +471,7 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
-    {
+        {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
@@ -481,31 +484,34 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
-        {
+            {
             // add the character state to the matrix
             DnaState dnaState;
+            bool isResolved = true;
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
-            {
+                {
                 dnaState.setState('-');
                 dnaState.setGapState(true);
-            }
+                isResolved = false;
+                }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
-            {
+                {
                 dnaState.setState('?');
                 dnaState.setMissingState(true);
-            }
+                isResolved = false;
+                }
             else
-            {
+                {
                 dnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                     dnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                }
+            dataVec.addCharacter(dnaState, isResolved);
             }
-            dataVec.addCharacter( dnaState );
-        }
         
         // add sequence to character matrix
         cMat->addTaxonData( dataVec );
-    }
+        }
     
     setExcluded( charblock, cMat );
     
