@@ -3,6 +3,7 @@
 #include "MemberProcedure.h"
 #include "ModelVector.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 
@@ -264,6 +265,17 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         int n = (int)charDataObject->getNumberOfTaxa();
         
         return new RevVariable( new Natural(n) );
+    }
+    else if (name == "percentageMissing")
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        const std::string &n = static_cast<const RlString&>( argument ).getValue();
+        
+        double p = charDataObject->getPercentageMissing( n );
+        
+        return new RevVariable( new Probability(p) );
     }
     else if (name == "size") 
     {

@@ -68,6 +68,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                              getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         double                                              getPaiwiseSequenceDifference(void) const;                                   //!< Get the average pairwise sequence distance.
+        double                                              getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -779,9 +780,9 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfSegregatingSite
 
 
 /**
- * Get the set of excluded character indices.
+ * Get the average pairwise distance between the sequences.
  *
- * \return    The excluded character indices.
+ * \return    The average pairwise distance.
  */
 template<class charType>
 double RevBayesCore::DiscreteCharacterData<charType>::getPaiwiseSequenceDifference(void) const
@@ -821,6 +822,21 @@ double RevBayesCore::DiscreteCharacterData<charType>::getPaiwiseSequenceDifferen
     pairwiseDistance *= 2.0 / (nt * (nt - 1.0 ) );
     
     return pairwiseDistance;
+}
+
+
+/**
+ * Get the percentage of missing characters n the sequences.
+ *
+ * \return    The percentage of missing characters.
+ */
+template<class charType>
+double RevBayesCore::DiscreteCharacterData<charType>::getPercentageMissing( const std::string &n ) const
+{
+    
+    RevBayesCore::DiscreteTaxonData<charType> td = getTaxonData(n);
+    
+    return td.getPercentageMissing();
 }
 
 

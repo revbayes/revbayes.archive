@@ -56,6 +56,7 @@ namespace RevBayesCore {
         virtual size_t                          getNumberOfIncludedCharacters(void) const = 0;                                  //!< Number of characters
         virtual size_t                          getNumberOfTaxa(void) const = 0;                                                //!< Number of taxa
         virtual size_t                          getNumberOfIncludedTaxa(void) const = 0;                                        //!< Number of included taxa
+        virtual double                          getPercentageMissing(const std::string &n) const = 0;                           //!< Returns the percentage of missing data for this sequence
         virtual AbstractTaxonData&              getTaxonData(size_t tn) = 0;                                                    //!< Return a reference to a sequence in the character matrix
         virtual const AbstractTaxonData&        getTaxonData(size_t tn) const = 0;                                              //!< Return a reference to a sequence in the character matrix
         virtual AbstractTaxonData&              getTaxonData(const std::string &tn) = 0;                                        //!< Return a reference to a sequence in the character matrix

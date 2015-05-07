@@ -33,8 +33,9 @@ namespace RevBayesCore {
         const charType&                         getCharacter(size_t index) const;                                   //!< Get the character at position index
         charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
+        double                                  getPercentageMissing(void) const;                                   //!< Returns the percentage of missing data for this sequence
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
-        bool                                    isCharacterResolved(size_t idx) const;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        bool                                    isCharacterResolved(size_t idx) const;                              //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
@@ -326,6 +327,27 @@ size_t RevBayesCore::DiscreteTaxonData<charType>::getNumberOfCharacters(void) co
 {
     
     return sequence.size();
+}
+
+
+/**
+ * Computes the percentage of the sequences that is missing.
+ *
+ * \return            Percentage of missing characters.
+ */
+template<class charType>
+double RevBayesCore::DiscreteTaxonData<charType>::getPercentageMissing( void ) const
+{
+    double numMissing = 0.0;
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        if ( sequence[i].isMissingState() == true )
+        {
+            ++numMissing;
+        }
+    }
+    
+    return numMissing / sequence.size();
 }
 
 

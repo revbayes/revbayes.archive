@@ -379,6 +379,21 @@ size_t ContinuousCharacterData::getNumberOfIncludedTaxa(void) const
 
 }
 
+
+/**
+ * Get the percentage of missing characters n the sequences.
+ *
+ * \return    The percentage of missing characters.
+ */
+double ContinuousCharacterData::getPercentageMissing( const std::string &n ) const
+{
+    
+    ContinuousTaxonData td = getTaxonData(n);
+    
+    return td.getPercentageMissing();
+}
+
+
 /**
  * Get the taxon data object with index tn.
  *
