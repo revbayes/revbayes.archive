@@ -539,6 +539,28 @@ void ContinuousCharacterData::includeCharacter(size_t i)
 }
 
 
+/**
+ * Include a taxon.
+ * Since we didn't actually deleted the taxon but marked it for exclusion
+ * we can now simply remove the flag.
+ *
+ * \param[in]    i    The name of the taxon that will be included.
+ */
+void ContinuousCharacterData::includeTaxon(const std::string &n)
+{
+    
+    for (size_t i = 0; i < getNumberOfTaxa(); i++)
+    {
+        if (n == sequenceNames[i] )
+        {
+            deletedTaxa.erase( i );
+            break;
+        }
+    }
+    
+}
+
+
 
 /** 
  * Get the index of the taxon with name s.
