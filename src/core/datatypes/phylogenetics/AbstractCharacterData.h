@@ -63,6 +63,7 @@ namespace RevBayesCore {
         virtual const std::vector<std::string>& getTaxonNames(void) const = 0;                                                  //!< Get the names of the taxa
         virtual const std::string&              getTaxonNameWithIndex(size_t idx) const = 0;                                    //!< Returns the idx-th taxon name
         virtual void                            includeCharacter(size_t i) = 0;                                                 //!< Include character
+        virtual void                            includeTaxon(const std::string& s) = 0;                                         //!< Include taxon
         virtual bool                            isCharacterExcluded(size_t i) const = 0;                                        //!< Is the character excluded
         virtual bool                            isCharacterResolved(size_t txIdx, size_t chIdx) const = 0;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                            isCharacterResolved(const std::string &tn, size_t chIdx) const = 0;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")

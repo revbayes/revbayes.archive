@@ -75,6 +75,7 @@ namespace RevBayesCore {
         const std::vector<std::string>&                     getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         void                                                includeCharacter(size_t i);                                                 //!< Include character
+        void                                                includeTaxon(const std::string& s);                                         //!< Include taxon
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                                isCharacterResolved(const std::string &tn, size_t chIdx) const;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
@@ -982,6 +983,30 @@ void RevBayesCore::DiscreteCharacterData<charType>::includeCharacter(size_t i)
     
     
     deletedCharacters.erase( i );
+    
+}
+
+
+/**
+ * Include a taxon.
+ * Since we didn't actually deleted the taxon but marked it for exclusion
+ * we can now simply remove the flag.
+ *
+ * \param[in]    i    The name of the taxon that will be included.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::includeTaxon(const std::string &n)
+{
+    
+    
+    for (size_t i = 0; i < getNumberOfTaxa(); i++)
+    {
+        if (n == sequenceNames[i] )
+        {
+            deletedTaxa.erase( i );
+            break;
+        }
+    }
     
 }
 

@@ -32,7 +32,7 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
     methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
@@ -66,7 +66,7 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Abst
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
     methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
@@ -100,7 +100,7 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
     methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
@@ -134,7 +134,7 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Type
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
     methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
 
@@ -285,7 +285,7 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
         }
         return NULL;
     }
-    else if (name == "ishomologous")
+    else if (name == "isHomologous")
     {
         found = true;
         
