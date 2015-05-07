@@ -1,4 +1,5 @@
 #include "ContinuousTaxonData.h"
+#include "RbConstants.h"
 #include "RbException.h"
 
 
@@ -10,8 +11,8 @@ using namespace RevBayesCore;
  * Does nothing except instanciating the object.
  */
 ContinuousTaxonData::ContinuousTaxonData(void) : 
-taxonName(""), 
-sequence() 
+    taxonName(""),
+    sequence()
 {
     
 }
@@ -22,8 +23,8 @@ sequence()
  * Does nothing except instanciating the object.
  */
 ContinuousTaxonData::ContinuousTaxonData(const std::string &tname) : 
-taxonName(tname), 
-sequence() 
+    taxonName(tname),
+    sequence()
 {
     
 }
@@ -102,11 +103,24 @@ ContinuousTaxonData& ContinuousTaxonData::concatenate(const ContinuousTaxonData 
  * 
  * \param[in]    newChar    The new character.
  */
-void ContinuousTaxonData::addCharacter( const double &newChar )
+void ContinuousTaxonData::addCharacter(const double &newChar)
 {
     
     sequence.push_back( newChar );
+    isResolved.push_back( true );
+}
+
+
+/**
+ * Push back a new character.
+ * 
+ * \param[in]    newChar    The new character.
+ */
+void ContinuousTaxonData::addCharacter(const double &newChar, const bool tf)
+{
     
+    sequence.push_back( newChar );
+    isResolved.push_back( tf );
 }
 
 
@@ -155,6 +169,26 @@ size_t ContinuousTaxonData::getNumberOfCharacters(void) const
 
 
 /**
+ * Computes the percentage of the sequences that is missing.
+ *
+ * \return            Percentage of missing characters.
+ */
+double ContinuousTaxonData::getPercentageMissing( void ) const
+{
+    double numMissing = 0.0;
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        if ( sequence[i] == RbConstants::Double::nan )
+        {
+            ++numMissing;
+        }
+    }
+    
+    return numMissing / sequence.size();
+}
+
+
+/**
  * Get the name of the taxon.
  *
  * \return            The taxon's name.
@@ -163,6 +197,37 @@ const std::string& ContinuousTaxonData::getTaxonName(void) const
 {
     
     return taxonName;
+}
+
+
+bool ContinuousTaxonData::isCharacterResolved(size_t idx) const
+{
+
+    if (idx >= isResolved.size())
+        {
+        throw RbException("Index out of bounds");
+        }
+    return isResolved[idx];
+}
+
+
+/**
+ * Determines whether the sequences completely missing.
+ *
+ * \return            True (missing) or false (observed).
+ */
+bool ContinuousTaxonData::isSequenceMissing( void ) const
+{
+    
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        if ( sequence[i] != RbConstants::Double::nan )
+        {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 
