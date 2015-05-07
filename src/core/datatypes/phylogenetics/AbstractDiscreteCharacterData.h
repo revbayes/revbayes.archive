@@ -75,6 +75,7 @@ namespace RevBayesCore {
         virtual bool                                isCharacterResolved(size_t txIdx, size_t chIdx) const = 0;                  //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                                isCharacterResolved(const std::string &tn, size_t chIdx) const = 0;         //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
+        virtual bool                                isSequenceMissing(const std::string &n) const = 0;                          //!< Returns whether the contains only missing data or has some actual observations
         virtual bool                                isTaxonExcluded(size_t i) const = 0;                                        //!< Is the taxon excluded
         virtual bool                                isTaxonExcluded(const std::string& s) const = 0;                            //!< Is the taxon excluded
         virtual void                                removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters

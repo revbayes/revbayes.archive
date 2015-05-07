@@ -80,6 +80,7 @@ namespace RevBayesCore {
         bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                                isCharacterResolved(const std::string &tn, size_t chIdx) const;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                                isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
+        bool                                                isSequenceMissing(const std::string &n) const;                              //!< Returns whether the contains only missing data or has some actual observations
         bool                                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                                isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
         void                                                removeExludedCharacters(void);                                              //!< Remove all the excluded characters
@@ -1131,6 +1132,21 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isHomologyEstablished(void) 
 {
     
     return homologyEstablished;
+}
+
+
+/**
+ * Is the entire sequence missing, i.e., are all character '?'?
+ *
+ * \return     True/False whether the sequence is missing.
+ */
+template<class charType>
+bool RevBayesCore::DiscreteCharacterData<charType>::isSequenceMissing( const std::string &n ) const
+{
+    
+    RevBayesCore::DiscreteTaxonData<charType> td = getTaxonData(n);
+    
+    return td.isSequenceMissing();
 }
 
 

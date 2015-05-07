@@ -626,6 +626,20 @@ bool ContinuousCharacterData::isHomologyEstablished(void) const
 
 
 /**
+ * Is the entire sequence missing, i.e., are all character '?'?
+ *
+ * \return     True/False whether the sequence is missing.
+ */
+bool ContinuousCharacterData::isSequenceMissing( const std::string &n ) const
+{
+    
+    ContinuousTaxonData td = getTaxonData(n);
+    
+    return td.isSequenceMissing();
+}
+
+
+/**
  * Is the taxon excluded.
  *
  * \param[in]    idx    The position of the taxon in question.
