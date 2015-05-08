@@ -6,6 +6,7 @@
 #include "NewickConverter.h"
 #include "NewickTreeReader.h"
 #include "NclReader.h"
+#include "NonHomologousDiscreteCharacterData.h"
 #include "RbFileManager.h"
 #include "RnaState.h"
 #include "StandardState.h"
@@ -127,7 +128,7 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
                         for (size_t j = 0; j < nSets; ++j)
                         {
                             const NxsUnsignedSet *set = assumption->GetCharSet(names[j]);
-                            AbstractCharacterData *m_tmp = m->clone();
+                            HomologousCharacterData *m_tmp = dynamic_cast<HomologousCharacterData *>(m)->clone();
                             m_tmp->excludeAllCharacters();
                             for (std::set<unsigned>::iterator k = set->begin(); k != set->end(); k++)
                             {
@@ -228,7 +229,8 @@ std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
 }
 
 /** Create an object to hold aligned amino acid data */
-DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
+{
     
     if ( charblock == NULL )
     {
@@ -242,15 +244,16 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
+    {
         charset.insert(i);
-	size_t numOrigTaxa = charblock->GetNTax();
+    }
+    size_t numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
 	DiscreteCharacterData<AminoAcidState>* cMat = new DiscreteCharacterData<AminoAcidState>();
-    cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -298,19 +301,21 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
 }
 
 /* Create an object to hold unaligned aminoacid data */
-DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock) {
+NonHomologousDiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock)
+{
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::protein )
+    {
         return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
 	unsigned numOrigTaxa = charblock->GetNTax();
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
-	DiscreteCharacterData<AminoAcidState>* cMat = new DiscreteCharacterData<AminoAcidState>();
-    cMat->setHomologyEstablished(false);
+	NonHomologousDiscreteCharacterData<AminoAcidState>* cMat = new NonHomologousDiscreteCharacterData<AminoAcidState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -342,11 +347,14 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix
 }
 
 /** Create an object to hold continuous data */
-ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) {
+ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock)
+{
     
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::continuous)
+    {
         return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
@@ -359,7 +367,6 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
     
     // instantiate the character matrix
 	ContinuousCharacterData* cMat = new ContinuousCharacterData();
-    cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -404,7 +411,8 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
 
 
 /** Create an object to hold aligned DNA data */
-DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
+{
     
     if ( charblock == NULL )
         {
@@ -467,7 +475,6 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
     
     // instantiate the character matrix
 	DiscreteCharacterData<DnaState>* cMat = new DiscreteCharacterData<DnaState>();
-    cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -519,19 +526,21 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
 }
 
 /** Create an object to hold unaligned DNA data */
-DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock) {
+NonHomologousDiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock)
+{
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
+    {
         return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
 	unsigned numOrigTaxa = charblock->GetNTax();
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
-	DiscreteCharacterData<DnaState>* cMat = new DiscreteCharacterData<DnaState>();
-    cMat->setHomologyEstablished(false);
+	NonHomologousDiscreteCharacterData<DnaState>* cMat = new NonHomologousDiscreteCharacterData<DnaState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -563,24 +572,28 @@ DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnaligne
 }
 
 /** Create an object to hold aligned RNA data */
-DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock)
+{
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::rna )
+    {
         return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
+    {
         charset.insert(i);
-	unsigned numOrigTaxa = charblock->GetNTax();
+    }
+    unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
 	DiscreteCharacterData<RnaState>* cMat = new DiscreteCharacterData<RnaState>();
-    cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -629,19 +642,21 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
 }
 
 /** Create an object to hold unaligned RNA data */
-DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock) {
+NonHomologousDiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnalignedBlock* charblock)
+{
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::rna )
+    {
         return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
 	unsigned numOrigTaxa = charblock->GetNTax();
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
-	DiscreteCharacterData<RnaState>* cMat = new DiscreteCharacterData<RnaState>();
-    cMat->setHomologyEstablished(false);
+	NonHomologousDiscreteCharacterData<RnaState>* cMat = new NonHomologousDiscreteCharacterData<RnaState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -673,17 +688,22 @@ DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnaligne
 }
 
 /** Create an object to hold standard data */
-DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
+DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock)
+{
     
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::standard)
+    {
         return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
+    {
         charset.insert(i);
-	unsigned numOrigTaxa = charblock->GetNTax();
+    }
+    unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
@@ -693,11 +713,12 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
     std::string sym = charblock->GetSymbols();
     size_t nStates = mapper->GetNumStates();
     if (nStates > 100)
+    {
         return NULL;
+    }
     
     // instantiate the character matrix
 	DiscreteCharacterData<StandardState>* cMat = new DiscreteCharacterData<StandardState>();
-    cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -748,7 +769,8 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
 
 
 /** Returns whether a file exists */
-bool NclReader::fileExists(const char* fn) const {
+bool NclReader::fileExists(const char* fn) const
+{
     
 	bool exists = false;
 	FILE *fp = fopen(fn, "r");
@@ -761,7 +783,8 @@ bool NclReader::fileExists(const char* fn) const {
 }
 
 
-std::string NclReader::findFileNameFromPath(const std::string& fp) const {
+std::string NclReader::findFileNameFromPath(const std::string& fp) const
+{
     
     std::string::size_type pos = fp.find_last_of('/');
     if ( pos != std::string::npos )
@@ -910,7 +933,8 @@ std::string NclReader::intuitDataType(std::string& s) {
 
 
 /** Try to determine if the file is likely to be in Fasta format */
-bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
+bool NclReader::isFastaFile(std::string& fn, std::string& dType)
+{
     
     // open file
 	std::ifstream fStrm;
@@ -977,7 +1001,8 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType) {
  * file is #NEXUS. If not, then we check if the file name ending is ".nex". If neither is true, it
  * is probably not a NEXUS file.
  */
-bool NclReader::isNexusFile(const std::string& fn) {
+bool NclReader::isNexusFile(const std::string& fn)
+{
     
     // open file, read first word, close file
 	std::ifstream fStrm;
@@ -987,8 +1012,11 @@ bool NclReader::isNexusFile(const std::string& fn) {
     fStrm.close();
     
     if (word=="#NEXUS")
+    {
         return true;
-    else {
+    }
+    else
+    {
         size_t found = fn.find_last_of(".");
         if ( found != std::string::npos && fn.substr(found+1) == "nex" )
             return true;
@@ -999,7 +1027,8 @@ bool NclReader::isNexusFile(const std::string& fn) {
 
 
 /** Try to determine if the file is likely to be in Phylip format */
-bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved) {
+bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved)
+{
     
     // open file
 	std::ifstream fStrm;
@@ -1673,12 +1702,16 @@ std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename
 
 
 /** Set excluded characters and taxa */
-void NclReader::setExcluded( const NxsCharactersBlock* charblock, AbstractCharacterData* cMat ) const {
+void NclReader::setExcluded( const NxsCharactersBlock* charblock, HomologousCharacterData* cMat ) const
+{
     
     // Set excluded taxa
-    for (unsigned int origTaxIndex=0; origTaxIndex<charblock->GetNTax(); origTaxIndex++ ) {
+    for (unsigned int origTaxIndex=0; origTaxIndex<charblock->GetNTax(); origTaxIndex++ )
+    {
 		if ( !charblock->IsActiveTaxon( origTaxIndex ) )
+        {
             cMat->excludeTaxon( origTaxIndex );
+        }
     }
     
     // Set excluded characters
