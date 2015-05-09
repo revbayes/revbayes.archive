@@ -55,7 +55,7 @@ namespace RevLanguage {
         
     private:
         UserFunction*                           userFunction;                                                       //!< The user function used to compute the value
-        RevPtr<RevVariable>                        returnVariable;                                                     //!< The current value of the function, wrapped as a variable
+        RevPtr<RevVariable>                     returnVariable;                                                     //!< The current value of the function, wrapped as a variable
     };
     
 }

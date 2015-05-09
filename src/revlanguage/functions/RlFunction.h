@@ -48,7 +48,6 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         const std::string&                              getName(void) const;                                                                //!< Get the name of the function
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
-        void                                            printStructure(std::ostream& o, bool verbose=false) const;                          //!< Print the structure of language object for user
         void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was called.
         void                                            setName(const std::string& nm);                                                     //!< Name the function

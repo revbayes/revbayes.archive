@@ -162,21 +162,3 @@ bool SyntaxBinaryExpr::isFunctionSafe( const Environment& env, std::set<std::str
     return false;
 }
 
-
-/** Print info about the syntax element */
-void SyntaxBinaryExpr::printValue( std::ostream& o ) const
-{
-    o << "[" << this << "] SyntaxBinaryExpr:" << std::endl;
-
-    o << "left operand  = [" << leftOperand  << "]";
-    leftOperand->printValue( o );
-    o << std::endl;
-
-    o << "right operand = [" << rightOperand << "]" ;
-    rightOperand->printValue( o );
-    o << std::endl;
-
-    o << "operation     = " << opCode[operation];
-    o << std::endl;
-}
-

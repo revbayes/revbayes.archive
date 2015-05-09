@@ -183,15 +183,3 @@ RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool d
 }
 
 
-/** Print info about the syntax element */
-void SyntaxFunctionDef::printValue( std::ostream& o ) const
-{
-    o << "SyntaxFunctionDef:" << std::endl;
-
-    o << "returnType   = " << returnType.getType() << std::endl;
-    o << "functionName = " << functionName << std::endl;
-    o << "formalArgs   = <" << formalArgs->size() << " formals (argument rules)>" << std::endl;
-    o << "code         = <" << code->size() << " code statements>" << std::endl;
-}
-
-

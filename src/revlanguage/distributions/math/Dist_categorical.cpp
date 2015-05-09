@@ -91,7 +91,7 @@ void Dist_categorical::printValue(std::ostream& o) const
         if ( p->getName() != "" )
             o << p->getName();
         else
-            p->getRevObject().printValue(o);
+            o << "?";
     }
     else
     {

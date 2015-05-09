@@ -316,6 +316,21 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 }
 
 
+/**
+ * Print the value. You can specify if the value will be printed to screen or not.
+ * By default we will call the method printValue(o), which will be the same behavior 
+ * regardless of the flag toScreen or not. You may want to overload this method,
+ * as done in RlString.
+ *
+ */
+void RevObject::printValue(std::ostream &o, bool toScreen) const
+{
+    // the default behavior is the same for printing to screen and anywhere else.
+    printValue(o);
+    
+}
+
+
 /** Set a member variable */
 void RevObject::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
@@ -377,16 +392,18 @@ std::string RevObject::toString( void ) const
 }
 
 /** Make sure we can print the value of the object easily */
-std::ostream& operator<<(std::ostream& o, const RevObject& x) {
+std::ostream& operator<<(std::ostream& o, const RevObject& x)
+{
     
-    x.printValue(o);
+    x.printValue(o,false);
     return o;
 }
 
 /** Make sure we can print the value of the object easily */
-std::ostream& RevLanguage::operator<<(std::ostream& o, const RevObject& x) {
+std::ostream& RevLanguage::operator<<(std::ostream& o, const RevObject& x)
+{
     
-    x.printValue(o);
+    x.printValue(o,false);
     return o;
 }
 
