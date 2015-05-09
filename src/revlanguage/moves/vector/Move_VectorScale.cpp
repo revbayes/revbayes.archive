@@ -39,9 +39,17 @@ void Move_VectorScale::constructInternalObject( void ) {
     std::vector< RevBayesCore::StochasticNode<double> *> n;
     for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it) 
     {
-        const RevBayesCore::StochasticNode<double> *theNode = static_cast< const RevBayesCore::StochasticNode<double>* >( *it );
-        n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
+        const RevBayesCore::StochasticNode<double> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
+        if ( theNode != NULL )
+        {
+            n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
+        }
+        else
+        {
+            throw RbException("Could not create a mvVectorScale because the node isn't a vector of stochastic nodes.");
+        }
     }
+    
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::VectorScaleMove(n, l, t, w);
 }

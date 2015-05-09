@@ -65,6 +65,19 @@ const double& ContinuousTaxonData::operator[](size_t i) const
 
 
 /**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the object.
+ */
+ContinuousTaxonData* ContinuousTaxonData::clone( void ) const
+{
+    
+    return new ContinuousTaxonData(*this);
+}
+
+
+/**
  * Add another character data object to this character data object.
  *
  * \param[in]    obsd    The CharacterData object that should be added.
