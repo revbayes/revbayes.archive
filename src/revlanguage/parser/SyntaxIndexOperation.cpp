@@ -298,32 +298,6 @@ SyntaxElement* SyntaxIndexOperation::getBaseVariable( void )
 }
 
 
-/** Print info about the syntax element */
-void SyntaxIndexOperation::printValue(std::ostream& o) const {
-
-    o << "<" << this << "> SyntaxIndexOperation:" << std::endl;
-    if (baseVariable != NULL)
-    {
-        o << "base variable   = <" << baseVariable << "> ";
-        baseVariable->printValue(o);
-        o << std::endl;
-    }
-    if ( index != NULL )
-    {
-        o << "index " << " = <" << index << "> ";
-        index->printValue(o);
-        o << std::endl;
-    }
-    else
-    {
-        o << "index " << " = < NULL >" << std::endl;
-    }
-
-    o << std::endl;
-
-}
-
-
 /**
  * Update the variable.
  * We need to refresh the composite variables so that the relationships are properly set.

@@ -145,16 +145,3 @@ bool SyntaxIncrement::isFunctionSafe( const Environment& env, std::set<std::stri
 }
 
 
-/**
- * Print info about the syntax element
- */
-void SyntaxIncrement::printValue(std::ostream& o) const
-{
-    o << "SyntaxIncrement:" << std::endl;
-    o << "variable      = ";
-    variable->printValue(o);
-    o << std::endl;
-    o << "expression    = '++'" << std::endl;
-}
-
-

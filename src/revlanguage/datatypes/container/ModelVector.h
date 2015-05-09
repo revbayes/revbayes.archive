@@ -39,8 +39,6 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get the object type spec of the instance
 
-        // Basic utility function you do not have to override
-        void                                        printValue(std::ostream& o) const;                          //!< Print value for user
  
         // Type conversion functions
         RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
@@ -58,6 +56,11 @@ namespace RevLanguage {
         virtual void                                sort(void);                                                                     //!< Sort vector
         virtual void                                unique(void);                                                                   //!< Remove consecutive duplicates
 
+    protected:
+        // Basic utility function you do not have to override
+        void                                        printValue(std::ostream& o) const;                          //!< Print value for user
+
+        
     private:
         
         struct comparator {

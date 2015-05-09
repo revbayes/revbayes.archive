@@ -35,7 +35,6 @@ namespace RevLanguage {
         static const std::string&                           getClassType(void);                                             //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                         //!< Get class type spec
         virtual const TypeSpec&                             getTypeSpec(void) const = 0;                                    //!< Get the type spec of the instance
-        virtual void                                        printValue(std::ostream& o) const = 0;                          //!< Print value for user
         
         
         // Getters and setters
@@ -46,6 +45,8 @@ namespace RevLanguage {
         WorkspaceToCoreWrapperObject(void);
         WorkspaceToCoreWrapperObject(rbType *v);
         WorkspaceToCoreWrapperObject(const WorkspaceToCoreWrapperObject &v);
+        
+        virtual void                                        printValue(std::ostream& o) const = 0;                          //!< Print value for user
         
         rbType*                                             value;
     };

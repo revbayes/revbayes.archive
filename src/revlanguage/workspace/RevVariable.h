@@ -62,7 +62,7 @@ namespace RevLanguage {
         bool                    isVectorVariable(void) const;                           //!< Is this a vector variable?
         bool                    isWorkspaceVariable(void) const;                        //!< Is this a workspace variable?
         void                    makeReference(const RevPtr<RevVariable>& refVar);       //!< Make this a reference variable
-        void                    printValue(std::ostream& o) const;                      //!< Print value of variable
+        void                    printValue(std::ostream& o, bool toScreen) const;       //!< Print value of variable
         void                    setElementVariableState(bool flag = true);              //!< Set (or unset) element variable status
         void                    setHiddenVariableState(bool flag = true);               //!< Set (or unset) hidden variable status
         void                    setVectorVariableState(bool flag = true);               //!< Set (or unset) vector variable status

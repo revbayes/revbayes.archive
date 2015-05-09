@@ -163,22 +163,6 @@ RevPtr<RevVariable> SyntaxFormal::evaluateContent( Environment& env, bool dynami
 
 
 /**
- * Print info about the syntax element. Note that the language
- * grammar specification does not currently support multiple formals,
- * so there can be no more than one element in argRule.
- */
-void SyntaxFormal::printValue(std::ostream& o) const
-{
-    o << "SyntaxFormal (processed):" << std::endl;
-    o << "type        = " << argRule->getArgumentTypeSpec()[0].getType() << std::endl;
-    o << "label       = " << argRule->getArgumentLabel() << std::endl;
-    o << "defaultVal  = ";
-    argRule->getDefaultVariable().getRevObject().printValue( o );
-    o << std::endl;
-}
-
-
-/**
  * Set the protected flag of the formal argument specification.
  *
  * @todo Support the protected modifier of member variable slots.

@@ -38,13 +38,12 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxFormal*               clone() const;                                                      //!< Clone object
-        void                        printValue(std::ostream& o) const;                                  //!< Print info about object
-
+        
         // Regular functions
         const ArgumentRule*         getArgumentRule(void) const;                                        //!< Get the argument rule
         ArgumentRule*               getArgumentRule(void);                                              //!< Get the argument rule (non-const to return non-const rule)
         const std::string&          getLabel(void) const;                                               //!< Get label
-        RevPtr<RevVariable>            evaluateContent(Environment& env, bool dynamic=false);              //!< Get semantic value
+        RevPtr<RevVariable>         evaluateContent(Environment& env, bool dynamic=false);              //!< Get semantic value
         void                        setIsProtected( bool prot = true );                                 //!< Set protected flag of the formal argument specification
         
     protected:

@@ -78,18 +78,3 @@ RevPtr<RevVariable> SyntaxClassDef::evaluateContent( Environment& env, bool dyna
     return NULL;
 }
 
-
-/** Print info about the syntax element */
-void SyntaxClassDef::printValue( std::ostream& o ) const
-{
-    o << "SyntaxClassDef:" << std::endl;
-
-    o << "className   = " << className;
-    o << std::endl;
-
-    o << "baseClass   = " << baseClass;
-    o << std::endl;
-
-    o << "defintions  = <" << definitions->size() << " definitions of member variables and functions>" << std::endl;
-}
-
