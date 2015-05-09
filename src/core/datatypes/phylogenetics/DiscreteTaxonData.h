@@ -19,7 +19,10 @@ namespace RevBayesCore {
     
         charType&                               operator[](size_t i);                                               //!< Index op allowing change
         const charType&                         operator[](size_t i) const;                                         //!< Const index op
-                       
+        
+        // implemented methods of the Cloneable interface
+        DiscreteTaxonData<charType>*            clone(void) const;
+
         // TaxonData functions
         void                                    addCharacter(const CharacterState &newChar );                       //!< Push back a new character
         void                                    addCharacter(const DiscreteCharacterState &newChar );               //!< Push back a new character
@@ -108,6 +111,20 @@ const charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i) 
     }
     
     return sequence[i];
+}
+
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the object.
+ */
+template<class charType>
+RevBayesCore::DiscreteTaxonData<charType>* RevBayesCore::DiscreteTaxonData<charType>::clone( void ) const
+{
+    
+    return new DiscreteTaxonData<charType>(*this);
 }
 
 

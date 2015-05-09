@@ -1,6 +1,8 @@
 #ifndef AbstractTaxonData_H
 #define AbstractTaxonData_H
 
+#include "Cloneable.h"
+
 #include <string>
 #include <set>
 
@@ -20,10 +22,13 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2013-04-15, version 1.0
      */
-    class AbstractTaxonData {
+    class AbstractTaxonData : public Cloneable {
     
     public:
         virtual                                ~AbstractTaxonData(void) {}
+        
+        // methods of the Cloneable interface
+        virtual AbstractTaxonData*              clone(void) const = 0;
         
         // AbstractTaxonData functions
         virtual AbstractTaxonData&              concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
