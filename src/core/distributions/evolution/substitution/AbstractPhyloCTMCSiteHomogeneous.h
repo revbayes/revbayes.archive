@@ -972,6 +972,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::drawJoi
                 u -= p[k];
                 if (u < 0.0)
                 {
+//                    std::cout << "fn1 " <<  c << "\n";
                     startStates[root.getIndex()][i] = c;
                     sampledSiteRates[i] = mixture;
                     stop = true;
@@ -1067,6 +1068,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
             u -= p[state];
             if (u < 0.0)
             {
+//                std::cout << "fn2 " << c << "\n";
                 endStates[nodeIndex][i] = c;
                 break;
             }
@@ -1100,16 +1102,28 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::tipDraw
     // get transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
     
+    const AbstractDiscreteCharacterData& d = this->getValue();
+    const DiscreteCharacterData<charType>& dd = static_cast<const DiscreteCharacterData<charType>& >( d );
+    const DiscreteTaxonData<charType>& td = dd.getTaxonData( node.getName() );
+    
     // sample characters conditioned on start states, going to end states
     std::vector<double> p(this->numChars, 0.0);
     for (size_t i = 0; i < this->numSites; i++)
     {
-        charType c;
-        c.setToFirstState();
-        for (size_t j = 0; j < char_node[i]; j++)
-            c++;
+//        charType c;
+//        c.setToFirstState();
+//        for (size_t j = 0; j < char_node[i]; j++)
+//            c++;
+//        
+
+//        const charType* c = &td.getCharacter(i);
+//        endStates[nodeIndex][i] = *c;
+        charType c = td.getCharacter(i);
+//        std::cout << "fn3 " << td.getTaxonName() << " " << c << "\n";
+//        charType c = td.getCharacter(i);
         endStates[nodeIndex][i] = c;
     }
+    
     
         /*
          
