@@ -148,6 +148,7 @@ int NaturalNumbersState::computeState(std::string symbol) const
 		}
         catch( boost::bad_lexical_cast const& )
         {
+            
 			throw RbException( "NaturalNumbers state was not valid integer." );
 		}
     }
