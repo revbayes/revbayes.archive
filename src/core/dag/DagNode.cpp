@@ -872,6 +872,18 @@ void DagNode::setName(std::string const &n)
 }
 
 
+
+/**
+ * Set the number of processes available to this specific DAG node object.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+void DagNode::setNumberOfProcesses(size_t n, size_t offset)
+{
+    
+}
+
+
 void DagNode::setParentNamePrefix(const std::string &p)
 {
     
