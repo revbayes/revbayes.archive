@@ -68,9 +68,9 @@ const ArgumentRules& Func_Mcmcmc::getArgumentRules( void ) const
         options.push_back( "single" );
         
         argumentRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
-        argumentRules.push_back( new ArgumentRule("nchains"    , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
-        argumentRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)) );
-        argumentRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec()                    , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.2) ) );
+        argumentRules.push_back( new ArgumentRule("nchains"    , Natural::getClassTypeSpec()                , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
+        argumentRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)) );
+        argumentRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.2) ) );
         argumentRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec()                   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         
         rulesSet = true;

@@ -31,14 +31,16 @@
 using namespace RevLanguage;
 
 /** Clone object */
-Func_write* Func_write::clone( void ) const {
+Func_write* Func_write::clone( void ) const
+{
     
     return new Func_write( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_write::execute( void ) {
+RevPtr<RevVariable> Func_write::execute( void )
+{
     
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
@@ -67,12 +69,13 @@ RevPtr<RevVariable> Func_write::execute( void ) {
         for (size_t i = 4; i < args.size(); i++) 
         {
             outStream << separator;
-            args[i].getVariable()->getRevObject().printValue(outStream);
+            args[i].getVariable()->getRevObject().printValue( outStream );
         }
-        outStream << std::endl;
+        
         outStream.close();
     }
-    else {
+    else
+    {
         
         std::ostream& o = std::cout;
         
