@@ -207,6 +207,7 @@ namespace RevBayesCore {
     template <>
     inline TimeTree* TreeSummary<TimeTree>::map( int b )
     {
+        bool useMean = true;
 		setBurnin(b);
 		
         std::stringstream ss;
@@ -219,6 +220,7 @@ namespace RevBayesCore {
         double sampleSize = trace.size() - burnin;
         
         double meanRootAge = 0.0;
+        std::vector<double> rootAgeSamples;
         for (size_t i = burnin; i < trace.size(); ++i)
         {
             // get the sampled tree
@@ -226,6 +228,8 @@ namespace RevBayesCore {
             
             // add this root age to our variable
             meanRootAge += tree->getRoot().getAge();
+            
+            rootAgeSamples.push_back(tree->getRoot().getAge());
             
         }
         
@@ -261,21 +265,50 @@ namespace RevBayesCore {
                     Clade parent( parentTaxa, 0.0 );
                     std::map<std::string, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent.toString()];
                     double parentCladeFreq = findCladeSample( parent.toString() ).getFrequency();
-                    const std::vector<double>& condCladeSamples = condCladeFreqs[c.toString()];
+                    std::vector<double> condCladeSamples = condCladeFreqs[c.toString()];
                     size_t condCladeSampleSize = condCladeSamples.size();
                     ccp = condCladeSampleSize / parentCladeFreq;
                     
-                    // finally, we compute the mean conditional age
-                    for (size_t i = 0; i<condCladeSampleSize; ++i)
-                    {
-                        age += condCladeSamples[i];
+                    if (useMean) {
+                        // finally, we compute the mean conditional age
+                        for (size_t i = 0; i<condCladeSampleSize; ++i)
+                        {
+                            age += condCladeSamples[i];
+                        }
+                        age /= condCladeSampleSize;
                     }
-                    age /= condCladeSampleSize;
+                    else {
+
+                        size_t idx = condCladeSampleSize / 2;
+                        std::sort( condCladeSamples.begin(), condCladeSamples.end() );
+                        if (condCladeSampleSize % 2 == 1)
+                        {
+                            age = condCladeSamples[idx];
+                        }
+                        else
+                        {
+                            age = (condCladeSamples[idx-1] + condCladeSamples[idx]) / 2;
+                        }
+                    }
                     
                 }
                 else
                 {
-                    age = meanRootAge / sampleSize;
+                    if (useMean) {
+                        age = meanRootAge / sampleSize;
+                    }
+                    else {
+                        std::sort( rootAgeSamples.begin(), rootAgeSamples.end() );
+                        size_t idx = rootAgeSamples.size() / 2;
+                        if (rootAgeSamples.size() % 2 == 1)
+                        {
+                            age = rootAgeSamples[idx];
+                        }
+                        else
+                        {
+                            age = (rootAgeSamples[idx-1] + rootAgeSamples[idx]) / 2;
+                        }
+                    }
                 }
                 n->addNodeParameter("ccp",ccp);
                 
@@ -1336,6 +1369,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
                 // check if this parameter has the correct name
                 if ( pair[0] != n )
                 {
+                    
                     throw RbException("The parameter for this tree doesn't match during the tree annotation.");
                 }
                 
