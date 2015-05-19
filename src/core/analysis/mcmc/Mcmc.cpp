@@ -330,8 +330,7 @@ void Mcmc::initializeSampler( bool priorOnly )
             
             if ( !(*i)->isClamped() && (*i)->isStochastic() )
             {
-    
-//                (*i)->redraw();
+                (*i)->redraw();
                 (*i)->reInitialized();
     
             }

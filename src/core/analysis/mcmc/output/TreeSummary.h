@@ -207,7 +207,7 @@ namespace RevBayesCore {
     template <>
     inline TimeTree* TreeSummary<TimeTree>::map( int b )
     {
-        bool useMean = !true;
+        bool useMean = true;
 		setBurnin(b);
 		
         std::stringstream ss;

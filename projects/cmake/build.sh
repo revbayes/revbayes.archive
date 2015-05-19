@@ -1,4 +1,4 @@
 #!/bin/sh
 ./regenerate.sh $@
 cmake . -DCMAKE_BUILD_TYPE=release
-make -j 16
+make -j 4

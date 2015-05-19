@@ -191,7 +191,6 @@ size_t  NaturalNumbersState::getStateIndex(void) const
 
 const std::string& NaturalNumbersState::getStateLabels( void ) const
 {
-	
     return boost::lexical_cast<std::string>(state);
 	
 }
