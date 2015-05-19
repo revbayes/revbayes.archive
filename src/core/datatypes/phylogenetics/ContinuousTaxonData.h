@@ -19,6 +19,9 @@ namespace RevBayesCore {
         double&                                 operator[](size_t i);                                               //!< Index op allowing change
         const double&                           operator[](size_t i) const;                                         //!< Const index op
         
+        // implemented methods of the Cloneable interface
+        ContinuousTaxonData*                    clone(void) const;
+        
         // TaxonData functions
         ContinuousTaxonData&                    concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
         ContinuousTaxonData&                    concatenate(const ContinuousTaxonData &d);                          //!< Concatenate sequences
