@@ -63,9 +63,12 @@ namespace RevBayesCore {
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         size_t                                              getNumberOfInvariantSites(void) const;                                      //!< Number of invariant sites
+        size_t                                              getNumberOfSegregatingSites(void) const;                                    //!< Compute the number of segregating sites
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                              getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
+        double                                              getPaiwiseSequenceDifference(void) const;                                   //!< Get the average pairwise sequence distance.
+        double                                              getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -73,8 +76,12 @@ namespace RevBayesCore {
         const std::vector<std::string>&                     getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         void                                                includeCharacter(size_t i);                                                 //!< Include character
+        void                                                includeTaxon(const std::string& s);                                         //!< Include taxon
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
+        bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        bool                                                isCharacterResolved(const std::string &tn, size_t chIdx) const;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                                isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
+        bool                                                isSequenceMissing(const std::string &n) const;                              //!< Returns whether the contains only missing data or has some actual observations
         bool                                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                                isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
         void                                                removeExludedCharacters(void);                                              //!< Remove all the excluded characters
@@ -652,7 +659,8 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfCharacters(void
  * \return    The total number of characters
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharacters(void) const {
+size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharacters(void) const
+{
     
     if (getNumberOfTaxa() > 0) 
     {
@@ -675,11 +683,15 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfStates(void) co
     
     // Get the first character in the matrix
     if ( getNumberOfTaxa() == 0 )
+    {
         return 0;
+    }
     
     const DiscreteTaxonData<charType>& sequence = getTaxonData( 0 );
     if ( sequence.getNumberOfCharacters() == 0 )
+    {
         return 0;
+    }
     
     return sequence[0].getNumberOfStates();
 }
@@ -748,6 +760,83 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfInvariantSites(
     }
     
     return invSites;
+}
+
+
+/**
+ * Get the set of excluded character indices.
+ * We use the fact that the number of segregating sites is numSites - numInvariantSites.
+ *
+ * \return    The excluded character indices.
+ */
+template<class charType>
+size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfSegregatingSites(void) const
+{
+    const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(0);
+    size_t nc = firstTaxonData.getNumberOfCharacters();
+    
+    return nc - getNumberOfInvariantSites();
+}
+
+
+/**
+ * Get the average pairwise distance between the sequences.
+ *
+ * \return    The average pairwise distance.
+ */
+template<class charType>
+double RevBayesCore::DiscreteCharacterData<charType>::getPaiwiseSequenceDifference(void) const
+{
+    double pairwiseDistance = 0.0;
+    size_t nt = this->getNumberOfIncludedTaxa();
+    
+    
+    for (size_t i=0; i<(nt-1); i++)
+    {
+        
+        const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(i);
+        size_t nc = firstTaxonData.getNumberOfCharacters();
+        
+        for (size_t j=i+1; j<nt; j++)
+        {
+            
+            const AbstractDiscreteTaxonData& secondTaxonData = this->getTaxonData(j);
+            double pd = 0.0;
+            
+            for (size_t k=0; k<nc; k++)
+            {
+                const DiscreteCharacterState& a = firstTaxonData[k];
+                const DiscreteCharacterState& b = secondTaxonData[k];
+                if (a != b)
+                {
+                    ++pd;
+                }
+            }
+        
+            pairwiseDistance += pd;
+            
+        } // end loop over all second taxa
+    
+    } // end loop over all first taxa
+    
+    pairwiseDistance *= 2.0 / (nt * (nt - 1.0 ) );
+    
+    return pairwiseDistance;
+}
+
+
+/**
+ * Get the percentage of missing characters n the sequences.
+ *
+ * \return    The percentage of missing characters.
+ */
+template<class charType>
+double RevBayesCore::DiscreteCharacterData<charType>::getPercentageMissing( const std::string &n ) const
+{
+    
+    RevBayesCore::DiscreteTaxonData<charType> td = getTaxonData(n);
+    
+    return td.getPercentageMissing();
 }
 
 
@@ -915,6 +1004,30 @@ void RevBayesCore::DiscreteCharacterData<charType>::includeCharacter(size_t i)
 }
 
 
+/**
+ * Include a taxon.
+ * Since we didn't actually deleted the taxon but marked it for exclusion
+ * we can now simply remove the flag.
+ *
+ * \param[in]    i    The name of the taxon that will be included.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::includeTaxon(const std::string &n)
+{
+    
+    
+    for (size_t i = 0; i < getNumberOfTaxa(); i++)
+    {
+        if (n == sequenceNames[i] )
+        {
+            deletedTaxa.erase( i );
+            break;
+        }
+    }
+    
+}
+
+
 
 
 
@@ -988,6 +1101,20 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterExcluded(size_t i
 }
 
 
+template<class charType>
+bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterResolved(size_t txIdx, size_t chIdx) const {
+
+    RevBayesCore::DiscreteTaxonData<charType> td = getTaxonData(txIdx);
+    return td.isCharacterResolved(chIdx);
+}
+
+template<class charType>
+bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterResolved(const std::string &tn, size_t chIdx) const {
+
+    RevBayesCore::DiscreteTaxonData<charType> td = getTaxonData(tn);
+    return td.isCharacterResolved(chIdx);
+}
+
 /** 
  * Does the character have missing or ambiguous characters?
  *
@@ -1021,6 +1148,21 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isHomologyEstablished(void) 
 {
     
     return homologyEstablished;
+}
+
+
+/**
+ * Is the entire sequence missing, i.e., are all character '?'?
+ *
+ * \return     True/False whether the sequence is missing.
+ */
+template<class charType>
+bool RevBayesCore::DiscreteCharacterData<charType>::isSequenceMissing( const std::string &n ) const
+{
+    
+    RevBayesCore::DiscreteTaxonData<charType> td = getTaxonData(n);
+    
+    return td.isSequenceMissing();
 }
 
 

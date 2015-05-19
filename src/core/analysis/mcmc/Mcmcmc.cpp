@@ -667,6 +667,10 @@ void Mcmcmc::synchronizeHeats(void)
 // MJL: allow swapChains to take a swap function -- e.g. pairwise swap for 1..n-1
 void Mcmcmc::swapChains(void)
 {
+    
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " Mcmcmc::swapChains at iteration -- " << currentGeneration << "\n";
+#endif
     size_t numChains = chains.size();
     
     // exit if there is only one chain

@@ -40,6 +40,8 @@ ExponentialWithOffsetDistribution* ExponentialWithOffsetDistribution::clone( voi
 
 double ExponentialWithOffsetDistribution::computeLnProbability( void )
 {
+    assert( lambda->getValue() >= 0.0 );
+    
     double v = *value - offset->getValue();
     if ( v < 0.0 )
     {

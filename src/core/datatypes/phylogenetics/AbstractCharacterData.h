@@ -56,6 +56,7 @@ namespace RevBayesCore {
         virtual size_t                          getNumberOfIncludedCharacters(void) const = 0;                                  //!< Number of characters
         virtual size_t                          getNumberOfTaxa(void) const = 0;                                                //!< Number of taxa
         virtual size_t                          getNumberOfIncludedTaxa(void) const = 0;                                        //!< Number of included taxa
+        virtual double                          getPercentageMissing(const std::string &n) const = 0;                           //!< Returns the percentage of missing data for this sequence
         virtual AbstractTaxonData&              getTaxonData(size_t tn) = 0;                                                    //!< Return a reference to a sequence in the character matrix
         virtual const AbstractTaxonData&        getTaxonData(size_t tn) const = 0;                                              //!< Return a reference to a sequence in the character matrix
         virtual AbstractTaxonData&              getTaxonData(const std::string &tn) = 0;                                        //!< Return a reference to a sequence in the character matrix
@@ -63,8 +64,12 @@ namespace RevBayesCore {
         virtual const std::vector<std::string>& getTaxonNames(void) const = 0;                                                  //!< Get the names of the taxa
         virtual const std::string&              getTaxonNameWithIndex(size_t idx) const = 0;                                    //!< Returns the idx-th taxon name
         virtual void                            includeCharacter(size_t i) = 0;                                                 //!< Include character
+        virtual void                            includeTaxon(const std::string& s) = 0;                                         //!< Include taxon
         virtual bool                            isCharacterExcluded(size_t i) const = 0;                                        //!< Is the character excluded
+        virtual bool                            isCharacterResolved(size_t txIdx, size_t chIdx) const = 0;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        virtual bool                            isCharacterResolved(const std::string &tn, size_t chIdx) const = 0;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                            isHomologyEstablished(void) const = 0;                                          //!< Returns whether the homology of the characters has been established
+        virtual bool                            isSequenceMissing(const std::string &n) const = 0;                              //!< Returns whether the contains only missing data or has some actual observations
         virtual bool                            isTaxonExcluded(size_t i) const = 0;                                            //!< Is the taxon excluded
         virtual bool                            isTaxonExcluded(const std::string& s) const = 0;                                //!< Is the taxon excluded
         virtual void                            removeExludedCharacters(void) = 0;                                              //!< Remove all the excluded characters
