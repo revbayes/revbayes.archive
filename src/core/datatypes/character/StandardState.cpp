@@ -23,7 +23,7 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 //StandardState::StandardState(void) : DiscreteCharacterState(), labels( "01" ), state(0x1) { }
-StandardState::StandardState(void) : DiscreteCharacterState(), labels( "0123456789ABCDEFGHIJKLMNO" ), state(0x1) { }
+StandardState::StandardState(void) : DiscreteCharacterState(), labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ), state(0x1) { }
 
 
 /** Default constructor */
