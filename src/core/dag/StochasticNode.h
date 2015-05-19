@@ -94,13 +94,12 @@ namespace RevBayesCore {
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) :
-DynamicNode<valueType>( n ),
-clamped( false ),
-ignoreRedraw(false),
-lnProb( RbConstants::Double::neginf ),
-needsProbabilityRecalculation( true ),
-distribution( d )
+RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ),
+    clamped( false ),
+    ignoreRedraw(false),
+    lnProb( RbConstants::Double::neginf ),
+    needsProbabilityRecalculation( true ),
+    distribution( d )
 {
     this->type = DagNode::STOCHASTIC;
     
@@ -433,7 +432,8 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
+void RevBayesCore::StochasticNode<valueType>::redraw( void )
+{
     
     // draw the value
     if ( !ignoreRedraw )
@@ -519,7 +519,7 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forc
 
 
 template <class valueType>
-void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)
+void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw( bool tf )
 {
     ignoreRedraw = tf;
 }
