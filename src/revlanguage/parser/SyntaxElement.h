@@ -35,7 +35,6 @@ namespace RevLanguage {
 
         // Basic utility functions you have to override
         virtual SyntaxElement*          clone(void) const = 0;                                                              //!< Clone object
-        virtual void                    printValue(std::ostream& o) const = 0;                                              //!< Print info about object
         
         // Regular functions
         virtual RevPtr<RevVariable>     evaluateContent(Environment& env, bool dynamic=false) = 0;                          //!< Get semantic value (static)

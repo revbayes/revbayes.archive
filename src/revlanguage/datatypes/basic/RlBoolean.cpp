@@ -157,7 +157,8 @@ double RlBoolean::isConvertibleTo(const TypeSpec& type, bool once) const
 
 
 /** Print value for user */
-void RlBoolean::printValue(std::ostream &o) const {
+void RlBoolean::printValue(std::ostream &o) const
+{
 
     o << (dagNode->getValue() ? "true" : "false");
 }

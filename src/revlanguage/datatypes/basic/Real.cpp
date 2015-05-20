@@ -346,7 +346,8 @@ Real* Real::multiply(const Integer &rhs) const
 
 
 /** Print value for user */
-void Real::printValue(std::ostream &o) const {
+void Real::printValue(std::ostream &o) const
+{
 
     long previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

@@ -60,7 +60,7 @@ RevPtr<RevVariable> Func_ls::execute( void )
             t1.str("");
             t1 << (*it).first << " = ";
             t2.str("");
-            (*it).second->printValue( t2 );
+            (*it).second->printValue( t2, true );
             s << t1.str() << StringUtilities::oneLiner( t2.str(), 75 - t1.str().size() ) << std::endl;
         }
         

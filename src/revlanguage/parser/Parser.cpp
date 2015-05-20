@@ -209,7 +209,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
     if (!root->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance())
     {
         std::ostringstream msg;
-        result->getRevObject().printValue(msg);
+        result->getRevObject().printValue(msg,true);
         RBOUT(msg.str());
     }
 

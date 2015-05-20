@@ -77,8 +77,7 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxFunctionCall*                 clone() const;                                                              //!< Clone object
-        void                                printValue(std::ostream& o) const;                                          //!< Print info about object
-
+        
         // Regular functions
         const std::string&                  getFunctionName(void) const { return functionName; }                        //!< Get function name
         RevPtr<RevVariable>                 evaluateContent(Environment& env, bool dynamic=false);                      //!< Get semantic value

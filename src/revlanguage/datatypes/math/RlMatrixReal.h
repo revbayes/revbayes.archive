@@ -46,6 +46,8 @@ namespace RevLanguage {
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
+        
+    protected:
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
  
     };

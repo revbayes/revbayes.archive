@@ -152,17 +152,3 @@ bool SyntaxUnaryExpr::isFunctionSafe( const Environment& env, std::set<std::stri
         return false;
 }
 
-
-/** Print info about the syntax element */
-void SyntaxUnaryExpr::printValue(std::ostream& o) const
-{
-    o << "[" << this << "] SyntaxUnaryExpr:" << std::endl;
-    
-    o << "operand       = [" << operand << "] ";
-    operand->printValue( o );
-    o << std::endl;
-
-    o << "operation     = " << opCode[operation];
-    o << std::endl;
-}
-

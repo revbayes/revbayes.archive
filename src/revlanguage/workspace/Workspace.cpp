@@ -227,7 +227,8 @@ RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
 
 
 /** Print the frame content, not the entire environment. */
-void Workspace::printValue(std::ostream& o) const {
+void Workspace::printValue(std::ostream& o) const
+{
 
     if ( variableTable.size() > 0 )
     {
@@ -240,7 +241,7 @@ void Workspace::printValue(std::ostream& o) const {
             std::ostringstream s;
             s << (*it).first << " = ";
             std::ostringstream t;
-            (*it).second->printValue( t );
+            (*it).second->printValue( t, true );
             o << StringUtilities::oneLiner( t.str(), 75 - s.str().length() ) << std::endl;
         }
         o << std::endl;

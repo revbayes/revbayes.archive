@@ -1,0 +1,7 @@
+## Examples of Graphical models
+
+### The GTR Model
+
+[[img/Graph_mod.jpg]]
+
+This model is derived from the GTR implementation in the file: TestGtrModel.cpp. In this example, the model specified includes a birth-death process on a rooted time-tree. Additionally, there are Dirichlet priors on the base frequencies and exchangeability rates. The tree height (or age of the root) is a DeterministicNode, thus we can create a monitor for that statistic. 

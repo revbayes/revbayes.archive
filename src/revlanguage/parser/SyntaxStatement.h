@@ -40,10 +40,9 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxStatement*                            clone() const;                                                                  //!< Clone object
-        void                                        printValue(std::ostream& o) const;                                              //!< Print info about object
-
+        
         // Regular functions
-        RevPtr<RevVariable>                            evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
+        RevPtr<RevVariable>                         evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
 
     protected:
         bool                                        isTrue(SyntaxElement* expression, Environment& env) const;                      //!< Does expression evaluate to true?

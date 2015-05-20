@@ -213,7 +213,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                      result != NULL && result->getRevObject() != RevNullObject::getInstance())
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg,true);
                     RBOUT( msg.str() );
                 }
 
@@ -273,7 +273,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                         && result != NULL && result->getRevObject() != RevNullObject::getInstance() )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
 	 
@@ -320,7 +320,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
 
@@ -347,7 +347,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
                 
@@ -369,7 +369,7 @@ RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dyna
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
                     
@@ -414,48 +414,5 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
         
         return   retValue;
     }
-}
-
-
-/** Print info about the syntax element */
-void SyntaxStatement::printValue(std::ostream& o) const
-{
-    o << "SyntaxStatement:" << std::endl;
-    o << "statementType = " << stmtName[ statementType ] << std::endl;
-    if (expression == NULL)
-        o << "expression    = NULL" << std::endl;
-    else 
-    {
-        o << "expression    = [" << expression << "] ";
-        expression->printValue(o);
-        o << std::endl;
-    }
-    if ( statements1 == NULL )
-        o << "statements1   = NULL" << std::endl;
-    else 
-    {
-        o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
-        int count = 1;
-        for ( std::list<SyntaxElement*>::const_iterator it = statements1->begin(); it !=statements1->end(); ++it, ++count )
-        {
-            o << "   stmt " << count << " = [" << (*it) << "] ";
-            (*it)->printValue(o);
-            o << std::endl;
-        }
-    }
-    if ( statements2 == NULL )
-        o << "statements2   = NULL" << std::endl;
-    else 
-    {
-        o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
-        int count = 1;
-        for ( std::list<SyntaxElement*>::const_iterator it = statements2->begin(); it != statements2->end(); ++it, ++count )
-        {
-            o << "   stmt " << count << " = [" << (*it) << "] ";
-            (*it)->printValue(o);
-            o << std::endl;
-        }
-    }
-    o << std::endl;
 }
 

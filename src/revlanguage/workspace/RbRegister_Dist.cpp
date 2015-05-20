@@ -34,7 +34,6 @@
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
-#include "RevAbstractType.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
@@ -114,6 +113,7 @@
 #include "Dist_bdp.h"
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_Coalescent.h"
+#include "Dist_CoalescentSkyline.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
@@ -241,6 +241,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // coalescent (constant population sizes)
         addDistribution( "dnCoalescent",                new Dist_Coalescent() );
+        
+        // coalescent (skyline population sizes)
+        addDistribution( "dnCoalescentSkyline",         new Dist_CoalescentSkyline() );
 
         // multispecies coalescent (per branch constant population sizes)
         addDistribution( "dnCoalMultiSpeciesConst",     new Dist_constPopMultispCoal() );
