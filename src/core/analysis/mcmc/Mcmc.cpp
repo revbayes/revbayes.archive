@@ -799,7 +799,7 @@ void Mcmc::setNumberOfProcesses(size_t n, size_t offset)
     MonteCarloSampler::setNumberOfProcesses(n, offset);
     
     // delegate the call to the model
-    model->setNumberOfProcesses(n,offset);
+    model.setNumberOfProcesses(n,offset);
 }
 
 
