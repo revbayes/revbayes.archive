@@ -1,0 +1,135 @@
+################################################################################
+#
+# RevBayes Example: Bayesian inference of phylogeny using a HKY model
+# 
+# This file: Runs the full MCMC on a single gene under the HKY 
+#            substitution model using a rooted (birth-death) tree model.
+#
+# authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
+#
+################################################################################
+
+#######################
+# Reading in the Data #
+#######################
+
+###### This just defines a single model for all sites #######
+
+### Read in sequence data for both genes
+
+data <- readDiscreteCharacterData("data/primates_cytb.nex")
+
+# Get some useful variables from the data. We need these later on.
+n_species <- data.ntaxa()
+names <- data.names()
+
+# set my move index
+mi = 0
+
+
+
+######################
+# Substitution Model #
+######################
+
+pi_prior <- v(1,1,1,1) 
+pi ~ dnDirichlet(pi_prior)
+moves[++mi] = mvSimplexElementScale(pi, weight=1.0)
+
+
+kappa ~ dnLnorm(0.0,1.25)
+moves[++mi] = mvScale(kappa, weight=1.0)
+
+Q := fnHKY(kappa,pi)
+
+
+
+
+
+##############
+# Tree model #
+##############
+
+# Specify a prior on the diversification and turnover rate
+diversification ~ dnUniform(0,1000)
+relativeExtinction ~ dnBeta(1,1)
+
+# now transform the diversification and turnover rates into speciation and extinction rates
+speciation := abs(diversification / (1.0 - relativeExtinction) )
+extinction := speciation * relativeExtinction
+
+# specify a prior on the root age (our informed guess is about 75-80 mya)
+root ~ dnUniform(0.0,1000.0)
+
+sampling_fraction <- 23 / 450 # 23 out of the ~ 450 primate species
+
+# create some moves that change the stochastic variables
+# all moves are sliding proposals but you could use scaling proposals for the rates too
+moves[++mi] = mvSlide(diversification,delta=1,tune=false,weight=1)
+moves[++mi] = mvSlide(relativeExtinction,delta=1,tune=false,weight=1)
+moves[++mi] = mvSlide(root,delta=1,tune=true,weight=1)
+
+# construct a variable for the tree drawn from a birth death process
+psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=abs(root), rho=sampling_fraction, nTaxa=n_species, names=names )
+
+moves[++mi] = mvNarrow(psi, weight=5.0)
+moves[++mi] = mvNNI(psi, weight=1.0)
+moves[++mi] = mvFNPR(psi, weight=3.0)
+moves[++mi] = mvSubtreeScale(psi, weight=3.0)
+moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
+
+
+
+
+
+
+###################
+# PhyloCTMC Model #
+###################
+
+# We use an empirical estimate of the clock rate which is 0.01 (=1%) per million years per site
+clockRate <- 0.01
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
+
+# attach the data
+seq.clamp(data)
+
+
+
+
+#############
+# THE Model #
+#############
+
+# We define our model.
+# We can use any node of our model as a handle, here we chose to use the rate matrix.
+mymodel = model(Q)
+
+
+
+
+
+
+monitors[1] = mnModel(filename="output/HKY.log",printgen=10, separator = TAB)
+monitors[2] = mnFile(filename="output/HKY.trees",printgen=10, separator = TAB, psi)
+monitors[3] = mnScreen(printgen=1000, diversification, relativeExtinction)
+
+mymcmc = mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=10000,tuningInterval=250)
+mymcmc.run(generations=100000)
+
+
+# Now, we will analyze the tree output.
+# Let us start by reading in the tree trace
+treetrace = readTreeTrace("output/HKY.trees", treetype="clock")
+# and get the summary of the tree trace
+treetrace.summarize()
+
+mapTree(treetrace,"output/primates_cytb_HKY.tree")
+
+# you may want to quit RevBayes now
+#q()
+
