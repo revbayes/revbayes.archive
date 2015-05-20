@@ -43,12 +43,23 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    std::set<RevBayesCore::DagNode*> n;
-    for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
+    
+    vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
+    sort( vars.begin(), vars.end(), compareVarNames );
+    std::vector<RevBayesCore::DagNode *> n;
+    for (std::vector<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
     {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
-        n.insert( node );
+        n.push_back( node );
     }
+//    
+//    
+//    std::set<RevBayesCore::DagNode*> n;
+//    for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
+//    {
+//        RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
+//        n.insert( node );
+//    }
     bool np = static_cast<const RlBoolean &>( isNodeParameter->getRevObject() ).getValue();
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
@@ -127,7 +138,7 @@ void Mntr_ExtendedNewickFile::setConstParameter(const std::string& name, const R
     
     if ( name == "" )
     {
-        vars.insert( var );
+        vars.push_back( var );
     }
     else if ( name == "filename" )
     {

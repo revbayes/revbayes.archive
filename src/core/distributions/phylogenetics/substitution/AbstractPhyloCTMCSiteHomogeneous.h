@@ -1100,60 +1100,18 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::tipDraw
     // get transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
     
-    // sample characters conditioned on start states, going to end states
+    const AbstractDiscreteCharacterData& d = this->getValue();
+    const DiscreteCharacterData<charType>& dd = static_cast<const DiscreteCharacterData<charType>& >( d );
+    const DiscreteTaxonData<charType>& td = dd.getTaxonData( node.getName() );
+    
+    // ideally sample ambiguous tip states given the underlying process and ancestral state
+    // for now, always sample the clamped character
     std::vector<double> p(this->numChars, 0.0);
     for (size_t i = 0; i < this->numSites; i++)
     {
-        charType c;
-        c.setToFirstState();
-        for (size_t j = 0; j < char_node[i]; j++)
-            c++;
+        charType c = td.getCharacter(i);
         endStates[nodeIndex][i] = c;
     }
-    
-        /*
-         
-         
-        size_t cat = sampledSiteRates[i];
-        size_t k = startStates[nodeIndex][i].getStateIndex();
-        
-        // sum to sample
-        double sum = 0.0;
-        
-		// if the matrix is compressed use the pattern for this site
-        size_t pattern = i;
-		if (compressed) {
-			pattern = sitePattern[i];
-		}
-        
-        // get ptr to first mixture cat for site
-        const double* p_site_mixture_j = p_node  + cat * this->mixtureOffset + pattern * this->siteOffset;
-        
-        // iterate over possible end states for each site given start state
-        for (size_t j = 0; j < this->numChars; j++)
-        {
-            double tp_kj = this->transitionProbMatrices[cat][k][j];
-            p[j] = tp_kj * *p_site_mixture_j;
-            sum += p[j];
-            p_site_mixture_j++;
-        }
-        
-        // sample char from p
-        charType c;
-        c.setToFirstState();
-        double u = rng->uniform01() * sum;
-        for (size_t state = 0; state < this->numChars; state++)
-        {
-            u -= p[state];
-            if (u < 0.0)
-            {
-                endStates[nodeIndex][i] = c;
-                break;
-            }
-            c++;
-        }
-         */
-    // no further recursion
 }
 
 template<class charType, class treeType>

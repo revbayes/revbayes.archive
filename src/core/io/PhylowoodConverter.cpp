@@ -291,13 +291,19 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
             // area-encoded states (e.g. 3 -> 0001, 1 -> 1000, etc.)
             else if (bgtype == "Area")
             {
+                bool ambig = false;
+                
                 // get node, state, and bits for i,j cell in tab-delimited file
                 size_t nodeIdx = idx[j][1];
                 unsigned stateIdx = 0;
                 if (chartype == "NaturalNumbers")
                     stateIdx = std::atoi(stateChars[i][j].c_str());
                 else if (chartype == "Standard")
+                {
+                    if (stateChars[i][j] == "-")
+                        ambig = true;
                     stateIdx = (unsigned)standardStates.find( stateChars[i][j] );
+                }
 
                 // start
                 if (idx[j][0] == 0) {
@@ -305,7 +311,15 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
                 }
                 // end
                 else if (idx[j][0] == 1) {
-                    marginalEndProbs[nodeIdx][stateIdx] += 1;
+                    if (ambig) {
+                        for (size_t jdx = 0; jdx < marginalEndProbs[nodeIdx].size(); jdx++)
+                        {
+                            marginalEndProbs[nodeIdx][jdx] += 1;
+                        }
+                    }
+                    else {
+                        marginalEndProbs[nodeIdx][stateIdx] += 1;
+                    }
                 }
             }
         }
