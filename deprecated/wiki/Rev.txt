@@ -1,0 +1,18 @@
+This document describes the RevLanguage and should be seen as a reference rather than a manual. 
+
+## Variables
+
+The type of a variable in the RevLanguage is automatically determined. Therefore, the RevLanguage is a loosely typed language. A variable is created by the simple construct 
+    
+      variable_name <assignment_operator> expression
+    
+
+such as 
+    
+      a <var_name> in <container> <statement(s)>
+    
+
+A simple example of a loops is 
+    
+      sum 
+    
