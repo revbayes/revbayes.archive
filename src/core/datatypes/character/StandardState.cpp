@@ -116,7 +116,12 @@ void StandardState::addState(char symbol) {
 //    size_t pos = computeState( symbol );
 //    setState(pos, true);
     unsigned long n = computeState( symbol );
+
+//    unsigned long s = state;
+//    s |= n;
+    
     state |= n;
+    
 }
 
 
@@ -140,7 +145,8 @@ unsigned long StandardState::computeStateIndex(char symbol) const {
 unsigned long StandardState::computeState(char symbol) const {
     
     size_t pos = computeStateIndex(symbol);
-    return (1u << pos);
+    unsigned long n = 1;
+    return (n << pos);
 }
     
 size_t StandardState::getNumberOfStates( void ) const {

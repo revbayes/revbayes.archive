@@ -643,6 +643,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
                     p_site_mixture[2] = p2;
                     p_site_mixture[3] = p3;
                     
+                    
                 } 
                 else // no ambiguous characters in use
                 {
