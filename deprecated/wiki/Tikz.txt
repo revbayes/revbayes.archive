@@ -1,0 +1,185 @@
+## Using tikz with a standard .tex editor
+
+1) Paste the code in the **.tex preamble** section into your .tex file.
+
+2) Next, add the following code to the end your .tex file.
+
+```
+% line after preamble code
+\begin{document}
+    % paste the tikz .tex code here
+\end{document}
+```
+
+3) Paste the code in the **.tex body** section in where it says `% paste the tikz .tex code here`.
+
+4) The image below should render after compiling your .tex file.
+
+## Using tikz with LaTeXiT
+
+1) Install [LaTeXiT](http://www.chachatelier.fr/latexit/).
+
+2) Create a new tikz preamble. Open LaTeXiT, open Preferences, click Templates, click '+' to add a new preamble type, rename the preamble 'tikz'. Paste the **.tex preamble** code into the preamble body. Close the Preferences window.
+
+3) Paste the code in the **.tex body** section into the LaTeXiT window.
+
+## .tex preamble
+```
+% preamble
+\documentclass[10pt]{article}
+\usepackage[paperwidth=30in, paperheight=30in]{geometry}
+\usepackage[usenames]{color} %used for font color
+\usepackage{amssymb} %maths
+\usepackage{amsmath} %maths
+\usepackage[utf8]{inputenc} %useful to type directly diacritic characters
+\usepackage{skull}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{fit}
+\usetikzlibrary{calc}
+\usetikzlibrary{automata}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{shapes.multipart}
+\tikzset{>=latex}
+\tikzstyle{snode}=[black,draw=black,line width=1.5pt,shape=circle,fill=white,minimum size=8mm]
+\tikzstyle{obnode}=[black,draw=black,line width=1.5pt,shape=circle,fill=black!20!white,minimum size=8mm]
+\tikzstyle{detnode}=[black,draw=black,line width=1.5pt,densely dotted,shape=circle,fill=white,minimum size=8mm]
+\tikzstyle{constnode}=[black,draw=black,line width=1.5pt,shape=rectangle,fill=white,minimum size=8mm]
+\tikzstyle{blnode}=[white,draw=black,line width=1pt,shape=circle,fill=black,minimum size=1mm,font=\scriptsize,inner sep=1pt]
+\tikzstyle{ylnode}=[black,draw=black,line width=1pt,shape=circle,fill=yellow,minimum size=1mm,font=\scriptsize,inner sep=1pt]
+%\tikzstyle{aero}= [very thick,color=black,decoration={markings,mark=at position 1 with {\arrow[scale=1.5]{>}}},postaction={decorate}]
+\tikzstyle{taro}=[->,line width=2pt,color=black]
+\tikzstyle{dtaro}=[->,line width=2pt, densely dotted,color=black]
+%\input{/Users/tracyh/Documents/arrowsnew}
+%\tikzset{options/.code={\tikzset{#1}}} % just to compact the code
+\tikzstyle{smod}=[black, draw=black, line width=2pt, fill=white, shape=rectangle, rounded corners, minimum size=10mm, minimum width=20mm]
+\tikzstyle{obmod}=[black, draw=black, line width=2pt, fill=black!20!white, shape=rectangle, rounded corners, minimum size=10mm, minimum width=20mm, minimum width=20mm]
+```
+
+## .tex body
+```
+\begin{tikzpicture}
+\node[font=\Huge] at (-17.5,20) {a)};
+\node [font=\Huge][inner sep=10mm][smod] (tree) at (-13,17.5) { Tree };
+\node [font=\Huge][inner sep=10mm][smod] (rate_mtx) at (-6,17.5) { Rate matrix };
+\node [font=\Huge][inner sep=10mm][smod] (asrv) at (2,17.5) { Site rates };
+\node [font=\Huge][inner sep=10mm][smod] (ibr) at (10,17.5) { Branch rates };
+\node [font=\Huge][inner sep=10mm][obmod] (ctmc) at (-2,12.5) { PhyloCTMC };
+\draw [taro] (rate_mtx) -- (ctmc);
+\draw [taro] (tree) -- (ctmc);
+\draw [taro] (ibr) -- (ctmc);
+\draw [taro] (asrv) -- (ctmc);
+\node[font=\Huge] at (-17.5,7.5) {b)};
+\node[black,draw=black,line width=2pt, dashed,dash pattern=on 7pt off 2pt,shape=rectangle,inner sep=30mm,rounded corners=1cm, rectangle split, rectangle split horizontal, rectangle split parts=3, rectangle split empty part height=7ex] (tp) at (-2,-2.5) { \nodepart {two}  \nodepart {three} };
+\node [font=\Large] at (tp.text) [above=3.5]{root};
+\node [font=\Large] at (tp.two) [above=3.5]{internal};
+\node [font=\Large] at (tp.three) [above=3.4]{tip};
+\node [obnode] (tn) at ($(tp.three)-(0,1.2)$) {\LARGE $\mathcal{S}_{ij}$};
+\node [snode] (in) at ($(tp.two)-(0,1.2)$) {\LARGE $\mathcal{S}_{ij}$};
+\node [snode] (rn) at ($(tp.text)-(0,1.2)$) {\LARGE $\mathcal{S}_{ij}$};
+\node [font=\scriptsize,snode] (pin) at ($(in)+(-2,2)$) {\large $\mathcal{S}_{\tilde{p}(i)j}$};
+\node [font=\scriptsize,snode] (ptn) at ($(tn)+(-2,2)$) {\large $\mathcal{S}_{\tilde{p}(i)j}$};
+\draw [taro] (ptn) -- (tn) ;
+\draw [taro] (pin) -- (in) ;
+\node (a1) at ($(rn)-(2,0)$) { };
+\node (a2) at ($(tn)+(2,0)$) { };
+\node[rectangle,dashed, very thick, inner sep=6mm, draw=black!100, fit = (tn) (rn) (in) (ptn) (a1) (a2)] (siteplate) {};
+%\node at ($(tp.two)-(-3.75,4.5)$) {$i \in$ internals};
+%\node at ($(tp.three)-(-4.25,4.5)$) {$i \in$ tips};
+%\node at ($(tp.text)-(-4.25,4.5)$) {$i =$ root};
+\node at ($(tp.two)-(-2.0,2.7)$) {$i \in$ internals};
+\node at ($(tp.three)-(-2.25,2.7)$) {$i \in$ tips};
+\node at ($(tp.text)-(-2.25,2.7)$) {$i =$ root};
+\node at ($(tn)+(2,-0.8)$) {$j \in N$};
+% For topology node, change the absolute path to the image file. Also, since it's EPS, LaTeXiT must be set "latex+dvipdf" in the Typesetting Preferences
+%\node[constnode,inner sep=2mm] (topo) at ($(tp)+(-11,0)$) {\includegraphics{/Users/tracyh/Work/RB_manuscripts/Graph_mod_MS/Figures/tikz_tex/small_tree_rt.eps}};
+%\node[constnode,inner sep=2mm] (topo) at ($(tp)+(-11,0)$) {\includegraphics{/Users/hoehna/Manuscripts/RevBayes/GraphicalModels/Figures/tikz_tex/small_tree_rt.eps}};
+\node[detnode] (topo) at ($(tp)+(-11,0)$) {\Huge $\Psi$};
+\draw[-,line width=2pt] (topo) -- (tp) ;
+%\node[rectangle, inner sep=14mm, draw=black!100,rounded corners,line width=3pt, fit = (qn) (pen) (pbn)] (gtrmod) { };
+%\node[anchor=south west,inner sep=10pt] at (gtrmod.south west) {\huge GTR};
+\node[detnode] (alq) at ($(tp)-(0,5)$) {\LARGE $Q$};
+\draw [taro] (alq) -- (in) ;
+\draw [taro] (alq) edge[bend left](rn) ;
+\draw [taro] (alq) edge[bend right] (tn) ;
+\node[rectangle, inner sep=12mm, draw=black!100,rounded corners,line width=3pt, fit = (topo) (tp) (alq)] (ctmc) { };
+\node[anchor=north west,inner sep=12pt] at (ctmc.north west) {\huge PhyloCTMC};
+\node [detnode] (lin) at ($(in)+(2,4)$) {\LARGE $l_i$};
+\node [detnode] (ltn) at ($(tn)+(2,4)$) {\LARGE $l_i$};
+\node [snode] (blen) at ($(ltn)+(6,2)$) {\LARGE $l_i$};
+\node[rectangle,dashed, inner sep=8mm, draw=black!100,line width=3pt, fit = (blen)] (plate2) {};
+\node [anchor=south east,inner sep=7pt] at (plate2.south east) {\footnotesize $i \in 2K-3$};
+\node [constnode] (lam) at ($(blen)+(0,2.5)$) {\LARGE $\lambda$};
+\draw[taro] (lam) -- (blen);
+\node [black, draw=black, line width=2pt,inner sep=26pt, shape=rectangle, rounded corners, fit = (lam) (plate2)] (ibl) {};
+\node [anchor=north east,inner sep=7pt] at (ibl.north east) {\huge IBL};
+\draw [->,line width=4pt,color=black] (ibl) -- (ctmc);
+%\node [smod, inner sep=8mm] (tree) at ($(ctmc)-(10,9)$) {\huge Tree};
+%\node [smod, inner sep=8mm] (sr) at ($(ctmc)+(17,0)$) {\huge Site rates};
+% edges
+%\draw [->,line width=4pt,color=black] (tree) -- (ctmc);
+%\draw [->,line width=4pt,color=black] (sr) -- (ctmc);
+\node [detnode] (qn) at ($(ctmc)-(-6,9)$) {\LARGE $Q$};
+\node [snode] (en) at ($(qn)-(1,1.5)$) {\LARGE $\epsilon$};
+\node [snode] (bn) at ($(qn)-(-1,1.5)$) {\LARGE $\pi$};
+\draw [dtaro] (en) -- (qn) ;
+\draw [dtaro] (bn) -- (qn) ;
+\node [constnode] (pen) at ($(en)-(0,1.5)$) {\LARGE $e$};
+\node [constnode] (pbn) at ($(bn)-(0,1.5)$) {\LARGE $b$};
+\draw [taro] (pen) -- (en) ;
+\draw [taro] (pbn) -- (bn) ;
+\node [black, draw=black, line width=2pt,inner sep=28pt, shape=rectangle, rounded corners, minimum size=30mm, minimum width=20mm, fit = (qn) (pbn) (pen)] (gtr) {};
+\node [anchor=south east,inner sep=7pt] at (gtr.south east) {\huge GTR};
+\draw [->,line width=4pt,color=black] (gtr) -- (ctmc);
+%\draw [taro] (lin) edge[bend left](in) ;
+%\draw [taro] (ltn) edge[bend left](tn) ;
+% Site rates
+\node [detnode] (sri) at ($(in)+(2,1)$) {\LARGE $r_j$}; 
+\node [detnode] (srt) at ($(tn)+(2,1) $) {\LARGE $r_j$}; 
+\node [detnode] (mi) at ($(in)+(0.25,2)$) {\LARGE $m_{ij}$}; 
+\node [detnode] (mt) at ($(tn)+(0.25,2)$) {\LARGE $m_{ij}$}; 
+\draw [dtaro] (sri) -- (mi) ;
+\draw [dtaro] (srt) -- (mt) ;
+\draw [dtaro] (lin) -- (mi) ;
+\draw [dtaro] (ltn) -- (mt) ;
+\draw [taro] (mi) -- (in) ;
+\draw [taro] (mt) -- (tn) ;
+\node [snode] (srm) at ($(srt)+(6,-3)$) {\LARGE $r_j$};
+\node [constnode] (srhp1) at ($(srm)-(0.6,2.5)$) {\LARGE $\kappa$};
+\node [constnode] (srhp2) at ($(srm)-(-0.6,2.5)$) {\LARGE $\beta$};
+\draw[taro] (srhp1) -- (srm);
+\draw[taro] (srhp2) -- (srm);
+\node[rectangle,dashed, inner sep=8mm, draw=black!100,line width=3pt, fit = (srm)] (plate3) {};
+\node [anchor=south east,inner sep=7pt] at (plate3.south east) {\scriptsize $j \in N$};
+\node [black, draw=black, line width=2pt,inner sep=26pt, shape=rectangle, rounded corners, fit = (srhp1) (srhp2) (plate3)] (ASRV) {};
+\node [anchor=south east,inner sep=7pt] at (ASRV.south east) {\huge ASRV};
+\draw [->,line width=4pt,color=black] (ASRV) -- (ctmc);
+%% Tree
+\node [snode] (psi) at ($(ctmc)-(8,9)$) {\LARGE $\Psi$};
+\node [constnode] (ntax) at ($(psi)-(0,2)$) {\LARGE $K$};
+\draw[taro] (ntax) -- (psi);
+\node [black, draw=black, line width=2pt,inner sep=28pt, shape=rectangle, rounded corners, fit = (psi) (ntax)] (treem) {};
+\node [anchor=south,inner sep=7pt] at (treem.south) {\huge Uniform};
+\draw [->,line width=4pt,color=black] (treem) -- (ctmc);
+%% Some labels
+\node [below=3mm of gtr] (rmlabel) {\huge Rate matrix};
+\node [below=3mm of ASRV] (srlabel) {\huge Site rates};
+\node [below=3mm of ibl] (bllabel) {\huge Branch lengths};
+\node [below=3mm of treem] (tmlabel) {\huge Tree};
+% branch lengths
+\path ($(ltn)+(0.25,1)$) edge[->, line width=2pt, dashed,color=black] (ltn) ;
+\path ($(lin)+(0.25,1)$) edge[->, line width=2pt, dashed,color=black] (lin) ;
+% topology
+\path ($(topo)+(0,-1)$) edge[->, line width=2pt, dashed,color=black] (topo) ;
+% rate matrix
+\path ($(alq)+(0,-1)$) edge[->, line width=2pt, dashed,color=black] (alq) ;
+% site rates
+\path ($(sri)+(0.25,-1)$) edge[->, line width=2pt, dashed,color=black] (sri) ;
+\path ($(srt)+(0.25,-1)$) edge[->, line width=2pt, dashed,color=black] (srt) ;
+\end{tikzpicture}
+```
+
+## tikz image
+[[img/tikz_eg.png]]
