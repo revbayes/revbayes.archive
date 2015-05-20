@@ -508,6 +508,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
     usingAmbiguousCharacters = ambiguousCharacters;
 
     std::vector<bool> unique(numSites, true);
+    std::vector<size_t> indexOfSitePattern;
+    
     // compress the character matrix if we're asked to
     if ( compressed ) 
     {
@@ -553,6 +555,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
 				
                 // increase the pattern counter
                 numPatterns++;
+				
+                // add the index of the site to our pattern-index vector
+                indexOfSitePattern.push_back( site );
                 
                 // flag that this site is unique (or the first occurence of this pattern)
                 unique[site] = true;
@@ -587,28 +592,24 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
             size_t patternIndex = 0;
             for (size_t site = pattern_block_start; site < pattern_block_end; ++site)
             {
-                // only add this site if it is unique
-                if ( unique[site] ) 
+                charType &c = static_cast<charType &>( taxon.getCharacter(indexOfSitePattern[site]) );
+                gapMatrix[nodeIndex][patternIndex] = c.isGapState();
+
+                if ( ambiguousCharacters )
                 {
-                    charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[site]) );
-                    gapMatrix[nodeIndex][patternIndex] = c.isGapState();
-
-                    if ( ambiguousCharacters ) 
-                    {
-                        // we use the actual state
-                        charMatrix[nodeIndex][patternIndex] = c.getState();
-                    }
-                    else
-                    {
-                        // we use the index of the state
-                        size_t index = c.getStateIndex();
-                        
-                        charMatrix[nodeIndex][patternIndex] = index;
-                    }
-
-                    // increase the pattern index
-                    patternIndex++;
+                    // we use the actual state
+                    charMatrix[nodeIndex][patternIndex] = c.getState();
                 }
+                else
+                {
+                    // we use the index of the state
+                    size_t index = c.getStateIndex();
+                        
+                    charMatrix[nodeIndex][patternIndex] = index;
+                }
+
+                // increase the pattern index
+                patternIndex++;
             }
         }
     }
