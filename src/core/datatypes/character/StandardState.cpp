@@ -113,13 +113,7 @@ void StandardState::operator-=( int i )
 
 void StandardState::addState(char symbol) {
     
-//    size_t pos = computeState( symbol );
-//    setState(pos, true);
     unsigned long n = computeState( symbol );
-
-//    unsigned long s = state;
-//    s |= n;
-    
     state |= n;
     
 }
