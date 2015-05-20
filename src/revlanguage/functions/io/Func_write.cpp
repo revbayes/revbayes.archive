@@ -65,11 +65,11 @@ RevPtr<RevVariable> Func_write::execute( void )
         }
         
         // print the arguments
-        args[0].getVariable()->getRevObject().printValue(outStream);
+        args[0].getVariable()->getRevObject().printValue(outStream, false);
         for (size_t i = 4; i < args.size(); i++) 
         {
             outStream << separator;
-            args[i].getVariable()->getRevObject().printValue( outStream );
+            args[i].getVariable()->getRevObject().printValue( outStream , false );
         }
         
         outStream.close();
@@ -80,11 +80,11 @@ RevPtr<RevVariable> Func_write::execute( void )
         std::ostream& o = std::cout;
         
         // print the arguments
-        args[0].getVariable()->getRevObject().printValue( o );
+        args[0].getVariable()->getRevObject().printValue( o, true );
         for (size_t i = 4; i < args.size(); i++) 
         {
             o << separator;
-            args[i].getVariable()->getRevObject().printValue( o );
+            args[i].getVariable()->getRevObject().printValue( o, true );
         }
         o << std::endl;
     }

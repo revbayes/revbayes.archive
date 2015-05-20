@@ -94,20 +94,27 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
         {
             theta = popSizes[currentInterval];
             double age = ages[i];
-            double max = (prevCoalescentTime < intervals[currentInterval]) ? intervals[currentInterval] : prevCoalescentTime;
+            double max = age;
+            if ( currentInterval < intervals.size() )
+            {
+                max = (age > intervals[currentInterval]) ? intervals[currentInterval] : age;
+            }
+//            double min = (prevCoalescentTime > intervals[currentInterval]) ? intervals[currentInterval] : prevCoalescentTime;
             
-            deltaAge = age - max;
+            deltaAge = max - prevCoalescentTime;
+//            deltaAge = age - min;
             valid = currentInterval >= intervals.size() || age < intervals[currentInterval];
             if ( !valid )
             {
                 ++currentInterval;
+                prevCoalescentTime = max;
                 
                 lnProbTimes -= nPairs * deltaAge / theta ;
             }
             
         } while ( !valid );
         
-        lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta ;
+        lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta;
     }
     
     return lnProbTimes;
@@ -136,7 +143,7 @@ std::vector<double> PiecewiseConstantCoalescent::simulateCoalescentTime( size_t 
     const RbVector<double> &intervals = intervalStarts->getValue();
     size_t currentInterval = 0;
     // draw a time for each speciation event condition on the time of the process
-    for (size_t i = 0; i < numTaxa; ++i)
+    for (size_t i = 0; i < n; ++i)
     {
         double prevCoalescentTime = 0.0;
         if ( i > 0 )

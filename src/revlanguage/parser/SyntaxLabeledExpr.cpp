@@ -82,18 +82,6 @@ bool SyntaxLabeledExpr::isFunctionSafe( const Environment& env, std::set<std::st
 }
 
 
-/** Print info about the syntax element */
-void SyntaxLabeledExpr::printValue( std::ostream& o ) const
-{
-    o << "[" << this << "] SyntaxLabeledExpr:" << std::endl;
-    o << "label      = " << label << std::endl;
-    o << "expression = [" << expression << "]";
-    expression->printValue(o);
-    o << std::endl;
-    o << std::endl;
-}
-
-
 /**
  * Does this syntax element retrieve an external variable? Simply
  * delegate to the expression. The inLHS flag should always be

@@ -29,11 +29,13 @@ namespace RevLanguage {
         RevAbstractType*                    clone(void) const;                                                      //!< Clone object
         const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get the type spec for this instance
         bool                                isAbstract(void) const;                                                 //!< Return true because we are abstract
-        void                                printValue(std::ostream& o) const;                                      //!< Print value for user
         
         // RevAbstractType function
         RevObject*                          makeExampleObject(void) const;                                          //!< Make new example object instance
 
+    protected:
+        void                                printValue(std::ostream& o) const;                                      //!< Print value for user
+        
     private:
         const TypeSpec&                     myTypeSpec;                                                             //!< Abstract type specification
         RevObject*                          exampleObject;                                                          //!< Example of non-abstract derived class

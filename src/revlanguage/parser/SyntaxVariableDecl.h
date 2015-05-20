@@ -52,7 +52,6 @@ namespace RevLanguage {
         
         // Basic utility functions
         SyntaxVariableDecl*         clone() const;                                              //!< Clone object
-        void                        printValue(std::ostream& o) const;                          //!< Print info about object
         
         // Regular functions
         RevPtr<RevVariable>         evaluateContent(Environment& env, bool dynamic=false);      //!< Get semantic value

@@ -184,11 +184,18 @@ void RlString::parseValue(void)
 
 
 /** Print value */
-void RlString::printValue(std::ostream& o) const
+void RlString::printValue(std::ostream& o, bool toScreen) const
 {
 
-	o << "\"";
-    dagNode->printValue( o );
-    o << "\"";
+    if ( toScreen == true )
+    {
+        o << "\"";
+        dagNode->printValue( o );
+        o << "\"";
+    }
+    else
+    {
+        dagNode->printValue( o );
+    }
 }
 

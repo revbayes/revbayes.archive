@@ -145,16 +145,3 @@ bool SyntaxDecrement::isFunctionSafe( const Environment& env, std::set<std::stri
     return true;
 }
 
-
-/**
- * Print info about the syntax element 
- */
-void SyntaxDecrement::printValue(std::ostream& o) const 
-{
-    o << "SyntaxDecrement:" << std::endl;
-    o << "variable      = ";
-    variable->printValue(o);
-    o << std::endl;
-    o << "expression    = '--'" << std::endl;
-}
-

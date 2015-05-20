@@ -29,6 +29,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* includeTaxaArgRules          = new ArgumentRules();
     ArgumentRules* includeTaxaArgRules2         = new ArgumentRules();
     ArgumentRules* isSequenceMissingArgRules    = new ArgumentRules();
+    ArgumentRules* percentageMissingArgRules    = new ArgumentRules();
     ArgumentRules* showdataArgRules             = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules           = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules2          = new ArgumentRules();
@@ -39,18 +40,21 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     includeTaxaArgRules->push_back(         new ArgumentRule(""           , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );
     includeTaxaArgRules2->push_back(        new ArgumentRule(""           , ModelVector<RlString>::getClassTypeSpec()   , ArgumentRule::BY_VALUE) );
     isSequenceMissingArgRules->push_back(   new ArgumentRule(""           , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );
+    percentageMissingArgRules->push_back(   new ArgumentRule(""           , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );
     removeTaxaArgRules->push_back(          new ArgumentRule(""           , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );
     removeTaxaArgRules2->push_back(         new ArgumentRule(""           , ModelVector<RlString>::getClassTypeSpec()   , ArgumentRule::BY_VALUE) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("current"    , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );
     
-    methods.addFunction("names",                new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("ntaxa",                new MemberProcedure(Natural::getClassTypeSpec(),   ntaxaArgRules                ) );
+
     methods.addFunction("excludeTaxa",          new MemberProcedure(RlUtils::Void,                 excludeTaxaArgRules          ) );
     methods.addFunction("excludeTaxa",          new MemberProcedure(RlUtils::Void,                 excludeTaxaArgRules2         ) );
     methods.addFunction("includeTaxa",          new MemberProcedure(RlUtils::Void,                 includeTaxaArgRules          ) );
     methods.addFunction("includeTaxa",          new MemberProcedure(RlUtils::Void,                 includeTaxaArgRules2         ) );
     methods.addFunction("isSequenceMissing",    new MemberProcedure(RlBoolean::getClassTypeSpec(), isSequenceMissingArgRules    ) );
+    methods.addFunction("names",                new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
+    methods.addFunction("ntaxa",                new MemberProcedure(Natural::getClassTypeSpec(),   ntaxaArgRules                ) );
+    methods.addFunction("percentageMissing",    new MemberProcedure(Probability::getClassTypeSpec(),            percentageMissingArgRules   ) );
     methods.addFunction("show",                 new MemberProcedure(RlUtils::Void,                 showdataArgRules             ) );
     methods.addFunction("removeTaxa",           new MemberProcedure(RlUtils::Void,                 removeTaxaArgRules           ) );
     methods.addFunction("removeTaxa",           new MemberProcedure(RlUtils::Void,                 removeTaxaArgRules2          ) );

@@ -79,7 +79,7 @@ void Argument::printValue(std::ostream &o) const
 {
     
     o << label << " = ";
-    var->printValue(o);
+    var->printValue(o, true);
     
 }
 
