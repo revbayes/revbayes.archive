@@ -1,9 +1,8 @@
- 
-
 #include "SimpleMove.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <set>
 
@@ -58,8 +57,8 @@ double SimpleMove::performMove( double &probRatio )
     
     // calculate the probability ratio for the node we just changed
     probRatio = theNode->getLnProbabilityRatio();
-        
-    if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) 
+    
+    if ( RbMath::isAComputableNumber(probRatio) )
     {
         
         std::set<DagNode* > affectedNodes;
