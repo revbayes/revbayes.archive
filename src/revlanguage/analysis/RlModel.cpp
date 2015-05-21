@@ -224,7 +224,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 				rl << nname.str() ;
            
             // only print values of constant nodes (only simple numeric values)
-            if((*it)->getDagNodeType() == "constant"){
+            if((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
                 std::stringstream trl;
                 if((*it)->isSimpleNumeric())  
                     (*it)->printValueElements(trl," ");
@@ -249,7 +249,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                     }
                 }
             }
-            else if((*it)->getDagNodeType() == "deterministic"){
+            else if((*it)->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC){
                 o << "   n_" << stname;
                 o << " [shape=";
                 std::stringstream strss;
@@ -281,7 +281,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                 }
                 o << "oval, style=\"dashed,filled\", fillcolor=white, label=\"" << rl.str() << "\"]\n";
             }
-            else if((*it)->getDagNodeType() == "stochastic"){
+            else if((*it)->getDagNodeType() == RevBayesCore::DagNode::STOCHASTIC){
                 o << "   n_" << stname;
                 o << " [shape=";
                 o << "oval, ";
@@ -330,7 +330,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                             
                             o << "   n_" << stname << " -> n_";
                             o << stcn;
-                            if(ch->getDagNodeType() == "deterministic")
+                            if(ch->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC)
                                 o << "[style=dashed]";
                             o << "\n";
                         }
@@ -346,7 +346,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 
                             o << "   n_" << stname << " -> n_";
                             o << stcn;
-                            if((*ci)->getDagNodeType() == "deterministic")
+                            if((*ci)->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC)
                                 o << "[style=dashed]";
                             o << "\n";
                         }
