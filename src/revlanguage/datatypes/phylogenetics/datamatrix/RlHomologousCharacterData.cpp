@@ -19,7 +19,7 @@ HomologousCharacterData::HomologousCharacterData( RevBayesCore::HomologousCharac
 MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
 {
     
-    MethodTable methods = MethodTable();
+    MethodTable methods = AbstractCharacterData::getCharacterDataMethods();
     
     ArgumentRules* ncharArgRules                = new ArgumentRules();
     ArgumentRules* excludeallArgRules           = new ArgumentRules();
