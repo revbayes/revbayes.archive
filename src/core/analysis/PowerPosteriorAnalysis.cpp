@@ -108,7 +108,6 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
         std::stringstream ss;
         ss << "\n";
         ss << "Running burn-in phase of Power Posterior sampler for " << generations << " iterations.\n";
-//    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
         ss << sampler->getStrategyDescription();
         std::cout << ss.str() << std::endl;
     
@@ -175,15 +174,17 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
         std::cout << "Running power posterior analysis ..." << std::endl;
     }
     
+    // compute which block of the data this process needs to compute
+    size_t stone_block_start = size_t(floor( (double(pid)   / numProcesses ) * powers.size()) );
+    size_t stone_block_end   = size_t(floor( (double(pid+1) / numProcesses ) * powers.size()) );
+//    size_t stone_block_size  = stone_block_end - stone_block_start;
+    
     /* Run the chain */
-    for (size_t i = 0; i < powers.size(); ++i)
+    for (size_t i = stone_block_start; i < stone_block_end; ++i)
     {
     
-        if ( i % numProcesses == pid)
-        {
-            // run the i-th stone
-            runStone(i, gen);
-        }
+        // run the i-th stone
+        runStone(i, gen);
         
     }
     

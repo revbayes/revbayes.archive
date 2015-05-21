@@ -47,6 +47,7 @@ namespace RevBayesCore {
         std::vector<DagNode*>&                                      getDagNodes(void);                                              //!< Non-constant getter function of the set of DAG nodes contained in the model graph.
         const std::vector<DagNode*>&                                getDagNodes(void) const;                                        //!< Constant getter function of the set of DAG nodes contained in the model graph.
         const std::map<const DagNode*, DagNode*>&                   getNodesMap(void) const;                                        //!< Constant getter function of the map between the pointer of the original DAG nodes to the pointers of the copied DAG nodes.  
+        void                                                        setNumberOfProcesses(size_t i, size_t offset=0);                //!< Set the number of processes for this model.
 
     private:
         
