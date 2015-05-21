@@ -749,12 +749,14 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
                 stdState.setMissingState(true);
             }
             else
+            {
                 for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                     stdState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
                     for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                         stdState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
+            }
             dataVec.addCharacter( stdState );
         }
         

@@ -790,6 +790,20 @@ void Mcmc::setLikelihoodHeat(double h)
 
 
 /**
+ * Set the number of processes available to this specific MCMC simulation.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+void Mcmc::setNumberOfProcesses(size_t n, size_t offset)
+{
+    MonteCarloSampler::setNumberOfProcesses(n, offset);
+    
+    // delegate the call to the model
+    model.setNumberOfProcesses(n,offset);
+}
+
+
+/**
  * Set the heat of the posterior of the current chain.
  * The heat of the posterior is used in the MC^3 algorithm.
  * The heat is passed to the moves for the accept-reject mechanism.

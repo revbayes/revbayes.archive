@@ -58,7 +58,8 @@ namespace RevBayesCore {
         void                            setToFirstState(void);                                      //!< Set this character state to the first (lowest) possible state
     
     private:
-        unsigned long                   computeState(char symbol) const;                            //!< Compute the internal state value for this character.
+        unsigned long                   computeStateIndex(char symbol) const;                       //!< Compute the internal state value for this character.
+        unsigned long                   computeState(char symbol) const;
 
         std::string                     labels;
         unsigned long                   state;
