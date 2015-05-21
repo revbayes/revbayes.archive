@@ -85,3 +85,12 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<
 }
 
 
+
+
+/** Should the rhs be evaluated dynamically? Yes, because we may want a move or monitor, etc. */
+bool SyntaxWorkspaceVariableAssignment::isDynamic( void )
+{
+    return true;
+}
+
+

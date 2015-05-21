@@ -312,7 +312,7 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
 //        {
 //            return theVar->getRevObject().isConvertibleTo( *it, true );
 //        }
-        else
+        else if ( nodeType != STOCHASTIC )
         {
             
             const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();
