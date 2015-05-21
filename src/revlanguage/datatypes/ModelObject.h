@@ -303,8 +303,7 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
     }
-//    else if ( isConstant() == false )
-    else if ( dagNode->getDagNodeType() != "constant" )
+    else if ( dagNode->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
     {
         RevBayesCore::ConstantNode<rbType>* newNode = new ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
         dagNode->replace(newNode);

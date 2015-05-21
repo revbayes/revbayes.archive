@@ -95,7 +95,7 @@ double OptionRule::isArgumentValid( Argument &arg, bool once) const
         return -1;
     }
     
-    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == "constant") )
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT) )
     {
         once = true;
     }
