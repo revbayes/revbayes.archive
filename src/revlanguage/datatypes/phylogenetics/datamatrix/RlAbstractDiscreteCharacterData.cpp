@@ -160,6 +160,12 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const 
 AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const AbstractDiscreteCharacterData &d) const
 {
     AbstractDiscreteCharacterData* cloneObj = clone();
+
+    // we need to make this a constant DAG node so that we can actually modify the value
+    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+    cloneObj->makeConstantValue();
+    
+    // now concatenate
     cloneObj->getDagNode()->getValue().concatenate( d.getValue() );
     
     // return the copy
