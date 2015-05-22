@@ -32,33 +32,17 @@ mi = 0
 ##############
 
 # Specify a prior on the diversification and turnover rate
-#diversification ~ dnUniform(0,1000)
-#relativeExtinction ~ dnBeta(1,1)
+diversification ~ dnUniform(0,1000)
+relativeExtinction ~ dnBeta(1,1)
 
-diversification ~ dnUniform(0,100)
-relativeExtinction ~ dnUniform(0,10)
+#diversification ~ dnUniform(0,100)
+#relativeExtinction ~ dnUniform(0,10)
 
 # now transform the diversification and turnover rates into speciation and extinction rates
-#speciation := abs(diversification / (1.0 - relativeExtinction) )
-#extinction := speciation * relativeExtinction
+speciation := abs(diversification / (1.0 - relativeExtinction) )
+extinction := speciation * relativeExtinction
 #speciation := diversification + relativeExtinction
 #extinction := relativeExtinction
-#speciation := diversification / (1.0 + relativeExtinction)
-#extinction := speciation * relativeExtinction
-#speciation := diversification * relativeExtinction
-#extinction := relativeExtinction
-#speciation := diversification
-#extinction := diversification * relativeExtinction
-#speciation := diversification * ( 1 + relativeExtinction )
-#extinction := relativeExtinction
-#speciation := diversification / relativeExtinction
-#extinction := speciation * relativeExtinction
-#speciation := (diversification + relativeExtinction) / diversification
-#extinction := relativeExtinction
-#speciation := diversification * ( 1 + relativeExtinction ) * relativeExtinction
-#extinction := relativeExtinction
-speciation := diversification + relativeExtinction 
-extinction := relativeExtinction / diversification
 
 
 # specify a prior on the root age (our informed guess is about 75-80 mya)

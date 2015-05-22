@@ -1370,7 +1370,7 @@
 	<!-- The strict clock (Uniform rates across branches)                        -->
 	<strictClockBranchRates id="COIII.branchRates">
 		<rate>
-			<parameter id="COIII.clock.rate" value="1.0"/>
+			<parameter id="COIII.clock.rate" value="1.0" lower="0.0"/>
 		</rate>
 	</strictClockBranchRates>
 
@@ -1840,6 +1840,46 @@
 		<sp idref="Tarsius"/>
 		<sp idref="Varecia"/>
 	</taxa>
+	<taxa id="all">
+		<taxon idref="Alouatta"/>
+		<taxon idref="Aotus"/>
+		<taxon idref="Callicebus"/>
+		<taxon idref="Cebus"/>
+		<taxon idref="Cheirogaleus"/>
+		<taxon idref="Chlorocebus"/>
+		<taxon idref="Colobus"/>
+		<taxon idref="Daubentonia"/>
+		<taxon idref="Galago"/>
+		<taxon idref="Hylobates"/>
+		<taxon idref="Lemur"/>
+		<taxon idref="Lepilemur"/>
+		<taxon idref="Loris"/>
+		<taxon idref="Macaca"/>
+		<taxon idref="Microcebus"/>
+		<taxon idref="Nycticebus"/>
+		<taxon idref="Otolemur"/>
+		<taxon idref="Pan"/>
+		<taxon idref="Perodicticus"/>
+		<taxon idref="Propithecus"/>
+		<taxon idref="Saimiri"/>
+		<taxon idref="Tarsius"/>
+		<taxon idref="Varecia"/>
+	</taxa>
+
+	<!-- species starting tree for calibration                                   -->
+	<coalescentTree id="spStartingTree">
+		<constrainedTaxa>
+			<taxa idref="allSpecies"/>
+			<tmrca monophyletic="true">
+				<taxa idref="all"/>
+			</tmrca>
+		</constrainedTaxa>
+		<constantSize id="spInitDemo" units="substitutions">
+			<populationSize>
+				<parameter id="sp.popSize" value="0.1"/>
+			</populationSize>
+		</constantSize>
+	</coalescentTree>
 
 	<!-- Species Tree: Provides Per branch demographic function                  -->
 	<speciesTree id="sptree" constantPopulation="true">
@@ -1847,7 +1887,22 @@
 		<sppSplitPopulations value="0.1">
 			<parameter id="speciesTree.splitPopSize"/>
 		</sppSplitPopulations>
+		<coalescentTree idref="spStartingTree"/>
 	</speciesTree>
+
+	<!-- Species Sets                                                            -->
+	<tmrcaStatistic id="tmrca(all)">
+		<mrca>
+			<taxa idref="all"/>
+		</mrca>
+		<speciesTree idref="sptree"/>
+	</tmrcaStatistic>
+	<monophylyStatistic id="monophyly(all)">
+		<mrca>
+			<taxa idref="all"/>
+		</mrca>
+		<speciesTree idref="sptree"/>
+	</monophylyStatistic>
 
 	<!-- Species tree prior: Birth Death Model                                   -->
 	<birthDeathModel id="birthDeath" units="substitutions">
@@ -1976,6 +2031,9 @@
 			<parameter idref="zic3.frequencies"/>
 		</deltaExchange>
 		<scaleOperator scaleFactor="0.75" weight="3">
+			<parameter idref="COIII.clock.rate"/>
+		</scaleOperator>
+		<scaleOperator scaleFactor="0.75" weight="3">
 			<parameter idref="FGA.clock.rate"/>
 		</scaleOperator>
 		<scaleOperator scaleFactor="0.75" weight="3">
@@ -2002,35 +2060,6 @@
 		<scaleOperator scaleFactor="0.75" weight="3">
 			<parameter idref="zic3.clock.rate"/>
 		</scaleOperator>
-		<upDownOperator scaleFactor="0.75" weight="30">
-			<up>
-				<parameter idref="FGA.clock.rate"/>
-				<parameter idref="GHRmeredith.clock.rate"/>
-				<parameter idref="lrpprc_169.clock.rate"/>
-				<parameter idref="npas3.clock.rate"/>
-				<parameter idref="sim1.clock.rate"/>
-				<parameter idref="tex2.clock.rate"/>
-				<parameter idref="ttr.clock.rate"/>
-				<parameter idref="zfy.clock.rate"/>
-				<parameter idref="zic3.clock.rate"/>
-				<parameter idref="species.birthDeath.meanGrowthRate"/>
-			</up>
-			<down>
-				<speciesTree idref="sptree"/>
-				<parameter idref="species.popMean"/>
-				<parameter idref="speciesTree.splitPopSize"/>
-				<parameter idref="COIII.treeModel.allInternalNodeHeights"/>
-				<parameter idref="FGA.treeModel.allInternalNodeHeights"/>
-				<parameter idref="GHRmeredith.treeModel.allInternalNodeHeights"/>
-				<parameter idref="lrpprc_169.treeModel.allInternalNodeHeights"/>
-				<parameter idref="npas3.treeModel.allInternalNodeHeights"/>
-				<parameter idref="sim1.treeModel.allInternalNodeHeights"/>
-				<parameter idref="tex2.treeModel.allInternalNodeHeights"/>
-				<parameter idref="ttr.treeModel.allInternalNodeHeights"/>
-				<parameter idref="zfy.treeModel.allInternalNodeHeights"/>
-				<parameter idref="zic3.treeModel.allInternalNodeHeights"/>
-			</down>
-		</upDownOperator>
 		<subtreeSlide size="0.02" gaussian="true" weight="15">
 			<treeModel idref="COIII.treeModel"/>
 		</subtreeSlide>
@@ -2213,6 +2242,7 @@
 		</uniformOperator>
 		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
+				<parameter idref="COIII.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="COIII.treeModel.allInternalNodeHeights"/>
@@ -2315,6 +2345,12 @@
 				<speciesCoalescent idref="species.coalescent"/>
 				<mixedDistributionLikelihood idref="species.popSizesLikelihood"/>
 				<speciationLikelihood idref="speciation.likelihood"/>
+				<booleanLikelihood>
+					<monophylyStatistic idref="monophyly(all)"/>
+				</booleanLikelihood>
+				<normalPrior mean="75.0" stdev="2.5">
+					<statistic idref="tmrca(all)"/>
+				</normalPrior>
 				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
 					<parameter idref="COIII.kappa"/>
 				</logNormalPrior>
@@ -2375,33 +2411,36 @@
 				<uniformPrior lower="0.0" upper="1.0">
 					<parameter idref="zic3.frequencies"/>
 				</uniformPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				<oneOnXPrior>
+					<parameter idref="COIII.clock.rate"/>
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="FGA.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="GHRmeredith.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="lrpprc_169.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="npas3.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="sim1.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="tex2.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="ttr.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="zfy.clock.rate"/>
-				</logNormalPrior>
-				<logNormalPrior mean="0.0" stdev="1.0" offset="0.0" meanInRealSpace="false">
+				</oneOnXPrior>
+				<oneOnXPrior>
 					<parameter idref="zic3.clock.rate"/>
-				</logNormalPrior>
+				</oneOnXPrior>
 				<exponentialPrior mean="10.0" offset="0.0">
 					<parameter idref="species.popMean"/>
 				</exponentialPrior>
@@ -2504,7 +2543,7 @@
 		</log>
 
 		<!-- write log to file                                                       -->
-		<log id="fileLog" logEvery="1000" fileName="StarBEAST_fixed_clock.log" overwrite="false">
+		<log id="fileLog" logEvery="1000" fileName="StarBEAST_root_calibration.log" overwrite="false">
 			<posterior idref="posterior"/>
 			<prior idref="prior"/>
 			<likelihood idref="likelihood"/>
@@ -2526,6 +2565,7 @@
 			<parameter idref="ttr.treeModel.rootHeight"/>
 			<parameter idref="zfy.treeModel.rootHeight"/>
 			<parameter idref="zic3.treeModel.rootHeight"/>
+			<tmrcaStatistic idref="tmrca(all)"/>
 			<parameter idref="COIII.kappa"/>
 			<parameter idref="COIII.frequencies"/>
 			<parameter idref="FGA.kappa"/>
@@ -2569,74 +2609,74 @@
 		</log>
 
 		<!-- write tree log to file                                                  -->
-		<logTree id="species.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.species.trees" sortTranslationTable="true">
+		<logTree id="species.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.species.trees" sortTranslationTable="true">
 			<speciesTree idref="sptree"/>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="COIII.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.COIII.trees" sortTranslationTable="true">
+		<logTree id="COIII.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.COIII.trees" sortTranslationTable="true">
 			<treeModel idref="COIII.treeModel"/>
 			<trait name="rate" tag="COIII.rate">
 				<strictClockBranchRates idref="COIII.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="FGA.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.FGA.trees" sortTranslationTable="true">
+		<logTree id="FGA.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.FGA.trees" sortTranslationTable="true">
 			<treeModel idref="FGA.treeModel"/>
 			<trait name="rate" tag="FGA.rate">
 				<strictClockBranchRates idref="FGA.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="GHRmeredith.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.GHRmeredith.trees" sortTranslationTable="true">
+		<logTree id="GHRmeredith.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.GHRmeredith.trees" sortTranslationTable="true">
 			<treeModel idref="GHRmeredith.treeModel"/>
 			<trait name="rate" tag="GHRmeredith.rate">
 				<strictClockBranchRates idref="GHRmeredith.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="lrpprc_169.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.lrpprc_169.trees" sortTranslationTable="true">
+		<logTree id="lrpprc_169.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.lrpprc_169.trees" sortTranslationTable="true">
 			<treeModel idref="lrpprc_169.treeModel"/>
 			<trait name="rate" tag="lrpprc_169.rate">
 				<strictClockBranchRates idref="lrpprc_169.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="npas3.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.npas3.trees" sortTranslationTable="true">
+		<logTree id="npas3.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.npas3.trees" sortTranslationTable="true">
 			<treeModel idref="npas3.treeModel"/>
 			<trait name="rate" tag="npas3.rate">
 				<strictClockBranchRates idref="npas3.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="sim1.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.sim1.trees" sortTranslationTable="true">
+		<logTree id="sim1.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.sim1.trees" sortTranslationTable="true">
 			<treeModel idref="sim1.treeModel"/>
 			<trait name="rate" tag="sim1.rate">
 				<strictClockBranchRates idref="sim1.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="tex2.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.tex2.trees" sortTranslationTable="true">
+		<logTree id="tex2.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.tex2.trees" sortTranslationTable="true">
 			<treeModel idref="tex2.treeModel"/>
 			<trait name="rate" tag="tex2.rate">
 				<strictClockBranchRates idref="tex2.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="ttr.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.ttr.trees" sortTranslationTable="true">
+		<logTree id="ttr.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.ttr.trees" sortTranslationTable="true">
 			<treeModel idref="ttr.treeModel"/>
 			<trait name="rate" tag="ttr.rate">
 				<strictClockBranchRates idref="ttr.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="zfy.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.zfy.trees" sortTranslationTable="true">
+		<logTree id="zfy.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.zfy.trees" sortTranslationTable="true">
 			<treeModel idref="zfy.treeModel"/>
 			<trait name="rate" tag="zfy.rate">
 				<strictClockBranchRates idref="zfy.branchRates"/>
 			</trait>
 			<posterior idref="posterior"/>
 		</logTree>
-		<logTree id="zic3.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_fixed_clock.zic3.trees" sortTranslationTable="true">
+		<logTree id="zic3.treeFileLog" logEvery="1000" nexusFormat="true" fileName="StarBEAST_root_calibration.zic3.trees" sortTranslationTable="true">
 			<treeModel idref="zic3.treeModel"/>
 			<trait name="rate" tag="zic3.rate">
 				<strictClockBranchRates idref="zic3.branchRates"/>
