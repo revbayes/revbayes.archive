@@ -1,14 +1,5 @@
-//
-//  Move_VectorSlide.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 4/4/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__Move_VectorSlide__
-#define __revbayes_proj__Move_VectorSlide__
-
+#ifndef Move_VectorSlide_H
+#define Move_VectorSlide_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -24,7 +15,7 @@ namespace RevLanguage {
      *
      * This class is the RevLanguage wrapper of VectorSlide.
      *
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @author The RevBayes Development Core Team (Michael Landis)
      * @copyright GPL version 3
      * @since 2013-11-17, version 1.0
      */
@@ -35,7 +26,7 @@ namespace RevLanguage {
         Move_VectorSlide(void);                                                                                                                   //!< Default constructor
         
         // Basic utility functions
-        virtual Move_VectorSlide*                        clone(void) const;                                                                              //!< Clone the object
+        virtual Move_VectorSlide*                   clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
@@ -47,9 +38,9 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                              //!< The variable holding the real valued vector.
-        RevPtr<const RevVariable>                      delta;                                                                                         //!< The variable for the tuning parameter.
-        RevPtr<const RevVariable>                      tune;                                                                                           //!< The variable telling if to tune or not.
+        RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   delta;                                                                                         //!< The variable for the tuning parameter.
+        RevPtr<const RevVariable>                   tune;                                                                                           //!< The variable telling if to tune or not.
         
     };
     

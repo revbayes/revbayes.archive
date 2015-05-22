@@ -179,19 +179,6 @@ std::string SyntaxVariable::getFullName( Environment& env ) const
 }
 
 
-/** Print info about the syntax element */
-void SyntaxVariable::printValue(std::ostream& o) const
-{
-    o << "<" << this << "> SyntaxVariable:" << std::endl;
-    o << "identifier      = \"" << identifier << "\"" << std::endl;
-    
-    o << std::endl;
-    
-}
-
-
-
-
 /**
  * Is the syntax element safe for use in a function ( as
  * opposed to a procedure)? The variable element is safe

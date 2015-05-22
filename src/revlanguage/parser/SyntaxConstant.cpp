@@ -72,12 +72,3 @@ bool SyntaxConstant::isConstExpression( void ) const
     return true;
 }
 
-
-/** Print info about the syntax element */
-void SyntaxConstant::printValue( std::ostream& o ) const
-{
-    o << "SyntaxConstant: value = ";
-    value->printValue(o);
-    o << std::endl;
-}
-

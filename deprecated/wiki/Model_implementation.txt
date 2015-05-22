@@ -1,0 +1,205 @@
+## Implementing a New Model
+
+Some helpful things to get started: 
+
+### Drawing a graphical model
+
+Look at some other examples ([[Graphical Models]]). You should ask yourself the following questions: 
+
+  1. What are the datatypes of my variables? 
+  2. On which other variables does the variable depend? 
+  3. Is the variable a random variable (stochastic), a deterministic variable or a constant variable? 
+  4. What is the function or distribution for this variable? 
+
+### Writing a RevLanguage pseudo-code example
+
+Look at some other examples (***link***) 
+
+## Adding the TestXXX.cpp
+
+Your first step should be to create a new test file for your model. You can call the file something like _TestMyNewAwesomeModelThatCanCureCancer.cpp_. All test files are currently stored in the directory .../src/test/. 
+
+To add your test example for execution you need to add it into Test.cpp. 
+    
+       /* A GTR model test */
+       try {
+           TestGtrModel testGtr = TestGtrModel("data/primates.nex", "trees/primates.tree", 10000);
+           testGtr.run();
+       } catch (RbException &e) {
+           std::cout &lt;AbstractCharacterData*&gt; data = NclReader::getInstance().readMatrices(alignmentFilename);
+       std::cout &lt;TimeTree*&gt; trees = NclReader::getInstance().readTimeTrees( treeFilename );
+       std::cout &lt;double&gt; *a = new ConstantNode("a", new double(1.0) );
+    
+
+You need to pass an object that you allocated to the constructor. The DagNode will take ownership over the object and delete it once the variable is deleted. 
+
+#### Deterministic variables
+
+The constructor of a deterministic variables requires the name and a pointer to the function. Functions take in pointers of TypedDagNodes as arguments in the constructor. This is how the relationship between the variables is established. There might be some additional arguments in the constructor that change the behavior of the function but are not an actual part of the model graph. 
+    
+       DeterministicNode&lt;RateMatrix&gt; *q = new DeterministicNode&lt;RateMatrix&gt;( "Q", new GtrRateMatrixFunction(er, pi) );
+    
+
+#### Stochastic variables
+
+Stochastic variables are constructed with a name and a pointer to the distribution. The distribution will be associated from now on with the variable. The distribution draws a random value and thus initializes the variable. 
+    
+       StochasticNode&lt;double&gt; &gt; *pi = new StochasticNode&lt;double&gt; &gt;( "pi", new DirichletDistribution(bf) );
+    
+
+### Running an analysis
+
+  * Creating monitors 
+  * Creating moves 
+  * Creating the model object 
+  * Creating the mcmc object and running it 
+
+## Adding new functions
+
+Function are the classes that can be associated with a deterministic DAG node. Everything that you think could/should be a a deterministic function in a model graph needs to be derived from Function.h. All functions are stored in src/core/functions. 
+
+In the following you can find the methods that are provided from the base class(es), the method that you have to overwrite and the methods you can overwrite. 
+
+### Methods that are provided for your convenience
+
+_void addParameter(const DagNode *n)_  
+Simply adds a parameter to the set of parameters. This list is needed to that the model graph can as for all parameters of a function and then replace each one of them, one-by-one. 
+
+  
+_const std::set&lt;const DagNode*&gt;&amp; getParameters()_  
+Returns the set of parameters. See addParameter(). 
+
+_getValue()_ Does bla bla bla while bla-bla-blaing. 
+
+_setDeterministicNode(DeterministicNode&lt;valueType&gt; *n)_
+
+### Functions that you have to implement
+
+  * clone() 
+  * update() 
+  * ... 
+
+### Functions that you may want to implement
+
+  * touch() 
+  * restore() 
+  * keep() 
+
+## Adding new distributions
+
+Distributions are the RevBayes class that can be associated with a stochastic node. The value type of the stochastic node needs to match the value type of the distribution. Every stochastic DAG node holds its own independent instance of a distribution. 
+
+Commonly, you will derive your distribution from _TypedDistribution&lt;valueType&gt;_, which itself is derived from _Distribution_. There are other more specific base classes of distributions, e.g. _ContinuousDistribution_ for all continuous distributions. Only _ContinuousDistribution_ can be used when creating a _ContinuousStochasticNode_ which then can be used in a _SlidingMove_ etc. 
+
+The stochastic node does not store the value itself but the distribution has to do this. The class TypedDistribution&lt;valueType&gt; does this and provides convenience access to the values (getValue() and setValue()). 
+
+Parameters of the distribution should be of type _const TypedDagNode&lt;paramValueType&gt; *_. Every parameter needs to wrapped in a DAG node because the parameter might change and it is not guaranteed that the pointer to the actual parameter value remains constant. However, the pointer to the DAG node remains constant and the value can be obtain from the DAG node by calling _getValue()_. 
+
+Additional attributes of the distributions, e.g. the number of sites of the character evolution model, that are fixed, should be of the primitive data type and not wrapped in a DAG node. 
+
+### Inherited attributes that you can use
+
+_StochasticNode&lt;valueType&gt;* dagNode_  
+The pointer to the DAG node owning this distribution. This is only for convenience and was added so that the distribution has access to the DAG structure and can get the information who are the children of this node. It can also call touch/keep/restore of the DAG node to delegate the call (see keep/restore/touch). The distribution does not own the DAG node. 
+
+  
+_std::set&lt;const DagNode*&gt; parameters_  
+The set of parameters of the distribution. The distribution knows its parameters so this is just for convenience when _getParameters_ is called. 
+
+  
+_valueType* value_  
+The current value of the distribution. The distribution owns it. 
+
+  
+
+
+### Methods provided for your convenience
+
+_void addParameter(const DagNode *n)_  
+Adds a parameter to the set of parameters for this distribution. The set of parameters is needed for the cloning the entire DAG. 
+
+_const std::set&lt;const DagNode*&gt;&amp; getParameters()_  
+Get the set of 
+
+  
+_(const) valueType&amp; getValue()_  
+Just returns the current value of the distribution. 
+
+  
+_void setStochasticNode(StochasticNode&lt;valueType&gt; *n)_  
+Sets the stochastic node to which this distribution is attached to. See above the member definition. 
+
+  
+
+
+### Methods you have to implement
+
+_Distribution* clone()_  
+This function commonly just calls the copy constructor. You are responsible to write a proper deep copy here. Commonly a deep copy will use the same pointers to the parameters (_const TypedDageNode&lt;paramType&gt;*_) because we want a copy of the exact same distribution. Imagine the user just duplicated the variable. You might change the return type to a covariant return type. 
+
+  
+_double computeLnProbability()_  
+Compute and return the log-probability (density) for the current value conditioned on the current parameters. You are allowed to use any stored partial probabilities, but you need to make sure which parts need to be recalculated. This function will only be called if the DAG node owning the distribution has been touched, and thus requires a new probability. 
+
+  
+_void redraw()_  
+Redraw the current value from the distribution conditioned on the current parameters. This function will be called from the MCMC if the initial posterior probability is too low, or from the simulation function. 
+
+  
+_void swapParameter(const DagNode *oldP, const DagNode *newP)_  
+For one reason or another, the parameter has changed and thus we need to change our pointers. This might be because the user has replaced parameter _x_ with a new DAG node or because the entire DAG is cloned. Be careful that the user might have used the same DAG nodes for two or more parameters, e.g. _x ~ gamma(alpha,alpha)_, and thus multiple pointers need to be changed at once. 
+
+  
+
+
+### Methods you may want to overwrite
+
+_void getAffected(std::set&lt;DagNode *&gt;&amp; affected, DagNode* affecter)_  
+You may want to overwrite this function if downstream DAG nodes are effected if the parameter _affecter_ was touched. For instance, the mixture distribution overwrites this function because if the parameter values have changed, then we need to notify the DAG nodes that take in the mixture. A simple implementation just calls getAffected of the stochastic node (we have the pointer to it for exactly this situation). You should always overwrite _getAffected_ together with _keepSpecialization_, _restoreSpeciation_ and _touchSpecialization_. 
+
+  
+_void keepSpecialization(DagNode* affecter)_  
+See _getAffected_. Any _keep_ function is called when the new proposed value is accepted and thus the probability can be stored. If you have some additional attributes, e.g. partial likelihoods, then you might want to store them when _keep_ is called. 
+
+  
+_void restoreSpecialization(DagNode *restorer)_  
+See _getAffected_. A restore is called if the DAG node has been touched but the new value was rejected. Thus, the value (either the value of the distribution or of one of the parameters) is restored and the probability needs to be restored too. 
+
+  
+_void setValue(valueType *v)_ The default implementation just releases the old value and keeps the new one. However, if you want to do some additional stuff, e.g. validity checks or data transformations, then you might want to overwrite this method. Note, the distribution owns the value. 
+
+  
+_void touchSpecialization(DagNode *toucher)_  
+See _getAffected_. Either the value of this distribution or of one of the parameters has changed. _Touched_ means that the probabilities are dirty, so you might want to flag some parts of your specific calculation as dirty depending on who was the toucher, i.e. which parameters has changed. 
+
+## Adding new moves
+
+## Adding new data types
+
+## Instantiating the model
+
+  * DAG explored and cloned using cloneDAG(), which calls each DagNode::clone() for each object. If parts of your DAG are not properly cloned, verify DagNode::clone() is implemented correctly for the affected DagNode. 
+  * To observe a value for a random variable (e.g. the alignment at the tips of a tree), call StochasticNode&lt;valueType&gt;::clamp(value). Observed (i.e. clamped) values contribute to the model likelihood, whereas unclamped values are considered to be part of the prior probability. 
+
+  
+
+
+## FAQ
+
+### 1\. I added the test into Test.cpp but the test is not executed
+
+Answer: You probably did not enable testing in RbOptions.h. 
+
+  
+
+
+### 2\. I added a move/monitor to a variable but it is not monitored/changed
+
+Answer: Make sure that each variable has a unique name identifier and that the graph is connected properly. 
+
+  
+
+
+### 3\. Should I use std::vector&lt;someType&gt; &gt; or use TypedDagNode&lt;someType&gt; &gt;?
+
+Answer: That depends ... 

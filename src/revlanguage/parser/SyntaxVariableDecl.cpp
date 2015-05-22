@@ -162,17 +162,3 @@ bool SyntaxVariableDecl::isFunctionSafe( const Environment& env, std::set<std::s
 }
 
 
-/** Print info about the syntax element */
-void SyntaxVariableDecl::printValue(std::ostream& o) const
-{
-    o << "SyntaxVariableDecl: " << elementTypeName;
-    for ( std::list<SyntaxElement*>::const_iterator it = lengthExpr->begin(); it != lengthExpr->end(); ++it )
-    {
-        if ( (*it) == NULL )
-            o << "[]";
-        else
-            o << "[<expr>]";
-    }
-}
-
-

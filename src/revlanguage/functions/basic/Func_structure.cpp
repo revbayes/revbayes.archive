@@ -59,7 +59,6 @@ RevPtr<RevVariable> Func_structure::execute( void )
         o << "_refVar       = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
     }
 
-    args[0].getVariable()->getRevObject().printStructure( o, verbose );
     o << std::endl;
 
     RBOUT( o.str() );

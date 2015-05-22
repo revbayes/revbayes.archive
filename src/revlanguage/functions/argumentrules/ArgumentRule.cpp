@@ -275,9 +275,18 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
         return -1;
     }
     
-    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == "constant") )
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT) )
     {
         once = true;
+    }
+    
+    if ( nodeType == STOCHASTIC && theVar->getRevObject().getDagNode()->getDagNodeType() != RevBayesCore::DagNode::STOCHASTIC )
+    {
+        return -1;
+    }
+    else if ( nodeType == DETERMINISTIC && theVar->getRevObject().getDagNode()->getDagNodeType() != RevBayesCore::DagNode::DETERMINISTIC )
+    {
+        return -1;
     }
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
@@ -303,7 +312,7 @@ double ArgumentRule::isArgumentValid( Argument &arg, bool once) const
 //        {
 //            return theVar->getRevObject().isConvertibleTo( *it, true );
 //        }
-        else
+        else if ( nodeType != STOCHASTIC )
         {
             
             const TypeSpec& typeFrom = theVar->getRevObject().getTypeSpec();

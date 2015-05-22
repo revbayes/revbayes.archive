@@ -47,7 +47,8 @@ namespace RevLanguage {
     protected:
         
         void                                    assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs);               //!< The assignment operation.
-        
+        bool                                    isDynamic(void);                                                            //!< Should the rhs be evaluated dynamically?
+
     };
     
 }

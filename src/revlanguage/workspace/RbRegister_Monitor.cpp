@@ -32,7 +32,6 @@
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
-#include "RevAbstractType.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 

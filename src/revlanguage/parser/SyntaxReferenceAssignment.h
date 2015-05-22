@@ -82,7 +82,6 @@ namespace RevLanguage {
         // Basic utility functions
         SyntaxReferenceAssignment*      clone() const;                                                  //!< Clone object
         bool                            isAssignment(void) const;                                       //!< Is this an assignment statement?
-        void                            printValue(std::ostream& o) const;                              //!< Print info about object
         
         // Regular functions
         RevPtr<RevVariable>             evaluateContent(Environment& env, bool dynamic=false);          //!< Get semantic value

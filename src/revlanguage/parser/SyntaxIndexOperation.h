@@ -33,8 +33,7 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxIndexOperation*               clone(void) const;                                                                      //!< Clone object
-        void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
-
+        
         // Regular functions
         RevPtr<RevVariable>                 evaluateLHSContent(Environment& env, const std::string& varType);                       //!< Get semantic lhs value
         RevPtr<RevVariable>                 evaluateContent(Environment& env, bool dynamic=false);                                  //!< Get semantic value

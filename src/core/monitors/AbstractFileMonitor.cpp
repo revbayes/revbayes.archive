@@ -51,17 +51,17 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     likelihood      = f.likelihood;
     append          = f.append;
     
-    //    if (f.outStream.is_open())
-    //    {
-    //        openStream();
-    //    }
+    if (f.outStream.is_open())
+    {
+        openStream();
+    }
     
 }
 
 
 void AbstractFileMonitor::closeStream()
 {
-    //    outStream.close();
+    outStream.close();
 }
 
 
@@ -92,18 +92,14 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
 void AbstractFileMonitor::monitor(unsigned long gen)
 {
     
-//    if ( nodes[0]->getName() != "pi" && nodes[0]->getName() != "tau" )
-//    {
-//        std::cerr << "Strange first node:\t\t" << nodes[0]->getName() << std::endl;
-//    }
-    
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0)
     {
-        outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
-
+//        outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
+        outStream.seekg(0, std::ios::end);
+        
         // print the iteration number first
         outStream << gen;
         
@@ -157,7 +153,7 @@ void AbstractFileMonitor::monitor(unsigned long gen)
         
         outStream << std::endl;
         
-        outStream.close();
+//        outStream.close();
         
     }
     
@@ -175,14 +171,16 @@ void AbstractFileMonitor::openStream(void)
     // open the stream to the file
     if (append)
     {
-        outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
+        outStream.open( workingFileName.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }
     else
     {
         outStream.open( workingFileName.c_str(), std::fstream::out);
+        outStream.close();
+        outStream.open( workingFileName.c_str(), std::fstream::in | std::fstream::out);
     }
     
-    outStream.close();
+//    outStream.close();
     
 }
 
@@ -192,7 +190,8 @@ void AbstractFileMonitor::openStream(void)
 void AbstractFileMonitor::printHeader( void )
 {
     
-    outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
+//    outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
+    outStream.seekg(0, std::ios::end);
     
     // print one column for the iteration number
     outStream << "Iteration";
@@ -223,7 +222,7 @@ void AbstractFileMonitor::printHeader( void )
     
     outStream << std::endl;
     
-    outStream.close();
+//    outStream.close();
     
 }
 

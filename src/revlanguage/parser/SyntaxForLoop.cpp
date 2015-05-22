@@ -172,14 +172,3 @@ bool SyntaxForLoop::isFunctionSafe( const Environment& env, std::set<std::string
     return inExpression->isFunctionSafe( env, localVars );
 }
 
-
-/** Print info about syntax element */
-void SyntaxForLoop::printValue( std::ostream& o ) const
-{
-    o << "SyntaxForLoop:" << std::endl;
-    o << "varName      = " << varName << std::endl;
-    o << "inExpression = ";
-    inExpression->printValue( o );
-    o << std::endl;
-}
-

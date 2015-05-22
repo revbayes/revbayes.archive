@@ -39,8 +39,6 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get the object type spec of the instance
 
-        // Basic utility function you do not have to override
-        void                                        printValue(std::ostream& o) const;                          //!< Print value for user
  
         // Type conversion functions
         RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
@@ -58,6 +56,11 @@ namespace RevLanguage {
         virtual void                                sort(void);                                                                     //!< Sort vector
         virtual void                                unique(void);                                                                   //!< Remove consecutive duplicates
 
+    protected:
+        // Basic utility function you do not have to override
+        void                                        printValue(std::ostream& o) const;                          //!< Print value for user
+
+        
     private:
         
         struct comparator {
@@ -350,7 +353,7 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
             rlType orgElement = rlType( orgInternalElement );
 
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isType( *type.getElementTypeSpec() ) )
+            if ( type.getElementTypeSpec() != NULL && !orgElement.isType( *type.getElementTypeSpec() ) )
             {
             
                 double elementPenalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );

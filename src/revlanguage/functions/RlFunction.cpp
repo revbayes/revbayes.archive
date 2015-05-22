@@ -41,7 +41,8 @@ Function::~Function(void) {
 
 
 /** Debug info about object */
-std::string Function::callSignature(void) const {
+std::string Function::callSignature(void) const
+{
     
     std::ostringstream o;
     o << getType() << ": " << std::endl;
@@ -49,16 +50,18 @@ std::string Function::callSignature(void) const {
     if (argsProcessed)
     {
 
-        for ( size_t i = 0;  i < args.size(); i++ ) {
+        for ( size_t i = 0;  i < args.size(); i++ )
+        {
             o << " args[" << i << "] = ";
-            args[i].getVariable()->getRevObject().printValue(o);
+            args[i].getVariable()->getRevObject().printValue( o, true);
             o << std::endl;
         }
     }
     else
     {
         
-        for ( size_t i = 0;  i < getArgumentRules().size(); i++ ) {
+        for ( size_t i = 0;  i < getArgumentRules().size(); i++ )
+        {
             o << " args[" << i << "] = ";
             getArgumentRules()[i].printValue( o );
             o << std::endl;
@@ -459,17 +462,6 @@ std::string Function::getRevDeclaration(void) const
     o << ")";
     
     return o.str();
-}
-
-
-/** Print structure of object for user */
-void Function::printStructure(std::ostream& o, bool verbose) const
-{
-    
-    o << "_objectType   = Function" << std::endl;
-    o << "_type         = " << getType() << std::endl;
-    o << "_name         = " << getName() << std::endl;
-    o << "_declaration  = " << getRevDeclaration() << std::endl;
 }
 
 

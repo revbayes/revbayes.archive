@@ -31,14 +31,16 @@
 using namespace RevLanguage;
 
 /** Clone object */
-Func_write* Func_write::clone( void ) const {
+Func_write* Func_write::clone( void ) const
+{
     
     return new Func_write( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_write::execute( void ) {
+RevPtr<RevVariable> Func_write::execute( void )
+{
     
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
@@ -63,25 +65,26 @@ RevPtr<RevVariable> Func_write::execute( void ) {
         }
         
         // print the arguments
-        args[0].getVariable()->getRevObject().printValue(outStream);
+        args[0].getVariable()->getRevObject().printValue(outStream, false);
         for (size_t i = 4; i < args.size(); i++) 
         {
             outStream << separator;
-            args[i].getVariable()->getRevObject().printValue(outStream);
+            args[i].getVariable()->getRevObject().printValue( outStream , false );
         }
-        outStream << std::endl;
+        
         outStream.close();
     }
-    else {
+    else
+    {
         
         std::ostream& o = std::cout;
         
         // print the arguments
-        args[0].getVariable()->getRevObject().printValue( o );
+        args[0].getVariable()->getRevObject().printValue( o, true );
         for (size_t i = 4; i < args.size(); i++) 
         {
             o << separator;
-            args[i].getVariable()->getRevObject().printValue( o );
+            args[i].getVariable()->getRevObject().printValue( o, true );
         }
         o << std::endl;
     }

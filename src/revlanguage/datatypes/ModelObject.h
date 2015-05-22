@@ -53,8 +53,6 @@ namespace RevLanguage {
         void                                    makeConversionValue(RevPtr<RevVariable> var);                                  //!< Convert to conversion object
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         void                                    makeUserFunctionValue(UserFunction* fxn);                                   //!< Convert to user-defined Rev function object
-        virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
-        void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
         void                                    replaceVariable(RevObject *newVar);                                         //!< Replace the internal DAG node (and prepare to replace me...)
@@ -70,6 +68,8 @@ namespace RevLanguage {
         ModelObject(rbType *v);
         ModelObject(RevBayesCore::TypedDagNode<rbType> *v);
         ModelObject(const ModelObject &v);
+        
+        void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         
         RevBayesCore::TypedDagNode<rbType>*     dagNode;
 
@@ -303,8 +303,7 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
     }
-//    else if ( isConstant() == false )
-    else if ( dagNode->getDagNodeType() != "constant" )
+    else if ( dagNode->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
     {
         RevBayesCore::ConstantNode<rbType>* newNode = new ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
         dagNode->replace(newNode);
@@ -369,31 +368,6 @@ void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn 
     
     // Increment the reference counter
     dagNode->incrementReferenceCount();
-}
-
-
-/** Print structure info for user */
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o, bool verbose ) const
-{
-    o << "_RevType      = " << getType() << std::endl;
-    o << "_RevTypeSpec  = [ " << getTypeSpec() << " ]" << std::endl;
-    o << "_value        = ";
-    
-    std::ostringstream o1;
-    printValue( o1 );
-    o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
-
-    dagNode->printStructureInfo( o, verbose );
-    
-    
-    const MethodTable& methods = getMethods();
-    for ( MethodTable::const_iterator it = methods.begin(); it != methods.end(); ++it )
-    {
-        o << "." << (*it).first << " = ";
-        (*it).second->printValue( o );
-        o << std::endl;
-    }
 }
 
 

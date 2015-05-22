@@ -330,7 +330,6 @@ void Mcmc::initializeSampler( bool priorOnly )
             
             if ( !(*i)->isClamped() && (*i)->isStochastic() )
             {
-    
                 (*i)->redraw();
                 (*i)->reInitialized();
     
@@ -787,6 +786,20 @@ void Mcmc::setChainLikelihoodHeat(double h)
 void Mcmc::setLikelihoodHeat(double h)
 {
     chainLikelihoodHeat = h;
+}
+
+
+/**
+ * Set the number of processes available to this specific MCMC simulation.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+void Mcmc::setNumberOfProcesses(size_t n, size_t offset)
+{
+    MonteCarloSampler::setNumberOfProcesses(n, offset);
+    
+    // delegate the call to the model
+    model.setNumberOfProcesses(n,offset);
 }
 
 

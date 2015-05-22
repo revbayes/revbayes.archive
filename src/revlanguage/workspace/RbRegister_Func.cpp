@@ -34,7 +34,6 @@
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
-#include "RevAbstractType.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
@@ -100,7 +99,7 @@
 #include "Func_workspaceVector.h"
 
 
-/* Functions related to evolution (in folder "functions/evolution") */
+/* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
 #include "Func_clade.h"
 #include "Func_concatenate.h"
@@ -116,7 +115,7 @@
 #include "Func_treeScale.h"
 
 
-/* Rate matrix functions (in folder "functions/evolution/ratematrix") */
+/* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
 #include "Func_cpRev.h"
@@ -128,6 +127,7 @@
 #include "Func_FreeK.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_InfiniteSitesRateMatrix.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_k80.h"
@@ -138,6 +138,12 @@
 #include "Func_vt.h"
 #include "Func_t92.h"
 #include "Func_wag.h"
+
+/* Functions related to evolution (in folder "functions/popgen") */
+#include "Func_SegregatingSites.h"
+#include "Func_TajimasD.h"
+#include "Func_TajimasPi.h"
+#include "Func_WattersonTheta.h"
 
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
@@ -271,36 +277,44 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         ///////////////////////////////////////////
         
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
-        addFunction( "fnBlosum62", new Func_blosum62());
-        addFunction( "fnChromosomes", new Func_chromosomes());
-        addFunction( "fnCpRev",    new Func_cpRev()   );
-        addFunction( "fnDayhoff",  new Func_dayhoff() );
-        addFunction( "fnDECRateMatrix", new Func_DECRateMatrix() );
-        addFunction( "fnEpoch",    new Func_epoch() );
-        addFunction( "fnF81",      new Func_f81()     );
-        addFunction( "fnFreeBinary", new Func_FreeBinary() );
-        addFunction( "fnFreeK",    new Func_FreeK()   );
-        addFunction( "fnGTR",      new Func_gtr()     );
-        addFunction( "fnHKY",      new Func_hky()     );
-        addFunction( "fnJC",       new Func_jc()      );
-        addFunction( "fnJones",    new Func_jones()   );
-        addFunction( "fnK80",      new Func_k80()     );
-        addFunction( "fnMtMam",    new Func_mtMam()   );
-        addFunction( "fnMtRev",    new Func_mtRev()   );
-        addFunction( "fnPomo",     new Func_pomo()    );
-        addFunction( "fnRtRev",    new Func_rtRev()   );
-        addFunction( "fnT92",      new Func_t92()     );
-        addFunction( "fnVT",       new Func_vt()      );
-        addFunction( "fnWAG",      new Func_wag()     );
+        addFunction( "fnBlosum62",          new Func_blosum62()                 );
+        addFunction( "fnChromosomes",       new Func_chromosomes()              );
+        addFunction( "fnCpRev",             new Func_cpRev()                    );
+        addFunction( "fnDayhoff",           new Func_dayhoff()                  );
+        addFunction( "fnDECRateMatrix",     new Func_DECRateMatrix()            );
+        addFunction( "fnEpoch",             new Func_epoch()                    );
+        addFunction( "fnF81",               new Func_f81()                      );
+        addFunction( "fnFreeBinary",        new Func_FreeBinary()               );
+        addFunction( "fnFreeK",             new Func_FreeK()                    );
+        addFunction( "fnGTR",               new Func_gtr()                      );
+        addFunction( "fnHKY",               new Func_hky()                      );
+        addFunction( "fnInfiniteSites",     new Func_InfiniteSitesRateMatrix()  );
+        addFunction( "fnJC",                new Func_jc()                       );
+        addFunction( "fnJones",             new Func_jones()                    );
+        addFunction( "fnK80",               new Func_k80()                      );
+        addFunction( "fnMtMam",             new Func_mtMam()                    );
+        addFunction( "fnMtRev",             new Func_mtRev()                    );
+        addFunction( "fnPomo",              new Func_pomo()                     );
+        addFunction( "fnRtRev",             new Func_rtRev()                    );
+        addFunction( "fnT92",               new Func_t92()                      );
+        addFunction( "fnVT",                new Func_vt()                       );
+        addFunction( "fnWAG",               new Func_wag()                      );
         
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
-        addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
-        addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
+        addFunction( "fnBiogeoDE",      new Func_biogeo_de() );
+        addFunction( "fnBiogeoGRM",     new Func_biogeo_grm() );
         
-        /* cladogenic probs used for e.g. DEC models (in folder "functions/evolution") */
-        addFunction( "fnCladoProbs", new Func_cladoProbs() );
-        addFunction( "fnDECRates", new Func_DECRates() );
-        addFunction( "fnDECRoot", new Func_DECRoot() );
+        /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */
+        addFunction( "fnCladoProbs",    new Func_cladoProbs() );
+        addFunction( "fnDECRates",      new Func_DECRates() );
+        addFunction( "fnDECRoot",       new Func_DECRoot() );
+        
+        
+        /* Population genetics functions (in folder "functions/popgen") */
+        addFunction( "fnSegregatingSites",  new Func_SegregatingSites() );
+        addFunction( "fnTajimasD",          new Func_TajimasD()         );
+        addFunction( "fnTajimasPi",         new Func_TajimasPi()        );
+        addFunction( "fnWattersonsTheta",   new Func_WattersonTheta()   );
 
     
         /* Inference functions (in folder "functions/inference") */

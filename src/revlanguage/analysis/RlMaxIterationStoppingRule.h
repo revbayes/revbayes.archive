@@ -35,10 +35,10 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
         const MemberRules&                          getParameterRules(void) const;                                                     //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
     protected:
         
+        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         RevPtr<const RevVariable>                   maxIteration;

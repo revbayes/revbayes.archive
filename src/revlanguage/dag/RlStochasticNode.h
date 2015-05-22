@@ -186,6 +186,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueT
         // set value
         this->setValue( RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
         
+        // mark this node to ignore redraws
+        this->setIgnoreRedraw( true );
+        
         return NULL;
     }
     else if (name == "unclamp")

@@ -1,0 +1,27 @@
+Plates, mixtures and trees are motifs of a DAG. For convenience (for moves notably), they have been individualized in revBayes, so that one can create a plate, a mixture or a tree as part of a DAG. Here we present what plates and mixtures are. 
+
+  
+
+
+## Plates
+
+Plates are replicating units for independent identically distributed (iid) variables. When a part of a DAG corresponds to the exact repetition _N_ times of a particular motif, one can represent this entire set of motifs as a plate, indexed from 1 to _N_ (Fig. 1). The use of plates simplifies the representation of complex DAGs.
+
+[[img/Plate.png]] 
+
+Fig. 1 reads as follows: we generate _N_ variables _Xi_ that are deterministic functions of variables _ri_, which are independent and identically distributed according to a distribution taking a single parameter _alpha_ as input. 
+
+In the rev language, one can use a plate much like one would use a for loop, to replicate the dependencies between vectors of DAG nodes.
+
+[[img/Mixture_plate1.png]] 
+
+  
+Example: a model of rate heterogeneity across sites can be seen as a plate, iterating over sites (Fig. 2). Indeed, for all sites the rate is independent and identically distributed, most often drawn from a discretized Gamma distribution. The discretized Gamma distribution itself can be seen as a plate, where e.g. 4 rates are draw from a Gamma distribution. 
+
+## Mixtures
+
+Mixtures can be seen as an elaboration upon a plate. Mixtures also provide ways to replicate iid variables. However their specificity comes from the fact that the iid variables depend upon a discrete distribution of parameters. Fig. 3 shows a discretized Gamma distribution represented as a mixture, and thus can be directly compared to Fig. 2. Contrary to Fig. 2, we have represented the set of available rates not as a plate but as a vector. Each site in an alignment has a rate drawn from the discretized Gamma distribution. Although both plates and mixtures can be used to represent the discretized Gamma distribution on site rates, the mixture representation is more flexible. 
+
+Fig. 3 reads as follows: _N_ _Xi_ variables are deterministic functions of variables _ri_, which are iid according to a discrete distribution with _k_ categories taking a single parameter _alpha_ as input. There is an allocation vector _Ai_ that gives the index of the category for each _ri_: each _ri_ is just one of the _k_ values drawn from the discrete distribution. 
+
+[[img/Mixture_plate2.png]] 

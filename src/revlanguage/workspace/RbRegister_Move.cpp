@@ -32,7 +32,6 @@
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
-#include "RevAbstractType.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
@@ -73,6 +72,7 @@
 #include "Move_SingleElementScale.h"
 #include "Move_VectorSingleElementScale.h"
 #include "Move_VectorSingleElementSlide.h"
+#include "Move_VectorFixedSingleElementSlide.h"
 #include "Move_VectorScale.h"
 #include "Move_VectorSlide.h"
 
@@ -153,11 +153,12 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );        
 
         /* Moves on vectors of real values */
-        addTypeWithConstructor("mvSingleElementScale",          new Move_SingleElementScale() );
-        addTypeWithConstructor("mvVectorScale",                 new Move_VectorScale() );
-        addTypeWithConstructor("mvVectorSlide",                 new Move_VectorSlide() );
-        addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
-        addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
+        addTypeWithConstructor("mvSingleElementScale",              new Move_SingleElementScale() );
+        addTypeWithConstructor("mvVectorScale",                     new Move_VectorScale() );
+        addTypeWithConstructor("mvVectorSlide",                     new Move_VectorSlide() );
+        addTypeWithConstructor("mvVectorSingleElementScale",        new Move_VectorSingleElementScale() );
+        addTypeWithConstructor("mvVectorSingleElementSliding",      new Move_VectorSingleElementSlide() );
+        addTypeWithConstructor("mvVectorFixedSingleElementSliding", new Move_VectorFixedSingleElementSlide() );
         
         /* Moves on matrices of real values */
         addTypeWithConstructor("mvMatrixElementSlide",          new Move_MatrixSingleElementSlide() );
