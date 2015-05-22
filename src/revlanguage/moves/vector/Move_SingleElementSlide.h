@@ -1,22 +1,5 @@
-/**
- * @file
- * This file contains the declaration of RevLanguage wrapper of SimplexSingleElementScale.
- *
- * @brief Declaration of RlSimplexMove
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
- */
-
-#ifndef Move_SimplexSingleElementScale_H
-#define Move_SimplexSingleElementScale_H
+#ifndef Move_SingleElementSlide_H
+#define Move_SingleElementSlide_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -27,14 +10,30 @@
 
 namespace RevLanguage {
     
-    class Move_SimplexSingleElementScale : public Move {
+    
+    /**
+     * The RevLanguage wrapper of the sliding move.
+     *
+     * The RevLanguage wrapper of the sliding move simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal move object can be constructed and hooked up
+     * in a DAG-nove (variable) that it works on.
+     * See the SingleElementSlideProposal.h for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-01-28, version 1.0
+     *
+     */
+    class Move_SingleElementSlide : public Move {
         
     public:
         
-        Move_SimplexSingleElementScale(void);                                                                               //!< Default constructor (0.0)
+        Move_SingleElementSlide(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Move_SimplexSingleElementScale*     clone(void) const;                                                      //!< Clone object
+        virtual Move_SingleElementSlide*            clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -46,9 +45,10 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;
-        RevPtr<const RevVariable>                      alpha;
-        RevPtr<const RevVariable>                      tune;
+        RevPtr<const RevVariable>                   v;
+        RevPtr<const RevVariable>                   lambda;
+        RevPtr<const RevVariable>                   weight;
+        RevPtr<const RevVariable>                   tune;
         
     };
     

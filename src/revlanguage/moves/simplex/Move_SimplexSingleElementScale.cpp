@@ -1,11 +1,3 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
@@ -24,13 +16,15 @@
 
 using namespace RevLanguage;
 
-Move_SimplexSingleElementScale::Move_SimplexSingleElementScale() : Move() {
+Move_SimplexSingleElementScale::Move_SimplexSingleElementScale() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_SimplexSingleElementScale* Move_SimplexSingleElementScale::clone(void) const {
+Move_SimplexSingleElementScale* Move_SimplexSingleElementScale::clone(void) const
+{
     
 	return new Move_SimplexSingleElementScale(*this);
 }

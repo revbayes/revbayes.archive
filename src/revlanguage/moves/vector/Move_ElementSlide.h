@@ -1,5 +1,5 @@
-#ifndef Move_VectorSlide_H
-#define Move_VectorSlide_H
+#ifndef Move_ElementSlide_H
+#define Move_ElementSlide_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -13,20 +13,20 @@ namespace RevLanguage {
     /**
      * @brief Rev Wrapper of a scaling move on all elements of a real valued vector.
      *
-     * This class is the RevLanguage wrapper of VectorSlide.
+     * This class is the RevLanguage wrapper of ElementSlide.
      *
-     * @author The RevBayes Development Core Team (Michael Landis)
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
-     * @since 2013-11-17, version 1.0
+     * @since 2015-05-21, version 1.0
      */
-    class Move_VectorSlide : public Move {
+    class Move_ElementSlide : public Move {
         
     public:
         
-        Move_VectorSlide(void);                                                                                                                   //!< Default constructor
+        Move_ElementSlide(void);                                                                                                                   //!< Default constructor
         
         // Basic utility functions
-        virtual Move_VectorSlide*                   clone(void) const;                                                                              //!< Clone the object
+        virtual Move_ElementSlide*                  clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
@@ -47,4 +47,4 @@ namespace RevLanguage {
 }
 
 
-#endif /* defined(__revbayes_proj__Move_VectorSlide__) */
+#endif /* defined(__revbayes_proj__Move_ElementSlide__) */

@@ -1,43 +1,44 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "RlBoolean.h"
+#include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
-#include "Move_SingleElementScale.h"
+#include "Move_SingleElementSlide.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
-#include "RlBoolean.h"
-#include "SingleElementScaleProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "SingleElementSlideProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_SingleElementScale::Move_SingleElementScale() : Move()
+Move_SingleElementSlide::Move_SingleElementSlide() : Move()
 {
     
 }
 
-
 /** Clone object */
-Move_SingleElementScale* Move_SingleElementScale::clone(void) const {
+Move_SingleElementSlide* Move_SingleElementSlide::clone(void) const
+{
     
-	return new Move_SingleElementScale(*this);
+    return new Move_SingleElementSlide(*this);
 }
 
 
-void Move_SingleElementScale::constructInternalObject( void )
+void Move_SingleElementSlide::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
-    // now allocate a new element scaling move
+    // now allocate a new sliding move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<Real> &>( v->getRevObject() ).getDagNode();
     std::set<const RevBayesCore::DagNode*> p = tmp->getParents();
     std::vector< RevBayesCore::StochasticNode<double> *> n;
     for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it)
@@ -49,37 +50,40 @@ void Move_SingleElementScale::constructInternalObject( void )
         }
         else
         {
-            throw RbException("Could not create a mvVectorElementScale because the node isn't a vector of stochastic nodes.");
+            throw RbException("Could not create a mvElementSlide because the node isn't a vector of stochastic nodes.");
         }
     }
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *prop = new RevBayesCore::SingleElementScaleProposal(n,l);
+    RevBayesCore::Proposal *prop = new RevBayesCore::SingleElementSlideProposal(n,l);
     value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_SingleElementScale::getClassType(void) {
+const std::string& Move_SingleElementSlide::getClassType(void)
+{
     
-    static std::string revType = "Move_SingleElementScale";
+    static std::string revType = "Move_SingleElementSlide";
     
-	return revType; 
+    return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_SingleElementScale::getClassTypeSpec(void) {
+const TypeSpec& Move_SingleElementSlide::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_SingleElementScale::getParameterRules(void) const {
+const MemberRules& Move_SingleElementSlide::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -87,9 +91,9 @@ const MemberRules& Move_SingleElementScale::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()        , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -102,7 +106,8 @@ const MemberRules& Move_SingleElementScale::getParameterRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& Move_SingleElementScale::getTypeSpec( void ) const {
+const TypeSpec& Move_SingleElementSlide::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -111,13 +116,16 @@ const TypeSpec& Move_SingleElementScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_SingleElementScale::printValue(std::ostream &o) const {
+void Move_SingleElementSlide::printValue(std::ostream &o) const
+{
     
-    o << "SingleElementScale(";
-    if (x != NULL) {
-        o << x->getName();
+    o << "Move_SingleElementSlide(";
+    if (v != NULL)
+    {
+        o << v->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -125,18 +133,26 @@ void Move_SingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_SingleElementScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_SingleElementSlide::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "x" ) {
-        x = var;
+    if ( name == "x" )
+    {
+        v = var;
     }
-    else if ( name == "lambda" ) {
+    else if ( name == "lambda" )
+    {
         lambda = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "weight" )
+    {
+        weight = var;
+    }
+    else if ( name == "tune" )
+    {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

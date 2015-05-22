@@ -2,39 +2,40 @@
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
-#include "Move_SingleElementScale.h"
+#include "Move_ElementScale.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlBoolean.h"
-#include "SingleElementScaleProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "ElementScaleProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_SingleElementScale::Move_SingleElementScale() : Move()
+Move_ElementScale::Move_ElementScale() : Move()
 {
     
 }
 
 
 /** Clone object */
-Move_SingleElementScale* Move_SingleElementScale::clone(void) const {
+Move_ElementScale* Move_ElementScale::clone(void) const
+{
     
-	return new Move_SingleElementScale(*this);
+    return new Move_ElementScale(*this);
 }
 
 
-void Move_SingleElementScale::constructInternalObject( void )
+void Move_ElementScale::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
-    // now allocate a new element scaling move
+    // now allocate a new vector-scale move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
@@ -49,37 +50,38 @@ void Move_SingleElementScale::constructInternalObject( void )
         }
         else
         {
-            throw RbException("Could not create a mvVectorElementScale because the node isn't a vector of stochastic nodes.");
+            throw RbException("Could not create a mvElementScale because the node isn't a vector of stochastic nodes.");
         }
     }
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *prop = new RevBayesCore::SingleElementScaleProposal(n,l);
+    RevBayesCore::Proposal *prop = new RevBayesCore::ElementScaleProposal(n,l);
     value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
+    
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_SingleElementScale::getClassType(void) {
+const std::string& Move_ElementScale::getClassType(void) {
     
-    static std::string revType = "Move_SingleElementScale";
+    static std::string revType = "Move_ElementScale";
     
-	return revType; 
+    return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_SingleElementScale::getClassTypeSpec(void) {
+const TypeSpec& Move_ElementScale::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_SingleElementScale::getParameterRules(void) const {
+const MemberRules& Move_ElementScale::getParameterRules(void) const {
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -102,7 +104,7 @@ const MemberRules& Move_SingleElementScale::getParameterRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& Move_SingleElementScale::getTypeSpec( void ) const {
+const TypeSpec& Move_ElementScale::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -111,9 +113,9 @@ const TypeSpec& Move_SingleElementScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_SingleElementScale::printValue(std::ostream &o) const {
+void Move_ElementScale::printValue(std::ostream &o) const {
     
-    o << "SingleElementScale(";
+    o << "Move_ElementScale(";
     if (x != NULL) {
         o << x->getName();
     }
@@ -125,7 +127,7 @@ void Move_SingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_SingleElementScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_ElementScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "x" ) {
         x = var;

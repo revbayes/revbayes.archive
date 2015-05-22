@@ -1,5 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_VectorScale.h"
 #include "Natural.h"
@@ -10,24 +11,27 @@
 #include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "VectorScaleMove.h"
+#include "VectorScaleProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_VectorScale::Move_VectorScale() : Move() {
+Move_VectorScale::Move_VectorScale() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_VectorScale* Move_VectorScale::clone(void) const {
+Move_VectorScale* Move_VectorScale::clone(void) const
+{
     
 	return new Move_VectorScale(*this);
 }
 
 
-void Move_VectorScale::constructInternalObject( void ) {
+void Move_VectorScale::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -35,28 +39,19 @@ void Move_VectorScale::constructInternalObject( void ) {
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
-    std::set<const RevBayesCore::DagNode*> p = tmp->getParents();
-    std::vector< RevBayesCore::StochasticNode<double> *> n;
-    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it) 
-    {
-        const RevBayesCore::StochasticNode<double> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
-        if ( theNode != NULL )
-        {
-            n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
-        }
-        else
-        {
-            throw RbException("Could not create a mvVectorScale because the node isn't a vector of stochastic nodes.");
-        }
-    }
+    RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *>( tmp );
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    value = new RevBayesCore::VectorScaleMove(n, l, t, w);
+    
+    RevBayesCore::Proposal *prop = new RevBayesCore::VectorScaleProposal(n,l);
+    value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
+
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_VectorScale::getClassType(void) { 
+const std::string& Move_VectorScale::getClassType(void)
+{
     
     static std::string revType = "Move_VectorScale";
     
@@ -64,7 +59,8 @@ const std::string& Move_VectorScale::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_VectorScale::getClassTypeSpec(void) { 
+const TypeSpec& Move_VectorScale::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
