@@ -1,4 +1,4 @@
-#include "VectorSingleElementScaleProposal.h"
+#include "SingleElementScaleProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,14 +14,17 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-VectorSingleElementScaleProposal::VectorSingleElementScaleProposal( StochasticNode< RbVector<double> > *n, double l) : Proposal(),
-    variable( n ),
+SingleElementScaleProposal::SingleElementScaleProposal( std::vector<StochasticNode<double> *> n, double l) : Proposal(),
+    variables( n ),
     lambda( l ),
     index( 0 ),
     storedValue( 0.0 )
 {
     // tell the base class to add the node
-    addNode( variable );
+    for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+    {
+        addNode( *it );
+    }
     
 }
 
@@ -31,9 +34,9 @@ VectorSingleElementScaleProposal::VectorSingleElementScaleProposal( StochasticNo
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void VectorSingleElementScaleProposal::cleanProposal( void )
+void SingleElementScaleProposal::cleanProposal( void )
 {
-    variable->clearTouchedElementIndices();
+    
 }
 
 /**
@@ -42,10 +45,10 @@ void VectorSingleElementScaleProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-VectorSingleElementScaleProposal* VectorSingleElementScaleProposal::clone( void ) const
+SingleElementScaleProposal* SingleElementScaleProposal::clone( void ) const
 {
     
-    return new VectorSingleElementScaleProposal( *this );
+    return new SingleElementScaleProposal( *this );
 }
 
 
@@ -54,9 +57,9 @@ VectorSingleElementScaleProposal* VectorSingleElementScaleProposal::clone( void 
  *
  * \return The Proposals' name.
  */
-const std::string& VectorSingleElementScaleProposal::getProposalName( void ) const
+const std::string& SingleElementScaleProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorSingleElementScaling";
+    static std::string name = "SingleElementScaling";
     
     return name;
 }
@@ -72,26 +75,24 @@ const std::string& VectorSingleElementScaleProposal::getProposalName( void ) con
  *
  * \return The hastings ratio.
  */
-double VectorSingleElementScaleProposal::doProposal( void )
+double SingleElementScaleProposal::doProposal( void )
 {
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    RbVector<double> &val = variable->getValue();
-
     // choose an index
-    index = size_t(rng->uniform01() * val.size());
+    index = size_t(rng->uniform01() * variables.size());
+    
+    double &val = variables[index]->getValue();
     
     // copy value
-    storedValue = val[index];
+    storedValue = val;
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
     double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    val[index] *= scalingFactor;
-    
-    variable->addTouchedElementIndex(index);
+    val *= scalingFactor;
     
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor );
@@ -104,7 +105,7 @@ double VectorSingleElementScaleProposal::doProposal( void )
  * Prepare the proposal, e.g., pick the element that we want to change.
  * Here we do not need to do any preparation.
  */
-void VectorSingleElementScaleProposal::prepareProposal( void )
+void SingleElementScaleProposal::prepareProposal( void )
 {
     
 }
@@ -118,7 +119,7 @@ void VectorSingleElementScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void VectorSingleElementScaleProposal::printParameterSummary(std::ostream &o) const
+void SingleElementScaleProposal::printParameterSummary(std::ostream &o) const
 {
     
     o << "lambda = " << lambda;
@@ -133,11 +134,10 @@ void VectorSingleElementScaleProposal::printParameterSummary(std::ostream &o) co
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void VectorSingleElementScaleProposal::undoProposal( void )
+void SingleElementScaleProposal::undoProposal( void )
 {
-    std::vector<double>& v = variable->getValue();
-    v[index] = storedValue;
-    variable->clearTouchedElementIndices();
+    double &v = variables[index]->getValue();
+    v = storedValue;
     
 }
 
@@ -148,10 +148,16 @@ void VectorSingleElementScaleProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void VectorSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void SingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
+    for (size_t i = 0; i < variables.size(); ++i)
+    {
+        if ( variables[i] == oldN )
+        {
+            variables[i] = static_cast<StochasticNode<double> *>(newN);
+        }
+    }
     
 }
 
@@ -163,7 +169,7 @@ void VectorSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void VectorSingleElementScaleProposal::tune( double rate )
+void SingleElementScaleProposal::tune( double rate )
 {
     
     if ( rate > 0.44 )
