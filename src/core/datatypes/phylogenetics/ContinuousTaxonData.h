@@ -19,14 +19,21 @@ namespace RevBayesCore {
         double&                                 operator[](size_t i);                                               //!< Index op allowing change
         const double&                           operator[](size_t i) const;                                         //!< Const index op
         
+        // implemented methods of the Cloneable interface
+        ContinuousTaxonData*                    clone(void) const;
+        
         // TaxonData functions
         ContinuousTaxonData&                    concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
         ContinuousTaxonData&                    concatenate(const ContinuousTaxonData &d);                          //!< Concatenate sequences
-        void                                    addCharacter(const double &newChar );                               //!< Push back a new character
+        void                                    addCharacter(const double &newChar);                                //!< Push back a new character
+        void                                    addCharacter(const double &newChar, const bool tf);                 //!< Push back a new character
         const double&                           getCharacter(size_t index) const;                                   //!< Get the character at position index
         double&                                 getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
+        double                                  getPercentageMissing(void) const;                                   //!< Returns the percentage of missing data for this sequence
         const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
+        bool                                    isCharacterResolved(size_t idx) const;                              //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
@@ -34,6 +41,7 @@ namespace RevBayesCore {
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
         std::vector<double>                     sequence;
+        std::vector<bool>                       isResolved;
         
     };
     

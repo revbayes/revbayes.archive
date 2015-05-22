@@ -240,7 +240,10 @@ void Mcmcmc::nextCycle(bool advanceCycle)
 #endif
         
         // perform chain swap
-        swapChains();
+        for (size_t i = 0; i < numChains; i++)
+        {
+            swapChains();
+        }
     }
     
 }
@@ -703,7 +706,7 @@ void Mcmcmc::swapChains(void)
     MPI::COMM_WORLD.Barrier();
 #endif
     // swap chains
-//    swapNeighborChains();
+    swapNeighborChains();
     swapRandomChains();
     
 #ifdef DEBUG_MPI_MCA
@@ -716,92 +719,214 @@ void Mcmcmc::swapChains(void)
 #endif
 
 }
+//
+//
+//void Mcmcmc::swapNeighborChains(void)
+//{
+//    
+//    size_t numAccepted = 0;
+//    double lnProposalRatio = 0.0;
+//    
+//    //for (size_t i = 1; i < numChains; i++)
+//    for (size_t i = numChains-1; i > 0; i--)
+//    {
+//        // swap?
+//        bool accept = false;
+//        // swap adjacent chains
+//        size_t j = 0;
+//        size_t k = 0;
+//        
+//        if (processActive == true)
+//        {
+//            ++numAttemptedSwaps;
+//            
+//            j = heatRanks[i-1];
+//            k = heatRanks[i];
+//            
+//            // compute exchange ratio
+//            double bj = chainHeats[j];
+//            double bk = chainHeats[k];
+//            double lnPj = chainValues[j];
+//            double lnPk = chainValues[k];
+//            double lnR = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
+//            
+//            // determine whether we accept or reject the chain swap
+//            double u = GLOBAL_RNG->uniform01();
+//            if (lnR >= 0)
+//            {
+//                accept = true;
+//            }
+//            else if (lnR < -100)
+//            {
+//                accept = false;
+//            }
+//            else if (u < exp(lnR))
+//            {
+//                accept = true;
+//            }
+//            else
+//            {
+//                accept = false;
+//            }
+//            
+//            if (accept == true)
+//            {
+//                numAccepted++;
+//            }
+//            
+//            // on accept, swap beta values and active chains
+//            if (accept)
+//            {
+//                
+//                //size_t tmpIdx = j;
+//                heatRanks[i-1] = k;
+//                heatRanks[i] = j;
+//                
+//                // swap active chain
+//                if (activeChainIndex == j)
+//                {
+//                    activeChainIndex = k;
+//                }
+//                else if (activeChainIndex == k)
+//                {
+//                    activeChainIndex = j;
+//                }
+//                
+//            }
+//        }
+//        
+//        if (accept)
+//        {
+//            updateChainState(j);
+//            updateChainState(k);
+//            
+//            ++numAcceptedSwaps;
+//        }
+//    }
+//    
+//}
+
 
 
 void Mcmcmc::swapNeighborChains(void)
 {
     
-    size_t numAccepted = 0;
     double lnProposalRatio = 0.0;
     
-    //for (size_t i = 1; i < numChains; i++)
-    for (size_t i = numChains-1; i > 0; i--)
+    // randomly pick the indices of two chains
+    int j = 0;
+    int k = 0;
+    
+    // swap?
+    bool accept = false;
+    if (numChains < 2) return;
+    
+#ifdef RB_MPI
+    MPI::COMM_WORLD.Barrier();
+#endif
+    if ( pid == activePID )
     {
-        // swap?
-        bool accept = false;
-        // swap adjacent chains
-        size_t j = 0;
-        size_t k = 0;
+        j = int(GLOBAL_RNG->uniform01() * (numChains-1));
+        k = j + 1;
+//        if (numChains > 1)
+//        {
+//            do {
+//                k = int(GLOBAL_RNG->uniform01() * numChains);
+//            }
+//            while(j == k);
+//        }
+#ifdef RB_MPI
+#ifdef DEBUG_MPI_MCA
+        std::cout << pid << " attempt swap chains " << j << " " << k << "\n";
+#endif
+#endif
         
-        if (processActive == true)
+        ++numAttemptedSwaps;
+        
+        // compute exchange ratio
+        double bj = chainHeats[j];
+        double bk = chainHeats[k];
+        double lnPj = chainValues[j];
+        double lnPk = chainValues[k];
+        double lnR = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
+        
+        // determine whether we accept or reject the chain swap
+        double u = GLOBAL_RNG->uniform01();
+        if (lnR >= 0)
         {
-            ++numAttemptedSwaps;
-            
-            j = heatRanks[i-1];
-            k = heatRanks[i];
-            
-            // compute exchange ratio
-            double bj = chainHeats[j];
-            double bk = chainHeats[k];
-            double lnPj = chainValues[j];
-            double lnPk = chainValues[k];
-            double lnR = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
-            
-            // determine whether we accept or reject the chain swap
-            double u = GLOBAL_RNG->uniform01();
-            if (lnR >= 0)
-            {
-                accept = true;
-            }
-            else if (lnR < -100)
-            {
-                accept = false;
-            }
-            else if (u < exp(lnR))
-            {
-                accept = true;
-            }
-            else
-            {
-                accept = false;
-            }
-            
-            if (accept == true)
-            {
-                numAccepted++;
-            }
-            
-            // on accept, swap beta values and active chains
-            if (accept)
-            {
-                
-                //size_t tmpIdx = j;
-                heatRanks[i-1] = k;
-                heatRanks[i] = j;
-                
-                // swap active chain
-                if (activeChainIndex == j)
-                {
-                    activeChainIndex = k;
-                }
-                else if (activeChainIndex == k)
-                {
-                    activeChainIndex = j;
-                }
-                
-            }
+            accept = true;
+        }
+        else if (lnR < -100)
+        {
+            accept = false;
+        }
+        else if (u < exp(lnR))
+        {
+            accept = true;
+        }
+        else
+        {
+            accept = false;
         }
         
-        if (accept)
+        
+        // on accept, swap beta values and active chains
+        if (accept == true )
         {
-            updateChainState(j);
-            updateChainState(k);
+            
+#ifdef DEBUG_MPI_MCA
+            std::cout << pid << " swap chains " << j << " " << k << "\n";
+#endif
+            
+            // swap active chain
+            if (activeChainIndex == j)
+            {
+                activeChainIndex = k;
+            }
+            else if (activeChainIndex == k)
+            {
+                activeChainIndex = j;
+            }
+            
+            chainHeats[j] = bk;
+            chainHeats[k] = bj;
+            size_t tmp = heatRanks[j];
+            heatRanks[j] = heatRanks[k];
+            heatRanks[k] = tmp;
             
             ++numAcceptedSwaps;
         }
+        
+        
     }
     
+#ifdef RB_MPI
+    
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " pre-Bcast-j " << activePID << " " << j << " " << k << " " << "\n";
+#endif
+    
+    MPI::COMM_WORLD.Barrier();
+    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)activePID);
+    MPI::COMM_WORLD.Barrier();
+    
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " pre-Bcast-k " << activePID << " " << j << " " << k << " " << "\n";
+#endif
+    
+    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)activePID);
+    MPI::COMM_WORLD.Barrier();
+#endif
+    
+    
+    // update the chains accross processes
+    // this is necessary because only process 0 does the swap
+    // all the other processes need to be told that there was a swap
+    updateChainState(j);
+    updateChainState(k);
+    
 }
+
 
 
 void Mcmcmc::swapRandomChains(void)
@@ -816,6 +941,9 @@ void Mcmcmc::swapRandomChains(void)
     // swap?
     bool accept = false;
     
+#ifdef RB_MPI
+    MPI::COMM_WORLD.Barrier();
+#endif
     if ( pid == activePID )
     {
         j = int(GLOBAL_RNG->uniform01() * numChains);
@@ -826,6 +954,11 @@ void Mcmcmc::swapRandomChains(void)
             }
             while(j == k);
         }
+#ifdef RB_MPI
+#ifdef DEBUG_MPI_MCA
+        std::cout << pid << " attempt swap chains " << j << " " << k << "\n";
+#endif
+#endif
         
         ++numAttemptedSwaps;
             
@@ -892,6 +1025,7 @@ void Mcmcmc::swapRandomChains(void)
     std::cout << pid << " pre-Bcast-j " << activePID << " " << j << " " << k << " " << "\n";
 #endif
     
+    MPI::COMM_WORLD.Barrier();
     MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)activePID);
     MPI::COMM_WORLD.Barrier();
     
@@ -935,18 +1069,33 @@ void Mcmcmc::updateChainState(size_t j)
 
 #ifdef DEBUG_MPI_MCA
     std::cout << pid << " Mcmcmc::updateChainState start\n";
+    MPI::COMM_WORLD.Barrier();
 #endif
     
 #ifdef RB_MPI
+    MPI::COMM_WORLD.Barrier();
     // update heat
-    if (pid == activePID)
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " Mcmcmc::updateChainState send " << activePID << " " << processPerChain[j] << "\n";
+#endif
+    if (pid == activePID && pid == processPerChain[j])
+    {
+        ; // do nothing
+    }
+    else if (pid == activePID)
     {
         MPI::COMM_WORLD.Send(&chainHeats[j], 1, MPI::DOUBLE, (int)processPerChain[j], 0);
     }
-    if (pid == processPerChain[j])
+    //MPI::COMM_WORLD.Barrier();
+    else if (pid == processPerChain[j])
     {
         MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, (int)activePID, 0);
     }
+    MPI::COMM_WORLD.Barrier();
+#endif
+
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " Mcmcmc::updateChainState heat\n";
     MPI::COMM_WORLD.Barrier();
 #endif
     
@@ -958,24 +1107,35 @@ void Mcmcmc::updateChainState(size_t j)
     bool tf = activeChainIndex == j;
     
 #ifdef RB_MPI
-    if (pid == activePID)
+    MPI::COMM_WORLD.Barrier();
+    if (pid == activePID && pid == processPerChain[j])
+    {
+        ; // do nothing
+    }
+    else if (pid == activePID)
     {
         MPI::COMM_WORLD.Send(&tf, 1, MPI::BOOL, (int)processPerChain[j], 0);
     }
-    if (pid == processPerChain[j])
+    else if (pid == processPerChain[j])
     {
         MPI::COMM_WORLD.Recv(&tf, 1, MPI::BOOL, (int)activePID, 0);
     }
     MPI::COMM_WORLD.Barrier();
 #endif
+
+#ifdef DEBUG_MPI_MCA
+    std::cout << pid << " Mcmcmc::updateChainState activePID\n";
+    MPI::COMM_WORLD.Barrier();
+#endif
     
     if (pid == processPerChain[j])
     {
-        chains[j]->setChainActive(tf);
+        chains[j]->setChainActive( chainHeats[j] == 1.0 );
     }
     
 #ifdef DEBUG_MPI_MCA
     std::cout << pid << " Mcmcmc::updateChainState end\n";
+    MPI::COMM_WORLD.Barrier();
 #endif
     
 }

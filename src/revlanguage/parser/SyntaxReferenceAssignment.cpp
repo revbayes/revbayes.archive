@@ -126,16 +126,3 @@ bool SyntaxReferenceAssignment::isFunctionSafe( const Environment& env, std::set
 }
 
 
-/** Print info about the syntax element */
-void SyntaxReferenceAssignment::printValue( std::ostream& o ) const
-{
-    o << "SyntaxReferenceAssignment:" << std::endl;
-    o << "lhsExpression = ";
-    lhsExpression->printValue( o );
-    o << std::endl;
-    o << "rhsExpression = ";
-    rhsExpression->printValue( o );
-    o << std::endl;
-}
-
-

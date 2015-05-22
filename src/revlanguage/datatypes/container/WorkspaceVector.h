@@ -54,14 +54,16 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get the object type spec of the instance        
         
-        // Basic utility function provided here
-        void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
-        
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
         
         // WorkspaceVector functions
         vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
+        
+    protected:
+        // Basic utility function provided here
+        void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
+
         
     private:
 
@@ -328,7 +330,8 @@ void WorkspaceVector<rlType>::printValue( std::ostream& o ) const
     for ( size_t i = 0; i < this->value->size(); ++i )
     {
         o << "[" << i + 1 << "]" << std::endl;
-            (*this->value)[i].printValue(o);
+        RevObject& tmp = (*this->value)[i];
+        tmp.printValue(o,true);
         o << std::endl << std::endl;
     }
 

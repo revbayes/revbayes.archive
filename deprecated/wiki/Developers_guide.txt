@@ -1,0 +1,183 @@
+This document is for those who want to work in the backend of RevBayes. This includes implementing types, function, distributions and moves. Please read the whole guide from the beginning because it explains our class hierarchy. You will learn from which class you should derive and which functions you have to overwrite. 
+
+We have some general guidelines about memory management, documenting the code, and testing the functionality. It might be helpful if you read these too before implementing your own classes in RevBayes. 
+
+## Class hierarchy
+
+Here is an overview of the class hierarchy containing only the most important interfaces in RevBayes. It should help you find the inheritance structures and you should look up all base classes of your new class to find the functions you need to overwrite. 
+
+[[img/RevBayesClassDiagram.png]]
+
+The class diagram contains all the important interfaces and their inheritance structure, which you need to know to implement functions, distributions and moves. Additionally, it contains the methods of these classes, which are described more in detail below. Method names in italics are pure virtual and should be overwritten in all non-abstract classes, method names in xxx can be overwritten and method names in plain text should not be overwritten. 
+
+## Objects in RevBayes
+
+All classes in RevBayes should derive from RbObject, our main base class. 
+
+_**Functions you have to overwrite:**_
+
+**clone()**: The clone function should make a deep copy of the object and return a pointer to the cloned object. Commonly this function will just call the copy constructor. We use the clone function so that we can create copies of the actual object (the derived class implementation) even if we only have a pointer to the base class. 
+    
+      RbFunction* myFunction = new Func_exp();
+      RbFunction* myClonedFunction = myFunction-&gt;clone();		# myClonedFunction is actually of type Func_exp.
+    
+
+Note, the caller of the clone function is responsible for freeing the memory of the returned object. 
+
+**getClassName()**: This function has to be overwritten and should be static. It should return the name for objects of this class, e.g. "Exponential Distribution" for class Dist_exponential. 
+
+**getClassTypeSpec()**: This function has to be overwritten and should be static. It should return the static member variable of the type specification for instance of this class. Usual implementation build the type specification from the class name and the bass class: TypeSpec( getClassName(), new TypeSpec( _baseClass_::getClassTypeSpec() ) ) 
+
+**getTypeSpec()**: This virtual function should be overwritten in all non-abstract classes. An instance of the class should return the class' type specification. For instance 
+    
+      RbFunction* myFunction = new Func_exp();
+      myFunction-&gt;getTypeSpec();		
+    
+
+'myFunction' should return in this case a type specification telling that the instance is of type Func_exp. The 'getTypeSpec()' function is used, amongst others, for argument matching by asking for the type specification of the received argument and match that against the required argument type. 
+
+**printValue()**: This should simply print the value to the stream (which is given as an argument). The function is primarily used to print the value of the class instance for users, e.g. 
+    
+      a &lt;Argument&gt;& args) {
+    	if ( name == "myMemberMethod1" ) {
+    		// do stuff
+    		// return member
+    	} else if ( name == "myMemberMethod2" ) {
+    		// do stuff
+    		// return member
+    	} else {
+    		return myBaseClass::executeOperation( name, args );
+    }
+    
+
+You need to return a reference to an object stored inside the class, or the static instance of RbNullObject for void functions. The arguments come in the exact order as they are specified in the method rules. That means, if you specified first argument 'x' of type 'Integer' and then 'y' of type 'RbString', you can get 'x' by using 'static_cast&lt;const Integer&amp;&gt;( args[0].getVariable().getValue() )' and 'y' by 'static_cast&lt;const RbString&amp;&gt;( args[1].getVariable().getValue() )'. Note that the 'getValue()' function of the variable will return a reference to an RbLanguageObject, but the parser will have made sure that the actual type is of the specified type ('Integer' here for the first variable and 'RbString' for the second variable). Hence, it is important that you specify the correct desired types in the method rules (see below). A static cast is appropriate because of the mentioned reasons. 
+
+**getMethods()**: We return here a static member holding a map (MethodTable) of function names (strings) to functions (MemberFunction). The parser needs the map to check whether an object provides the member function with given name, and to match the arguments of the member function call. A common implementation is 
+    
+    const MethodTable& MyClass::getMethods( void ) {
+    	static MethodTable myMethods = MethodTable();
+    	static bool methodsSet = false;
+    	if ( !methodsSet) {
+    		// add function "xxx"
+    		ArgumentRules* xxxRules = new ArgumentRules
+    		xxxRules.push_back( new ValueRule( "nameOfArgument", ClassOfTheArgument::getTypeSpec() ) );
+    		myMethods.addFunction( "xxx", new MemberFunction( xxxReturnType::getClassTypeSpec(), xxxRules ) );
+    		...
+    		methodsSet = true;
+    	}
+    
+    	return myRules;
+    }
+    
+
+For more information about arguments, please read section [Functions](Developers-guide#Functions) of implementing functions. 
+
+**setMemberVariable()**: This function will be called by 'setVariable()'. You should catch setting of variables here and store it into a class attribute. This should help us getting faster access to arguments of functions. Be aware that the default implementation throws an error if it gets an variable with a name it doesn't expect, i.e. it does not know what to do with a member with that name. 
+    
+    void myMemberObject::setMemberVariable(const std::string &name, const Variable* var) {
+    	if ( name == "myMemberVariable1" ) {
+    		myMemberVariable1 = var
+    	} else if ( name == "myMemberVariable2" ) {
+    		myMemberVariable1 = var;
+    	} else {
+    		return myBaseClass::setMemberVariable( name, var );
+    }
+    
+
+We get here a pointer to a constant variable, which means that we cannot change the arguments value. If we want to, we have to create a copy of the argument. Member variables should be stored as pointers to a constant Variable. Therefore, if the variable changes, e.g. by setting a new value to it from the RevLanguage, the value of the member variable will automatically change too and we do not need to ask every time when the member function is re-executed if the variable has changed. Note, because of memory management issues you need to either use an RbConstVariablePtr or to increment (and decrement) the reference counter of the variable manually. The reason is that multiple objects can have a pointer to the same variable and the ownership is not clearly defined. In that way member variables behave exactly the same way as arguments of functions (they are actually arguments of the constructor function). Especially since distributions are member objects too and get their distribution parameters set by the constructor function, this design is quite useful. 
+
+_**Functions you probably do not want to overwrite (only in specific cases and done carefully):**_
+
+**executeMethod()**: Member function calls in the RevLanguage lead to a call of 'executeMethod()' of member objects. Currently we return here a RbLanguageObject reference. The actual function is executed in 'executeOperation()'. We have this two stage function call because we might have to shift to a paradigm that return DAG nodes for some functions, e.g. 'getVariable()' in TreePlate and Mixture. For simplicity, there will be then the simple call 'executeMethod()' which still returns RbLanguageObjects and 'executeMethod()' will by default wrap the return value into a constant DAG node. TreePlate and Mixture might want to overwrite 'executeMethod()'. 
+
+**getMember()**: This function looks up a member in the member map and returns the variable to the member. You should only overwrite this function if you have members which are not stored in the members-map. 
+
+**getMembers()**: Returns the map of names (strings) to members (const Variable*). 
+
+**hasMember()**: Checks whether there is an entry in the members map for the name. You should only overwrite this function if you store members also somewhere else than the members map. 
+
+**setMember()**: We add the new member variable into a map of name (string) to member (const Variable*) and delegate the call to 'setMemberVariable()' which should be overwritten in the derived classes and know what to do exactly with this member variable. We need the map of members for 1) returning the map so that stochastic nodes can add themselves as children to the members of the distribution (the arguments), and 2) convenient access for 'hasMember()' and 'getMember()'. 
+
+#### Container type objects
+
+We have several different container type objects, which are currently vectors and sets. 
+
+  
+
+
+#### Plates and mixtures
+
+For more details on plates and mixtures, please see [[Plates_and_mixtures]]. 
+
+### Functions
+
+* * *
+
+RevBayes provides currently functions in two flavours: Parser functions and inference functions. Parser functions are mostly for data input/output and other manipulations which work directly in the interactive environment. The inference functions are the functions used in the DAG during the MCMC. Only inference function can be used, not parser functions. 
+
+  
+
+
+  * What types of functions exist in RevBayes (Inference and Parser) 
+  * Where do functions go? 
+  * Where do you find certain types of functions? 
+  * Directory structure of functions 
+  * Naming conventions 
+  * What is required for RbRegister for each function 
+
+We currently have the following types of argument rules: 
+
+  * ValueRule: This is the standard rule which should work in almost all situations. The rule specifies that you expect an argument of the given type or which possibly can be converted into the type. 
+  * Ellipsis: The ellipsis (...) is used when you expect an unknown number of arguments, e.g. the vector constructor 'v(1,2,3,4)'. The ellipsis arguments have no name, which you need to remember when you catch the arguments in 'setArgumentVariable()'. Furthermore, the ellipsis needs to be always the last rule. If a function is called which has an ellipsis argument, then no default values can be used. That means, you need to pass in an argument for every rule! 
+  * OptionRule: The option rule provides a set of possible (string) values which you expect as arguments, other values are not excepted by the parser then. 
+  * RangeRule: The range rule specifies an upper and lower limit for values you expect. 
+
+If you are unsure whether to expect a single value or a vector of values, you can specify the rule to receive a vector of values. Then, the parser will make sure that you will get a vector of values, even if the user called the function with a single, plain (i.e. non-vector type) element. The parser will simple create a new value of the vector type with only a single element. Note, this might be not type safe in the current implementation for dynamic DAG evaluation. Also note, that we have strong type checking, that means that we only allow the expected type, a derived class of the type, or a constant object which can be converted into the required type. 
+
+Creating [Parser Functions](Parser-Functions): these functions are only executed in Rev environment. Examples include clear(), ls(), print(), quit(). 
+
+Creating [Inference-Functions](Inference-Functions)
+
+### Distributions
+
+* * *
+
+### Moves
+
+* * *
+
+## Commenting
+
+## Memory management
+
+Every class should be responsible for its own memory management and we can avoid memory leaks if you follow some simple rules. These rules apply especially to function parameters and return values. We start with the parameters types: 
+
+  
+1) Pass by constant reference: 
+
+This should be the default. If you don't want to store or keep the passed in parameter, then you should use constant reference. 
+    
+      getLnProb(const RbLanguageObject& x) { ... return lnProb; }
+    
+
+You can also see that the function will not change the parameter if it uses a constant reference. 
+
+2) Pass by reference: 
+
+You should try to avoid pass by reference because it can result into unexpected behavior. Sometimes it is unavoidable, as in cases when you want to add something to a list which you got as a parameter. 
+    
+      getAffected(std::set&lt;DAGNode&gt;& affected) { affected.insert(this); ... }
+    
+
+3) Pass by pointer: 
+
+If you want to store the element, you should expect a pointer, e.g. 
+    
+      setValue(RbLanguageObject* x) { this-&gt;value = x }
+    
+
+It is more efficient to ask for a pointer if you want to keep the object than for a constant reference because the caller can then decide if he needs to clone the object or not. 
+
+4) Pass by constant pointer: 
+
+You should try to use as rare as possible parameters with constant pointers. Situations when you might want to use constant pointers are when you want to keep this object, but you want to share the ownership. This is the case with DAG node or variables, for instance several distributions might have the same variable as an argument. You probably don't want to have independent copies because if the variable is updated, all the other variables which have this variables as an argument want to have the updated variable.

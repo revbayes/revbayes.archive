@@ -286,33 +286,3 @@ bool SyntaxFunctionCall::isFunctionSafe( const Environment& env, std::set<std::s
     return true;
 }
 
-
-/** Print info about the syntax element */
-void SyntaxFunctionCall::printValue(std::ostream& o) const {
-
-    o << "[" << this << "] SyntaxFunctionCall:" << std::endl;
-    o << "functionName  = " << functionName << std::endl;
-    o << "baseVariable  = ";
-    if ( baseVariable == NULL )
-        o << "NULL" << std::endl;
-    else
-    {
-        o << "[" << baseVariable << "] ";
-        baseVariable->printValue(o);
-        o << std::endl;
-    }
-    if ( arguments->size() == 0 )
-        o << "arguments     = []";
-    else
-    {
-        size_t index = 1;
-        for ( std::list<SyntaxLabeledExpr*>::const_iterator it = arguments->begin(); it !=arguments->end(); ++it, ++index )
-        {
-            o << "arguments[" << index <<  "]  = [" << (*it) << "] ";
-            (*it)->printValue(o);
-            o << std::endl;
-        }
-    }
-    o << std::endl;
-}
-

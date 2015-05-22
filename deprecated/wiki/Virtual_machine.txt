@@ -1,0 +1,28 @@
+Perhaps the easiest way to get RevBayes to run on your computer is to use a virtual machine. 
+You can download a ready-to-use [virtual machine](ftp:..pbil.univ-lyon1.fr/pub/boussau/PhyldogTutorialData/Phyldog-demo.ova). Once downloaded, import it using a virtualization tool such as Virtual Box. Here are some intructions for Virtual Box:
+
+1. download the [RevBayes.ova](ftp://pbil.univ-lyon1.fr/pub/boussau/RevBayesTutorialData/RevBayes.ova) file on your computer (also downloadable from here);
+2. while downloading, if necessary, install both [VirtualBox] (https://www.virtualbox.org/wiki/Downloads) and [VirtualBox additions] (https://www.virtualbox.org/wiki/Downloads) (be careful to choose the right version for your system);
+3. run VirtualBox, and do File / Import a Virtual Application. Then, select [RevBayes.ova] (ftp://pbil.univ-lyon1.fr/pub/boussau/RevBayesTutorialData/RevBayes.ova);
+4. once loaded, Virtualbox lets you to choose the number of CPUs and the amount of RAM you want to allow to this virtual machine (2 Gb may be useful);
+5. start the virtual machine;
+6. the login is revbayes, as well as the password (US Qwerty Keyboard);
+7. once logged in, if your keyboard layout is not english/US, let’s go to the main menu named Application menu (upper left of the screen) : Settings / Keyboard. Go to Layout, uncheck Use system defaults and set your own layout;
+8. in Application menu / Settings / Display, you can also change the screen size.
+9. You can find a terminal emulator at the bottom panel of the screen. The revbayes executable file is in revbayes/projects/cmake/rb, and tutorials are available in revbayes/tutorials
+
+Caveats:
+* If you can't run the virtual machine on your computer, and get an error message like "VT-x is not available", it may be because you need to enable virtualization in the bios of your computer. Googling "enable virtualization in the bios" should give you a range of pages with the proper instructions for your system.
+* The RevBayes version installed can be updated using the usual git commands. To do so:
+
+    ``cd ~/revbayes``
+
+    ``git pull``
+
+    ``cd revbayes/projects/cmake``
+
+    ``./build.sh``
+
+And you should have a new version of revbayes in ``revbayes/projects/cmake/rb``.
+* The virtual machine runs a Linux distribution. Copying and pasting can be done using Ctrl+c and Ctrl+v, except in the terminal, where it's shift+Ctrl+c and shift+Ctrl+v. You should be able to copy and paste or drag and drop between your own machine and the virtual machine.
+

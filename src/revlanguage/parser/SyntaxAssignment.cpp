@@ -142,20 +142,6 @@ bool SyntaxAssignment::isFunctionSafe( const Environment& env, std::set<std::str
 }
 
 
-
-/** Print info about the syntax element */
-void SyntaxAssignment::printValue( std::ostream& o ) const
-{
-    o << "SyntaxAssignment:" << std::endl;
-    o << "lhsExpression = ";
-    lhsExpression->printValue( o );
-    o << std::endl;
-    o << "rhsExpression = ";
-    rhsExpression->printValue( o );
-    o << std::endl;
-}
-
-
 /** 
  * Removing all element variables from this variable.
  * First, we need to check if this is a vector variable, 

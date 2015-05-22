@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of RevObject, which is
- * the RevBayes abstract base class for all language objects.
- *
- * @brief Declaration of RevObject
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2009-07-27
- *
- * $Id$
- */
-
 #ifndef RevObject_H
 #define RevObject_H
 
@@ -63,14 +47,13 @@ namespace RevLanguage {
         static const std::string&           getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
-        virtual void                        printStructure(std::ostream& o, bool verbose=false) const = 0;                                  //!< Print structure of language object for user
-        virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
+        virtual void                        printValue(std::ostream& o, bool toScreen) const;                                               //!< Print value for user either to screen or somewhere else
         virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
         // Basic utility functions you may want to override
         virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
         virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
-        virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);      //!< Execute member method (if applicable)
+        virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
         virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
         virtual const MemberRules&          getParameterRules(void) const;                                                                  //!< Get member rules
         virtual bool                        isAbstract(void) const;                                                                         //!< Is this an abstract type/object?
@@ -94,6 +77,9 @@ namespace RevLanguage {
         
         RevObject( bool includeMemberMethods=true );                                                                                        //!< Constructor without member methods.
     
+        // pure virtual helper methods
+        virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
+        
         // members
         MethodTable                         methods;
 

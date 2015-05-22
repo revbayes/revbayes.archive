@@ -250,25 +250,27 @@ const std::set<DagNode*>& DagNode::getChildren( void ) const
 /**
  * Get the type of the DAG node as a string.
  */
-std::string DagNode::getDagNodeType( void ) const
+DagNode::DagNodeTypes DagNode::getDagNodeType( void ) const
 {
     
-    if ( type == CONSTANT ) 
-    {
-        return "constant";
-    } 
-    else if ( type == DETERMINISTIC )
-    {
-        return "deterministic";
-    }
-    else if ( type == STOCHASTIC )
-    {
-        return "stochastic";
-    }
-    else
-    {
-        throw RbException("Unknown DAG type.");
-    }
+    return type;
+    
+//    if ( type == CONSTANT ) 
+//    {
+//        return "constant";
+//    } 
+//    else if ( type == DETERMINISTIC )
+//    {
+//        return "deterministic";
+//    }
+//    else if ( type == STOCHASTIC )
+//    {
+//        return "stochastic";
+//    }
+//    else
+//    {
+//        throw RbException("Unknown DAG type.");
+//    }
     
 }
 
@@ -869,6 +871,18 @@ void DagNode::setName(std::string const &n)
     // set the internal value
     name = n;
 
+}
+
+
+
+/**
+ * Set the number of processes available to this specific DAG node object.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+void DagNode::setNumberOfProcesses(size_t n, size_t offset)
+{
+    
 }
 
 

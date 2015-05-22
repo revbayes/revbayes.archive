@@ -1,5 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_SingleElementScale.h"
 #include "Natural.h"
@@ -8,14 +9,15 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlBoolean.h"
-#include "SingleElementScaleMove.h"
+#include "SingleElementScaleProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Move_SingleElementScale::Move_SingleElementScale() : Move() {
+Move_SingleElementScale::Move_SingleElementScale() : Move()
+{
     
 }
 
@@ -27,23 +29,34 @@ Move_SingleElementScale* Move_SingleElementScale::clone(void) const {
 }
 
 
-void Move_SingleElementScale::constructInternalObject( void ) {
+void Move_SingleElementScale::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new element scaling move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
     std::set<const RevBayesCore::DagNode*> p = tmp->getParents();
     std::vector< RevBayesCore::StochasticNode<double> *> n;
-    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it) 
+    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it)
     {
-        const RevBayesCore::StochasticNode<double> *theNode = static_cast< const RevBayesCore::StochasticNode<double>* >( *it );
-        n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
+        const RevBayesCore::StochasticNode<double> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
+        if ( theNode != NULL )
+        {
+            n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
+        }
+        else
+        {
+            throw RbException("Could not create a mvVectorElementScale because the node isn't a vector of stochastic nodes.");
+        }
     }
+    
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    value = new RevBayesCore::SingleElementScaleMove(n, l, t, w);
+    
+    RevBayesCore::Proposal *prop = new RevBayesCore::SingleElementScaleProposal(n,l);
+    value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
 }
 
 
@@ -74,7 +87,7 @@ const MemberRules& Move_SingleElementScale::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
         moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         

@@ -41,6 +41,9 @@ void AbstractMove::autoTune( void )
     if ( autoTuning ) 
     {
         tune();
+        
+        // we need to reset the counters so that the next tuning only uses the new acceptance rate.
+        resetCounters();
     }
     
 }

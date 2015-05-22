@@ -112,7 +112,10 @@ void StandardState::operator-=( int i )
 }
 
 void StandardState::addState(char symbol) {
-    state |= computeState( symbol );
+    
+    unsigned long n = computeState( symbol );
+    state |= n;
+    
 }
 
 
@@ -127,12 +130,19 @@ StandardState* StandardState::clone( void ) const {
 }
 
 
-unsigned long StandardState::computeState(char symbol) const {
+unsigned long StandardState::computeStateIndex(char symbol) const {
     
     size_t pos = labels.find(symbol);
     return pos;
 }
 
+unsigned long StandardState::computeState(char symbol) const {
+    
+    size_t pos = computeStateIndex(symbol);
+    unsigned long n = 1;
+    return (n << pos);
+}
+    
 size_t StandardState::getNumberOfStates( void ) const {
     return labels.size();
 }
@@ -271,4 +281,5 @@ void StandardState::setToFirstState( void )
     state = 0x01;
     
 }
+
 

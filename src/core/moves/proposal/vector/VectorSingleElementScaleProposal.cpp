@@ -101,7 +101,8 @@ double VectorSingleElementScaleProposal::doProposal( void )
 
 
 /**
- *
+ * Prepare the proposal, e.g., pick the element that we want to change.
+ * Here we do not need to do any preparation.
  */
 void VectorSingleElementScaleProposal::prepareProposal( void )
 {

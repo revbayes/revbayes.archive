@@ -1,0 +1,52 @@
+
+
+### XCode 5 Developers ###
+
+  * Open Xcode 5 and in the Welcome to Xcode window, choose Create a new Xcode Project 
+  * Select Command Line Tool and name it RevBayes 
+  * Add a new target for the tests by going to File-&gt;New-&gt;Target 
+  * Add as a Command Line Tool and name it RevBayesCoreTests 
+  * Delete the files in each of the directories including main.cpp so that RevBayes and RevBayesCoreTests are empty 
+  * Add the source files by selecting the appropriate directory and going to the "File" pull-down menu 
+    * Add the revbayes/src/revlanguage directory to RevBayes by going to File-&gt;Add Files to "RevBayes"... 
+      * Make sure that only the "RevBayes" target is selected 
+    * Add the revbayes/src/tests directory to RevBayesCoreTests by going to File-&gt;Add Files to "RevBayesCoreTests"... 
+      * Make sure that only the "RevBayesCoreTests" target is selected 
+    * Add the revbayes/src/core directory to RevBayes by going to File-&gt;Add Files to "RevBayes"... 
+      * Make sure that ALL targets are selected 
+    * Add the revbayes/src/libs to the RevBayes project and select both the RevBayes and RevBayesCoreTests targets 
+  * Add the boost library to your Xcode project 
+    * Select the RevBayes project and go to the BulidSettings, make sure that the RevBayes project is selected at the very top (otherwise, you must make this change for each target) 
+    * Under the "Search Paths" heading find the setting called "Header Search Paths" 
+    * Add the value: **"$(inherited) &lt;path to revbayes repository&gt;/revbayes/boost_1_55_0"** to both the Debug and Release, where &lt;path to revbayes repository&gt; = the location of the revbayes repository on your machine. 
+  * In the Xcode project build settings change some default settings 
+    * C++ Language Dialect: **GNU++98 [-std=gnu++98]**
+    * C++ Standard Library: **libstdc++ (GNU C++ standard library)**
+    * C Language Dialect: **GNU99 [-std=gnu99]**
+
+### Xcode 4 Developers ###
+RevBayes comes in three different flavors: the GUI, the computing environment and the core test suite. Here we will walk you through creating one RevBayes project in Xcode containing the three different targets. If you do not want all three targets, you can simply skip that target and all files that belong only to this target. For instance, if you do not want the GUI, then you do not need the GUI source files. Before we continue you should have created a local copy of the GitHub git directory containing the RevBayes code following the directions on GitHub. We will use the directory name _revbayes_ for the root of the RevBayes git directory. 
+
+Let's start with a clean fresh sheet and create a new project. If you have Xcode open, just click on _Window_ in the menu bar and then _Welcome to Xcode_. Otherwise, just double-click Xcode and you will get to the same window. 
+
+Now select _Create a new Xcode project_. Choose a Command Line Tool project in C++ and name it _RevBayes_ (we will use the default source folder and target named _RevBayes_ for the computing environment). Then make sure you add two targets, _RevBayesCoreTest_ as a Command Line Tool and _RevBayesGui_ as a Cocoa Application. You create a new target by clicking on _File_ in the menu bar, then _New_ and finally _New Target ..._. In the end, your project should have the following three targets: 
+
+  1. RevBayes as a Command Line Tool 
+  2. RevBayesGui as a Cocoa Application 
+  3. RevBayesCoreTest as a Command Line Tool 
+
+Remove all files that are automatically inserted into your project, such as _main.cpp_ or _main.m_, but keep the three empty directories _RevBayes_, _RevBayesCoreTest_, and _RevBayesGui_ (or whatever you called them). You should not touch the directories _Frameworks_ and _Products_. If anything goes wrong you can always start from scratch again. 
+
+The next step is to include the RevBayes source files and attach them to the appropriate targets. First, let us add the GUI source files. Select the _RevBayesGui_ directory in the left-most panel in Xcode (so that the source code files will end up in that directory). Click on _File_ in the menu bar and then on _Add files to "RevBayes"_. Select the directory _revbayes/trunk/src/gui_ and make sure that only the checkbox for the target RevBayesGui is selected. See the figure.
+
+[[img/Add_Source.png]]
+
+Next, select the _RevBayes_ directory and open the _Add files to "RevBayes"_ dialog again. This time, add the files _revbayes/trunk/src/revlanguage_ and check the targets _RevBayesGui_ and _RevBayes_. Then select the _RevBayesCoreTest_ directory and open the _Add files to "RevBayes"_ dialog. Add the files _revbayes/trunk/src/test_ and check the target _RevBayesCoreTest_. Finally, select the _RevBayes_ project and open the _Add files to "RevBayes"_ dialog. Add the files _revbayes/trunk/src/core_ and check all targets (this will add the _core_ folder outside of the three target-specific folders). 
+
+For the GUI, Xcode needs to have the two files _RevBayesGUI-Info.plist_ and _RevBayesGui-Prefix.pch_ in the _RevBayesGUI_ folder. The original versions of those files are in _revbayes/trunk/src/gui_. Apparently it is not sufficient to move the files to the _RevBayesGui_ folder in the Project Navigator in XCode (which is in the left-most panel if the folder symbol is selected). You either have to copy or put soft links to the original file locations in the _RevBayesGui_ directory inside the XCode directory for your project. Or you can keep the default files created by Xcode in the "Supporting Files" directory. 
+
+You should now be able to compile and run the three different targets. If not, check the settings in _RbOptions.h_in _revbayes/core/utils/_ and see if there is any setting there that conflicts with your environment. For instance, the current _RbOptions.h_ settings may result in code that references a library that you do not have on your machine. 
+
+You may want to change the working directory and set command line arguments for your targets. For instance, the computing environment will treat any command line argument as a path to a Rev language file to be processed. In the menu _Product_, select _Scheme_ and then _Edit Scheme..._, where you change working directory and command line argument settings under the _Arguments_ and _Options_ tabs. 
+
+**NB**! Xcode does not automatically include new files added by other developers to the repository. If files get added, your code will probably no longer compile. You can add the new files to your project by first removing the four code folders listed above and then adding them back in. Make sure you only remove the references, though, and not the files themselves, or you will have to start over from scratch... 

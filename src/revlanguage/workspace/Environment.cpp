@@ -530,7 +530,7 @@ void Environment::printValue(std::ostream& o) const
     for ( it = variableTable.begin(); it != variableTable.end(); it++ )
     {
         o << (*it).first << " = ";
-        (*it).second->printValue( o );
+        (*it).second->printValue( o, true );
         o << std::endl;
     }
 

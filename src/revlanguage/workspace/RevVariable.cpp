@@ -314,7 +314,7 @@ void RevVariable::makeReference(const RevPtr<RevVariable>& refVar)
 
 
 /* Print value of the RevVariable RevVariable */
-void RevVariable::printValue(std::ostream& o) const
+void RevVariable::printValue(std::ostream& o, bool toScreen) const
 {
     
     if (revObject == NULL)
@@ -323,7 +323,7 @@ void RevVariable::printValue(std::ostream& o) const
     }
     else
     {
-        revObject->printValue( o );
+        revObject->printValue( o, toScreen );
     }
     
 }

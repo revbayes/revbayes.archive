@@ -16,9 +16,9 @@
 #endif
 
 void RevBayesCore::MpiUtilities::DebugWait(int rank) {
-    char	a;
     
 #ifdef RB_MPI
+    char	a;
     if(rank == 0) {
     	scanf("%c", &a);
     	printf("%d: Starting now\n", rank);

@@ -8,14 +8,14 @@ using namespace RevBayesCore;
 
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
     isNodeParameter( np ),
     tree( t ),
     nodeVariables( n )
 {
 //    this->nodes.insert( tree );
     
-    for (std::set<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
+    for (std::vector<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
         this->nodes.push_back( *it );
         
@@ -40,7 +40,7 @@ void ExtendedNewickTreeMonitor::monitorVariables(unsigned long gen)
     outStream << separator;
     
     tree->getValue().clearParameters();
-    for (std::set<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
+    for (std::vector<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
         const std::string &name = (*it)->getName();
 //        Container *c = dynamic_cast<Container *>( (*it)->getValue() );
@@ -94,13 +94,17 @@ void ExtendedNewickTreeMonitor::swapNode(DagNode *oldN, DagNode *newN)
     else if ( nodeVar != NULL )
     {
         // error catching
-        if ( nodeVariables.find(nodeVar) == nodeVariables.end() )
+//        if ( nodeVariables.find(nodeVar) == nodeVariables.end() )
+//        it = find (myvector.begin(), myvector.end(), 30);
+//        if (it != myvector.end())
+        std::vector<DagNode*>::iterator it = find(nodeVariables.begin(), nodeVariables.end(), nodeVar);
+        if (it == nodeVariables.end())
         {
             throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this extended newick monitor because the monitor doesn't hold this DAG node.");
         }
-        
-        nodeVariables.erase( nodeVar );
-        nodeVariables.insert( static_cast< TypedDagNode< RbVector<double> > *>(newN) );
+        *it = static_cast< TypedDagNode< RbVector<double> > *>(newN);
+//        nodeVariables.erase( nodeVar );
+//        nodeVariables.insert( static_cast< TypedDagNode< RbVector<double> > *>(newN) );
     }
     
     // delegate to base class
