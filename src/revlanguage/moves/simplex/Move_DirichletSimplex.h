@@ -1,22 +1,5 @@
-/**
- * @file
- * This file contains the declaration of RevLanguage wrapper of SimplexMove.
- *
- * @brief Declaration of RlSimplexMove
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
- */
-
-#ifndef Move_simplex_H
-#define Move_simplex_H
+#ifndef Move_DirichletSimplex_H
+#define Move_DirichletSimplex_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -27,14 +10,23 @@
 
 namespace RevLanguage {
     
-    class Move_Simplex : public Move {
+    /**
+     * @brief Rev Wrapper of a Dirichlet-simplex move on all elements of a simplex.
+     *
+     * This class is the RevLanguage wrapper of DirichletSimplexMove.
+     *
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @copyright GPL version 3
+     * @since 2015-05-21, version 1.0
+     */
+    class Move_DirichletSimplex : public Move {
         
     public:
         
-        Move_Simplex(void);                                                                                      //!< Default constructor (0.0)
+        Move_DirichletSimplex(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Move_Simplex*                       clone(void) const;                                                      //!< Clone object
+        virtual Move_DirichletSimplex*              clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -46,11 +38,11 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;
-        RevPtr<const RevVariable>                      alpha;
-        RevPtr<const RevVariable>                      numCats;
-        RevPtr<const RevVariable>                      offset;
-        RevPtr<const RevVariable>                      tune;
+        RevPtr<const RevVariable>                   x;
+        RevPtr<const RevVariable>                   alpha;
+        RevPtr<const RevVariable>                   numCats;
+        RevPtr<const RevVariable>                   offset;
+        RevPtr<const RevVariable>                   tune;
         
     };
     

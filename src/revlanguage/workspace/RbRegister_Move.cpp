@@ -65,8 +65,8 @@
 #include "Move_RandomIntegerWalk.h"
 
 /* Moves on simplices */
-#include "Move_Simplex.h"
-#include "Move_SimplexSingleElementScale.h"
+#include "Move_DirichletSimplex.h"
+#include "Move_BetaSimplex.h"
 
 /* Moves on real valued vectors */
 #include "Move_ElementScale.h"
@@ -152,8 +152,11 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
 
         /* Moves on simplices */
-        addTypeWithConstructor("mvSimplex",             new Move_Simplex() );
-        addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );        
+        addTypeWithConstructor("mvDirichletSimplex",    new Move_DirichletSimplex() );
+        addTypeWithConstructor("mvBetaSimplex",         new Move_BetaSimplex() );
+        // old names
+        addTypeWithConstructor("mvSimplex",             new Move_DirichletSimplex() );
+        addTypeWithConstructor("mvSimplexElementScale", new Move_BetaSimplex() );
 
         /* Moves on vectors of real values */
         addTypeWithConstructor("mvVectorSingleElementSlide",        new Move_SingleElementSlide() );
