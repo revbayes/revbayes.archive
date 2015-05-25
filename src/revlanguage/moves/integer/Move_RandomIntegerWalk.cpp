@@ -1,7 +1,9 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Integer.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_RandomIntegerWalk.h"
+#include "RandomIntegerWalkProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -56,7 +58,8 @@ void Move_RandomIntegerWalk::constructInternalObject( void )
     RevBayesCore::StochasticNode<int> *n = static_cast<RevBayesCore::StochasticNode<int> *>( tmp );
     
     // finally create the internal move object
-    value = new RevBayesCore::RandomIntegerWalkMove(n, w);
+    RevBayesCore::Proposal *prop = new RevBayesCore::RandomIntegerWalkProposal(n);
+    value = new RevBayesCore::MetropolisHastingsMove(prop,w);
     
 }
 

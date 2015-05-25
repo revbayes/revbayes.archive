@@ -1,7 +1,6 @@
 #ifndef RlMove_RandomGeometricWalk_H
 #define RlMove_RandomGeometricWalk_H
 
-#include "RandomGeometricWalkMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -32,7 +31,7 @@ namespace RevLanguage {
         Move_RandomGeometricWalk(void);                                                                                                          //!< Default constructor
         
         // Basic utility functions
-        virtual Move_RandomGeometricWalk*            clone(void) const;                                                                          //!< Clone object
+        virtual Move_RandomGeometricWalk*           clone(void) const;                                                                          //!< Clone object
         void                                        constructInternalObject(void);                                                              //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                                         //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                     //!< Get class type spec
@@ -44,9 +43,9 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);         //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                          //!< The variable on which the move works
-        RevPtr<const RevVariable>                      p;                                                                                          //!< The tuning parameter
-        RevPtr<const RevVariable>                      tune;                                                                                       //!< If autotuning should be used.
+        RevPtr<const RevVariable>                   x;                                                                                          //!< The variable on which the move works
+        RevPtr<const RevVariable>                   p;                                                                                          //!< The tuning parameter
+        RevPtr<const RevVariable>                   tune;                                                                                       //!< If autotuning should be used.
 
     };
     
