@@ -29,13 +29,13 @@ namespace RevLanguage {
     class WorkspaceVector : public WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >, public Container {
         
     public:
-        typedef typename rlType::valueType          elementType;
-        typedef RevBayesCore::RbVector<elementType> vectorRbPtr;
+//        typedef typename rlType::valueType          elementType;
+//        typedef RevBayesCore::RbVector<elementType> vectorRbPtr;
         typedef std::vector<rlType*>                vectorRlPtr;
         
                                                     WorkspaceVector(void);                                              //!< Default constructor
                                                     WorkspaceVector(const RevBayesCore::RbVector<rlType>& v);           //!< Constructor from rb value pointers
-                                                    WorkspaceVector(const vectorRbPtr& v);                              //!< Constructor from rb value pointers
+//                                                    WorkspaceVector(const vectorRbPtr& v);                              //!< Constructor from rb value pointers
                                                     WorkspaceVector(const vectorRlPtr& v);                              //!< Constructor from rl value pointers
         
         // STL-like vector functions provided here
@@ -58,7 +58,7 @@ namespace RevLanguage {
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
         
         // WorkspaceVector functions
-        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
+//        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
         
     protected:
         // Basic utility function provided here
@@ -108,19 +108,19 @@ WorkspaceVector<rlType>::WorkspaceVector( const RevBayesCore::RbVector<rlType>& 
 }
 
 
-/**
- * Construct from vector of pointers to internal value
- * objects. We assume here that we are responsible for
- * managing the associated memory. Here we need to make
- * copies of the original objects, so we delete those
- * after we are done.
- */
-template <typename rlType>
-WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
-    WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<typename rlType::valueType> >()
-{
-    *this->value = v;
-}
+///**
+// * Construct from vector of pointers to internal value
+// * objects. We assume here that we are responsible for
+// * managing the associated memory. Here we need to make
+// * copies of the original objects, so we delete those
+// * after we are done.
+// */
+//template <typename rlType>
+//WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
+//    WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<typename rlType::valueType> >()
+//{
+//    *this->value = v;
+//}
 
 
 /**
@@ -197,7 +197,7 @@ const std::string& WorkspaceVector<rlType>::getClassType(void)
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
 	return revTypeSpec;
 }
@@ -223,24 +223,24 @@ const TypeSpec& WorkspaceVector<rlType>::getTypeSpec(void) const
 }
 
 
-/**
- * Here we return a vector of clones of the elementType values of the
- * Rev object elements. The clones are put in an RbVector, which is
- * assumed to take on ownership of those element value clones.
- */
-template<typename rlType>
-RevBayesCore::RbVector<typename rlType::valueType> WorkspaceVector<rlType>::getVectorRbPointer( void ) const
-{
-    vectorRbPtr theVector;
-    
-    RevBayesCore::RbIterator< rlType > it;
-    for ( it = this->value->begin(); it != this->value->end(); ++it )
-    {
-        theVector.push_back( it->getValue() );
-    }
-    
-    return theVector;
-}
+///**
+// * Here we return a vector of clones of the elementType values of the
+// * Rev object elements. The clones are put in an RbVector, which is
+// * assumed to take on ownership of those element value clones.
+// */
+//template<typename rlType>
+//RevBayesCore::RbVector<typename rlType::valueType> WorkspaceVector<rlType>::getVectorRbPointer( void ) const
+//{
+//    vectorRbPtr theVector;
+//    
+//    RevBayesCore::RbIterator< rlType > it;
+//    for ( it = this->value->begin(); it != this->value->end(); ++it )
+//    {
+//        theVector.push_back( it->getValue() );
+//    }
+//    
+//    return theVector;
+//}
 
 
 /**
