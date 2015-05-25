@@ -43,7 +43,6 @@ namespace RevLanguage {
         const rlType&                               operator[](size_t index) const;                                     //!< Subscript operator (const)
         void                                        pop_back(void);                                                     //!< Drop element at back
         void                                        pop_front(void);                                                    //!< Drop element from front
-        void                                        push_back(const rlType &x);                                         //!< Append element to end
         void                                        push_back(const RevObject &x);                                      //!< Append element to end
         void                                        push_front(const rlType &x);                                        //!< Append element to end
         size_t                                      size(void) const;                                                   //!< The size of the vector
@@ -262,17 +261,6 @@ void WorkspaceVector<rlType>::pop_front( void )
     this->value->erase( this->value->begin() );
 }
 
-/**
- * Push a Rev object element onto the back of the vector.
- */
-template <typename rlType>
-void WorkspaceVector<rlType>::push_back( const rlType &x )
-{
-
-    // Push it onto the back of the elements vector
-    this->value->push_back( x );
-}
-
 
 /**
  * Push a Rev object element onto the back of the vector.
@@ -290,7 +278,7 @@ void WorkspaceVector<rlType>::push_back( const RevObject &x )
     }
     
     // Push it onto the back of the elements vector
-    this->push_back( *x_converted );
+    this->value->push_back( *x_converted );
 }
 
 
