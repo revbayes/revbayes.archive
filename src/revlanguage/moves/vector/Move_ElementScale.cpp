@@ -63,7 +63,8 @@ void Move_ElementScale::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Move_ElementScale::getClassType(void) {
+const std::string& Move_ElementScale::getClassType(void)
+{
     
     static std::string revType = "Move_ElementScale";
     
@@ -71,7 +72,8 @@ const std::string& Move_ElementScale::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_ElementScale::getClassTypeSpec(void) {
+const TypeSpec& Move_ElementScale::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -81,7 +83,8 @@ const TypeSpec& Move_ElementScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ElementScale::getParameterRules(void) const {
+const MemberRules& Move_ElementScale::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -104,7 +107,8 @@ const MemberRules& Move_ElementScale::getParameterRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& Move_ElementScale::getTypeSpec( void ) const {
+const TypeSpec& Move_ElementScale::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -113,13 +117,16 @@ const TypeSpec& Move_ElementScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_ElementScale::printValue(std::ostream &o) const {
+void Move_ElementScale::printValue(std::ostream &o) const
+{
     
-    o << "Move_ElementScale(";
-    if (x != NULL) {
+    o << "Move_VectorScale(";
+    if (x != NULL)
+    {
         o << x->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";

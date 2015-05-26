@@ -1,42 +1,37 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlBoolean.h"
-#include "ContinuousStochasticNode.h"
+#include "DirichletSimplexProposal.h"
+#include "MetropolisHastingsMove.h"
+#include "Move_DirichletSimplex.h"
 #include "Natural.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "Move_Simplex.h"
+#include "RlBoolean.h"
 #include "RlSimplex.h"
-#include "SimplexMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Move_Simplex::Move_Simplex() : Move() {
+Move_DirichletSimplex::Move_DirichletSimplex() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_Simplex* Move_Simplex::clone(void) const {
+Move_DirichletSimplex* Move_DirichletSimplex::clone(void) const
+{
     
-	return new Move_Simplex(*this);
+	return new Move_DirichletSimplex(*this);
 }
 
 
-void Move_Simplex::constructInternalObject( void ) {
+void Move_DirichletSimplex::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -48,20 +43,25 @@ void Move_Simplex::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmp = static_cast<const Simplex &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *n = static_cast<RevBayesCore::StochasticNode< RevBayesCore::RbVector<double> > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    value = new RevBayesCore::SimplexMove(n, a, size_t(nc), o, t, w);
+
+    RevBayesCore::Proposal *prop = new RevBayesCore::DirichletSimplexProposal(n,a,nc,o);
+    value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
+
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_Simplex::getClassType(void) { 
+const std::string& Move_DirichletSimplex::getClassType(void)
+{
     
-    static std::string revType = "Move_Simplex";
+    static std::string revType = "Move_DirichletSimplex";
     
 	return revType; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_Simplex::getClassTypeSpec(void) { 
+const TypeSpec& Move_DirichletSimplex::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -71,7 +71,8 @@ const TypeSpec& Move_Simplex::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_Simplex::getParameterRules(void) const {
+const MemberRules& Move_DirichletSimplex::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -95,7 +96,8 @@ const MemberRules& Move_Simplex::getParameterRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& Move_Simplex::getTypeSpec( void ) const {
+const TypeSpec& Move_DirichletSimplex::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -104,13 +106,16 @@ const TypeSpec& Move_Simplex::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_Simplex::printValue(std::ostream &o) const {
+void Move_DirichletSimplex::printValue(std::ostream &o) const
+{
     
-    o << "Move_Simplex(";
-    if (x != NULL) {
+    o << "Move_DirichletSimplex(";
+    if (x != NULL)
+    {
         o << x->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -118,24 +123,30 @@ void Move_Simplex::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_Simplex::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_DirichletSimplex::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "x" ) {
+    if ( name == "x" )
+    {
         x = var;
     }
-    else if ( name == "alpha" ) {
+    else if ( name == "alpha" )
+    {
         alpha = var;
     }
-    else if ( name == "numCats" ) {
+    else if ( name == "numCats" )
+    {
         numCats = var;
     }
-    else if ( name == "offset" ) {
+    else if ( name == "offset" )
+    {
         offset = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "tune" )
+    {
         tune = var;
     }
     else {
         Move::setConstParameter(name, var);
     }
+    
 }

@@ -31,8 +31,18 @@ RevPtr<RevVariable> Func_Mcmc::execute( void )
 {
     
     const RevBayesCore::Model&                              mdl     = static_cast<const Model &>( args[0].getVariable()->getRevObject() ).getValue();
-    const RevBayesCore::RbVector<RevBayesCore::Monitor>&    mntr    = static_cast<const WorkspaceVector<Monitor> &>( args[1].getVariable()->getRevObject() ).getVectorRbPointer();
-    const RevBayesCore::RbVector<RevBayesCore::Move>&       mvs     = static_cast<const WorkspaceVector<Move> &>( args[2].getVariable()->getRevObject() ).getVectorRbPointer();
+    const WorkspaceVector<Monitor> &                        ws_vec_mntr = static_cast<const WorkspaceVector<Monitor> &>( args[1].getVariable()->getRevObject() );
+    RevBayesCore::RbVector<RevBayesCore::Monitor>           mntr;
+    for ( size_t i = 0; i < ws_vec_mntr.size(); ++i )
+    {
+        mntr.push_back( ws_vec_mntr[i].getValue() );
+    }
+    const WorkspaceVector<Move>&                            ws_vec_mvs = static_cast<const WorkspaceVector<Move> &>( args[2].getVariable()->getRevObject() );
+    RevBayesCore::RbVector<RevBayesCore::Move>              mvs;
+    for ( size_t i = 0; i < ws_vec_mvs.size(); ++i )
+    {
+        mvs.push_back( ws_vec_mvs[i].getValue() );
+    }
     const std::string &                                     sched   = static_cast<const RlString &>( args[3].getVariable()->getRevObject() ).getValue();
     int                                                     nreps   = static_cast<const Natural &>( args[4].getVariable()->getRevObject() ).getValue();
     RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr);

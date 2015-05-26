@@ -26,13 +26,15 @@ Move_TreeScale::Move_TreeScale() : Move() {
 
 
 /** Clone object */
-Move_TreeScale* Move_TreeScale::clone(void) const {
+Move_TreeScale* Move_TreeScale::clone(void) const
+{
     
 	return new Move_TreeScale(*this);
 }
 
 
-void Move_TreeScale::constructInternalObject( void ) {
+void Move_TreeScale::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -54,7 +56,8 @@ void Move_TreeScale::constructInternalObject( void ) {
 
 
 /** Get Rev type of object */
-const std::string& Move_TreeScale::getClassType(void) { 
+const std::string& Move_TreeScale::getClassType(void)
+{
     
     static std::string revType = "Move_TreeScale";
     
@@ -62,7 +65,8 @@ const std::string& Move_TreeScale::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_TreeScale::getClassTypeSpec(void) { 
+const TypeSpec& Move_TreeScale::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -71,7 +75,7 @@ const TypeSpec& Move_TreeScale::getClassTypeSpec(void) {
 
 
 
-/** Return member rules (no members) */
+/** Return member rules */
 const MemberRules& Move_TreeScale::getParameterRules(void) const
 {
     

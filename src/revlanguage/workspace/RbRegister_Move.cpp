@@ -55,6 +55,7 @@
 #include "Move_Slide.h"
 
 /* Compound Moves on Real Values */
+#include "Move_UpDownScale.h"
 #include "Move_ScalerUpDown.h"
 #include "Move_SliderUpDown.h"
 #include "Move_LevyJumpSum.h"
@@ -65,11 +66,14 @@
 #include "Move_RandomIntegerWalk.h"
 
 /* Moves on simplices */
-#include "Move_Simplex.h"
-#include "Move_SimplexSingleElementScale.h"
+#include "Move_DirichletSimplex.h"
+#include "Move_BetaSimplex.h"
 
 /* Moves on real valued vectors */
+#include "Move_ElementScale.h"
+#include "Move_ElementSlide.h"
 #include "Move_SingleElementScale.h"
+#include "Move_SingleElementSlide.h"
 #include "Move_VectorSingleElementScale.h"
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorFixedSingleElementSlide.h"
@@ -137,6 +141,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvSlide",               new Move_Slide() );
         addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
 		
+        /* compound moves */
+        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
+        
 		// compound moves on real values
         addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
         addTypeWithConstructor("mvSliderUpDown",        new Move_SliderUpDown() );
@@ -149,13 +156,19 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 
 
         /* Moves on simplices */
-        addTypeWithConstructor("mvSimplex",             new Move_Simplex() );
-        addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );        
+        addTypeWithConstructor("mvDirichletSimplex",    new Move_DirichletSimplex() );
+        addTypeWithConstructor("mvBetaSimplex",         new Move_BetaSimplex() );
+        // old names
+        addTypeWithConstructor("mvSimplex",             new Move_DirichletSimplex() );
+        addTypeWithConstructor("mvSimplexElementScale", new Move_BetaSimplex() );
 
         /* Moves on vectors of real values */
-        addTypeWithConstructor("mvSingleElementScale",              new Move_SingleElementScale() );
+        addTypeWithConstructor("mvVectorSingleElementSlide",        new Move_SingleElementSlide() );
+        addTypeWithConstructor("mvVectorSingleElementScale",        new Move_SingleElementScale() );
         addTypeWithConstructor("mvVectorScale",                     new Move_VectorScale() );
         addTypeWithConstructor("mvVectorSlide",                     new Move_VectorSlide() );
+        addTypeWithConstructor("mvVectorScale",                     new Move_ElementScale() );
+        addTypeWithConstructor("mvVectorSlide",                     new Move_ElementSlide() );
         addTypeWithConstructor("mvVectorSingleElementScale",        new Move_VectorSingleElementScale() );
         addTypeWithConstructor("mvVectorSingleElementSliding",      new Move_VectorSingleElementSlide() );
         addTypeWithConstructor("mvVectorFixedSingleElementSliding", new Move_VectorFixedSingleElementSlide() );

@@ -227,7 +227,8 @@ TopologyNode& Topology::getNode(size_t idx) {
 }
 
 
-const TopologyNode& Topology::getNode(size_t idx) const {
+const TopologyNode& Topology::getNode(size_t idx) const
+{
     
     if ( idx >= nodes.size() ) 
     {
@@ -240,14 +241,20 @@ const TopologyNode& Topology::getNode(size_t idx) const {
 
 /** Calculate the number of interior nodes in the BranchLengthTree by deducing the number of
  tips from number of nodes, and then subtract 1 more if the BranchLengthTree is rooted. */
-size_t Topology::getNumberOfInteriorNodes( void ) const {
+size_t Topology::getNumberOfInteriorNodes( void ) const
+{
     
     size_t preliminaryNumIntNodes = getNumberOfNodes() - getNumberOfTips();
     
     if ( isRooted() )
+    {
         return preliminaryNumIntNodes - 1;
+    }
     else
+    {
         return preliminaryNumIntNodes;
+    }
+    
 }
 
 
@@ -265,12 +272,16 @@ std::string Topology::getPlainNewickRepresentation( void ) const {
 
 /** Calculate and return the number of tips on the BranchLengthTree by going through the vector
  of nodes, querying each about its tip status. */
-size_t Topology::getNumberOfTips( void ) const {
+size_t Topology::getNumberOfTips( void ) const
+{
     
     size_t n = 0;
-    for (size_t i=0; i<nodes.size(); i++) {
+    for (size_t i=0; i<nodes.size(); i++)
+    {
         if (nodes[i]->isTip() == true)
+        {
             n++;
+        }
     }
     return n;
 }
@@ -278,7 +289,8 @@ size_t Topology::getNumberOfTips( void ) const {
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
-const TopologyNode& Topology::getInteriorNode( size_t indx ) const {
+const TopologyNode& Topology::getInteriorNode( size_t indx ) const
+{
     
     // \TODO: Bound checking, maybe draw from downpass array instead
     return *nodes[ indx + getNumberOfTips() ];
@@ -292,7 +304,8 @@ TopologyNode& Topology::getRoot( void )
 }
 
 
-const TopologyNode& Topology::getRoot( void ) const {
+const TopologyNode& Topology::getRoot( void ) const
+{
     
     return *root;
 }
@@ -300,7 +313,8 @@ const TopologyNode& Topology::getRoot( void ) const {
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the tips are first in the nodes vector. */
-TopologyNode& Topology::getTipNode( size_t indx ) {
+TopologyNode& Topology::getTipNode( size_t indx )
+{
     
 #ifdef ASSERTIONS_BranchLengthTree
     if ( indx >= getNumberOfTips() ) {
@@ -318,19 +332,22 @@ TopologyNode& Topology::getTipNode( size_t indx ) {
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the tips are first in the nodes vector. */
-const TopologyNode& Topology::getTipNode( size_t indx ) const {
+const TopologyNode& Topology::getTipNode( size_t indx ) const
+{
     
     // \TODO: Bound checking
     return *nodes[ indx ];
 }
 
 
-bool Topology::isBinary( void ) const {
+bool Topology::isBinary( void ) const
+{
     return binary;
 }
 
 
-bool Topology::isRooted( void ) const {
+bool Topology::isRooted( void ) const
+{
     return rooted;
 }
 

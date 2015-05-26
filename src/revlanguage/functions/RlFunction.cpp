@@ -582,10 +582,13 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
         for (size_t j=0; j<nRules; j++) {
 
-            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
+            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() )
+            {
 
                 if ( filled[j] )
+                {
                     throw RbException( "Duplicate argument labels '" + passedArgs[i].getLabel() );
+                }
                 
                 pArgs[i]            = theRules[j].fitArgument( pArgs[i], once );
                 taken[i]            = true;
@@ -731,8 +734,11 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
     /*********************  5. Insert arguments into argument list  **********************/
     for (size_t j=0; j<nRules; j++) 
     {
-        if ( passedArgIndex[j] < 1000 ) 
+        if ( passedArgIndex[j] < 1000 )
+        {
             args.push_back( pArgs[ passedArgIndex[j] ] );
+        }
+        
     }
     
     /*********************  6. Insert ellipsis arguments  **********************/
@@ -744,7 +750,8 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 }
 
 
-void Function::setExecutionEnviroment(Environment *e) {
+void Function::setExecutionEnviroment(Environment *e)
+{
     
     env = e;
 

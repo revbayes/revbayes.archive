@@ -1,7 +1,6 @@
 #ifndef Move_RandomIntegerWalk_H
 #define Move_RandomIntegerWalk_H
 
-#include "RandomIntegerWalkMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

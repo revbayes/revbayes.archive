@@ -55,9 +55,17 @@ void PowerPosteriorAnalysis::constructInternalObject( void )
     // now allocate a new sliding move
     const RevBayesCore::Model&                      mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
     const WorkspaceVector<Move>&                    rlmvs   = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() );
-    RevBayesCore::RbVector<RevBayesCore::Move>      mvs     = rlmvs.getVectorRbPointer();
     const WorkspaceVector<Monitor>&                 rlmntr  = static_cast<const WorkspaceVector<Monitor> &>( monitors->getRevObject() );
-    RevBayesCore::RbVector<RevBayesCore::Monitor>   mntr    = rlmntr.getVectorRbPointer();
+    RevBayesCore::RbVector<RevBayesCore::Monitor>   mntr;
+    for ( size_t i = 0; i < rlmntr.size(); ++i )
+    {
+        mntr.push_back( rlmntr[i].getValue() );
+    }
+    RevBayesCore::RbVector<RevBayesCore::Move>      mvs;
+    for ( size_t i = 0; i < rlmvs.size(); ++i )
+    {
+        mvs.push_back( rlmvs[i].getValue() );
+    }
     const std::string&                              fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const double                                    alpha   = static_cast<const RealPos &>( alphaVal->getRevObject() ).getValue();
     const int                                       sf      = static_cast<const Natural &>( sampFreq->getRevObject() ).getValue();

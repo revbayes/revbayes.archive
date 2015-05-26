@@ -97,7 +97,13 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
         else
         {
-            RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules = static_cast<const WorkspaceVector<StoppingRule> &>( args[0].getVariable()->getRevObject() ).getVectorRbPointer();
+            const WorkspaceVector<StoppingRule>&                    ws_vec = static_cast<const WorkspaceVector<StoppingRule> &>( args[0].getVariable()->getRevObject() );
+            RevBayesCore::RbVector<RevBayesCore::StoppingRule>      rules;
+            for ( size_t i = 0; i < ws_vec.size(); ++i )
+            {
+                rules.push_back( ws_vec[i].getValue() );
+            }
+            
             value->run( rules );
         }
         
