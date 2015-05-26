@@ -437,6 +437,10 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction("dcat", new DistributionFunctionPdf<Natural>( new Dist_categorical() ) );
         addFunction("rcat", new DistributionFunctionRv<Natural>( new Dist_categorical() ) );
         
+        
+        // CPP normal distribution
+        addFunction("dCppNormal", new DistributionFunctionPdf<Real>( new Dist_cppNormal() ) );
+        
         // dirichlet distribution
         addFunction("ddirichlet", new DistributionFunctionPdf<Simplex>( new Dist_dirichlet() ) );
         addFunction("rdirichlet", new DistributionFunctionRv<Simplex>( new Dist_dirichlet() ) );
