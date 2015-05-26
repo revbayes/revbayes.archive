@@ -56,6 +56,10 @@ namespace RevLanguage {
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
         
+        // Type conversion functions
+//        RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
+//        virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
+
         // WorkspaceVector functions
 //        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
         
@@ -171,6 +175,66 @@ WorkspaceVector<rlType>* WorkspaceVector<rlType>::clone() const
 {
     return new WorkspaceVector<rlType>( *this );
 }
+
+
+/**
+ * Convert to object of another type. Here we use the setElements function
+ * of the Container base class to do generic type conversion in all cases
+ * where the elements are individually convertible to the desired element
+ * type. This is not done automatically for us because of the templating.
+ * A vector of RealPos, for example, does not inherit from a vector of Real,
+ * which means that a vector of RealPos is not a specialized vector of Real
+ * in the C++ sense (or in the Rev sense).
+ */
+//template <typename rlType>
+//RevObject* WorkspaceVector<rlType>::convertTo(const TypeSpec &type) const
+//{
+//    
+//    // First check that we are not asked to convert to our own type
+//    if ( type == getClassTypeSpec() )
+//    {
+//        return this->clone();
+//    }
+//    
+//    // Test whether we want to convert to another generic model vector
+//    if ( type.getParentType() == getClassTypeSpec().getParentType() )
+//    {
+//        // We are both model vectors. Rely on generic code to cover all allowed conversions
+//        
+//        // First generate an empty model vector of the desired type
+//        RevObject *emptyContainer = Workspace::userWorkspace().makeNewDefaultObject( type.getType() );
+//        Container *theConvertedContainer = dynamic_cast<Container*>( emptyContainer );
+//        
+//        // test if the cast succeeded
+//        if (theConvertedContainer == NULL)
+//        {
+//            throw RbException("Could not convert a container of type " + this->getClassType() + " to a container of type " + type.getType() );
+//        }
+//        
+//        for ( typename RevBayesCore::RbConstIterator<elementType> i = this->getValue().begin(); i != this->getValue().end(); ++i )
+//        {
+//            
+//            rlType orgElement = rlType( *i );
+//            if ( orgElement.isType( *type.getElementTypeSpec() ) )
+//            {
+//                theConvertedContainer->push_back( orgElement );
+//            }
+//            else
+//            {
+//                RevObject *convObj = orgElement.convertTo( *type.getElementTypeSpec() );
+//                theConvertedContainer->push_back( *convObj );
+//                delete convObj;
+//            }
+//            
+//        }
+//        
+//        // Now return the converted container object
+//        return emptyContainer;
+//    }
+//    
+//    // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
+//    return this->ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
+//}
 
 
 /**

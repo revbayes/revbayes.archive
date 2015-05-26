@@ -27,22 +27,30 @@ RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x ) {
 
 
 /** Construct from double */
-RealPos::RealPos( double x ) : Real( x ) {
+RealPos::RealPos( double x ) : Real( x )
+{
 
     setGuiVariableName("Positive Real Number");
     setGuiLatexSymbol("R+");
     if ( x < 0.0 )
+    {
         throw RbException( "Nonpositive value for " + getClassType() );
+    }
+    
 }
 
 
 /** Construct from int */
-RealPos::RealPos( int x ) : Real( x ) {
+RealPos::RealPos( int x ) : Real( x )
+{
 
     setGuiVariableName("Positive Real Number");
     setGuiLatexSymbol("R+");
     if ( x < 0 )
+    {
         throw RbException( "Nonpositive value for " + getClassType() );
+    }
+    
 }
 
 

@@ -112,9 +112,14 @@ const std::string& TypeSpec::getParentType( void ) const
     static std::string emptyString;
     
     if ( parent == NULL)
+    {
         return emptyString;
+    }
     else
+    {
         return parent->getType();
+    }
+    
 }
 
 
