@@ -52,6 +52,7 @@ Move_UpDownScale* Move_UpDownScale::clone(void) const
  */
 void Move_UpDownScale::constructInternalObject( void )
 {
+    
     // we free the memory first
     delete value;
     
@@ -221,9 +222,9 @@ const MemberRules& Move_UpDownScale::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "up"  , WorkspaceVector<RevObject>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        moveMemberRules.push_back( new ArgumentRule( "down", WorkspaceVector<RevObject>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "up"  , WorkspaceVector<RevObject>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<RevObject>() ) );
+        moveMemberRules.push_back( new ArgumentRule( "down", WorkspaceVector<RevObject>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<RevObject>() ) );
+        moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
         moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */

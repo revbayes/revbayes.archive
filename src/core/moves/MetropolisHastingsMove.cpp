@@ -221,26 +221,32 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     // compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        if ( (*it)->isClamped() )
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
-            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-        }
-        else
-        {
-            lnPriorRatio += (*it)->getLnProbabilityRatio();
+            if ( (*it)->isClamped() )
+            {
+                lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+            }
+            else
+            {
+                lnPriorRatio += (*it)->getLnProbabilityRatio();
+            }
         }
     }
     
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
-        if ( (*it)->isClamped() )
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
-            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-        }
-        else
-        {
-            lnPriorRatio += (*it)->getLnProbabilityRatio();
+            if ( (*it)->isClamped() )
+            {
+                lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+            }
+            else
+            {
+                lnPriorRatio += (*it)->getLnProbabilityRatio();
+            }
         }
     }
     
@@ -248,7 +254,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     double lnPosteriorRatio;
     lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
 	
-	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) )
+	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
     {
 		
             proposal->undoProposal();

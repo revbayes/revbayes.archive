@@ -141,16 +141,19 @@ void RevBayesCore::TreeUtilities::getOldestTip(TimeTree* t, TopologyNode *n, dou
     }
 }
 
-void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor) {
+void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor)
+{
     // we only rescale internal nodes
-    if ( !n->isTip() ) {
+    if ( !n->isTip() )
+    {
         // rescale the age of the node
         double newAge = n->getAge() * factor;
         t->setAge(n->getIndex(), newAge);
         
         // assertion that we have binary trees
 #ifdef ASSERTIONS_TREE
-        if ( n->getNumberOfChildren() != 2 ) {
+        if ( n->getNumberOfChildren() != 2 )
+        {
             throw RbException("NNI is only implemented for binary trees!");
         }
 #endif
