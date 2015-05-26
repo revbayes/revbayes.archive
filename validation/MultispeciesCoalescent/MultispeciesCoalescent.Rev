@@ -93,8 +93,8 @@ moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=2)
 moves[++mi] = mvSlide(relativeExtinction,delta=1,tune=true,weight=2)
 moves[++mi] = mvScale(diversification,lambda=1,tune=true,weight=2)
 moves[++mi] = mvScale(relativeExtinction,lambda=1,tune=true,weight=2)
-moves[++mi] = mvSlide(root,delta=1,tune=true,weight=0.2)
-moves[++mi] = mvScale(root,lambda=1,tune=true,weight=0.2)
+moves[++mi] = mvSlide(root,delta=1,tune=true,weight=0.1)
+moves[++mi] = mvScale(root,lambda=1,tune=true,weight=0.1)
 
 
 # construct a variable for the tree drawn from a birth death process
@@ -115,14 +115,14 @@ moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 
 
 # We assume independent population size parameters for each branch of the species tree.
-for (i in 1:n_branches) {
-  Ne[i] ~ dnExponential(0.1)
-  moves[++mi] = mvScale(Ne[i],1,true,1.0)
-}
+#for (i in 1:n_branches) {
+#  Ne[i] ~ dnExponential(0.1)
+#  moves[++mi] = mvScale(Ne[i],1,true,1.0)
+#}
 
 # We could also assume a single effective population size for the entire species tree.
-#Ne ~ dnGamma(shape=1.0,rate=1.0)
-#moves[++mi] = mvScale(Ne,1,true,1.0)
+Ne ~ dnExponential(10.0)
+moves[++mi] = mvScale(Ne,1,true,1.0)
 
 
 
@@ -205,7 +205,7 @@ for ( i in 1:num_loci ) {
 mymcmc = mcmc(mymodel, monitors, moves)
 
 # This should be sufficient to obtain enough MCMC samples
-mymcmc.burnin(generations=5000,tuningInterval=250)
+mymcmc.burnin(generations=5000,tuningInterval=500)
 mymcmc.run(generations=50000)
 
 
