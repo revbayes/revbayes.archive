@@ -185,7 +185,7 @@ const std::string& RevObject::getType( void ) const
 RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 {
     
-    throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of type '" + getClassType() + "'.");
+    throw RbException("Workspace objects cannot be used inside DAG's! You tried to access the DAG node of type '" + getClassType() + "'.");
     
     return NULL;
 }

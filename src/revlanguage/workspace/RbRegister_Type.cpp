@@ -43,6 +43,7 @@
 
 /* Base types (in folder "datatypes") */
 #include "RevObject.h"
+#include "AbstractModelObject.h"
 
 /* Primitive types (in folder "datatypes/basic") */
 #include "Integer.h"
@@ -135,6 +136,8 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<Taxon,5>::addTypeToWorkspace( *this, new Taxon() );
         
         
+        
+        
         AddWorkspaceVectorType<RateGenerator,5>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
@@ -142,6 +145,10 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
 		
+        
+        //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
+        addFunction("v", new Func_workspaceVector<AbstractModelObject>() );
+        
 		addFunction("v", new Func_workspaceVector<AncestralStateTrace>() );
         
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
