@@ -8,7 +8,6 @@
 #import "ToolDistanceMatrix.h"
 #import "WindowControllerDistanceMatrix.h"
 
-#include "DistanceMatrix.h"
 #include "Parser.h"
 #include "RevNullObject.h"
 #include "Workspace.h"
@@ -166,6 +165,7 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
+#   if 0
     const RevBayesCore::DistanceMatrix *dm = dynamic_cast<const RevBayesCore::DistanceMatrix *>( &dv );
     if ( NULL == dm )
         {
@@ -203,6 +203,7 @@
     // remove the variables from the core
     RevLanguage::Workspace::userWorkspace().eraseVariable(dataName);
     RevLanguage::Workspace::userWorkspace().eraseVariable(distName);
+#   endif
 
     [self stopProgressIndicator];
 }

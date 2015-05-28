@@ -10,6 +10,8 @@
 #include "DnaState.h"
 #include "Parser.h"
 #include "AbstractCharacterData.h"
+#include "HomologousCharacterData.h"
+#include "NonHomologousCharacterData.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "AbstractTaxonData.h"
@@ -220,11 +222,33 @@
     RbData* m = [[RbData alloc] init];
     [m setNumTaxa:(int)(cd.getNumberOfTaxa())];
     if ( cd.isHomologyEstablished() == true )
+        {
         [m setIsHomologyEstablished:YES];
+        const RevBayesCore::HomologousCharacterData* hd = dynamic_cast<const RevBayesCore::HomologousCharacterData*>(&cd);
+        if (!hd)
+            {
+            
+            }
+        [m setNumCharacters:(int)(hd->getNumberOfCharacters())];
+        }
     else
+        {
         [m setIsHomologyEstablished:NO];
+        const RevBayesCore::NonHomologousCharacterData* nhd = dynamic_cast<const RevBayesCore::NonHomologousCharacterData*>(&cd);
+        if (!nhd)
+            {
+            
+            }
+        std::vector<size_t> sequenceLengths = nhd->getNumberOfCharacters();
+        size_t maxLen = 0;
+        for (int i=0; i<sequenceLengths.size(); i++)
+            {
+            if (sequenceLengths[i] > maxLen)
+                maxLen = sequenceLengths[i];
+            }
+        [m setNumCharacters:(int)maxLen];
+        }
         
-    [m setNumCharacters:(int)(cd.getNumberOfCharacters())];
     [m setName:nsfn];
     if ( dt == "DNA" )
         [m setDataType:DNA];
