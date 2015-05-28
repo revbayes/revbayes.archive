@@ -115,14 +115,14 @@ moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 
 
 # We assume independent population size parameters for each branch of the species tree.
-#for (i in 1:n_branches) {
-#  Ne[i] ~ dnExponential(0.1)
-#  moves[++mi] = mvScale(Ne[i],1,true,1.0)
-#}
+for (i in 1:n_branches) {
+  Ne[i] ~ dnExponential(1.0)
+  moves[++mi] = mvScale(Ne[i],1,true,1.0)
+}
 
 # We could also assume a single effective population size for the entire species tree.
-Ne ~ dnExponential(10.0)
-moves[++mi] = mvScale(Ne,1,true,1.0)
+#Ne ~ dnExponential(10.0)
+#moves[++mi] = mvScale(Ne,1,true,1.0)
 
 
 
@@ -141,7 +141,7 @@ for (i in 1:num_loci) {
    moves[++mi] = mvFNPR(geneTree[i], 3.0)
    moves[++mi] = mvGPR(geneTree[i], 2.0)
    moves[++mi] = mvSubtreeScale(geneTree[i], 5.0)
-#   moves[++mi] = mvTreeScale(geneTree[i], 1.0, true, 3.0)
+   moves[++mi] = mvTreeScale(geneTree[i], 1.0, true, 3.0)
    moves[++mi] = mvNodeTimeSlideUniform(geneTree[i], 20.0)
    moves[++mi] = mvRootTimeSlide(geneTree[i], 1.0, true, 3.0)
 
@@ -160,6 +160,8 @@ for ( i in 2:num_loci ) {
     relativeClockRate[i] ~ dnLognormal(0,1)
     clockRate[i] := clockRate[1] * relativeClockRate[i]
     moves[++mi] = mvScale(relativeClockRate[i],lambda=1,tune=true,weight=1)
+    
+    moves[++mi] = mvUpDownScale(upTree=geneTree[i],downScalar=relativeClockRate[i],lambda=1,tune=true,weight=1)
 }
 
 ###################

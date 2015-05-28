@@ -47,11 +47,15 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
     }
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
-    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); it++)
+    for (size_t i = 0; i < affectedNodes.size(); ++i)
     {
+        std::set<DagNode*>::iterator it = affectedNodes.begin();
+        std::advance(it, i);
+        
         if ( nodes.find(*it) != nodes.end() )
         {
             affectedNodes.erase(*it);
+            --i;
         }
     }
 }
