@@ -29,8 +29,7 @@ namespace RevBayesCore {
         virtual                                ~NonHomologousCharacterData(void) {}
         
         // Overloaded operators
-        virtual const AbstractTaxonData&        operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
-        
+        virtual const AbstractTaxonData&        operator[](size_t i) const = 0;                                                                     //!< Subscript operator (const)
         virtual bool                            operator==(const NonHomologousCharacterData &rm) const { return this == &rm; }
         virtual bool                            operator!=(const NonHomologousCharacterData &rm) const { return !operator==(rm); }
         virtual bool                            operator<(const NonHomologousCharacterData &rm) const { return this < &rm; }
@@ -40,21 +39,17 @@ namespace RevBayesCore {
         virtual NonHomologousCharacterData*     clone(void) const = 0;
         
         // CharacterData functions
-//        virtual NonHomologousCharacterData&     concatenate(const AbstractCharacterData &d) = 0;                                //!< Concatenate two sequences
-//        virtual NonHomologousCharacterData&     concatenate(const NonHomologousCharacterData &d) = 0;                                //!< Concatenate two sequences
-        virtual std::vector<size_t>             getNumberOfCharacters(void) const = 0;                                          //!< Number of characters
-        virtual size_t                          getNumberOfCharacters(size_t i) const = 0;                                          //!< Number of characters
-        
-        
-        bool                                    isHomologyEstablished(void) const { return  false; }                                          //!< Returns whether the homology of the characters has been established
+        virtual std::vector<size_t>             getNumberOfCharacters(void) const = 0;                                                              //!< Number of characters
+        virtual size_t                          getNumberOfCharacters(size_t i) const = 0;                                                          //!< Number of characters
+        bool                                    isHomologyEstablished(void) const { return  false; }                                                //!< Returns whether the homology of the characters has been established
         
     protected:
-        NonHomologousCharacterData() {}                                                                                      //!< Constructor requires character type
+                                                NonHomologousCharacterData(void) {}                                                                 //!< Constructor requires character type
         
     };
     
     // Global functions using the class
-    std::ostream&                               operator<<(std::ostream& o, const NonHomologousCharacterData& x);                    //!< Overloaded output operator
+    std::ostream&                               operator<<(std::ostream& o, const NonHomologousCharacterData& x);                                   //!< Overloaded output operator
     
 }
 

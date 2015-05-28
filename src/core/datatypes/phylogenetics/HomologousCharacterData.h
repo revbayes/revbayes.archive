@@ -54,11 +54,11 @@ namespace RevBayesCore {
         virtual void                            removeExludedCharacters(void) = 0;                                              //!< Remove all the excluded characters
         virtual void                            restoreCharacter(size_t i) = 0;                                                 //!< Restore character
         
-        bool                                    isHomologyEstablished(void) const { return true; }                                          //!< Returns whether the homology of the characters has been established
+        bool                                    isHomologyEstablished(void) const { return true; }                              //!< Returns whether the homology of the characters has been established
         
         
     protected:
-        HomologousCharacterData() {}                                                                                            //!< Constructor requires character type
+                                                HomologousCharacterData(void) {}                                                //!< Constructor requires character type
         
     };
     
