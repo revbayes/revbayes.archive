@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class NonHomologousDiscreteCharacterData : public NonHomologousCharacterData {
         
     public:
-        NonHomologousDiscreteCharacterData();                                                                                        //!< Default constructor
+                                                            NonHomologousDiscreteCharacterData(void);                                   //!< Default constructor
         
         // Overloaded operators
         const DiscreteTaxonData<charType>&                  operator[](size_t i) const;                                                 //!< Subscript operator (const)
@@ -39,25 +39,18 @@ namespace RevBayesCore {
         NonHomologousDiscreteCharacterData<charType>*       clone(void) const;
                 
         // CharacterData functions
-//        NonHomologousDiscreteCharacterData&                 concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
-//        NonHomologousDiscreteCharacterData&                 concatenate(const NonHomologousCharacterData &d);                           //!< Concatenate data matrices
-//        NonHomologousDiscreteCharacterData&                 concatenate(const NonHomologousDiscreteCharacterData &d);                   //!< Concatenate data matrices
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                         getDatatype(void) const;
         std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
         std::vector<size_t>                                 getNumberOfCharacters(void) const;                                          //!< Number of characters
-        size_t                                              getNumberOfCharacters(size_t i) const;                                          //!< Number of characters
+        size_t                                              getNumberOfCharacters(size_t i) const;                                      //!< Number of characters
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
-        
-    protected:
-        
     };
-    
     
 }
 

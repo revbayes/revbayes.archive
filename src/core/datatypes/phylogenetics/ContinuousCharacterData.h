@@ -26,7 +26,7 @@ namespace RevBayesCore {
     class ContinuousCharacterData : public HomologousCharacterData {
         
     public:
-                                                        ContinuousCharacterData();                                                                                        //!< Default constructor
+                                                        ContinuousCharacterData(void);                                              //!< Default constructor
         
         // Overloaded operators
         const ContinuousTaxonData&                      operator[](size_t i) const;                                                 //!< Subscript operator (const)
@@ -57,7 +57,6 @@ namespace RevBayesCore {
 
         
     protected:
-
         std::set<size_t>                                deletedCharacters;                                                          //!< Set of deleted characters
 
     };
