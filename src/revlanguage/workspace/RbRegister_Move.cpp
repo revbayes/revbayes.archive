@@ -56,6 +56,7 @@
 
 /* Compound Moves on Real Values */
 #include "Move_UpDownScale.h"
+#include "Move_UpDownTreeScale.h"
 #include "Move_ScalerUpDown.h"
 #include "Move_SliderUpDown.h"
 #include "Move_LevyJumpSum.h"
@@ -142,7 +143,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
 		
         /* compound moves */
-        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
+//        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
+        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownTreeScale() );
         
 		// compound moves on real values
         addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
