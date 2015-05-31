@@ -353,14 +353,14 @@ std::string TopologyNode::buildNewickString( void )
                 o << nodeComments[i];
             }
             
-//            //Finally let's print the species name if it's available
-//            if (getSpeciesName() != "") {
-//                if ( nodeComments.size() > 0 )
-//                {
-//                    o << ",";
-//                }
-//                o << "&species=" << getSpeciesName();
-//            }
+            //Finally let's print the species name if it's available
+            if (getSpeciesName() != "") {
+                if ( nodeComments.size() > 0 )
+                {
+                    o << ",";
+                }
+                o << "&species=" << getSpeciesName();
+            }
             
             o << "]";
         }
