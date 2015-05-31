@@ -250,7 +250,6 @@ double UpDownScaleProposal::doProposal( void )
         scalingCount -= tau.getNumberOfInteriorNodes();
     }
     
-    
     // compute the Hastings ratio
     double lnHastingsratio = scalingCount * log( scalingFactor );
     
@@ -293,6 +292,7 @@ void UpDownScaleProposal::printParameterSummary(std::ostream &o) const
  */
 void UpDownScaleProposal::undoProposal( void )
 {
+    
     double scalingFactor = 1.0 / storedScalingFactor;
     
     // scale all the single variable up
