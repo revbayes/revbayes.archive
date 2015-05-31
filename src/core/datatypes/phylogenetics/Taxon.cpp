@@ -175,7 +175,8 @@ void Taxon::setSpeciesName( const std::string &sn )
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const Taxon& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Taxon& x)
+{
     o << x.getName() << ":" << x.getSpeciesName() << ":" << x.getDate();    
     return o;
 }
