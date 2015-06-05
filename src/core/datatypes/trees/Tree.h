@@ -75,6 +75,7 @@ namespace RevBayesCore {
         const std::string&                                  getNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree
         TopologyNode&                                       getRoot(void);                                                                                      //!< Get a pointer to the root node of the Tree
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
+        size_t                                              getTipIndex(std::string name) const;
         TopologyNode&                                       getTipNode(size_t indx);                                                                            //!< Get a pointer to tip node i
         const TopologyNode&                                 getTipNode(size_t indx) const;                                                                      //!< Get a pointer to tip node i
         double                                              getTmrca(const TopologyNode &n);
