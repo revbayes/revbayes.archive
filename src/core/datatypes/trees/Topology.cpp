@@ -141,6 +141,21 @@ Topology* Topology::clone(void) const
 }
 
 
+size_t Topology::getTipIndex( std::string name ) const
+{
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        if (name == n.getName())
+        {
+            return n.getIndex();
+        }
+    }
+    // if name not found
+    return ((size_t)-1);
+}
+
+
 std::vector<std::string> Topology::getTipNames( void ) const 
 {
     std::vector<std::string> names;
