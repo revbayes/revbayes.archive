@@ -317,6 +317,7 @@ void Mcmc::initializeSampler( bool priorOnly )
     // first we touch all nodes so that the likelihood is dirty
     for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
     {
+        (*i)->setMcmcMode( true );
         (*i)->setPriorOnly( priorOnly );
         (*i)->touch();
     }
