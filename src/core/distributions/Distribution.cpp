@@ -173,13 +173,26 @@ void Distribution::restoreSpecialization( DagNode *restorer )
     // do nothing
 }
 
+
+/**
+ * Set the flag if we are in MCMC mode or not.
+ * This default implementation does nothing but derived classes can simply overwrite this.
+ * It is just a placeholder.
+ */
+void Distribution::setMcmcMode(bool tf)
+{
+    // do nothing
+}
+
+
 /**
  * Swap the old parameter with a new one.
  * This will be called for example when the entire model graph is cloned or
  * when we replace a variable with the same name (re-assignment).
  * Here we update our set and delegate to the derived class.
  */
-void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
     
     std::set<const DagNode *>::iterator position = parameters.find(oldP);
     if ( position != parameters.end() )

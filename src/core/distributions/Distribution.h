@@ -44,6 +44,7 @@ namespace RevBayesCore {
         void                                    keep(DagNode* affecter);
         virtual void                            reInitialized( void );                                                  //!< The model was re-initialized
         void                                    restore(DagNode *restorer);
+        virtual void                            setMcmcMode(bool tf);                                                   //!< Change the likelihood computation to or from MCMC mode.
         void                                    swapParameter(const DagNode *oldP, const DagNode *newP);                //!< Exchange the parameter
         void                                    touch(DagNode *toucher, bool touchAll);
         
