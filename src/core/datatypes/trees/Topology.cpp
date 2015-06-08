@@ -55,9 +55,9 @@ Topology::Topology(const Topology& t) :
 
 //SK
 Topology::Topology(TopologyNode* Root, std::vector<TopologyNode*> Nodes) :
-root(Root),
-nodes(Nodes),
-treesUsingThisTopology()
+    root(Root),
+    nodes(Nodes),
+    treesUsingThisTopology()
 {
 	numNodes = nodes.size();
 	numTips = 0;
@@ -128,7 +128,9 @@ Topology& Topology::operator=(const Topology &t)
 void Topology::addTree( Tree* t )
 {
     if ( treesUsingThisTopology.empty() )
+    {
         root->setTree( t );
+    }
     
     treesUsingThisTopology.insert( t );
 }
