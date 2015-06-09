@@ -83,10 +83,6 @@ bool MaxTimeStoppingRule::stop( size_t g )
     double timeUsed = time(NULL) - startTime;
     
     bool passed = timeUsed >= maxTime;
-//    if ( passed )
-//    {
-//        std::cerr << "Reached maximum time!" << std::endl;
-//    }
     
     return passed;
 }
