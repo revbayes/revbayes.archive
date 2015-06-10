@@ -448,11 +448,12 @@ void StringUtilities::toLower(std::string& str)
     
 }
 
-std::string StringUtilities::toString(double x, size_t digits)
+std::string StringUtilities::toString(double x, int digits)
 {
     
     std::stringstream o;
-    o << std::setw(12) << std::setprecision(d);
+//    o << std::setw(12) << std::setprecision(digits);
+    o << std::setprecision(digits);
     o << x;
     return o.str();
 
