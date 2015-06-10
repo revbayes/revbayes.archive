@@ -60,8 +60,9 @@ namespace RevBayesCore {
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setClamped(bool tf);                                                        //!< Set directly the flag whether this node is clamped.
-        virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
+        void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
+        virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
         // Parent DAG nodes management functions
@@ -495,6 +496,16 @@ void RevBayesCore::StochasticNode<valueType>::setClamped(bool tf)
 {
     
     clamped = tf;
+    
+}
+
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setMcmcMode(bool tf)
+{
+    
+    distribution->setMcmcMode( tf );
     
 }
 

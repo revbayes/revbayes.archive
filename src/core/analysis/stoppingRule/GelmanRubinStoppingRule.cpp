@@ -140,16 +140,6 @@ bool GelmanRubinStoppingRule::stop( size_t g )
         
         passed &= grTest.assessConvergenceMultipleChains(v, burnins[i]);
     }
-    
-    
-    if ( passed )
-    {
-        std::cerr << "Passed Gelman-Rubin!" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Failed Gelman-Rubin!" << std::endl;
-    }
 
     
     

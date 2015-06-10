@@ -55,9 +55,9 @@ Topology::Topology(const Topology& t) :
 
 //SK
 Topology::Topology(TopologyNode* Root, std::vector<TopologyNode*> Nodes) :
-root(Root),
-nodes(Nodes),
-treesUsingThisTopology()
+    root(Root),
+    nodes(Nodes),
+    treesUsingThisTopology()
 {
 	numNodes = nodes.size();
 	numTips = 0;
@@ -128,7 +128,9 @@ Topology& Topology::operator=(const Topology &t)
 void Topology::addTree( Tree* t )
 {
     if ( treesUsingThisTopology.empty() )
+    {
         root->setTree( t );
+    }
     
     treesUsingThisTopology.insert( t );
 }
@@ -138,6 +140,21 @@ void Topology::addTree( Tree* t )
 Topology* Topology::clone(void) const 
 {
     return new Topology(*this);
+}
+
+
+size_t Topology::getTipIndex( std::string name ) const
+{
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        if (name == n.getName())
+        {
+            return n.getIndex();
+        }
+    }
+    // if name not found
+    return ((size_t)-1);
 }
 
 

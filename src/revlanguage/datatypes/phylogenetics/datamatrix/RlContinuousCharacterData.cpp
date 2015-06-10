@@ -15,7 +15,7 @@ using namespace RevLanguage;
 /** Default constructor */
 ContinuousCharacterData::ContinuousCharacterData(void) :
     ModelObject<RevBayesCore::ContinuousCharacterData>(),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     
     // Add method for call "x[]" as a function
@@ -36,7 +36,7 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) :
     ModelObject<RevBayesCore::ContinuousCharacterData>( d.clone() ),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
@@ -60,7 +60,7 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) :
     ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
@@ -82,7 +82,7 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
 
 ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) :
     ModelObject<RevBayesCore::ContinuousCharacterData>( d ),
-    AbstractCharacterData( NULL )
+    HomologousCharacterData( NULL )
 {
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
