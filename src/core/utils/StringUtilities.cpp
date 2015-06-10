@@ -289,7 +289,7 @@ bool StringUtilities::isIntegerNumber(const std::string& s)
         std::size_t found = s.find('.');
         if (found != std::string::npos)
         {
-            return true;
+            return false;
         }
     }
     

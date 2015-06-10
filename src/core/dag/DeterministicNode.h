@@ -49,6 +49,7 @@ namespace RevBayesCore {
         virtual void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);
         void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
+        void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
         
         // Parent DAG nodes management functions
         virtual std::set<const DagNode*>                    getParents(void) const;                                                     //!< Get the set of parents
@@ -59,7 +60,7 @@ namespace RevBayesCore {
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
-        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                                  //!< Touch myself and tell affected nodes value is reset
+        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                   //!< Touch myself and tell affected nodes value is reset
         
     private:
         TypedFunction<valueType>*                           function;
@@ -192,7 +193,8 @@ RevBayesCore::DeterministicNode<valueType>& RevBayesCore::DeterministicNode<valu
 
 
 template<class valueType>
-RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valueType>::clone( void ) const {
+RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valueType>::clone( void ) const
+{
     
     return new DeterministicNode<valueType>( *this );
 }
@@ -202,7 +204,8 @@ RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valu
  * This call is started by the parent. We need to delegate this call to all our children.
  */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+{
     
     this->getAffectedNodes( affected );
     
@@ -210,7 +213,8 @@ void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *>
 
 
 template<class valueType>
-RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<valueType>::getFunction( void ) {
+RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<valueType>::getFunction( void )
+{
     
     return *function;
 }
@@ -380,6 +384,16 @@ void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
     
     // clear the list of touched element indices
     this->touchedElements.clear();
+    
+}
+
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::setMcmcMode(bool tf)
+{
+    
+    // nothing to do
     
 }
 

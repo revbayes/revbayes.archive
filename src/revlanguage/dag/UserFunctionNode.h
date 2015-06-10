@@ -41,6 +41,7 @@ namespace RevLanguage {
         bool                                    isConstant(void) const;                                             //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;      //!< Print structure info
         void                                    redraw(void) {}                                                     //!< Redraw (or not)
+        void                                    setMcmcMode(bool tf);                                               //!< Set the modus of the DAG node to MCMC mode.
         void                                    update(void);                                                       //!< Update current value
         
         // Parent DAG nodes management functions
@@ -410,6 +411,17 @@ void UserFunctionNode<rlType>::restoreMe( RevBayesCore::DagNode* restorer )
     
     // Dispatch call to downstream nodes
     this->restoreAffected();
+}
+
+
+
+
+template<class valueType>
+void UserFunctionNode<valueType>::setMcmcMode(bool tf)
+{
+    
+    // nothing to do
+    
 }
 
 
