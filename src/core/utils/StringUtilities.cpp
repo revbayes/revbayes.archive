@@ -20,6 +20,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 
@@ -293,7 +294,7 @@ bool StringUtilities::isIntegerNumber(const std::string& s)
         }
     }
     
-    return false;
+    return true;
 }
 
 
@@ -445,6 +446,16 @@ void StringUtilities::toLower(std::string& str)
         str[i] = char( tolower(str[i]) );
     }
     
+}
+
+std::string StringUtilities::toString(double x, size_t digits)
+{
+    
+    std::stringstream o;
+    o << std::setw(12) << std::setprecision(d);
+    o << x;
+    return o.str();
+
 }
 
 

@@ -39,6 +39,7 @@ namespace StringUtilities {
     void                        replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr);
     void                        stringSplit(const std::string &str, const std::string &delim, std::vector<std::string>& results); //!< Split a string into pieces
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
+    std::string                 toString(double x, size_t digits=6);                                                          //!< Convert string's characters to lower case
     
     /**
      * Generic to_string function

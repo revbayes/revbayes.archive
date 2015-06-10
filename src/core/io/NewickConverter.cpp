@@ -396,7 +396,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
 				
 				node->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
 				
-			} else if (paramName=="species")
+			}
+            else if (paramName=="species")
             {
 				
 				// \todo: Needs implementation

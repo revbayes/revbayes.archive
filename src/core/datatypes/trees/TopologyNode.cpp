@@ -153,7 +153,7 @@ void TopologyNode::addBranchParameter(const std::string &n, double p)
     std::string comment = o.str();
     branchComments.push_back( comment );
     
-    newickNeedsRefreshing = true;
+    flagNewickRecomputation();
     
 }
 
@@ -166,7 +166,7 @@ void TopologyNode::addBranchParameter(const std::string &n, const std::string &p
     
 //    nodeFields[n] = p;
     
-    newickNeedsRefreshing = true;
+    flagNewickRecomputation();
     
 }
 
@@ -181,7 +181,7 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<d
         std::string comment = o.str();
         branchComments.push_back( comment );
         
-        newickNeedsRefreshing = true;
+        flagNewickRecomputation();
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -197,7 +197,7 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<s
         std::string comment = n + "=" + p[index];
         branchComments.push_back( comment );
         
-        newickNeedsRefreshing = true;
+        flagNewickRecomputation();
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -241,7 +241,7 @@ void TopologyNode::addNodeParameter(const std::string &n, double p)
     std::string comment = o.str();
     nodeComments.push_back( comment );
     
-    newickNeedsRefreshing = true;
+    flagNewickRecomputation();
     
 }
 
@@ -254,7 +254,7 @@ void TopologyNode::addNodeParameter(const std::string &n, const std::string &p)
     
 //    nodeFields[n] = p;
     
-    newickNeedsRefreshing = true;
+    flagNewickRecomputation();
     
 }
 
@@ -286,7 +286,7 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<dou
         std::string comment = o.str();
         nodeComments.push_back( comment );
         
-        newickNeedsRefreshing = true;
+        flagNewickRecomputation();
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -305,7 +305,7 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std
         std::string comment = o.str();
         nodeComments.push_back( comment );
         
-        newickNeedsRefreshing = true;
+        flagNewickRecomputation();
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -1146,7 +1146,8 @@ void TopologyNode::removeTree(Tree *t)
 }
 
 
-void TopologyNode::setIndex( size_t idx) {
+void TopologyNode::setIndex( size_t idx)
+{
     
     index = idx;
     
