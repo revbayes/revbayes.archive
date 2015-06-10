@@ -31,7 +31,6 @@
 #include "TreeUtilities.h"
 
 #include <algorithm>
-#include <boost/lexical_cast.hpp>
 #include <map>
 #include <string>
 
@@ -578,8 +577,10 @@ namespace RevBayesCore {
                     
                     // get AncestralStateTrace for this node
                     AncestralStateTrace ancestralstate_trace;
-                    for (size_t k = 0; k < ancestralstate_traces.size(); k++) {
-                        if (ancestralstate_traces[k].getParameterName() == boost::lexical_cast<std::string>(sampleCladeIndex)) {
+                    for (size_t k = 0; k < ancestralstate_traces.size(); k++)
+                    {
+                        if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sampleCladeIndex))
+                        {
                             ancestralstate_trace = ancestralstate_traces[k];
                             break;
                         }
@@ -631,21 +632,27 @@ namespace RevBayesCore {
                 std::string state3 = "";
                 
                 // loop through all states for this node
-                for (int j = 0; j < pp[i].size(); j++) {
+                for (int j = 0; j < pp[i].size(); j++)
+                {
                     total_node_pp += pp[i][j];
-                    if (pp[i][j] > state1_pp) {
+                    if (pp[i][j] > state1_pp)
+                    {
                         state3_pp = state2_pp;
                         state2_pp = state1_pp;
                         state1_pp = pp[i][j];
                         state3 = state2;
                         state2 = state1;
                         state1 = states[i][j];
-                    } else if (pp[i][j] > state2_pp) {
+                    }
+                    else if (pp[i][j] > state2_pp)
+                    {
                         state3_pp = state2_pp;
                         state2_pp = pp[i][j];
                         state3 = state2;
                         state2 = states[i][j];
-                    } else if (pp[i][j] > state3_pp) {
+                    }
+                    else if (pp[i][j] > state3_pp)
+                    {
                         state3_pp = pp[i][j];
                         state3 = states[i][j];
                     }
@@ -655,15 +662,19 @@ namespace RevBayesCore {
                 
                 std::string final_state = "{";
 				bool states = false;
-				if (state1_pp > 0.0001) {
-					final_state += state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
+				if (state1_pp > 0.0001)
+                {
+					final_state += state1 + "=" + StringUtilities::toString(state1_pp);
 					states = true;
-                    if (state2_pp > 0.0001) {
-                        final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
-						if (state3_pp > 0.0001) {
-							final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
-							if (other_pp > 0.0001) {
-								final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
+                    if (state2_pp > 0.0001)
+                    {
+                        final_state += "," + state2 + "=" + StringUtilities::toString(state2_pp);
+						if (state3_pp > 0.0001)
+                        {
+							final_state += "," + state3 + "=" + StringUtilities::toString(state3_pp);
+							if (other_pp > 0.0001)
+                            {
+								final_state += ",other=" + StringUtilities::toString(other_pp);
 							} 
 						}
                     }
@@ -671,7 +682,7 @@ namespace RevBayesCore {
                 if (1.0-total_node_pp > 0.0001) {
 					if (states)
 						final_state += ",";
-                    final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+                    final_state += "node_doesnt_exist=" + StringUtilities::toString(1.0-total_node_pp);
                 } 
                 final_state += "}";
                 
@@ -788,7 +799,7 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
                 AncestralStateTrace ancestralstate_trace;
                 for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                 {
-                    if (ancestralstate_traces[k].getParameterName() == boost::lexical_cast<std::string>(sampleCladeIndex))
+                    if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sampleCladeIndex))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
@@ -882,17 +893,17 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
 			bool states = false;
 			if (state1_pp > 0.0001)
             {
-				final_state += state1 + "=" + boost::lexical_cast<std::string>(state1_pp+0.0000001).substr(0,6);
+				final_state += state1 + "=" + StringUtilities::toString(state1_pp);
 				states = true;
 				if (state2_pp > 0.0001)
                 {
-					final_state += "," + state2 + "=" + boost::lexical_cast<std::string>(state2_pp+0.0000001).substr(0,6);
+					final_state += "," + state2 + "=" + StringUtilities::toString(state2_pp);
 					if (state3_pp > 0.0001)
                     {
-						final_state += "," + state3 + "=" + boost::lexical_cast<std::string>(state3_pp+0.0000001).substr(0,6);
+						final_state += "," + state3 + "=" + StringUtilities::toString(state3_pp);
 						if (other_pp > 0.0001)
                         {
-							final_state += ",other=" + boost::lexical_cast<std::string>(other_pp+0.0000001).substr(0,6);
+							final_state += ",other=" + StringUtilities::toString(other_pp);
 						} 
 					}
 				}
@@ -903,7 +914,7 @@ treeType* RevBayesCore::TreeSummary<treeType>::ancestralStateTree(const treeType
                 {
 					final_state += ",";
                 }
-                final_state += "node_doesnt_exist=" + boost::lexical_cast<std::string>(1.0-total_node_pp+0.0000001).substr(0,6);
+                final_state += "node_doesnt_exist=" + StringUtilities::toString(1.0-total_node_pp);
 			} 
 			final_state += "}";
             
@@ -930,7 +941,14 @@ void RevBayesCore::TreeSummary<treeType>::annotate(treeType &tree, int b )
     treeType *sample_tree = trace.objectAt( 0 );
     
     // first we annotate the node parameters
-    const std::vector<std::string> &nodeParameters = sample_tree->getRoot().getNodeParameters();
+    // we need an internal node because the root might not have all parameter (e.g. rates)
+    // and the tips might neither have all parameters
+    TopologyNode *n = &sample_tree->getRoot().getChild( 0 );
+    if ( n->isTip() == true )
+    {
+        n = &sample_tree->getRoot().getChild( 1 );
+    }
+    const std::vector<std::string> &nodeParameters = n->getNodeParameters();
     for (size_t i = 0; i < nodeParameters.size(); ++i)
     {
         
@@ -1091,7 +1109,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                 // check if this parameter exists
                 if ( params.size() <= paramIndex )
                 {
-                    throw RbException("Too few parameter for this tree during the tree annotation.");
+                    if ( sample_node.isRoot() == true )
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        throw RbException("Too few parameter for this tree during the tree annotation.");
+                    }
+                    
                 }
                 
                 std::string tmp = params[paramIndex];
@@ -1127,7 +1153,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                 }
                 
                 
-                for (std::map<std::string, Sample<std::string> >::iterator it=stateAbsencePresence[j].begin(); it!=stateAbsencePresence[i].end(); ++it )
+                for (std::map<std::string, Sample<std::string> >::iterator it=stateAbsencePresence[j].begin(); it!=stateAbsencePresence[j].end(); ++it )
                 {
 
                     const Sample<std::string> &s = it->second;
@@ -1184,7 +1210,7 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                 }
                 
                 double pp = cladeSamples[j].getFrequency() / double(cladeSamples[j].getSampleSize());
-                final_state += cladeSamples[j].getValue() + "=" + boost::lexical_cast<std::string>(pp+0.0000001).substr(0,6);
+                final_state += cladeSamples[j].getValue() + "=" + StringUtilities::toString(pp);
                 total_node_pp += pp;
 
             }
@@ -1400,17 +1426,17 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
             sort(stateSamples.begin(), stateSamples.end());
             
             
-            size_t interval_start = (hpd/2.0) * stateSamples.size();
+            size_t interval_start = ((1.0-hpd)/2.0) * stateSamples.size();
             size_t interval_median = 0.5 * stateSamples.size();
-            size_t interval_end = (1.0-hpd/2.0) * stateSamples.size();
+            size_t interval_end = (1.0-(1.0-hpd)/2.0) * stateSamples.size();
             interval_end = (interval_end >= stateSamples.size() ? stateSamples.size()-1 : interval_end);
             double lower = stateSamples[interval_start];
             double median = stateSamples[interval_median];
             double upper = stateSamples[interval_end];
             
             // make node age annotation
-            std::string param = "{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
-                                                + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}";
+            std::string param = "{" + StringUtilities::toString(lower)
+                                                + "," + StringUtilities::toString(upper) + "}";
 
             if ( isNodeParameter == true )
             {
@@ -1490,11 +1516,11 @@ void RevBayesCore::TreeSummary<treeType>::annotateHPDAges(treeType &tree, double
         double upper = branch_lengths[interval_start + interval_size - 1];
         
         // make node age annotation
-        node_intervals[i] = new std::string("{" + boost::lexical_cast<std::string>(lower+0.0000001).substr(0,6)
-                                            + "," + boost::lexical_cast<std::string>(upper+0.0000001).substr(0,6) + "}");
+        node_intervals[i] = new std::string("{" + StringUtilities::toString(lower)
+                                            + "," + StringUtilities::toString(upper) + "}");
     }	
     
-    std::string label = "height_" + boost::lexical_cast<std::string>( (int)(hpd * 100) ) + "%_HPD";
+    std::string label = "height_" + StringUtilities::toString( (int)(hpd * 100) ) + "%_HPD";
     tree.addNodeParameter(label, node_intervals, true);
     
 }
