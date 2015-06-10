@@ -13,8 +13,8 @@
 
 int main(int argc, char* argv[]) {
     
-    int processId = 0;
 #   ifdef RB_MPI
+    int processId = 0;
     int numProcesses = 0;
     try
         {
