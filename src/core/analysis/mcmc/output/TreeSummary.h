@@ -1033,15 +1033,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
 //    bool useRoot = true;
     
     // loop through all trees in tree trace
-    for (size_t i = burnin; i < trace.size(); i++)
+    for (size_t iteration = burnin; iteration < trace.size(); ++iteration)
     {
-        treeType *sample_tree = trace.objectAt( i );
+        treeType *sample_tree = trace.objectAt( iteration );
         const TopologyNode& sample_root = sample_tree->getRoot();
         
         // loop through all nodes in inputTree
-        for (size_t j = 0; j < input_nodes.size(); j++)
+        for (size_t node_index = 0; node_index < input_nodes.size(); ++node_index)
         {
-            TopologyNode *node = input_nodes[j];
+            TopologyNode *node = input_nodes[node_index];
             
             if ( node->isTip() == true )
             {
@@ -1136,24 +1136,24 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                 
                 const std::string &state = pair[1];
                 
-                std::map<std::string, Sample<std::string> >::iterator entry = stateAbsencePresence[j].find( state );
+                std::map<std::string, Sample<std::string> >::iterator entry = stateAbsencePresence[node_index].find( state );
                 
-                if ( entry == stateAbsencePresence[i].end() )
+                if ( entry == stateAbsencePresence[node_index].end() )
                 {
                     Sample<std::string> stateSample = Sample<std::string>(state, 0);
-                    if (i > burnin)
+                    if (iteration > burnin)
                     {
-                        stateSample.setTrace(std::vector<double>(i - burnin, 0.0));
+                        stateSample.setTrace(std::vector<double>(iteration - burnin, 0.0));
                     }
                     else
                     {
                         stateSample.setTrace(std::vector<double>());
                     }
-                    stateAbsencePresence[j].insert(std::pair<std::string, Sample<std::string> >(state, stateSample));
+                    stateAbsencePresence[node_index].insert(std::pair<std::string, Sample<std::string> >(state, stateSample));
                 }
                 
                 
-                for (std::map<std::string, Sample<std::string> >::iterator it=stateAbsencePresence[j].begin(); it!=stateAbsencePresence[j].end(); ++it )
+                for (std::map<std::string, Sample<std::string> >::iterator it=stateAbsencePresence[node_index].begin(); it!=stateAbsencePresence[node_index].end(); ++it )
                 {
 
                     const Sample<std::string> &s = it->second;
@@ -1180,9 +1180,17 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
     {
         
         TopologyNode &node = *input_nodes[i];
-        if ( node.isTip() && isNodeParameter == true )
+        if ( node.isTip() && interiorOnly == true )
         {
-            node.addNodeParameter(n,"{}");
+            // make parameter string for this node
+            if ( isNodeParameter == true )
+            {
+                node.addNodeParameter(n,"{}");
+            }
+            else
+            {
+                node.addBranchParameter(n,"{}");
+            }
         }
         else
         {
@@ -1192,15 +1200,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
             for (std::map<std::string, Sample<std::string> >::iterator it = stateAbsencePresence[i].begin(); it != stateAbsencePresence[i].end(); ++it)
             {
                 it->second.computeStatistics();
-                cladeSamples.push_back(it->second);
+                stateSamples.push_back(it->second);
             }
     
             // sort the samples by frequency
-            sort(cladeSamples.begin(), cladeSamples.end());
+            sort(stateSamples.begin(), stateSamples.end());
             
             double total_node_pp = 0.0;
             std::string final_state = "{";
-            for (size_t j = 0; j < num; ++j)
+            for (size_t j = 0; j < num && j < stateSamples.size(); ++j)
             {
                 if ( total_node_pp > 0.9999 ) continue;
                 
@@ -1209,8 +1217,8 @@ void RevBayesCore::TreeSummary<treeType>::annotateDiscrete(treeType &tree, const
                     final_state += ",";
                 }
                 
-                double pp = cladeSamples[j].getFrequency() / double(cladeSamples[j].getSampleSize());
-                final_state += cladeSamples[j].getValue() + "=" + StringUtilities::toString(pp);
+                double pp = stateSamples[j].getFrequency() / double(stateSamples[j].getSampleSize());
+                final_state += stateSamples[j].getValue() + "=" + StringUtilities::toString(pp);
                 total_node_pp += pp;
 
             }
@@ -1412,15 +1420,15 @@ void RevBayesCore::TreeSummary<treeType>::annotateContinuous(treeType &tree, con
     
     
     std::vector<double> posteriors;
-    for (int i = 0; i < input_nodes.size(); i++)
+    for (int idx = 0; idx < input_nodes.size(); ++idx)
     {
         
-        TopologyNode &node = *input_nodes[i];
+        TopologyNode &node = *input_nodes[idx];
         if ( ( node.isTip() == false || interiorOnly == false ) && ( node.isRoot() == false || useRoot == true ) )
         {
             
             // collect the samples
-            std::vector<double> stateSamples = samples[i];
+            std::vector<double> stateSamples = samples[idx];
             
             // sort the samples by frequency
             sort(stateSamples.begin(), stateSamples.end());
