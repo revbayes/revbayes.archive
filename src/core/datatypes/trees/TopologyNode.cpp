@@ -146,6 +146,11 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
 void TopologyNode::addBranchParameter(const std::string &n, double p)
 {
     
+    if ( n == "index" || n == "species" )
+    {
+        std::cerr << "Illegal branch parameter with name '" << n << "'.\n";
+    }
+    
     std::stringstream o;
     char s[32];
     snprintf(s, sizeof(s), "%f",p);
@@ -160,6 +165,11 @@ void TopologyNode::addBranchParameter(const std::string &n, double p)
 
 void TopologyNode::addBranchParameter(const std::string &n, const std::string &p)
 {
+    
+    if ( n == "index" || n == "species" )
+    {
+        std::cerr << "Illegal branch parameter with name '" << n << "'.\n";
+    }
     
     std::string comment = n + "=" + p;
     branchComments.push_back( comment );
@@ -234,6 +244,11 @@ void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp)
 void TopologyNode::addNodeParameter(const std::string &n, double p)
 {
     
+    if ( n == "index" || n == "species" )
+    {
+        std::cerr << "Illegal node parameter with name '" << n << "'.\n";
+    }
+    
     std::stringstream o;
     char s[32];
     snprintf(s, sizeof(s), "%f",p);
@@ -248,6 +263,11 @@ void TopologyNode::addNodeParameter(const std::string &n, double p)
 
 void TopologyNode::addNodeParameter(const std::string &n, const std::string &p)
 {
+    
+    if ( n == "index" || n == "species" )
+    {
+        std::cerr << "Illegal node parameter with name '" << n << "'.\n";
+    }
     
     std::string comment = n + "=" + p;
     nodeComments.push_back( comment );
