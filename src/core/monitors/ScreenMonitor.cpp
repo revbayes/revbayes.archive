@@ -34,7 +34,8 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    waitingTime( false ),
+    printWaitingTime( true ),
+    printElapsedTime( true ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
@@ -53,7 +54,8 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    waitingTime( false ),
+    printWaitingTime( true ),
+    printElapsedTime( true ),
     prefixSeparator("   "),
     suffixSeparator("   |"),
     headerPrintingInterval( 20 ),
@@ -180,7 +182,25 @@ void ScreenMonitor::monitor(unsigned long gen)
                 ss.str("");
             }
             
-            if ( waitingTime )
+            if ( printElapsedTime )
+            {
+                
+                size_t timeUsed = time(NULL) - startTime;
+                
+                size_t hours   = timeUsed / 3600;
+                size_t minutes = timeUsed / 60 - hours * 60;
+                size_t seconds = timeUsed - minutes * 60 - hours * 3600;
+                
+                ss << std::setw( 2 ) << std::setfill( '0' ) << hours << ":";
+                ss << std::setw( 2 ) << std::setfill( '0' ) << minutes << ":";
+                ss << std::setw( 2 ) << std::setfill( '0' ) << seconds;
+                
+                std::cout << prefixSeparator << ss.str() << suffixSeparator;
+                ss.str("");
+                
+            }
+            
+            if ( printWaitingTime )
             {
 
                 if ( (gen-startGen) <= samplingFrequency )
@@ -283,8 +303,17 @@ void ScreenMonitor::printHeader( void )
                 ss << prefixSeparator << header << suffixSeparator;
             }
         }
+        
+        if ( printElapsedTime )
+        {
+            // We know it takes 8 characters to print the waiting time, so hard-set column
+            // width to this number
+            header = "elapsed";
+            StringUtilities::fillWithSpaces( header, 8, false );
+            ss << prefixSeparator << header << suffixSeparator;
+        }
     
-        if ( waitingTime )
+        if ( printWaitingTime )
         {
             // We know it takes 8 characters to print the waiting time, so hard-set column
             // width to this number
@@ -307,12 +336,12 @@ void ScreenMonitor::printHeader( void )
 }
 
 
-void ScreenMonitor::reset(size_t n)
+void ScreenMonitor::reset( size_t n )
 {
     startGen = currentGen;
     numCycles = n;
     startTime = time( NULL );
-    waitingTime = true;
+    printWaitingTime = true;
 }
 
 

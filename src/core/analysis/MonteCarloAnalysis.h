@@ -36,8 +36,8 @@ namespace RevBayesCore {
         void                                                burnin(size_t g, size_t ti);
         size_t                                              getCurrentGeneration(void) const;                           //!< Get the current generations number
         void                                                printPerformanceSummary(void) const;
-        void                                                run(RbVector<StoppingRule> r);
-        void                                                runPriorSampler(RbVector<StoppingRule> r);
+        void                                                run(size_t k, RbVector<StoppingRule> r);
+        void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
 
     protected:
         
