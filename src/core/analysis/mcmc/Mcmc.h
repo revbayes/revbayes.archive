@@ -58,7 +58,6 @@ namespace RevBayesCore {
         void                                                setReplicateIndex(size_t idx);                                                          //!< Set the index of this replicate.
         void                                                setStoneIndex(size_t idx);                                                              //!< Set the index of this replicate.
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
-        void                                                startMonitors(void);                                                                    //!< Start the monitors
         void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
         

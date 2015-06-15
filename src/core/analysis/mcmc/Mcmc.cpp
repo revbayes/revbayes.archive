@@ -864,37 +864,6 @@ void Mcmc::setScheduleType(const std::string &s)
 }
 
 
-void Mcmc::startMonitors( void )
-{
-    
-#ifdef DEBUG_MPI_MCA
-    std::cout << "Mcmc::startMonitors start\n";
-#endif
-    /* Open the output file and print headers */
-    for (size_t i=0; i<monitors.size(); i++)
-    {
-        
-        // open filestream for each monitor
-        //        monitors[i].openStream();
-        
-        // reset the monitor
-        //        monitors[i].reset( numCycles );
-        
-        
-        // if this chain is active, print the header
-        if (chainActive)
-        {
-            monitors[i].openStream();
-            monitors[i].printHeader();
-            
-        }
-    }
-#ifdef DEBUG_MPI_MCA
-    std::cout << "Mcmc::startMonitors end\n";
-#endif
-    
-}
-
 void Mcmc::startMonitors( size_t numCycles )
 {
     

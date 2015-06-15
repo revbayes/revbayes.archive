@@ -44,7 +44,6 @@ namespace RevBayesCore {
         void                                    setNumberOfProcesses(size_t i, size_t offset=0);                     //!< Set the number of processes for this replication.
         void                                    setReplicateIndex(size_t i);                        //!< Set the index for this replication.
         void                                    setStoneIndex(size_t i);                            //!< Set the index for this replication.
-        void                                    startMonitors(void);                                //!< Start the monitors
         void                                    startMonitors(size_t numCycles);                    //!< Start the monitors
         void                                    tune(void);                                         //!< Tune the sampler and its moves.
         

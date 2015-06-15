@@ -52,7 +52,8 @@ namespace RevBayesCore {
         bool                                posterior;
         bool                                prior;
         bool                                likelihood;
-        bool                                waitingTime;
+        bool                                printWaitingTime;
+        bool                                printElapsedTime;
         std::string                         prefixSeparator;
         std::string                         suffixSeparator;
         size_t                              headerPrintingInterval;

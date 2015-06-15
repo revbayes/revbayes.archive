@@ -414,33 +414,6 @@ void Mcmcmc::setStoneIndex(size_t index)
 }
 
 
-
-void Mcmcmc::startMonitors( void )
-{
-    #ifdef DEBUG_MPI_MCA
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-        std::cout << "\n" << pid << " Mcmcmc::startMonitors(void) " << i << " " << pid << " " << chainsPerProcess[pid][i] << " " << chains[ chainsPerProcess[pid][i] ] << "\n";
-    }
-    std::cout << "\n" << pid << " Mcmcmc::startMonitors(void) start\n";
-    std::cout << "\n" << pid << " Mcmcmc::startMonitors(void) pid " << pid << " - " << activePID << "\n";
-#endif
-    // Monitor
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-#ifdef DEBUG_MPI_MCA
-        std::cout << "\n" << pid << " Mcmcmc::startMonitors(void) inside " << chainsPerProcess[pid][i] << "\n";
-        std::cout << "\n" << pid << " Mcmcmc::startMonitors(void) inside " << chains[ chainsPerProcess[pid][i] ] << "\n";
-#endif
-        chains[ chainsPerProcess[pid][i] ]->startMonitors();
-    }
-#ifdef DEBUG_MPI_MCA
-    std::cout << "\n" << pid << " Mcmcmc::startMonitors(void) end\n";
-#endif
-    
-}
-
-
 void Mcmcmc::startMonitors(size_t numCycles)
 {
     

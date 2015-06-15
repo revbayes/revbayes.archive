@@ -25,14 +25,10 @@ MonteCarloAnalysis::MonteCarloAnalysis(RevBayesCore::MonteCarloAnalysis *m) : Wo
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
-    runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec()                , ArgumentRule::BY_VALUE ) );
+    runArgRules->push_back( new ArgumentRule("rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<StoppingRule>() ) );
+    runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
     methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
-
-    ArgumentRules* run2ArgRules = new ArgumentRules();
-    run2ArgRules->push_back( new ArgumentRule("rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    run2ArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, run2ArgRules) );
 
     ArgumentRules* burninArgRules = new ArgumentRules();
     burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -77,34 +73,25 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         found = true;
         
         // get the member with give index
-        if ( args[0].getVariable()->getRevObject().isType( Natural::getClassTypeSpec() ) )
+        const WorkspaceVector<StoppingRule>& ws_vec = static_cast<const WorkspaceVector<StoppingRule> &>( args[1].getVariable()->getRevObject() );
+        RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules;
+        for ( size_t i = 0; i < ws_vec.size(); ++i )
         {
-            int currentGen = int(value->getCurrentGeneration());
-            int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
-            bool prior = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
-            if ( prior == true )
-            {
-                RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules;
-                rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
-                value->runPriorSampler( rules );
-            }
-            else
-            {
-                RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules;
-                rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
-                value->run( rules );
-            }
+            rules.push_back( ws_vec[i].getValue() );
+        }
+
+        int currentGen = int(value->getCurrentGeneration());
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
+        rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
+        
+        bool prior = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
+        if ( prior == true )
+        {
+            value->runPriorSampler( gen, rules );
         }
         else
         {
-            const WorkspaceVector<StoppingRule>&                    ws_vec = static_cast<const WorkspaceVector<StoppingRule> &>( args[0].getVariable()->getRevObject() );
-            RevBayesCore::RbVector<RevBayesCore::StoppingRule>      rules;
-            for ( size_t i = 0; i < ws_vec.size(); ++i )
-            {
-                rules.push_back( ws_vec[i].getValue() );
-            }
-            
-            value->run( rules );
+            value->run( gen, rules );
         }
         
         return NULL;

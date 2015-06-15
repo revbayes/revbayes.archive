@@ -346,62 +346,11 @@ std::string TopologyNode::buildNewickString( void )
     o.precision( 6 );
     
     // test whether this is a internal or external node
-    if (tipNode)
+    if ( tipNode == true )
     {
         // this is a tip so we just return the name of the node
         o << taxon.getName();
-        if ( nodeComments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
-        {
-            o << "[&";
-            // first let us print the node index
-            if ( RbSettings::userSettings().getPrintNodeIndex() == true )
-            {
-                o << "index=" << index;
-                if (nodeComments.size() > 0 || getSpeciesName() != "")
-                {
-                    o << ",";
-                }
-            }
-            
-            for (size_t i = 0; i < nodeComments.size(); ++i)
-            {
-                if ( i > 0 )
-                {
-                    o << ",";
-                }
-                o << nodeComments[i];
-            }
-            
-            //Finally let's print the species name if it's available
-            if (getSpeciesName() != "")
-            {
-                if ( nodeComments.size() > 0 )
-                {
-                    o << ",";
-                }
-                o << "species=" << getSpeciesName();
-            }
-            
-            o << "]";
-        }
         
-        if ( tree != NULL )
-        {
-            o << ":" << getBranchLength();
-        }
-        if ( branchComments.size() > 0 )
-        {
-            o << "[&";
-            for (size_t i = 0; i < branchComments.size(); ++i)
-            {
-                if ( i > 0 )
-                {
-                    o << ",";
-                }
-                o << branchComments[i];
-            }
-            o << "]";
-        }
     }
     else
     {
@@ -411,49 +360,62 @@ std::string TopologyNode::buildNewickString( void )
             o << getChild(i).computeNewick() << ",";
         }
         o << getChild(getNumberOfChildren()-1).computeNewick() << ")";
-        if ( nodeComments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
+    }
+    
+    if ( nodeComments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
+    {
+        o << "[&";
+        
+        bool needsComma = false;
+        
+        // first let us print the node index
+        if ( RbSettings::userSettings().getPrintNodeIndex() == true )
         {
-            o << "[&";
-            // first let us print the node index
-            if ( RbSettings::userSettings().getPrintNodeIndex() == true )
+            o << "index=" << index;
+            needsComma = true;
+        }
+            
+        for (size_t i = 0; i < nodeComments.size(); ++i)
+        {
+            if ( needsComma == true )
             {
-                o << "index=" << index;
-                if ( nodeComments.size() > 0 )
-                {
-                    o << ",";
-                }
+                o << ",";
             }
-            for (size_t i = 0; i < nodeComments.size(); ++i)
+            o << nodeComments[i];
+            needsComma = true;
+        }
+            
+        //Finally let's print the species name (always)
+//        if ( needsComma == true )
+//        {
+//            o << ",";
+//        }
+//        o << "&species=" << getSpeciesName();
+        
+        o << "]";
+    }
+        
+    if ( tree != NULL )
+    {
+        o << ":" << getBranchLength();
+    }
+    if ( branchComments.size() > 0 )
+    {
+        o << "[&";
+        for (size_t i = 0; i < branchComments.size(); ++i)
+        {
+            if ( i > 0 )
             {
-                if ( i > 0 )
-                {
-                    o << ",";
-                }
-                o << nodeComments[i];
+                o << ",";
             }
-            o << "]";
+            o << branchComments[i];
         }
-        if ( tree != NULL )
-        {
-            o << ":" << getBranchLength();
-        }
-        if ( branchComments.size() > 0 )
-        {
-            o << "[&";
-            for (size_t i = 0; i < branchComments.size(); ++i)
-            {
-                if ( i > 0 )
-                {
-                    o << ",";
-                }
-                o << branchComments[i];
-            }
-            o << "]";
-        }
-        if (rootNode)
-        {
-            o << ";";
-        }
+        o << "]";
+    }
+    
+    if (rootNode)
+    {
+        o << ";";
     }
     
     return o.str();

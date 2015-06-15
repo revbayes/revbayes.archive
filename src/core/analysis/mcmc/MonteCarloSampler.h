@@ -52,7 +52,6 @@ namespace RevBayesCore {
         virtual void                            setLikelihoodHeat(double v) = 0;                    //!< Set the heating temparature of the likelihood of the chain
         virtual void                            setReplicateIndex(size_t i) = 0;                    //!< Set the index for this replication.
         virtual void                            setStoneIndex(size_t i) = 0;                        //!< Set the index for this stone.
-        virtual void                            startMonitors(void) = 0;                            //!< Start the monitors
         virtual void                            startMonitors(size_t numCycles) = 0;                //!< Start the monitors
         virtual void                            tune(void) = 0;                                     //!< Tune the sampler and its moves.
         

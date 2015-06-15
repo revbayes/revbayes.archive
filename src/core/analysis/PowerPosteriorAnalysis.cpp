@@ -261,7 +261,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     
     // Monitor
-    sampler->startMonitors();
+    sampler->startMonitors(gen);
     sampler->monitor(0);
     
     double p = powers[idx];
