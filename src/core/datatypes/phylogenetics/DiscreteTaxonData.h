@@ -357,7 +357,7 @@ double RevBayesCore::DiscreteTaxonData<charType>::getPercentageMissing( void ) c
     double numMissing = 0.0;
     for (size_t i = 0; i < sequence.size(); ++i)
     {
-        if ( sequence[i].isMissingState() == true )
+        if ( sequence[i].isMissingState() == true || sequence[i].isGapState() == true )
         {
             ++numMissing;
         }
@@ -386,7 +386,8 @@ const std::string& RevBayesCore::DiscreteTaxonData<charType>::getTaxonName(void)
  * \return            True (resolved) or false (unresolved).
  */
 template<class charType>
-bool RevBayesCore::DiscreteTaxonData<charType>::isCharacterResolved(size_t idx) const {
+bool RevBayesCore::DiscreteTaxonData<charType>::isCharacterResolved(size_t idx) const
+{
 
     if (idx >= isResolved.size())
         {
@@ -407,7 +408,7 @@ bool RevBayesCore::DiscreteTaxonData<charType>::isSequenceMissing( void ) const
     
     for (size_t i = 0; i < sequence.size(); ++i)
     {
-        if ( sequence[i].isMissingState() == false )
+        if ( sequence[i].isMissingState() == false && sequence[i].isGapState() == false )
         {
             return false;
         }
