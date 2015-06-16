@@ -402,9 +402,8 @@
         std::cout << std::endl;
         }
         
-    // create the character matrix
+    // create the character matrix (homology established)
 	RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState > *cMat = new RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState >();
-    cMat->setHomologyEstablished(true);
     
     for (int n=0, taxonIndex=0; n<[myTree numberOfNodes]; n++)
         {

@@ -77,10 +77,6 @@ void MaxIterationStoppingRule::setNumberOfRuns(size_t n)
 bool MaxIterationStoppingRule::stop( size_t g )
 {
     bool passed = g >= maxGenerations;
-//    if ( passed )
-//    {
-//        std::cerr << "Reached maximum iterations!" << std::endl;
-//    }
     
     return passed;
 }

@@ -20,6 +20,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 
@@ -289,11 +290,11 @@ bool StringUtilities::isIntegerNumber(const std::string& s)
         std::size_t found = s.find('.');
         if (found != std::string::npos)
         {
-            return true;
+            return false;
         }
     }
     
-    return false;
+    return true;
 }
 
 
@@ -445,6 +446,17 @@ void StringUtilities::toLower(std::string& str)
         str[i] = char( tolower(str[i]) );
     }
     
+}
+
+std::string StringUtilities::toString(double x, int digits)
+{
+    
+    std::stringstream o;
+//    o << std::setw(12) << std::setprecision(digits);
+    o << std::setprecision(digits);
+    o << x;
+    return o.str();
+
 }
 
 

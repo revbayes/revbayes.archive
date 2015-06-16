@@ -81,6 +81,7 @@ namespace RevLanguage {
 #include "TypeSpec.h"
 #include "RevVariable.h"
 #include "Workspace.h"
+#include "WorkspaceVector.h"
 
 #include <algorithm>
 
@@ -198,7 +199,9 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
     
     // First check that we are not asked to convert to our own type
     if ( type == getClassTypeSpec() )
+    {
         return this->clone();
+    }
     
     // Test whether we want to convert to another generic model vector
     if ( type.getParentType() == getClassTypeSpec().getParentType() )
@@ -235,6 +238,40 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         // Now return the converted container object
         return emptyContainer;
     }
+    else if ( type == WorkspaceVector<RevObject>::getClassTypeSpec() )
+    {
+        // create an empty container
+        WorkspaceVector<RevObject> *theConvertedContainer = new WorkspaceVector<RevObject>();
+
+        if ( this->getDagNode()->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC )
+        {
+            
+            std::set<const RevBayesCore::DagNode*> args = this->getDagNode()->getParents();
+            
+            for ( std::set<const RevBayesCore::DagNode*>::iterator i = args.begin(); i != args.end(); ++i )
+            {
+                RevBayesCore::DagNode* node = const_cast<RevBayesCore::DagNode*>(*i);
+                RevBayesCore::TypedDagNode<elementType>* tnode = static_cast<RevBayesCore::TypedDagNode<elementType>* >( node );
+                rlType orgElement = rlType( tnode );
+                theConvertedContainer->push_back( orgElement );
+                
+            }
+            
+        }
+        else
+        {
+            for ( typename RevBayesCore::RbConstIterator<elementType> i = this->getValue().begin(); i != this->getValue().end(); ++i )
+            {
+            
+                rlType orgElement = rlType( *i );
+                theConvertedContainer->push_back( orgElement );
+            
+            }
+        }
+        
+        return theConvertedContainer;
+    }
+    
     
     // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
     return this->ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
@@ -340,6 +377,7 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 template <typename rlType>
 double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
+    
     if ( type.getParentType() == getClassTypeSpec().getParentType() && once == true )
     {
         // We want to convert to another generic model vector
@@ -368,6 +406,11 @@ double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) c
         }
 
         return penalty;
+    }
+    else if ( type == WorkspaceVector<RevObject>::getClassTypeSpec() )
+    {
+        // yes we can
+        return 0.0;
     }
 
     return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::isConvertibleTo( type, once );

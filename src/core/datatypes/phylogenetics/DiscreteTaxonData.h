@@ -15,7 +15,7 @@ namespace RevBayesCore {
     class DiscreteTaxonData : public AbstractDiscreteTaxonData {
     
     public:
-        DiscreteTaxonData(const std::string &tname);                                                                //!< Set type spec of container from type of elements
+                                                DiscreteTaxonData(const std::string &tname);                        //!< Set type spec of container from type of elements
     
         charType&                               operator[](size_t i);                                               //!< Index op allowing change
         const charType&                         operator[](size_t i) const;                                         //!< Const index op
@@ -54,7 +54,6 @@ namespace RevBayesCore {
     // Global functions using the class
     template<class charType>
     std::ostream&                       operator<<(std::ostream& o, const DiscreteTaxonData<charType>& x);          //!< Overloaded output operator
-
     
 }
 

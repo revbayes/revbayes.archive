@@ -106,6 +106,7 @@
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
+#include "Func_phyloDiversity.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_simTree.h"
@@ -305,9 +306,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "fnBiogeoGRM",     new Func_biogeo_grm() );
         
         /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */
-        addFunction( "fnCladoProbs",    new Func_cladoProbs() );
-        addFunction( "fnDECRates",      new Func_DECRates() );
-        addFunction( "fnDECRoot",       new Func_DECRoot() );
+        addFunction( "fnCladoProbs",        new Func_cladoProbs() );
+        addFunction( "fnDECRates",          new Func_DECRates() );
+        addFunction( "fnDECRoot",           new Func_DECRoot() );
+        addFunction( "fnPD",                new Func_phyloDiversity<BranchLengthTree>() );
+        addFunction( "fnPD",                new Func_phyloDiversity<TimeTree>() );
         
         
         /* Population genetics functions (in folder "functions/popgen") */

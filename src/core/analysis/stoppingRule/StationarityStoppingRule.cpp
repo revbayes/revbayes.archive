@@ -142,15 +142,5 @@ bool StationarityStoppingRule::stop( size_t g )
     }
     
     
-    if ( passed )
-    {
-        std::cerr << "Passed Stationarity!" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Failed Stationarity!" << std::endl;
-    }
-    
-    
     return passed;
 }

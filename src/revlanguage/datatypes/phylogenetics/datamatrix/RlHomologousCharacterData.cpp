@@ -43,14 +43,14 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
     setCodonPartitionArgRules2->push_back(  new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
     
     
-    methods.addFunction("nchar",               new MemberProcedure(Natural::getClassTypeSpec(),               ncharArgRules           ) );
-    methods.addFunction("excludeCharacter",     new MemberProcedure(RlUtils::Void,        excludecharArgRules        ) );
-    methods.addFunction("excludeCharacter",     new MemberProcedure(RlUtils::Void,        excludecharArgRules2       ) );
-    methods.addFunction("excludeAll",           new MemberProcedure(RlUtils::Void,        excludeallArgRules         ) );
-    methods.addFunction("includeCharacter",     new MemberProcedure(RlUtils::Void,        includecharArgRules        ) );
-    methods.addFunction("includeCharacter",     new MemberProcedure(RlUtils::Void,        includecharArgRules2       ) );
-    methods.addFunction("includeAll",           new MemberProcedure(RlUtils::Void,        includeallArgRules         ) );
-    methods.addFunction("isResolved",           new MemberProcedure(RlBoolean::getClassTypeSpec(), isResolvedArgRules           ) );
+    methods.addFunction("nchar",                new MemberProcedure(Natural::getClassTypeSpec(),   ncharArgRules        ) );
+    methods.addFunction("excludeCharacter",     new MemberProcedure(RlUtils::Void,                 excludecharArgRules  ) );
+    methods.addFunction("excludeCharacter",     new MemberProcedure(RlUtils::Void,                 excludecharArgRules2 ) );
+    methods.addFunction("excludeAll",           new MemberProcedure(RlUtils::Void,                 excludeallArgRules   ) );
+    methods.addFunction("includeCharacter",     new MemberProcedure(RlUtils::Void,                 includecharArgRules  ) );
+    methods.addFunction("includeCharacter",     new MemberProcedure(RlUtils::Void,                 includecharArgRules2 ) );
+    methods.addFunction("includeAll",           new MemberProcedure(RlUtils::Void,                 includeallArgRules   ) );
+    methods.addFunction("isResolved",           new MemberProcedure(RlBoolean::getClassTypeSpec(), isResolvedArgRules   ) );
     
     
     return methods;
