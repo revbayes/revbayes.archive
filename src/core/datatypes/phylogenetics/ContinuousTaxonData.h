@@ -13,8 +13,8 @@ namespace RevBayesCore {
     class ContinuousTaxonData : public AbstractTaxonData {
         
     public:
-        ContinuousTaxonData(void);                                                                                  //!< Set type spec of container from type of elements
-        ContinuousTaxonData(const std::string &tname);                                                              //!< Set type spec of container from type of elements
+                                                ContinuousTaxonData(void);                                          //!< Set type spec of container from type of elements
+                                                ContinuousTaxonData(const std::string &tname);                      //!< Set type spec of container from type of elements
         
         double&                                 operator[](size_t i);                                               //!< Index op allowing change
         const double&                           operator[](size_t i) const;                                         //!< Const index op
@@ -48,8 +48,6 @@ namespace RevBayesCore {
     // Global functions using the class
     std::ostream&                               operator<<(std::ostream& o, const ContinuousTaxonData& x);          //!< Overloaded output operator
     
-    
 }
-
 
 #endif

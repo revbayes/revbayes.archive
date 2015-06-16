@@ -183,7 +183,7 @@ unsigned long NaturalNumbersState::getState( void ) const
 }
 
 
-size_t  NaturalNumbersState::getStateIndex(void) const
+size_t NaturalNumbersState::getStateIndex(void) const
 {
     return (size_t)state;
 }

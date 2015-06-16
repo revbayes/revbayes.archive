@@ -13,12 +13,8 @@
 
 using namespace RevLanguage;
 
-Move::Move(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>() {
-    
-}
-
-
-Move::Move(const Move &m) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>( m ) {
+Move::Move(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Move>()
+{
     
 }
 

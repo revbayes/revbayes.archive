@@ -225,6 +225,11 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     
 }
 
+size_t Tree::getTipIndex(std::string name) const
+{
+    return topology->getTipIndex( name );
+}
+
 std::vector<std::string> Tree::getTipNames() const
 {
 

@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class ProbabilityDensityFunction : public ContinuousFunction {
         
     public:
-        ProbabilityDensityFunction(const TypedDagNode<valueType> *x, TypedDistribution<valueType> *d);
+        ProbabilityDensityFunction(const TypedDagNode<valueType> *x, TypedDistribution<valueType> *d, bool l=true);
         virtual                            ~ProbabilityDensityFunction(void);
         
         ProbabilityDensityFunction*         clone(void) const;                                                  //!< Create a clon.
@@ -32,15 +32,19 @@ namespace RevBayesCore {
         void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Implementation of swaping parameters
         
     private:
+        
         const TypedDagNode<valueType>*      x;
         TypedDistribution<valueType>*       dist;
+        bool                                useLog;
+        
     };
 }
 
 template <class valueType>
-RevBayesCore::ProbabilityDensityFunction<valueType>::ProbabilityDensityFunction(const TypedDagNode<valueType> *z, TypedDistribution<valueType>* d) : ContinuousFunction( new double(0.0) ),
+RevBayesCore::ProbabilityDensityFunction<valueType>::ProbabilityDensityFunction(const TypedDagNode<valueType> *z, TypedDistribution<valueType>* d, bool l) : ContinuousFunction( new double(0.0) ),
     x( z ),
-    dist( d )
+    dist( d ),
+    useLog( l )
 {
 
     addParameter( x );
@@ -81,7 +85,16 @@ template <class valueType>
 void RevBayesCore::ProbabilityDensityFunction<valueType>::update( void )
 {
     dist->setValue( new valueType(x->getValue()) );
-    *value = dist->computeLnProbability();
+    
+    if ( useLog == true )
+    {
+        *value = dist->computeLnProbability();
+    }
+    else
+    {
+        *value = exp( dist->computeLnProbability() );
+    }
+    
 }
 
 #endif

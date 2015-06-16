@@ -77,7 +77,7 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
     retVal = equal_range(name);
     for (std::multimap<std::string, Function *>::iterator i=retVal.first; i!=retVal.second; i++) 
     {
-        if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()))
+        if ( isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()) == false )
         {
             std::ostringstream msg;
             msg << name << " =  ";
@@ -457,7 +457,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
         if ( !(x[i].hasDefault() == true && y[i].hasDefault() == true) &&
             !x[i].isEllipsis() &&
             !y[i].isEllipsis() &&
-            x[i].getArgumentTypeSpec() != y[i].getArgumentTypeSpec())
+            (x[i].getArgumentTypeSpec() != y[i].getArgumentTypeSpec() || x[i].getArgumentDagNodeType() != y[i].getArgumentDagNodeType() ))
         {
             return true;
         }

@@ -32,9 +32,6 @@ namespace RevLanguage {
     public:
         
                                                     Move(void);                                                                         //!< Default constructor (0.0)
-                                                    Move(const Move& x);                                                                //!< Copy constructor
-        
-        // Overloaded operators
         
         // Basic utility functions
         virtual Move*                               clone(void) const = 0;                                                              //!< Clone object

@@ -197,7 +197,8 @@ void AncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen)
 			// we assume that tip nodes always precede internal nodes
 			TopologyNode* the_node = nodes[i];
 			
-			if ( !the_node->isTip() ) {
+			if ( !the_node->isTip() )
+            {
 				
 				// add a separator before every new element
 				outStream << separator;
@@ -218,7 +219,8 @@ void AncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen)
 				for (int j = 0; j < ancestralStates.size(); j++)
 				{
 					outStream << ancestralStates[j].getStringValue();
-					if (j != ancestralStates.size()-1 && typeid(ancestralStates[j]) != typeid(DnaState) ) {
+					if (j != ancestralStates.size()-1 && typeid(ancestralStates[j]) != typeid(DnaState) )
+                    {
 						outStream << ",";
 					}
 				}
@@ -268,7 +270,8 @@ void AncestralStateMonitor<characterType, treeType>::printHeader()
 	for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
     {
 		TopologyNode* the_node = nodes[i];
-		if ( !the_node->isTip() ) {
+		if ( !the_node->isTip() )
+        {
 			// add a separator before every new element
 			outStream << separator;
 			

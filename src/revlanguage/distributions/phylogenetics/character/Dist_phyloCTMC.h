@@ -61,23 +61,24 @@ namespace RevLanguage {
 #include "PomoState.h"
 #include "NaturalNumbersState.h"
 
-#include <boost/lexical_cast.hpp>
-
 template <class treeType>
-RevLanguage::Dist_phyloCTMC<treeType>::Dist_phyloCTMC() : TypedDistribution< AbstractDiscreteCharacterData >() {
+RevLanguage::Dist_phyloCTMC<treeType>::Dist_phyloCTMC() : TypedDistribution< AbstractDiscreteCharacterData >()
+{
     
 }
 
 
 template <class treeType>
-RevLanguage::Dist_phyloCTMC<treeType>::~Dist_phyloCTMC() {
+RevLanguage::Dist_phyloCTMC<treeType>::~Dist_phyloCTMC()
+{
     
 }
 
 
 
 template <class treeType>
-RevLanguage::Dist_phyloCTMC<treeType>* RevLanguage::Dist_phyloCTMC<treeType>::clone( void ) const {
+RevLanguage::Dist_phyloCTMC<treeType>* RevLanguage::Dist_phyloCTMC<treeType>::clone( void ) const
+{
   
     return new Dist_phyloCTMC(*this);
 }

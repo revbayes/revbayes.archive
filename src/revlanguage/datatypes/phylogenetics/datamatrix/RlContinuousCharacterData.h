@@ -14,7 +14,7 @@
 
 #include "ContinuousCharacterData.h"
 #include "ModelObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlHomologousCharacterData.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -22,7 +22,7 @@
 
 namespace RevLanguage {
     
-    class ContinuousCharacterData : public ModelObject<RevBayesCore::ContinuousCharacterData>, AbstractCharacterData {
+    class ContinuousCharacterData : public ModelObject<RevBayesCore::ContinuousCharacterData>, HomologousCharacterData {
         
     public:
         ContinuousCharacterData(void);                                                                          //!< Default constructor

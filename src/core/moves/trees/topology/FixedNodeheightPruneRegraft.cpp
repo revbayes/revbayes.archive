@@ -31,20 +31,27 @@ FixedNodeheightPruneRegraft* FixedNodeheightPruneRegraft::clone( void ) const {
 
 void FixedNodeheightPruneRegraft::findNewBrothers(std::vector<TopologyNode *> &b, TopologyNode &p, TopologyNode *n) {
     // security check that I'm not a tip
-    if (!n->isTip() && &p != n) {
+    if (!n->isTip() && &p != n)
+    {
         // check the first child
         TopologyNode* child = &n->getChild( 0 );
-        if ( child->getAge() < p.getAge() ) {
+        if ( child->getAge() < p.getAge() )
+        {
             b.push_back( child );
-        } else {
+        }
+        else
+        {
             findNewBrothers(b, p, child);
         }
         
         // check the second child
         child = &n->getChild( 1 );
-        if ( child->getAge() < p.getAge() ) {
+        if ( child->getAge() < p.getAge() )
+        {
             b.push_back( child );
-        } else {
+        }
+        else
+        {
             findNewBrothers(b, p, child);
         }
     }
@@ -52,7 +59,8 @@ void FixedNodeheightPruneRegraft::findNewBrothers(std::vector<TopologyNode *> &b
 
 
 
-const std::string& FixedNodeheightPruneRegraft::getMoveName( void ) const {
+const std::string& FixedNodeheightPruneRegraft::getMoveName( void ) const
+{
     static std::string name = "FNPR";
     
     return name;

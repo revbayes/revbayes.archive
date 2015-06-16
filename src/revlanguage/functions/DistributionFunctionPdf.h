@@ -140,7 +140,8 @@ RevBayesCore::TypedFunction<double>* RevLanguage::DistributionFunctionPdf<valueT
     
     
     RevBayesCore::TypedDagNode<typename valueType::valueType>* arg = static_cast<const valueType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>* f = new RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>( arg, copyObject->createDistribution() );
+    bool useLog = static_cast<const RlBoolean &>( this->args[args.size()-1].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>* f = new RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>( arg, copyObject->createDistribution(), useLog );
     
     return f;
 }

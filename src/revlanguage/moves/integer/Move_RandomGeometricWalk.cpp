@@ -1,8 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Integer.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_RandomGeometricWalk.h"
 #include "Probability.h"
+#include "RandomGeometricWalkProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -56,11 +58,12 @@ void Move_RandomGeometricWalk::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<int>* tmp = static_cast<const Integer &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<int> *n = static_cast<RevBayesCore::StochasticNode<int> *>( tmp );
-    double q = static_cast<const Probability &>( p->getRevObject() ).getValue();
+    double a = static_cast<const Probability &>( p->getRevObject() ).getValue();
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
 
     // finally create the internal move object
-    value = new RevBayesCore::RandomGeometricWalkMove(n, q, t, w);
+    RevBayesCore::Proposal *prop = new RevBayesCore::RandomGeometricWalkProposal(n,a);
+    value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
     
 }
 
@@ -110,7 +113,7 @@ const MemberRules& Move_RandomGeometricWalk::getParameterRules(void) const
     if ( !rulesSet ) 
     {
         moveMemberRules.push_back( new ArgumentRule( "x"   , Integer::getClassTypeSpec()    , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "p"   , Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(0.5) ) );
+        moveMemberRules.push_back( new ArgumentRule( "alpha", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Real(0.5) ) );
         moveMemberRules.push_back( new ArgumentRule( "tune", RlBoolean::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -139,7 +142,8 @@ const TypeSpec& Move_RandomGeometricWalk::getTypeSpec( void ) const
 
 
 
-void Move_RandomGeometricWalk::printValue(std::ostream &o) const {
+void Move_RandomGeometricWalk::printValue(std::ostream &o) const
+{
     
     o << "Move_RandomGeometricWalk(";
     if (x != NULL) 
@@ -172,7 +176,7 @@ void Move_RandomGeometricWalk::setConstParameter(const std::string& name, const 
     {
         x = var;
     }
-    else if ( name == "p" ) 
+    else if ( name == "alpha" ) 
     {
         p = var;
     }

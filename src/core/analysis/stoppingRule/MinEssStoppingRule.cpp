@@ -85,15 +85,6 @@ bool MinEssStoppingRule::stop( size_t g )
         
     }
     
-    if ( passed )
-    {
-        std::cerr << "Passed ESS!" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Failed ESS!" << std::endl;
-    }
-    
     
     return passed;
 }
