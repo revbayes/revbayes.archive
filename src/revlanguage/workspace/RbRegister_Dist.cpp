@@ -111,6 +111,7 @@
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
+#include "Dist_bdpTopology.h"
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
@@ -223,7 +224,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
         addDistribution( "dnBirthDeath",                new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
-        
+        addDistribution( "dnBDPTopology",               new Dist_bdpTopology() );
+		
         addDistribution( "dnBirthDeathMulti",           new Dist_BirthDeathMultiRate() );
         
         // constant rate birth-death process with serially sampled tips

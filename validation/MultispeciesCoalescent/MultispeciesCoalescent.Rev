@@ -3,8 +3,11 @@
 # RevBayes Example: Species tree inference using the multispecies coalescent.
 #
 # 
-# This file: Specifies the HKY model with a strict clock.
-#            Here, we run an MCMC on this model.
+# This file: specifies the multispecies coalescent, with different effective population sizes for each branch of the species tree.
+# 			 We assume the species tree is drawn from a constant birth-death process.
+#			 Along the branches of the species tree, a multispecies coalescent process generates gene trees.
+#			 Along each gene tree, gene sequences are evolved according to an HKY model with a strict clock. 
+#            Here, we run an MCMC on this model, using data from 10 genes in 23 mammalian species.
 #
 # authors: Bastien Boussau and Sebastian Hoehna
 #
@@ -16,7 +19,7 @@
 
 ###### This just defines a single model for all sites #######
 
-### Read in sequence data for both genes
+### Read in sequence data for all genes
 
 locus_names = ["COIII", "FGA", "GHRmeredith", "lrpprc_169", "npas3", "sim1", "tex2", "ttr", "zfy", "zic3"]
 
@@ -36,30 +39,6 @@ n_branches <- 2 * n_species - 1 # number of branches in a rooted tree
 
 # set my move index
 mi = 0
-
-
-
-######################
-# Substitution Model #
-######################
-
-
-for ( i in 1:num_loci ) {
-
-    #### specify the HKY substitution model applied uniformly to all sites ###
-    kappa[i] ~ dnLognormal(0,1)
-    moves[++mi] = mvScale(kappa[i],weight=1)
-
-
-    pi_prior[i] <- v(1,1,1,1) 
-    pi[i] ~ dnDirichlet(pi_prior[i])
-    moves[++mi] = mvSimplexElementScale(pi[i],weight=2)
-
-
-    #### create a deterministic variable for the rate matrix ####
-    Q[i] := fnHKY(kappa[i],pi[i]) 
-
-}
 
 
 ######################
@@ -85,10 +64,10 @@ root ~ dnUniform(0,1000)
 # pull up the species tree.
 root.setValue(0.001)
 
-sampling_fraction <- 23 / 450 # 23 out of the ~ 450 primate species
+sampling_fraction <- 23 / 450 # we sampled 23 out of the ~ 450 primate species
 
 # create some moves that change the stochastic variables
-# all moves are sliding proposals but you could use scaling proposals for the rates too
+# all moves are sliding and scaling proposals
 moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=2)
 moves[++mi] = mvSlide(relativeExtinction,delta=1,tune=true,weight=2)
 moves[++mi] = mvScale(diversification,lambda=1,tune=true,weight=2)
@@ -114,25 +93,29 @@ moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 ###################
 
 
-# We assume independent population size parameters for each branch of the species tree.
+# We assume independent effective population size parameters for each branch of the species tree.
 for (i in 1:n_branches) {
   Ne[i] ~ dnExponential(1.0)
   moves[++mi] = mvScale(Ne[i],1,true,1.0)
 }
 
+<<<<<<< HEAD
+# We could instead assume a single effective population size for the entire species tree with the following two lines:
+#Ne ~ dnGamma(shape=1.0,rate=1.0)
+=======
 # We could also assume a single effective population size for the entire species tree.
 #Ne ~ dnExponential(10.0)
+>>>>>>> 4f841d4d2905ccd050de81e69167343d9784a0ca
 #moves[++mi] = mvScale(Ne,1,true,1.0)
-
-
 
 for (i in 1:num_loci) {
 
+   # We need to read in files providing the link between gene names and species names
    taxa = readTaxonData("data/species_maps/primates_" + locus_names[i] + "_species_map.txt")
 
    # The gene tree from the multispecies coalescent process
-   # Note that if Ne had been a vector of effective population sizes, 
-   # allowing 1 parameter per branch of the species tree, the same line would work.
+   # Note that Ne is a vector of effective population sizes, 
+   # allowing 1 parameter per branch of the species tree.
    geneTree[i] ~ dnCoalMultiSpeciesConst(speciesTree=psi, Ne=Ne, taxa=taxa)
 
    # moves on the tree
@@ -147,21 +130,40 @@ for (i in 1:num_loci) {
 
 }
 
-
-
 ###############
 # Clock Model #
 ###############
 
-# We use a fixed estimate of the clock rate which is 1.00 per million years per site
+# We use a fixed estimate of the clock rate which is 1.00 substitution per site per million years 
+# Arbitrarily, we decide that the first gene has a clock rate of 1
 clockRate[1] <- 1.0
 
+# All other genes have clock rates defined relatively to the first gene
 for ( i in 2:num_loci ) { 
     relativeClockRate[i] ~ dnLognormal(0,1)
     clockRate[i] := clockRate[1] * relativeClockRate[i]
     moves[++mi] = mvScale(relativeClockRate[i],lambda=1,tune=true,weight=1)
     
     moves[++mi] = mvUpDownScale(upTree=geneTree[i],downScalar=relativeClockRate[i],lambda=1,tune=true,weight=1)
+}
+
+######################
+# Substitution Model #
+######################
+
+for ( i in 1:num_loci ) {
+
+    #### specify the HKY substitution model applied uniformly to all sites
+    kappa[i] ~ dnLognormal(0,1)
+    moves[++mi] = mvScale(kappa[i],weight=1)
+
+    pi_prior[i] <- v(1,1,1,1) 
+    pi[i] ~ dnDirichlet(pi_prior[i])
+    moves[++mi] = mvSimplexElementScale(pi[i],weight=2)
+
+    #### create a deterministic variable for the rate matrix
+    Q[i] := fnHKY(kappa[i],pi[i]) 
+
 }
 
 ###################
@@ -185,24 +187,20 @@ for ( i in 1:num_loci ) {
 # THE Model #
 #############
 
-# We define our model.
-# We can use any node of our model as a handle, here we chose to use the rate matrix.
+# We get a handle on our model.
+# We can use any node of our model as a handle, here we choose to use the topology.
 mymodel = model(psi)
 
-
-
-
-
-
+# Monitors to check the progression of the program
 monitors[1] = mnScreen(printgen=100, root)
 monitors[2] = mnModel(filename="output/primates_fixed_clock.log",printgen=10, separator = TAB)
 monitors[3] = mnFile(filename="output/primates_fixed_clock.trees",printgen=10, separator = TAB, psi)
 for ( i in 1:num_loci ) { 
-    # add a monitor per gene tree
+    # We add a monitor for each gene tree
     monitors[i+3] = mnFile(filename="output/primates_fixed_clock_" + locus_names[i] + ".trees",printgen=10, separator = TAB, geneTree[i])
 }
 
-# Here we use a plain MCMC. You could also set nruns=2 for replicated analysis
+# Here we use a plain MCMC. You could also set nruns=2 for a replicated analysis
 # or use mcmcmc with heated chains.
 mymcmc = mcmc(mymodel, monitors, moves)
 
