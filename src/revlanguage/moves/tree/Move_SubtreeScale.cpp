@@ -1,17 +1,10 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_SubtreeScale.h"
+#include "SubtreeScaleProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RevObject.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -19,57 +12,100 @@
 
 using namespace RevLanguage;
 
-Move_SubtreeScale::Move_SubtreeScale() : Move() {
+/**
+ * Default constructor.
+ *
+ * The default constructor does nothing except allocating the object.
+ */
+Move_SubtreeScale::Move_SubtreeScale() : Move()
+{
     
 }
 
 
-/** Clone object */
-Move_SubtreeScale* Move_SubtreeScale::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the move.
+ */
+Move_SubtreeScale* Move_SubtreeScale::clone(void) const
+{
     
-	return new Move_SubtreeScale(*this);
+    return new Move_SubtreeScale(*this);
 }
 
 
-void Move_SubtreeScale::constructInternalObject( void ) {
+/**
+ * Create a new internal move object.
+ *
+ * This function simply dynamically allocates a new internal move object that is
+ * associated with the variable (DAG-node). The internal move object is created by calling its
+ * constructor and passing the move-parameters (the variable and other parameters) as arguments of the
+ * constructor. The move constructor takes care of the proper hook-ups.
+ *
+ * \return A new internal distribution object.
+ */
+void Move_SubtreeScale::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::SubtreeScale(t, w);
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::SubtreeScaleProposal(n);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w);
+    
 }
 
 
-/** Get Rev type of object */
-const std::string& Move_SubtreeScale::getClassType(void) { 
+/**
+ * Get Rev type of object
+ *
+ * \return The class' name.
+ */
+const std::string& Move_SubtreeScale::getClassType(void)
+{
     
     static std::string revType = "Move_SubtreeScale";
     
-	return revType; 
+    return revType;
 }
 
-/** Get class type spec describing type of object */
-const TypeSpec& Move_SubtreeScale::getClassTypeSpec(void) { 
+
+/**
+ * Get class type spec describing type of an object from this class (static).
+ *
+ * \return TypeSpec of this class.
+ */
+const TypeSpec& Move_SubtreeScale::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
-
-/** Return member rules (no members) */
-const MemberRules& Move_SubtreeScale::getParameterRules(void) const {
+/**
+ * Get the member rules used to create the constructor of this object.
+ *
+ * The member rules of the scale move are:
+ * (1) the variable which must be a time-tree.
+ *
+ * \return The member rules.
+ */
+const MemberRules& Move_SubtreeScale::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
@@ -82,8 +118,14 @@ const MemberRules& Move_SubtreeScale::getParameterRules(void) const {
     return memberRules;
 }
 
-/** Get type spec */
-const TypeSpec& Move_SubtreeScale::getTypeSpec( void ) const {
+
+/**
+ * Get type-specification on this object (non-static).
+ *
+ * \return The type spec of this object.
+ */
+const TypeSpec& Move_SubtreeScale::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -91,28 +133,50 @@ const TypeSpec& Move_SubtreeScale::getTypeSpec( void ) const {
 }
 
 
-
-/** Get type spec */
-void Move_SubtreeScale::printValue(std::ostream &o) const {
+/**
+ * Print the value for the user.
+ */
+void Move_SubtreeScale::printValue(std::ostream &o) const
+{
     
-    o << "Move_SubtreeScale(";
-    if (tree != NULL) {
+    o << "Narrow(";
+    if (tree != NULL)
+    {
         o << tree->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
+    
 }
 
 
-/** Set a NearestNeighborInterchange variable */
-void Move_SubtreeScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+/**
+ * Set a member variable.
+ *
+ * Sets a member variable with the given name and store the pointer to the variable.
+ * The value of the variable might still change but this function needs to be called again if the pointer to
+ * the variable changes. The current values will be used to create the distribution object.
+ *
+ * \param[in]    name     Name of the member variable.
+ * \param[in]    var      Pointer to the variable.
+ */
+void Move_SubtreeScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
-    if ( name == "tree" ) {
+    if ( name == "tree" )
+    {
         tree = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
+    
 }
+
+
+
+
