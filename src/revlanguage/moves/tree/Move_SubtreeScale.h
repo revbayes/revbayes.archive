@@ -1,24 +1,6 @@
-/**
- * @file
- * This file contains the declaration of RevLanguage wrapper of NNI.
- *
- * @brief Declaration of RlSlidingMove
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
- */
-
 #ifndef Move_SubtreeScale_H
 #define Move_SubtreeScale_H
 
-#include "SubtreeScale.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -27,6 +9,22 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * The RevLanguage wrapper of the scubtree-scale move.
+     *
+     * The RevLanguage wrapper of the narrow-exchange move simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal move object can be constructed and hooked up
+     * in a DAG-nove (variable) that it works on.
+     * See the SubtreeScaleProposal.h for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-01-28, version 1.0
+     *
+     */
     class Move_SubtreeScale : public Move {
         
     public:
@@ -34,7 +32,7 @@ namespace RevLanguage {
         Move_SubtreeScale(void);                                                                                                 //!< Default constructor
         
         // Basic utility functions
-        virtual Move_SubtreeScale*                       clone(void) const;                                                      //!< Clone object
+        virtual Move_SubtreeScale*                  clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -46,7 +44,7 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                      tree;
+        RevPtr<const RevVariable>                   tree;
         
     };
     
