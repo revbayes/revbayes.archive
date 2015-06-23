@@ -254,7 +254,8 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         
     }
     retVal = equal_range(name);
-    if (hits == 1) {
+    if (hits == 1)
+    {
         if (retVal.first->second->checkArguments(args,NULL,once) == false)
         {
             std::ostringstream msg;
@@ -264,15 +265,49 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
+                // add a comma before the every argument except the first
                 if (it != args.begin()) 
                 {
                     msg << ",";
                 }
+                
+                // create the default type of the passed-in argument
                 std::string type = "NULL";
-                if (it->getVariable() != NULL) type = it->getVariable()->getRevObject().getType();
+                // get the type if the variable wasn't NULL
+                if (it->getVariable() != NULL)
+                {
+                    type = it->getVariable()->getRevObject().getType();
+                }
                 msg << " " << type;
+                
+                // create the default DAG type of the passed-in argument
+                std::string dagtype = "";
+                // get the type if the variable wasn't NULL
+                if (it->getVariable() != NULL && it->getVariable()->getRevObject().getDagNode() != NULL )
+                {
+                    if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC )
+                    {
+                        dagtype = "<deterministic>";
+                    }
+                    else if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::STOCHASTIC )
+                    {
+                        dagtype = "<stochastic>";
+                    }
+                    else if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT )
+                    {
+                        dagtype = "<constant>";
+                    }
+                    else
+                    {
+                        dagtype = "<?>";
+                    }
+                }
+                msg << dagtype;
+                
                 if ( it->getLabel() != "" )
+                {
                     msg << " '" << it->getLabel() << "'";
+                }
             }
             msg << " )." << std::endl;
             msg << "Correct usage is:" << std::endl;
