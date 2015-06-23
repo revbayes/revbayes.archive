@@ -94,7 +94,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::TypedFunction<valueTy
 
 /* Get Rev type of object */
 template <typename valueType>
-const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void) { 
+const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void)
+{
     
     static std::string revType = "Function<"+ valueType::getClassType() +">";
     
@@ -103,7 +104,8 @@ const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void) {
 
 /* Get class type spec describing type of object */
 template <typename valueType>
-const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
