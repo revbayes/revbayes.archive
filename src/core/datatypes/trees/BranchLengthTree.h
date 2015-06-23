@@ -33,10 +33,8 @@ namespace RevBayesCore {
         BranchLengthTree(void);                                                                                             //!< Default constructor
         virtual                                    ~BranchLengthTree(void);                                                                                                        //!< Destructor
         
-        BranchLengthTree&                           operator=(const BranchLengthTree& t);
-
         // Basic utility functions
-        BranchLengthTree*                           clone(void) const;                                                      //!< Clone object
+        virtual BranchLengthTree*                   clone(void) const;                                                      //!< Clone object
         
         // BranchLengthTree functions
         double                                      getAge(size_t idx) const;

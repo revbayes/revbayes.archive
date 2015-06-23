@@ -45,30 +45,17 @@ BranchLengthTree::~BranchLengthTree(void)
 }
 
 
-BranchLengthTree& BranchLengthTree::operator=(const BranchLengthTree &t)
-{
-    
-    if (this != &t)
-    {
-        Tree::operator=(t);
-        
-        branchLengths      = t.branchLengths;
-        
-    }
-    
-    return *this;
-}
-
-
 /* Clone function */
-BranchLengthTree* BranchLengthTree::clone(void) const {
+BranchLengthTree* BranchLengthTree::clone(void) const
+{
     
     return new BranchLengthTree(*this);
 }
 
 
 
-double BranchLengthTree::getAge(size_t idx) const {
+double BranchLengthTree::getAge(size_t idx) const
+{
     
     // BranchLengthTree always returns 0.0 as age
     return 0.0;
@@ -92,23 +79,29 @@ double BranchLengthTree::getAge(size_t idx) const {
 }
 
 
-double BranchLengthTree::getBranchLength(size_t idx) const {
+double BranchLengthTree::getBranchLength(size_t idx) const
+{
     return branchLengths[idx];
 }
 
 
 
-double BranchLengthTree::getTime(size_t idx) const {
+double BranchLengthTree::getTime(size_t idx) const
+{
     throw RbException("A branch-length tree does not provide node times.");
     return -1;
 }
 
 
-double BranchLengthTree::getTreeLength(void) const {
+double BranchLengthTree::getTreeLength(void) const
+{
     double treeLength = 0;
     const std::vector<TopologyNode*> &nodes = topology->getNodes();
     for (size_t i = 0; i < nodes.size(); i++)
+    {
         treeLength += nodes[i]->getBranchLength();
+    }
+    
     return treeLength;
 }
 
@@ -144,9 +137,11 @@ void BranchLengthTree::reroot(const std::string &outgroup)
 	topology->setRoot( &outgroupNode.getParent() );
 	
 	// reset the branch lengths
-    for (size_t i = 0; i < branchLengths.size(); ++i) {
+    for (size_t i = 0; i < branchLengths.size(); ++i)
+    {
 		branchLengths[nodes[i]->getIndex()] = old_branchLengths[i];
     }
+    
 }
 
 void BranchLengthTree::reroot(RevBayesCore::TopologyNode &n)
@@ -163,13 +158,16 @@ void BranchLengthTree::reroot(RevBayesCore::TopologyNode &n)
 	topology->setRoot( &n.getParent() );
 	
 	// reset the branch lengths
-    for (size_t i = 0; i < branchLengths.size(); ++i) {
+    for (size_t i = 0; i < branchLengths.size(); ++i)
+    {
 		branchLengths[nodes[i]->getIndex()] = old_branchLengths[i];
     }
+    
 }
 
 
-void BranchLengthTree::resizeElementVectors(size_t n) {
+void BranchLengthTree::resizeElementVectors(size_t n)
+{
     // remove all elements
     branchLengths.clear();
     
@@ -199,7 +197,8 @@ void BranchLengthTree::reverseParentChild(RevBayesCore::TopologyNode &n)
 }
 
 
-void BranchLengthTree::setBranchLength(size_t idx, double bl) {
+void BranchLengthTree::setBranchLength(size_t idx, double bl)
+{
     
     // fire a tree change event
     const std::set<TreeChangeEventListener*> &listeners = changeEventHandler.getListeners();
@@ -212,7 +211,8 @@ void BranchLengthTree::setBranchLength(size_t idx, double bl) {
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchLengthTree& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const BranchLengthTree& x)
+{
     o << x.getNewickRepresentation();
     
     return o;

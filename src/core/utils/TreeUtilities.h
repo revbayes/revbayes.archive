@@ -32,6 +32,7 @@ namespace RevBayesCore {
         void            rescaleSubtree(TimeTree *t, TopologyNode *n, double factor);
         void            rescaleTree(TimeTree *t, TopologyNode *n, double factor);
         void            getOldestTip(TimeTree* t, TopologyNode *n, double& oldest);
+        void            getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa );
         std::string     uniqueNewickTopology(const Tree &t);
     
         // internal helper functions

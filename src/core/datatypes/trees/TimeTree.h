@@ -29,13 +29,10 @@ namespace RevBayesCore {
     
     public:
         TimeTree(void);                                                                                                     //!< Default constructor
-        TimeTree(const TimeTree& t);                                                                                        //!< Copy constructor
         virtual                                    ~TimeTree(void);                                                                                                        //!< Destructor
-    
-        TimeTree&                                   operator=(const TimeTree& t);
-    
+        
         // Basic utility functions
-        TimeTree*                                   clone(void) const;                                                      //!< Clone object
+        virtual TimeTree*                           clone(void) const;                                                      //!< Clone object
     
         // TimeTree functions
         double                                      getAge(size_t idx) const;

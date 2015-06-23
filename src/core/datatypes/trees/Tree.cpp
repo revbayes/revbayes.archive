@@ -316,6 +316,22 @@ const TopologyNode& Tree::getTipNode(size_t indx) const
     return topology->getTipNode(indx);
 }
 
+TopologyNode& Tree::getTipNodeWithName( const std::string &n )
+{
+    return topology->getTipNodeWithName( n );
+}
+
+const TopologyNode& Tree::getTipNodeWithName( const std::string &n ) const
+{
+    
+    return topology->getTipNodeWithName( n );
+}
+
+std::vector<TopologyNode*> Tree::getTipNodesWithSpeciesName( const std::string &n )
+{
+    return topology->getTipNodesWithSpeciesName( n );
+}
+
 
 double Tree::getTmrca(const TopologyNode &n)
 {

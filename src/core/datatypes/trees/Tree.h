@@ -62,9 +62,6 @@ namespace RevBayesCore {
 		void                                                clearNodeParameters(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
-        std::vector<std::string>                            getTipNames() const;
-        std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
-        std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         TopologyNode&                                       getNode(size_t idx);                                                                                //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                                                          //!< Get the node at index
         std::vector<TopologyNode*>                          getNodes(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
@@ -75,9 +72,15 @@ namespace RevBayesCore {
         const std::string&                                  getNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree
         TopologyNode&                                       getRoot(void);                                                                                      //!< Get a pointer to the root node of the Tree
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
+        std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
+        std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
         size_t                                              getTipIndex(std::string name) const;
+        std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getTipNode(size_t indx);                                                                            //!< Get a pointer to tip node i
         const TopologyNode&                                 getTipNode(size_t indx) const;                                                                      //!< Get a pointer to tip node i
+        TopologyNode&                                       getTipNodeWithName(const std::string &n);                                                                            //!< Get a pointer to tip node i
+        const TopologyNode&                                 getTipNodeWithName(const std::string &n) const;                                                                      //!< Get a pointer to tip node i
+        std::vector<TopologyNode*>                          getTipNodesWithSpeciesName(const std::string &n);                                                                            //!< Get a pointer to tip node i
         double                                              getTmrca(const TopologyNode &n);
         TreeChangeEventHandler&                             getTreeChangeEventHandler(void) const;                                                              //!< Get the change-event handler for this tree
         const Topology&                                     getTopology(void) const;                                                                            //!< Get the topology of this tree
