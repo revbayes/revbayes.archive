@@ -204,7 +204,7 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getOldestNodesInPopulati
             // push the parent to our current list
             individualTaxa.insert( &geneNode->getParent() );
         }
-        else
+        else if ( geneNode->isTip() == false )
         {
             // add this node if it is within the age of our population
             nodesInPopulationSet.insert( geneNode );
