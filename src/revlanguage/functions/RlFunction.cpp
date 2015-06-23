@@ -468,11 +468,6 @@ void Function::printValue(std::ostream& o) const
 
     const ArgumentRules& argRules = getArgumentRules();
 
-    // we don't want extra spaces if not necessary
-    if ( getReturnType().getType() != "" )
-    {
-        o << getReturnType().getType() << " ";
-    }
     o << name << " (";
     for (size_t i=0; i<argRules.size(); i++)
     {
