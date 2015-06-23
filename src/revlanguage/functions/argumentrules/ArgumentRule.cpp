@@ -361,15 +361,48 @@ bool RevLanguage::ArgumentRule::isEllipsis( void ) const
  * a constant currently, so the printing of this modifier is suspended for now.
  *
  */
-void RevLanguage::ArgumentRule::printValue(std::ostream &o) const
+void ArgumentRule::printValue(std::ostream &o) const
 {
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
         if ( it != argTypeSpecs.begin() )
+        {
             o << "|";
+        }
+        
         o << (*it).getType();
     }
+    
+    // create the default DAG type of the passed-in argument
+    std::string dagtype = "";
+    // get the type if the variable wasn't NULL
+    if ( nodeType == ArgumentRule::DETERMINISTIC )
+    {
+        dagtype = "<deterministic>";
+    }
+    else if ( nodeType == ArgumentRule::STOCHASTIC )
+    {
+        dagtype = "<stochastic>";
+    }
+    else if ( nodeType == ArgumentRule::CONSTANT )
+    {
+        dagtype = "<constant>";
+    }
+    else if ( nodeType == ArgumentRule::DYNAMIC )
+    {
+        dagtype = "<dynamic>";
+    }
+    else if ( nodeType == ArgumentRule::ANY )
+    {
+        dagtype = "<any>";
+    }
+    else
+    {
+        dagtype = "<?>";
+    }
+    o << dagtype;
+    
     o << " " << label;
 }
 

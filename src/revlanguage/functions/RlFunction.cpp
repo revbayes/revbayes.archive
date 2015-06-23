@@ -30,12 +30,9 @@ Function::Function(const Function &x) : RevObject( x ),
 
 
 /** Destructor. We need to free the arguments here. */
-Function::~Function(void) {
+Function::~Function(void)
+{
     
-#if defined ( DEBUG_MEMORY )
-    std::cerr << " Deleting function '" << name << "' <" << this << ">" << std::endl;
-#endif
-
     // we don't own the enclosing environment -> we don't delete it.
 }
 
@@ -466,11 +463,17 @@ std::string Function::getRevDeclaration(void) const
 
 
 /** Print value for user */
-void Function::printValue(std::ostream& o) const {
+void Function::printValue(std::ostream& o) const
+{
 
     const ArgumentRules& argRules = getArgumentRules();
 
-    o << getReturnType().getType() << " function (";
+    // we don't want extra spaces if not necessary
+    if ( getReturnType().getType() != "" )
+    {
+        o << getReturnType().getType() << " ";
+    }
+    o << name << " (";
     for (size_t i=0; i<argRules.size(); i++)
     {
         if (i != 0)
@@ -758,7 +761,8 @@ void Function::setExecutionEnviroment(Environment *e)
 }
 
 /** Set name of function */
-void Function::setName(const std::string& nm) {
+void Function::setName(const std::string& nm)
+{
     
     name = nm;
 }
