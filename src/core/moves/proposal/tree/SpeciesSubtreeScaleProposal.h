@@ -40,7 +40,7 @@ namespace RevBayesCore {
         
     protected:
 
-        std::vector<TopologyNode*>                      getNodesInPopulation( TimeTree &tau, TopologyNode &n );
+        std::vector<TopologyNode*>                      getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n );
         void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);             //!< Swap the DAG nodes on which the Proposal is working on
         
         
