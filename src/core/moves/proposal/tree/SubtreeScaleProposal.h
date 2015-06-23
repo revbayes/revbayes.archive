@@ -10,11 +10,12 @@
 namespace RevBayesCore {
     
     /**
-     * The narrow-exchange operator.
+     * The subtree-scale operator.
      *
-     * A narrow-exchange proposal is a NNI (nearest neighbour interchange) proposal on rooted trees without changing the node age.
-     * That is, we pick a random node which is not the root and neither its parent is the root.
-     * Then, we try to exchange the picked node with it's uncle. This move will automatically fail if the uncle is older than the parent.
+     * A subtree-scale proposal is a scaling proposal on rooted subtrees without changing the topology.
+     * That is, we pick a random node which is not the root.
+     * Then, we uniformly pick an age between the parent and the oldest sampled descendant.
+     * The picked subtree is then scaled to this new age.
      *
      *
      * @copyright Copyright 2009-

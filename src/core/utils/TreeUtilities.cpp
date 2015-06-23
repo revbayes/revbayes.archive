@@ -119,11 +119,13 @@ void RevBayesCore::TreeUtilities::getOldestTip(TimeTree* t, TopologyNode *n, dou
 {
     
     // we only rescale internal nodes
-    if ( !n->isTip() ) {
+    if ( !n->isTip() )
+    {
         
         // assertion that we have binary trees
 #ifdef ASSERTIONS_TREE
-        if ( n->getNumberOfChildren() != 2 ) {
+        if ( n->getNumberOfChildren() != 2 )
+        {
             throw RbException("NNI is only implemented for binary trees!");
         }
 #endif
@@ -140,6 +142,30 @@ void RevBayesCore::TreeUtilities::getOldestTip(TimeTree* t, TopologyNode *n, dou
         }
     }
 }
+
+
+void RevBayesCore::TreeUtilities::getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa )
+{
+    
+    if ( n->isTip() )
+    {
+        taxa.push_back( n );
+    }
+    else
+    {
+        
+        // recursively add children to the list of nodes in this subtree
+        for (size_t i = 0; i < n->getNumberOfChildren(); ++i)
+        {
+            TopologyNode& child = n->getChild( i );
+            
+            getTaxaInSubtree( &child, taxa );
+        }
+    }
+    
+}
+
+
 
 void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor)
 {
