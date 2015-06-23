@@ -1,8 +1,9 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_FNPR.h"
-#include "FixedNodeheightPruneAndRegraftProposal.h"
+#include "ModelVector.h"
+#include "Move_SpeciesSubtreeScale.h"
+#include "SpeciesSubtreeScaleProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
@@ -17,7 +18,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Move_FNPR::Move_FNPR() : Move()
+Move_SpeciesSubtreeScale::Move_SpeciesSubtreeScale() : Move()
 {
     
 }
@@ -29,10 +30,10 @@ Move_FNPR::Move_FNPR() : Move()
  *
  * \return A new copy of the move.
  */
-Move_FNPR* Move_FNPR::clone(void) const
+Move_SpeciesSubtreeScale* Move_SpeciesSubtreeScale::clone(void) const
 {
     
-    return new Move_FNPR(*this);
+    return new Move_SpeciesSubtreeScale(*this);
 }
 
 
@@ -46,17 +47,34 @@ Move_FNPR* Move_FNPR::clone(void) const
  *
  * \return A new internal distribution object.
  */
-void Move_FNPR::constructInternalObject( void )
+void Move_SpeciesSubtreeScale::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     
-    RevBayesCore::Proposal *p = new RevBayesCore::FixedNodeheightPruneAndRegraftProposal(n);
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::TimeTree> >* tmp_gt = static_cast<const ModelVector<TimeTree> &>( geneTrees->getRevObject() ).getDagNode();
+    std::set<const RevBayesCore::DagNode*> parents = tmp_gt->getParents();
+    std::vector< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *> gt;
+    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+    {
+        const RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( *it );
+        if ( theNode != NULL )
+        {
+            gt.push_back( const_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( theNode ) );
+        }
+        else
+        {
+            throw RbException("Could not create a mvElementScale because the node isn't a vector of stochastic nodes.");
+        }
+    }
+
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::SpeciesSubtreeScaleProposal(st,gt);
     value = new RevBayesCore::MetropolisHastingsMove(p,w);
     
 }
@@ -67,10 +85,10 @@ void Move_FNPR::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_FNPR::getClassType(void)
+const std::string& Move_SpeciesSubtreeScale::getClassType(void)
 {
     
-    static std::string revType = "Move_FNPR";
+    static std::string revType = "Move_SpeciesSubtreeScale";
     
     return revType;
 }
@@ -81,7 +99,7 @@ const std::string& Move_FNPR::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Move_FNPR::getClassTypeSpec(void)
+const TypeSpec& Move_SpeciesSubtreeScale::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -98,7 +116,7 @@ const TypeSpec& Move_FNPR::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Move_FNPR::getParameterRules(void) const
+const MemberRules& Move_SpeciesSubtreeScale::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -106,7 +124,8 @@ const MemberRules& Move_FNPR::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "geneTrees"  , ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -124,7 +143,7 @@ const MemberRules& Move_FNPR::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Move_FNPR::getTypeSpec( void ) const
+const TypeSpec& Move_SpeciesSubtreeScale::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -136,13 +155,13 @@ const TypeSpec& Move_FNPR::getTypeSpec( void ) const
 /**
  * Print the value for the user.
  */
-void Move_FNPR::printValue(std::ostream &o) const
+void Move_SpeciesSubtreeScale::printValue(std::ostream &o) const
 {
     
-    o << "FNPR(";
-    if (tree != NULL)
+    o << "SpeciesSubtreeScale(";
+    if (speciesTree != NULL)
     {
-        o << tree->getName();
+        o << speciesTree->getName();
     }
     else
     {
@@ -163,12 +182,16 @@ void Move_FNPR::printValue(std::ostream &o) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Move_FNPR::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_SpeciesSubtreeScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "tree" )
+    if ( name == "speciesTree" )
     {
-        tree = var;
+        speciesTree = var;
+    }
+    else if ( name == "geneTrees" )
+    {
+        geneTrees = var;
     }
     else
     {

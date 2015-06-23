@@ -139,7 +139,7 @@ const TypeSpec& Move_SubtreeScale::getTypeSpec( void ) const
 void Move_SubtreeScale::printValue(std::ostream &o) const
 {
     
-    o << "Narrow(";
+    o << "SubtreeScale(";
     if (tree != NULL)
     {
         o << tree->getName();

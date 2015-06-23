@@ -112,22 +112,19 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     
     double scalingFactor = my_new_age / my_age;
     
-    size_t nNodes = node->getNumberOfNodesInSubtree(false);
-    
-    // rescale the subtree of the species tree
-    TreeUtilities::rescaleSubtree(&tau, node, scalingFactor );
+    size_t nNodes = node->getNumberOfNodesInSubtree( false );
     
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
         TimeTree& geneTree = geneTrees[i]->getValue();
         
-        std::vector<TopologyNode*> nodes = getNodesInPopulation(geneTree, *node );
+        std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(geneTree, *node );
         
         for (size_t j=0; j<nodes.size(); ++j)
         {
             // add the number of nodes that we are going to scale in the subtree
-            nNodes += nodes[j]->getNumberOfNodesInSubtree(false);
+            nNodes += nodes[j]->getNumberOfNodesInSubtree( false );
             
             // rescale the subtree of this gene tree
             TreeUtilities::rescaleSubtree(&geneTree, nodes[j], scalingFactor );
@@ -135,16 +132,21 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
         
     }
     
-    if (min_age != 0.0)
-    {
-        for (size_t i = 0; i < tau.getNumberOfTips(); i++)
-        {
-            if (tau.getNode(i).getAge() < 0.0)
-            {
-                return RbConstants::Double::neginf;
-            }
-        }
-    }
+    // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
+//    if (min_age != 0.0)
+//    {
+//        for (size_t i = 0; i < tau.getNumberOfTips(); i++)
+//        {
+//            if (tau.getNode(i).getAge() < 0.0)
+//            {
+//                return RbConstants::Double::neginf;
+//            }
+//        }
+//    }
+    
+    
+    // rescale the subtree of the species tree
+    TreeUtilities::rescaleSubtree(&tau, node, scalingFactor );
     
     // compute the Hastings ratio
     double lnHastingsratio = (nNodes > 1 ? log( scalingFactor ) * (nNodes-1) : 0.0 );
@@ -154,44 +156,8 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
 }
 
 
-std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n )
 {
-    
-    //    const std::vector< TopologyNode* > &speciesTreeNodes = sp.getNodes();
-    //    // first let's create a map from species names to the nodes of the species tree
-    //    std::map<std::string, TopologyNode * > speciesNames2speciesNodes;
-    //
-    //    for (std::vector< TopologyNode *>::const_iterator it = speciesTreeNodes.begin(); it != speciesTreeNodes.end(); ++it)
-    //    {
-    //        if ( (*it)->isTip() )
-    //        {
-    //            const std::string &name = (*it)->getName();
-    //            speciesNames2speciesNodes[name] = *it;
-    //        }
-    //    }
-    //
-    //
-    //    // create a map from individual name to the actual tip node for convenience
-    //    std::map< std::string, TopologyNode*> individualNames2geneTreeTips;
-    //    for ( size_t i = 0; i < numTaxa; ++i)
-    //    {
-    //        TopologyNode *tip = &value->getTipNode( i );
-    //        individualNames2geneTreeTips[ tip->getName() ] = tip;
-    //    }
-    //
-    //
-    //    std::map< const TopologyNode *, std::set< TopologyNode* > > individualsPerBranch;
-    //
-    //    for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
-    //    {
-    //        const std::string &tipName = it->getName();
-    //        TopologyNode *n = individualNames2geneTreeTips[tipName];
-    //        const std::string &speciesName = it->getSpeciesName();
-    //        TopologyNode *speciesNode = speciesNames2speciesNodes[speciesName];
-    //        std::set< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
-    //        nodesAtNode.insert( n );
-    //    }
-    //
     
     // I need all the oldest nodes/subtrees that have the same tips.
     // Those nodes need to be scaled too.
@@ -208,38 +174,35 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getNodesInPopulation( Ti
     TreeUtilities::getTaxaInSubtree( &n, speciesTaxa );
     
     // get all the individuals
-    std::vector<TopologyNode*> individualTaxa;
+    std::set<TopologyNode*> individualTaxa;
     for (size_t i = 0; i < speciesTaxa.size(); ++i)
     {
         const std::string &name = speciesTaxa[i]->getName();
         std::vector<TopologyNode*> ind = tau.getTipNodesWithSpeciesName( name );
         for (size_t j = 0; j < ind.size(); ++j)
         {
-            individualTaxa.push_back( ind[j] );
+            individualTaxa.insert( ind[j] );
         }
-    }
-    
-    std::set<TopologyNode*> tmpNodes;
-    for (size_t i = 0; i < individualTaxa.size(); ++i)
-    {
-        tmpNodes.insert( individualTaxa[i] );
     }
     
     // create the set of the nodes within this population
     std::set<TopologyNode*> nodesInPopulationSet;
     
     // now go through all nodes in the gene
-    while ( tmpNodes.empty() == false )
+    while ( individualTaxa.empty() == false )
     {
-        std::set<TopologyNode*>::iterator it = tmpNodes.begin();
-        tmpNodes.erase( it );
+        std::set<TopologyNode*>::iterator it = individualTaxa.begin();
+        individualTaxa.erase( it );
         
         TopologyNode *geneNode = *it;
         
+        // add this node to our list of node we need to scale, if:
+        // a) this is the root node
+        // b) this is not the root and the age of the parent node is larger than the parent's age of the species node
         if ( geneNode->isRoot() == false && ( max_age == -1.0 || max_age > geneNode->getParent().getAge() ) )
         {
             // push the parent to our current list
-            tmpNodes.insert( &geneNode->getParent() );
+            individualTaxa.insert( &geneNode->getParent() );
         }
         else
         {
@@ -304,7 +267,7 @@ void SpeciesSubtreeScaleProposal::undoProposal( void )
         // get the i-th gene tree
         TimeTree& geneTree = geneTrees[i]->getValue();
         
-        std::vector<TopologyNode*> nodes = getNodesInPopulation(geneTree, *storedNode );
+        std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(geneTree, *storedNode );
         
         for (size_t j=0; j<nodes.size(); ++j)
         {
