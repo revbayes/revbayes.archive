@@ -69,7 +69,7 @@ RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceToCoreWrapperObject<Rev
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burninFraction", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
     summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
     this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
@@ -82,9 +82,9 @@ RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typena
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
+    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
     summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
-    summarizeArgRules->push_back( new ArgumentRule("burninFraction", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
     this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
 
 }
