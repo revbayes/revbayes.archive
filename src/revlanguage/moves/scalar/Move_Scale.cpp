@@ -143,7 +143,8 @@ const TypeSpec& Move_Scale::getTypeSpec( void ) const
 
 
 
-void Move_Scale::printValue(std::ostream &o) const {
+void Move_Scale::printValue(std::ostream &o) const
+{
     
     o << "Scale(";
     if (x != NULL) 
