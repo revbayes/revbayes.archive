@@ -62,7 +62,7 @@ SpeciesSubtreeScaleBetaProposal* SpeciesSubtreeScaleBetaProposal::clone( void ) 
  */
 const std::string& SpeciesSubtreeScaleBetaProposal::getProposalName( void ) const
 {
-    static std::string name = "SpeciesSubtreeScale";
+    static std::string name = "SpeciesSubtreeScaleBeta";
     
     return name;
 }

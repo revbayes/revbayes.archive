@@ -69,17 +69,11 @@ const std::string& SpeciesSubtreeScaleProposal::getProposalName( void ) const
 /**
  * Perform the proposal.
  *
- * A Beta-simplex proposal randomly changes some values of a simplex, although the other values
- * change too because of the renormalization.
- * First, some random indices are drawn. Then, the proposal draws a new somplex
- *   u ~ Beta(val[index] * alpha)
- * where alpha is the tuning parameter.The new value is set to u.
- * The simplex is then renormalized.
- *
  * \return The hastings ratio.
  */
 double SpeciesSubtreeScaleProposal::doProposal( void )
 {
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -126,8 +120,19 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
             // add the number of nodes that we are going to scale in the subtree
             nNodes += nodes[j]->getNumberOfNodesInSubtree( false );
             
+            if ( nodes[j]->isTip() == true )
+            {
+                std::cerr << "Trying to scale a tip\n";
+            }
+            
+            if ( nodes[j]->isRoot() == true )
+            {
+                std::cerr << "Trying to scale the root\n";
+            }
+            
             // rescale the subtree of this gene tree
             TreeUtilities::rescaleSubtree(&geneTree, nodes[j], scalingFactor );
+            
         }
         
     }
@@ -152,7 +157,6 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     double lnHastingsratio = (nNodes > 1 ? log( scalingFactor ) * (nNodes-1) : 0.0 );
     
     return lnHastingsratio;
-    
 }
 
 
@@ -257,10 +261,8 @@ void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o) const
  */
 void SpeciesSubtreeScaleProposal::undoProposal( void )
 {
-    
     // undo the proposal
     double sf = storedAge / storedNode->getAge();
-    
     
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
@@ -272,13 +274,25 @@ void SpeciesSubtreeScaleProposal::undoProposal( void )
         for (size_t j=0; j<nodes.size(); ++j)
         {
             
+            if ( nodes[j]->isTip() == true )
+            {
+                std::cerr << "Trying to scale a tip\n";
+            }
+            
+            if ( nodes[j]->isRoot() == true )
+            {
+                std::cerr << "Trying to scale the root\n";
+            }
+            
             // rescale the subtree of this gene tree
             TreeUtilities::rescaleSubtree(&geneTree, nodes[j], sf );
+            
         }
         
     }
     
     TreeUtilities::rescaleSubtree(&speciesTree->getValue(), storedNode, sf );
+    
 }
 
 

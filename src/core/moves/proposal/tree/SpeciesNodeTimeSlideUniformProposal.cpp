@@ -69,13 +69,6 @@ const std::string& SpeciesNodeTimeSlideUniformProposal::getProposalName( void ) 
 /**
  * Perform the proposal.
  *
- * A Beta-simplex proposal randomly changes some values of a simplex, although the other values
- * change too because of the renormalization.
- * First, some random indices are drawn. Then, the proposal draws a new somplex
- *   u ~ Beta(val[index] * alpha)
- * where alpha is the tuning parameter.The new value is set to u.
- * The simplex is then renormalized.
- *
  * \return The hastings ratio.
  */
 double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
