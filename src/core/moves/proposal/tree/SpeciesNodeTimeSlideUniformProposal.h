@@ -1,5 +1,5 @@
-#ifndef SpeciesNodeTimeSlideUniform_H
-#define SpeciesNodeTimeSlideUniform_H
+#ifndef SpeciesNodeTimeSlideUniformProposal_H
+#define SpeciesNodeTimeSlideUniformProposal_H
 
 #include <string>
 
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2015-06-23, version 1.0
      *
      */
-    class SpeciesNodeTimeSlideUniform : public Proposal {
+    class SpeciesNodeTimeSlideUniformProposal : public Proposal {
         
     public:
-        SpeciesNodeTimeSlideUniform(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt);                                               //!<  constructor
+        SpeciesNodeTimeSlideUniformProposal(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt);                                               //!<  constructor
         
         // Basic utility functions
         void                                            cleanProposal(void);                                        //!< Clean up proposal
-        SpeciesNodeTimeSlideUniform*                    clone(void) const;                                          //!< Clone object
+        SpeciesNodeTimeSlideUniformProposal*            clone(void) const;                                          //!< Clone object
         double                                          doProposal(void);                                           //!< Perform proposal
         const std::string&                              getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                            prepareProposal(void);                                      //!< Prepare the proposal
@@ -52,9 +52,7 @@ namespace RevBayesCore {
         // stored objects to undo proposal
         TopologyNode*                                   storedNode;
         double                                          storedAge;
-        
-        std::map< std::string, TopologyNode*>           individualNames2geneTreeTips;
-        
+                
     };
     
 }
