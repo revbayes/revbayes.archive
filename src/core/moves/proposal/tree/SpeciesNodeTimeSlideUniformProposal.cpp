@@ -60,7 +60,7 @@ SpeciesNodeTimeSlideUniformProposal* SpeciesNodeTimeSlideUniformProposal::clone(
  */
 const std::string& SpeciesNodeTimeSlideUniformProposal::getProposalName( void ) const
 {
-    static std::string name = "SpeciesSubtreeScale";
+    static std::string name = "SpeciesNodeTimeSlideUniform";
     
     return name;
 }
