@@ -54,8 +54,6 @@ namespace RevBayesCore {
         TopologyNode*                                   storedNode;
         double                                          storedAge;
         
-        std::map< std::string, TopologyNode*>           individualNames2geneTreeTips;
-
     };
     
 }

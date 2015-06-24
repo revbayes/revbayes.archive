@@ -7,6 +7,7 @@
 //
 
 #include "BranchLengthTree.h"
+#include "RbException.h"
 #include "StringUtilities.h"
 #include "TimeTree.h"
 #include "Topology.h"
@@ -167,42 +168,47 @@ void RevBayesCore::TreeUtilities::getTaxaInSubtree(TopologyNode *n, std::vector<
 
 
 
-void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor)
+void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor, bool verbose)
 {
     // we only rescale internal nodes
-    if ( !n->isTip() )
+    if ( n->isTip() == false )
     {
         // rescale the age of the node
         double newAge = n->getAge() * factor;
         t->setAge(n->getIndex(), newAge);
         
         // assertion that we have binary trees
-#ifdef ASSERTIONS_TREE
-        if ( n->getNumberOfChildren() != 2 )
+        if ( verbose == true )
         {
-            throw RbException("NNI is only implemented for binary trees!");
+            if ( n->getNumberOfChildren() != 2 )
+            {
+                throw RbException("Subtree scaling is only implemented for binary trees!");
+            }
         }
-#endif
         
         // rescale both children
-        rescaleSubtree( t, &n->getChild(0), factor);
-        rescaleSubtree( t, &n->getChild(1), factor);
+        rescaleSubtree( t, &n->getChild(0), factor, verbose);
+        rescaleSubtree( t, &n->getChild(1), factor, verbose);
     }
+    
 }
 
 
-void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, double factor) {
+void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, double factor)
+{
     // rescale the time of the node
     double newAge = n->getAge() * factor;
     t->setAge( n->getIndex(), newAge);
     
     // recursive call for internal nodes
-    if ( !n->isTip() ) {
+    if ( n->isTip() == false )
+    {
         
         // assertion that we have binary trees
 #ifdef ASSERTIONS_TREE
-        if ( n->getNumberOfChildren() != 2 ) {
-            throw RbException("NNI is only implemented for binary trees!");
+        if ( n->getNumberOfChildren() != 2 )
+        {
+            throw RbException("Tree scaling  is only implemented for binary trees!");
         }
 #endif
         
@@ -210,6 +216,7 @@ void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, doub
         rescaleTree( t, &n->getChild(0), factor);
         rescaleTree( t, &n->getChild(1), factor);
     }
+    
 }
 
 
