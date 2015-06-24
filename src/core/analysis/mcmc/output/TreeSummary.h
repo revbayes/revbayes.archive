@@ -2031,6 +2031,7 @@ void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o, doub
         StringUtilities::fillWithSpaces(s, 16, true);
         o << s;
         
+        ss.str(std::string());
         ss << freq;
         s = ss.str();
         StringUtilities::fillWithSpaces(s, 16, true);
