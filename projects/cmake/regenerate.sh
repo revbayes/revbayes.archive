@@ -141,6 +141,7 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 
 SET(BOOST_ROOT ../../boost_1_55_0)
 SET(Boost_USE_STATIC_RUNTIME true)
+SET(Boost_USE_STATIC_LIBS ON)
 #find_package(Boost 1.55.0 COMPONENTS filesystem regex signals context system thread date_time program_options iostreams serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.55.0
