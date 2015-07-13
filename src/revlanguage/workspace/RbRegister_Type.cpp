@@ -125,21 +125,21 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        AddWorkspaceVectorType<Integer,5>::addTypeToWorkspace( *this, new Integer() );
-        AddWorkspaceVectorType<Natural,5>::addTypeToWorkspace( *this, new Natural() );
-        AddWorkspaceVectorType<Probability,5>::addTypeToWorkspace( *this, new Probability() );
-        AddWorkspaceVectorType<Real,5>::addTypeToWorkspace( *this, new Real() );
-        AddWorkspaceVectorType<RealPos,5>::addTypeToWorkspace( *this, new RealPos() );
-        AddWorkspaceVectorType<RlBoolean,5>::addTypeToWorkspace( *this, new RlBoolean() );
-        AddWorkspaceVectorType<RlString,5>::addTypeToWorkspace( *this, new RlString() );
-        AddWorkspaceVectorType<Simplex,5>::addTypeToWorkspace( *this, new Simplex() );
-        AddWorkspaceVectorType<Taxon,5>::addTypeToWorkspace( *this, new Taxon() );
+        AddWorkspaceVectorType<Integer,4>::addTypeToWorkspace( *this, new Integer() );
+        AddWorkspaceVectorType<Natural,4>::addTypeToWorkspace( *this, new Natural() );
+        AddWorkspaceVectorType<Probability,4>::addTypeToWorkspace( *this, new Probability() );
+        AddWorkspaceVectorType<Real,4>::addTypeToWorkspace( *this, new Real() );
+        AddWorkspaceVectorType<RealPos,4>::addTypeToWorkspace( *this, new RealPos() );
+        AddWorkspaceVectorType<RlBoolean,4>::addTypeToWorkspace( *this, new RlBoolean() );
+        AddWorkspaceVectorType<RlString,4>::addTypeToWorkspace( *this, new RlString() );
+        AddWorkspaceVectorType<Simplex,4>::addTypeToWorkspace( *this, new Simplex() );
+        AddWorkspaceVectorType<Taxon,4>::addTypeToWorkspace( *this, new Taxon() );
         
         
         
         
-        AddWorkspaceVectorType<RateGenerator,5>::addTypeToWorkspace( *this, new RateGenerator() );
-        AddWorkspaceVectorType<AbstractDiscreteCharacterData,5>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
+        AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
+        AddWorkspaceVectorType<AbstractDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
