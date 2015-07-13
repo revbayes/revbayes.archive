@@ -25,8 +25,7 @@ make
 Command line options are:
 -h | -help                      : print this help and exit.
 -boost          <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
--mac_universal  <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
--mavericks      <true|false>    : set to true if you are building on a OS X - Mavericks system. Defaults to false.
+-mac            <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
 -win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 -mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
 '
@@ -50,9 +49,9 @@ echo 'you can turn this of with argument "-boost false"'
 
 cd ../../boost_1_55_0
 rm ./project-config.jam*  # clean up from previous runs
-./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
+./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,serialization,signals
 
-if [ "$mavericks" = "true" || "$mac_universal" = "true" ]
+if [ "$mac" = "true" ]
 then
 ./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
 else
@@ -91,7 +90,7 @@ if ! test -z $DEBUG_REVBAYES
 then
 	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
 	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
-elif [ "$mac_universal" = "true" ]
+elif [ "$mac" = "true" ]
 then
 echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mmacosx-version-min=10.6 -Wall -msse -msse2 -msse3")
@@ -142,17 +141,19 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 SET(BOOST_ROOT ../../boost_1_55_0)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
+<<<<<<< HEAD
 #find_package(Boost 1.55.0 COMPONENTS filesystem regex signals context system thread date_time program_options iostreams serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
+=======
+#find_package(Boost 1.55.0 COMPONENTS filesystem regex signals system thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
+>>>>>>> 6bd4dbe3dc6cc64237a04a0d8d67a86db949101a
 find_package(Boost
 1.55.0
 COMPONENTS regex
 program_options
 system
 thread
-context
 signals
 date_time
-iostreams
 serialization REQUIRED)
 MESSAGE("Boost information:")
 MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIR}")
