@@ -104,28 +104,30 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     TreeUtilities::getOldestTip(&tau, node, min_age);
     
     // draw new ages
-    double currentValue = my_age / (parent_age - min_age);
+    double current_value = my_age / (parent_age - min_age);
     double a = alpha + 1.0;
-    double b = (a-1.0) / currentValue - a + 2.0;
+    double b = (a-1.0) / current_value - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
+    
+    new_value = current_value;
     
     double my_new_age = new_value * (parent_age - min_age);
     
-    double scalingFactor = my_new_age / my_age;
+    double scaling_factor = my_new_age / my_age;
     
-    size_t nNodes = node->getNumberOfNodesInSubtree( false );
+    size_t num_nodes = node->getNumberOfNodesInSubtree( false );
     
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& geneTree = geneTrees[i]->getValue();
+        TimeTree& gene_tree = geneTrees[i]->getValue();
         
-        std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(geneTree, *node );
+        std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(gene_tree, *node );
         
         for (size_t j=0; j<nodes.size(); ++j)
         {
             // add the number of nodes that we are going to scale in the subtree
-            nNodes += nodes[j]->getNumberOfNodesInSubtree( false );
+            num_nodes += nodes[j]->getNumberOfNodesInSubtree( false );
             
             if ( nodes[j]->isTip() == true )
             {
@@ -138,7 +140,7 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
             }
             
             // rescale the subtree of this gene tree
-            TreeUtilities::rescaleSubtree(&geneTree, nodes[j], scalingFactor );
+            TreeUtilities::rescaleSubtree(&gene_tree, nodes[j], scaling_factor );
             
         }
         
@@ -157,14 +159,14 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     //    }
     
     // rescale the subtree of the species tree
-    TreeUtilities::rescaleSubtree(&tau, node, scalingFactor );
+    TreeUtilities::rescaleSubtree(&tau, node, scaling_factor );
     
     // compute the Hastings ratio
     double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
     double new_a = alpha + 1.0;
     double new_b = (a-1.0) / new_value - a + 2.0;
-    double backward = RbStatistics::Beta::lnPdf(new_a, new_b, currentValue);
-    double lnHastingsratio = (backward - forward) * (nNodes-1);
+    double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
+    double lnHastingsratio = (backward - forward) * (num_nodes-1);
     
     return lnHastingsratio;
 }

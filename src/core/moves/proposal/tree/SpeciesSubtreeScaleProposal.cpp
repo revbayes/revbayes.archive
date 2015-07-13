@@ -104,21 +104,23 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     // draw new ages and compute the hastings ratio at the same time
     double my_new_age = min_age + (parent_age - min_age) * rng->uniform01();
     
-    double scalingFactor = my_new_age / my_age;
+    my_new_age = my_age;
     
-    size_t nNodes = node->getNumberOfNodesInSubtree( false );
+    double scaling_factor = my_new_age / my_age;
+    
+    size_t num_nodes = node->getNumberOfNodesInSubtree( false );
     
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& geneTree = geneTrees[i]->getValue();
+        TimeTree& gene_tree = geneTrees[i]->getValue();
         
-        std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(geneTree, *node );
+        std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(gene_tree, *node );
         
         for (size_t j=0; j<nodes.size(); ++j)
         {
             // add the number of nodes that we are going to scale in the subtree
-            nNodes += nodes[j]->getNumberOfNodesInSubtree( false );
+            num_nodes += nodes[j]->getNumberOfNodesInSubtree( false );
             
             if ( nodes[j]->isTip() == true )
             {
@@ -131,7 +133,7 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
             }
             
             // rescale the subtree of this gene tree
-            TreeUtilities::rescaleSubtree(&geneTree, nodes[j], scalingFactor );
+            TreeUtilities::rescaleSubtree(&gene_tree, nodes[j], scaling_factor );
             
         }
         
@@ -151,10 +153,10 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     
     
     // rescale the subtree of the species tree
-    TreeUtilities::rescaleSubtree(&tau, node, scalingFactor );
+    TreeUtilities::rescaleSubtree(&tau, node, scaling_factor );
     
     // compute the Hastings ratio
-    double lnHastingsratio = (nNodes > 1 ? log( scalingFactor ) * (nNodes-1) : 0.0 );
+    double lnHastingsratio = (num_nodes > 1 ? log( scaling_factor ) * (num_nodes-1) : 0.0 );
     
     return lnHastingsratio;
 }
@@ -174,14 +176,14 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getOldestNodesInPopulati
     }
     
     // get all the taxa from the species tree that are descendants of node i
-    std::vector<TopologyNode*> speciesTaxa;
-    TreeUtilities::getTaxaInSubtree( &n, speciesTaxa );
+    std::vector<TopologyNode*> species_taxa;
+    TreeUtilities::getTaxaInSubtree( &n, species_taxa );
     
     // get all the individuals
     std::set<TopologyNode*> individualTaxa;
-    for (size_t i = 0; i < speciesTaxa.size(); ++i)
+    for (size_t i = 0; i < species_taxa.size(); ++i)
     {
-        const std::string &name = speciesTaxa[i]->getName();
+        const std::string &name = species_taxa[i]->getName();
         std::vector<TopologyNode*> ind = tau.getTipNodesWithSpeciesName( name );
         for (size_t j = 0; j < ind.size(); ++j)
         {
