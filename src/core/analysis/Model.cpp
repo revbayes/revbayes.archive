@@ -84,7 +84,7 @@ Model::~Model( void )
     {
         std::set<const DagNode*>::iterator it = sources.begin();
         const DagNode *theNode = *it;
-        sources.erase( *it );
+        sources.erase( it );
         
         if ( theNode->decrementReferenceCount() == 0)
         {
@@ -128,7 +128,7 @@ Model& Model::operator=(const Model &x)
         {
             std::set<const DagNode*>::iterator it = sources.begin();
             const DagNode *theNode = *it;
-            sources.erase( *it );
+            sources.erase( it );
             
             if ( theNode->decrementReferenceCount() == 0)
             {
