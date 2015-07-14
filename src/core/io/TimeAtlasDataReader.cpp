@@ -51,7 +51,7 @@ void TimeAtlasDataReader::readJson(void)
     RbFileManager* f = new RbFileManager(this->filename);
     if ( !f->openFile(readStream) )
     {
-        throw RbException( "ERROR: Could not open file " + this->filename );
+        throw RbException( "Could not open file " + this->filename );
     }
     
     try
