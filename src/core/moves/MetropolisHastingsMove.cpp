@@ -237,13 +237,10 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     double lnPriorRatio = 0.0;
     double lnLikelihoodRatio = 0.0;
     
-    std::cerr << "\nCore Node:\n";
-    
     // compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         DagNode *the_node = *it;
-        std::cerr << the_node->getName() << " <" << the_node << ">" << std::endl;
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -257,12 +254,10 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         }
     }
     
-    std::cerr << "\nAffected Node:\n";
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
         DagNode *the_node = *it;
-        std::cerr << the_node->getName() << " <" << the_node << ">" << std::endl;
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -282,7 +277,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 	
 	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
     {
-        std::cerr << "Reject\n";
 		
             proposal->undoProposal();
             
@@ -300,7 +294,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 
         if (lnAcceptanceRatio >= 0.0)
         {
-            std::cerr << "Accept\n";
             numAccepted++;
         
             // call accept for each node
@@ -312,7 +305,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         }
         else if (lnAcceptanceRatio < -300.0)
         {
-            std::cerr << "Reject\n";
             proposal->undoProposal();
         
             // call restore for each node
@@ -328,7 +320,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             double u = GLOBAL_RNG->uniform01();
             if (u < r)
             {
-                std::cerr << "Accept\n";
                 numAccepted++;
             
                 // call accept for each node
@@ -341,7 +332,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             }
             else
             {
-                std::cerr << "Reject\n";
                 proposal->undoProposal();
             
                 // call restore for each node
