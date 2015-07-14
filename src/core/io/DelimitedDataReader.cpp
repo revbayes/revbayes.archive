@@ -1,5 +1,7 @@
-#include "RbFileManager.h"
 #include "DelimitedDataReader.h"
+#include "RbFileManager.h"
+#include "RbException.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -25,9 +27,9 @@ void DelimitedDataReader::readData( size_t linesToSkipped )
     // open file
     std::ifstream readStream;
     RbFileManager* f = new RbFileManager(filename);
-    if (!f->openFile(readStream))
+    if ( !f->openFile(readStream) )
     {
-        std::cout << "ERROR: Could not open file " << filename << "\n";
+        throw RbException( "Could not open file " + filename );
     }
     
     chars.clear();
