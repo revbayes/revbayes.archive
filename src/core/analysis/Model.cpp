@@ -82,12 +82,13 @@ Model::~Model( void )
     
     while ( !sources.empty() ) 
     {
-        std::set<const DagNode*>::iterator theNode = sources.begin();
-        sources.erase( *theNode );
+        std::set<const DagNode*>::iterator it = sources.begin();
+        const DagNode *theNode = *it;
+        sources.erase( *it );
         
-        if ( (*theNode)->decrementReferenceCount() == 0)
+        if ( theNode->decrementReferenceCount() == 0)
         {
-            delete *theNode;
+            delete theNode;
         }
     }
     
@@ -125,12 +126,13 @@ Model& Model::operator=(const Model &x)
         // empty the source nodes
         while ( !sources.empty() ) 
         {
-            std::set<const DagNode*>::iterator theNode = sources.begin();
-            sources.erase( theNode );
+            std::set<const DagNode*>::iterator it = sources.begin();
+            const DagNode *theNode = *it;
+            sources.erase( *it );
             
-            if ( (*theNode)->decrementReferenceCount() == 0)
+            if ( theNode->decrementReferenceCount() == 0)
             {
-                delete *theNode;
+                delete theNode;
             }
         }
         
