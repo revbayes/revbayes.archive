@@ -45,13 +45,13 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);         //!< Set member variable
         
-        RevPtr<const RevVariable>                      ctmc;                                                                                       //!< The variable on which the move works
-        RevPtr<const RevVariable>                      qmap;                                                                                          //!< The variable on which the move works
-        RevPtr<const RevVariable>                      tree;                                                                                          //!< The variable on which the move works
-        RevPtr<const RevVariable>                      lambda;                                                                                     //!< The tuning parameter used.
-        RevPtr<const RevVariable>                      type;
-        RevPtr<const RevVariable>                      graph;
-        RevPtr<const RevVariable>                      proposal;
+        RevPtr<const RevVariable>                   ctmc;                                                                                       //!< The variable on which the move works
+        RevPtr<const RevVariable>                   qmap;                                                                                          //!< The variable on which the move works
+        RevPtr<const RevVariable>                   tree;                                                                                          //!< The variable on which the move works
+        RevPtr<const RevVariable>                   lambda;                                                                                     //!< The tuning parameter used.
+        RevPtr<const RevVariable>                   type;
+        RevPtr<const RevVariable>                   graph;
+        RevPtr<const RevVariable>                   proposal;
         
     };
     
@@ -288,8 +288,8 @@ const MemberRules& RevLanguage::Move_CharacterHistory<treeType>::getParameterRul
     {
         
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", treeType::getClassTypeSpec()                     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", treeType::getClassTypeSpec()                     , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
         
         std::vector<std::string> optionsType;
