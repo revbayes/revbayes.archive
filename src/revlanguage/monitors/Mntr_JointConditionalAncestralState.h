@@ -26,28 +26,28 @@ namespace RevLanguage {
         Mntr_JointConditionalAncestralState(void);                                                                          //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Mntr_JointConditionalAncestralState*                clone(void) const;                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal Mntr_JointConditionalAncestralState.
-        static const std::string&                   getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                          //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        virtual Mntr_JointConditionalAncestralState*    clone(void) const;                                      //!< Clone object
+        void                                            constructInternalObject(void);                                          //!< We construct the a new internal Mntr_JointConditionalAncestralState.
+        static const std::string&                       getClassType(void);                                                     //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                                 //!< Get class type spec
+        const MemberRules&                              getParameterRules(void) const;                                          //!< Get member rules (const)
+        virtual const TypeSpec&                         getTypeSpec(void) const;                                                //!< Get language type of the object
+        virtual void                                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-		std::vector<RevPtr<const RevVariable> >     vars;
-        RevPtr<const RevVariable>                   filename;
-        RevPtr<const RevVariable>                   printgen;
-		RevPtr<const RevVariable>                   tree;
-		RevPtr<const RevVariable>                   ctmc;
-        RevPtr<const RevVariable>                   separator;
-        RevPtr<const RevVariable>                   append;
-		RevPtr<const RevVariable>                   monitorType;
-        RevPtr<const RevVariable>                   withTips;
-        RevPtr<const RevVariable>                   withStartStates;
+		std::vector<RevPtr<const RevVariable> >         vars;
+        RevPtr<const RevVariable>                       filename;
+        RevPtr<const RevVariable>                       printgen;
+		RevPtr<const RevVariable>                       tree;
+		RevPtr<const RevVariable>                       ctmc;
+        RevPtr<const RevVariable>                       separator;
+        RevPtr<const RevVariable>                       append;
+		RevPtr<const RevVariable>                       monitorType;
+        RevPtr<const RevVariable>                       withTips;
+        RevPtr<const RevVariable>                       withStartStates;
     };
     
 }
@@ -173,22 +173,23 @@ const TypeSpec& Mntr_JointConditionalAncestralState<treeType>::getClassTypeSpec(
 
 /** Return member rules (no members) */
 template <class treeType>
-const MemberRules& Mntr_JointConditionalAncestralState<treeType>::getParameterRules(void) const {
+const MemberRules& Mntr_JointConditionalAncestralState<treeType>::getParameterRules(void) const
+{
     
     static MemberRules asMonitorMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-		asMonitorMemberRules.push_back( new ArgumentRule("tree"          , treeType::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-		asMonitorMemberRules.push_back( new ArgumentRule("ctmc"          , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-		asMonitorMemberRules.push_back( new ArgumentRule("type"          , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("withTips"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("withStartStates"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+		asMonitorMemberRules.push_back( new ArgumentRule("tree"           , treeType::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+		asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+		asMonitorMemberRules.push_back( new ArgumentRule("type"           , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("separator"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("append"         , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("withTips"       , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("withStartStates", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;
     }

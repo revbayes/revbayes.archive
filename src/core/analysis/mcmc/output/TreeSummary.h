@@ -48,8 +48,8 @@ namespace RevBayesCore {
         treeType*                                                               ancestralStateTree(const treeType &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin = -1);
         void                                                                    annotate(treeType &inputTree, int b = -1 );
         void                                                                    annotateHPDAges(treeType &inputTree, double hpd = 0.95, int b = -1 );
-        void                                                                    printTreeSummary(std::ostream& o);
-        void                                                                    printCladeSummary(void);
+        void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
+        void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
 		void                                                                    summarizeClades(int burnin = -1);
 		void                                                                    summarizeConditionalClades(int burnin = -1);
 		void                                                                    summarizeTrees(int burnin = -1);
@@ -1905,67 +1905,21 @@ void RevBayesCore::TreeSummary<treeType>::summarizeTrees(int b)
 
 
 template <class treeType>
-void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o)
+void RevBayesCore::TreeSummary<treeType>::printCladeSummary(std::ostream &o, double minCladeProbability)
 {
     
     std::stringstream ss;
     ss << std::fixed;
     ss << std::setprecision(4);
     
-    o << "========================================" << std::endl;
-    o << "Printing Posterior Distribution of Trees" << std::endl;
-    o << "========================================" << std::endl;
+    o << std::endl;
+    o << "=========================================" << std::endl;
+    o << "Printing Posterior Distribution of Clades" << std::endl;
+    o << "=========================================" << std::endl;
+    o << std::endl;
     
     // now the printing
     std::string s = "Samples";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << "\n" << s;
-    s = "Posterior";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    s = "ESS";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    s = "Tree";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    o << std::endl;
-    o << "----------------------------------------------------------------" << std::endl;
-    double totalSamples = trace.size();
-    for (std::vector<Sample<std::string> >::reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
-    {
-        ss.str(std::string());
-        ss << it->getFrequency();
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
-        
-        ss.str(std::string());
-        ss << it->getFrequency()/(totalSamples-burnin);
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
-        
-        ss.str(std::string());
-        ss << it->getEss();
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
-        
-        o << it->getValue();
-        o << std::endl;
-        
-    }
-    
-    
-    o << "\n\n\n=========================================" << std::endl;
-    o << "Printing Posterior Distribution of Clades" << std::endl;
-    o << "=========================================" << std::endl;
-    
-    
-    
-    // now the printing
-    s = "Samples";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << "\n" << s;
     s = "Posterior";
@@ -1979,17 +1933,29 @@ void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o)
     o << s;
     o << std::endl;
     o << "--------------------------------------------------------------" << std::endl;
+    
+    double totalSamples = trace.size();
+    
     for (std::vector<Sample<std::string> >::reverse_iterator it = cladeSamples.rbegin(); it != cladeSamples.rend(); ++it)
     {
         
+        double freq =it->getFrequency();
+        double p =it->getFrequency()/(totalSamples-burnin);
+        
+        
+        if ( p < minCladeProbability )
+        {
+            break;
+        }
+        
         ss.str(std::string());
-        ss << it->getFrequency();
+        ss << freq;
         s = ss.str();
         StringUtilities::fillWithSpaces(s, 16, true);
         o << s;
         
         ss.str(std::string());
-        ss << it->getFrequency()/(totalSamples-burnin);
+        ss << p;
         s = ss.str();
         StringUtilities::fillWithSpaces(s, 16, true);
         o << s;
@@ -2010,9 +1976,94 @@ void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o)
         
         o << it->getValue();
         o << std::endl;
+        
     }
     
+    o << std::endl;
+    o << std::endl;
+    
 }
+
+
+template <class treeType>
+void RevBayesCore::TreeSummary<treeType>::printTreeSummary(std::ostream &o, double credibleIntervalSize)
+{
+    
+    std::stringstream ss;
+    ss << std::fixed;
+    ss << std::setprecision(4);
+    
+    o << std::endl;
+    o << "========================================" << std::endl;
+    o << "Printing Posterior Distribution of Trees" << std::endl;
+    o << "========================================" << std::endl;
+    o << std::endl;
+    
+    // now the printing
+    std::string s = "Cum. Prob.";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "Samples";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "Posterior";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "ESS";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    s = "Tree";
+    StringUtilities::fillWithSpaces(s, 16, true);
+    o << s;
+    o << std::endl;
+    o << "----------------------------------------------------------------" << std::endl;
+    double totalSamples = trace.size();
+    double totalProb = 0.0;
+    for (std::vector<Sample<std::string> >::reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    {
+        double freq =it->getFrequency();
+        double p =it->getFrequency()/(totalSamples-burnin);
+        totalProb += p;
+        
+        ss.str(std::string());
+        ss << totalProb;
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        ss.str(std::string());
+        ss << freq;
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        ss.str(std::string());
+        ss << p;
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        ss.str(std::string());
+        ss << it->getEss();
+        s = ss.str();
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        
+        o << it->getValue();
+        o << std::endl;
+        
+        if ( totalProb >= credibleIntervalSize )
+        {
+            break;
+        }
+        
+    }
+    
+    o << std::endl;
+    o << std::endl;
+    
+}
+
 
 template <class treeType>
 RevBayesCore::TopologyNode* RevBayesCore::TreeSummary<treeType>::assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin)

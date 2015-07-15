@@ -1,4 +1,4 @@
-#include "SpeciesNodeTimeSlideUniform.h"
+#include "SpeciesNodeTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -15,9 +15,9 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesNodeTimeSlideUniform::SpeciesNodeTimeSlideUniform( StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt ) : Proposal(),
-speciesTree( sp ),
-geneTrees( gt )
+SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt ) : Proposal(),
+    speciesTree( sp ),
+    geneTrees( gt )
 {
     // tell the base class to add the node
     addNode( speciesTree );
@@ -35,7 +35,7 @@ geneTrees( gt )
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void SpeciesNodeTimeSlideUniform::cleanProposal( void )
+void SpeciesNodeTimeSlideUniformProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -46,10 +46,10 @@ void SpeciesNodeTimeSlideUniform::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-SpeciesNodeTimeSlideUniform* SpeciesNodeTimeSlideUniform::clone( void ) const
+SpeciesNodeTimeSlideUniformProposal* SpeciesNodeTimeSlideUniformProposal::clone( void ) const
 {
     
-    return new SpeciesNodeTimeSlideUniform( *this );
+    return new SpeciesNodeTimeSlideUniformProposal( *this );
 }
 
 
@@ -58,9 +58,9 @@ SpeciesNodeTimeSlideUniform* SpeciesNodeTimeSlideUniform::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& SpeciesNodeTimeSlideUniform::getProposalName( void ) const
+const std::string& SpeciesNodeTimeSlideUniformProposal::getProposalName( void ) const
 {
-    static std::string name = "SpeciesSubtreeScale";
+    static std::string name = "SpeciesNodeTimeSlideUniform";
     
     return name;
 }
@@ -69,16 +69,9 @@ const std::string& SpeciesNodeTimeSlideUniform::getProposalName( void ) const
 /**
  * Perform the proposal.
  *
- * A Beta-simplex proposal randomly changes some values of a simplex, although the other values
- * change too because of the renormalization.
- * First, some random indices are drawn. Then, the proposal draws a new somplex
- *   u ~ Beta(val[index] * alpha)
- * where alpha is the tuning parameter.The new value is set to u.
- * The simplex is then renormalized.
- *
  * \return The hastings ratio.
  */
-double SpeciesNodeTimeSlideUniform::doProposal( void )
+double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
 {
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -166,7 +159,7 @@ double SpeciesNodeTimeSlideUniform::doProposal( void )
 }
 
 
-std::vector<TopologyNode*> SpeciesNodeTimeSlideUniform::getNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::vector<TopologyNode*> SpeciesNodeTimeSlideUniformProposal::getNodesInPopulation( TimeTree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -283,7 +276,7 @@ std::vector<TopologyNode*> SpeciesNodeTimeSlideUniform::getNodesInPopulation( Ti
 /**
  *
  */
-void SpeciesNodeTimeSlideUniform::prepareProposal( void )
+void SpeciesNodeTimeSlideUniformProposal::prepareProposal( void )
 {
     
 }
@@ -297,7 +290,7 @@ void SpeciesNodeTimeSlideUniform::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesNodeTimeSlideUniform::printParameterSummary(std::ostream &o) const
+void SpeciesNodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
 {
     
     // no parameters
@@ -312,7 +305,7 @@ void SpeciesNodeTimeSlideUniform::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void SpeciesNodeTimeSlideUniform::undoProposal( void )
+void SpeciesNodeTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
@@ -367,7 +360,7 @@ void SpeciesNodeTimeSlideUniform::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void SpeciesNodeTimeSlideUniform::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void SpeciesNodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if ( oldN == speciesTree )
@@ -395,7 +388,7 @@ void SpeciesNodeTimeSlideUniform::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void SpeciesNodeTimeSlideUniform::tune( double rate )
+void SpeciesNodeTimeSlideUniformProposal::tune( double rate )
 {
     
     // nothing to tune

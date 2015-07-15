@@ -34,31 +34,54 @@ RevPtr<RevVariable> Func_structure::execute( void )
     
     bool verbose = static_cast< const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
 
+    // get a reference to the variable from which we want to know the struct
+    RevPtr<RevVariable> &the_var = args[0].getVariable();
+    
     o << std::endl;
     if ( verbose == true )
     {
-        if ( args[0].getVariable()->getName() == "" )
-            o << "_variable     = <unnamed> <" << args[0].getVariable() << ">" << std::endl;
+        
+        // print the name and the memory address
+        if ( the_var->getName() == "" )
+        {
+            o << "_variable     = <unnamed> <" << the_var << ">" << std::endl;
+        }
         else
-            o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+        {
+            o << "_variable     = " << the_var->getName() << " <" << the_var << ">" << std::endl;
+        }
+        
     }
     else
     {
-        if ( args[0].getVariable()->getName() == "" )
+        
+        // print only the name
+        if ( the_var->getName() == "" )
+        {
             o << "_variable     = <unnamed>" << std::endl;
+        }
         else
-            o << "_variable     = " << args[0].getVariable()->getName() << std::endl;
+        {
+            o << "_variable     = " << the_var->getName() << std::endl;
+        }
+        
     }
-    if ( args[0].getVariable()->isWorkspaceVariable() && verbose == true )
+    
+    if ( the_var->isWorkspaceVariable() && verbose == true )
     {
         o << "_varType      = workspace (control)" << std::endl;
     }
-    else if ( args[0].getVariable()->isReferenceVariable() && verbose == true  )
+    else if ( the_var->isReferenceVariable() && verbose == true  )
     {
         o << "_varType      = reference" << std::endl;
-        o << "_refVar       = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+        o << "_refVar       = " << the_var->getName() << " <" << the_var << ">" << std::endl;
     }
-
+    
+    if ( the_var->getRevObject().isModelObject() == true )
+    {
+        the_var->getRevObject().getDagNode()->printStructureInfo( o, verbose );
+    }
+    
     o << std::endl;
 
     RBOUT( o.str() );

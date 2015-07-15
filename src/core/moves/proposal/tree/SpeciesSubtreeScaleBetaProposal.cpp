@@ -1,4 +1,5 @@
-#include "SpeciesSubtreeScaleProposal.h"
+#include "DistributionBeta.h"
+#include "SpeciesSubtreeScaleBetaProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -15,9 +16,10 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesSubtreeScaleProposal::SpeciesSubtreeScaleProposal( StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt ) : Proposal(),
+SpeciesSubtreeScaleBetaProposal::SpeciesSubtreeScaleBetaProposal( StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt, double a ) : Proposal(),
     speciesTree( sp ),
-    geneTrees( gt )
+    geneTrees( gt ),
+    alpha( a )
 {
     // tell the base class to add the node
     addNode( speciesTree );
@@ -35,7 +37,7 @@ SpeciesSubtreeScaleProposal::SpeciesSubtreeScaleProposal( StochasticNode<TimeTre
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void SpeciesSubtreeScaleProposal::cleanProposal( void )
+void SpeciesSubtreeScaleBetaProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -46,10 +48,10 @@ void SpeciesSubtreeScaleProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-SpeciesSubtreeScaleProposal* SpeciesSubtreeScaleProposal::clone( void ) const
+SpeciesSubtreeScaleBetaProposal* SpeciesSubtreeScaleBetaProposal::clone( void ) const
 {
     
-    return new SpeciesSubtreeScaleProposal( *this );
+    return new SpeciesSubtreeScaleBetaProposal( *this );
 }
 
 
@@ -58,9 +60,9 @@ SpeciesSubtreeScaleProposal* SpeciesSubtreeScaleProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& SpeciesSubtreeScaleProposal::getProposalName( void ) const
+const std::string& SpeciesSubtreeScaleBetaProposal::getProposalName( void ) const
 {
-    static std::string name = "SpeciesSubtreeScale";
+    static std::string name = "SpeciesSubtreeScaleBeta";
     
     return name;
 }
@@ -71,7 +73,7 @@ const std::string& SpeciesSubtreeScaleProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double SpeciesSubtreeScaleProposal::doProposal( void )
+double SpeciesSubtreeScaleBetaProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -101,10 +103,15 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     double min_age = 0.0;
     TreeUtilities::getOldestTip(&tau, node, min_age);
     
-    // draw new ages and compute the hastings ratio at the same time
-    double my_new_age = min_age + (parent_age - min_age) * rng->uniform01();
+    // draw new ages
+    double current_value = my_age / (parent_age - min_age);
+    double a = alpha + 1.0;
+    double b = (a-1.0) / current_value - a + 2.0;
+    double new_value = RbStatistics::Beta::rv(a, b, *rng);
     
-    my_new_age = my_age;
+    new_value = current_value;
+    
+    double my_new_age = new_value * (parent_age - min_age);
     
     double scaling_factor = my_new_age / my_age;
     
@@ -140,29 +147,32 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     }
     
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
-//    if (min_age != 0.0)
-//    {
-//        for (size_t i = 0; i < tau.getNumberOfTips(); i++)
-//        {
-//            if (tau.getNode(i).getAge() < 0.0)
-//            {
-//                return RbConstants::Double::neginf;
-//            }
-//        }
-//    }
-    
+    //    if (min_age != 0.0)
+    //    {
+    //        for (size_t i = 0; i < tau.getNumberOfTips(); i++)
+    //        {
+    //            if (tau.getNode(i).getAge() < 0.0)
+    //            {
+    //                return RbConstants::Double::neginf;
+    //            }
+    //        }
+    //    }
     
     // rescale the subtree of the species tree
     TreeUtilities::rescaleSubtree(&tau, node, scaling_factor );
     
     // compute the Hastings ratio
-    double lnHastingsratio = (num_nodes > 1 ? log( scaling_factor ) * (num_nodes-1) : 0.0 );
+    double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
+    double new_a = alpha + 1.0;
+    double new_b = (a-1.0) / new_value - a + 2.0;
+    double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
+    double lnHastingsratio = (backward - forward) * (num_nodes-1);
     
     return lnHastingsratio;
 }
 
 
-std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -176,14 +186,14 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getOldestNodesInPopulati
     }
     
     // get all the taxa from the species tree that are descendants of node i
-    std::vector<TopologyNode*> species_taxa;
-    TreeUtilities::getTaxaInSubtree( &n, species_taxa );
+    std::vector<TopologyNode*> speciesTaxa;
+    TreeUtilities::getTaxaInSubtree( &n, speciesTaxa );
     
     // get all the individuals
     std::set<TopologyNode*> individualTaxa;
-    for (size_t i = 0; i < species_taxa.size(); ++i)
+    for (size_t i = 0; i < speciesTaxa.size(); ++i)
     {
-        const std::string &name = species_taxa[i]->getName();
+        const std::string &name = speciesTaxa[i]->getName();
         std::vector<TopologyNode*> ind = tau.getTipNodesWithSpeciesName( name );
         for (size_t j = 0; j < ind.size(); ++j)
         {
@@ -232,7 +242,7 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getOldestNodesInPopulati
 /**
  *
  */
-void SpeciesSubtreeScaleProposal::prepareProposal( void )
+void SpeciesSubtreeScaleBetaProposal::prepareProposal( void )
 {
     
 }
@@ -246,10 +256,10 @@ void SpeciesSubtreeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o) const
+void SpeciesSubtreeScaleBetaProposal::printParameterSummary(std::ostream &o) const
 {
     
-    // no parameters
+    o << "alpha = " << alpha;
     
 }
 
@@ -261,7 +271,7 @@ void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void SpeciesSubtreeScaleProposal::undoProposal( void )
+void SpeciesSubtreeScaleBetaProposal::undoProposal( void )
 {
     // undo the proposal
     double sf = storedAge / storedNode->getAge();
@@ -304,7 +314,7 @@ void SpeciesSubtreeScaleProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void SpeciesSubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if ( oldN == speciesTree )
@@ -332,10 +342,17 @@ void SpeciesSubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void SpeciesSubtreeScaleProposal::tune( double rate )
+void SpeciesSubtreeScaleBetaProposal::tune( double rate )
 {
     
-    // nothing to tune
+    if ( rate > 0.234 )
+    {
+        alpha /= (1.0 + ((rate-0.234)/0.766) );
+    }
+    else
+    {
+        alpha *= (2.0 - rate/0.234 );
+    }
     
 }
 

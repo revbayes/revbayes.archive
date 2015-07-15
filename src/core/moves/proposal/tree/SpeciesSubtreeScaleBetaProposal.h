@@ -1,5 +1,5 @@
-#ifndef SpeciesNodeTimeSlideUniform_H
-#define SpeciesNodeTimeSlideUniform_H
+#ifndef SpeciesSubtreeScaleBetaProposal_H
+#define SpeciesSubtreeScaleBetaProposal_H
 
 #include <string>
 
@@ -10,26 +10,27 @@
 namespace RevBayesCore {
     
     /**
-     * The species-node-time-slide (uniform) operator.
+     * The species-subtree-scale operator.
      *
-     * A species-node-time-slide proposal is a sliding window proposal on rooted subtrees without changing the topology.
+     * A subtree-scale proposal is a scaling proposal on rooted subtrees without changing the topology.
      * That is, we pick a random node which is not the root.
-     * Then, we uniformly propose a new age centered around the current age plus-minus epsilon.
+     * Then, we randomly pick an age between the parent and the oldest sampled descendant drawn from a beta distribution.
+     * The picked subtree is then scaled to this new age.
      * All gene-trees that are present in the population will be scaled too!
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2015-06-23, version 1.0
+     * @since 2015-06-24, version 1.0
      *
      */
-    class SpeciesNodeTimeSlideUniform : public Proposal {
+    class SpeciesSubtreeScaleBetaProposal : public Proposal {
         
     public:
-        SpeciesNodeTimeSlideUniform(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt);                                               //!<  constructor
+        SpeciesSubtreeScaleBetaProposal(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt, double a);                                               //!<  constructor
         
         // Basic utility functions
         void                                            cleanProposal(void);                                        //!< Clean up proposal
-        SpeciesNodeTimeSlideUniform*                    clone(void) const;                                          //!< Clone object
+        SpeciesSubtreeScaleBetaProposal*                clone(void) const;                                          //!< Clone object
         double                                          doProposal(void);                                           //!< Perform proposal
         const std::string&                              getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                            prepareProposal(void);                                      //!< Prepare the proposal
@@ -39,7 +40,7 @@ namespace RevBayesCore {
         
     protected:
         
-        std::vector<TopologyNode*>                      getNodesInPopulation( TimeTree &tau, TopologyNode &n );
+        std::vector<TopologyNode*>                      getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n );
         void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);             //!< Swap the DAG nodes on which the Proposal is working on
         
         
@@ -49,11 +50,12 @@ namespace RevBayesCore {
         StochasticNode<TimeTree>*                       speciesTree;                                                   //!< The variable the Proposal is working on
         std::vector< StochasticNode<TimeTree> *>        geneTrees;
         
+        // tuning parameter
+        double                                          alpha;
+        
         // stored objects to undo proposal
         TopologyNode*                                   storedNode;
         double                                          storedAge;
-        
-        std::map< std::string, TopologyNode*>           individualNames2geneTreeTips;
         
     };
     

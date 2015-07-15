@@ -68,7 +68,7 @@ const std::string& BetaSimplexProposal::getProposalName( void ) const
  *
  * A Beta-simplex proposal randomly changes some values of a simplex, although the other values
  * change too because of the renormalization.
- * First, some random indices are drawn. Then, the proposal draws a new somplex
+ * First, some random indices are drawn. Then, the proposal draws a new simplex
  *   u ~ Beta(val[index] * alpha)
  * where alpha is the tuning parameter.The new value is set to u.
  * The simplex is then renormalized.
@@ -95,8 +95,8 @@ double BetaSimplexProposal::doProposal( void )
     double currentValue = value[chosenIndex];
     
     // draw new rates and compute the hastings ratio at the same time
-    double a = alpha * currentValue + 1.0;
-    double b = alpha * (1.0-currentValue) + 1.0;
+    double a = alpha + 1.0;
+    double b = (a-1.0) / currentValue - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
     
     // set the value
@@ -115,8 +115,8 @@ double BetaSimplexProposal::doProposal( void )
     
     // compute the Hastings ratio
     double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
-    double new_a = alpha * value[chosenIndex] + 1.0;
-    double new_b = alpha * (1.0-value[chosenIndex]) + 1.0;
+    double new_a = alpha + 1.0;
+    double new_b = (a-1.0) / value[chosenIndex] - a + 2.0;
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, currentValue);
     
     return backward - forward;
@@ -186,7 +186,6 @@ void BetaSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  */
 void BetaSimplexProposal::tune( double rate )
 {
-    
     
     if ( rate > 0.234 )
     {

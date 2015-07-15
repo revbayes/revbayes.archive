@@ -22,7 +22,7 @@ data <- readDiscreteCharacterData("data/primates_cytb.nex")
 # Get some useful variables from the data. We need these later on.
 n_species <- data.ntaxa()
 names <- data.names()
-
+ 
 # set my move index
 mi = 0
 

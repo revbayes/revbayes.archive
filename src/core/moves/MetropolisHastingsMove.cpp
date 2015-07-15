@@ -212,6 +212,21 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     proposal->prepareProposal();
     double lnHastingsRatio = proposal->doProposal();
     
+    
+    affectedNodes.clear();
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        (*it)->getAffectedNodes( affectedNodes );
+    }
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        DagNode *the_node = *it;
+        if ( affectedNodes.find(the_node) != affectedNodes.end() )
+        {
+            affectedNodes.erase(the_node);
+        }
+    }
+    
     // first we touch all the nodes
     // that will set the flags for recomputation
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -225,15 +240,16 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     // compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
+        DagNode *the_node = *it;
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
-            if ( (*it)->isClamped() )
+            if ( the_node->isClamped() )
             {
-                lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
             }
             else
             {
-                lnPriorRatio += (*it)->getLnProbabilityRatio();
+                lnPriorRatio += the_node->getLnProbabilityRatio();
             }
         }
     }
@@ -241,15 +257,16 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
+        DagNode *the_node = *it;
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
-            if ( (*it)->isClamped() )
+            if ( the_node->isClamped() )
             {
-                lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
             }
             else
             {
-                lnPriorRatio += (*it)->getLnProbabilityRatio();
+                lnPriorRatio += the_node->getLnProbabilityRatio();
             }
         }
     }
