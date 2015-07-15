@@ -1393,7 +1393,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
     simulate( tau->getValue().getRoot(), taxa, perSiteRates );
     
     // add the taxon data to the character data
-    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
+//    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
+    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
     {
         this->value->addTaxonData( taxa[i] );
     }
