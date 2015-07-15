@@ -19,10 +19,15 @@ MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,
     taxa(t),
     speciesTree( sp ),
     Nes( NULL ),
-    Ne( NULL ),
+    Ne( new ConstantNode<double>("Ne", new double(1.0) ) ),
     numTaxa( taxa.size() ),
     logTreeTopologyProb (0.0)
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( speciesTree );
+    addParameter( Ne );
     
     std::set<std::string> speciesNames;
     for (std::vector<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it)
@@ -39,16 +44,8 @@ MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     
-    //Default value for Ne
-    Ne = new ConstantNode<double>("Ne", new double(1.0) );
-    
     redrawValue();
     
-    // add the parameters to our set (in the base class)
-    // in that way other class can easily access the set of our parameters
-    // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( speciesTree );
-    addParameter( Ne );
     
 
 }
@@ -602,7 +599,8 @@ double  MultispeciesCoalescent::getNe(size_t index) const
 
 
 
-void MultispeciesCoalescent::redrawValue( void ) {
+void MultispeciesCoalescent::redrawValue( void )
+{
     
     simulateTree();
     

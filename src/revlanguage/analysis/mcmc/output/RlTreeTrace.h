@@ -60,6 +60,7 @@ namespace RevLanguage {
 #include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "RlUtils.h"
 #include "TreeSummary.h"
 
@@ -68,7 +69,9 @@ RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceToCoreWrapperObject<Rev
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
+    summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
     this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
 
 }
@@ -79,7 +82,9 @@ RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typena
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
+    summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
     this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
 
 }
@@ -87,14 +92,16 @@ RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typena
 
 /** Clone object */
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>* RevLanguage::TreeTrace<treeType>::clone(void) const {
+RevLanguage::TreeTrace<treeType>* RevLanguage::TreeTrace<treeType>::clone(void) const
+{
     
 	return new TreeTrace(*this);
 }
 
 
 template <typename treeType>
-void RevLanguage::TreeTrace<treeType>::constructInternalObject( void ) {
+void RevLanguage::TreeTrace<treeType>::constructInternalObject( void )
+{
     throw RbException("We do not support a constructor function for TreeTrace.");
 }
 
@@ -108,11 +115,15 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::TreeTrace<treeType>::
     {
         found = true;
         
-        int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        double f            = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
+        double treeCI       = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
+        double minCladeProb = static_cast<const Probability &>( args[2].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
+        int b = int( floor( this->value->size()*f ) );
         summary.summarizeTrees( b );
+        summary.printTreeSummary(std::cout, treeCI);
         summary.summarizeClades( b );
-        summary.printTreeSummary(std::cerr);
+        summary.printCladeSummary(std::cout, minCladeProb);
         
         return NULL;
     } 
@@ -123,7 +134,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::TreeTrace<treeType>::
 
 /** Get Rev type of object */
 template <typename treeType>
-const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void) { 
+const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void)
+{
     
 //    static std::string revType = "TreeTrace<" + treeType::getClassType() + ">";
     static std::string revType = "TreeTrace__" + treeType::getClassType();
@@ -133,7 +145,8 @@ const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void) {
 
 /** Get class type spec describing type of object */
 template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
     
@@ -144,15 +157,14 @@ const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(
 
 /** Return member rules (no members) */
 template <typename treeType>
-const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getParameterRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getParameterRules(void) const
+{
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-//        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-//        modelMemberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
-//        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
+    if ( !rulesSet )
+    {
         
         rulesSet = true;
     }
@@ -163,7 +175,8 @@ const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getParameterRu
 
 /** Get type spec */
 template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -173,7 +186,8 @@ const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getTypeSpec( void
 
 /** Get type spec */
 template <typename treeType>
-void RevLanguage::TreeTrace<treeType>::printValue(std::ostream &o) const {
+void RevLanguage::TreeTrace<treeType>::printValue(std::ostream &o) const
+{
     
     o << "TreeTrace";
 }

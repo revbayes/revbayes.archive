@@ -118,7 +118,9 @@
 #include "Move_OriginTimeSlide.h"
 #include "Move_RateAgeBetaShift.h"
 #include "Move_RootTimeSlide.h"
+#include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
+#include "Move_SpeciesSubtreeScaleBeta.h"
 #include "Move_SubtreeScale.h"
 #include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
@@ -213,27 +215,29 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<TimeTree>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-		addTypeWithConstructor("mvEmpiricalTree",           new Move_EmpiricalTree<BranchLengthTree>() );
-		addTypeWithConstructor("mvEmpiricalTree",           new Move_EmpiricalTree<TimeTree>() );
-        addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
-        addTypeWithConstructor("mvGPR",                     new Move_GibbsPruneAndRegraft() );
-        addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
-        addTypeWithConstructor("mvNNI",                     new Move_NNIClock() );
-        addTypeWithConstructor("mvNNI",                     new Move_NNINonclock() );
-        addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
-        addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
-        addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
-        addTypeWithConstructor("mvNodeTimeSlideBeta",       new Move_NodeTimeSlideBeta() );
-        addTypeWithConstructor("mvOriginTimeSlide",         new Move_OriginTimeSlide() );
-        addTypeWithConstructor("mvRateAgeBetaShift",        new Move_RateAgeBetaShift() );
-        addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
-        addTypeWithConstructor("mvSubtreeScale",            new Move_SubtreeScale() );
-        addTypeWithConstructor("mvSPR",                     new Move_SPRNonclock() );
-        addTypeWithConstructor("mvSpeciesSubtreeScale",     new Move_SpeciesSubtreeScale() );
-        addTypeWithConstructor("mvSubtreePruneRegraft",     new Move_SPRNonclock() );
-        addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
-        addTypeWithConstructor("mvFossilSafeSlide",         new Move_FossilSafeSlide() );
-        addTypeWithConstructor("mvFossilSafeScale",         new Move_FossilSafeScale() );
+		addTypeWithConstructor("mvEmpiricalTree",               new Move_EmpiricalTree<BranchLengthTree>() );
+		addTypeWithConstructor("mvEmpiricalTree",               new Move_EmpiricalTree<TimeTree>() );
+        addTypeWithConstructor("mvFNPR",                        new Move_FNPR() );
+        addTypeWithConstructor("mvGPR",                         new Move_GibbsPruneAndRegraft() );
+        addTypeWithConstructor("mvNarrow",                      new Move_NarrowExchange() );
+        addTypeWithConstructor("mvNNI",                         new Move_NNIClock() );
+        addTypeWithConstructor("mvNNI",                         new Move_NNINonclock() );
+        addTypeWithConstructor("mvNNIClock",                    new Move_NNIClock() );
+        addTypeWithConstructor("mvNNINonclock",                 new Move_NNINonclock() );
+        addTypeWithConstructor("mvNodeTimeSlideUniform",        new Move_NodeTimeSlideUniform() );
+        addTypeWithConstructor("mvNodeTimeSlideBeta",           new Move_NodeTimeSlideBeta() );
+        addTypeWithConstructor("mvOriginTimeSlide",             new Move_OriginTimeSlide() );
+        addTypeWithConstructor("mvRateAgeBetaShift",            new Move_RateAgeBetaShift() );
+        addTypeWithConstructor("mvRootTimeSlide",               new Move_RootTimeSlide() );
+        addTypeWithConstructor("mvSubtreeScale",                new Move_SubtreeScale() );
+        addTypeWithConstructor("mvSPR",                         new Move_SPRNonclock() );
+        addTypeWithConstructor("mvSpeciesNodeTimeSlideUniform", new Move_SpeciesNodeTimeSlideUniform() );
+        addTypeWithConstructor("mvSpeciesSubtreeScale",         new Move_SpeciesSubtreeScale() );
+        addTypeWithConstructor("mvSpeciesSubtreeScaleBeta",     new Move_SpeciesSubtreeScaleBeta() );
+        addTypeWithConstructor("mvSubtreePruneRegraft",         new Move_SPRNonclock() );
+        addTypeWithConstructor("mvTreeScale",                   new Move_TreeScale() );
+        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
+        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
