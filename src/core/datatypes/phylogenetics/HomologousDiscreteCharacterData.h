@@ -1,7 +1,7 @@
-#ifndef DiscreteCharacterData_H
-#define DiscreteCharacterData_H
+#ifndef HomologousDiscreteCharacterData_H
+#define HomologousDiscreteCharacterData_H
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
 #include "MatrixReal.h"
 #include "DiscreteTaxonData.h"
@@ -26,24 +26,24 @@ namespace RevBayesCore {
      * @since 2013-04-15, version 1.0
      */
     template<class charType>
-    class DiscreteCharacterData : public AbstractDiscreteCharacterData {
+    class HomologousDiscreteCharacterData : public AbstractHomologousDiscreteCharacterData {
         
     public:
-                                                            DiscreteCharacterData();                                                                                        //!< Default constructor
+                                                            HomologousDiscreteCharacterData();                                                                                        //!< Default constructor
         
         // Overloaded operators
         const DiscreteTaxonData<charType>&                  operator[](size_t i) const;                                                 //!< Subscript operator (const)
-        bool                                                operator<(const DiscreteCharacterData& x) const;                            //!< Less than operator
+        bool                                                operator<(const HomologousDiscreteCharacterData& x) const;                            //!< Less than operator
         
         // implemented methods of the Cloneable interface
-        DiscreteCharacterData<charType>*                    clone(void) const;
+        HomologousDiscreteCharacterData<charType>*                    clone(void) const;
         
         // CharacterData functions
         MatrixReal                                          computeStateFrequencies(void) const;
-        DiscreteCharacterData&                              concatenate(const DiscreteCharacterData &d);                                //!< Concatenate data matrices
-        DiscreteCharacterData&                              concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
-        DiscreteCharacterData&                              concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
-        DiscreteCharacterData&                              concatenate(const AbstractDiscreteCharacterData &d);                        //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                              concatenate(const HomologousDiscreteCharacterData &d);                                //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                              concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                              concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                              concatenate(const AbstractHomologousDiscreteCharacterData &d);                        //!< Concatenate data matrices
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
@@ -100,7 +100,7 @@ namespace RevBayesCore {
  * Does nothing except instanciating the object.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>::DiscreteCharacterData() 
+RevBayesCore::HomologousDiscreteCharacterData<charType>::HomologousDiscreteCharacterData() 
 {
 
 }
@@ -115,7 +115,7 @@ RevBayesCore::DiscreteCharacterData<charType>::DiscreteCharacterData()
  * \return            The TaxonData object at position i.
  */
 template<class charType>
-const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<charType>::operator[]( const size_t i ) const 
+const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::operator[]( const size_t i ) const 
 {
     
     return getTaxonData( i );
@@ -127,7 +127,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacter
  * Less than operator.
  */
 template<class charType>
-bool RevBayesCore::DiscreteCharacterData<charType>::operator<(const DiscreteCharacterData<charType> &x) const 
+bool RevBayesCore::HomologousDiscreteCharacterData<charType>::operator<(const HomologousDiscreteCharacterData<charType> &x) const 
 {
     
     return sequenceNames.size() < x.sequenceNames.size();
@@ -140,10 +140,10 @@ bool RevBayesCore::DiscreteCharacterData<charType>::operator<(const DiscreteChar
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const AbstractCharacterData &obsd)
+RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractCharacterData &obsd)
 {
     
-    const DiscreteCharacterData<charType>* rhs = dynamic_cast<const DiscreteCharacterData<charType>* >( &obsd );
+    const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
     if ( rhs == NULL )
     {
         throw RbException("Adding wrong character data type into CharacterData!!!");
@@ -160,10 +160,10 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd)
+RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousCharacterData &obsd)
 {
     
-    const DiscreteCharacterData<charType>* rhs = dynamic_cast<const DiscreteCharacterData<charType>* >( &obsd );
+    const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
     if ( rhs == NULL )
     {
         throw RbException("Adding wrong character data type into CharacterData!!!");
@@ -180,10 +180,10 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const AbstractDiscreteCharacterData &obsd)
+RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const AbstractHomologousDiscreteCharacterData &obsd)
 {
     
-    const DiscreteCharacterData<charType>* rhs = dynamic_cast<const DiscreteCharacterData<charType>* >( &obsd );
+    const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
     if ( rhs == NULL )
     {
         throw RbException("Adding wrong character data type into CharacterData!!!");
@@ -200,7 +200,7 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterData<charType>::concatenate(const DiscreteCharacterData<charType> &obsd)
+RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::concatenate(const HomologousDiscreteCharacterData<charType> &obsd)
 {
     
     size_t sequenceLength = getNumberOfCharacters();
@@ -257,10 +257,10 @@ RevBayesCore::DiscreteCharacterData<charType>& RevBayesCore::DiscreteCharacterDa
  * \return A new copy of the object. 
  */
 template<class charType>
-RevBayesCore::DiscreteCharacterData<charType>* RevBayesCore::DiscreteCharacterData<charType>::clone( void ) const 
+RevBayesCore::HomologousDiscreteCharacterData<charType>* RevBayesCore::HomologousDiscreteCharacterData<charType>::clone( void ) const 
 {
     
-    return new DiscreteCharacterData<charType>(*this);
+    return new HomologousDiscreteCharacterData<charType>(*this);
 }
 
 
@@ -271,7 +271,7 @@ RevBayesCore::DiscreteCharacterData<charType>* RevBayesCore::DiscreteCharacterDa
  * \return       A matrix of site frequencies where each column is a site a each row the frequency of a character.
  */
 template<class charType>
-RevBayesCore::MatrixReal RevBayesCore::DiscreteCharacterData<charType>::computeStateFrequencies( void ) const 
+RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>::computeStateFrequencies( void ) const 
 {
     
     charType tmp;
@@ -325,7 +325,7 @@ RevBayesCore::MatrixReal RevBayesCore::DiscreteCharacterData<charType>::computeS
  * We don't actually delete the characters but mark them for exclusion.
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::excludeAllCharacters(void)
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::excludeAllCharacters(void)
 {
     
     for (size_t i = 0; i < getTaxonData( 0 ).size(); ++i)
@@ -343,7 +343,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::excludeAllCharacters(void)
  * \param[in]    i    The position of the character that will be excluded.
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::excludeCharacter(size_t i) 
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::excludeCharacter(size_t i) 
 {
     
     if (i >= getTaxonData( 0 ).size() ) 
@@ -369,7 +369,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::excludeCharacter(size_t i)
  * \return              The cn-th character of the tn-th taxon. 
  */
 template<class charType>
-const charType& RevBayesCore::DiscreteCharacterData<charType>::getCharacter( size_t tn, size_t cn ) const 
+const charType& RevBayesCore::HomologousDiscreteCharacterData<charType>::getCharacter( size_t tn, size_t cn ) const 
 {
     
     if ( cn >= getNumberOfCharacters() )
@@ -387,7 +387,7 @@ const charType& RevBayesCore::DiscreteCharacterData<charType>::getCharacter( siz
  * \return      The data type (e.g. DNA, RNA or Standard).
  */
 template<class charType>
-std::string RevBayesCore::DiscreteCharacterData<charType>::getDatatype(void) const 
+std::string RevBayesCore::HomologousDiscreteCharacterData<charType>::getDatatype(void) const 
 {
     
     std::string dt = "";
@@ -411,7 +411,7 @@ std::string RevBayesCore::DiscreteCharacterData<charType>::getDatatype(void) con
  * \return    The excluded character indices.
  */
 template<class charType>
-const std::set<size_t>& RevBayesCore::DiscreteCharacterData<charType>::getExcludedCharacters(void) const
+const std::set<size_t>& RevBayesCore::HomologousDiscreteCharacterData<charType>::getExcludedCharacters(void) const
 {
     
     return deletedCharacters;
@@ -424,7 +424,7 @@ const std::set<size_t>& RevBayesCore::DiscreteCharacterData<charType>::getExclud
  * \return    The excluded character indices.
  */
 template<class charType>
-std::vector<double> RevBayesCore::DiscreteCharacterData<charType>::getEmpiricalBaseFrequencies(void) const
+std::vector<double> RevBayesCore::HomologousDiscreteCharacterData<charType>::getEmpiricalBaseFrequencies(void) const
 {
     size_t nStates = this->getTaxonData(0)[0].getNumberOfStates();
     std::vector<double> ebf = std::vector<double>(nStates, 0.0);
@@ -466,7 +466,7 @@ std::vector<double> RevBayesCore::DiscreteCharacterData<charType>::getEmpiricalB
  * \return    The total number of characters
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfCharacters(void) const 
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfCharacters(void) const 
 {
     
     if (getNumberOfTaxa() > 0) 
@@ -487,7 +487,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfCharacters(void
  * \return    The total number of characters
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharacters(void) const
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfIncludedCharacters(void) const
 {
     
     if (getNumberOfTaxa() > 0) 
@@ -506,7 +506,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedCharact
  * \return      The number of states for the characters.
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfStates(void) const 
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfStates(void) const 
 {
     
     // Get the first character in the matrix
@@ -531,7 +531,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfStates(void) co
  * \return    The excluded character indices.
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfInvariantSites(void) const
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfInvariantSites(void) const
 {
     size_t invSites = 0;
     size_t nt = this->getNumberOfTaxa();
@@ -568,7 +568,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfInvariantSites(
  * \return    The excluded character indices.
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfSegregatingSites(void) const
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfSegregatingSites(void) const
 {
     const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(0);
     size_t nc = firstTaxonData.getNumberOfCharacters();
@@ -583,7 +583,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfSegregatingSite
  * \return    The average pairwise distance.
  */
 template<class charType>
-double RevBayesCore::DiscreteCharacterData<charType>::getPaiwiseSequenceDifference(void) const
+double RevBayesCore::HomologousDiscreteCharacterData<charType>::getPaiwiseSequenceDifference(void) const
 {
     double pairwiseDistance = 0.0;
     size_t nt = this->getNumberOfIncludedTaxa();
@@ -629,7 +629,7 @@ double RevBayesCore::DiscreteCharacterData<charType>::getPaiwiseSequenceDifferen
  * \return     A const reference to the taxon data object at position tn.
  */
 template<class charType>
-const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<charType>::getTaxonData( size_t tn ) const 
+const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::getTaxonData( size_t tn ) const 
 {
     
     if ( tn >= getNumberOfTaxa() )
@@ -656,7 +656,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacter
  * \return     A non-const reference to the taxon data object at position tn.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<charType>::getTaxonData( size_t tn ) 
+RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::getTaxonData( size_t tn ) 
 {
     
     if ( tn >= getNumberOfTaxa() )
@@ -683,7 +683,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<c
  * \return     A non-const reference to the taxon data object with name tn.
  */
 template<class charType>
-const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<charType>::getTaxonData( const std::string &tn ) const 
+const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::getTaxonData( const std::string &tn ) const 
 {
     
     if ( tn == "" ) 
@@ -711,7 +711,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacter
  * \return     A const reference to the taxon data object with name tn.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<charType>::getTaxonData( const std::string &tn ) 
+RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteCharacterData<charType>::getTaxonData( const std::string &tn ) 
 {
     
     
@@ -742,7 +742,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<c
  * \param[in]    i    The position of the character that will be included.
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::includeCharacter(size_t i)
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::includeCharacter(size_t i)
 {
     
     if (i >= getTaxonData( 0 ).size() )
@@ -764,7 +764,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::includeCharacter(size_t i)
  * \param[in]   idx    The site at which we want to know if it is constant?
  */
 template<class charType>
-bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
+bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstant(size_t idx) const 
 {
     
     const CharacterState* f = NULL;
@@ -793,7 +793,7 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterConstant(size_t i
  * \param[in]    i   The position of the character.
  */
 template<class charType>
-bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterExcluded(size_t i) const 
+bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterExcluded(size_t i) const 
 {
     
 	std::set<size_t>::const_iterator it = deletedCharacters.find( i );
@@ -807,14 +807,14 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterExcluded(size_t i
 
 
 template<class charType>
-bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterResolved(size_t txIdx, size_t chIdx) const {
+bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterResolved(size_t txIdx, size_t chIdx) const {
 
     const RevBayesCore::DiscreteTaxonData<charType>& td = getTaxonData(txIdx);
     return td.isCharacterResolved(chIdx);
 }
 
 template<class charType>
-bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterResolved(const std::string &tn, size_t chIdx) const {
+bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterResolved(const std::string &tn, size_t chIdx) const {
 
     const RevBayesCore::DiscreteTaxonData<charType>& td = getTaxonData(tn);
     return td.isCharacterResolved(chIdx);
@@ -826,7 +826,7 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterResolved(const st
  * \param[in]    idx    The position of the character in question.
  */
 template<class charType>
-bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterMissingOrAmbiguous(size_t idx) const 
+bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterMissingOrAmbiguous(size_t idx) const 
 {
     
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
@@ -847,7 +847,7 @@ bool RevBayesCore::DiscreteCharacterData<charType>::isCharacterMissingOrAmbiguou
  * Calculates and returns the number of constant characters.
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::numConstantPatterns( void ) const 
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numConstantPatterns( void ) const 
 {
     
     size_t nc = 0;
@@ -865,7 +865,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::numConstantPatterns( void 
  * Returns the number of characters with missing or ambiguous data
  */
 template<class charType>
-size_t RevBayesCore::DiscreteCharacterData<charType>::numMissAmbig(void) const 
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numMissAmbig(void) const 
 {
     
     size_t nma = 0;
@@ -884,7 +884,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::numMissAmbig(void) const
  *
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::removeExludedCharacters( void )
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::removeExludedCharacters( void )
 {
     
     for (typename std::map<std::string, AbstractTaxonData* >::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
@@ -903,7 +903,7 @@ void RevBayesCore::DiscreteCharacterData<charType>::removeExludedCharacters( voi
  * \param[in]    i    The position of the character to restore.
  */
 template<class charType>
-void RevBayesCore::DiscreteCharacterData<charType>::restoreCharacter(size_t i) 
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::restoreCharacter(size_t i) 
 {
     
     if (i >= getNumberOfCharacters() )

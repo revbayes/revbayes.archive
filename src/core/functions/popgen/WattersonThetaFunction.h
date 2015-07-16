@@ -1,7 +1,7 @@
 #ifndef WattersonThetaFunction_H
 #define WattersonThetaFunction_H
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -24,21 +24,21 @@ namespace RevBayesCore {
     class WattersonThetaFunction : public TypedFunction<double> {
         
     public:
-        WattersonThetaFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a, bool ps);
-        virtual                                                ~WattersonThetaFunction(void);                                                    //!< Virtual destructor
+        WattersonThetaFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps);
+        virtual                                                            ~WattersonThetaFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        WattersonThetaFunction*                                 clone(void) const;                                                              //!< Create an independent clone
-        void                                                    update(void);
+        WattersonThetaFunction*                                             clone(void) const;                                                              //!< Create an independent clone
+        void                                                                update(void);
         
     protected:
-        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
+        void                                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
     private:
         
         // members
-        const TypedDagNode< AbstractDiscreteCharacterData >*    alignment;
-        bool                                                    perSite;
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >*      alignment;
+        bool                                                                perSite;
         
     };
     

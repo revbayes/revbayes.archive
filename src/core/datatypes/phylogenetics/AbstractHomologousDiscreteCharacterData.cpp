@@ -1,10 +1,10 @@
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 
 #include <sstream>
 
 using namespace RevBayesCore;
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractDiscreteCharacterData& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractHomologousDiscreteCharacterData& x) {
     
     std::stringstream s;
     

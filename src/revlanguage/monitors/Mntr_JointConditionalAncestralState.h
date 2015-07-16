@@ -63,7 +63,7 @@ namespace RevLanguage {
 #include "Natural.h"
 #include "RbException.h"
 #include "RevObject.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlModel.h"
 #include "RlTimeTree.h"
 #include "RlBranchLengthTree.h"
@@ -103,8 +103,8 @@ void Mntr_JointConditionalAncestralState<treeType>::constructInternalObject( voi
 	RevBayesCore::TypedDagNode<typename treeType::valueType>* t = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
     
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_tdn = static_cast<const RevLanguage::AbstractDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractDiscreteCharacterData>* >(ctmc_tdn);
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
 
 	bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
     bool                                wt      = static_cast<const RlBoolean &>( withTips->getRevObject() ).getValue();
@@ -182,7 +182,7 @@ const MemberRules& Mntr_JointConditionalAncestralState<treeType>::getParameterRu
     if ( !rulesSet )
     {
 		asMonitorMemberRules.push_back( new ArgumentRule("tree"           , treeType::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-		asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+		asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         asMonitorMemberRules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
 		asMonitorMemberRules.push_back( new ArgumentRule("type"           , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
         asMonitorMemberRules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );

@@ -9,11 +9,11 @@
 #ifndef __rb_mlandis__AbstractTreeHistoryCtmc__
 #define __rb_mlandis__AbstractTreeHistoryCtmc__
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "BranchHistory.h"
 #include "ContinuousCharacterData.h"
 #include "DiscreteTaxonData.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
 #include "DnaState.h"
 #include "RandomNumberFactory.h"
@@ -31,7 +31,7 @@
 namespace RevBayesCore {
 
     template<class charType, class treeType>
-    class AbstractTreeHistoryCtmc : public TypedDistribution< AbstractDiscreteCharacterData >, public TreeChangeEventListener {
+    class AbstractTreeHistoryCtmc : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
@@ -58,7 +58,7 @@ namespace RevBayesCore {
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
-        void                                                                setValue(AbstractDiscreteCharacterData *v, bool f=false);           //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);           //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                setTipProbs(const HomologousCharacterData* tp);
         
         virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
@@ -122,7 +122,7 @@ namespace RevBayesCore {
 }
 
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
 numChars( nChars ),
 numSites( nSites ),
 numSiteRates( 1 ),
@@ -155,7 +155,7 @@ tipsInitialized( false )
 
 
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractDiscreteCharacterData >( n ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractHomologousDiscreteCharacterData >( n ),
 numChars( n.numChars ),
 numSites( n.numSites ),
 numSiteRates( n.numSiteRates ),
@@ -451,11 +451,11 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistories(con
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractDiscreteCharacterData *v, bool force)
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
     
     // delegate to the parent class
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v, force);
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
 
     
     drawInitValue();
@@ -472,7 +472,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
     delete this->value;
     
     // create a new character data object
-    this->value = new DiscreteCharacterData<charType>();
+    this->value = new HomologousDiscreteCharacterData<charType>();
     
     // create a vector of taxon data
     std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>("") );
@@ -491,7 +491,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 //        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
     }
     
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(this->value);
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(this->value);
 }
 
 

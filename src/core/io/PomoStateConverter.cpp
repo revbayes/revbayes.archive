@@ -29,11 +29,11 @@ PomoStateConverter::PomoStateConverter( void )
  * This function concverts a DNA matrix into a PomoState matrix of given virtualPopulationSize,
  * using the given mapping between sequence name and species name.
  */
-DiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
-                                                                                const AbstractDiscreteCharacterData &d,
+HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
+                                                                                const AbstractHomologousDiscreteCharacterData &d,
                                                                                 const unsigned int virtualPopulationSize,
                                                                                 const std::map<std::string, std::string> sequenceNameToSpeciesName) {
-    DiscreteCharacterData<PomoState>* data = new DiscreteCharacterData<PomoState> ();
+    HomologousDiscreteCharacterData<PomoState>* data = new HomologousDiscreteCharacterData<PomoState> ();
     //First, build a vector of frequencies according to the Pomo model
     std::vector<double> tempFreq (5, 0.0);
     std::vector< std::vector<double> > frequencies ( 4+ (virtualPopulationSize-1) * 6, tempFreq);

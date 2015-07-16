@@ -1,7 +1,7 @@
 #include "AminoAcidState.h"
 #include "BranchLengthTree.h"
 #include "ConstantNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DnaState.h"
 #include "NewickConverter.h"
 #include "NewickTreeReader.h"
@@ -229,7 +229,7 @@ std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
 }
 
 /** Create an object to hold aligned amino acid data */
-DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
 {
     
     if ( charblock == NULL )
@@ -253,7 +253,7 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	DiscreteCharacterData<AminoAcidState>* cMat = new DiscreteCharacterData<AminoAcidState>();
+	HomologousDiscreteCharacterData<AminoAcidState>* cMat = new HomologousDiscreteCharacterData<AminoAcidState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -413,7 +413,7 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
 
 
 /** Create an object to hold aligned DNA data */
-DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
 {
     
     if ( charblock == NULL )
@@ -476,7 +476,7 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	DiscreteCharacterData<DnaState>* cMat = new DiscreteCharacterData<DnaState>();
+	HomologousDiscreteCharacterData<DnaState>* cMat = new HomologousDiscreteCharacterData<DnaState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -576,7 +576,7 @@ NonHomologousDiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatri
 }
 
 /** Create an object to hold aligned RNA data */
-DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock)
 {
     
     // check that the character block is of the correct type
@@ -597,7 +597,7 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	DiscreteCharacterData<RnaState>* cMat = new DiscreteCharacterData<RnaState>();
+	HomologousDiscreteCharacterData<RnaState>* cMat = new HomologousDiscreteCharacterData<RnaState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -694,7 +694,7 @@ NonHomologousDiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatri
 }
 
 /** Create an object to hold standard data */
-DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock)
 {
     
     // check that the character block is of the correct type
@@ -724,7 +724,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
     }
     
     // instantiate the character matrix
-	DiscreteCharacterData<StandardState>* cMat = new DiscreteCharacterData<StandardState>();
+	HomologousDiscreteCharacterData<StandardState>* cMat = new HomologousDiscreteCharacterData<StandardState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)

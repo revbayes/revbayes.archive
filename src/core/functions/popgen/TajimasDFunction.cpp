@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-TajimasDFunction::TajimasDFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a) : TypedFunction<double>( new double(0.0) ),
+TajimasDFunction::TajimasDFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a) : TypedFunction<double>( new double(0.0) ),
     alignment( a )
 {
     // add the lambda parameter as a parent
@@ -62,7 +62,7 @@ void TajimasDFunction::swapParameterInternal(const DagNode *oldP, const DagNode 
     
     if (oldP == alignment)
     {
-        alignment = static_cast<const TypedDagNode< AbstractDiscreteCharacterData >* >( newP );
+        alignment = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( newP );
     }
     
 }
