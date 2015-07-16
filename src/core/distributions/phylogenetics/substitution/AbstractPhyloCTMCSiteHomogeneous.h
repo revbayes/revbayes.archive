@@ -1,7 +1,7 @@
 #ifndef AbstractPhyloCTMCSiteHomogeneous_H
 #define AbstractPhyloCTMCSiteHomogeneous_H
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "RbVector.h"
@@ -65,7 +65,7 @@ namespace RevBayesCore {
      * @since 2012-06-17, version 1.0
      */
     template<class charType, class treeType>
-    class AbstractPhyloCTMCSiteHomogeneous : public TypedDistribution< AbstractDiscreteCharacterData >, public TreeChangeEventListener {
+    class AbstractPhyloCTMCSiteHomogeneous : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
@@ -85,8 +85,8 @@ namespace RevBayesCore {
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
         void																updateMarginalNodeLikelihoods(void);
-        void                                                                setMcmcMode(bool tf);                                                   //!< Change the likelihood computation to or from MCMC mode.
-        void                                                                setValue(AbstractDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
+        void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
         
@@ -219,7 +219,7 @@ namespace RevBayesCore {
 
 
 #include "DiscreteCharacterState.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateMatrix_JC.h"
@@ -235,7 +235,7 @@ namespace RevBayesCore {
 
 template<class charType, class treeType>
 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb) :
-    TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
     numNodes( t->getValue().getNumberOfNodes() ),
     numSites( nSites ),
     numChars( nChars ),
@@ -328,7 +328,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
 
 template<class charType, class treeType>
 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n) :
-    TypedDistribution< AbstractDiscreteCharacterData >( n ),
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >( n ),
     numNodes( n.numNodes ),
     numSites( n.numSites ),
     numChars( n.numChars ),
@@ -1169,8 +1169,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::tipDraw
     // get transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
     
-    const AbstractDiscreteCharacterData& d = this->getValue();
-    const DiscreteCharacterData<charType>& dd = static_cast<const DiscreteCharacterData<charType>& >( d );
+    const AbstractHomologousDiscreteCharacterData& d = this->getValue();
+    const HomologousDiscreteCharacterData<charType>& dd = static_cast<const HomologousDiscreteCharacterData<charType>& >( d );
     const DiscreteTaxonData<charType>& td = dd.getTaxonData( node.getName() );
     
     // ideally sample ambiguous tip states given the underlying process and ancestral state
@@ -1340,7 +1340,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::redrawV
     delete this->value;
     
     // create a new character data object
-    this->value = new DiscreteCharacterData<charType>();
+    this->value = new HomologousDiscreteCharacterData<charType>();
     
     // create a vector of taxon data 
     std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( numNodes, DiscreteTaxonData<charType>("") );
@@ -1636,11 +1636,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValue(AbstractDiscreteCharacterData *v, bool force)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
     
     // delegate to the parent class
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v, force);
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
     
     // reset the number of sites
     this->numSites = v->getNumberOfIncludedCharacters();

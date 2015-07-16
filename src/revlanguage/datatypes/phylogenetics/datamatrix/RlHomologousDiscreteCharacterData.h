@@ -1,9 +1,9 @@
-#ifndef RlDiscreteCharacterData_H
-#define RlDiscreteCharacterData_H
+#ifndef RlHomologousDiscreteCharacterData_H
+#define RlHomologousDiscreteCharacterData_H
 
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "ModelObject.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 
 #include <set>
 #include <string>
@@ -14,11 +14,11 @@ namespace RevLanguage {
     
 
     /**
-     * The RevLanguage wrapper of the DiscreteCharacterData class.
+     * The RevLanguage wrapper of the HomologousDiscreteCharacterData class.
      *
      * The RevLanguage wrapper of the discrete character data is our
      * data object that stores discrete character data such as character matrices (alignments).
-     * Please read the DiscreteCharacterData.h for more info.
+     * Please read the HomologousDiscreteCharacterData.h for more info.
      *
      *
      * @copyright Copyright 2009-
@@ -27,17 +27,17 @@ namespace RevLanguage {
      *
      */
     template <class rlCharType>
-    class DiscreteCharacterData : public AbstractDiscreteCharacterData {
+    class HomologousDiscreteCharacterData : public AbstractHomologousDiscreteCharacterData {
     
     public:
-        DiscreteCharacterData(void);                                                                                                            //!< Default constructor
-        DiscreteCharacterData(RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v);                                          //!< Constructor with core object
-        DiscreteCharacterData(RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData >*d);                                     //!< Constructor with DAG node
+        HomologousDiscreteCharacterData(void);                                                                                                            //!< Default constructor
+        HomologousDiscreteCharacterData(RevBayesCore::HomologousDiscreteCharacterData<typename rlCharType::valueType> *v);                                          //!< Constructor with core object
+        HomologousDiscreteCharacterData(RevBayesCore::TypedDagNode< RevBayesCore::AbstractHomologousDiscreteCharacterData >*d);                                     //!< Constructor with DAG node
         
-        typedef RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> valueType;
+        typedef RevBayesCore::HomologousDiscreteCharacterData<typename rlCharType::valueType> valueType;
     
         // Basic utility functions
-        DiscreteCharacterData*              clone(void) const;                                                                                  //!< Clone object
+        HomologousDiscreteCharacterData*    clone(void) const;                                                                                  //!< Clone object
         static const std::string&           getClassType(void);                                                                                 //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
@@ -59,7 +59,7 @@ namespace RevLanguage {
 
 
 template <class rlType>
-RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData(void) : AbstractDiscreteCharacterData()
+RevLanguage::HomologousDiscreteCharacterData<rlType>::HomologousDiscreteCharacterData(void) : AbstractHomologousDiscreteCharacterData()
 {
 
     // Add method for call "x[]" as a function
@@ -71,8 +71,8 @@ RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData(void) : Abstra
 
 
 template <class rlType>
-RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlType::valueType> *v) :
-    AbstractDiscreteCharacterData( v )
+RevLanguage::HomologousDiscreteCharacterData<rlType>::HomologousDiscreteCharacterData( RevBayesCore::HomologousDiscreteCharacterData<typename rlType::valueType> *v) :
+    AbstractHomologousDiscreteCharacterData( v )
 {
 
     // Add method for call "x[]" as a function
@@ -84,8 +84,8 @@ RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData( RevBayesCore:
 
 
 template <class rlType>
-RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractDiscreteCharacterData > *d) :
-    AbstractDiscreteCharacterData( d )
+RevLanguage::HomologousDiscreteCharacterData<rlType>::HomologousDiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d) :
+    AbstractHomologousDiscreteCharacterData( d )
 {
 
     // Add method for call "x[]" as a function
@@ -98,15 +98,15 @@ RevLanguage::DiscreteCharacterData<rlType>::DiscreteCharacterData( RevBayesCore:
 
 
 template <typename charType>
-RevLanguage::DiscreteCharacterData<charType>* RevLanguage::DiscreteCharacterData<charType>::clone() const {
+RevLanguage::HomologousDiscreteCharacterData<charType>* RevLanguage::HomologousDiscreteCharacterData<charType>::clone() const {
     
-    return new DiscreteCharacterData<charType>( *this );
+    return new HomologousDiscreteCharacterData<charType>( *this );
 }
 
 
 /* Map calls to member methods */
 template <typename rlType>
-RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteCharacterData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::HomologousDiscreteCharacterData<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "[]") 
@@ -121,31 +121,31 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::DiscreteCharacterData
             throw RbException("Index out of bounds in []");
         }
             
-        const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename rlType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+        const RevBayesCore::DiscreteTaxonData<typename rlType::valueType>& element = static_cast< RevBayesCore::HomologousDiscreteCharacterData<typename rlType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
     
         return new RevVariable( new DiscreteTaxonData<rlType>( new RevBayesCore::DiscreteTaxonData<typename rlType::valueType>( element ) ) );
     }
     
-    return AbstractDiscreteCharacterData::executeMethod( name, args, found );
+    return AbstractHomologousDiscreteCharacterData::executeMethod( name, args, found );
 }
 
 
 /* Get class name of object */
 template <typename rlType>
-const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassType(void)
+const std::string& RevLanguage::HomologousDiscreteCharacterData<rlType>::getClassType(void)
 {
     
-    static std::string revClassType = "DiscreteCharacterData<" + rlType::getClassType() + ">";
+    static std::string revClassType = "HomologousDiscreteCharacterData<" + rlType::getClassType() + ">";
     
 	return revClassType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClassTypeSpec(void)
+const RevLanguage::TypeSpec& RevLanguage::HomologousDiscreteCharacterData<rlType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractDiscreteCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
 	return revClassTypeSpec; 
 }
@@ -153,7 +153,7 @@ const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClas
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getTypeSpec(void) const {
+const RevLanguage::TypeSpec& RevLanguage::HomologousDiscreteCharacterData<rlType>::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;

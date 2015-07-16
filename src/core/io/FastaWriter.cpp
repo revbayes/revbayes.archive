@@ -23,7 +23,7 @@ FastaWriter::FastaWriter( void )
  * \param[in]   fileName    The name of the file into which the objects is to be written.
  * \param[in]   data        The character data object which is written out.
  */
-void FastaWriter::writeData(std::string const &fileName, const AbstractDiscreteCharacterData &data)
+void FastaWriter::writeData(std::string const &fileName, const AbstractHomologousDiscreteCharacterData &data)
 {
     
     // the filestream object

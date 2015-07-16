@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class PathRejectionSampleMove : public MoveOld {
         
     public:
-        PathRejectionSampleMove( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
+        PathRejectionSampleMove( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
         
         // Basic utility functions
         PathRejectionSampleMove* clone(void) const;                                                                  //!< Clone object
@@ -51,7 +51,7 @@ namespace RevBayesCore {
     private:
         
         // ctmcs
-        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
         
@@ -69,13 +69,13 @@ namespace RevBayesCore {
     
 }
 
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
+RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
     MoveOld(t, w, tuning),
     ctmc(n),
     tau(t),
@@ -113,7 +113,7 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::swapNode(DagNode
     
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >( newN );
+        ctmc = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >( newN );
     }
     else if (oldN == tau)
     {

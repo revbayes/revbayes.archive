@@ -52,7 +52,7 @@ void NexusWriter::openStream( void )
  *
  * \param[in]   data        The discrete character data object which is written out.
  */
-void NexusWriter::writeNexusBlock(const AbstractDiscreteCharacterData &data) 
+void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData &data) 
 {
     // write initial lines of the character block
     outStream << std::endl;

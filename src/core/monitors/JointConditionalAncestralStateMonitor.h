@@ -9,7 +9,7 @@
 #ifndef __revbayes_proj__JointConditionalJointConditionalAncestralStateMonitor__
 #define __revbayes_proj__JointConditionalJointConditionalAncestralStateMonitor__
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "Monitor.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -45,7 +45,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-		JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss);                                  //!< Constructor
+		JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss);                                  //!< Constructor
 		
         JointConditionalAncestralStateMonitor(const JointConditionalAncestralStateMonitor &m);
         virtual ~JointConditionalAncestralStateMonitor(void);
@@ -72,7 +72,7 @@ namespace RevBayesCore {
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
 		bool                                append;                                                             //!< Flag if to append to existing file
 		TypedDagNode<treeType>*             tree;
-		StochasticNode<AbstractDiscreteCharacterData>*                            ctmc;
+		StochasticNode<AbstractHomologousDiscreteCharacterData>*                            ctmc;
 		bool                                stochasticNodesOnly;
         bool                                withTips;
         bool                                withStartStates;
@@ -94,7 +94,7 @@ using namespace RevBayesCore;
 
 /* Constructor */
 template<class characterType, class treeType>
-JointConditionalAncestralStateMonitor<characterType, treeType>::JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
+JointConditionalAncestralStateMonitor<characterType, treeType>::JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
 outStream(),
 filename( fname ),
 separator( del ),
@@ -321,7 +321,7 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::swapNode(Da
 	}
 	else if ( oldN == ctmc )
 	{
-		ctmc = static_cast< StochasticNode<AbstractDiscreteCharacterData> *>( newN );
+		ctmc = static_cast< StochasticNode<AbstractHomologousDiscreteCharacterData> *>( newN );
 	}
     
     Monitor::swapNode( oldN, newN );
