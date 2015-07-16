@@ -1,39 +1,27 @@
-/**
- * @file
- * This file contains the implementation of AminoAcidState, which is
- * the class for the Amino Acid character data type in RevBayes.
- *
- * @brief Implementation of AminoAcidState
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: AminoAcidState.cpp 1568 2012-05-24 07:58:04Z hoehna $
- */
-
 #include "AminoAcidState.h"
 #include <sstream>
 
 using namespace RevBayesCore;
 
 /** Default constructor */
-AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
+AminoAcidState::AminoAcidState(void) : DiscreteCharacterState()
+{
     
-    setState('-');
+    setState("-");
 }
 
 
 /** Constructor that sets the observation */
-AminoAcidState::AminoAcidState(char s) : DiscreteCharacterState() {
+AminoAcidState::AminoAcidState(const std::string &s) : DiscreteCharacterState()
+{
     
     setState(s);
 }
 
 
 /* Equals comparison */
-bool AminoAcidState::operator==(const CharacterState& x) const {
+bool AminoAcidState::operator==(const CharacterState& x) const
+{
     
     const AminoAcidState* derivedX = static_cast<const AminoAcidState*>(&x);
     if ( derivedX != NULL ) {
@@ -45,20 +33,24 @@ bool AminoAcidState::operator==(const CharacterState& x) const {
 
 
 /* Not equals comparison */
-bool AminoAcidState::operator!=(const CharacterState& x) const {
+bool AminoAcidState::operator!=(const CharacterState& x) const
+{
     
     return !operator==(x);
 }
 
 
-bool AminoAcidState::operator<(const CharacterState &x) const {
+bool AminoAcidState::operator<(const CharacterState &x) const
+{
     
     const AminoAcidState* derivedX = static_cast<const AminoAcidState*>(&x);
-    if ( derivedX != NULL ) {
+    if ( derivedX != NULL )
+    {
         unsigned int myState = state;
         unsigned int yourState = derivedX->state;
         
-        while ( (myState & 1) == ( yourState & 1 )  ) {
+        while ( (myState & 1) == ( yourState & 1 )  )
+        {
             myState >>= 1;
             yourState >>= 1;
         }
@@ -106,25 +98,37 @@ void AminoAcidState::operator-=( int i )
     stateIndex -= i;
 }
 
-void AminoAcidState::addState(char symbol)
+void AminoAcidState::addState(const std::string &symbol)
 {
-    state |= computeState( symbol );
+    
+    // check if the state was previously set
+    if ( state == 0x00000 ) // it was not set
+    {
+        setState( symbol ); // this will also set the stateIndex
+    }
+    else // it was set
+    {
+        state |= computeState( symbol ); // we cannot have two indices
+    }
+    
 }
 
 
 /* Clone object */
-AminoAcidState* AminoAcidState::clone(void) const {
+AminoAcidState* AminoAcidState::clone(void) const
+{
     
-	return  new AminoAcidState( *this );
+	return new AminoAcidState( *this );
 }
 
 
-unsigned int AminoAcidState::computeState(char symbol) const {
+unsigned int AminoAcidState::computeState(const std::string &symbol) const
+{
     /* A R N D C Q E G H I L K M F P S T W Y V */
-    symbol = char( toupper( symbol ) );
+    char s = char( toupper( symbol[0] ) );
     
     
-    switch ( symbol ) {
+    switch ( s ) {
         case '-':
             return 0x00000;
         case 'A':
@@ -174,22 +178,26 @@ unsigned int AminoAcidState::computeState(char symbol) const {
 }
 
 
-std::string AminoAcidState::getDatatype( void ) const {
+std::string AminoAcidState::getDatatype( void ) const
+{
     return "Protein";
 }
 
 
-unsigned int AminoAcidState::getNumberObservedStates( void ) const {
+unsigned int AminoAcidState::getNumberObservedStates( void ) const
+{
     return 1;
 }
 
 
-size_t AminoAcidState::getNumberOfStates( void ) const {
+size_t AminoAcidState::getNumberOfStates( void ) const
+{
     return 20;
 }
 
 
-unsigned long AminoAcidState::getState( void ) const {
+unsigned long AminoAcidState::getState( void ) const
+{
     return state;
 }
 
@@ -198,7 +206,8 @@ size_t AminoAcidState::getStateIndex( void ) const
     return stateIndex;
 }
 
-const std::string& AminoAcidState::getStateLabels( void ) const {
+const std::string& AminoAcidState::getStateLabels( void ) const
+{
     
     static const std::string stateLabels = "ARNDCQEGHILKMFPSTWYV";
    
@@ -273,18 +282,19 @@ bool AminoAcidState::isAmbiguous( void ) const
     return getNumberObservedStates() > 1;
 }
 
-void AminoAcidState::setState(size_t pos, bool val)
+void AminoAcidState::setStateByIndex(size_t index)
 {
     
-    unsigned x = (unsigned)val << pos;
+    stateIndex = index;
     
-//    state &= ((unsigned int)val) << pos;
-    state ^= x;
-    stateIndex = pos;
+    // compute the state from the index
+    state = 0x1;
+    state <<= (index-1);
+    
 }
 
 
-void AminoAcidState::setState(char symbol)
+void AminoAcidState::setState(const std::string &symbol)
 {
     state = computeState( symbol );
     
