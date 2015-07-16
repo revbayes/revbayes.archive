@@ -807,7 +807,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
     {
         // create the character
         charType c;
-        c.setState(childState[i]->getState(), 1);
+        c.setState( std::string(1, childState[i]->getState() ) );
         taxa[nodeIndex].addCharacter( c );
     }
         

@@ -26,7 +26,7 @@ namespace RevBayesCore {
     
     public:
                                         RnaState(void);                                     //!< Default constructor
-                                        RnaState(char s);                                   //!< Constructor with nucleotide observation
+                                        RnaState(const std::string &s);                     //!< Constructor with nucleotide observation
     
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality
@@ -41,7 +41,7 @@ namespace RevBayesCore {
         RnaState*                       clone(void) const;                                  //!< Get a copy of this object
     
         // Discrete character observation functions
-        void                            addState(char symbol);                              //!< Add a character state to the set of character states
+        void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
         std::string                     getDatatype(void) const;                            //!< Get the datatype as a common string.
         unsigned int                    getNumberObservedStates(void) const;                //!< How many states are observed for the character
         const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
@@ -50,12 +50,13 @@ namespace RevBayesCore {
         unsigned long                   getState(void) const;                               //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
         bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
-        void                            setState(char symbol);                              //!< Set the discrete observation
-        void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
+        void                            setStateByIndex(size_t index);                      //!< Set the discrete observation
+        void                            setState(const std::string &symbol);                //!< Set the discrete observation
+//        void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
     
     private:
-        char                            computeState(char symbol) const;                    //!< Compute the internal state value for this character.
+        char                            computeState(const std::string &symbol) const;      //!< Compute the internal state value for this character.
     
         char                            state;
         size_t                          stateIndex;

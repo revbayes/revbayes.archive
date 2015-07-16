@@ -274,19 +274,21 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
             if (charblock->IsGapState(origTaxIndex, *cit) == true)
             {
                 aaState.setGapState(true);
-                aaState.setState('-');
+                aaState.setState("-");
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                aaState.setState('?');
+                aaState.setState("?");
                 aaState.setMissingState(true);
             }
             else
             {
                 size_t nStates = charblock->GetNumStates(origTaxIndex, *cit);
-                aaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                aaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                 for(unsigned s=1; s<nStates; s++)
-                    aaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                {
+                    aaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                }
             }
             dataVec.addCharacter( aaState );
         }
@@ -335,7 +337,7 @@ NonHomologousDiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAm
         for (size_t i=0; i<rowDataAsString.size(); i++)
         {
             AminoAcidState aaState;
-            aaState.setState(rowDataAsString[i]);
+            aaState.setState( std::string(1, rowDataAsString[i] ) );
             dataVec.addCharacter( aaState );
         }
         
@@ -478,7 +480,7 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
-        {
+    {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
@@ -491,34 +493,36 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
-            {
+        {
             // add the character state to the matrix
             DnaState dnaState;
             bool isResolved = true;
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
-                {
-                dnaState.setState('-');
+            {
+                dnaState.setState("-");
                 dnaState.setGapState(true);
                 isResolved = false;
-                }
+            }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
-                {
-                dnaState.setState('?');
+            {
+                dnaState.setState("?");
                 dnaState.setMissingState(true);
                 isResolved = false;
-                }
-            else
-                {
-                dnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
-                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                    dnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
-                }
-            dataVec.addCharacter(dnaState, isResolved);
             }
+            else
+            {
+                dnaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
+                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                {
+                    dnaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                }
+            }
+            dataVec.addCharacter(dnaState, isResolved);
+        }
         
         // add sequence to character matrix
         cMat->addTaxonData( dataVec );
-        }
+    }
     
     setExcluded( charblock, cMat );
     
@@ -560,7 +564,7 @@ NonHomologousDiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatri
         for (size_t i=0; i<rowDataAsString.size(); i++)
         {
             DnaState dnaState;
-            dnaState.setState(rowDataAsString[i]);
+            dnaState.setState( std::string(1, rowDataAsString[i] ) );
             dataVec.addCharacter( dnaState );
         }
         
@@ -616,18 +620,20 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
             {
                 rnaState.setGapState(true);
-                rnaState.setState('-');
+                rnaState.setState("-");
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                rnaState.setState('?');
+                rnaState.setState("?");
                 rnaState.setMissingState(true);
             }
             else
             {
-                rnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                rnaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                    rnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                {
+                    rnaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                }
             }
             dataVec.addCharacter( rnaState );
         }
@@ -676,7 +682,7 @@ NonHomologousDiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatri
         for (size_t i=0; i<rowDataAsString.size(); i++)
         {
             RnaState rnaState;
-            rnaState.setState(rowDataAsString[i]);
+            rnaState.setState( std::string(1, rowDataAsString[i] ) );
             dataVec.addCharacter( rnaState );
         }
         
@@ -752,9 +758,11 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
             {
                 for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
-                    stdState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                    stdState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                     for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                        stdState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                    {
+                        stdState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                    }
                 }
             }
             dataVec.addCharacter( stdState );
