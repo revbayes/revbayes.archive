@@ -352,6 +352,13 @@ bool ContinuousCharacterData::isConstant( void ) const
 }
 
 
+bool ContinuousCharacterData::isModelObject( void ) const
+{
+    
+    return true;
+}
+
+
 void ContinuousCharacterData::makeConstantValue( void )
 {
     

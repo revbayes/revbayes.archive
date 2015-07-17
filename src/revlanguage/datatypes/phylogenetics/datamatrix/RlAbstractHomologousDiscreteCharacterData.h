@@ -41,29 +41,30 @@ namespace RevLanguage {
         virtual RevPtr<RevVariable>                             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
       
         AbstractHomologousDiscreteCharacterData*                concatenate(const RevObject& d) const;                                                  //!< Concatenate two sequences
-        AbstractHomologousDiscreteCharacterData*                concatenate(const AbstractHomologousDiscreteCharacterData& d) const;                              //!< Concatenate two sequences
+        AbstractHomologousDiscreteCharacterData*                concatenate(const AbstractHomologousDiscreteCharacterData& d) const;                    //!< Concatenate two sequences
         
         
         // Basic utility functions you should not have to override
-        bool                                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
-        bool                                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
-        void                                                    makeConstantValue(void);                                                    //!< Convert to constant object
-        void                                                    makeConversionValue(RevPtr<RevVariable> var);                                  //!< Convert to conversion object
-        AbstractHomologousDiscreteCharacterData*                makeIndirectReference(void);                                                //!< Make reference to object
-        void                                                    makeUserFunctionValue(UserFunction* fxn);                                   //!< Convert to user-defined Rev function object
-        void                                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
-        void                                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
-        void                                                    replaceVariable(RevObject *newVar);                                         //!< Replace the internal DAG node (and prepare to replace me...)
+        bool                                                    isAssignable(void) const;                                                               //!< Is object or upstream members assignable?
+        bool                                                    isConstant(void) const;                                                                 //!< Is this variable and the internally stored deterministic node constant?
+        bool                                                    isModelObject(void) const;                                                              //!< Is this object a model object. Yes, so we return true.
+        void                                                    makeConstantValue(void);                                                                //!< Convert to constant object
+        void                                                    makeConversionValue(RevPtr<RevVariable> var);                                           //!< Convert to conversion object
+        AbstractHomologousDiscreteCharacterData*                makeIndirectReference(void);                                                            //!< Make reference to object
+        void                                                    makeUserFunctionValue(UserFunction* fxn);                                               //!< Convert to user-defined Rev function object
+        void                                                    setDagNode(RevBayesCore::DagNode *newNode);                                             //!< Set or replace the internal dag node (and keep me)
+        void                                                    setName(const std::string &n);                                                          //!< Set the name of the variable (if applicable)
+        void                                                    replaceVariable(RevObject *newVar);                                                     //!< Replace the internal DAG node (and prepare to replace me...)
         
         // Getters and setters
-        RevBayesCore::TypedDagNode<valueType>*                  getDagNode(void) const;                                                     //!< Get the internal DAG node
-        virtual const valueType&                                getValue(void) const;                                                       //!< Get the value (const)
-        virtual valueType&                                      getValue(void);                                                             //!< Get the value (non-const)
-        void                                                    setValue(valueType *x);                                                        //!< Set new constant value
+        RevBayesCore::TypedDagNode<valueType>*                  getDagNode(void) const;                                                                 //!< Get the internal DAG node
+        virtual const valueType&                                getValue(void) const;                                                                   //!< Get the value (const)
+        virtual valueType&                                      getValue(void);                                                                         //!< Get the value (non-const)
+        void                                                    setValue(valueType *x);                                                                 //!< Set new constant value
 
     protected:
 
-        void                                                    printValue(std::ostream& o) const;                                          //!< Print value for user
+        void                                                    printValue(std::ostream& o) const;                                                      //!< Print value for user
 
         RevBayesCore::TypedDagNode<valueType>*                  dagNode;
 
