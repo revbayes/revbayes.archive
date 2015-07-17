@@ -97,6 +97,11 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
+    // add the DAG node member methods
+    // note that this is a sage case because all DAG nodes are member objects
+    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+    methods.insertInheritedMethods( dagMethods );
+    
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
