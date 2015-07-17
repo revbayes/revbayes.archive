@@ -35,7 +35,7 @@ namespace RevLanguage {
         ModelObject&                            operator=(const ModelObject& x);                                            //!< Assignment operator
         
         // The value type definition
-        typedef rbType valueType;
+        typedef rbType                          valueType;
        
         // Basic utility functions you have to override
         virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
