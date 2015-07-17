@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DelimitedCharacterDataReader.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "Ellipsis.h"
 #include "Func_readCharacterDataDelimited.h"
 #include "NaturalNumbersState.h"
@@ -9,7 +9,7 @@
 #include "RlString.h"
 #include "StringUtilities.h"
 #include "RlContinuousCharacterData.h"
-#include "RlDiscreteCharacterData.h"
+#include "RlHomologousDiscreteCharacterData.h"
 #include "RlNaturalNumbersState.h"
 #include "RlStandardState.h"
 
@@ -60,7 +60,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     {
         
         // setup a matrix of NaturalNumbers states
-        RevBayesCore::DiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::DiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
+        RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
         
         // get data from file
         RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
@@ -89,7 +89,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-        DiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new DiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
         
         return new RevVariable( rlCoreStates );
         
@@ -98,7 +98,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     {
     
         // setup a matrix of NaturalNumbers states
-        RevBayesCore::DiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::DiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
+        RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
         
         // get data from file
         RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
@@ -130,7 +130,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-        DiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new DiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
         
         return new RevVariable( rlCoreStates );
         
@@ -139,7 +139,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     {
         
         // setup a matrix of NaturalNumbers states
-        RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreStates = new RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState>();
+        RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreStates = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState>();
         
         // get data from file
         RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
@@ -168,7 +168,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-        DiscreteCharacterData<RevLanguage::StandardState> *rlCoreStates = new DiscreteCharacterData<RevLanguage::StandardState>( coreStates );
+        HomologousDiscreteCharacterData<RevLanguage::StandardState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::StandardState>( coreStates );
         
         return new RevVariable( rlCoreStates );
         

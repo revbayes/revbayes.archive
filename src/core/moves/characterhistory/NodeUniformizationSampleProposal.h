@@ -11,7 +11,7 @@
 
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
 #include "DistributionPoisson.h"
 #include "PathUniformizationSampleProposal.h"
@@ -50,8 +50,8 @@ namespace RevBayesCore {
     class NodeUniformizationSampleProposal : public Proposal {
         
     public:
-        NodeUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
-        NodeUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
         
@@ -118,7 +118,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -149,7 +149,7 @@ sampleSiteIndexSet(true)
 
 
 template<class charType, class treeType>
-RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, PathUniformizationSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -525,7 +525,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType, treeType>::swapNod
     
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {

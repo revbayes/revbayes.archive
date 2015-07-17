@@ -1,7 +1,7 @@
 #ifndef NonHomologousDiscreteCharacterData_H
 #define NonHomologousDiscreteCharacterData_H
 
-#include "NonHomologousCharacterData.h"
+#include "AbstractNonHomologousDiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
 #include "MatrixReal.h"
 #include "DiscreteTaxonData.h"
@@ -26,7 +26,7 @@ namespace RevBayesCore {
      * @since 2013-04-15, version 1.0
      */
     template<class charType>
-    class NonHomologousDiscreteCharacterData : public NonHomologousCharacterData {
+    class NonHomologousDiscreteCharacterData : public AbstractNonHomologousDiscreteCharacterData {
         
     public:
                                                             NonHomologousDiscreteCharacterData(void);                                   //!< Default constructor
@@ -132,7 +132,7 @@ template<class charType>
 const charType& RevBayesCore::NonHomologousDiscreteCharacterData<charType>::getCharacter( size_t tn, size_t cn ) const
 {
     
-    if ( cn >= getNumberOfCharacters() )
+    if ( cn >= getNumberOfCharacters(tn) )
     {
         throw RbException( "Character index out of range" );
     }

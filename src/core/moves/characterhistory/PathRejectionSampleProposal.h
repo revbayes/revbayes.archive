@@ -11,7 +11,7 @@
 
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
@@ -47,7 +47,7 @@ namespace RevBayesCore {
     class PathRejectionSampleProposal : public Proposal {
         
     public:
-        PathRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
+        PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -70,7 +70,7 @@ namespace RevBayesCore {
         void                            fillStateCounts(std::vector<CharacterEvent*> s, unsigned* counts);
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
         
@@ -107,7 +107,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
+RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
@@ -517,7 +517,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::swapNodeInte
 {
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {

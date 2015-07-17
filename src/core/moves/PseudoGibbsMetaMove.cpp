@@ -14,7 +14,7 @@
 
 using namespace RevBayesCore;
 
-PseudoGibbsMetaMove::PseudoGibbsMetaMove(const Move* m, AbstractDiscreteCharacterData* d, const size_t numOfSubsets) {
+PseudoGibbsMetaMove::PseudoGibbsMetaMove(const Move* m, AbstractHomologousDiscreteCharacterData* d, const size_t numOfSubsets) {
     
 	move = m;
 	data = d;

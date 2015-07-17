@@ -37,7 +37,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sne=false, bool ste=true);
+        TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<treeType> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sne=false, bool ste=true);
         
         // new TreeCharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t"));
         
@@ -69,7 +69,7 @@ namespace RevBayesCore {
         std::fstream                        outStream;
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>* variable;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>* variable;
         TypedDagNode<treeType>*             tree;
         std::set<DagNode *>                 nodeVariables;
         std::string                         filename;
@@ -89,7 +89,7 @@ namespace RevBayesCore {
 
 /* Constructor */
 template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType>* t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sne, bool ste) :
+RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<treeType>* t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sne, bool ste) :
 Monitor(g,t),
 outStream(),
 variable(s),
@@ -637,7 +637,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::swapNode
     }
     else if (oldN == variable)
     {
-        variable = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN);
+        variable = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN);
     }
 
     // delegate to base class

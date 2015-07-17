@@ -22,7 +22,7 @@
 #include "AminoAcidState.h"
 #include "AbstractCharacterData.h"
 #include "ContinuousCharacterData.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DnaState.h"
 #include "ncl.h"
 #include "NonHomologousDiscreteCharacterData.h"
@@ -79,11 +79,11 @@ namespace RevBayesCore {
         
     private:
         
-        DiscreteCharacterData<AminoAcidState>*                  createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
+        HomologousDiscreteCharacterData<AminoAcidState>*        createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         ContinuousCharacterData*                                createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
-        DiscreteCharacterData<DnaState>*                        createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
-        DiscreteCharacterData<RnaState>*                        createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
-        DiscreteCharacterData<StandardState>*                   createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data
+        HomologousDiscreteCharacterData<DnaState>*              createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
+        HomologousDiscreteCharacterData<RnaState>*              createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
+        HomologousDiscreteCharacterData<StandardState>*         createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data
         NonHomologousDiscreteCharacterData<AminoAcidState>*     createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock);                   //!< Create an object to hold amino acid data
         NonHomologousDiscreteCharacterData<DnaState>*           createUnalignedDnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold DNA data
         NonHomologousDiscreteCharacterData<RnaState>*           createUnalignedRnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold RNA data

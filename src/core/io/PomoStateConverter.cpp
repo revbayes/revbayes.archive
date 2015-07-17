@@ -29,11 +29,11 @@ PomoStateConverter::PomoStateConverter( void )
  * This function concverts a DNA matrix into a PomoState matrix of given virtualPopulationSize,
  * using the given mapping between sequence name and species name.
  */
-DiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
-                                                                                const AbstractDiscreteCharacterData &d,
+HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
+                                                                                const AbstractHomologousDiscreteCharacterData &d,
                                                                                 const unsigned int virtualPopulationSize,
                                                                                 const std::map<std::string, std::string> sequenceNameToSpeciesName) {
-    DiscreteCharacterData<PomoState>* data = new DiscreteCharacterData<PomoState> ();
+    HomologousDiscreteCharacterData<PomoState>* data = new HomologousDiscreteCharacterData<PomoState> ();
     //First, build a vector of frequencies according to the Pomo model
     std::vector<double> tempFreq (5, 0.0);
     std::vector< std::vector<double> > frequencies ( 4+ (virtualPopulationSize-1) * 6, tempFreq);
@@ -151,28 +151,32 @@ PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
     
     //First, normalize the counts vector
     double sum = 0.0;
-    for (size_t i = 0 ; i < counts.size(); ++i) {
+    for (size_t i = 0 ; i < counts.size(); ++i)
+    {
       //  std::cout << counts[i] << ",";
         sum += counts[i];
     }
     //std::cout << "  ";
-    for (size_t i = 0 ; i < counts.size(); ++i) {
+    for (size_t i = 0 ; i < counts.size(); ++i)
+    {
         counts[i] /= sum;
        // std::cout << counts[i] << ",";
     }
     //If the site is all gaps
     if (counts[4] == 1.0) {
         PomoState* pol = new PomoState();
-        pol->setState((size_t)0);
+        pol->setStateByIndex((size_t)0);
         return pol;
     }
     //Now, compare the counts vector to the frequencies vector, to find the most alike frequency.
     size_t index=0;
     double minDiff = 10000000000;
     double diff = 0.0;
-    for (size_t i = 0 ; i < frequencies.size(); ++i) {
+    for (size_t i = 0 ; i < frequencies.size(); ++i)
+    {
         diff=0.0;
-        for (size_t j = 0 ; j < counts.size(); ++j) {
+        for (size_t j = 0 ; j < counts.size(); ++j)
+        {
             diff += (frequencies[i][j] -counts[j]) * (frequencies[i][j] -counts[j]);
         }
         if (diff < minDiff) {
@@ -184,7 +188,7 @@ PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
         }
     }
     PomoState* pol = new PomoState(virtualPopulationSize);
-    pol->setState((size_t) (index+1) );
+    pol->setStateByIndex((size_t) (index+1) );
  //   std::cout << "  "<<pol->getStringValue() <<std::endl;;
     return pol;
 }

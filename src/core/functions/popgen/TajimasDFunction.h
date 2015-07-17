@@ -1,7 +1,7 @@
 #ifndef TajimasDFunction_H
 #define TajimasDFunction_H
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -23,20 +23,20 @@ namespace RevBayesCore {
     class TajimasDFunction : public TypedFunction<double> {
         
     public:
-        TajimasDFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a);
-        virtual                                                ~TajimasDFunction(void);                                                    //!< Virtual destructor
+        TajimasDFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a);
+        virtual                                                        ~TajimasDFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        TajimasDFunction*                                      clone(void) const;                                                              //!< Create an independent clone
-        void                                                    update(void);
+        TajimasDFunction*                                               clone(void) const;                                                              //!< Create an independent clone
+        void                                                            update(void);
         
     protected:
-        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaDng parameters
+        void                                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaDng parameters
         
     private:
         
         // members
-        const TypedDagNode< AbstractDiscreteCharacterData >*    alignment;
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >*  alignment;
         
     };
     
