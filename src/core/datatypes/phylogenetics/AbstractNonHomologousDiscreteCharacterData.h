@@ -29,8 +29,10 @@ namespace RevBayesCore {
      */
     class AbstractNonHomologousDiscreteCharacterData : public NonHomologousCharacterData {
         
+        
     public:
-        virtual                                    ~AbstractNonHomologousDiscreteCharacterData(void) {}
+        
+        virtual                                                    ~AbstractNonHomologousDiscreteCharacterData(void) {}
         
         // Overloaded operators
         virtual const AbstractTaxonData&                            operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
@@ -39,29 +41,14 @@ namespace RevBayesCore {
         virtual AbstractNonHomologousDiscreteCharacterData*         clone(void) const = 0;
         
         // CharacterData functions
-//        virtual AbstractNonHomologousDiscreteCharacterData&         concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate data matrices
-//        virtual AbstractNonHomologousDiscreteCharacterData&         concatenate(const NonHomologousCharacterData &d) = 0;                          //!< Concatenate two sequences
-//        virtual AbstractNonHomologousDiscreteCharacterData&         concatenate(const AbstractNonHomologousDiscreteCharacterData &d) = 0;                    //!< Concatenate data matrices
-//        virtual MatrixReal                                          computeStateFrequencies(void) const = 0;                                    //!< Compute the state frequencies for this character data object
-//        virtual void                                                excludeCharacter(size_t i) = 0;                                             //!< Exclude character
         virtual const DiscreteCharacterState&                       getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
         virtual std::string                                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
-//        virtual std::vector<double>                                 getEmpiricalBaseFrequencies(void) const = 0;                                //!< Compute the empirical base frequencies
         virtual std::vector<size_t>                                 getNumberOfCharacters(void) const = 0;                                                              //!< Number of characters
         virtual size_t                                              getNumberOfCharacters(size_t i) const = 0;                                                          //!< Number of characters
-//        virtual size_t                                              getNumberOfSegregatingSites(void) const = 0;                                //!< Compute the number of segregating sites
-//        virtual size_t                                              getNumberOfStates(void) const = 0;                                          //!< Get the number of states for the characters in this matrix
-//        virtual size_t                                              getNumberOfInvariantSites(void) const = 0;                                  //!< Number of invariant sites
-//        virtual double                                              getPaiwiseSequenceDifference(void) const = 0;                               //!< Get the average pairwise sequence distance.
         virtual AbstractDiscreteTaxonData&                          getTaxonData(size_t tn) = 0;                                                //!< Return a reference to a sequence in the character matrix
         virtual const AbstractDiscreteTaxonData&                    getTaxonData(size_t tn) const = 0;                                          //!< Return a reference to a sequence in the character matrix
         virtual AbstractDiscreteTaxonData&                          getTaxonData(const std::string &tn) = 0;                                    //!< Return a reference to a sequence in the character matrix
         virtual const AbstractDiscreteTaxonData&                    getTaxonData(const std::string &tn) const = 0;                              //!< Return a reference to a sequence in the character matrix
-//        virtual bool                                                isCharacterExcluded(size_t i) const = 0;                                    //!< Is the character excluded
-//        virtual bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const = 0;                  //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
-//        virtual bool                                                isCharacterResolved(const std::string &tn, size_t chIdx) const = 0;         //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
-//        virtual void                                                removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters
-//        virtual void                                                restoreCharacter(size_t i) = 0;                                             //!< Restore character
         
     protected:
         AbstractNonHomologousDiscreteCharacterData() {}                                          //!< Constructor requires character type

@@ -130,6 +130,11 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
     MethodTable charDataMethods = getCharacterDataMethods();
     methods.insertInheritedMethods( charDataMethods );
     
+    // add the DAG node member methods
+    // note that this is a sage case because all DAG nodes are member objects
+    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+    methods.insertInheritedMethods( dagMethods );
+    
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
