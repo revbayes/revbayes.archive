@@ -65,7 +65,7 @@
 
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
 #include "RlAbstractCharacterData.h"
-#include "RlDiscreteCharacterData.h"
+#include "RlHomologousDiscreteCharacterData.h"
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
@@ -488,8 +488,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_unifPositive() ) );
         
         
-        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<TimeTree>() ) );
-        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<BranchLengthTree>() ) );
+        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMC<TimeTree>() ) );
+        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMC<BranchLengthTree>() ) );
 
 
     }

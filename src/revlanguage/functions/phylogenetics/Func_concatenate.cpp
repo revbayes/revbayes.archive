@@ -3,7 +3,7 @@
 #include "Ellipsis.h"
 #include "Func_concatenate.h"
 #include "RbException.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
@@ -30,15 +30,15 @@ Func_concatenate* Func_concatenate::clone( void ) const
 RevPtr<RevVariable> Func_concatenate::execute( void )
 {
     
-    const AbstractDiscreteCharacterData& a = static_cast<const AbstractDiscreteCharacterData &>( args[0].getVariable()->getRevObject() );
-    const AbstractDiscreteCharacterData& b = static_cast<const AbstractDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
+    const AbstractHomologousDiscreteCharacterData& a = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[0].getVariable()->getRevObject() );
+    const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
     
-    AbstractDiscreteCharacterData* d = a.concatenate( b );
+    AbstractHomologousDiscreteCharacterData* d = a.concatenate( b );
     for (size_t i = 2; i < args.size(); ++i)
     {
-        const AbstractDiscreteCharacterData& c = static_cast<const AbstractDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
+        const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
         
-        AbstractDiscreteCharacterData* tmp = d->concatenate( c );
+        AbstractHomologousDiscreteCharacterData* tmp = d->concatenate( c );
         delete d;
         
         d = tmp;
@@ -58,9 +58,9 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "a", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "v", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis( AbstractDiscreteCharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "v", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new Ellipsis( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

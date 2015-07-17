@@ -1,8 +1,8 @@
 #ifndef Dist_phyloDACTMC_H
 #define Dist_phyloDACTMC_H
 
-#include "AbstractDiscreteCharacterData.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlRateMap.h"
 #include "RlTypedDistribution.h"
 #include "RlSimplex.h"
@@ -11,7 +11,7 @@
 namespace RevLanguage {
     
     template <class treeType>
-    class Dist_phyloDACTMC :  public TypedDistribution< AbstractDiscreteCharacterData > {
+    class Dist_phyloDACTMC :  public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
         
     public:
         Dist_phyloDACTMC( void );
@@ -29,7 +29,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >*      createDistribution(void) const;
+        RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >*      createDistribution(void) const;
         
     protected:
         
@@ -62,7 +62,7 @@ namespace RevLanguage {
 
 
 template <class treeType>
-RevLanguage::Dist_phyloDACTMC<treeType>::Dist_phyloDACTMC() : TypedDistribution< AbstractDiscreteCharacterData >() {
+RevLanguage::Dist_phyloDACTMC<treeType>::Dist_phyloDACTMC() : TypedDistribution< AbstractHomologousDiscreteCharacterData >() {
     
 }
 
@@ -80,7 +80,7 @@ RevLanguage::Dist_phyloDACTMC<treeType>* RevLanguage::Dist_phyloDACTMC<treeType>
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* RevLanguage::Dist_phyloDACTMC<treeType>::createDistribution( void ) const {
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >* RevLanguage::Dist_phyloDACTMC<treeType>::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
@@ -89,7 +89,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
     size_t nChars = rm->getValue().getNumberOfCharacters();
     
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData > *d = NULL;
+    RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
     
     if ( dt == "DNA" )
     {
@@ -223,7 +223,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getTypeSpe
 //    methods.addFunction("printBranchHistory", new DistributionMemberFunction<Dist_phyloDACTMC<treeType>, Natural>( this, argRules ) );
 //    
 //    // Insert inherited methods
-//    methods.insertInheritedMethods( TypedDistribution<AbstractDiscreteCharacterData>::makeMethods() );
+//    methods.insertInheritedMethods( TypedDistribution<AbstractHomologousDiscreteCharacterData>::makeMethods() );
 //    
 //    return methods;
 //}

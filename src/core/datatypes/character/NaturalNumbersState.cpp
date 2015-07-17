@@ -112,17 +112,11 @@ void NaturalNumbersState::operator-=( int i )
 }
 
 
-void NaturalNumbersState::addState(std::string symbol)
+void NaturalNumbersState::addState(const std::string &symbol)
 {
     
     state = computeState( symbol );
     
-}
-
-void NaturalNumbersState::addState(char symbol)
-{
-    
-    state = computeState( boost::lexical_cast<std::string>( symbol )  );
 }
 
 
@@ -133,7 +127,7 @@ NaturalNumbersState* NaturalNumbersState::clone( void ) const
 }
 
 
-int NaturalNumbersState::computeState(std::string symbol) const
+int NaturalNumbersState::computeState(const std::string &symbol) const
 {
 	
 	if (symbol == "-" || symbol == "?")
@@ -221,26 +215,20 @@ bool NaturalNumbersState::isAmbiguous( void ) const
 }
 
 
-void NaturalNumbersState::setState(size_t pos, bool val) {
-    
-    throw RbException( "setState(size_t pos, bool val) is not implemented in NaturalNumbersState" );
-}
-
-void NaturalNumbersState::setState(std::string symbol) {
+void NaturalNumbersState::setState(const std::string &symbol)
+{
     state = computeState( symbol ) ;
 }
 
 
-void NaturalNumbersState::setState(char symbol) {
-    state = computeState(  boost::lexical_cast<std::string>(symbol) ) ;
-}
-
-void NaturalNumbersState::setState(size_t stateIndex) {
+void NaturalNumbersState::setStateByIndex(size_t stateIndex)
+{
     state = (int)stateIndex;
 }
 
 
-void NaturalNumbersState::setToFirstState( void ) {
+void NaturalNumbersState::setToFirstState( void )
+{
     
     state = 0;
     

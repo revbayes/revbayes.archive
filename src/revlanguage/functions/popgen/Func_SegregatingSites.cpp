@@ -1,6 +1,6 @@
 #include "SegregatingSitesFunction.h"
 #include "Func_SegregatingSites.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
@@ -24,7 +24,7 @@ Func_SegregatingSites* Func_SegregatingSites::clone( void ) const
 RevBayesCore::TypedFunction< int >* Func_SegregatingSites::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData >* d = static_cast<const AbstractDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::SegregatingSitesFunction* f = new RevBayesCore::SegregatingSitesFunction( d );
     
     return f;
@@ -41,7 +41,7 @@ const ArgumentRules& Func_SegregatingSites::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "data", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "data", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
         rulesSet = true;
     }

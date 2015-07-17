@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType> *t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<treeType> *t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor& f);
         
@@ -59,7 +59,7 @@ namespace RevBayesCore {
         std::fstream                            outStream;
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>*  variable;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  variable;
         TypedDagNode<treeType>*                 tree;
         const TimeAtlas*                        timeAtlas;
         std::set<DagNode *>                     nodeVariables;
@@ -96,7 +96,7 @@ namespace RevBayesCore {
 
 /* Constructor */
 template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType>* t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<treeType>* t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
 Monitor(g,t),
 outStream(),
 variable( s ),
@@ -447,7 +447,7 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::swapNode(
     }
     else if ( oldN == variable )
     {
-        variable = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN);
+        variable = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN);
         found = true;
     }
     

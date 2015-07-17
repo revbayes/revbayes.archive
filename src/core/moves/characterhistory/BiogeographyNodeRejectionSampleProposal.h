@@ -13,7 +13,7 @@
 #include "BiogeographicCladoEvent.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
 #include "DistributionPoisson.h"
 #include "BiogeographyPathRejectionSampleProposal.h"
@@ -53,8 +53,8 @@ namespace RevBayesCore {
     class BiogeographyNodeRejectionSampleProposal : public Proposal {
         
     public:
-        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
-        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         
         // Basic utility functions
@@ -78,7 +78,7 @@ namespace RevBayesCore {
         
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
         
@@ -134,7 +134,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -188,7 +188,7 @@ useTail(false)
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -928,7 +928,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {

@@ -1,6 +1,6 @@
 #include "TajimasPiFunction.h"
 #include "Func_TajimasPi.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
@@ -25,7 +25,7 @@ Func_TajimasPi* Func_TajimasPi::clone( void ) const
 RevBayesCore::TypedFunction< double >* Func_TajimasPi::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData >* d = static_cast<const AbstractDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::Boolean >* ps = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TajimasPiFunction* f = new RevBayesCore::TajimasPiFunction( d, ps->getValue() );
     
@@ -43,7 +43,7 @@ const ArgumentRules& Func_TajimasPi::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "data",    AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "data",    AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "perSite", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;

@@ -68,7 +68,7 @@
 
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
 #include "RlAbstractCharacterData.h"
-#include "RlDiscreteCharacterData.h"
+#include "RlHomologousDiscreteCharacterData.h"
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
@@ -139,7 +139,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         
         
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
-        AddWorkspaceVectorType<AbstractDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractDiscreteCharacterData() );
+        AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
 		AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );

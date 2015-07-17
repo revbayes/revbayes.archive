@@ -10,7 +10,7 @@
 #include "Func_pomoStateConverter.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
 #include "PomoStateConverter.h"
@@ -33,7 +33,7 @@ Func_pomoStateConverter* Func_pomoStateConverter::clone( void ) const {
 
 RevPtr<RevVariable> Func_pomoStateConverter::execute() {
     
-    const RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData>* aln = static_cast<const AbstractDiscreteCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* aln = static_cast<const AbstractHomologousDiscreteCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
@@ -49,9 +49,9 @@ RevPtr<RevVariable> Func_pomoStateConverter::execute() {
         gene2species[it->getName()] = it->getSpeciesName();
     }
     
-    AbstractDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
+    AbstractHomologousDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
         
-    return new RevVariable( new AbstractDiscreteCharacterData( PomoAln ) );
+    return new RevVariable( new AbstractHomologousDiscreteCharacterData( PomoAln ) );
 }
 
 
@@ -64,9 +64,9 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                      , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                                , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()                     , ArgumentRule::BY_VALUE ) );
 
         rulesSet = true;
     }
@@ -94,7 +94,7 @@ const TypeSpec& Func_pomoStateConverter::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = AbstractDiscreteCharacterData::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
     
     return returnTypeSpec;
 }

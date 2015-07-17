@@ -701,7 +701,7 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType, treeType>::drawAnce
         {
 			
 			// randomly draw state if all states have 0 probability
-			c.setState((size_t)(u*c.getNumberOfStates()));
+			c.setStateByIndex((size_t)(u*c.getNumberOfStates()));
 			
 		}
         else

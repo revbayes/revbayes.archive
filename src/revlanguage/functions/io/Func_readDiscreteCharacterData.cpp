@@ -1,7 +1,7 @@
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "Ellipsis.h"
 #include "Func_readDiscreteCharacterData.h"
 #include "ModelVector.h"
@@ -11,7 +11,7 @@
 #include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlAminoAcidState.h"
-#include "RlDiscreteCharacterData.h"
+#include "RlHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
@@ -66,7 +66,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void ) {
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     // the vector of matrices;
-    ModelVector<AbstractDiscreteCharacterData> *m = new ModelVector<AbstractDiscreteCharacterData>();
+    ModelVector<AbstractHomologousDiscreteCharacterData> *m = new ModelVector<AbstractHomologousDiscreteCharacterData>();
     
     // the return value
     RevObject* retVal = NULL;
@@ -129,26 +129,26 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void ) {
                 
                 if ( dType == "DNA" )
                     {
-                    RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-                    DiscreteCharacterData<DnaState> mDNA = DiscreteCharacterData<DnaState>( coreM );
+                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
+                    HomologousDiscreteCharacterData<DnaState> mDNA = HomologousDiscreteCharacterData<DnaState>( coreM );
                     m->push_back( mDNA );
                     }
                 else if ( dType == "RNA" )
                     {
-                    RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
-                    DiscreteCharacterData<RnaState> mRNA = DiscreteCharacterData<RnaState>( coreM );
+                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
+                    HomologousDiscreteCharacterData<RnaState> mRNA = HomologousDiscreteCharacterData<RnaState>( coreM );
                     m->push_back( mRNA );
                     }
                 else if ( dType == "Protein" )
                     {
-                    RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
-                    DiscreteCharacterData<AminoAcidState> mAA = DiscreteCharacterData<AminoAcidState>( coreM );
+                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
+                    HomologousDiscreteCharacterData<AminoAcidState> mAA = HomologousDiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                     }
                 else if ( dType == "Standard" )
                     {
-                    RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
-                    DiscreteCharacterData<StandardState> mSS = DiscreteCharacterData<StandardState>( coreM );
+                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
+                    HomologousDiscreteCharacterData<StandardState> mSS = HomologousDiscreteCharacterData<StandardState>( coreM );
                     m->push_back( mSS );
                     }
                 else
@@ -233,7 +233,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void ) {
             // set the return value
             if ( returnAsVector == false )
                 {
-                retVal = new AbstractDiscreteCharacterData( (*m)[0] );
+                retVal = new AbstractHomologousDiscreteCharacterData( (*m)[0] );
                 delete m;
                 }
             else
@@ -331,7 +331,7 @@ const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readDiscreteCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = ModelVector<AbstractDiscreteCharacterData>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

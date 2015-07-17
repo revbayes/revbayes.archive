@@ -1,4 +1,4 @@
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "ArgumentRule.h"
 #include "MemberProcedure.h"
 #include "ModelVector.h"
@@ -11,9 +11,9 @@
 
 using namespace RevLanguage;
 
-AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
-    ModelObject<RevBayesCore::AbstractDiscreteCharacterData>(),
-    HomologousCharacterData( NULL )
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(void) :
+    HomologousCharacterData( NULL ),
+    dagNode( NULL )
 {
     
     ArgumentRules* chartypeArgRules            = new ArgumentRules();
@@ -39,10 +39,52 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData(void) :
 }
 
 
-AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::AbstractDiscreteCharacterData *d) :
-    ModelObject<RevBayesCore::AbstractDiscreteCharacterData>( d ),
-    HomologousCharacterData( NULL )
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( const RevBayesCore::AbstractHomologousDiscreteCharacterData &d) :
+    HomologousCharacterData( NULL ),
+    dagNode( new ConstantNode<valueType>("",d.clone()) )
 {
+    
+    // increment the reference count to the value
+    dagNode->incrementReferenceCount();
+    
+    // set the internal value pointer
+    setCharacterDataObject( &this->getDagNode()->getValue() );
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
+    
+    ArgumentRules* chartypeArgRules            = new ArgumentRules();
+    ArgumentRules* ishomologousArgRules        = new ArgumentRules();
+    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
+    ArgumentRules* invSitesArgRules            = new ArgumentRules();
+    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
+    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
+    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
+    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    
+    
+    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
+    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
+    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
+    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
+    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
+    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
+    
+}
+
+
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::AbstractHomologousDiscreteCharacterData *d) :
+    HomologousCharacterData( NULL ),
+    dagNode( new ConstantNode<valueType>("",d) )
+{
+    
+    // increment the reference count to the value
+    dagNode->incrementReferenceCount();
+    
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
@@ -73,10 +115,14 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::Abst
 }
 
 
-AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore::AbstractDiscreteCharacterData &d) :
-    ModelObject<RevBayesCore::AbstractDiscreteCharacterData>( d.clone() ),
-    HomologousCharacterData( NULL )
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData> *d) :
+    HomologousCharacterData( NULL ),
+    dagNode( d )
 {
+    
+    // increment the reference count to the value
+    dagNode->incrementReferenceCount();
+    
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
@@ -107,44 +153,73 @@ AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( const RevBayesCore
 }
 
 
-AbstractDiscreteCharacterData::AbstractDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData> *d) :
-    ModelObject<RevBayesCore::AbstractDiscreteCharacterData>( d ),
-    HomologousCharacterData( NULL )
+AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(const AbstractHomologousDiscreteCharacterData &d) :
+    HomologousCharacterData( d ),
+    dagNode( NULL )
 {
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
+    if ( d.dagNode != NULL )
+    {
+        
+        dagNode = d.dagNode->clone();
+        
+        // increment the reference count to the value
+        dagNode->incrementReferenceCount();
+    }
     
-    ArgumentRules* chartypeArgRules            = new ArgumentRules();
-    ArgumentRules* ishomologousArgRules        = new ArgumentRules();
-    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
-    ArgumentRules* invSitesArgRules            = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
-    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    
-    
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
-    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
-    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
+}
 
+
+AbstractHomologousDiscreteCharacterData::~AbstractHomologousDiscreteCharacterData()
+{
+    
+    // free the old value
+    if ( dagNode != NULL )
+    {
+        if ( dagNode->decrementReferenceCount() == 0 )
+        {
+            delete dagNode;
+        }
+    }
+}
+
+
+AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData::operator=(const AbstractHomologousDiscreteCharacterData &v) {
+    
+    if ( this != &v )
+    {
+        // delegate to base class
+        HomologousCharacterData::operator=( v );
+        
+        // free the old value
+        if ( dagNode != NULL )
+        {
+            if ( dagNode->decrementReferenceCount() == 0 )
+            {
+                delete dagNode;
+            }
+            
+            dagNode = NULL;
+        }
+        
+        // create own copy
+        if ( v.dagNode != NULL )
+        {
+            dagNode = v.dagNode->clone();
+            
+            // increment the reference count to the value
+            dagNode->incrementReferenceCount();
+        }
+    }
+    
+    return *this;
 }
 
 
 
-AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const RevObject &d) const
+AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d) const
 {
-    const AbstractDiscreteCharacterData* tmp = dynamic_cast<const AbstractDiscreteCharacterData*>( &d );
+    const AbstractHomologousDiscreteCharacterData* tmp = dynamic_cast<const AbstractHomologousDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
         return concatenate( *tmp );
@@ -157,9 +232,9 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const 
 
 
 
-AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const AbstractDiscreteCharacterData &d) const
+AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d) const
 {
-    AbstractDiscreteCharacterData* cloneObj = clone();
+    AbstractHomologousDiscreteCharacterData* cloneObj = clone();
 
     // we need to make this a constant DAG node so that we can actually modify the value
     // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
@@ -174,15 +249,22 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::concatenate(const 
 
 
 
-AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::clone() const
+AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::clone() const
 {
-    return new AbstractDiscreteCharacterData( *this );
+    return new AbstractHomologousDiscreteCharacterData( *this );
 }
 
 
 /* Map calls to member methods */
-RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    
+    RevPtr<RevVariable> retVal = dynamic_cast<RevMemberObject *>( dagNode )->executeMethod(name, args, found);
+    
+    if ( found == true )
+    {
+        return retVal;
+    }
     
     if ( this->getDagNode() != NULL )
     {
@@ -190,7 +272,7 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
         setCharacterDataObject( &this->getDagNode()->getValue() );
     }
     
-    RevPtr<RevVariable> retVal = executeCharacterDataMethod(name, args, found);
+    retVal = executeCharacterDataMethod(name, args, found);
     
     if ( found == true )
     {
@@ -201,7 +283,7 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
         found = true;
         
         const RevObject& argument = args[0].getVariable()->getRevObject();
-        RevBayesCore::AbstractDiscreteCharacterData &v = dagNode->getValue();
+        RevBayesCore::AbstractHomologousDiscreteCharacterData &v = dagNode->getValue();
         size_t nChars = v.getNumberOfCharacters();
         
         // e.g. data.setCodonPartition(sites=v(3))
@@ -258,7 +340,7 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
         found = true;
         
         const RevObject& argument = args[0].getVariable()->getRevObject();
-        RevBayesCore::AbstractDiscreteCharacterData &v = dagNode->getValue();
+        RevBayesCore::AbstractHomologousDiscreteCharacterData &v = dagNode->getValue();
         size_t nChars = v.getNumberOfCharacters();
         size_t nTaxa = v.getNumberOfTaxa();
         
@@ -316,34 +398,253 @@ RevPtr<RevVariable> AbstractDiscreteCharacterData::executeMethod(std::string con
         return new RevVariable( new Natural(n) );
     }
     
-    return ModelObject<RevBayesCore::AbstractDiscreteCharacterData>::executeMethod( name, args, found );
+    return HomologousCharacterData::executeMethod( name, args, found );
 }
 
 
 /* Get Rev type of object */
-const std::string& AbstractDiscreteCharacterData::getClassType(void)
+const std::string& AbstractHomologousDiscreteCharacterData::getClassType(void)
 {
     
-    static std::string revType = "AbstractDiscreteCharacterData";
+    static std::string revType = "AbstractHomologousDiscreteCharacterData";
     
     return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& AbstractDiscreteCharacterData::getClassTypeSpec(void)
+const TypeSpec& AbstractHomologousDiscreteCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( HomologousCharacterData::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
 
+RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* AbstractHomologousDiscreteCharacterData::getDagNode( void ) const
+{
+    
+    return dagNode;
+}
+
+
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
-const TypeSpec& AbstractDiscreteCharacterData::getTypeSpec(void) const {
+const TypeSpec& AbstractHomologousDiscreteCharacterData::getTypeSpec(void) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
 }
 
 
+const RevBayesCore::AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData::getValue( void ) const
+{
+    
+    if ( dagNode == NULL )
+    {
+        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
+    }
+    
+    return dagNode->getValue();
+}
+
+
+RevBayesCore::AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData::getValue( void )
+{
+    
+    if ( dagNode == NULL )
+    {
+        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
+    }
+    
+    return dagNode->getValue();
+}
+
+
+/**
+ * Is the object or any of its upstream members or elements
+ * modifiable by the user through assignment? We simply ask
+ * our DAG node.
+ */
+bool AbstractHomologousDiscreteCharacterData::isAssignable( void ) const
+{
+    if ( dagNode == NULL )
+    {
+        return false;
+    }
+    
+    return dagNode->isAssignable();
+}
+
+
+bool AbstractHomologousDiscreteCharacterData::isConstant( void ) const
+{
+    
+    return dagNode->isConstant();
+}
+
+
+void AbstractHomologousDiscreteCharacterData::makeConstantValue( void )
+{
+    
+    if ( dagNode == NULL )
+    {
+        throw RbException("Cannot convert a variable without value to a constant value.");
+    }
+    else if ( dagNode->getDagNodeType() != RevBayesCore::DagNode::CONSTANT )
+    {
+        RevBayesCore::ConstantNode<valueType>* newNode = new ConstantNode<valueType>(dagNode->getName(), RevBayesCore::Cloner<valueType, IsDerivedFrom<valueType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
+        dagNode->replace(newNode);
+        
+        // delete the value if there are no other references to it.
+        if ( dagNode->decrementReferenceCount() == 0 )
+        {
+            delete dagNode;
+        }
+        
+        dagNode = newNode;
+        
+        // increment the reference counter
+        dagNode->incrementReferenceCount();
+    }
+    
+}
+
+
+/**
+ * Make an indirect reference to the variable. This is appropriate for the contexts
+ * where the object occurs on the righ-hand side of expressions like a := b
+ */
+AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::makeIndirectReference(void)
+{
+    //    IndirectReferenceNode< RevLanguage::ModelObject<rbType> >* newNode = new IndirectReferenceNode< RevLanguage::ModelObject<rbType> >( "", this->getDagNode() );
+    
+    RevBayesCore::IndirectReferenceFunction< valueType > *func = new RevBayesCore::IndirectReferenceFunction<valueType>( this->getDagNode() );
+    RevBayesCore::DeterministicNode< valueType >* newNode = new RevBayesCore::DeterministicNode< valueType >( "", func );
+    
+    AbstractHomologousDiscreteCharacterData* newObj = this->clone();
+    
+    const std::set<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
+    while ( !mvs.empty() )
+    {
+        newObj->getDagNode()->removeMove( *mvs.begin() );
+    }
+    
+    newObj->setDagNode( newNode );
+    
+    return newObj;
+}
+
+
+/** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
+void AbstractHomologousDiscreteCharacterData::makeUserFunctionValue( UserFunction* fxn )
+{
+    UserFunctionNode< AbstractHomologousDiscreteCharacterData >*  detNode = new UserFunctionNode< AbstractHomologousDiscreteCharacterData >( "", fxn );
+    
+    // Signal replacement and delete the value if there are no other references to it.
+    if ( dagNode != NULL )
+    {
+        dagNode->replace( detNode );
+        if ( dagNode->decrementReferenceCount() == 0 )
+            delete dagNode;
+    }
+    
+    // Shift the actual node
+    dagNode = detNode;
+    
+    // Increment the reference counter
+    dagNode->incrementReferenceCount();
+}
+
+
+/**
+ * Print value for user. The DAG node pointer may be NULL, in which
+ * case we print "NA".
+ */
+void AbstractHomologousDiscreteCharacterData::printValue(std::ostream &o) const
+{
+    if ( dagNode == NULL )
+    {
+        o << "NA";
+    }
+    else
+    {
+        dagNode->printValue( o );
+    }
+    
+}
+
+
+/** Copy name of variable onto DAG node, if it is not NULL */
+void AbstractHomologousDiscreteCharacterData::setName(std::string const &n)
+{
+    if ( dagNode != NULL )
+    {
+        dagNode->setName( n );
+    }
+    
+}
+
+
+/**
+ * Set dag node. We also accommodate the possibility of setting the DAG node to null.
+ */
+void AbstractHomologousDiscreteCharacterData::setDagNode(RevBayesCore::DagNode* newNode)
+{
+    
+    // Take care of the old value node
+    if ( dagNode != NULL )
+    {
+        if ( newNode != NULL )
+        {
+            newNode->setName( dagNode->getName() );
+        }
+        
+        dagNode->replace(newNode);
+        
+        if ( dagNode->decrementReferenceCount() == 0 )
+        {
+            delete dagNode;
+        }
+        
+    }
+    
+    // Set the new value node
+    dagNode = static_cast< RevBayesCore::TypedDagNode<valueType>* >( newNode );
+    
+    // Increment the reference count to the new value node
+    if ( dagNode != NULL )
+    {
+        dagNode->incrementReferenceCount();
+    }
+    
+}
+
+
+void AbstractHomologousDiscreteCharacterData::setValue(valueType *x)
+{
+    
+    RevBayesCore::ConstantNode<valueType>* newNode;
+    
+    if ( dagNode == NULL )
+    {
+        newNode = new ConstantNode<valueType>("",x);
+    }
+    else
+    {
+        newNode = new ConstantNode<valueType>(dagNode->getName(),x);
+        dagNode->replace(newNode);
+        
+        if ( dagNode->decrementReferenceCount() == 0 )
+        {
+            delete dagNode;
+        }
+        
+    }
+    
+    dagNode = newNode;
+    
+    // increment the reference count to the value
+    dagNode->incrementReferenceCount();
+    
+}

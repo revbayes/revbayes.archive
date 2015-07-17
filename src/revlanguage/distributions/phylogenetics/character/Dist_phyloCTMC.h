@@ -1,15 +1,15 @@
 #ifndef Dist_phyloCTMC_H
 #define Dist_phyloCTMC_H
 
-#include "AbstractDiscreteCharacterData.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
 
 namespace RevLanguage {
     
     template <class treeType>
-    class Dist_phyloCTMC :  public TypedDistribution< AbstractDiscreteCharacterData > {
+    class Dist_phyloCTMC :  public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
         
     public:
         Dist_phyloCTMC( void );
@@ -25,7 +25,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >*      createDistribution(void) const;
+        RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >*      createDistribution(void) const;
         
     protected:
         
@@ -62,7 +62,7 @@ namespace RevLanguage {
 #include "NaturalNumbersState.h"
 
 template <class treeType>
-RevLanguage::Dist_phyloCTMC<treeType>::Dist_phyloCTMC() : TypedDistribution< AbstractDiscreteCharacterData >()
+RevLanguage::Dist_phyloCTMC<treeType>::Dist_phyloCTMC() : TypedDistribution< AbstractHomologousDiscreteCharacterData >()
 {
     
 }
@@ -85,7 +85,7 @@ RevLanguage::Dist_phyloCTMC<treeType>* RevLanguage::Dist_phyloCTMC<treeType>::cl
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* RevLanguage::Dist_phyloCTMC<treeType>::createDistribution( void ) const
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >* RevLanguage::Dist_phyloCTMC<treeType>::createDistribution( void ) const
 {
     
     // get the parameters
@@ -107,7 +107,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData >* 
         pInvNode = static_cast<const Probability &>( pInv->getRevObject() ).getDagNode();
     }
     
-    RevBayesCore::TypedDistribution< RevBayesCore::AbstractDiscreteCharacterData > *d = NULL;
+    RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
     if ( rootFrequencies->getRevObject() != RevNullObject::getInstance() )
     {

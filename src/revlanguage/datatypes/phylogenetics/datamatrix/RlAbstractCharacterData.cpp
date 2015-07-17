@@ -232,6 +232,27 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
 
 
 
+
+/* Get Rev type of object */
+const std::string& AbstractCharacterData::getClassType(void)
+{
+    
+    static std::string revType = "AbstractCharacterData";
+    
+    return revType;
+}
+
+/* Get class type spec describing type of object */
+const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
+{
+    
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    
+    return revTypeSpec;
+}
+
+
+
 void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
 {
     
