@@ -42,6 +42,7 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         bool                                                    isAssignable(void) const;                                                               //!< Is object or upstream members assignable?
         bool                                                    isConstant(void) const;                                                                 //!< Is this variable and the internally stored deterministic node constant?
+        bool                                                    isModelObject(void) const;                                                              //!< Is this object a model object. Yes, so we return true.
         void                                                    makeConstantValue(void);                                                                //!< Convert to constant object
         void                                                    makeConversionValue(RevPtr<RevVariable> var);                                           //!< Convert to conversion object
         AbstractNonHomologousDiscreteCharacterData*             makeIndirectReference(void);                                                            //!< Make reference to object

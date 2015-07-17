@@ -484,6 +484,13 @@ bool AbstractHomologousDiscreteCharacterData::isConstant( void ) const
 }
 
 
+bool AbstractHomologousDiscreteCharacterData::isModelObject( void ) const
+{
+    
+    return true;
+}
+
+
 void AbstractHomologousDiscreteCharacterData::makeConstantValue( void )
 {
     

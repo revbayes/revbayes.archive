@@ -289,6 +289,13 @@ bool AbstractNonHomologousDiscreteCharacterData::isConstant( void ) const
 }
 
 
+bool AbstractNonHomologousDiscreteCharacterData::isModelObject( void ) const
+{
+    
+    return true;
+}
+
+
 void AbstractNonHomologousDiscreteCharacterData::makeConstantValue( void )
 {
     
