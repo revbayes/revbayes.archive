@@ -12,11 +12,6 @@ CoalaFunction::CoalaFunction(const TypedDagNode< RbVector<double> > *coords, con
 }
 
 
-CoalaFunction::CoalaFunction(const CoalaFunction &n) : TypedFunction< RbVector<double> >( n ), coordinates( n.coordinates ), coa( n.coa ), colWeights( n.colWeights ) {
-    // no need to add parameters, happens automatically
-}
-
-
 CoalaFunction::~CoalaFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
