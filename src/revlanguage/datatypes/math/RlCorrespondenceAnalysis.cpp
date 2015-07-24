@@ -2,6 +2,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "CorrespondenceAnalysis.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -18,6 +19,12 @@ using namespace RevLanguage;
 CorrespondenceAnalysis::CorrespondenceAnalysis() : WorkspaceToCoreWrapperObject<RevBayesCore::CorrespondenceAnalysis>()
 {
     
+    // Add methods
+    ArgumentRules* columnWeightsArgRules = new ArgumentRules();
+    ArgumentRules* principalAxesArgRules = new ArgumentRules();
+    
+    methods.addFunction("columnWeights", new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(), columnWeightsArgRules ) );
+    methods.addFunction("principalAxes", new MemberProcedure(MatrixReal::getClassTypeSpec()          , principalAxesArgRules ) );
 }
 
 
@@ -47,17 +54,22 @@ void CorrespondenceAnalysis::constructInternalObject( void )
 RevPtr<RevVariable> CorrespondenceAnalysis::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-//    if (name == "graph")
-//    {
-//        found = true;
-//        
-//        const std::string&   fn      = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-//        bool vb = static_cast< const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
-//        const std::string&   bg      = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
-//        printCorrespondenceAnalysisDotGraph(fn, vb, bg);
-//        
-//        return NULL;
-//    }
+    if ( name == "columnWeights" )
+    {
+        found = true;
+        
+        const std::vector<double> &w = value->getColumnWeights();
+        
+        return new RevVariable( new ModelVector<RealPos>( w ) );
+    }
+    else if ( name == "principalAxes" )
+    {
+        found = true;
+        
+        const RevBayesCore::MatrixReal &m = value->getPrincipalAxes();
+        
+        return new RevVariable( new MatrixReal( m ) );
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
