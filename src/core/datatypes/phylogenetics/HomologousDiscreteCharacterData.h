@@ -33,17 +33,17 @@ namespace RevBayesCore {
         
         // Overloaded operators
         const DiscreteTaxonData<charType>&                  operator[](size_t i) const;                                                 //!< Subscript operator (const)
-        bool                                                operator<(const HomologousDiscreteCharacterData& x) const;                            //!< Less than operator
+        bool                                                operator<(const HomologousDiscreteCharacterData& x) const;                  //!< Less than operator
         
         // implemented methods of the Cloneable interface
         HomologousDiscreteCharacterData<charType>*                    clone(void) const;
         
         // CharacterData functions
         MatrixReal                                          computeStateFrequencies(void) const;
-        HomologousDiscreteCharacterData&                              concatenate(const HomologousDiscreteCharacterData &d);                                //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                              concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                              concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                              concatenate(const AbstractHomologousDiscreteCharacterData &d);                        //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const HomologousDiscreteCharacterData &d);                      //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const AbstractCharacterData &d);                                //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const AbstractHomologousDiscreteCharacterData &d);              //!< Concatenate data matrices
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
@@ -132,6 +132,81 @@ bool RevBayesCore::HomologousDiscreteCharacterData<charType>::operator<(const Ho
     
     return sequenceNames.size() < x.sequenceNames.size();
 }
+
+
+
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the object.
+ */
+template<class charType>
+RevBayesCore::HomologousDiscreteCharacterData<charType>* RevBayesCore::HomologousDiscreteCharacterData<charType>::clone( void ) const
+{
+    
+    return new HomologousDiscreteCharacterData<charType>(*this);
+}
+
+
+
+/**
+ * Compute the state frequencies per site.
+ *
+ * \return       A matrix of site frequencies where each column is a site a each row the frequency of a character.
+ */
+template<class charType>
+RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>::computeStateFrequencies( void ) const
+{
+    
+    charType tmp;
+    size_t alphabetSize = tmp.getNumberOfStates();
+    size_t numSequences = this->sequenceNames.size();
+    MatrixReal m(numSequences,alphabetSize);
+    for (size_t i = 0; i < numSequences; ++i)
+    {
+        const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
+        size_t l = seq.size();
+        double nonGapSeqLength = 0.0;
+        std::vector<double> stateCounts(alphabetSize);
+        for (size_t j = 0; j < l; ++j)
+        {
+            const charType& c = seq[j];
+            
+            if ( !c.isGapState() )
+            {
+                nonGapSeqLength++;
+                
+                unsigned long state = c.getState();
+                double numObservedStates = c.getNumberObservedStates();
+                
+                size_t index = 0;
+                do
+                {
+                    
+                    if ( (state & 1) == 1 )
+                    {
+                        // add a uniform probability of having observed each of the ambiguous characters
+                        stateCounts[index] += 1.0 / numObservedStates;
+                    }
+                    state >>= 1;
+                    ++index;
+                } while ( state != 0 );
+            }
+        } // finished loop over sequence
+        
+        // set the observed state frequencies for this sequence into the matrix
+        std::vector<double> &observedFreqs = m[i];
+        for (size_t j = 0; j < alphabetSize; ++j)
+        {
+            observedFreqs[j] = stateCounts[j] / nonGapSeqLength;
+        }
+    }
+    
+    return m;
+}
+
 
 
 /**
@@ -245,78 +320,6 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
     
     // return a reference to this object
     return *this;
-}
-
-
-
-
-/**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
- *
- * \return A new copy of the object. 
- */
-template<class charType>
-RevBayesCore::HomologousDiscreteCharacterData<charType>* RevBayesCore::HomologousDiscreteCharacterData<charType>::clone( void ) const 
-{
-    
-    return new HomologousDiscreteCharacterData<charType>(*this);
-}
-
-
-
-/**
- * Compute the state frequencies per site.
- *
- * \return       A matrix of site frequencies where each column is a site a each row the frequency of a character.
- */
-template<class charType>
-RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>::computeStateFrequencies( void ) const 
-{
-    
-    charType tmp;
-    size_t alphabetSize = tmp.getNumberOfStates();
-    size_t numSequences = this->sequenceNames.size();
-    MatrixReal m(numSequences,alphabetSize);
-    for (size_t i = 0; i < numSequences; ++i) 
-    {
-        const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
-        size_t l = seq.size();
-        double nonGapSeqLength = 0.0;
-        std::vector<double> stateCounts(alphabetSize);
-        for (size_t j = 0; j < l; ++j) 
-        {
-            const charType& c = seq[j];
-            
-            if ( !c.isGapState() ) 
-            {
-                nonGapSeqLength++;
-                
-                unsigned long state = c.getState();
-                double numObservedStates = c.getNumberObservedStates();
-                
-                size_t index = 0;
-                do 
-                {
-                    
-                    if ( (state & 1) == 1 ) {
-                        // add a uniform probability of having observed each of the ambiguous characters
-                        stateCounts[index] += 1.0 / numObservedStates;
-                    }
-                    state >>= 1;
-                    ++index;
-                } while ( state != 0 );
-            }
-        } // finished loop over sequence
-        
-        // set the observed state frequencies for this sequence into the matrix
-        std::vector<double> &observedFreqs = m[i];
-        for (size_t j = 0; j < alphabetSize; ++j) {
-            observedFreqs[j] = stateCounts[j] / nonGapSeqLength;
-        }
-    }
-    
-    return m;
 }
 
 
