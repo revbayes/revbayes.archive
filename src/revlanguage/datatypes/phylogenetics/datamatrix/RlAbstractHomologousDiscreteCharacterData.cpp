@@ -1,5 +1,6 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "ArgumentRule.h"
+#include "RlMatrixReal.h"
 #include "MemberProcedure.h"
 #include "ModelVector.h"
 #include "Natural.h"
@@ -16,25 +17,7 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
     dagNode( NULL )
 {
     
-    ArgumentRules* chartypeArgRules            = new ArgumentRules();
-    ArgumentRules* ishomologousArgRules        = new ArgumentRules();
-    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
-    ArgumentRules* invSitesArgRules            = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
-    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
-    setCodonPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule("", ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    
-    
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
-    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
-    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
+    initMethods();
 
 }
 
@@ -50,29 +33,7 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
-    
-    ArgumentRules* chartypeArgRules            = new ArgumentRules();
-    ArgumentRules* ishomologousArgRules        = new ArgumentRules();
-    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
-    ArgumentRules* invSitesArgRules            = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
-    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    
-    
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
-    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
-    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
+    initMethods();
     
 }
 
@@ -88,29 +49,7 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
-    
-    ArgumentRules* chartypeArgRules            = new ArgumentRules();
-    ArgumentRules* ishomologousArgRules        = new ArgumentRules();
-    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
-    ArgumentRules* invSitesArgRules            = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
-    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    
-    
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
-    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
-    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
+    initMethods();
 
 }
 
@@ -126,34 +65,7 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
     // set the internal value pointer
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
-    // insert the character data specific methods
-    MethodTable charDataMethods = getCharacterDataMethods();
-    methods.insertInheritedMethods( charDataMethods );
-    
-    // add the DAG node member methods
-    // note that this is a sage case because all DAG nodes are member objects
-    const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
-    methods.insertInheritedMethods( dagMethods );
-    
-    ArgumentRules* chartypeArgRules            = new ArgumentRules();
-    ArgumentRules* ishomologousArgRules        = new ArgumentRules();
-    ArgumentRules* empiricalBaseArgRules       = new ArgumentRules();
-    ArgumentRules* invSitesArgRules            = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
-    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
-    ArgumentRules* setNumStatesPartitionArgRules   = new ArgumentRules();
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(  new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    
-    
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
-    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
-    methods.addFunction("setNumStatesPartition",   new MemberProcedure(RlUtils::Void,        setNumStatesPartitionArgRules  ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-    methods.addFunction("getEmpiricalBaseFrequencies", new MemberProcedure(Simplex::getClassTypeSpec(),     empiricalBaseArgRules       ) );
-    methods.addFunction("getNumInvariantSites", new MemberProcedure(Natural::getClassTypeSpec(),     invSitesArgRules       ) );
+    initMethods();
 
 }
 
@@ -282,6 +194,14 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     if ( found == true )
     {
         return retVal;
+    }
+    else if (name == "computeStateFrequencies")
+    {
+        found = true;
+        
+        RevBayesCore::MatrixReal sf = this->dagNode->getValue().computeStateFrequencies();
+        
+        return new RevVariable( new MatrixReal(sf) );
     }
     else if (name == "setCodonPartition")
     {
@@ -493,6 +413,38 @@ bool AbstractHomologousDiscreteCharacterData::isModelObject( void ) const
 {
     
     return true;
+}
+
+
+void AbstractHomologousDiscreteCharacterData::initMethods( void )
+{
+    
+    // insert the character data specific methods
+    MethodTable charDataMethods = getCharacterDataMethods();
+    methods.insertInheritedMethods( charDataMethods );
+    
+    ArgumentRules* chartypeArgRules                 = new ArgumentRules();
+    ArgumentRules* compStateFreqArgRules            = new ArgumentRules();
+    ArgumentRules* ishomologousArgRules             = new ArgumentRules();
+    ArgumentRules* empiricalBaseArgRules            = new ArgumentRules();
+    ArgumentRules* invSitesArgRules                 = new ArgumentRules();
+    ArgumentRules* setCodonPartitionArgRules        = new ArgumentRules();
+    ArgumentRules* setCodonPartitionArgRules2       = new ArgumentRules();
+    ArgumentRules* setNumStatesPartitionArgRules    = new ArgumentRules();
+    
+    setCodonPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules2->push_back( new ArgumentRule("", ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    
+    
+    methods.addFunction("chartype",                     new MemberProcedure(RlString::getClassTypeSpec(),   chartypeArgRules                ) );
+    methods.addFunction("computeStateFrequencies",      new MemberProcedure(RlString::getClassTypeSpec(),   compStateFreqArgRules           ) );
+    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                  setCodonPartitionArgRules       ) );
+    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                  setCodonPartitionArgRules2      ) );
+    methods.addFunction("setNumStatesPartition",        new MemberProcedure(RlUtils::Void,                  setNumStatesPartitionArgRules   ) );
+    methods.addFunction("isHomologous",                 new MemberProcedure(RlBoolean::getClassTypeSpec(),  ishomologousArgRules            ) );
+    methods.addFunction("getEmpiricalBaseFrequencies",  new MemberProcedure(Simplex::getClassTypeSpec(),    empiricalBaseArgRules           ) );
+    methods.addFunction("getNumInvariantSites",         new MemberProcedure(Natural::getClassTypeSpec(),    invSitesArgRules                ) );
 }
 
 
