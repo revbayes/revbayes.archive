@@ -9,7 +9,7 @@
 
 namespace RevLanguage {
     
-    class Func_normalize :  public TypedFunction< ModelVector<RealPos> > {
+    class Func_normalize : public TypedFunction< ModelVector<RealPos> > {
         
     public:
         Func_normalize();
