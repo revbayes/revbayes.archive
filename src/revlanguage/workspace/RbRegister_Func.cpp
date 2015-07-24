@@ -227,6 +227,7 @@
 /* Math functions (in folder "functions/math") */
 #include "Func_abs.h"
 #include "Func_ceil.h"
+#include "Func_coala.h"
 #include "Func_diagonalMatrix.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
@@ -463,6 +464,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "ceil",        new Func_ceil<RealPos,Natural>()  );
         addFunction( "ceiling",     new Func_ceil<Real,Integer>()  );
         addFunction( "ceiling",     new Func_ceil<RealPos,Natural>()  );
+        
+        // coala function
+        addFunction( "fnCoala",     new Func_coala()        );
         
         // diagonal matrix
         addFunction( "diag",         new Func_diagonalMatrix() );
