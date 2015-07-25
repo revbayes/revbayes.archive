@@ -59,7 +59,7 @@ namespace RevBayesCore {
         MatrixReal                              operator+(const MatrixReal& B) const;                               //!< operator + 
         MatrixReal                              operator-(const MatrixReal& B) const;                               //!< operator - 
         MatrixReal                              operator*(const MatrixReal& B) const;                               //!< operator * (matrix multiplication) 
-        std::vector<double>                     operator*(const std::vector<double> &b) const;                                          //!< operator * for scalar 
+        std::vector<double>                     operator*(const std::vector<double> &b) const;                      //!< operator * for vector
         
 
 //        std::vector<std::vector<double> >::const_iterator       begin(void) const;
@@ -114,6 +114,8 @@ namespace RevBayesCore {
 //    MatrixReal                            operator*(const MatrixReal& A, double b);                            //!< operator * for matrix * scalar 
 //    MatrixReal                            operator/(const MatrixReal& A, double b);                            //!< operator / for matrix / scalar 
 //    MatrixReal&                           operator/=(MatrixReal& A, double b);                                 //!< operator /= for scalar 
+
+    RbVector<double>                      operator*(const RbVector<double> &a, const MatrixReal& B);                            //!< operator * for scalar * matrix
     
 }
 
