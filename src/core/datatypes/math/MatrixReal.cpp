@@ -1034,6 +1034,26 @@ std::vector<double> MatrixReal::operator*(const std::vector<double> &V) const
 }
 
 
+
+
+
+RbVector<double> RevBayesCore::operator*(const RbVector<double> &a, const MatrixReal& b)
+{
+    size_t nCols = b.getNumberOfColumns();
+    RbVector<double> E(nCols, 0.0);
+    
+    for (unsigned int i = 0; i < nCols; i++)
+    {
+        for (unsigned int j = 0; j < a.size(); j++)
+        {
+            E[i] += b[j][i] * a[j];
+        }
+    }
+    
+    return E;
+}
+
+
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x) {
     
     std::streamsize previousPrecision = o.precision();
