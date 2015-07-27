@@ -68,6 +68,9 @@ namespace RevLanguage {
 
         RevBayesCore::TypedDagNode<valueType>*                  dagNode;
 
+    private:
+        
+        void                                                    initMethods(void);
         
     };
     

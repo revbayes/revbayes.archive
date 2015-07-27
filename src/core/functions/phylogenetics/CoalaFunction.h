@@ -22,7 +22,7 @@
 #ifndef CoalaFunction_H
 #define CoalaFunction_H
 
-#include "CorrespondenceAnalysis.h"
+#include "MatrixReal.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -34,7 +34,6 @@ namespace RevBayesCore {
         
     public:
         CoalaFunction(const TypedDagNode< RbVector<double> > *coords, const MatrixReal &ca, const std::vector<double> & cw);
-        CoalaFunction(const CoalaFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~CoalaFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -47,7 +46,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*           coordinates;
+        const TypedDagNode< RbVector<double> >*             coordinates;
         MatrixReal                                          coa;
         std::vector<double>                                 colWeights;
     };
