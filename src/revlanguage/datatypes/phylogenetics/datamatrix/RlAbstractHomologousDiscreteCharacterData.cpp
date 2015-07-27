@@ -418,6 +418,14 @@ bool AbstractHomologousDiscreteCharacterData::isModelObject( void ) const
 
 void AbstractHomologousDiscreteCharacterData::initMethods( void )
 {
+
+    // add the DAG node member methods
+    // note that this is a sage case because all DAG nodes are member objects
+    if ( dagNode != NULL )
+    {
+        const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+        methods.insertInheritedMethods( dagMethods );
+    }
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
