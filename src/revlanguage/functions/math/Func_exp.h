@@ -21,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-07-27, version 1.0
      *
      */
-    class Func_exp :  public TypedFunction<RealPos> {
+    class Func_exp : public TypedFunction<RealPos> {
         
     public:
         Func_exp( void );

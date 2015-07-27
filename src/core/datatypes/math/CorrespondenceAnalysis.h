@@ -72,7 +72,7 @@ namespace RevBayesCore
         CorrespondenceAnalysis(
                                const MatrixReal& data,
                                unsigned int nbAxes,
-                               double tol = 0.0000001)
+                               double tol)
         throw (RbException);
         
         virtual ~CorrespondenceAnalysis() {}
