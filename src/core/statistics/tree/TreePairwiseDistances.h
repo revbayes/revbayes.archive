@@ -92,10 +92,10 @@ void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode n
 	
 	// For all leaves in node's subtree, get leaf-to-node distances.
 	// Leaves are ordered according to the children of node.
-	std::map<const TopologyNode, std::vector< std::pair<std::string, double> > > leavesDists;
+	std::map< size_t, std::vector< std::pair<std::string, double> > > leavesDists;
 	for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
 	{
-		const TopologyNode child = node.getChild(i);
+		const size_t child = node.getChild(i).getIndex();
 		processDistsInSubtree(child, matrix, leavesDists[child], namesToId); // recursivity
 	}
 	// Write leaf-leaf distances to the distance matrix.
@@ -108,12 +108,12 @@ void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode n
 			const TopologyNode son1 = node.getChild(son1_loc);
 			const TopologyNode son2 = node.getChild(son2_loc);
 			
-			for (std::vector< std::pair<std::string, double> >::iterator son1_leaf = leavesDists[son1].begin();
-				 son1_leaf != leavesDists[son1].end();
+			for (std::vector< std::pair<std::string, double> >::iterator son1_leaf = leavesDists[son1.getIndex()].begin();
+				 son1_leaf != leavesDists[son1.getIndex()].end();
 				 ++son1_leaf)
 			{
-				for (std::vector< std::pair<std::string, double> >::iterator son2_leaf = leavesDists[son2].begin();
-					 son2_leaf != leavesDists[son2].end();
+				for (std::vector< std::pair<std::string, double> >::iterator son2_leaf = leavesDists[son2.getIndex()].begin();
+					 son2_leaf != leavesDists[son2.getIndex()].end();
 					 ++son2_leaf)
 				{
 					int son1_leaf_id = namesToId.at( son1_leaf->first );
@@ -133,8 +133,8 @@ void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode n
 		if (node.isTip() )
 		{
 			std::string root_name = node.getName();
-			for (std::vector< std::pair<std::string, double> >::iterator other_leaf = leavesDists[node.getChild(0)].begin();
-				 other_leaf != leavesDists[node.getChild(0)].end();
+			for (std::vector< std::pair<std::string, double> >::iterator other_leaf = leavesDists[node.getChild(0).getIndex()].begin();
+				 other_leaf != leavesDists[node.getChild(0).getIndex()].end();
 				 ++other_leaf)
 			{
 				matrix [ namesToId.at(root_name) ] [ namesToId.at(other_leaf->first) ]= matrix[ namesToId.at(other_leaf->first) ] [ namesToId.at(root_name) ] = other_leaf->second;
@@ -147,7 +147,7 @@ void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode n
 	// Get distances from node's parent to considered leaves
 	distsToNodeFather.clear();
 	double nodeToFather = node.getBranchLength();
-	for (std::map<const TopologyNode, std::vector<std::pair<std::string, double> > >::iterator son = leavesDists.begin(); son != leavesDists.end(); ++son)
+	for (std::map<const size_t, std::vector<std::pair<std::string, double> > >::iterator son = leavesDists.begin(); son != leavesDists.end(); ++son)
 	{
 		for (std::vector< std::pair<std::string, double> >::iterator leaf = (son->second).begin(); leaf != (son->second).end(); ++leaf)
 		{
@@ -160,14 +160,14 @@ void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode n
 template<class treeType>
 RevBayesCore::MatrixReal* TreePairwiseDistances<treeType>::getDistanceMatrix(const TypedDagNode<treeType>& tree)
 {
-	RevBayesCore::MatrixReal* matrix = new RevBayesCore::MatrixReal( tree->getValue().getNumberOfTips() );
-	std::vector<std::string> names = tree->getValue().getTipNames( ) ;
+	RevBayesCore::MatrixReal* matrix = new RevBayesCore::MatrixReal( tree.getValue().getNumberOfTips() );
+	std::vector<std::string> names = tree.getValue().getTipNames( ) ;
 	std::map< std::string, int > namesToId;
 	for(size_t i = 0; i < names.size(); ++i) {
 		namesToId[ names[i] ] = i;
 	}
 	std::vector< std::pair<std::string, double> > distsToRoot;
-	processDistsInSubtree_(*(tree->getValue().getRoot()), *matrix, distsToRoot, namesToId);
+	processDistsInSubtree( tree.getValue().getRoot() , *matrix, distsToRoot, namesToId);
 	return matrix;
 }
 
@@ -177,7 +177,7 @@ RevBayesCore::MatrixReal* TreePairwiseDistances<treeType>::getDistanceMatrix(con
 template<class treeType>
 void TreePairwiseDistances<treeType>::update( void ) {
 	
-	RevBayesCore::MatrixReal matrix =	getDistanceMatrix( tree );
+	RevBayesCore::MatrixReal matrix =	*(getDistanceMatrix( *tree ) );
     *value = matrix;
 }
 
