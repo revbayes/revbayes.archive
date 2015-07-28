@@ -315,7 +315,8 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "fnPD",                new Func_phyloDiversity<TimeTree>() );
 		
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
-		addFunction( "treePairwiseDistances",        new Func_treePairwiseDistances() );		
+		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances<BranchLengthTree>() );
+		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances<TimeTree>() );
 		
         /* Population genetics functions (in folder "functions/popgen") */
         addFunction( "fnSegregatingSites",  new Func_SegregatingSites() );
