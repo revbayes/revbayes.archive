@@ -251,7 +251,11 @@
 					{
 					// setting up continuous matrix
 					float state = [dataMatrixCell getContinuousState];
-					NSString* stateStr = [NSString localizedStringWithFormat:@"%2.4f", state];
+                    NSString* stateStr;
+                    if ( [dataMatrixCell isAmbig] == YES )
+                        stateStr = [NSString localizedStringWithFormat:@"%c", '-'];
+                    else
+                        stateStr = [NSString localizedStringWithFormat:@"%2.4f", state];
 
 					NSColor* textColor = [NSColor blackColor];
 					NSColor* bkgrndColor = [NSColor grayColor];
@@ -274,6 +278,7 @@
                     if ( [dataMatrixCell isGapState] == YES )
                         state = '-';
 					NSString* stateStr = [NSString localizedStringWithFormat:@"%c", state];
+                    NSLog(@"\"%@\"", stateStr);
 					
 					NSDictionary* colorDict;
 					if ([dataMatrixCell dataType] == DNA || [dataMatrixCell dataType] == RNA)

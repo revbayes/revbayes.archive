@@ -47,22 +47,22 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn );
     if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
-    {
+        {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
-    }
+        }
     
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
     if ( myFileManager.isDirectory() )
-    {
+        {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    }
+        }
     else
-    {
+        {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
-    }
+        }
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
@@ -78,141 +78,141 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
     // that can be read.
     size_t numFilesRead = 0;
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
-    {
+        {
         bool isInterleaved = false;
         std::string myFileType = "unknown";
         std::string dType = "unknown";
         if (reader.isNexusFile(*p) == true)
-        {
+            {
             myFileType = "nexus";
-        }
+            }
         else if (reader.isPhylipFile(*p, dType, isInterleaved) == true)
-        {
+            {
             myFileType = "phylip";
-        }
+            }
         else if (reader.isFastaFile(*p, dType) == true)
-        {
+            {
             myFileType = "fasta";
-        }
+            }
         
-        int numMatricesReadForThisFile=0;
+        int numMatricesReadForThisFile = 0;
         if (myFileType != "unknown")
-        {
+            {
             std::string suffix = "|" + dType;
             if ( myFileType == "phylip" )
-            {
+                {
                 if (isInterleaved == true)
-                {
+                    {
                     suffix += "|interleaved";
-                }
+                    }
                 else
-                {
+                    {
                     suffix += "|noninterleaved";
+                    }
                 }
-            }
             else if ( myFileType == "fasta" )
-            {
+                {
                 suffix += "|noninterleaved";
-            }
+                }
             else
-            {
+                {
                 suffix += "|unknown";
-            }
+                }
             myFileType += suffix;
             
             // read the content of the file now
             std::vector<RevBayesCore::AbstractCharacterData*> m_i = reader.readMatrices( *p, myFileType );
             for (std::vector<RevBayesCore::AbstractCharacterData*>::iterator it = m_i.begin(); it != m_i.end(); it++)
-            {
+                {
                 dType = (*it)->getDatatype();
                 
                 // Assume success; correct below if failure
                 numMatricesReadForThisFile++;
                 
                 if ( (*it)->isHomologyEstablished() == true )
-                {
-                    if ( dType == "DNA" )
                     {
+                    if ( dType == "DNA" )
+                        {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
                         HomologousDiscreteCharacterData<DnaState> mDNA = HomologousDiscreteCharacterData<DnaState>( coreM );
                         m->push_back( mDNA );
-                    }
+                        }
                     else if ( dType == "RNA" )
-                    {
+                        {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
                         HomologousDiscreteCharacterData<RnaState> mRNA = HomologousDiscreteCharacterData<RnaState>( coreM );
                         m->push_back( mRNA );
-                    }
+                        }
                     else if ( dType == "Protein" )
-                    {
+                        {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
                         HomologousDiscreteCharacterData<AminoAcidState> mAA = HomologousDiscreteCharacterData<AminoAcidState>( coreM );
                         m->push_back( mAA );
-                    }
+                        }
                     else if ( dType == "Standard" )
-                    {
+                        {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
                         HomologousDiscreteCharacterData<StandardState> mSS = HomologousDiscreteCharacterData<StandardState>( coreM );
                         m->push_back( mSS );
-                    }
+                        }
                     else if ( dType == "Continuous" )
-                    {
+                        {
                         RevBayesCore::ContinuousCharacterData *coreM = static_cast<RevBayesCore::ContinuousCharacterData *>( *it );
                         ContinuousCharacterData mCC = ContinuousCharacterData (coreM );
                         m->push_back( mCC );
-                    }
+                        }
                     else
-                    {
+                        {
                         numMatricesReadForThisFile--;
                         throw RbException("Unknown data type \"" + dType + "\".");
+                        }
                     }
-                }
                 else
-                {
-                    if ( dType == "DNA" )
                     {
+                    if ( dType == "DNA" )
+                        {
                         RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
                         NonHomologousDiscreteCharacterData<DnaState> mDNA = NonHomologousDiscreteCharacterData<DnaState>( coreM );
                         m->push_back( mDNA );
-                    }
+                        }
                     else if ( dType == "RNA" )
-                    {
+                        {
                         RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
                         NonHomologousDiscreteCharacterData<RnaState> mRNA = NonHomologousDiscreteCharacterData<RnaState>( coreM );
                         m->push_back( mRNA );
-                    }
+                        }
                     else if ( dType == "Protein" )
-                    {
+                        {
                         RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
                         NonHomologousDiscreteCharacterData<AminoAcidState> mAA = NonHomologousDiscreteCharacterData<AminoAcidState>( coreM );
                         m->push_back( mAA );
-                    }
+                        }
                     else if ( dType == "Standard" )
-                    {
+                        {
                         
-                    }
+                        }
                     else if ( dType == "Continuous" )
-                    {
+                        {
                         
-                    }
+                        }
                     else
-                    {
+                        {
                         numMatricesReadForThisFile--;
                         throw RbException("Unknown data type \"" + dType + "\".");
+                        }
                     }
                 }
             }
-        }
         else
-        {
+            {
             reader.addWarning("Unknown file type");
-        }
+            }
         
         if (numMatricesReadForThisFile > 0)
-        {
+            {
             numFilesRead++;
+            }
         }
-    }
     
     // print summary of results of file reading to the user
     if (myFileManager.isDirectory() == true)

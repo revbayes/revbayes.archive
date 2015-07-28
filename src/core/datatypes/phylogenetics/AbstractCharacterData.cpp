@@ -632,7 +632,7 @@ void AbstractCharacterData::setTaxonName(const std::string& currentName, const s
 /**
  * Print the content of the data matrix.
  */
-void AbstractCharacterData::show(std::ostream &out)
+void AbstractCharacterData::show(std::ostream &out) const
 {
     
     size_t nt = this->getNumberOfTaxa();
