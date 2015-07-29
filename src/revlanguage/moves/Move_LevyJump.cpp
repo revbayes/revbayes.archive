@@ -16,7 +16,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
-#include "LevyJumpMove.h"
+#include "LevyJumpProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -69,7 +69,8 @@ void Move_LevyJump::constructInternalObject( void )
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    value = new RevBayesCore::LevyJumpMove(n,d,t,w);
+    RevBayesCore::Proposal *p = new RevBayesCore::LevyJumpProposal(n,d);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
 }
 

@@ -1,7 +1,6 @@
 #ifndef Move_EmpiricalTree_H
 #define Move_EmpiricalTree_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -46,8 +45,9 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "EmpiricalTreeProposal.h"
 #include "ModelVector.h"
-#include "EmpiricalTreeMove.h"
+#include "MetropolisHastingsMove.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -84,7 +84,9 @@ void RevLanguage::Move_EmpiricalTree<rlValueType>::constructInternalObject( void
     RevBayesCore::TypedDagNode<typename rlValueType::valueType>* tmp = static_cast<const rlValueType &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< typename rlValueType::valueType > *t = static_cast<RevBayesCore::StochasticNode< typename rlValueType::valueType > *>( tmp );
     
-    value = new RevBayesCore::EmpiricalTreeMove<typename rlValueType::valueType>(t, w);
+    RevBayesCore::Proposal *p = new RevBayesCore::EmpiricalTreeProposal<typename rlValueType::valueType>( t );
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
+
 }
 
 

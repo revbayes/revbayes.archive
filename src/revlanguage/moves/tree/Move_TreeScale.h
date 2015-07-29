@@ -18,7 +18,6 @@
 #ifndef Move_TreeScale_H
 #define Move_TreeScale_H
 
-#include "TreeScale.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

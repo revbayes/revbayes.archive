@@ -313,12 +313,19 @@ void SpeciesSubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     }
     else
     {
+        size_t num_found_trees = 0;
         for ( size_t i=0; i<geneTrees.size(); ++i )
         {
             if ( oldN == geneTrees[i] )
             {
                 geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                ++num_found_trees;
             }
+        }
+        
+        if ( num_found_trees != 1 )
+        {
+            std::cerr << "Found " << num_found_trees << " DAG nodes matching to node \"" << oldN->getName() << "\".";
         }
     }
     

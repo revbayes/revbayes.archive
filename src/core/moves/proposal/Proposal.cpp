@@ -18,7 +18,7 @@ Proposal::Proposal(const Proposal &p)  :
     nodes( p.nodes )
 {
     
-    for (std::set<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
+    for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
     {
         (*it)->incrementReferenceCount();
     }
@@ -29,13 +29,14 @@ Proposal::Proposal(const Proposal &p)  :
 Proposal::~Proposal( void )
 {
     
-    for (std::set<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        DagNode *theNode = *it;
+        DagNode *theNode = nodes[i];
         if ( theNode->decrementReferenceCount() == 0 )
         {
             delete theNode;
         }
+        
     }
     
 }
@@ -48,22 +49,24 @@ Proposal& Proposal::operator=(const Proposal &p)
     if ( this != &p )
     {
         
-        for (std::set<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
+        for (size_t i = 0; i < nodes.size(); ++i)
         {
-            DagNode *theNode = *it;
+            DagNode *theNode = nodes[i];
             if ( theNode->decrementReferenceCount() == 0 )
             {
                 delete theNode;
             }
+            
         }
         nodes.clear();
         
         nodes = p.nodes;
         
-        for (std::set<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
+        for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
         {
             (*it)->incrementReferenceCount();
         }
+        
     }
     
     return *this;
@@ -74,13 +77,27 @@ Proposal& Proposal::operator=(const Proposal &p)
 /**
  * Add this node to our set of nodes.
  */
-void Proposal::addNode( DagNode *n)
+void Proposal::addNode( DagNode *n )
 {
+    bool exists = false;
     
-    nodes.insert( n );
+    for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
+    {
+        if ( *it == n )
+        {
+            exists = true;
+            break;
+        }
+    }
     
-    // increment reference count
-    n->incrementReferenceCount();
+    // only add the node if it doesn't exist already
+    if ( exists == false )
+    {
+        nodes.push_back( n );
+    
+        // increment reference count
+        n->incrementReferenceCount();
+    }
     
 }
 
@@ -91,7 +108,7 @@ void Proposal::addNode( DagNode *n)
  *
  * \return  Const reference to a vector of nodes pointer on which the proposal operates.
  */
-const std::set<DagNode*>& Proposal::getNodes( void ) const
+const std::vector<DagNode*>& Proposal::getNodes( void ) const
 {
     
     return nodes;
@@ -106,16 +123,20 @@ const std::set<DagNode*>& Proposal::getNodes( void ) const
  */
 void Proposal::removeNode( RevBayesCore::DagNode *n )
 {
-    std::set< DagNode *>::iterator it = nodes.find( n );
-    if ( it != nodes.end() )
+    for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
     {
-        nodes.erase( it );
+        if ( *it == n )
+        {
+            nodes.erase( it );
+            break;
+        }
     }
     
     if ( n->decrementReferenceCount() == 0 )
     {
         delete n;
     }
+    
 }
 
 /**
@@ -124,13 +145,23 @@ void Proposal::removeNode( RevBayesCore::DagNode *n )
  * when we replace a variable with the same name (re-assignment).
  * Here we update our set and delegate to the derived class.
  */
-void Proposal::swapNode(DagNode *oldP, DagNode *newP) {
+void Proposal::swapNode(DagNode *oldP, DagNode *newP)
+{
+    bool exists = false;
     
-    std::set<DagNode *>::iterator position = nodes.find(oldP);
-    if ( position != nodes.end() )
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        nodes.erase( position );
-        nodes.insert( newP );
+        
+        if ( nodes[i] == oldP )
+        {
+            nodes[i] = newP;
+            exists = true;
+            break;
+        }
+    }
+
+    if ( exists == true )
+    {
         swapNodeInternal( oldP, newP );
         
         // increment and decrement the reference counts

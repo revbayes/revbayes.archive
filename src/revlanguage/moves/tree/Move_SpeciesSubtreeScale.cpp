@@ -52,7 +52,7 @@ void Move_SpeciesSubtreeScale::constructInternalObject( void )
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new move
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );

@@ -3,6 +3,7 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_ScalerUpDown.h"
 #include "Natural.h"
@@ -10,27 +11,28 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
-#include "RlTimeTree.h"
-#include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "ScalerUpDownMove.h"
+#include "ScaleUpDownProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_ScalerUpDown::Move_ScalerUpDown() : Move() {
+Move_ScalerUpDown::Move_ScalerUpDown() : Move()
+{
     
 }
 
 /** Clone object */
-Move_ScalerUpDown* Move_ScalerUpDown::clone(void) const {
+Move_ScalerUpDown* Move_ScalerUpDown::clone(void) const
+{
     
 	return new Move_ScalerUpDown(*this);
 }
 
 
-void Move_ScalerUpDown::constructInternalObject( void ) {
+void Move_ScalerUpDown::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -47,12 +49,9 @@ void Move_ScalerUpDown::constructInternalObject( void ) {
 
     bool tv = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-	std::vector<RevBayesCore::DagNode*> valueVec;
-	valueVec.push_back( sv1 );
-	valueVec.push_back( sv2 );
+    RevBayesCore::Proposal *p = new RevBayesCore::ScaleUpDownProposal(sv1, sv2, sf);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,tv);
     
-    
-    value = new RevBayesCore::ScalerUpDownMove(valueVec, sf, tv, w);
 }
 
 

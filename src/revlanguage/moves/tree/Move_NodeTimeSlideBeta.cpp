@@ -1,14 +1,8 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_NodeTimeSlideBeta.h"
+#include "NodeTimeSlideBetaProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -20,19 +14,22 @@
 
 using namespace RevLanguage;
 
-Move_NodeTimeSlideBeta::Move_NodeTimeSlideBeta() : Move() {
+Move_NodeTimeSlideBeta::Move_NodeTimeSlideBeta() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_NodeTimeSlideBeta* Move_NodeTimeSlideBeta::clone(void) const {
+Move_NodeTimeSlideBeta* Move_NodeTimeSlideBeta::clone(void) const
+{
     
 	return new Move_NodeTimeSlideBeta(*this);
 }
 
 
-void Move_NodeTimeSlideBeta::constructInternalObject( void ) {
+void Move_NodeTimeSlideBeta::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -43,7 +40,10 @@ void Move_NodeTimeSlideBeta::constructInternalObject( void ) {
     double o = static_cast<const RealPos &>( offset->getRevObject() ).getValue();
     bool tu = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    value = new RevBayesCore::NodeTimeSlideBeta(t, d, o, tu, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideBetaProposal(t, d, o);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,tu);
+    
 }
 
 

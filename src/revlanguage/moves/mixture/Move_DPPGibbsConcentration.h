@@ -1,7 +1,6 @@
 #ifndef Move_DPPGibbsConcentration_H
 #define Move_DPPGibbsConcentration_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

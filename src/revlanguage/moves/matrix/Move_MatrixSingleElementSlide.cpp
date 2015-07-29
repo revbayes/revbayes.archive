@@ -10,9 +10,9 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
-#include "ContinuousStochasticNode.h"
 #include "MatrixReal.h"
-#include "MatrixRealSingleElementSlidingMove.h"
+#include "MatrixRealSingleElementSlidingProposal.h"
+#include "MetropolisHastingsMove.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
@@ -25,7 +25,8 @@
 
 using namespace RevLanguage;
 
-Move_MatrixSingleElementSlide::Move_MatrixSingleElementSlide() : Move() {
+Move_MatrixSingleElementSlide::Move_MatrixSingleElementSlide() : Move()
+{
     
 }
 
@@ -48,7 +49,10 @@ void Move_MatrixSingleElementSlide::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* tmp = static_cast<const MatrixReal &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    value = new RevBayesCore::MatrixRealSingleElementSlidingMove(n, l, t, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSingleElementSlidingProposal(n,l);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
+
 }
 
 

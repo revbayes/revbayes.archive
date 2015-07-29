@@ -1,15 +1,8 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_VectorFixedSingleElementSlide.h"
 #include "Natural.h"
@@ -19,23 +12,26 @@
 #include "RevObject.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "VectorFixedSingleElementSlidingMove.h"
+#include "VectorFixedSingleElementSlideProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_VectorFixedSingleElementSlide::Move_VectorFixedSingleElementSlide() : Move() {
+Move_VectorFixedSingleElementSlide::Move_VectorFixedSingleElementSlide() : Move()
+{
     
 }
 
 /** Clone object */
-Move_VectorFixedSingleElementSlide* Move_VectorFixedSingleElementSlide::clone(void) const {
+Move_VectorFixedSingleElementSlide* Move_VectorFixedSingleElementSlide::clone(void) const
+{
     
 	return new Move_VectorFixedSingleElementSlide(*this);
 }
 
 
-void Move_VectorFixedSingleElementSlide::constructInternalObject( void ) {
+void Move_VectorFixedSingleElementSlide::constructInternalObject( void )
+{
 
     // we free the memory first
     delete value;
@@ -47,7 +43,10 @@ void Move_VectorFixedSingleElementSlide::constructInternalObject( void ) {
     RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     size_t e = static_cast<const Natural &>( whichElement->getRevObject() ).getValue();
-    value = new RevBayesCore::VectorFixedSingleElementSlidingMove(n, l, t, w, e-1);
+
+    RevBayesCore::Proposal *p = new RevBayesCore::VectorFixedSingleElementSlideProposal(n, l, e-1);
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
+
 }
 
 
