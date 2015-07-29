@@ -50,10 +50,46 @@
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+             # Let's simulate data using a HKY model on a DNA alphabet.
+             kappa_prior <- 1.0
+  			 kappa ~ dnExp(kappa_prior)
+
+  			 sf_prior <- v(1,1,1,1)
+  			 sf ~ dnDirichlet(sf_prior)
+
+  			 matrix := fnHKY(kappa,sf) 
+             print(matrix)
+             
+             # Let's change the matrix so that changes towards "G" are much more frequent than others. To achieve that, we put a high "G" equilibrium frequency.
+             # We create a simplex:
+             GBiasedFrequencies <- simplex(0.01, 0.01, 0.97, 0.01)
+             sf.setValue(GBiasedFrequencies)
+             
+             #What does the matrix look like now?
+             print(matrix)
+             
+             # We build a tree with 3 leaves
+             n_species <- 3
+             for (i in 1:n_species) {
+        			s_names[i] = "Species_"+i
+			 }
+             speciation ~ dnExponential(10.0)
+			 extinction ~ dnExponential(10.0)
+			 tree_height ~ dnUnif(0,1.0)
+			 speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+             
+             # Let's simulate 30 sites over this tree, starting from a sequence completely made of "A"s.
+             # Root frequencies: all "A"s
+             frequencyA <- 1.0
+             rootFrequencies <- simplex(frequencyFirstState, 0.0, 0.0, 0.0)
+             n_sites=30
+             aln ~ dnPhyloCTMC(tree=speciesTree, Q=matrix, rootFrequencies=rootFrequencies, nSites=n_sites, type="DNA")
+			
+			 # Now we can have a look at the sequences in the resulting alignment. If things worked well, we should see traces of a vast increase in "G"s from an ancestral sequence entirely made of "A"s.
+			 aln.show()             
+             
+             # And we can compute the log probability of the alignment
+             aln.lnProbability()             ]]>
 
         </example>
 

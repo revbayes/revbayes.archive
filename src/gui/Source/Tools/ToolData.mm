@@ -4,14 +4,17 @@
 #import "ToolData.h"
 #import "WindowControllerCharacterMatrix.h"
 #include <string>
+#include <cmath>
 #include "AminoAcidState.h"
 #include "CharacterState.h"
 #include "AbstractDiscreteTaxonData.h"
+#include "ContinuousCharacterData.h"
 #include "DnaState.h"
 #include "Parser.h"
 #include "AbstractCharacterData.h"
 #include "HomologousCharacterData.h"
 #include "NonHomologousCharacterData.h"
+#include "RbMathLogic.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "AbstractTaxonData.h"
@@ -216,6 +219,7 @@
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd andDataType:(const std::string&)dt {
 
+    cd.show(std::cout);
     std::string fn = cd.getFileName();
     
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
@@ -291,11 +295,18 @@
                 }
             else
                 {
-//                double x = static_cast<const RevBayesCore::ContinuousCharacterState &>(theChar).getMean();
-//                NSNumber* n = [NSNumber numberWithDouble:x];
-//                [cell setVal:n];
-//                [cell setIsDiscrete:NO];
-//                [cell setNumStates:0];
+                const double x = static_cast<const RevBayesCore::ContinuousCharacterData &>(cd).getCharacter(i, j);
+                if ( RevBayesCore::RbMath::isNan(x) )
+                    {
+                    [cell setIsAmbig:YES];
+                    }
+                else
+                    {
+                    NSNumber* n = [NSNumber numberWithDouble:x];
+                    [cell setVal:n];
+                    [cell setIsDiscrete:NO];
+                    [cell setNumStates:0];
+                    }
                 }
             [cell setRow:i];
             [cell setColumn:j];
