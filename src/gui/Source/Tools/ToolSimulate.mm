@@ -10,7 +10,7 @@
 #import "WindowControllerSimulateQuery.h"
 
 #include <iostream>
-#include "DiscreteCharacterData.h"
+//#include "DiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DistributionExponential.h"
 #include "DistributionGamma.h"
@@ -403,6 +403,7 @@
         }
         
     // create the character matrix (homology established)
+#   if 0 // TEMPORARY
 	RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState > *cMat = new RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState >();
     
     for (int n=0, taxonIndex=0; n<[myTree numberOfNodes]; n++)
@@ -440,9 +441,10 @@
         [self setIsResolved:YES];
         [self makeDataInspector];
         }
-    
+
     // free up temporary matrix holding sequences
     delete cMat;
+#   endif
     delete [] m[0];
     delete [] m;
 }
