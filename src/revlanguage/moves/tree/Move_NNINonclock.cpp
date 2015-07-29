@@ -8,7 +8,8 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "NearestNeighborInterchange_nonClock.h"
+#include "MetropolisHastingsMove.h"
+#include "NearestNeighborInterchange_nonClockProposal.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -21,19 +22,22 @@
 
 using namespace RevLanguage;
 
-Move_NNINonclock::Move_NNINonclock() : Move() {
+Move_NNINonclock::Move_NNINonclock() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_NNINonclock* Move_NNINonclock::clone(void) const {
+Move_NNINonclock* Move_NNINonclock::clone(void) const
+{
     
 	return new Move_NNINonclock(*this);
 }
 
 
-void Move_NNINonclock::constructInternalObject( void ) {
+void Move_NNINonclock::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -41,12 +45,15 @@ void Move_NNINonclock::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::Topology> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Topology> *>( tmp );
-    value = new RevBayesCore::NearestNeighborInterchange_nonClock(t, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::NearestNeighborInterchange_nonClockProposal( t );
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_NNINonclock::getClassType(void) { 
+const std::string& Move_NNINonclock::getClassType(void)
+{
     
     static std::string revType = "Move_NNI";
     
@@ -54,7 +61,8 @@ const std::string& Move_NNINonclock::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_NNINonclock::getClassTypeSpec(void) { 
+const TypeSpec& Move_NNINonclock::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     

@@ -94,7 +94,6 @@
 #include "Move_DPPScaleCatValsMove.h"
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
-#include "Move_DPPScaleCatAllocateAux.h"
 #include "Move_MixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
 
@@ -115,9 +114,7 @@
 #include "Move_NNINonclock.h"
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
-#include "Move_OriginTimeSlide.h"
 #include "Move_RateAgeBetaShift.h"
-#include "Move_RootTimeSlide.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
 #include "Move_SpeciesSubtreeScaleBeta.h"
@@ -125,8 +122,6 @@
 #include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
 #include "Move_WeightedNodeTimeSlide.h"
-#include "Move_FossilSafeSlide.h"
-#include "Move_FossilSafeScale.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
@@ -188,8 +183,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvConjugateInverseWishartBrownian", new Move_ConjugateInverseWishartBrownian() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
-        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
+//        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
+//        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
@@ -226,9 +221,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvNNINonclock",                 new Move_NNINonclock() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",        new Move_NodeTimeSlideUniform() );
         addTypeWithConstructor("mvNodeTimeSlideBeta",           new Move_NodeTimeSlideBeta() );
-        addTypeWithConstructor("mvOriginTimeSlide",             new Move_OriginTimeSlide() );
         addTypeWithConstructor("mvRateAgeBetaShift",            new Move_RateAgeBetaShift() );
-        addTypeWithConstructor("mvRootTimeSlide",               new Move_RootTimeSlide() );
         addTypeWithConstructor("mvSubtreeScale",                new Move_SubtreeScale() );
         addTypeWithConstructor("mvSPR",                         new Move_SPRNonclock() );
         addTypeWithConstructor("mvSpeciesNodeTimeSlideUniform", new Move_SpeciesNodeTimeSlideUniform() );
@@ -236,8 +229,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvSpeciesSubtreeScaleBeta",     new Move_SpeciesSubtreeScaleBeta() );
         addTypeWithConstructor("mvSubtreePruneRegraft",         new Move_SPRNonclock() );
         addTypeWithConstructor("mvTreeScale",                   new Move_TreeScale() );
-        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
-        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
+//        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
+//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );

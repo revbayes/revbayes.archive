@@ -1,7 +1,6 @@
 #ifndef Move_VectorSingleElementSlide_H
 #define Move_VectorSingleElementSlide_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

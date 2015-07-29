@@ -18,7 +18,6 @@
 #ifndef Move_NodeTimeSlideUniform_H
 #define Move_NodeTimeSlideUniform_H
 
-#include "NodeTimeSlideUniform.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

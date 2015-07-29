@@ -3,7 +3,7 @@
 
 #include "Cloneable.h"
 
-#include <set>
+#include <vector>
 
 namespace RevBayesCore {
     
@@ -28,7 +28,7 @@ namespace RevBayesCore {
         
         // public methods
         void                                                    swapNode(DagNode *oldN, DagNode *newN);                                                 //!< Swap the pointers to the variable on which the move works on.
-        const std::set<DagNode*>&                               getNodes(void) const;                                                                   //!< Get the vector of nodes for which the proposal is drawing new values.
+        const std::vector<DagNode*>&                            getNodes(void) const;                                                                   //!< Get the vector of nodes for which the proposal is drawing new values.
         
         
         // pure virtual public methods
@@ -58,7 +58,7 @@ namespace RevBayesCore {
         
     private:
         
-        std::set<DagNode*>                                      nodes;
+        std::vector<DagNode*>                                   nodes;
 
         
     };
