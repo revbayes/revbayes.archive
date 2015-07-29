@@ -120,12 +120,12 @@ const ArgumentRules& Func_treePairwiseDistances<treeType>::getArgumentRules( voi
 	if ( !rulesSet )
 	{
 		
-		std::vector<TypeSpec> treeTypes;
+		/*std::vector<TypeSpec> treeTypes;
 		treeTypes.push_back( TimeTree::getClassTypeSpec() );
-		treeTypes.push_back( BranchLengthTree::getClassTypeSpec() );
+		treeTypes.push_back( BranchLengthTree::getClassTypeSpec() );*/
 		
 		
-		argumentRules.push_back( new ArgumentRule( "tree", treeTypes , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+		argumentRules.push_back( new ArgumentRule( "tree", treeType::getClassTypeSpec(),  ArgumentRule::BY_CONSTANT_REFERENCE ) );
 		
 		rulesSet = true;
 	}
