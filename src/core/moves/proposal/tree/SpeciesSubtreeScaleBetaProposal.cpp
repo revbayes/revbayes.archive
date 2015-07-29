@@ -144,6 +144,8 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
             
         }
         
+        geneTrees[i]->touch( true );
+        
     }
     
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!

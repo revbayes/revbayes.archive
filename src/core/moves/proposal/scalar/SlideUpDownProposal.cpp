@@ -59,7 +59,7 @@ SlideUpDownProposal* SlideUpDownProposal::clone( void ) const
  */
 const std::string& SlideUpDownProposal::getProposalName( void ) const
 {
-    static std::string name = "Sliding";
+    static std::string name = "SlideUpDown";
     
     return name;
 }

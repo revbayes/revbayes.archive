@@ -397,7 +397,6 @@ void ContinuousCharacterData::makeConstantValue( void )
  */
 ContinuousCharacterData* ContinuousCharacterData::makeIndirectReference(void)
 {
-    //    IndirectReferenceNode< RevLanguage::ModelObject<rbType> >* newNode = new IndirectReferenceNode< RevLanguage::ModelObject<rbType> >( "", this->getDagNode() );
     
     RevBayesCore::IndirectReferenceFunction< valueType > *func = new RevBayesCore::IndirectReferenceFunction<valueType>( this->getDagNode() );
     RevBayesCore::DeterministicNode< valueType >* newNode = new RevBayesCore::DeterministicNode< valueType >( "", func );

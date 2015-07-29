@@ -27,6 +27,7 @@ namespace RevBayesCore {
         
     public:
         SpeciesSubtreeScaleProposal(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt);                                               //!<  constructor
+        virtual ~SpeciesSubtreeScaleProposal(void);
         
         // Basic utility functions
         void                                            cleanProposal(void);                                        //!< Clean up proposal

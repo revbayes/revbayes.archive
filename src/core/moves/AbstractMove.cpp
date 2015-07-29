@@ -105,6 +105,23 @@ AbstractMove::AbstractMove( const AbstractMove &m ) : Move( m ),
 AbstractMove::~AbstractMove( void )
 {
     
+    // clean up my pointers to the nodes
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = nodes[i];
+        
+        // add myself to the set of moves
+        theNode->removeMove( this );
+        
+        // decrease the DAG node reference count because we also have a pointer to it
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete theNode;
+        }
+        
+    }
+    
 }
 
 /**
@@ -287,6 +304,9 @@ void AbstractMove::removeNode( RevBayesCore::DagNode *n )
         }
     }
     
+    // remove myself from this node
+    n->removeMove( this );
+    
     if ( n->decrementReferenceCount() == 0 )
     {
         delete n;
@@ -338,13 +358,10 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
         DagNode* theNode = nodes[i];
         if ( theNode == oldN )
         {
-            nodes.erase( nodes.begin() + i );
+            nodes[i] = newN;
         }
         
     }
-    
-    // insert the new node
-    nodes.push_back( newN );
     
     // remove myself from the old node and add myself to the new node
     oldN->removeMove( this );

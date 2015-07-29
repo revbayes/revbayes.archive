@@ -1152,10 +1152,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
         
         // recurse towards tips
         if (!children[i]->isTip())
+        {
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
         else
+        {
             tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
+        
     }
+    
 }
 
 template<class charType, class treeType>
@@ -1164,7 +1170,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::tipDraw
     
     // get working variables
     size_t nodeIndex = node.getIndex();
-    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+//    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
 
     // get transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
@@ -1286,7 +1292,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
     size_t index = n.getIndex();
     
     // if this node is already dirty, the also all the ancestral nodes must have been flagged as dirty
-    if ( !dirtyNodes[index] ) 
+    if ( dirtyNodes[index] == false )
     {
         // the root doesn't have an ancestor
         if ( !n.isRoot() ) 
@@ -1320,7 +1326,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
     {
         const TopologyNode &child = node.getChild(i);
         
-        if ( !child.isTip() )
+        if ( child.isTip() == false )
         {
             size_t childIndex = child.getIndex();
             computeMarginalNodeLikelihood( childIndex, nodeIndex );

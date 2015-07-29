@@ -19,6 +19,7 @@ SpeciesSubtreeScaleProposal::SpeciesSubtreeScaleProposal( StochasticNode<TimeTre
     speciesTree( sp ),
     geneTrees( gt )
 {
+    
     // tell the base class to add the node
     addNode( speciesTree );
     
@@ -26,6 +27,12 @@ SpeciesSubtreeScaleProposal::SpeciesSubtreeScaleProposal( StochasticNode<TimeTre
     {
         addNode( geneTrees[i] );
     }
+    
+}
+
+
+SpeciesSubtreeScaleProposal::~SpeciesSubtreeScaleProposal( void )
+{
     
 }
 
@@ -136,6 +143,8 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
             TreeUtilities::rescaleSubtree(&gene_tree, nodes[j], scaling_factor );
             
         }
+        
+        geneTrees[i]->touch( true );
         
     }
     

@@ -122,9 +122,8 @@ for (i in 1:num_loci) {
    moves[++mi] = mvFNPR(geneTree[i], 3.0)
 #   moves[++mi] = mvGPR(geneTree[i], 2.0)
    moves[++mi] = mvSubtreeScale(geneTree[i], 2.0)
-#   moves[++mi] = mvTreeScale(geneTree[i], 1.0, true, 3.0)
+   moves[++mi] = mvTreeScale(geneTree[i], 1.0, true, 3.0)
    moves[++mi] = mvNodeTimeSlideUniform(geneTree[i], 2.0)
-   moves[++mi] = mvRootTimeSlide(geneTree[i], 1.0, true, 1.0)
 
 }
 

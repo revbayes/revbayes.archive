@@ -108,6 +108,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 {
+    
     // Propose a new value
     proposal->prepareProposal();
     double lnHastingsRatio = proposal->doProposal();
@@ -169,7 +170,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 	
 	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
     {
-		
+        
         proposal->undoProposal();
             
         // call restore for each node
@@ -188,6 +189,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 
         if (lnAcceptanceRatio >= 0.0)
         {
+            
             numAccepted++;
         
             // call accept for each node
@@ -201,6 +203,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         }
         else if (lnAcceptanceRatio < -300.0)
         {
+            
             proposal->undoProposal();
         
             // call restore for each node
@@ -218,6 +221,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             double u = GLOBAL_RNG->uniform01();
             if (u < r)
             {
+                
                 numAccepted++;
             
                 // call accept for each node
@@ -232,6 +236,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             }
             else
             {
+                
                 proposal->undoProposal();
             
                 // call restore for each node
@@ -241,7 +246,9 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
                     DagNode* theNode = nodes[i];
                     theNode->restore();
                 }
+                
             }
+            
         }
 
     }
