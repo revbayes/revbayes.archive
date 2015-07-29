@@ -367,6 +367,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeScale",                   new Func_treeScale()                );
+		
 
         // type conversion
 //        addFunction( "_Natural2Integer",            new Func__conversion<Natural, Integer>()        );

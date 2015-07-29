@@ -39,6 +39,7 @@ namespace RevBayesCore {
         virtual bool                            isSequenceMissing(void) const = 0;                                  //!< Returns whether the contains only missing data or has some actual observations
         virtual void                            removeCharacters(const std::set<size_t> &i) = 0;                    //!< Remove all the characters with a given index
         virtual void                            setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
+        virtual std::string                     getStringRepresentation(size_t idx) const = 0;
     
     protected:
         AbstractTaxonData() {}                                                                                      //!< Default constructor

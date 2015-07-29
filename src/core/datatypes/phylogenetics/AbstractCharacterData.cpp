@@ -647,12 +647,12 @@ void AbstractCharacterData::show(std::ostream &out) const
         for (size_t j=0; j<nc; j++)
         {
             
-            
-//            std::cout << taxonData[j] << " ";
-//            if ( (j+1) % 100 == 0 && (j+1) != nc )
-//            {
-//                std::cout << std::endl << "   ";
-//            }
+            std::string s = taxonData.getStringRepresentation(j);
+            std::cout << s << " ";
+            if ( (j+1) % 100 == 0 && (j+1) != nc )
+            {
+                std::cout << std::endl << "   ";
+            }
             
         }
         
