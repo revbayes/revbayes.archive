@@ -91,7 +91,7 @@ void Proposal::addNode( DagNode *n )
     }
     
     // only add the node if it doesn't exist already
-    if ( exists == false )
+    if ( n != NULL && exists == false )
     {
         nodes.push_back( n );
     
