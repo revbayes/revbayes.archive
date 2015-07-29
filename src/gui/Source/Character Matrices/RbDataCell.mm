@@ -66,6 +66,36 @@
 	return '*';
 }
 
+- (char)getDiscreteStateWithLabels:(NSString*)labels {
+
+	if (isDiscrete == YES)
+		{
+		NSNumber* n = [self val];
+		unsigned int x = [n unsignedIntValue];
+		if (dataType == DNA)
+			{
+			return [self interpretAsDna:x];
+			}
+		else if (dataType == RNA)
+			{
+			char v = [self interpretAsDna:x];
+			if (v == 'T')
+				v = 'U';
+			return v;
+			}
+		else if (dataType == AA)
+			{
+			return [self interpretAsAminoAcid:x];
+			}
+		else if (dataType == STANDARD)
+			{
+			return [self interpretAsStandard:x withLabels:labels];
+			}
+		return '*';
+		}
+	return '*';
+}
+
 - (char)interpretAsAminoAcid:(unsigned)x {
 
     if (isGapState == YES)
@@ -130,6 +160,31 @@
 	char v = ' ';
 	int nOn = 0;
 	for (int i=0; i<10; i++)
+		{
+		unsigned mask = 1 << i ;
+		if ( (x & mask) != 0 )
+			{
+			v = stCode[i];
+			nOn++;
+			}
+		}
+	if (nOn > 1)
+		{
+		return 'N';
+		}
+	return v;
+}
+
+- (char)interpretAsStandard:(unsigned)x withLabels:(NSString*)labels {
+    
+    char stCode[32];
+    for (int i=0; i<[labels length]; i++)
+        stCode[i] = [labels characterAtIndex:i];
+
+    NSLog(@"x = %u", x);
+	char v = ' ';
+	int nOn = 0;
+	for (int i=0; i<[labels length]; i++)
 		{
 		unsigned mask = 1 << i ;
 		if ( (x & mask) != 0 )

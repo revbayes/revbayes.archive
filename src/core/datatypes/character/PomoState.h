@@ -54,7 +54,7 @@ namespace RevBayesCore {
         bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
         void                            setStateByIndex(size_t index);                      //!< Set the discrete observation
         void                            setState(const std::string &symbol);                //!< Set the discrete observation
-//        void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
+//      void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
         void                            setVirtualPopulationSize(unsigned int populationSize);             //!< Set the virtual population size for the state space
         
@@ -63,7 +63,7 @@ namespace RevBayesCore {
         unsigned int                    computeState(const std::string &symbol) const;      //!< Compute the internal state value for this character.
         
         unsigned int                    state;
-        // size_t                          stateIndex;
+//      size_t                          stateIndex;
         
         unsigned int                    virtualPopulationSize;                              //!< The virtual population size of the Pomo model (by default, 10)
     };

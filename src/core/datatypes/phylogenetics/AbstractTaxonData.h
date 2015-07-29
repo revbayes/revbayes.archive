@@ -40,6 +40,7 @@ namespace RevBayesCore {
         virtual void                            removeCharacters(const std::set<size_t> &i) = 0;                    //!< Remove all the characters with a given index
         virtual void                            setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
         virtual std::string                     getStringRepresentation(size_t idx) const = 0;
+        virtual std::string                     getStateLabels(void) = 0;                                           //!< Get the possible state labels
     
     protected:
         AbstractTaxonData() {}                                                                                      //!< Default constructor

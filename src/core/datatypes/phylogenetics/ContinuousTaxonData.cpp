@@ -201,6 +201,10 @@ double ContinuousTaxonData::getPercentageMissing( void ) const
     return numMissing / sequence.size();
 }
 
+std::string ContinuousTaxonData::getStateLabels(void) {
+
+    return "";
+}
 
 std::string ContinuousTaxonData::getStringRepresentation(size_t idx) const {
 
