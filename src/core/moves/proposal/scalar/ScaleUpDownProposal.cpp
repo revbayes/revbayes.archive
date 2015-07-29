@@ -16,11 +16,11 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 ScaleUpDownProposal::ScaleUpDownProposal( ContinuousStochasticNode *n1, ContinuousStochasticNode *n2, double l) : Proposal(),
-variable1( n1 ),
-variable2( n2 ),
-storedValue1( 0.0 ),
-storedValue2( 0.0 ),
-lambda( l )
+    variable1( n1 ),
+    variable2( n2 ),
+    storedValue1( 0.0 ),
+    storedValue2( 0.0 ),
+    lambda( l )
 {
     // tell the base class to add the node
     addNode( variable1 );
@@ -59,7 +59,7 @@ ScaleUpDownProposal* ScaleUpDownProposal::clone( void ) const
  */
 const std::string& ScaleUpDownProposal::getProposalName( void ) const
 {
-    static std::string name = "Sliding";
+    static std::string name = "ScaleUpDown";
     
     return name;
 }
@@ -88,6 +88,8 @@ double ScaleUpDownProposal::doProposal( void )
     
     double u = rng->uniform01();
     double c = exp( lambda * (u - 0.5) );
+    
+    c = 1.0;
     
     sv1 *= c;
     sv2 /= c;

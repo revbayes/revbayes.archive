@@ -133,6 +133,8 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
             geneTree.setAge( nodes[j]->getIndex(), new_a );
         }
         
+        geneTrees[i]->touch( true );
+        
     }
     
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
