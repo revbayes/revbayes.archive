@@ -307,6 +307,22 @@ double AbstractCharacterData::getPercentageMissing( const std::string &n ) const
 }
 
 
+std::string AbstractCharacterData::getStateLabels(void) {
+
+    if (taxonMap.size() == 0)
+        return "";
+    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.begin();
+    return i->second->getStateLabels();
+}
+
+std::string AbstractCharacterData::getStateLabels(void) const {
+
+    if (taxonMap.size() == 0)
+        return "";
+    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.begin();
+    return i->second->getStateLabels();
+}
+
 /**
  * Get the taxon data object with index tn.
  *

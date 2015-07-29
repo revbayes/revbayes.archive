@@ -44,6 +44,7 @@ namespace RevBayesCore {
         void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
         std::string                             getStringRepresentation(size_t idx) const;
+        std::string                             getStateLabels(void);                                               //!< Get the possible state labels
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
@@ -366,6 +367,18 @@ double RevBayesCore::DiscreteTaxonData<charType>::getPercentageMissing( void ) c
     
     return numMissing / sequence.size();
 }
+
+
+template<class charType>
+std::string RevBayesCore::DiscreteTaxonData<charType>::getStateLabels(void) {
+
+    if (sequence.size() == 0)
+        {
+        return "";
+        }
+    return sequence[0].getStateLabels();
+}
+
 
 
 template<class charType>
