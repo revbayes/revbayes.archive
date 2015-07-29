@@ -278,7 +278,6 @@
                     if ( [dataMatrixCell isGapState] == YES )
                         state = '-';
 					NSString* stateStr = [NSString localizedStringWithFormat:@"%c", state];
-                    NSLog(@"\"%@\"", stateStr);
 					
 					NSDictionary* colorDict;
 					if ([dataMatrixCell dataType] == DNA || [dataMatrixCell dataType] == RNA)
