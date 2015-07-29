@@ -656,10 +656,6 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
     const std::vector<DagNode*>& modelNodes = model.getDagNodes();
     for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
     {
-        if ( it->getMoveName() == "SpeciesSubtreeScale" )
-        {
-            std::cerr << "Cloning SpeciesSubtreeScale.\n";
-        }
         
         Move *theMove = it->clone();
         std::vector<DagNode*> nodes = theMove->getDagNodes();
