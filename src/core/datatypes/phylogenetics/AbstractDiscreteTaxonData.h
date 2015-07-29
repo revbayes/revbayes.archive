@@ -42,6 +42,7 @@ namespace RevBayesCore {
         virtual const std::string&                  getTaxonName(void) const = 0;                                       //!< Return the name of the character vector
         virtual bool                                isCharacterResolved(size_t idx) const = 0;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual void                                setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
+        virtual std::string                         getStateLabels(void) = 0;                                           //!< Get the possible state labels
         
     protected:
         AbstractDiscreteTaxonData() {}                                                                                  //!< Default constructor

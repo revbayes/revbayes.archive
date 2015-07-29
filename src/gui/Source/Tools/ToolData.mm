@@ -252,7 +252,13 @@
             }
         [m setNumCharacters:(int)maxLen];
         }
-        
+    
+    // get the state labels
+    std::string stateLabels = cd.getStateLabels();
+    NSString* sl = [NSString stringWithCString:(stateLabels.c_str()) encoding:NSUTF8StringEncoding];
+    [m setStateLabels:sl];
+    NSLog(@"state labels = %@", [m stateLabels]);
+    
     [m setName:nsfn];
     if ( dt == "DNA" )
         [m setDataType:DNA];
