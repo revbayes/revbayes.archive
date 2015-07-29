@@ -1,6 +1,7 @@
 #include "ContinuousTaxonData.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 
 
 using namespace RevBayesCore;
@@ -200,6 +201,18 @@ double ContinuousTaxonData::getPercentageMissing( void ) const
     return numMissing / sequence.size();
 }
 
+
+std::string ContinuousTaxonData::getStringRepresentation(size_t idx) const {
+
+    if ( RevBayesCore::RbMath::isNan(sequence[idx]) )
+        {
+        return "-";
+        }
+    char tempCStr[20];
+    sprintf(tempCStr, "%1.2lf", sequence[idx]);
+    std::string tempStr = tempCStr;
+    return tempStr;
+}
 
 /**
  * Get the name of the taxon.

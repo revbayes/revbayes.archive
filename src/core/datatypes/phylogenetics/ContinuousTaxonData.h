@@ -37,6 +37,7 @@ namespace RevBayesCore {
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
+        std::string                             getStringRepresentation(size_t idx) const;
         
     private:
         std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
