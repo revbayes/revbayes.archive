@@ -87,7 +87,7 @@ double TreeScaleProposal::doProposal( void )
     // now we store all necessary values
     storedAge = my_age;
     
-    // draw new ages and compute the hastings ratio at the same time
+    // draw new ages 
     double u = rng->uniform01();
     double scalingFactor = std::exp( delta * ( u - 0.5 ) );
     

@@ -46,14 +46,14 @@ namespace RevBayesCore {
         
         
         // member variables
-        StochasticNode<TimeTree>*       tree;
-        StochasticNode<double>*         rootAge;
+        StochasticNode<TimeTree>*               tree;
+        StochasticNode<double>*                 rootAge;
         
         // parameters
-        double                          delta;
+        double                                  delta;
         
         // stored objects to undo proposal
-        double                          storedAge;
+        double                                  storedAge;
     };
     
 }
