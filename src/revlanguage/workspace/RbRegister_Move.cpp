@@ -118,6 +118,7 @@
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
 #include "Move_SpeciesSubtreeScaleBeta.h"
+#include "Move_SpeciesTreeScale.h"
 #include "Move_SubtreeScale.h"
 #include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
@@ -227,6 +228,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvSpeciesNodeTimeSlideUniform", new Move_SpeciesNodeTimeSlideUniform() );
         addTypeWithConstructor("mvSpeciesSubtreeScale",         new Move_SpeciesSubtreeScale() );
         addTypeWithConstructor("mvSpeciesSubtreeScaleBeta",     new Move_SpeciesSubtreeScaleBeta() );
+        addTypeWithConstructor("mvSpeciesTreeScale",            new Move_SpeciesTreeScale() );
         addTypeWithConstructor("mvSubtreePruneRegraft",         new Move_SPRNonclock() );
         addTypeWithConstructor("mvTreeScale",                   new Move_TreeScale() );
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );

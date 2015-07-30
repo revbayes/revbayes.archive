@@ -129,7 +129,7 @@ for (i in 1:num_loci) {
 
 #moves[++mi] = mvSpeciesNodeTimeSlideUniform(speciesTree=psi, geneTrees=geneTree, weight=20.0)
 moves[++mi] = mvSpeciesSubtreeScale(speciesTree=psi, geneTrees=geneTree, weight=20.0)
-#moves[++mi] = mvSpeciesSubtreeScaleBeta(speciesTree=psi, geneTrees=geneTree, weight=20.0)
+moves[++mi] = mvSpeciesSubtreeScaleBeta(speciesTree=psi, geneTrees=geneTree, weight=20.0)
    
 ###############
 # Clock Model #
