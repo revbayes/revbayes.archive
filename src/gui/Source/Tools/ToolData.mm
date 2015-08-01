@@ -219,7 +219,6 @@
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd andDataType:(const std::string&)dt {
 
-    cd.show(std::cout);
     std::string fn = cd.getFileName();
     
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
