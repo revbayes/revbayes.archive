@@ -128,9 +128,10 @@ for (i in 1:num_loci) {
 }
 
 #moves[++mi] = mvSpeciesNodeTimeSlideUniform(speciesTree=psi, geneTrees=geneTree, weight=20.0)
-moves[++mi] = mvSpeciesSubtreeScale(speciesTree=psi, geneTrees=geneTree, weight=20.0)
-moves[++mi] = mvSpeciesSubtreeScaleBeta(speciesTree=psi, geneTrees=geneTree, weight=20.0)
-   
+#moves[++mi] = mvSpeciesSubtreeScale(speciesTree=psi, geneTrees=geneTree, weight=20.0)
+#moves[++mi] = mvSpeciesSubtreeScaleBeta(speciesTree=psi, geneTrees=geneTree, weight=20.0)
+moves[++mi] = mvSpeciesTreeScale(speciesTree=psi, rootAge=root, geneTrees=geneTree, delta=1.0, weight=20.0)
+  
 ###############
 # Clock Model #
 ###############
@@ -201,11 +202,11 @@ for ( i in 1:num_loci ) {
 
 # Here we use a plain MCMC. You could also set nruns=2 for a replicated analysis
 # or use mcmcmc with heated chains.
-mymcmc = mcmc(mymodel, monitors, moves)
+mymcmc = mcmcmc(mymodel, monitors, moves, nchains=4, swapInterval=10)
 
 # This should be sufficient to obtain enough MCMC samples
-#mymcmc.burnin(generations=500,tuningInterval=100)
-mymcmc.run(generations=1000)
+mymcmc.burnin(generations=1000,tuningInterval=200)
+mymcmc.run(generations=2000)
 
 mymcmc.operatorSummary()
 

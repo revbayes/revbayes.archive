@@ -95,7 +95,8 @@ double NodeTimeSlideUniformProposal::doProposal( void )
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
     double child_Age   = node->getChild( 0 ).getAge();
-    if ( child_Age < node->getChild( 1 ).getAge()) {
+    if ( child_Age < node->getChild( 1 ).getAge())
+    {
         child_Age = node->getChild( 1 ).getAge();
     }
     
