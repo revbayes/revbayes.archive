@@ -29,12 +29,14 @@ namespace RevBayesCore {
         SpeciesSubtreeScaleBetaProposal(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt, double a);                                               //!<  constructor
         
         // Basic utility functions
+        void                                            addGeneTree(StochasticNode<TimeTree> *gt);                                      //!< Add a DAG Node holding a gene tree on which this move should operate on
         void                                            cleanProposal(void);                                        //!< Clean up proposal
         SpeciesSubtreeScaleBetaProposal*                clone(void) const;                                          //!< Clone object
         double                                          doProposal(void);                                           //!< Perform proposal
         const std::string&                              getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                            prepareProposal(void);                                      //!< Prepare the proposal
         void                                            printParameterSummary(std::ostream &o) const;               //!< Print the parameter summary
+        void                                            removeGeneTree(StochasticNode<TimeTree> *gt);                                   //!< Remove a DAG Node holding a gene tree on which this move should operate on
         void                                            tune(double r);                                             //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                            undoProposal(void);                                         //!< Reject the proposal
         

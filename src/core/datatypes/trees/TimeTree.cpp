@@ -100,13 +100,18 @@ void TimeTree::setAge(size_t idx, double a)
     // fire a tree change event
     const std::set<TreeChangeEventListener*> &listeners = changeEventHandler.getListeners();
     const TopologyNode &n = topology->getNode(idx);
+    
     for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it)
     {
 
         for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
         {
-            (*it)->fireTreeChangeEvent(n.getChild(i));
+            (*it)->fireTreeChangeEvent( n.getChild(i) );
         }
+        
+        // just to be save
+        (*it)->fireTreeChangeEvent( n );
+
     }
     
     // flag the newick string as invalid
