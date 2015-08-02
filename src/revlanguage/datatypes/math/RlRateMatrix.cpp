@@ -73,7 +73,8 @@ RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator> 
 }
 
 
-RateMatrix* RateMatrix::clone() const {
+RateMatrix* RateMatrix::clone() const
+{
     return new RateMatrix( *this );
 }
 
