@@ -248,7 +248,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
 //    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
     marginalLikelihoods( NULL ),
     perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
-    useScaling( true ),
+    useScaling( false ),
     charMatrix(),
     gapMatrix(),
     patternCounts(),
@@ -300,8 +300,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     rateVariationAcrossSites                    = false;
 
     
-    // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
+    // We don't want tau to die before we die, or it can't remove us as listener
     tau->incrementReferenceCount();
     
     activeLikelihoodOffset      =  numNodes*numSiteRates*pattern_block_size*numChars;
@@ -381,9 +381,9 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     branchHeterogeneousClockRates               = n.branchHeterogeneousClockRates;
     branchHeterogeneousSubstitutionMatrices     = n.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = n.rateVariationAcrossSites;
-
-    // We don't want tau to die before we die, or it can't remove us as listener
+    
     tau->getValue().getTreeChangeEventHandler().addListener( this );
+    // We don't want tau to die before we die, or it can't remove us as listener
     tau->incrementReferenceCount();
     
     // copy the partial likelihoods if necessary
@@ -1152,10 +1152,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
         
         // recurse towards tips
         if (!children[i]->isTip())
+        {
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
         else
+        {
             tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
+        
     }
+    
 }
 
 template<class charType, class treeType>
@@ -1164,7 +1170,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::tipDraw
     
     // get working variables
     size_t nodeIndex = node.getIndex();
-    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+//    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
 
     // get transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
@@ -1218,7 +1224,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fillLik
             // rescale likelihood vector
             scale(nodeIndex,leftIndex,rightIndex);
         }
+        
     }
+    
 }
 
 
@@ -1226,6 +1234,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fillLik
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n )
 {
+//    std::cerr << "HandlerCTMC:\t\t" << this << std::endl;
     
     // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty( n );
@@ -1239,7 +1248,7 @@ template<class charType, class treeType>
 const std::vector<double>& RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::getRootFrequencies( void ) const
 {
     
-    if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL )
+    if ( branchHeterogeneousSubstitutionMatrices == true || rootFrequencies != NULL )
     {
         return rootFrequencies->getValue();
     }
@@ -1286,7 +1295,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
     size_t index = n.getIndex();
     
     // if this node is already dirty, the also all the ancestral nodes must have been flagged as dirty
-    if ( !dirtyNodes[index] ) 
+    if ( dirtyNodes[index] == false )
     {
         // the root doesn't have an ancestor
         if ( !n.isRoot() ) 
@@ -1320,7 +1329,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::recursi
     {
         const TopologyNode &child = node.getChild(i);
         
-        if ( !child.isTip() )
+        if ( child.isTip() == false )
         {
             size_t childIndex = child.getIndex();
             computeMarginalNodeLikelihood( childIndex, nodeIndex );
@@ -1475,6 +1484,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeL
     nodeOffset                  =  numSiteRates*pattern_block_size*numChars;
     mixtureOffset               =  pattern_block_size*numChars;
     siteOffset                  =  numChars;
+    
 }
 
 
@@ -2219,9 +2229,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapPar
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau->decrementReferenceCount();
+        
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
+        
         tau->getValue().getTreeChangeEventHandler().addListener( this );
         tau->incrementReferenceCount();
+        
         numNodes = tau->getValue().getNumberOfNodes();
     }
     
@@ -2287,6 +2300,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::touchSp
     
     if ( touchAll )
     {
+        
         for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
         {
             (*it) = true;

@@ -9,7 +9,6 @@
 #ifndef __revbayes_proj__Move_LevyJumpSum__
 #define __revbayes_proj__Move_LevyJumpSum__
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

@@ -18,7 +18,6 @@
 #ifndef Move_NodeTimeSlideBeta_H
 #define Move_NodeTimeSlideBeta_H
 
-#include "NodeTimeSlideBeta.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

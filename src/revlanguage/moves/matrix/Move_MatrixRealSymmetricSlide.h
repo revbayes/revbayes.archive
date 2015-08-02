@@ -11,7 +11,6 @@
 
 #include <iostream>
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

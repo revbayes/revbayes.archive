@@ -21,6 +21,10 @@ using namespace RevLanguage;
 Move_SpeciesSubtreeScale::Move_SpeciesSubtreeScale() : Move()
 {
     
+    // add method for call "addGeneTreeVariable" as a function
+    ArgumentRules* addGeneTreeArgRules = new ArgumentRules();
+    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    methods.addFunction("addGeneTreeVariable",  new MemberProcedure( RlUtils::Void, addGeneTreeArgRules) );
 }
 
 
@@ -52,31 +56,65 @@ void Move_SpeciesSubtreeScale::constructInternalObject( void )
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new move
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::TimeTree> >* tmp_gt = static_cast<const ModelVector<TimeTree> &>( geneTrees->getRevObject() ).getDagNode();
-    std::set<const RevBayesCore::DagNode*> parents = tmp_gt->getParents();
     std::vector< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *> gt;
-    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-    {
-        const RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( *it );
-        if ( theNode != NULL )
-        {
-            gt.push_back( const_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( theNode ) );
-        }
-        else
-        {
-            throw RbException("Could not create a mvElementScale because the node isn't a vector of stochastic nodes.");
-        }
-    }
+//    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::TimeTree> >* tmp_gt = static_cast<const ModelVector<TimeTree> &>( geneTrees->getRevObject() ).getDagNode();
+//    std::set<const RevBayesCore::DagNode*> parents = tmp_gt->getParents();
+//    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+//    {
+//        const RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( *it );
+//        if ( theNode != NULL )
+//        {
+//            gt.push_back( const_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( theNode ) );
+//        }
+//        else
+//        {
+//            throw RbException("Could not create a mvElementScale because the node isn't a vector of stochastic nodes.");
+//        }
+//    }
 
     
     RevBayesCore::Proposal *p = new RevBayesCore::SpeciesSubtreeScaleProposal(st,gt);
     value = new RevBayesCore::MetropolisHastingsMove(p,w);
     
+}
+
+
+RevPtr<RevVariable> Move_SpeciesSubtreeScale::executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found)
+{
+    
+    if ( name == "addGeneTreeVariable" )
+    {
+        found = true;
+        
+        RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+        
+        RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+        RevBayesCore::SpeciesSubtreeScaleProposal &p = static_cast<RevBayesCore::SpeciesSubtreeScaleProposal&>( m->getProposal() );
+        p.addGeneTree( gt );
+        
+        return NULL;
+    }
+    else if ( name == "removeGeneTreeVariable" )
+    {
+        found = true;
+        
+        RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+        
+        RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+        RevBayesCore::SpeciesSubtreeScaleProposal &p = static_cast<RevBayesCore::SpeciesSubtreeScaleProposal&>( m->getProposal() );
+        p.removeGeneTree( gt );
+        
+        return NULL;
+    }
+    
+    return Move::executeMethod( name, args, found );
 }
 
 
@@ -125,7 +163,7 @@ const MemberRules& Move_SpeciesSubtreeScale::getParameterRules(void) const
     if ( !rulesSet )
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-        memberRules.push_back( new ArgumentRule( "geneTrees"  , ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+//        memberRules.push_back( new ArgumentRule( "geneTrees"  , ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

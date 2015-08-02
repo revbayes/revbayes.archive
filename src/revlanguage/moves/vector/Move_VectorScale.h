@@ -1,7 +1,6 @@
 #ifndef Move_VectorScale_H
 #define Move_VectorScale_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

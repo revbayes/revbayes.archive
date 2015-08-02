@@ -1,15 +1,8 @@
-//
-//  Move_SliderUpDown.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/1/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_SliderUpDown.h"
 #include "Natural.h"
@@ -21,23 +14,26 @@
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "SliderUpDownMove.h"
+#include "SlideUpDownProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_SliderUpDown::Move_SliderUpDown() : Move() {
+Move_SliderUpDown::Move_SliderUpDown() : Move()
+{
     
 }
 
 /** Clone object */
-Move_SliderUpDown* Move_SliderUpDown::clone(void) const {
+Move_SliderUpDown* Move_SliderUpDown::clone(void) const
+{
     
 	return new Move_SliderUpDown(*this);
 }
 
 
-void Move_SliderUpDown::constructInternalObject( void ) {
+void Move_SliderUpDown::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -54,12 +50,9 @@ void Move_SliderUpDown::constructInternalObject( void ) {
     
     bool tv = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-	std::vector<RevBayesCore::DagNode*> valueVec;
-	valueVec.push_back( sv1 );
-	valueVec.push_back( sv2 );
+    RevBayesCore::Proposal *p = new RevBayesCore::SlideUpDownProposal(sv1, sv2, sf);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,tv);
     
-    
-    value = new RevBayesCore::SliderUpDownMove(valueVec, sf, tv, w);
 }
 
 

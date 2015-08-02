@@ -775,15 +775,17 @@ void MultispeciesCoalescent::simulateTree( void )
 void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == Nes)
+    if (oldP == Nes )
     {
         Nes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if ( oldP == Ne)
+    
+    if ( oldP == Ne )
     {
         Ne = static_cast<const TypedDagNode< double >* >( newP );
     }
-    else if ( oldP == speciesTree)
+    
+    if ( oldP == speciesTree )
     {
         speciesTree = static_cast<const TypedDagNode< TimeTree >* >( newP );
     }

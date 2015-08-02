@@ -178,13 +178,12 @@
 - (char)interpretAsStandard:(unsigned)x withLabels:(NSString*)labels {
     
     char stCode[32];
-    for (int i=0; i<[labels length]; i++)
+    for (size_t i=0; i<[labels length]; i++)
         stCode[i] = [labels characterAtIndex:i];
 
-    NSLog(@"x = %u", x);
 	char v = ' ';
 	int nOn = 0;
-	for (int i=0; i<[labels length]; i++)
+	for (size_t i=0; i<[labels length]; i++)
 		{
 		unsigned mask = 1 << i ;
 		if ( (x & mask) != 0 )
