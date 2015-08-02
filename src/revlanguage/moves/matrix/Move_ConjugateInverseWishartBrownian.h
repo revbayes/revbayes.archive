@@ -1,7 +1,6 @@
 #ifndef Move_ConjugateInverseWishartBrownian_H
 #define Move_ConjugateInverseWishartBrownian_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

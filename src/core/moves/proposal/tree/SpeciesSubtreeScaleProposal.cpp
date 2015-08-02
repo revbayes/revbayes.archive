@@ -19,12 +19,46 @@ SpeciesSubtreeScaleProposal::SpeciesSubtreeScaleProposal( StochasticNode<TimeTre
     speciesTree( sp ),
     geneTrees( gt )
 {
+    
     // tell the base class to add the node
     addNode( speciesTree );
     
     for (size_t i=0; i < geneTrees.size(); ++i)
     {
         addNode( geneTrees[i] );
+    }
+    
+}
+
+
+SpeciesSubtreeScaleProposal::~SpeciesSubtreeScaleProposal( void )
+{
+    
+}
+
+
+/**
+ * Add a new DAG node holding a gene tree on which this move operates on.
+ *
+ */
+void SpeciesSubtreeScaleProposal::addGeneTree(StochasticNode<TimeTree> *gt)
+{
+    // check if this node isn't already in our list
+    bool exists = false;
+    for (size_t i=0; i < geneTrees.size(); ++i)
+    {
+        if ( geneTrees[i] == gt )
+        {
+            exists = true;
+            break;
+        }
+    }
+    
+    // only add this variable if it doesn't exist in our list already
+    if ( exists != false )
+    {
+        geneTrees.push_back( gt );
+        addNode( gt );
     }
     
 }
@@ -104,7 +138,8 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
     // draw new ages and compute the hastings ratio at the same time
     double my_new_age = min_age + (parent_age - min_age) * rng->uniform01();
     
-    my_new_age = my_age;
+    // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
+//    my_new_age = my_age;
     
     double scaling_factor = my_new_age / my_age;
     
@@ -136,6 +171,9 @@ double SpeciesSubtreeScaleProposal::doProposal( void )
             TreeUtilities::rescaleSubtree(&gene_tree, nodes[j], scaling_factor );
             
         }
+        
+        // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
+//        geneTrees[i]->touch( true );
         
     }
     
@@ -255,6 +293,25 @@ void SpeciesSubtreeScaleProposal::printParameterSummary(std::ostream &o) const
 
 
 /**
+ * Remove a DAG node holding a gene tree on which this move operates on.
+ *
+ */
+void SpeciesSubtreeScaleProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
+{
+    // remove it from our list
+    for (size_t i=0; i < geneTrees.size(); ++i)
+    {
+        if ( geneTrees[i] == gt )
+        {
+            geneTrees.erase( geneTrees.begin() + i );
+            --i;
+        }
+    }
+    
+}
+
+
+/**
  * Reject the Proposal.
  *
  * Since the Proposal stores the previous value and it is the only place
@@ -313,12 +370,19 @@ void SpeciesSubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     }
     else
     {
+        size_t num_found_trees = 0;
         for ( size_t i=0; i<geneTrees.size(); ++i )
         {
             if ( oldN == geneTrees[i] )
             {
                 geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                ++num_found_trees;
             }
+        }
+        
+        if ( num_found_trees != 1 )
+        {
+            std::cerr << "Found " << num_found_trees << " DAG nodes matching to node \"" << oldN->getName() << "\".";
         }
     }
     

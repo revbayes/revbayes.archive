@@ -16,22 +16,17 @@ namespace RevBayesCore {
         
     public:
         RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
-        RateAgeBetaShift(const RateAgeBetaShift &m);                                                                                //!< Copy constructor
         virtual                                ~RateAgeBetaShift(void);                                                             //!< Destructor
-        
-        // overloaded operators
-        RateAgeBetaShift&                       operator=(const RateAgeBetaShift &m);                                               //!< Assignment operator
         
         // Basic utility functions
         RateAgeBetaShift*                       clone(void) const;                                                                  //!< Clone object
-        const std::set<DagNode*>&               getDagNodes(void) const;
         const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
-        void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         
     protected:
         void                                    performMove(double lHeat, double pHeat);                                 //!< Perform move
         void                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
+        void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         void                                    tune(void);
         
     private:
@@ -47,7 +42,6 @@ namespace RevBayesCore {
         double                                  storedAge;
         std::vector<double>                     storedRates;
         
-        std::set<DagNode*>                      nodes;
         size_t                                  numAccepted;
         
     };

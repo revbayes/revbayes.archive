@@ -305,21 +305,24 @@ void Mcmc::initializeSampler( bool priorOnly )
     std::set< const DagNode *> visited;
     getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
     
-    /* Get rid of previous move schedule, if any */
+    // Get rid of previous move schedule, if any
     if ( schedule )
     {
         delete schedule;
     }
     schedule = NULL;
     
-    /* Get initial lnProbability of model */
+    // Get initial lnProbability of model
     
     // first we touch all nodes so that the likelihood is dirty
     for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
     {
-        (*i)->setMcmcMode( true );
-        (*i)->setPriorOnly( priorOnly );
-        (*i)->touch();
+        
+        DagNode *the_node = *i;
+        the_node->setMcmcMode( true );
+        the_node->setPriorOnly( priorOnly );
+        the_node->touch();
+        
     }
     
     
@@ -496,7 +499,7 @@ void Mcmc::nextCycle(bool advanceCycle)
             if ( !(*it)->isConstant() )
             {
                 std::cerr << (*it)->getName() << " <" << (*it) << "> :" << std::endl;
-                (*it)->printValue( std::cerr, ", " );
+                (*it)->printValue( std::cerr );
                 std::cerr << std::endl << std::endl;
             }
         }
@@ -515,12 +518,12 @@ void Mcmc::nextCycle(bool advanceCycle)
             if ( !(*it)->isConstant() )
             {
                 std::cerr << (*it)->getName() << " <" << (*it) << "> :" << std::endl;
-                (*it)->printValue( std::cerr, ", " );
+                (*it)->printValue( std::cerr );
                 std::cerr << std::endl << std::endl;
             }
         }
         
-        getchar();
+//        getchar();
         
         std::cerr << std::endl << "With shortcuts" << std::endl;
 #endif
@@ -653,9 +656,10 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
     const std::vector<DagNode*>& modelNodes = model.getDagNodes();
     for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
     {
+        
         Move *theMove = it->clone();
-        std::set<DagNode*> nodes = theMove->getDagNodes();
-        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
+        std::vector<DagNode*> nodes = theMove->getDagNodes();
+        for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
             RevBayesCore::DagNode *theNode = *j;
@@ -664,7 +668,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             if ( theNode->getName() == "" )
             {
                 std::cerr << "The move has the following nodes:\n";
-                for (std::set<DagNode*>::const_iterator k = nodes.begin(); k != nodes.end(); ++k)
+                for (std::vector<DagNode*>::const_iterator k = nodes.begin(); k != nodes.end(); ++k)
                 {
                     std::cerr << (*k)->getName() << std::endl;
                 }
@@ -749,8 +753,10 @@ void Mcmc::reset( void )
     double movesPerIteration = 0.0;
     for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
+
         it->resetCounters();
         movesPerIteration += it->getUpdateWeight();
+        
     }
 
 }

@@ -18,7 +18,6 @@
 #ifndef Move_NNIClock_H
 #define Move_NNIClock_H
 
-#include "NearestNeighborInterchange.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

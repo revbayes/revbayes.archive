@@ -102,11 +102,10 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         }
         else
         {
-            /*
             const DagNode *orgCopy = n->second;
             std::cerr << "Ptr to org:\t" << orgCopy << "\t\t --- \t\t Ptr to desc:\t" << this << std::endl;
             std::cerr << "Cloning a DAG node with name '" << this->name << "' again, doh! Please tell this to Sebastian because it's most likely a bug." << std::endl;
-             */
+            
         }
     }
     
@@ -176,7 +175,8 @@ const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
  * At this point, we also need to make sure we update the stored ln probability.
  */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
+void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter )
+{
         
     if ( touched )
     {

@@ -18,7 +18,7 @@ RateMatrix::RateMatrix(void) : RateGenerator()
     methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
     
-    // add method for call "x[]" as a function
+    // add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
 
@@ -34,7 +34,7 @@ RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : RateGenerator( v.cl
     methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
     
-    // add method for call "x[]" as a function
+    // add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
 

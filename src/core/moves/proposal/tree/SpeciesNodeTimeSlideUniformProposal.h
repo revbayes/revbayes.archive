@@ -25,28 +25,30 @@ namespace RevBayesCore {
     class SpeciesNodeTimeSlideUniformProposal : public Proposal {
         
     public:
-        SpeciesNodeTimeSlideUniformProposal(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt);                                               //!<  constructor
+        SpeciesNodeTimeSlideUniformProposal(StochasticNode<TimeTree> *sp, const std::vector< StochasticNode<TimeTree> *> &gt);          //!<  constructor
         
         // Basic utility functions
-        void                                            cleanProposal(void);                                        //!< Clean up proposal
-        SpeciesNodeTimeSlideUniformProposal*            clone(void) const;                                          //!< Clone object
-        double                                          doProposal(void);                                           //!< Perform proposal
-        const std::string&                              getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
-        void                                            prepareProposal(void);                                      //!< Prepare the proposal
-        void                                            printParameterSummary(std::ostream &o) const;               //!< Print the parameter summary
-        void                                            tune(double r);                                             //!< Tune the proposal to achieve a better acceptance/rejection ratio
-        void                                            undoProposal(void);                                         //!< Reject the proposal
+        void                                            addGeneTree(StochasticNode<TimeTree> *gt);                                      //!< Add a DAG Node holding a gene tree on which this move should operate on
+        void                                            cleanProposal(void);                                                            //!< Clean up proposal
+        SpeciesNodeTimeSlideUniformProposal*            clone(void) const;                                                              //!< Clone object
+        double                                          doProposal(void);                                                               //!< Perform proposal
+        const std::string&                              getProposalName(void) const;                                                    //!< Get the name of the proposal for summary printing
+        void                                            prepareProposal(void);                                                          //!< Prepare the proposal
+        void                                            printParameterSummary(std::ostream &o) const;                                   //!< Print the parameter summary
+        void                                            removeGeneTree(StochasticNode<TimeTree> *gt);                                   //!< Remove a DAG Node holding a gene tree on which this move should operate on
+        void                                            tune(double r);                                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
+        void                                            undoProposal(void);                                                             //!< Reject the proposal
         
     protected:
         
         std::vector<TopologyNode*>                      getNodesInPopulation( TimeTree &tau, TopologyNode &n );
-        void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);             //!< Swap the DAG nodes on which the Proposal is working on
+        void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);                                 //!< Swap the DAG nodes on which the Proposal is working on
         
         
     private:
         
         // parameters
-        StochasticNode<TimeTree>*                       speciesTree;                                                   //!< The variable the Proposal is working on
+        StochasticNode<TimeTree>*                       speciesTree;                                                                    //!< The variable the Proposal is working on
         std::vector< StochasticNode<TimeTree> *>        geneTrees;
         
         // stored objects to undo proposal

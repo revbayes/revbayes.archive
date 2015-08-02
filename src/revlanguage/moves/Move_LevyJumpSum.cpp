@@ -1,20 +1,12 @@
-//
-//  Move_LevyJumpSum.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 4/4/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_LevyJumpSum.h"
 #include "Natural.h"
-#include "LevyJumpSumMove.h"
+#include "LevyJumpSumProposal.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -28,18 +20,21 @@
 
 using namespace RevLanguage;
 
-Move_LevyJumpSum::Move_LevyJumpSum() : Move() {
+Move_LevyJumpSum::Move_LevyJumpSum() : Move()
+{
     
 }
 
 /** Clone object */
-Move_LevyJumpSum* Move_LevyJumpSum::clone(void) const {
+Move_LevyJumpSum* Move_LevyJumpSum::clone(void) const
+{
     
 	return new Move_LevyJumpSum(*this);
 }
 
 
-void Move_LevyJumpSum::constructInternalObject( void ) {
+void Move_LevyJumpSum::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -56,12 +51,9 @@ void Move_LevyJumpSum::constructInternalObject( void ) {
     
     bool tv = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-	std::vector<RevBayesCore::DagNode*> valueVec;
-	valueVec.push_back( sv1 );
-	valueVec.push_back( sv2 );
+    RevBayesCore::Proposal *p = new RevBayesCore::LevyJumpSumProposal(sv1, sv2,sf);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,tv);
     
-    
-    value = new RevBayesCore::LevyJumpSumMove(valueVec, sf, tv, w);
 }
 
 

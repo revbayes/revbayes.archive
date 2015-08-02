@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "GibbsPruneAndRegraft.h"
+#include "GibbsPruneAndRegraftProposal.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -12,19 +13,22 @@
 
 using namespace RevLanguage;
 
-Move_GibbsPruneAndRegraft::Move_GibbsPruneAndRegraft() : Move() {
+Move_GibbsPruneAndRegraft::Move_GibbsPruneAndRegraft() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_GibbsPruneAndRegraft* Move_GibbsPruneAndRegraft::clone(void) const {
+Move_GibbsPruneAndRegraft* Move_GibbsPruneAndRegraft::clone(void) const
+{
     
     return new Move_GibbsPruneAndRegraft(*this);
 }
 
 
-void Move_GibbsPruneAndRegraft::constructInternalObject( void ) {
+void Move_GibbsPruneAndRegraft::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -32,7 +36,10 @@ void Move_GibbsPruneAndRegraft::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::GibbsPruneAndRegraft(t, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::GibbsPruneAndRegraftProposal(t);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w);
+    
 }
 
 

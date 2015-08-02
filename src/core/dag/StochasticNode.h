@@ -122,8 +122,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) :
-    DynamicNode<valueType>( n ),
+RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ),
     clamped( n.clamped ),
     ignoreRedraw(n.ignoreRedraw),
     needsProbabilityRecalculation( true ),
@@ -572,7 +571,7 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
     
-    if (!this->touched)
+    if ( this->touched == false )
     {
         storedLnProb = lnProb;
     }
