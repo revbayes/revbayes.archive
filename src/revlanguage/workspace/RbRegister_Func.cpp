@@ -227,6 +227,7 @@
 
 /* Math functions (in folder "functions/math") */
 #include "Func_abs.h"
+#include "Func_absVector.h"
 #include "Func_ceil.h"
 #include "Func_coala.h"
 #include "Func_diagonalMatrix.h"
@@ -461,7 +462,8 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         /* Math functions (in folder "functions/math") */
 		
 		// absolute function
-        addFunction( "abs",         new Func_abs()  );
+        addFunction( "abs",         new Func_abs()                  );
+        addFunction( "abs",         new Func_absVector()            );
 		
 		// ceil function
         addFunction( "ceil",        new Func_ceil<Real,Integer>()  );
