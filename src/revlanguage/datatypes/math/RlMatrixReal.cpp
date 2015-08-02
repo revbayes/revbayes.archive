@@ -20,41 +20,29 @@ using namespace RevLanguage;
 MatrixReal::MatrixReal(void) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(1,1,0) )
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("[]", new MemberFunction<MatrixReal,ModelVector<Real> >(this, squareBracketArgRules ) );
-
+    // initialize the member methods
+    initializeMethods();
 }
 
 MatrixReal::MatrixReal(const RevBayesCore::MatrixReal& from) : ModelObject<RevBayesCore::MatrixReal>( from.clone() )
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("[]", new MemberFunction<MatrixReal,ModelVector<Real> >(this, squareBracketArgRules ) );
-
+    // initialize the member methods
+    initializeMethods();
 }
 
 MatrixReal::MatrixReal(RevBayesCore::MatrixReal* m) : ModelObject<RevBayesCore::MatrixReal>( m )
 {
-
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("[]", new MemberFunction<MatrixReal,ModelVector<Real> >(this, squareBracketArgRules ) );
-
+    
+    // initialize the member methods
+    initializeMethods();
 }
 
 MatrixReal::MatrixReal( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : ModelObject<RevBayesCore::MatrixReal>( mat )
 {
     
-    // Add method for call "x[]" as a function
-    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("[]", new MemberFunction<MatrixReal,ModelVector<Real> >(this, squareBracketArgRules ) );
-
+    // initialize the member methods
+    initializeMethods();
 }
 
 
@@ -63,6 +51,30 @@ MatrixReal* MatrixReal::clone(void) const
 {
     
 	return new MatrixReal(*this);
+}
+
+
+/* Map calls to member methods */
+RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
+    
+    if (name == "min")
+    {
+        
+        found = true;
+        
+        double m = this->dagNode->getValue().getMin();
+        return new RevVariable( new Real( m ) );
+    }
+    else if (name == "max")
+    {
+        found = true;
+        
+        double m = this->dagNode->getValue().getMax();
+        return new RevVariable( new Real( m ) );
+    }
+    
+    return ModelObject<RevBayesCore::MatrixReal>::executeMethod( name, args, found );
 }
 
 
@@ -113,6 +125,24 @@ const TypeSpec& MatrixReal::getTypeSpec( void ) const
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+void MatrixReal::initializeMethods( void )
+{
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("[]", new MemberFunction<MatrixReal,ModelVector<Real> >(this, squareBracketArgRules ) );
+    
+    // add method for call "min" as a function
+    ArgumentRules* minArgRules = new ArgumentRules();
+    methods.addFunction("min",  new MemberProcedure( Real::getClassTypeSpec(), minArgRules) );
+    
+    // add method for call "max" as a function
+    ArgumentRules* maxArgRules = new ArgumentRules();
+    methods.addFunction("max",  new MemberProcedure( Real::getClassTypeSpec(), maxArgRules) );
+
 }
 
 

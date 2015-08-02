@@ -79,6 +79,8 @@ namespace RevBayesCore {
         const EigenSystem&                      getEigenSystem(void) const ;
         double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
+        double                                  getMax(void) const;
+        double                                  getMin(void) const;
         size_t                                  getNumberOfRows(void) const;
         bool                                    isDiagonal(void) const;
         bool                                    isPositive() const;
