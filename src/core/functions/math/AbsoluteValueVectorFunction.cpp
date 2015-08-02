@@ -28,7 +28,7 @@ void AbsoluteValueVectorFunction::swapParameterInternal(const DagNode *oldP, con
 
         // free the old value and allocate a new one of the right size
         delete value;
-        new RbVector<double>(a->getValue().size(), 0.0);
+        value = new RbVector<double>(a->getValue().size(), 0.0);
     }
     
 }
