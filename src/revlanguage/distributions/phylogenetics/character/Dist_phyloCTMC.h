@@ -156,6 +156,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
             
+            // sanity check
+            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+            }
+            
             dist->setRateMatrix( rm );
         } 
         else 
@@ -209,6 +215,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
+            // sanity check
+            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+            }
+
             
             dist->setRateMatrix( rm );
         } 
@@ -263,6 +275,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
+            // sanity check
+            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+            }
+
             
             dist->setRateMatrix( rm );
         } 
@@ -332,6 +350,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
+            // sanity check
+            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+            }
+
             
             dist->setRateMatrix( rm );
         }
@@ -400,6 +424,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
+            // sanity check
+            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+            }
+
             
             dist->setRateMatrix( rm );
         } 
@@ -469,6 +499,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
+            // sanity check
+            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+            }
+
             
             dist->setRateMatrix( rm );
         } 

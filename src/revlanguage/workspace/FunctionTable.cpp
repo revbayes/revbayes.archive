@@ -104,7 +104,8 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
  * to delete them. When that is completed, we
  * call the base class clear function.
  */
-void FunctionTable::clear(void) {
+void FunctionTable::clear(void)
+{
     
     for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
         delete( i->second );
@@ -115,14 +116,16 @@ void FunctionTable::clear(void) {
 
 
 /** Return a type-safe clone of the function table */
-FunctionTable* FunctionTable::clone( void ) const {
+FunctionTable* FunctionTable::clone( void ) const
+{
     
     return new FunctionTable( *this );
 }
 
 
 /** Erase function. @todo This does not work if there are several functions with the same name. Also memory leak. */
-void FunctionTable::eraseFunction(const std::string& name) {
+void FunctionTable::eraseFunction(const std::string& name)
+{
 
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
