@@ -8,13 +8,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_abs::Func_abs( void ) : TypedFunction<RealPos>( ) {
+Func_abs::Func_abs( void ) : TypedFunction<RealPos>( )
+{
     
 }
 
 
 /** Clone object */
-Func_abs* Func_abs::clone( void ) const {
+Func_abs* Func_abs::clone( void ) const
+{
     
     return new Func_abs( *this );
 }

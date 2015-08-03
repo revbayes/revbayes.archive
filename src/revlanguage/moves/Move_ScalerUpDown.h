@@ -17,7 +17,6 @@
 #ifndef Move_ScalerUpDown_H
 #define Move_ScalerUpDown_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

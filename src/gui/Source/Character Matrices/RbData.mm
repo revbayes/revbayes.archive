@@ -10,6 +10,7 @@
 @synthesize isHomologyEstablished;
 @synthesize name;
 @synthesize alignmentMethod;
+@synthesize stateLabels;
 @synthesize numCharacters;
 @synthesize numTaxa;
 
@@ -32,6 +33,23 @@
     if (c >= [td numCharacters])
         return nil;
     return [td dataCellIndexed:c];
+}
+
+- (char)stateWithRow:(size_t)r andColumn:(int)c {
+
+    // get the data cell
+    RbDataCell* dc = nil;
+    if (r >= [data count])
+        dc = nil;
+    RbTaxonData* td = [data objectAtIndex:r];
+    if (c >= [td numCharacters])
+        dc = nil;
+    dc = [td dataCellIndexed:c];
+    if (dc == nil)
+        return ' ';
+    
+    char ch = [dc getDiscreteStateWithLabels:stateLabels];
+    return ch;
 }
 
 - (void)cleanName:(NSString*)nameStr {
@@ -80,6 +98,7 @@
 	[aCoder encodeInt:numCharacters          forKey:@"numCharacters"];
 	[aCoder encodeObject:data                forKey:@"data"];
 	[aCoder encodeObject:name                forKey:@"name"];
+	[aCoder encodeObject:stateLabels         forKey:@"stateLabels"];
 	[aCoder encodeObject:taxonNames          forKey:@"taxonNames"];
 	[aCoder encodeObject:excludedTaxa        forKey:@"excludedTaxa"];
 	[aCoder encodeObject:excludedCharacters  forKey:@"excludedCharacters"];
@@ -154,6 +173,7 @@
 		name            = [[NSString alloc] init];
 		taxonNames      = [[NSMutableArray alloc] init];
         alignmentMethod = [[NSString alloc] init];
+		stateLabels     = [[NSString alloc] init];
 		
 		// allocate sets keeping track of excluded taxa and characters
 		excludedTaxa        = [[NSMutableSet alloc] init];
@@ -181,6 +201,7 @@
 		data                  = [aDecoder decodeObjectForKey:@"data"];
 		name                  = [aDecoder decodeObjectForKey:@"name"];
 		taxonNames            = [aDecoder decodeObjectForKey:@"taxonNames"];
+		stateLabels           = [aDecoder decodeObjectForKey:@"stateLabels"];
 		excludedTaxa          = [aDecoder decodeObjectForKey:@"excludedTaxa"];
 		excludedCharacters    = [aDecoder decodeObjectForKey:@"excludedCharacters"];
         copiedFrom            = [aDecoder decodeObjectForKey:@"copiedFrom"];
@@ -197,6 +218,7 @@
 		name            = @"";
 		taxonNames      = [[NSMutableArray alloc] init];
         alignmentMethod = @"";
+        stateLabels     = @"";
 		
 		// allocate sets keeping track of excluded taxa and characters
 		excludedTaxa       = [[NSMutableSet alloc] init];
@@ -215,6 +237,7 @@
             isHomologyEstablished = [d isHomologyEstablished];
             [self setName:[d name]];
             [self setAlignmentMethod:[d alignmentMethod]];
+            [self setStateLabels:[d stateLabels]];
             if ( [d copiedFrom] == nil )
                 copiedFrom = d;
             else
@@ -433,7 +456,7 @@
             [outStr appendString:@"#NEXUS\n\n"];
             [outStr appendString:@"begin data;\n"];
             [outStr appendFormat:@"   dimensions ntax=%d nchar=%d;\n", numTaxa, numCharacters];
-            [outStr appendString:@"   format symbols=\"0123456789ACGTU\" missing=? equate=\"N=?\" gap=-;\n"];
+            [outStr appendFormat:@"   format symbols=\"%@\" missing=? equate=\"N=?\" gap=-;\n", stateLabels];
             [outStr appendString:@"   matrix\n"];
             for (int i=0; i<numTaxa; i++)
                 {

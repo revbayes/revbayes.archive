@@ -72,7 +72,6 @@ namespace RevLanguage {
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "BiogeographyNodeRejectionSampleProposal.h"
 #include "BiogeographyPathRejectionSampleProposal.h"
-#include "PathRejectionSampleMove.h"
 #include "NodeRejectionSampleProposal.h"
 #include "PathUniformizationSampleProposal.h"
 #include "NodeUniformizationSampleProposal.h"
@@ -96,8 +95,6 @@ namespace RevLanguage {
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
-// to be removed once MH moves work
-#include "PathRejectionSampleMove.h"
 #include "StandardState.h"
 
 
@@ -178,13 +175,17 @@ void RevLanguage::Move_CharacterHistory<treeType>::constructInternalObject( void
         {
 //            RevBayesCore::Proposal* p2 = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
             p = new RevBayesCore::BiogeographyNodeRejectionSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
-            value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, p, d, false, w);
+//            value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, p, d, false, w);
+            value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
+
             return;
         }
         else if (gt == "branch")
         {
             p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, d);
-            value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, p, d, false, w);
+//            value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, typename treeType::valueType>(ctmc_sn, tree_sn, qmap_dn, p, d, false, w);
+            value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
+
             return;
         }
     }

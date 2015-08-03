@@ -196,6 +196,7 @@ size_t RevVariable::getReferenceCount(void) const
 /* Get the value of the RevVariable */
 RevObject& RevVariable::getRevObject(void) const
 {
+    
     if ( isReferenceVar )
     {
         return referencedVariable->getRevObject();

@@ -18,7 +18,6 @@
 #ifndef Move_SPRNonclock_H
 #define Move_SPRNonclock_H
 
-#include "SubtreePruneRegraft.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -34,7 +33,7 @@ namespace RevLanguage {
         Move_SPRNonclock(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Move_SPRNonclock*    clone(void) const;                                                      //!< Clone object
+        virtual Move_SPRNonclock*                       clone(void) const;                                                      //!< Clone object
         void                                            constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -46,7 +45,7 @@ namespace RevLanguage {
         
         void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
-        RevPtr<const RevVariable>                          tree;
+        RevPtr<const RevVariable>                       tree;
         
     };
     

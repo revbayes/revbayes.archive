@@ -1,37 +1,35 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_NNIClock.h"
+#include "NearestNeighborInterchangeProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlTimeTree.h"
+#include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Move_NNIClock::Move_NNIClock() : Move() {
+Move_NNIClock::Move_NNIClock() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_NNIClock* Move_NNIClock::clone(void) const {
+Move_NNIClock* Move_NNIClock::clone(void) const
+{
     
 	return new Move_NNIClock(*this);
 }
 
 
-void Move_NNIClock::constructInternalObject( void ) {
+void Move_NNIClock::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -39,7 +37,10 @@ void Move_NNIClock::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::NearestNeighborInterchange(t, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::NearestNeighborInterchangeProposal( t );
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
+    
 }
 
 

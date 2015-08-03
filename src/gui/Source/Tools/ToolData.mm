@@ -219,7 +219,6 @@
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd andDataType:(const std::string&)dt {
 
-    cd.show(std::cout);
     std::string fn = cd.getFileName();
     
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
@@ -252,7 +251,13 @@
             }
         [m setNumCharacters:(int)maxLen];
         }
-        
+    
+    // get the state labels
+    std::string stateLabels = cd.getStateLabels();
+    NSString* sl = [NSString stringWithCString:(stateLabels.c_str()) encoding:NSUTF8StringEncoding];
+    [m setStateLabels:sl];
+    NSLog(@"state labels = %@", [m stateLabels]);
+    
     [m setName:nsfn];
     if ( dt == "DNA" )
         [m setDataType:DNA];
@@ -275,7 +280,6 @@
         [rbTaxonData setTaxonName:taxonName];
         for (size_t j=0; j<td.getNumberOfCharacters(); j++)
             {
-            // Sebastian: This code needs to be fixed!!!
             RbDataCell* cell = [[RbDataCell alloc] init];
             [cell setDataType:[m dataType]];
             if ( [m dataType] != CONTINUOUS )

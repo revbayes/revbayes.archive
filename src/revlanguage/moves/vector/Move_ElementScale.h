@@ -1,7 +1,6 @@
 #ifndef Move_ElementScale_H
 #define Move_ElementScale_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

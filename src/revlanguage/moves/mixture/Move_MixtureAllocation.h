@@ -1,7 +1,6 @@
 #ifndef Move_MixtureAllocation_H
 #define Move_MixtureAllocation_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -48,8 +47,9 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
-#include "MixtureAllocationMove.h"
+#include "MixtureAllocationProposal.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -85,7 +85,9 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::constructInternalObject( 
     RevBayesCore::TypedDagNode<typename rlValueType::valueType>* tmp = static_cast<const rlValueType &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< typename rlValueType::valueType > *sn = static_cast<RevBayesCore::StochasticNode< typename rlValueType::valueType > *>( tmp );
     
-    value = new RevBayesCore::MixtureAllocationMove<typename rlValueType::valueType>(sn, w);
+    RevBayesCore::Proposal *p = new RevBayesCore::MixtureAllocationProposal<typename rlValueType::valueType>( sn );
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
+
 }
 
 

@@ -418,6 +418,14 @@ bool AbstractHomologousDiscreteCharacterData::isModelObject( void ) const
 
 void AbstractHomologousDiscreteCharacterData::initMethods( void )
 {
+
+    // add the DAG node member methods
+    // note that this is a sage case because all DAG nodes are member objects
+    if ( dagNode != NULL )
+    {
+        const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
+        methods.insertInheritedMethods( dagMethods );
+    }
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -481,7 +489,6 @@ void AbstractHomologousDiscreteCharacterData::makeConstantValue( void )
  */
 AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::makeIndirectReference(void)
 {
-    //    IndirectReferenceNode< RevLanguage::ModelObject<rbType> >* newNode = new IndirectReferenceNode< RevLanguage::ModelObject<rbType> >( "", this->getDagNode() );
     
     RevBayesCore::IndirectReferenceFunction< valueType > *func = new RevBayesCore::IndirectReferenceFunction<valueType>( this->getDagNode() );
     RevBayesCore::DeterministicNode< valueType >* newNode = new RevBayesCore::DeterministicNode< valueType >( "", func );

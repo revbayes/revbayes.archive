@@ -26,78 +26,75 @@ namespace RevBayesCore {
     class AbstractCharacterData : public Cloneable {
     
     public:    
-        virtual                                ~AbstractCharacterData(void);  
+        virtual                                    ~AbstractCharacterData(void);
         
         // Overloaded operators
-        virtual const AbstractTaxonData&        operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
+        virtual const AbstractTaxonData&            operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
     
-        virtual bool                            operator==(const AbstractCharacterData &rm) const { return this == &rm; }
-        virtual bool                            operator!=(const AbstractCharacterData &rm) const { return !operator==(rm); }
-        virtual bool                            operator<(const AbstractCharacterData &rm) const { return this < &rm; }
-        virtual bool                            operator<=(const AbstractCharacterData &rm) const { return operator<(rm) || operator==(rm); }
+        virtual bool                                operator==(const AbstractCharacterData &rm) const { return this == &rm; }
+        virtual bool                                operator!=(const AbstractCharacterData &rm) const { return !operator==(rm); }
+        virtual bool                                operator<(const AbstractCharacterData &rm) const { return this < &rm; }
+        virtual bool                                operator<=(const AbstractCharacterData &rm) const { return operator<(rm) || operator==(rm); }
 
         // methods of the Cloneable interface
-        virtual AbstractCharacterData*          clone(void) const = 0;
+        virtual AbstractCharacterData*              clone(void) const = 0;
         
         // Container functions
-        void                                    clear(void);
-    
-        
-        void                                    addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
-        void                                    excludeTaxon(size_t i);                                                     //!< Exclude taxon
-        void                                    excludeTaxon(const std::string& s);                                         //!< Exclude taxon
-        const std::string&                      getFileName(void) const;                                                    //!< Returns the name of the file the data came from
-        const std::string&                      getFilePath(void) const;                                                    //!< Returns the name of the file path
-        size_t                                  getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
-        size_t                                  getNumberOfTaxa(void) const;                                                //!< Number of taxa
-        size_t                                  getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
-        double                                  getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
-        AbstractTaxonData&                      getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
-        const AbstractTaxonData&                getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
-        AbstractTaxonData&                      getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
-        const AbstractTaxonData&                getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
-        const std::vector<std::string>&         getTaxonNames(void) const;                                                  //!< Get the names of the taxa
-        const std::string&                      getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
-        void                                    includeTaxon(const std::string& s);                                         //!< Include taxon
-        bool                                    isSequenceMissing(const std::string &n) const;                              //!< Returns whether the contains only missing data or has some actual observations
-        bool                                    isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
-        bool                                    isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
-        void                                    restoreTaxon(size_t i);                                                     //!< Restore taxon
-        void                                    restoreTaxon(const std::string& s);                                         //!< Restore taxon
-        void                                    setFileName(const std::string &fn);                                         //!< Set the file name
-        void                                    setFilePath(const std::string &fn);                                         //!< Set the file path
-        void                                    setTaxonName(const std::string& currentName, const std::string& newName);   //!< Change the name of a taxon
-        void                                    show(std::ostream &out) const;                                              //!< Show the entire content
+        void                                        clear(void);
+        void                                        addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
+        void                                        excludeTaxon(size_t i);                                                     //!< Exclude taxon
+        void                                        excludeTaxon(const std::string& s);                                         //!< Exclude taxon
+        const std::string&                          getFileName(void) const;                                                    //!< Returns the name of the file the data came from
+        const std::string&                          getFilePath(void) const;                                                    //!< Returns the name of the file path
+        size_t                                      getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
+        size_t                                      getNumberOfTaxa(void) const;                                                //!< Number of taxa
+        size_t                                      getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
+        double                                      getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
+        AbstractTaxonData&                          getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
+        const AbstractTaxonData&                    getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
+        AbstractTaxonData&                          getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
+        const AbstractTaxonData&                    getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
+        const std::vector<std::string>&             getTaxonNames(void) const;                                                  //!< Get the names of the taxa
+        const std::string&                          getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        std::string                                 getStateLabels(void);                                                       //!< Get the possible state labels
+        std::string                                 getStateLabels(void) const;                                                 //!< Get the possible state labels
+        void                                        includeTaxon(const std::string& s);                                         //!< Include taxon
+        bool                                        isSequenceMissing(const std::string &n) const;                              //!< Returns whether the contains only missing data or has some actual observations
+        bool                                        isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
+        bool                                        isTaxonExcluded(const std::string& s) const;                                //!< Is the taxon excluded
+        void                                        restoreTaxon(size_t i);                                                     //!< Restore taxon
+        void                                        restoreTaxon(const std::string& s);                                         //!< Restore taxon
+        void                                        setFileName(const std::string &fn);                                         //!< Set the file name
+        void                                        setFilePath(const std::string &fn);                                         //!< Set the file path
+        void                                        setTaxonName(const std::string& currentName, const std::string& newName);   //!< Change the name of a taxon
+        void                                        show(std::ostream &out) const;                                              //!< Show the entire content
         
         
         // CharacterData functions
-//        virtual AbstractCharacterData&          concatenate(const AbstractCharacterData &d) = 0;                                //!< Concatenate two sequences
-        virtual std::string                     getDatatype(void) const = 0;                                                    //!< Return the data type of this character data matrix
-        virtual bool                            isHomologyEstablished(void) const = 0;                                          //!< Returns whether the homology of the characters has been established
+//      virtual AbstractCharacterData&              concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate two sequences
+        virtual std::string                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
+        virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         
     protected:
-        AbstractCharacterData();                                                                                      //!< Constructor requires character type
-        AbstractCharacterData(const AbstractCharacterData &d);                                                                                      //!< Constructor requires character type
+                                                    AbstractCharacterData(void);                                                //!< Constructor requires character type
+                                                    AbstractCharacterData(const AbstractCharacterData &d);                      //!< Constructor requires character type
 
-        AbstractCharacterData&                              operator=(const AbstractCharacterData &d);                                                                                      //!< Constructor requires character type
+        AbstractCharacterData&                      operator=(const AbstractCharacterData &d);                                                                                      //!< Constructor requires character type
 
 
         // Utility functions
-        size_t                                              indexOfTaxonWithName(const std::string& s) const;                           //!< Get the index of the taxon
+        size_t                                      indexOfTaxonWithName(const std::string& s) const;                           //!< Get the index of the taxon
         
         // Member variables
-        std::set<size_t>                                    deletedTaxa;                                                                //!< Set of deleted taxa
-        std::string                                         fileName;                                                                   //!< The path/filename from where this matrix originated
-        std::string                                         filePath;                                                                   //!< The path/filename from where this matrix originated
-        std::vector<std::string>                            sequenceNames;                                                              //!< names of the sequences
-        
-        std::map<std::string, AbstractTaxonData* >          taxonMap;
-
+        std::set<size_t>                            deletedTaxa;                                                                //!< Set of deleted taxa
+        std::string                                 fileName;                                                                   //!< The path/filename from where this matrix originated
+        std::string                                 filePath;                                                                   //!< The path/filename from where this matrix originated
+        std::vector<std::string>                    sequenceNames;                                                              //!< names of the sequences
+        std::map<std::string, AbstractTaxonData* >  taxonMap;
     };
     
     // Global functions using the class
     std::ostream&                               operator<<(std::ostream& o, const AbstractCharacterData& x);                    //!< Overloaded output operator
-
 }
 
 #endif

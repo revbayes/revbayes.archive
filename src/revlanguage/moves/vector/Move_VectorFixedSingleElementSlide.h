@@ -18,7 +18,6 @@
 #ifndef Move_VectorFixedSingleElementSlide_H
 #define Move_VectorFixedSingleElementSlide_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

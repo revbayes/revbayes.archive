@@ -43,8 +43,8 @@ namespace RevBayesCore {
 
 template<class firstValueType, class secondValueType, class returnType>
 RevBayesCore::VectorScalarSubtraction<firstValueType, secondValueType, returnType>::VectorScalarSubtraction(const TypedDagNode< RbVector<firstValueType> > *l, const TypedDagNode< secondValueType > *r) : TypedFunction< RbVector<returnType> >( new RbVector<returnType>() ),
-a( l ),
-b( r )
+    a( l ),
+    b( r )
 {
     this->addParameter( l );
     this->addParameter( r );

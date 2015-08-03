@@ -8,7 +8,6 @@
 #ifndef Move_MatrixSingleElementSlide_H
 #define Move_MatrixSingleElementSlide_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
