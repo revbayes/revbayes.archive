@@ -109,7 +109,7 @@
 #include "Dist_PhyloMvtBrownian.h"
 #include "Dist_PhyloWhiteNoise.h"
 
-/* Tree priors (in folder "distributions/evolution/tree") */
+/* Tree priors (in folder "distributions/phylogenetics/tree") */
 #include "Dist_bdp.h"
 #include "Dist_bdpTopology.h"
 #include "Dist_BirthDeathMultiRate.h"
@@ -118,6 +118,7 @@
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
+#include "Dist_phyloDistanceGamma.h"
 #include "Dist_serialBDP.h"
 #include "Dist_skySerialBDP.h"
 #include "Dist_skyFossilBDP.h"
@@ -261,8 +262,11 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<BranchLengthTree>() );
         addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<TimeTree>() );
 		
+		// Distance Matrix Gamma distribution
+		addDistribution( "dnPhyloDistanceGamma",             new Dist_phyloDistanceGamma<BranchLengthTree>() );
+		addDistribution( "dnPhyloDistanceGamma",             new Dist_phyloDistanceGamma<TimeTree>() );
+
 		
-        
         /* Statistical distributions on simple variables (in folder "distributions/math") */
         
         // bernoulli distribution

@@ -112,8 +112,8 @@ const std::string& Func_phyloDiversity<treeType>::getClassType(void) {
 template <class treeType>
 const TypeSpec& Func_phyloDiversity<treeType>::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-    
+	static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<treeType>::getClassTypeSpec() ) );
+	
     return revTypeSpec;
 }
 

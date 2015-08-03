@@ -7,6 +7,7 @@
 //
 
 #include "BranchLengthTree.h"
+#include "MatrixReal.h"
 #include "RbException.h"
 #include "StringUtilities.h"
 #include "TimeTree.h"
@@ -15,6 +16,8 @@
 
 #include <algorithm>
 #include <iostream>
+
+using namespace RevBayesCore;
 
 void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth)
 {
@@ -258,3 +261,88 @@ std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const Top
     }
     
 }
+
+
+
+void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
+{
+	distsToNodeFather.clear();
+	
+	// node-is-leaf case
+	if ( node.isTip() )
+	{
+		distsToNodeFather.push_back(make_pair ( node.getName(), node.getBranchLength() ) );
+		return;
+	}
+	
+	// For all leaves in node's subtree, get leaf-to-node distances.
+	// Leaves are ordered according to the children of node.
+	std::map< size_t, std::vector< std::pair<std::string, double> > > leavesDists;
+	for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
+	{
+		const RevBayesCore::TopologyNode* child = &( node.getChild(i) );
+		processDistsInSubtree(*child, matrix, leavesDists[child->getIndex()], namesToId); // recursivity
+	}
+	
+	// Write leaf-leaf distances to the distance matrix.
+	// Only pairs in which the two leaves belong to different
+	// children are considered.
+	for (size_t son1_loc = 0; son1_loc < node.getNumberOfChildren(); ++son1_loc)
+	{
+		for (size_t son2_loc = 0; son2_loc < son1_loc; ++son2_loc)
+		{
+			const RevBayesCore::TopologyNode* son1 = &(node.getChild(son1_loc) );
+			const RevBayesCore::TopologyNode* son2 = &(node.getChild(son2_loc) );
+			
+			for (std::vector< std::pair<std::string, double> >::iterator son1_leaf = leavesDists[son1->getIndex()].begin();
+				 son1_leaf != leavesDists[son1->getIndex()].end();
+				 ++son1_leaf)
+			{
+				for (std::vector< std::pair<std::string, double> >::iterator son2_leaf = leavesDists[son2->getIndex()].begin();
+					 son2_leaf != leavesDists[son2->getIndex()].end();
+					 ++son2_leaf)
+				{
+					int son1_leaf_id = namesToId.at( son1_leaf->first );
+					int son2_leaf_id = namesToId.at( son2_leaf->first );
+					matrix[son1_leaf_id] [son2_leaf_id] =
+					matrix[son2_leaf_id] [son1_leaf_id] =
+					( son1_leaf->second + son2_leaf->second );
+				}
+			}
+		}
+	}
+	
+	// node-is-root case
+	if (node.isRoot())
+	{
+		// node-is-root-and-leaf case
+		if (node.isTip() )
+		{
+			std::string root_name = node.getName();
+			for (std::vector< std::pair<std::string, double> >::iterator other_leaf = leavesDists[node.getChild(0).getIndex()].begin();
+				 other_leaf != leavesDists[node.getChild(0).getIndex()].end();
+				 ++other_leaf)
+			{
+				matrix [ namesToId.at(root_name) ] [ namesToId.at(other_leaf->first) ]= matrix[ namesToId.at(other_leaf->first) ] [ namesToId.at(root_name) ] = other_leaf->second;
+			}
+		}
+		
+		return;
+	}
+	
+	
+	// Get distances from node's parent to considered leaves
+	distsToNodeFather.clear();
+	double nodeToFather = node.getBranchLength();
+	
+	for (std::map<const size_t, std::vector<std::pair<std::string, double> > >::iterator son = leavesDists.begin(); son != leavesDists.end(); ++son)
+	{
+		for (std::vector< std::pair<std::string, double> >::iterator leaf = (son->second).begin(); leaf != (son->second).end(); ++leaf)
+		{
+			distsToNodeFather.push_back(make_pair(leaf->first, (leaf->second + nodeToFather)));
+		}
+	}
+	
+}
+
+

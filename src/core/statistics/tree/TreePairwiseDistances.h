@@ -11,6 +11,7 @@
 #define __revbayes_bboussau__TreePairwiseDistances__
 
 #include "Tree.h"
+#include "TreeUtilities.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 #include "MatrixReal.h"
@@ -38,7 +39,7 @@ namespace RevBayesCore {
         void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                            //!< Implementation of swaping parameters
         
     private:
-		void processDistsInSubtree(const TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
+	/*	void processDistsInSubtree(const TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);*/
 		RevBayesCore::MatrixReal* getDistanceMatrix(const TypedDagNode<treeType>& tree);
 		
 
@@ -77,7 +78,7 @@ TreePairwiseDistances<treeType>* TreePairwiseDistances<treeType>::clone( void ) 
     return new TreePairwiseDistances<treeType>( *this );
 }
 
-
+/*
 template<class treeType>
 void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
 {
@@ -158,14 +159,16 @@ void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode& 
 		}
 	}
 
-}
+}*/
 
 
 template<class treeType>
 RevBayesCore::MatrixReal* TreePairwiseDistances<treeType>::getDistanceMatrix(const TypedDagNode<treeType>& tree)
 {
 
-	RevBayesCore::MatrixReal* matrix = new RevBayesCore::MatrixReal( tree.getValue().getNumberOfTips() );
+	RevBayesCore::MatrixReal* matrix = TreeUtilities::getDistanceMatrix ( tree.getValue() );
+	
+	/*new RevBayesCore::MatrixReal( tree.getValue().getNumberOfTips() );
 
 	std::vector<std::string> names = tree.getValue().getTipNames( ) ;
 	
@@ -179,7 +182,7 @@ RevBayesCore::MatrixReal* TreePairwiseDistances<treeType>::getDistanceMatrix(con
 
 	std::vector< std::pair<std::string, double> > distsToRoot;
 
-	processDistsInSubtree( tree.getValue().getRoot() , *matrix, distsToRoot, namesToId);
+	processDistsInSubtree( tree.getValue().getRoot() , *matrix, distsToRoot, namesToId);*/
 
 	return matrix;
 }
