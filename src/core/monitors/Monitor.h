@@ -48,6 +48,7 @@ namespace RevBayesCore {
         virtual void                                monitor(unsigned long gen) = 0;                                     //!< InferenceMonitor at generation gen
 
         // methods you may want to overwrite
+        virtual void                                addVariable(DagNode *n);
         virtual void                                swapNode(DagNode *oldN, DagNode *newN);
         virtual void                                closeStream(void);                                                  //!< Close stream after finish writing
         virtual void                                openStream(void);                                                   //!< Open the stream for writing
@@ -55,6 +56,7 @@ namespace RevBayesCore {
         virtual void                                setModel(Model* m);
         virtual void                                setReplicateIndex(size_t idx);                                      //!< Set the index of the replicate here.
         virtual void                                setStoneIndex(size_t idx);                                          //!< Set the index of the stone here.
+        virtual void                                removeVariable(DagNode *n);
         virtual void                                reset(size_t numCycles);                                            //!< Reset the monitor for a new start.
 
         // getters and setters
