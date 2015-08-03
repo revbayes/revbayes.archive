@@ -32,9 +32,11 @@
 
 - (float)getContinuousState;
 - (char)getDiscreteState;
+- (char)getDiscreteStateWithLabels:(NSString*)labels;
 - (char)interpretAsAminoAcid:(unsigned)x;
 - (char)interpretAsDna:(unsigned)x;
 - (char)interpretAsStandard:(unsigned)x;
+- (char)interpretAsStandard:(unsigned)x withLabels:(NSString*)labels;
 - (id)initWithCell:(RbDataCell*)c;
 - (void)setDiscreteStateTo:(int)x; 
 - (unsigned)unsignedRepresentation;

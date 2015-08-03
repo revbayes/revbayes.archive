@@ -15,7 +15,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt ) : Proposal(),
+SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( StochasticNode<TimeTree> *sp, const std::vector< StochasticNode<TimeTree> *> &gt ) : Proposal(),
     speciesTree( sp ),
     geneTrees( gt )
 {
@@ -25,6 +25,33 @@ SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( Stocha
     for (size_t i=0; i < geneTrees.size(); ++i)
     {
         addNode( geneTrees[i] );
+    }
+    
+}
+
+
+/**
+ * Add a new DAG node holding a gene tree on which this move operates on.
+ *
+ */
+void SpeciesNodeTimeSlideUniformProposal::addGeneTree(StochasticNode<TimeTree> *gt)
+{
+    // check if this node isn't already in our list
+    bool exists = false;
+    for (size_t i=0; i < geneTrees.size(); ++i)
+    {
+        if ( geneTrees[i] == gt )
+        {
+            exists = true;
+            break;
+        }
+    }
+    
+    // only add this variable if it doesn't exist in our list already
+    if ( exists != false )
+    {
+        geneTrees.push_back( gt );
+        addNode( gt );
     }
     
 }
@@ -73,6 +100,7 @@ const std::string& SpeciesNodeTimeSlideUniformProposal::getProposalName( void ) 
  */
 double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
 {
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -92,7 +120,8 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
     double child_Age   = node->getChild( 0 ).getAge();
-    if ( child_Age < node->getChild( 1 ).getAge()) {
+    if ( child_Age < node->getChild( 1 ).getAge())
+    {
         child_Age = node->getChild( 1 ).getAge();
     }
     
@@ -102,6 +131,9 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
     
     // draw new ages and compute the hastings ratio at the same time
     double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
+    
+    // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
+//    my_new_age = my_age; 
     
     int upslideNodes = 0;
     int downslideNodes = 0;
@@ -132,6 +164,9 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
             // set the new age of this gene tree node
             geneTree.setAge( nodes[j]->getIndex(), new_a );
         }
+        
+        // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
+//        geneTrees[i]->touch( true );
         
     }
     
@@ -355,10 +390,29 @@ void SpeciesNodeTimeSlideUniformProposal::undoProposal( void )
 
 
 /**
+ * Remove a DAG node holding a gene tree on which this move operates on.
+ *
+ */
+void SpeciesNodeTimeSlideUniformProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
+{
+    // remove it from our list
+    for (size_t i=0; i < geneTrees.size(); ++i)
+    {
+        if ( geneTrees[i] == gt )
+        {
+            geneTrees.erase( geneTrees.begin() + i );
+            --i;
+        }
+    }
+    
+}
+
+
+/**
  * Swap the current variable for a new one.
  *
  * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new RevVariable.
+ * \param[in]     newN     The new variable.
  */
 void SpeciesNodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {

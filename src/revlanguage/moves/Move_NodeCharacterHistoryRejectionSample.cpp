@@ -32,8 +32,6 @@
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
-// to be removed once MH moves work
-#include "PathRejectionSampleMove.h"
 #include "StandardState.h"
 
 

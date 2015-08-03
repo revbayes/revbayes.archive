@@ -12,6 +12,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
@@ -19,7 +20,7 @@
 #include "RevObject.h"
 #include "RlBoolean.h"
 #include "MatrixReal.h"
-#include "MatrixRealSymmetricSlideMove.h"
+#include "MatrixRealSymmetricSingleElementSlidingProposal.h"
 #include "RlMatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -51,7 +52,9 @@ void Move_MatrixRealSymmetricSlide::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* tmp = static_cast<const MatrixRealSymmetric &>( mat->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    value = new RevBayesCore::MatrixRealSymmetricSlideMove(matrix, l, t, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSymmetricSingleElementSlidingProposal(matrix,l);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
         
 }
 

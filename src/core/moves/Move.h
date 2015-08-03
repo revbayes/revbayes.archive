@@ -30,7 +30,7 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual void                                            autoTune(void) = 0;                                     //!< Automatic tuning of the move.
         virtual Move*                                           clone(void) const = 0;                                  //!< Create a deep copy.
-        virtual const std::set<DagNode*>&                       getDagNodes(void) const = 0;                            //!< Get the nodes vector
+        virtual const std::vector<DagNode*>&                    getDagNodes(void) const = 0;                            //!< Get the nodes vector
         virtual const std::string&                              getMoveName(void) const = 0;                            //!< Get the name of the move for summary printing
         virtual double                                          getUpdateWeight(void) const = 0;                        //!< Get update weight of InferenceMove
         virtual bool                                            isActive(unsigned long gen) const = 0;                  //!< Is this move active?

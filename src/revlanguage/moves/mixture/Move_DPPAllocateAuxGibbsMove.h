@@ -1,9 +1,7 @@
 #ifndef Move_DPPAllocateAuxGibbsMove_H
 #define Move_DPPAllocateAuxGibbsMove_H
 
-#include "MoveOld.h"
 #include "RlMove.h"
-#include "SimpleMove.h"
 #include "TypedDagNode.h"
 
 #include <ostream>

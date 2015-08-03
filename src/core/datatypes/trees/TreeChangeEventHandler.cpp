@@ -62,6 +62,7 @@ void TreeChangeEventHandler::fire(const TopologyNode &n)
         TreeChangeEventListener *l = *it;
         l->fireTreeChangeEvent( n );
     }
+    
 }
 
 

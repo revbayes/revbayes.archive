@@ -1,17 +1,10 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "SubtreePruneRegraft.h"
+#include "SubtreePruneRegraftProposal.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_SPRNonclock.h"
 #include "RlTopology.h"
 #include "Topology.h"
@@ -21,19 +14,22 @@
 
 using namespace RevLanguage;
 
-Move_SPRNonclock::Move_SPRNonclock() : Move() {
+Move_SPRNonclock::Move_SPRNonclock() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_SPRNonclock* Move_SPRNonclock::clone(void) const {
+Move_SPRNonclock* Move_SPRNonclock::clone(void) const
+{
     
 	return new Move_SPRNonclock(*this);
 }
 
 
-void Move_SPRNonclock::constructInternalObject( void ) {
+void Move_SPRNonclock::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -41,12 +37,16 @@ void Move_SPRNonclock::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::Topology> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Topology> *>( tmp );
-    value = new RevBayesCore::SubtreePruneRegraft(t, w);
+
+    RevBayesCore::Proposal *p = new RevBayesCore::SubtreePruneRegraftProposal(t);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w);
+    
 }
 
 
 /** Get class name of object */
-const std::string& Move_SPRNonclock::getClassName(void) {
+const std::string& Move_SPRNonclock::getClassName(void)
+{
     
     static std::string rbClassName = "Move_SPR";
     
@@ -54,7 +54,8 @@ const std::string& Move_SPRNonclock::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_SPRNonclock::getClassTypeSpec(void) {
+const TypeSpec& Move_SPRNonclock::getClassTypeSpec(void)
+{
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     

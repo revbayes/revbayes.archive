@@ -1,19 +1,13 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_TreeScale.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlBoolean.h"
 #include "RlTimeTree.h"
+#include "TreeScaleProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -51,7 +45,9 @@ void Move_TreeScale::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double l = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     bool tune = static_cast<const RlBoolean &>( tuning->getRevObject() ).getValue();
-    value = new RevBayesCore::TreeScale(t, ra, l, tune, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::TreeScaleProposal(t, ra, l);
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, tune);
 }
 
 

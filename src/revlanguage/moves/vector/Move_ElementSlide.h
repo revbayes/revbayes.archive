@@ -1,7 +1,6 @@
 #ifndef Move_ElementSlide_H
 #define Move_ElementSlide_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 

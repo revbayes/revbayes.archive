@@ -10,6 +10,7 @@
 #include "MatrixReal.h"
 #include "RbException.h"
 #include "RbVector.h"
+#include "RbConstants.h"
 #include "TypedDagNode.h"
 
 #include <cstring>
@@ -272,6 +273,48 @@ double MatrixReal::getLogDet() const
 //        }
         return tot;
     }
+    
+}
+
+
+
+double MatrixReal::getMax( void ) const
+{
+    
+    double max = RbConstants::Double::neginf;
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        for (size_t j = 0; j < nCols; ++j)
+        {
+            if ( max < elements[i][j] )
+            {
+                max = elements[i][j];
+            }
+        }
+    }
+    
+    return max;
+    
+}
+
+
+
+double MatrixReal::getMin( void ) const
+{
+    
+    double min = RbConstants::Double::inf;
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        for (size_t j = 0; j < nCols; ++j)
+        {
+            if ( min > elements[i][j] )
+            {
+                min = elements[i][j];
+            }
+        }
+    }
+    
+    return min;
     
 }
 

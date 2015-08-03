@@ -141,6 +141,7 @@ unsigned long StandardState::computeState(const std::string &symbol) const
 {
     
     size_t pos = computeStateIndex(symbol);
+    std::cout << "pos = " << pos << " " << symbol << " " << labels << std::endl;
     unsigned long n = 1;
     return (n << pos);
 }
