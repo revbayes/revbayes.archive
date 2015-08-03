@@ -146,7 +146,7 @@ const std::string& Func_treePairwiseDistances<treeType>::getClassType(void) {
 template <class treeType>
 const TypeSpec& Func_treePairwiseDistances<treeType>::getClassTypeSpec(void) {
 	
-	static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+	static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<treeType>::getClassTypeSpec() ) );
 	
 	return revTypeSpec;
 }

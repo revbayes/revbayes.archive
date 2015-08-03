@@ -15,7 +15,7 @@
 #ifndef TreeUtilities_H
 #define TreeUtilities_H
 
-#include "BranchLengthTree.h"
+#include "MatrixReal.h"
 #include "TimeTree.h"
 #include "Tree.h"
 #include "TopologyNode.h"
@@ -39,9 +39,43 @@ namespace RevBayesCore {
         void            constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth);
 //        void            constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages);
         std::string     uniqueNewickTopologyRecursive(const TopologyNode &n);
+		
+		template<class treeType>
+		MatrixReal* getDistanceMatrix(const treeType& tree);
+		
+		void processDistsInSubtree(const TopologyNode& node, MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
+
+
+
 
     }
     
 }
+
+
+template<class treeType>
+RevBayesCore::MatrixReal* RevBayesCore::TreeUtilities::getDistanceMatrix(const treeType& tree)
+{
+	
+	RevBayesCore::MatrixReal* matrix = new RevBayesCore::MatrixReal( tree.getNumberOfTips() );
+	
+	std::vector<std::string> names = tree.getTipNames( ) ;
+	
+	
+	
+	std::map< std::string, int > namesToId;
+	
+	for(size_t i = 0; i < names.size(); ++i) {
+		namesToId[ names[i] ] = i;
+	}
+	
+	std::vector< std::pair<std::string, double> > distsToRoot;
+	
+	processDistsInSubtree( tree.getRoot() , *matrix, distsToRoot, namesToId);
+	
+	return matrix;
+}
+
+
 
 #endif
