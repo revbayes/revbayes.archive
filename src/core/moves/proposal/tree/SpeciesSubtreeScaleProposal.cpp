@@ -55,7 +55,7 @@ void SpeciesSubtreeScaleProposal::addGeneTree(StochasticNode<TimeTree> *gt)
     }
     
     // only add this variable if it doesn't exist in our list already
-    if ( exists != false )
+    if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
