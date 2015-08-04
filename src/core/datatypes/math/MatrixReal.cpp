@@ -212,6 +212,20 @@ void MatrixReal::executeMethod(const std::string &n, const std::vector<const Dag
 }
 
 
+
+RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
+{
+    RbVector<double> col = RbVector<double>( nRows, 0);
+
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        col[i] = elements[i][columnIndex];
+    }
+    
+    return col;
+}
+
+
 size_t MatrixReal::getDim( void ) const
 {
     // we assume that this is a square matrix

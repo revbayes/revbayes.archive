@@ -73,6 +73,16 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
         double m = this->dagNode->getValue().getMax();
         return new RevVariable( new Real( m ) );
     }
+    else if (name == "column")
+    {
+        found = true;
+        
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
+        int i = index.getValue();
+        
+        RevBayesCore::RbVector<double> m = this->dagNode->getValue().getColumn( i );
+        return new RevVariable( new ModelVector<Real>( m ) );
+    }
     
     return ModelObject<RevBayesCore::MatrixReal>::executeMethod( name, args, found );
 }
@@ -142,7 +152,12 @@ void MatrixReal::initializeMethods( void )
     // add method for call "max" as a function
     ArgumentRules* maxArgRules = new ArgumentRules();
     methods.addFunction("max",  new MemberProcedure( Real::getClassTypeSpec(), maxArgRules) );
-
+    
+    // add method for call "column" as a function
+    ArgumentRules* columnArgRules = new ArgumentRules();
+    columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    methods.addFunction("column", new MemberFunction<MatrixReal,ModelVector<Real> >(this, columnArgRules ) );
+    
 }
 
 
