@@ -78,7 +78,7 @@ RevPtr<RevVariable> MatrixReal::executeMethod(std::string const &name, const std
         found = true;
         
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
-        int i = index.getValue();
+        int i = index.getValue() - 1;
         
         RevBayesCore::RbVector<double> m = this->dagNode->getValue().getColumn( i );
         return new RevVariable( new ModelVector<Real>( m ) );
