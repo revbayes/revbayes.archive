@@ -63,6 +63,8 @@ namespace RevBayesCore {
         bool                                            failed;
         TopologyNode*                                   storedChoosenNode;
         TopologyNode*                                   storedUncle;
+        std::vector< TopologyNode *>                    storedGeneTreeNodes;
+        std::vector< TopologyNode *>                    storedOldBrothers;
         
     };
     
