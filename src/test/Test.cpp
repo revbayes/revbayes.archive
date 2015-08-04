@@ -69,7 +69,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     
     try {
         numAttempted += 1;
-        TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood("data/morpho.nex", "data/morpho.tre");
+        TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood("/home/april/revbayes/examples/data/morpho.nex", "/home/april/revbayes/examples/data/morpho.tre");
         if (testFSL.run()) {
             numPassed += 1;
         } else {

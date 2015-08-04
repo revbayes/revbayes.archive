@@ -46,5 +46,6 @@ bool TestFilteredStandardLikelihood::run( void ) {
         std::cerr << "    lnProb is too high!" << std::endl;
         return false;
     }
+    cout << "likelihood reasonable" ;
     return true;
 }
