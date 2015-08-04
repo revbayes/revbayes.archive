@@ -17,6 +17,7 @@
 #define StandardState_H
 
 #include "DiscreteCharacterState.h"
+#include "AscertainmentBiasCorrection.h"
 #include <ostream>
 #include <set>
 
@@ -27,6 +28,7 @@ namespace RevBayesCore {
     public:
                                         StandardState(void);                                        //!< Default constructor
                                         StandardState(const StandardState& s);                      //!< Copy constructor
+       double                           VariableOnlyAscertainmentBiasCorrectionStruct(void);                                                                                                  
                                         StandardState(const std::string &s);                        //!< Constructor with nucleotide observation
                                         StandardState(const char& s, const std::string& l);
                                         StandardState(const std::string& s, const std::string& l);
@@ -57,7 +59,7 @@ namespace RevBayesCore {
         void                            setState(std::string s);                                    //!< Set the discrete observation from string of state symbols
         void                            setState(size_t pos, bool val);                             //!< Set the discrete observation from position and boolean flag
         void                            setToFirstState(void);                                      //!< Set this character state to the first (lowest) possible state
-    
+
     private:
         unsigned long                   computeState(char symbol) const;                            //!< Compute the internal state value for this character.
 
