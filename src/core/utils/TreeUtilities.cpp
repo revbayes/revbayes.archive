@@ -335,7 +335,7 @@ void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::Topo
 	distsToNodeFather.clear();
 	double nodeToFather = node.getBranchLength();
 	
-	for (std::map<const size_t, std::vector<std::pair<std::string, double> > >::iterator son = leavesDists.begin(); son != leavesDists.end(); ++son)
+	for (std::map<size_t, std::vector<std::pair<std::string, double> > >::iterator son = leavesDists.begin(); son != leavesDists.end(); ++son)
 	{
 		for (std::vector< std::pair<std::string, double> >::iterator leaf = (son->second).begin(); leaf != (son->second).end(); ++leaf)
 		{

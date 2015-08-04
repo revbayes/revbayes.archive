@@ -105,8 +105,8 @@ namespace RevBayesCore {
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
         void                                        getTaxaStringVector(std::vector<std::string> &taxa) const;                          //!< Fill the vector of taxa as strings
-        void                                        getTaxa(std::vector<Taxon> &taxa) const;                          //!< Fill the vector of taxa
-        Taxon                                       getTaxon() const;                                                //!< Fill the vector of taxa
+        void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
+        Taxon                                       getTaxon() const;                                                                   //!< Fill the vector of taxa
         double                                      getTime(void) const;                                                                //!< Get the time of the node
         double                                      getTmrca(const TopologyNode &n) const;
         void                                        initiateFlaggingForNewickRecomputation(void);
@@ -114,7 +114,7 @@ namespace RevBayesCore {
         bool                                        isRoot(void) const;                                                                 //!< Is node root?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
-        void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
+        void                                        removeChild(TopologyNode* c, bool enforceNewickRecomp = true);                      //!< Removes a specific child
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
   		void										setNodeType(bool tip, bool root, bool interior); //SK
