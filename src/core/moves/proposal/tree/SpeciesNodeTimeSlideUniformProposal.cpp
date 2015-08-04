@@ -48,7 +48,7 @@ void SpeciesNodeTimeSlideUniformProposal::addGeneTree(StochasticNode<TimeTree> *
     }
     
     // only add this variable if it doesn't exist in our list already
-    if ( exists != false )
+    if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
@@ -133,7 +133,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
     double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
     
     // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
-//    my_new_age = my_age; 
+    my_new_age = my_age; 
     
     int upslideNodes = 0;
     int downslideNodes = 0;
