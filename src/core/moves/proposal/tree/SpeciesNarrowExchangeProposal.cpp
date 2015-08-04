@@ -43,7 +43,7 @@ void SpeciesNarrowExchangeProposal::addGeneTree(StochasticNode<TimeTree> *gt)
     }
     
     // only add this variable if it doesn't exist in our list already
-    if ( exists != false )
+    if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
@@ -96,6 +96,10 @@ const std::string& SpeciesNarrowExchangeProposal::getProposalName( void ) const
 double SpeciesNarrowExchangeProposal::doProposal( void )
 {
     
+    // empty the previous vectors
+    storedGeneTreeNodes.clear();
+    storedOldBrothers.clear();
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -138,9 +142,6 @@ double SpeciesNarrowExchangeProposal::doProposal( void )
         storedChoosenNode   = node;
         storedUncle         = uncle;
         
-        int upslideNodes = 0;
-        int downslideNodes = 0;
-        
         // now we need to find for each gene tree the nodes that need to be moved as well
         // only nodes that have a coalescent event within the lifetime of the parents populations
         // from lineages belonging to the chosen node with lineages belonging to the brother population
@@ -180,8 +181,18 @@ double SpeciesNarrowExchangeProposal::doProposal( void )
                 std::advance(it,new_index);
                 TopologyNode *new_child = *it;
                 
+                // store nodes
+                storedGeneTreeNodes.push_back( the_gene_node );
+                TopologyNode &the_parent = the_gene_node->getParent();
+                TopologyNode *old_brother = &the_parent.getChild( 0 );
+                if ( old_brother == the_gene_node )
+                {
+                    old_brother = &the_parent.getChild( 1 );
+                }
+                storedOldBrothers.push_back( old_brother );
+                
                 // perform a prune and regraft move
-                prune( &the_gene_node->getParent(), the_gene_node );
+                prune( &the_parent, the_gene_node );
                 regraft( the_gene_node, new_child );
                 
             }
@@ -495,8 +506,34 @@ void SpeciesNarrowExchangeProposal::regraft( TopologyNode *node, TopologyNode *c
  */
 void SpeciesNarrowExchangeProposal::undoProposal( void )
 {
+    // we undo the proposal only if it didn't fail
+    if ( !failed )
+    {
+        // undo the proposal
+        TopologyNode& parent = storedUncle->getParent();
+        TopologyNode& grandparent = storedChoosenNode->getParent();
+        
+        // now exchange the two nodes
+        grandparent.removeChild( storedChoosenNode );
+        parent.removeChild( storedUncle );
+        grandparent.addChild( storedUncle );
+        parent.addChild( storedChoosenNode );
+        storedUncle->setParent( &grandparent );
+        storedChoosenNode->setParent( &parent );
+        
+        // now also undo all the gene tree changes!
+        for (size_t i = 0; i < storedGeneTreeNodes.size(); ++i)
+        {
+            TopologyNode *the_gene_node = storedGeneTreeNodes[i];
+            TopologyNode *old_brother   = storedOldBrothers[i];
+            
+            // perform a prune and regraft move
+            prune( &the_gene_node->getParent(), the_gene_node );
+            regraft( the_gene_node, old_brother );
+        }
+        
+    }
     
-    // undo the proposal
     
 }
 
