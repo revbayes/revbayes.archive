@@ -156,7 +156,7 @@ void MatrixReal::initializeMethods( void )
     // add method for call "column" as a function
     ArgumentRules* columnArgRules = new ArgumentRules();
     columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("column", new MemberFunction<MatrixReal,ModelVector<Real> >(this, columnArgRules ) );
+    methods.addFunction("column", new MemberProcedure( ModelVector<Real>::getClassTypeSpec(), columnArgRules ) );
     
 }
 
