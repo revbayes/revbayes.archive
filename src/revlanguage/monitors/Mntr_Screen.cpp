@@ -14,13 +14,15 @@
 
 using namespace RevLanguage;
 
-Mntr_Screen::Mntr_Screen(void) : Monitor() {
+Mntr_Screen::Mntr_Screen(void) : Monitor()
+{
     
 }
 
 
 /** Clone object */
-Mntr_Screen* Mntr_Screen::clone(void) const {
+Mntr_Screen* Mntr_Screen::clone(void) const
+{
     
 	return new Mntr_Screen(*this);
 }

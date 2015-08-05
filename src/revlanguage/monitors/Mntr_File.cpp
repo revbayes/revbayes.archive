@@ -75,7 +75,8 @@ const TypeSpec& Mntr_File::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_File::getParameterRules(void) const {
+const MemberRules& Mntr_File::getParameterRules(void) const
+{
     
     static MemberRules filemonitorMemberRules;
     static bool rulesSet = false;
