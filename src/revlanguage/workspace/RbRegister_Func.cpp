@@ -212,6 +212,7 @@
 #include "Func_readCharacterDataDelimited.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
+#include "Func_readDistanceMatrix.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"

@@ -257,6 +257,7 @@
 #include "Func_readCharacterDataDelimited.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
+#include "Func_readDistanceMatrix.h"
 #include "Func_readCharacterDataUniversal.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
@@ -407,6 +408,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
 		addFunction( "readBranchLengthTrees",       new Func_readBranchLengthTrees()        );
         addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData()  );
         addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()    );
+		addFunction( "readDistanceMatrix", 		    new Func_readDistanceMatrix()    );
         addFunction( "readCharacterData",           new Func_readCharacterDataUniversal()   );
         addFunction( "readTaxonData",               new Func_TaxonReader()                  );
         addFunction( "readTrace",                   new Func_readTrace()                    );
