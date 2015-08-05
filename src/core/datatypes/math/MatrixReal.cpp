@@ -214,6 +214,7 @@ void MatrixReal::executeMethod(const std::string &n, const std::vector<const Dag
 
 RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
 {
+    
     if ( columnIndex >= nCols )
     {
         std::stringstream o;
@@ -1118,7 +1119,8 @@ RbVector<double> RevBayesCore::operator*(const RbVector<double> &a, const Matrix
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x)
+{
     
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

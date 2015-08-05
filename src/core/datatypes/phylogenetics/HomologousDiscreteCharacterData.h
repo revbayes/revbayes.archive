@@ -154,7 +154,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>* RevBayesCore::Homologou
 /**
  * Compute the state frequencies per site.
  *
- * \return       A matrix of site frequencies where each column is a site a each row the frequency of a character.
+ * \return       A matrix of character frequencies where each column is a character and each row a taxon.
  */
 template<class charType>
 RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>::computeStateFrequencies( void ) const
@@ -174,7 +174,19 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
         {
             const charType& c = seq[j];
             
-            if ( !c.isGapState() )
+            if ( c.isMissingState() == true )
+            {
+                nonGapSeqLength++;
+                
+                size_t num_states = c.getNumberOfStates();
+                
+                for (size_t index = 0; index < num_states; ++index)
+                {
+                    stateCounts[index] += 1.0 / double( num_states );
+                }
+                
+            }
+            else if ( c.isGapState() == false )
             {
                 nonGapSeqLength++;
                 
@@ -193,7 +205,10 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
                     state >>= 1;
                     ++index;
                 } while ( state != 0 );
+                
             }
+            
+            
         } // finished loop over sequence
         
         // set the observed state frequencies for this sequence into the matrix
