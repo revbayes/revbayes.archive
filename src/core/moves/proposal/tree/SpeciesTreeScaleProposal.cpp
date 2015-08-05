@@ -151,6 +151,9 @@ double SpeciesTreeScaleProposal::doProposal( void )
         
         num_nodes += gene_tree.getNumberOfInteriorNodes();
         
+        // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
+        geneTrees[i]->touch( true );
+        
     }
     
     // Sebastian: We need to work on a mechanism to make these proposal safe for non-ultrametric trees!
