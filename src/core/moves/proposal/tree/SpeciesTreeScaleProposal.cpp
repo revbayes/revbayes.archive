@@ -152,7 +152,7 @@ double SpeciesTreeScaleProposal::doProposal( void )
         num_nodes += gene_tree.getNumberOfInteriorNodes();
         
         // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
-        geneTrees[i]->touch( true );
+//        geneTrees[i]->touch( true );
         
     }
     
