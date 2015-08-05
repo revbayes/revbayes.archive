@@ -1,4 +1,3 @@
-
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "MultispeciesCoalescent.h"
@@ -17,12 +16,12 @@ using namespace RevBayesCore;
 
 MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,
                                                const std::vector<Taxon> &t) : TypedDistribution<TimeTree>( NULL ),
-taxa(t),
-speciesTree( sp ),
-Nes( NULL ),
-Ne( NULL ),
-numTaxa( taxa.size() ),
-logTreeTopologyProb (0.0)
+    taxa(t),
+    speciesTree( sp ),
+    Nes( NULL ),
+    Ne( NULL ),
+    numTaxa( taxa.size() ),
+    logTreeTopologyProb (0.0)
 {
     
     std::set<std::string> speciesNames;
@@ -45,22 +44,18 @@ logTreeTopologyProb (0.0)
     
     redrawValue();
     
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( speciesTree );
+    addParameter( Ne );
+    
 
 }
 
 
-
-MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) : TypedDistribution<TimeTree>( v ),
-taxa( v.taxa ),
-speciesTree( v.speciesTree ),
-Nes (v.Nes),
-Ne( v.Ne ),
-numTaxa( v.numTaxa ),
-logTreeTopologyProb( v.logTreeTopologyProb ){
-}
-
-
-MultispeciesCoalescent::~MultispeciesCoalescent() {
+MultispeciesCoalescent::~MultispeciesCoalescent()
+{
     
 }
 
@@ -103,7 +98,8 @@ void MultispeciesCoalescent::attachTimes(TimeTree *psi, std::vector<TopologyNode
 }
 
 
-void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
+void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
+{
     
     if (tips.size() < numTaxa)
     {
@@ -137,13 +133,15 @@ void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &t
 }
 
 
-MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const {
+MultispeciesCoalescent* MultispeciesCoalescent::clone( void ) const
+{
     
     return new MultispeciesCoalescent( *this );
 }
 
 
-double MultispeciesCoalescent::computeLnProbability( void ) {
+double MultispeciesCoalescent::computeLnProbability( void )
+{
     
     // variable declarations and initialization
     double lnProbCoal = 0;
@@ -220,7 +218,7 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
         const TopologyNode *spParentNode = NULL;
         double speciesAge = spNode->getAge();
         double parentSpeciesAge = RbConstants::Double::inf;
-        double branchLength = RbConstants::Double::inf;
+//        double branchLength = RbConstants::Double::inf;
         if ( !spNode->isRoot() )
         {
             spParentNode = &spNode->getParent();
@@ -593,7 +591,7 @@ double  MultispeciesCoalescent::getNe(size_t index) const
     }
     else if (Nes != NULL)
     {
-        return (Nes->getValue()[index]);
+        return Nes->getValue()[index];
     }
     else
     {
@@ -610,23 +608,37 @@ void MultispeciesCoalescent::redrawValue( void ) {
     
 }
 
-void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* inputNes) {
+void MultispeciesCoalescent::setNes(TypedDagNode< RbVector<double> >* inputNes)
+{
+
+    removeParameter( Nes );
+    removeParameter( Ne );
     
     Nes = inputNes;
-    Ne= NULL;
-}
-
-
-void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe) {
+    Ne  = NULL;
     
-    Ne = inputNe;
+    addParameter( Nes );
+
+}
+
+
+void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe)
+{
+
+    removeParameter( Ne );
+    removeParameter( Nes );
+    
+    Ne  = inputNe;
     Nes = NULL;
+    
+    addParameter( Ne );
 }
 
 
 
 
-void MultispeciesCoalescent::simulateTree( void ) {
+void MultispeciesCoalescent::simulateTree( void )
+{
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -761,23 +773,8 @@ void MultispeciesCoalescent::simulateTree( void ) {
 }
 
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> MultispeciesCoalescent::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( Nes );
-    parameters.insert( Ne );
-    parameters.insert( speciesTree );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void MultispeciesCoalescent::swapParameter(const DagNode *oldP, const DagNode *newP)
+void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == Nes)
@@ -791,9 +788,6 @@ void MultispeciesCoalescent::swapParameter(const DagNode *oldP, const DagNode *n
     else if ( oldP == speciesTree)
     {
         speciesTree = static_cast<const TypedDagNode< TimeTree >* >( newP );
-        
-
-        
     }
     
 }

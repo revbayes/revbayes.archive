@@ -5,6 +5,8 @@
 #include "RbConstants.h"
 #include "RbException.h"
 
+#include <cmath>
+
 using namespace RevBayesCore;
 
 /**
@@ -24,6 +26,16 @@ BimodalNormalDistribution::BimodalNormalDistribution(const TypedDagNode<double> 
     stDev2( s2 ),
     p( p )
 {
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( mean1 );
+    addParameter( mean2 );
+    addParameter( s1 );
+    addParameter( s2 );
+    addParameter( p );
+    
     double u = GLOBAL_RNG->uniform01();
     if ( u < p->getValue() ) 
     {
@@ -67,7 +79,7 @@ BimodalNormalDistribution* BimodalNormalDistribution::clone( void ) const
  */
 double BimodalNormalDistribution::computeLnProbability( void ) 
 {
-    return p->getValue() * RbStatistics::Normal::lnPdf( mean1->getValue(), stDev1->getValue(), *value) + (1.0 - p->getValue()) * RbStatistics::Normal::lnPdf( mean2->getValue(), stDev2->getValue(), *value);
+    return log(p->getValue() * RbStatistics::Normal::pdf( mean1->getValue(), stDev1->getValue(), *value) + (1.0 - p->getValue()) * RbStatistics::Normal::pdf( mean2->getValue(), stDev2->getValue(), *value) );
 }
 
 
@@ -123,22 +135,6 @@ void BimodalNormalDistribution::redrawValue( void )
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> BimodalNormalDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( mean1 );
-    parameters.insert( mean2 );
-    parameters.insert( stDev1 );
-    parameters.insert( stDev2 );
-    parameters.insert( p );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /**
  * Swap the parameters held by this distribution.
  *
@@ -146,7 +142,7 @@ std::set<const DagNode*> BimodalNormalDistribution::getParameters( void ) const
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void BimodalNormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void BimodalNormalDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == mean1) 

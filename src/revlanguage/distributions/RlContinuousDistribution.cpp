@@ -8,7 +8,7 @@
 
 #include "RlContinuousDistribution.h"
 
-#include "ContinuousStochasticNode.h"
+#include "RlContinuousStochasticNode.h"
 #include "TypedDistribution.h"
 
 using namespace RevLanguage;
@@ -34,7 +34,7 @@ ContinuousDistribution::~ContinuousDistribution() {
 Real* ContinuousDistribution::createRandomVariable(void) const { 
     
     RevBayesCore::ContinuousDistribution* d = createDistribution();
-    RevBayesCore::TypedDagNode<double>* rv  = new RevBayesCore::ContinuousStochasticNode("", d);
+    RevBayesCore::TypedDagNode<double>* rv  = new ContinuousStochasticNode("", d, this->clone() );
     
     return new Real(rv);
 }

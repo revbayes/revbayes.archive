@@ -19,26 +19,32 @@ RevBayesCore::CummulativeDistributionFunction::CummulativeDistributionFunction(c
     
 }
 
-RevBayesCore::CummulativeDistributionFunction::~CummulativeDistributionFunction(void) {
+RevBayesCore::CummulativeDistributionFunction::~CummulativeDistributionFunction(void)
+{
     delete dist;
 }
 
 
-RevBayesCore::CummulativeDistributionFunction* RevBayesCore::CummulativeDistributionFunction::clone( void ) const {
+RevBayesCore::CummulativeDistributionFunction* RevBayesCore::CummulativeDistributionFunction::clone( void ) const
+{
     return new CummulativeDistributionFunction(*this);
 }
 
 
-void RevBayesCore::CummulativeDistributionFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == x) {
+void RevBayesCore::CummulativeDistributionFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == x)
+    {
         x = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else {
+    else
+    {
         dist->swapParameter(oldP, newP);
     }
 }
 
-void RevBayesCore::CummulativeDistributionFunction::update( void ) {
+void RevBayesCore::CummulativeDistributionFunction::update( void )
+{
     dist->setValue( new double(x->getValue()) );
     *value = dist->cdf();
 }

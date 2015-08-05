@@ -37,9 +37,10 @@ namespace RevBayesCore {
         // public member functions
         ConstantRateBirthDeathProcess*                      clone(void) const;                                                                                  //!< Create an independent clone
         
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

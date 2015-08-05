@@ -48,6 +48,8 @@ namespace RevBayesCore {
         void setTrees(TypedDagNode< RbVector< TimeTree > >* ts); //!< Set the trees in the distribution
         void setTrees(TypedDagNode< RbVector< BranchLengthTree > >* ts); //!< Set the trees in the distribution
 
+        void setRecordBranchLengths(  TypedDagNode< bool >* b) ; //!< Set whether we record some branch lengths information
+        
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
@@ -62,11 +64,11 @@ namespace RevBayesCore {
 
         // members
 
-        const TypedDagNode< RevBayesCore::RbVector<TimeTree> >*                                  ttrees;
-        const TypedDagNode< RevBayesCore::RbVector<BranchLengthTree> >*                         bltrees;
-        const TypedDagNode< RevBayesCore::RbVector< Taxon > >*                                    taxa;
-        const TypedDagNode< RevBayesCore::RbVector< std::string > >*                            species;
-        std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t > tripletDistribution;
+        const TypedDagNode< RbVector<TimeTree> >*                                  ttrees;
+        const TypedDagNode< RbVector<BranchLengthTree> >*                         bltrees;
+        const TypedDagNode< RbVector< Taxon > >*                                    taxa;
+        const TypedDagNode< RbVector< std::string > >*                           species;
+        const TypedDagNode< bool >*                                     recordBranchLengths;
         size_t                                                                numberOfTrees;
         std::set< Taxon >                                                           taxaSet;
         std::set< std::string >                                                  speciesSet;

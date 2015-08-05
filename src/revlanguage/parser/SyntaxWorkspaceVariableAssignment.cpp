@@ -39,7 +39,7 @@ SyntaxWorkspaceVariableAssignment* SyntaxWorkspaceVariableAssignment::clone () c
  * Note that the return variable is not set to a WorkspaceVariable variable, in case it is
  * used in further assignments of other types.
  */
-void SyntaxWorkspaceVariableAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxWorkspaceVariableAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating WorkspaceVariable assignment\n" );
@@ -51,18 +51,18 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Var
     // TODO: This needs to be cleaned up because it is not used properly anymore! (Sebastian)
     // Perform type conversion if needed, otherwise just clone the value object
     RevObject* newValue;
-    if ( !value.getTypeSpec().isDerivedOf( lhs->getRevObjectTypeSpec() ) )
+    if ( !value.getTypeSpec().isDerivedOf( lhs->getRequiredTypeSpec() ) )
     {
         // We are not of a derived type (or the same type) so we need to cast
-        if (value.isConvertibleTo( lhs->getRevObjectTypeSpec(), true ) )
+        if (value.isConvertibleTo( lhs->getRequiredTypeSpec(), true ) )
         {
-            newValue = value.convertTo( lhs->getRevObjectTypeSpec() );
+            newValue = value.convertTo( lhs->getRequiredTypeSpec() );
         }
         else
         {
             std::ostringstream msg;
             msg << "Cannot assign variable '" << lhs->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
-            msg << " because the variable requires type '" << lhs->getRevObjectTypeSpec().getType() << "'" << std::endl;
+            msg << " because the variable requires type '" << lhs->getRequiredTypeSpec().getType() << "'" << std::endl;
             throw RbException( msg );
         }
     }
@@ -75,13 +75,22 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Var
     // Fill the slot with newValue. The variable itself will be
     // passed on as the semantic value of the statement and can
     // be used in further assignments.
-    lhs->setRevObject( newValue );
+    lhs->replaceRevObject( newValue );
     lhs->setWorkspaceVariableState( true );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
     
+}
+
+
+
+
+/** Should the rhs be evaluated dynamically? Yes, because we may want a move or monitor, etc. */
+bool SyntaxWorkspaceVariableAssignment::isDynamic( void )
+{
+    return true;
 }
 
 

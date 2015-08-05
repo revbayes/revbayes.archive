@@ -54,10 +54,12 @@ void MoveOld::accept( void ) {
 }
 
 
-void MoveOld::autoTune( void ) {
+void MoveOld::autoTune( void )
+{
     
     // only do something if tuning is turned on
-    if ( autoTuning ) {
+    if ( autoTuning )
+    {
         // delegate to derived class
         tune();
         
@@ -67,7 +69,8 @@ void MoveOld::autoTune( void ) {
 }
 
 
-double MoveOld::getAcceptanceRatio( void ) const {
+double MoveOld::getAcceptanceRatio( void ) const
+{
     return numTried / double( numAccepted );
 }
 
@@ -79,7 +82,8 @@ const std::set<DagNode *>& MoveOld::getDagNodes( void ) const
 }
 
 
-double MoveOld::getUpdateWeight( void ) const {
+double MoveOld::getUpdateWeight( void ) const
+{
     return weight;
 }
 
@@ -132,7 +136,8 @@ void MoveOld::performGibbs(void)
 
 
 
-void MoveOld::performGibbsMove(void) {
+void MoveOld::performGibbsMove(void)
+{
     // dummy method
 }
 

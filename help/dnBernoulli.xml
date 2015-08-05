@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+    <?xml version="1.0"?>
 <?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
 
 <revbayes-help
@@ -10,14 +10,16 @@
 
         <name>dnBernoulli</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>dbernoulli</alias>
+        <alias>pbernoulli</alias>
+        <alias>qbernoulli</alias>
 
-        <title>Some title you want to give this function</title>
+        <title>Bernoulli Distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            A Bernoulli-distributed random variable takes the value 1 with probability
+            p and the value 0 with probability 1-p.
             </p>
         </description>
     
@@ -26,15 +28,19 @@
 
             <usage>
                 <![CDATA[
-                 dnBernoulli( Probability p )
+                    dnBernoulli( Probability prob )
+                    dbernoulli( Natural x, Probability prob )
+                    pbernoulli( Natural q, Probability prob )
+                    qbernoulli( Probability p, Probability prob )
+                    rbernoulli( Natural n, Probability prob )
                  ]]> 
             </usage>
         
             <argument>
-                <label>p</label>
+                <label>prob</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The probability of success on the single trial.</description>
                 <valueType>Probability</valueType>
             </argument>
 
@@ -43,32 +49,37 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This function was among the easiest in RevBayes to implement. 
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                    p ~ dnBeta(1.0,1.0)
+                    x ~ dnBernoulli(p)
+                    x.clamp(1)
+                    moves[1] = mvSlide(p, delta=0.1, weight=1.0)
+                    monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)
+                    mymodel = model(p)
+                    mymcmc = mcmc(mymodel, monitors, moves)
+                    mymcmc.burnin(generations=20000,tuningInterval=100)
+                    mymcmc.run(generations=200000)
+                    
                  ]]>
 
             </example>
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                    The Bernoulli distribution is attributed to the Swiss scientist Jacob Bernoulli.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Your name here</author>
+            <author>John Huelsenbeck</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>dnBinomial</entry>
             </seeAlso>
 
 

@@ -27,7 +27,7 @@
 namespace RevBayesCore {
 
     #define GLOBAL_RNG RandomNumberFactory::randomNumberFactoryInstance().getGlobalRandomNumberGenerator()
-    #define NEW_RNG    RandomNumberFactory::randomNumberFactoryInstance().getRandomNumberGenerator()
+//    #define NEW_RNG    RandomNumberFactory::randomNumberFactoryInstance().getRandomNumberGenerator()
 
     class RandomNumberGenerator;
     class RandomNumberFactory {
@@ -39,21 +39,15 @@ namespace RevBayesCore {
                                                         return singleRandomNumberFactory;
                                                     }
 		void                                        deleteRandomNumberGenerator(RandomNumberGenerator* r);                                 //!< Return a random number object to the pool
-		RandomNumberGenerator*                      getRandomNumberGenerator(void);                                                        //!< Return a pointer to a random number object
-		RandomNumberGenerator*                      getRandomNumberGenerator(std::vector<unsigned int> s);                                 //!< Return a pointer to a random number object witha  specific seed
 		RandomNumberGenerator*                      getGlobalRandomNumberGenerator(void) { return seedGenerator; }                         //!< Return a pointer to the global random number object
-		void                                        setFactorySeed(unsigned int &seed1, unsigned int &seed2) { I1 = seed1; I2 = seed2; }   //!< Set the seed for the factory
 
 	private:
                                                     RandomNumberFactory(void);                                                             //!< Default constructor
                                                     RandomNumberFactory(const RandomNumberFactory&);                                       //!< Copy constructor
-                                                    RandomNumberFactory&operator=(const RandomNumberFactory&);                             //!< Assignment operator
+                                                    RandomNumberFactory& operator=(const RandomNumberFactory&);                            //!< Assignment operator
                                                    ~RandomNumberFactory(void);                                                             //!< Destructor
-		void                                        setSeed(void);                                                                         //!< Set the seeds of the factory using the current time
-        void                                        setSeed(unsigned int s);
 		RandomNumberGenerator*                      seedGenerator;                                                                         //!< A random number object that generates seeds
 		std::set<RandomNumberGenerator*>            allocatedRandomNumbers;                                                                //!< The pool of random number objects
-		unsigned int                     I1, I2;                                                                                //!< The factory seeds
     };
 }
 

@@ -38,7 +38,7 @@ namespace RevBayesCore {
         virtual DynamicNode<valueType>*                     clone(void) const = 0;
         
         // public methods
-        virtual DagNode*                                    cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;                   //!< Clone the entire DAG which is connected to this node
+        virtual DagNode*                                    cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         
         // this function provided for derived classes used in the language layer, which need to override it
         virtual const std::string&                          getRevTypeOfValue(void);                                                        //!< Get Rev language type of value
@@ -46,7 +46,7 @@ namespace RevBayesCore {
     protected:
         virtual void                                        keepMe(DagNode* affecter);                                                      //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                                   //!< Restore value of this node
-        virtual void                                        touchMe(DagNode *toucher);                                                      //!< Tell affected nodes value is reset
+        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                                      //!< Tell affected nodes value is reset
         
         
         // members
@@ -82,11 +82,33 @@ RevBayesCore::DynamicNode<valueType>::~DynamicNode( void ) {
 
 /** Clone the entire graph: clone children, swap parents */
 template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes ) const {
+RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes, std::map<std::string, const DagNode* > &names ) const
+{
     
     // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
+    
+    
+    // just for self checking purposes we keep track of the names for the variables we already cloned
+    if ( this->name != "" )
+    {
+        // check if we already added a variable with this name
+        std::map<std::string, const DagNode* >::const_iterator n = names.find( this->name );
+        if ( n == names.end() )
+        {
+            // no, we haven't cloned a variable with this name before
+            names[ this->name ] = this;
+        }
+        else
+        {
+            /*
+            const DagNode *orgCopy = n->second;
+            std::cerr << "Ptr to org:\t" << orgCopy << "\t\t --- \t\t Ptr to desc:\t" << this << std::endl;
+            std::cerr << "Cloning a DAG node with name '" << this->name << "' again, doh! Please tell this to Sebastian because it's most likely a bug." << std::endl;
+             */
+        }
+    }
     
     // Get a shallow copy
     DynamicNode* copy = clone();
@@ -104,6 +126,8 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         const DagNode *theParam = (*i);
         
         theParam->removeChild( copy );
+        
+        theParam->decrementReferenceCount();
     }
     
     // Now replace the parents of the copy (which are now the same as our parents) with the parent clones
@@ -113,10 +137,11 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         const DagNode *theParam = (*i);
         
         // Get its clone. If we already have cloned this parent (parameter), then we will get the previously created clone
-        DagNode* theParamClone = theParam->cloneDAG( newNodes );
+        DagNode* theParamClone = theParam->cloneDAG( newNodes, names );
         
         // Add the copy back as a child of this parent so that the swapping works
         theParam->addChild( copy );
+        theParam->incrementReferenceCount();
         
         // Swap the parent of the copy with its clone. This will remove the copy again as the child of our parent.
         copy->swapParent( theParam, theParamClone);
@@ -125,7 +150,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     // Make sure the children clone themselves
     for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
     {
-        (*i)->cloneDAG( newNodes );
+        (*i)->cloneDAG( newNodes, names );
     }
     
     return copy;
@@ -152,11 +177,7 @@ const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
  */
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In keepMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
+        
     if ( touched )
     {
         touched = false;
@@ -168,12 +189,9 @@ void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
 
 /** Restore the old value of the node and tell affected */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In restoreMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
-    
+void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer)
+{
+
     if ( touched )
     {
         touched = false;
@@ -183,11 +201,8 @@ void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer) {
 
 /** touch this node for recalculation */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher ) {
-    
-#ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
-#endif
+void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
+{
     
     if (!touched)
     {

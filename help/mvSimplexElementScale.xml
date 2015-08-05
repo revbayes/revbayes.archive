@@ -10,14 +10,11 @@
 
         <name>mvSimplexElementScale</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Simplex element scaling move.</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Randomly pick and scale a single element of a simplex.
             </p>
         </description>
     
@@ -34,14 +31,14 @@
                 <label>x</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The variable that we want to modify.</description>
                 <valueType>Simplex</valueType>
             </argument>
             <argument>
                 <label>alpha</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>A concentration how close to the current value our proposals will be.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -49,7 +46,7 @@
                 <label>tune</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should we tune the alpha parameter.</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -57,7 +54,7 @@
                 <label>weight</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>How often we want to use this move per iteration.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -67,32 +64,25 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This move randomly picks an element of the simplex. Then, we use a beta distribution centered on the current value
+                with the concentration scaled by the alpha parameter. After proposing a new value we rescale the simplex so that it sums to 1 again.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                    a <- [1,1,1,1]
+                    b ~ dnDirichlet(a)
+                    moves[1] = mvSimplexElementScale(b,alpha=1.0)
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>mvSimplex</entry>
             </seeAlso>
 
 

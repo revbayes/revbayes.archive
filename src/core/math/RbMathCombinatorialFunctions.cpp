@@ -111,18 +111,41 @@ int RbMath::kchoose2(int k){
 }
 
 /*!
+ * This function returns the harmonic number of x=> sum_i=1^x(1/i)
+ *
+ * \brief Return sum_i=1^x(1/i)
+ * \param x The x value
+ * \return The harmonic number of x
+ */
+double RbMath::harmonicNumber(size_t n)
+{
+    
+    double hm = 0.0;
+    for (int i=1; i<=n; i++)
+    {
+        hm += 1.0/i;
+    }
+    
+    return (hm);
+}
+
+/*!
  * This function returns the factorial of x, x!
  *
  * \brief Return x!
  * \param x The x value
  * \return The factorial x!
  */
-double RbMath::factorial(int x) {
+double RbMath::factorial(int x)
+{
 
 	double fac = 1.0;
 	for (int i=1; i<=x; i++)
+    {
 		fac *= i;
-	return (fac);
+    }
+    
+    return (fac);
 }
 
 #define ODD(_K_) ((_K_) != 2 * floor((_K_) / 2.))
@@ -209,9 +232,9 @@ double RbMath::lnFactorial(int n) {
 }
 
 
-int RbMath::stirlingFirst(int n, int k) {
+unsigned long RbMath::stirlingFirst(int n, int k) {
 	
-	int r = 0;
+	unsigned long r = 0;
 	if(n == k)
 		return 1;
 	if(k == 1)
@@ -220,6 +243,70 @@ int RbMath::stirlingFirst(int n, int k) {
 		return 0;
 	if(n > 0 && k == 0)
 		return 0;
+	if(k == n-1)
+		return kchoose2(n);
 	r = stirlingFirst(n-1, k-1) + ((n-1)*stirlingFirst(n-1, k));
 	return r;
+}
+
+int RbMath::stirlingSecond(int n, int k) {
+	
+	int r = 0;
+	if(k > n || k < 0){
+		throw RbException("Error: k must be in 0,...,n");
+	}
+	else{
+		if (k == 1 || k == n) {
+			return 1;
+		}
+		else{
+			int v1 = factorial(k);
+			int sumv = 0;
+			for(int j=0; j<k+1; j++){
+				int v2 = 1;
+				if((k-j) % 2 == 1)
+					v2 = -1;
+				int v3 = v2 * choose(k,j) * pow(j,n);
+				sumv += v3;
+			}
+			r = sumv / v1;
+			return r;
+		}
+	}
+	return r;
+}
+
+double RbMath::lnStirlingFirst(int n, int k) {
+	
+	double r = log(stirlingFirst(n, k));
+	return r;
+}
+
+
+int RbMath::signedStirlingFirst(int n, int k) {
+	int sign = 1;
+	if((n-k) % 2 == 1)
+		sign = -1;
+	unsigned long v = stirlingFirst(n,k);
+	std::cout << v << std::endl;
+	return sign * (int)v;
+}
+
+/*!
+ * This function returns the harmonic number of x=> sum_i=1^x(1/i^2)
+ *
+ * \brief Return sum_i=1^x(1/i^2)
+ * \param x The x value
+ * \return The harmonic number of x
+ */
+double RbMath::squaredHarmonicNumber(size_t n)
+{
+    
+    double hm = 0.0;
+    for (int i=1; i<=n; i++)
+    {
+        hm += 1.0/(i*i);
+    }
+    
+    return (hm);
 }

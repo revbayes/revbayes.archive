@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Create a vector</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Create a vector</h1>
+
+        <h2>Function v</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">v</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            'v' creates a vector of the elements '...'
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+            v( Real, Real, ... )
+            v( Real[], Real[], ... )
+            ...
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b ></b>
+<div class="indent">
+A description of the argument.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+Any<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                'v' creates a vector of the elements '...', which are objects of a common base type. Vector elements may themselves be vectors.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+            > # create a vector, Natural[]
+            > x <- v(1,2,3)
+            > x <- x + 1
+            > x
+               [ 2, 3, 4 ]
+            > y <- v(2,4,6)
+            > # create a vector of Natural[][]
+            > z <- v(x,y)
+            > z
+               [ [ 2, 3, 4 ], [ 2, 4, 6 ] ]
+            > z[0]
+               [ 2, 3, 4 ]
+             </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Michael Landis</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('simplex'); return false;">simplex</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

@@ -71,10 +71,56 @@ bool OptionRule::areOptionsUnique( const std::vector<std::string>& optVals ) con
 
 
 
+OptionRule* OptionRule::clone( void ) const
+{
+    
+    return new OptionRule( *this );
+}
+
+
+
 const std::vector<std::string>& OptionRule::getOptions( void ) const
 {
     // return a const reference to the internal value
     return options;
+}
+
+
+double OptionRule::isArgumentValid( Argument &arg, bool once) const
+{
+    
+    RevPtr<RevVariable> theVar = arg.getVariable();
+    if ( theVar == NULL )
+    {
+        return -1;
+    }
+    
+    if ( evalType == BY_VALUE || theVar->isWorkspaceVariable() || ( theVar->getRevObject().isModelObject() && theVar->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::CONSTANT) )
+    {
+        once = true;
+    }
+    
+    RlString *revObj = dynamic_cast<RlString *>( &theVar->getRevObject() );
+    if ( revObj != NULL )
+    {
+        
+        const std::string &argValue = revObj->getValue();
+        for ( std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
+        {
+            
+            if ( argValue == *it )
+            {
+                return 0.0;
+            }
+        }
+        return -1;
+    }
+    else
+    {
+        return -1;
+    }
+
+    
 }
 
 
@@ -84,7 +130,7 @@ void OptionRule::printValue(std::ostream& o) const
 
     ArgumentRule::printValue(o);
 
-    o << " = ";
+    o << " {valid options: ";
     for (std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
     {
         
@@ -93,9 +139,9 @@ void OptionRule::printValue(std::ostream& o) const
             o << "|";
         }
         
-        o << *it;
+        o << "\"" << *it << "\"";
 
     }
-    o << std::endl;
+    o << "}" << std::endl;
 }
 

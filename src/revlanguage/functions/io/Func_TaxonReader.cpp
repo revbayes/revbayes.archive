@@ -22,7 +22,7 @@ Func_TaxonReader* Func_TaxonReader::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_TaxonReader::execute( void ) {
+RevPtr<RevVariable> Func_TaxonReader::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -31,7 +31,7 @@ RevPtr<Variable> Func_TaxonReader::execute( void ) {
     RevBayesCore::TaxonReader tr = RevBayesCore::TaxonReader(fn.getValue(),del);
     const std::vector<RevBayesCore::Taxon>& taxa = tr.getTaxa();
     
-    return new Variable( new ModelVector<Taxon>( taxa ) );
+    return new RevVariable( new ModelVector<Taxon>( taxa ) );
 }
 
 

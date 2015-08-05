@@ -3,6 +3,7 @@
 #include "RbHelpSystem.h"
 #include "RbHelpParser.h"
 #include "RbHelpRenderer.h"
+#include "RbSettings.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 
@@ -21,7 +22,7 @@ using namespace RevBayesCore;
 RbHelpSystem::RbHelpSystem()
 {
     
-    initializeHelp("help");
+    initializeHelp( RbSettings::userSettings().getHelpDir() );
 }
 
 
@@ -91,6 +92,13 @@ const std::set<std::string>& RbHelpSystem::getFunctionEntries( void ) const
 }
 
 
+const std::set<std::string>& RbHelpSystem::getTypeEntries( void ) const
+{
+    // return a constant reference to the internal value
+    return helpTypeNames;
+}
+
+
 /** Retrieve the help entry */
 const RbHelpEntry& RbHelpSystem::getHelp(const std::string &qs)
 {
@@ -146,8 +154,6 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
-    //pathToHelpDir = fMngr.getCurrentDirectory();
-    
     
     fMngr.setFilePath(helpDir);
     if (fMngr.testDirectory() == false)
@@ -168,7 +174,8 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
     for (std::vector<std::string>::iterator it = files.begin(); it != files.end(); ++it)
     {
         RevBayesCore::RbFileManager tmpFM = RevBayesCore::RbFileManager( *it );
-        if ( tmpFM.getFileExtension() == ext) {
+        if ( tmpFM.getFileExtension() == ext)
+        {
             fileNames.push_back( *it );
         }
     }
@@ -236,7 +243,7 @@ void RbHelpSystem::initializeHelp(const std::string &helpDir)
             const std::vector<std::string>& aliases = h->getAliases();
             for (std::vector<std::string>::const_iterator alias = aliases.begin(); alias != aliases.end(); ++alias)
             {
-                helpForTypes.insert( std::pair<std::string,RbHelpType*>( *alias , h) );
+                helpForTypes.insert( std::pair<std::string,RbHelpType*>( *alias , h->clone() ) );
                 helpForMethods.insert( std::pair<std::string, std::map<std::string,RbHelpFunction> >(*alias,methodsHelp) );
             }
         }

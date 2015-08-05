@@ -42,7 +42,10 @@ void TreeBipartitions::update( void )
     computeBipartitions();
 }
 
-
+const std::vector<double>& TreeBipartitions::getBipartitionAges(void)
+{
+    return bipartitionAges;
+}
 
 void TreeBipartitions::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
@@ -102,6 +105,8 @@ void TreeBipartitions::computeBipartitions(const TopologyNode* node, std::map <c
         //Here we assume we have a binary tree
         boost::dynamic_bitset<> bitVector = (*value)[ nodeToBitVectorIndex[children[ 0 ] ] ] | (*value)[ nodeToBitVectorIndex[children[ 1 ] ] ] ;
         value->push_back(bitVector);
+        bipartitionMap[ bitVector ] = node;
+        bipartitionAges.push_back( node->getBranchLength() );
         nodeToBitVectorIndex[ node ] = value->size() - 1;
     }
     else {
@@ -112,6 +117,8 @@ void TreeBipartitions::computeBipartitions(const TopologyNode* node, std::map <c
         }
         bitVector[nameToIndex.at( node->getName() ) ] = 1;
         value->push_back(bitVector);
+        bipartitionMap[ bitVector ] = node;
+        bipartitionAges.push_back( node->getBranchLength() );
         nodeToBitVectorIndex[ node ] = value->size() - 1;
     }
     

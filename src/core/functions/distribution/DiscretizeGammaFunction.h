@@ -30,7 +30,6 @@ namespace RevBayesCore {
         
     public:
         DiscretizeGammaFunction(const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<int> *nc, bool med);
-        DiscretizeGammaFunction(const DiscretizeGammaFunction &pdf);
         
         DiscretizeGammaFunction*            clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value

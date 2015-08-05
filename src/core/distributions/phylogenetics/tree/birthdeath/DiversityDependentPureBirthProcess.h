@@ -31,16 +31,16 @@ namespace RevBayesCore {
         // public member functions
         DiversityDependentPureBirthProcess*                 clone(void) const;                                                                                  //!< Create an independent clone
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
         
     private:
         
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                                                         //!< Compute the log-transformed probability of the current value.
-        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                        //!< Simulate n speciation events.
-        double                                              pSurvival(double start, double end) const;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
+        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
+        double                                              pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         
         // members
         const TypedDagNode<double>*                         initialSpeciation;                                                                                  //!< The initial speciation rate (lambda_0).

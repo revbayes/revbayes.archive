@@ -9,11 +9,23 @@
 #include <sstream>
 
 namespace RevLanguage {
+
+    class ParserInfo {
+    public:
+        bool inQuote;
+        bool inComment;
+        std::list<std::string> lines; 
+        int result;
+        std::string message;
+        std::string functionName;
+        std::string argumentLabel;
+        RevPtr<RevVariable> baseVariable;
+    };
     
     class SyntaxElement;
     class SyntaxFunctionCall;
     class SyntaxVariable;
-    
+
     /**
      * @brief Singleton Parser class
      *
@@ -32,12 +44,12 @@ namespace RevLanguage {
      * getline function to get a single line of input from the global
      * stringstream rrcommand, which is loaded with one Rev line at a time by
      * the processCommand function before the call to yyparse.
-     *
+     * 
      * The call to yyparse generates an error code if there is a syntax error
      * in the command buffer. The destructors in the bison-generated code should
      * deal with the deletion of the syntax element subtrees that have been created
      * up to the point when the error was encountered.
-     *
+     * 
      * For each complete and syntactically correct statement found in the buffer, the
      * bison code generates a call to the execute or help functin of the parser once
      * the syntax element tree is complete. The execute function executes the syntax
@@ -70,12 +82,13 @@ namespace RevLanguage {
      * functionName, baseVariableExpression etc, as well as some of the public functions
      * support this use case.
      */
-    class Parser {
         
+    class Parser {
+
     public:
         
-        enum ParserMode { CHECKING, EXECUTING };                                    //!< Parser modes
-        
+        enum ParserMode { CHECKING, EXECUTING };                                                    //!< Parser modes
+
         // Regular functions
         int                 execute(SyntaxElement* root, Environment &env) const;                   //!< Execute the syntax tree
         void                getline(char* buf, size_t maxsize);                                     //!< Give flex one line to process
@@ -83,7 +96,7 @@ namespace RevLanguage {
         int                 help(const std::string& baseSymbol, const std::string& symbol) const;   //!< Get help for a symbol
         int                 help(const SyntaxFunctionCall* root) const;                             //!< Get help for a function call
         int                 processCommand(std::string& command, Environment *env);                 //!< Process command with help from Bison
-        
+
         // State checking functions
         bool                isChecking(void) { return parserMode == CHECKING; }                     //!< Are we in state-checking mode?
         void                setBaseVariable(SyntaxVariable* var) { baseVariableExpr = var; }        //!< Set base variable expression
@@ -91,32 +104,34 @@ namespace RevLanguage {
         void                setFunctionName( const std::string& n ) { functionName = n; }           //!< Set function name
         void                setArgumentLabel( const std::string& n ) { argumentLabel = n; }         //!< Set argument label
         
+        ParserInfo          checkCommand(std::string& command, Environment *env);                   //!< Parse command without executing it
+        
         /** Get singleton parser */
         static Parser& getParser( void ) {
             static Parser theParser;
             return theParser;
         }
         
-        
-    private:
-        Parser(void);                                                                               //!< Prevent public construction
-        Parser(const Parser& x) {}                                                                  //!< Prevent copy construction
-        
+   private:
+                            Parser(void);                                                           //!< Prevent public construction
+                            Parser(const Parser& x) {}                                              //!< Prevent copy construction
+
         Parser&             operator=(const Parser& w) { return (*this); }                          //! Prevent assignment
-        
+
         // Help functions
-        void                breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
+        ParserInfo          breakIntoLines(const std::string& cmd, std::list<std::string>& lines, bool validate) const;    //!< Break a command string buffer into Rev lines
+        ParserInfo          breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
         void                setParserMode(ParserMode mode);                                         //!< Set the parser mode
         
         // Member variables
-        ParserMode          parserMode;                                                             //!< The current parser mode
-        std::string         functionName;                                                           //!< Function name of end state, if any
-        std::string         argumentLabel;                                                          //!< Argument label of end state, if any
-        SyntaxVariable*     baseVariableExpr;                                                       //!< Base variable expression of end state
-        RevPtr<Variable>    baseVariable;                                                           //!< Base variable of end state
-        
+        ParserMode          parserMode;                                             //!< The current parser mode
+        std::string         functionName;                                           //!< Function name of end state, if any
+        std::string         argumentLabel;                                          //!< Argument label of end state, if any
+        SyntaxVariable*     baseVariableExpr;                                       //!< Base variable expression of end state
+        RevPtr<RevVariable>    baseVariable;                                           //!< Base variable of end state
+
     };
-    
+
 }
 
 // Global call-back function for flex-generated code

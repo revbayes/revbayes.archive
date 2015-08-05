@@ -1,0 +1,55 @@
+################################################################################
+#
+# RevBayes Module: Multivariate normal distribution with the covariance matrix
+#                  separated into a variance and correlation coefficient parameters.
+#                  The correlation parameters are assumed to be drawn from a Dirichlet
+#                  process prior model.
+# 
+#
+# Authors: John Huelsenbeck and Risa Takenaka
+#
+################################################################################
+
+x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes.nex");
+
+nTraits <- x.nchar();
+kappa <- 0.1;
+df <- nTraits + 2;
+covdim = nTraits;
+
+for (i in 1:nTraits) {
+   mu[i] ~ dnNormal(0.0, 1.0);
+}
+
+for (i in 1:nTraits) {
+   sigma[i] ~ dnLognormal(0.0, 1.0);
+}
+
+R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
+
+V := fnDecompVarCovar(sigma, R);
+
+k <- 0;
+
+for (i in 1:x.ntaxa()) {
+	y[i] ~ dnMultivariateNormal(mu, V, 1);
+	for (j in 1:x.nchar()) {
+
+	if (x.isResolved(i,j)) 
+		{
+	   	y[i].clampAt(j,x[i][j]);
+		} else {
+		moves[++k] = mvVectorFixedSingleElementSliding(y[i], 0.5, j);
+		}
+	}
+}
+
+myModel = model(mu[1]);
+
+moves[++k] = mvVectorSlide(mu,0.1);
+moves[++k] = mvVectorScale(sigma);
+monitors[1] = mnScreen(printgen=1000, mu);
+monitors[2] = mnScreen(printgen=1000, sigma);
+
+mymcmc = mcmc(myModel, monitors, moves);
+mymcmc.run(10000);

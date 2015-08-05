@@ -1,7 +1,7 @@
 #ifndef Func_structure_H
 #define Func_structure_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
@@ -17,7 +17,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2014-01-21
      *
      */
-    class Func_structure : public Function {
+    class Func_structure : public Procedure {
         
     public:
         Func_structure( void );                                                                                             //!< Default constructor
@@ -33,7 +33,7 @@ namespace RevLanguage {
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
         bool                                    throws(void) const { return false; }                                        //!< Function may throw exceptions
         
-        RevPtr<Variable>                        execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                        execute(void);                                                              //!< Execute function
         
     };
     

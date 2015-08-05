@@ -19,16 +19,6 @@ RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const TypedDagNod
 }
 
 
-RevBayesCore::DiscretizeGammaFunction::DiscretizeGammaFunction(const DiscretizeGammaFunction &dgf) : TypedFunction< RbVector<double> >( dgf ),
-    shape( dgf.shape ),
-    rate( dgf.rate ),
-    numCats(dgf.numCats),
-    median(dgf.median)
-{
-    
-}
-
-
 
 RevBayesCore::DiscretizeGammaFunction* RevBayesCore::DiscretizeGammaFunction::clone( void ) const
 {
@@ -43,11 +33,13 @@ void RevBayesCore::DiscretizeGammaFunction::swapParameterInternal(const DagNode 
     {
         shape = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if(oldP == rate)
+    
+    if (oldP == rate)
     {
         rate = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if(oldP == numCats)
+    
+    if (oldP == numCats)
     {
         numCats = static_cast<const TypedDagNode<int>* >( newP );
     }

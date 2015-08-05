@@ -151,7 +151,7 @@ Model& Model::operator=(const Model &x)
  * Add a new source node.
  * We extract the model graph from the source node by calling cloneDAG on it.
  * cloneDAG clones the entire connected graph containing the given node.
- * Then we insert the source node in our set of source nodes so that we can use it
+ * Then we insert the copied source node in our set of source nodes so that we can use it
  * later to construct the model graph again in the copy constructor.
  * At the same time we fill the nodes map between the pointers of the nodes to the original DAG
  * and the the pointer to the cloned DAG nodes and fill also the vector of DAG nodes contained 
@@ -171,7 +171,8 @@ void Model::addSourceNode(const DagNode *sourceNode)
     
     // copy the entire graph connected to the source node
     // only if the node is not contained already in the nodesMap will it be copied.
-    sourceNode->cloneDAG(nodesMap);
+    std::map<std::string, const DagNode* > names;
+    sourceNode->cloneDAG(nodesMap, names);
     
     // add the source node to our set of sources
     DagNode *theNewSource = nodesMap[sourceNode];
@@ -256,4 +257,23 @@ const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const
 {
     
     return nodesMap;
+}
+
+
+/**
+ * Set the number of processes available to this specific model object.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+void Model::setNumberOfProcesses(size_t n, size_t offset)
+{
+    
+    // delegate the call to each DAG node
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        
+        DagNode *theNode = *it;
+        theNode->setNumberOfProcesses(n,offset);
+        
+    }
 }

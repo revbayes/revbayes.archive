@@ -20,6 +20,7 @@
 #define RlBoolean_H
 
 #include "ModelObject.h"
+#include "RbBoolean.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -27,11 +28,11 @@
 
 namespace RevLanguage {
 
-class RlBoolean : public ModelObject<bool> {
+    class RlBoolean : public ModelObject<RevBayesCore::Boolean> {
 
     public:
         RlBoolean(void);                                                                                        //!< Default constructor
-        RlBoolean(RevBayesCore::TypedDagNode<bool> *v);                                                         //!< Constructor from DAG node
+        RlBoolean(RevBayesCore::TypedDagNode<RevBayesCore::Boolean> *v);                                        //!< Constructor from DAG node
         RlBoolean(bool v);                                                                                      //!< Construct from bool
 
         // Operators
@@ -42,7 +43,9 @@ class RlBoolean : public ModelObject<bool> {
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-        bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
+        double                          isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
+        
+    protected:
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
     
     };

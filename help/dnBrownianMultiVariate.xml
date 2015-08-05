@@ -10,14 +10,11 @@
 
         <name>dnBrownianMultiVariate</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The multivariate Brownian model of trait evolution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This is the constructor function for the multivariate Brownian model of quantitative trait evolution along a time-calibrated phylogeny (Felsenstein, 1985). 
             </p>
         </description>
     
@@ -34,44 +31,69 @@
                 <label>tree</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>A time-calibrated phylogeny.</description>
                 <valueType>TimeTree</valueType>
             </argument>
             <argument>
                 <label>sigma</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The covariance per unit of time.</description>
                 <valueType>RealSymmetricMatrix</valueType>
             </argument>
 
             <returnValue>Dist_multivariateBrownian, Distribution, RevObject</returnValue>
 
             <details>
-                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                A multivariate Brownian motion of dimension D is parameterized by its initial value X(0) (a vector of dimension D) and its rate of change Sigma(a DxD symmmetric definite positive covariance matrix). Along a given time interval (0,T), the value of X at time T is multivariate normal of mean X(0) and covariance sigma*T. The value at the root, X(0), has an improper uniform distribution.
+                </p>
+                <p>
+                The process can be clamped at the tips of the phylogeny to the values specified by a continuous data matrix. This should be done trait by trait(see below). Values of X at the interior nodes of the phylogeny are usually integrated out (analytically). Here, in contrast, ancestral values are explicitly sampled by MCMC. This can be useful in the context of molecular comparative analyses, although this results in less efficient MCMC mixing.
+                </p>
+                <p>
+                A mathematically convenient prior for the covariance matrix of a multivariate Brownian motion is the inverse-Wishart distribution (see dnInvWishart and example below). 
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                 # load a tree
+                 trueTree = readTrees("data/chronoplac40.tree")[1]
+
+                 # load quantitative trait data
+                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
+                 # get number of traits (dimension of multivariate Brownian process)
+                 nTraits <- contData.nchar()[1]
+
+                 # use an inverse-Wishart prior distribution for the rate of the Brownian process
+                 # of parameters kappa * Identity and df = nTraits+2 degrees of freedom
+                 # where kappa is itself a scaling factor
+                 kappa ~ dnLogUniform(min=0.001,max=1000)
+                 # can be useful to start from a reasonable value for kappa
+                 kappa.setValue(0.1)
+                 Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+2)
+
+                 # multivariate Brownian process along the tree
+                 X ~ dnBrownianMultiVariate(trueTree,sigma=Sigma)
+
+                 # clamp the process at the tips of the tree, at the trait values observed in extant taxa
+                 # this has to be done trait by trait
+                 for (i in 1:nTraits)	{
+                       # the ith entry of the Brownian process should map to the ith. quantitative trait
+                       X.clampAt(contData,i,i)
+                 }
                  ]]>
 
             </example>
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                    Felsenstein F, 1985. Phylogenies and the comparative method. Am. Nat. 125:1-15.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Your name here</author>
+            <author>Nicolas Lartillot</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->

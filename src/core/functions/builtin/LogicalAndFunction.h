@@ -22,6 +22,7 @@
 #ifndef LogicalAndFunction_H
 #define LogicalAndFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -29,25 +30,24 @@
 
 namespace RevBayesCore {
     
-    class LogicalAndFunction : public TypedFunction<bool> {
+    class LogicalAndFunction : public TypedFunction<Boolean> {
         
     public:
-        LogicalAndFunction(const TypedDagNode<bool> * l, const TypedDagNode<bool> *r);
-        LogicalAndFunction(const LogicalAndFunction &n);                                                                                        //!< Copy constructor
-        virtual                                            ~LogicalAndFunction(void);                                                       //!< Virtual destructor
+        LogicalAndFunction(const TypedDagNode<Boolean> * l, const TypedDagNode<Boolean> *r);
+        virtual                            ~LogicalAndFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
-        LogicalAndFunction*                                 clone(void) const;                                                          //!< Create an independent clone
-        void                                                update(void);
+        LogicalAndFunction*                 clone(void) const;                                                          //!< Create an independent clone
+        void                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
+        void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
         
     private:
         
         // members
-        const TypedDagNode<bool>*                           left;
-        const TypedDagNode<bool>*                           right;
+        const TypedDagNode<Boolean>*        left;
+        const TypedDagNode<Boolean>*        right;
         
     };
     

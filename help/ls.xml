@@ -10,14 +10,11 @@
     
         <name>ls</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>List workspace content.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This function shows the content of the workspace.
             </p>
         </description>
 
@@ -31,7 +28,7 @@
             <label>all</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>Should all, even functions, be shown.</description>
             <valueType>Bool</valueType>
             <defaultValue>FALSE</defaultValue>
         </argument>
@@ -41,32 +38,28 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            The list functions shows all the variables in the current workspace.
+            You can also see all the functions available if you use ls(all=TRUE)
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+                # now we have an empty workspace
+                ls()
+                # next wee add a variable
+                a <- 1
+                # and we can see it
+                ls()
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Sebastian Hoehna</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>clear</entry>
         </seeAlso>
 
 

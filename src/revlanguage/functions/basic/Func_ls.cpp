@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_quit, which is
- * the function used to quit RevBayes.
- *
- * @brief Implementation of Func_quit
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2012-09-07
- *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_ls.h"
@@ -32,20 +13,23 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_ls::Func_ls( void ) : Function() {
+Func_ls::Func_ls( void ) : Procedure()
+{
     
 }
 
 
 /** Clone object */
-Func_ls* Func_ls::clone( void ) const {
+Func_ls* Func_ls::clone( void ) const
+{
     
     return new Func_ls( *this );
 }
 
 
 /** Execute function */
-RevPtr<Variable> Func_ls::execute( void ) {
+RevPtr<RevVariable> Func_ls::execute( void )
+{
     
     bool printAll = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
     
@@ -59,7 +43,7 @@ RevPtr<Variable> Func_ls::execute( void ) {
         variables.insert( globalVars.begin(), globalVars.end() );
     }
     
-    const VariableTable& userVars = Workspace::userWorkspace().getVariableTable();
+    const VariableTable& userVars = env->getVariableTable();
     variables.insert( userVars.begin(), userVars.end() );
     
     if ( !variables.empty() )
@@ -76,7 +60,7 @@ RevPtr<Variable> Func_ls::execute( void ) {
             t1.str("");
             t1 << (*it).first << " = ";
             t2.str("");
-            (*it).second->printValue( t2 );
+            (*it).second->printValue( t2, true );
             s << t1.str() << StringUtilities::oneLiner( t2.str(), 75 - t1.str().size() ) << std::endl;
         }
         

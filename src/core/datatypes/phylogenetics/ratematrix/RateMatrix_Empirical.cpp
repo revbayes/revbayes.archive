@@ -19,12 +19,13 @@ RateMatrix_Empirical::RateMatrix_Empirical(size_t n) : TimeReversibleRateMatrix(
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
     
-    updateMatrix();
+    update();
 }
 
 
 /** Copy constructor */
-RateMatrix_Empirical::RateMatrix_Empirical(const RateMatrix_Empirical& m) : TimeReversibleRateMatrix( m ) {
+RateMatrix_Empirical::RateMatrix_Empirical(const RateMatrix_Empirical& m) : TimeReversibleRateMatrix( m )
+{
     
     theEigenSystem       = new EigenSystem( *m.theEigenSystem );
     c_ijk                = m.c_ijk;
@@ -35,15 +36,18 @@ RateMatrix_Empirical::RateMatrix_Empirical(const RateMatrix_Empirical& m) : Time
 
 
 /** Destructor */
-RateMatrix_Empirical::~RateMatrix_Empirical(void) {
+RateMatrix_Empirical::~RateMatrix_Empirical(void)
+{
     
     delete theEigenSystem;
 }
 
 
-RateMatrix_Empirical& RateMatrix_Empirical::operator=(const RateMatrix_Empirical &r) {
+RateMatrix_Empirical& RateMatrix_Empirical::operator=(const RateMatrix_Empirical &r)
+{
     
-    if (this != &r) {
+    if (this != &r)
+    {
         TimeReversibleRateMatrix::operator=( r );
         
         delete theEigenSystem;
@@ -56,6 +60,26 @@ RateMatrix_Empirical& RateMatrix_Empirical::operator=(const RateMatrix_Empirical
     }
     
     return *this;
+}
+
+
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_Empirical& RateMatrix_Empirical::assign(const Assignable &m)
+{
+    
+    const RateMatrix_Empirical *rm = dynamic_cast<const RateMatrix_Empirical*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 
@@ -89,8 +113,9 @@ void RateMatrix_Empirical::calculateCijk(void) {
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Empirical::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Empirical::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
     
+    double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )
 		tiProbsEigens(t, P);
 	else
@@ -169,7 +194,7 @@ void RateMatrix_Empirical::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_Empirical::updateMatrix( void ) {
+void RateMatrix_Empirical::update( void ) {
     
 }
 

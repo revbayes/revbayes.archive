@@ -1,66 +1,118 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string>
-#include <cstring>
-#include <cstdlib>
-#include <unistd.h>
-#include <map>
 #include <vector>
-#include <algorithm>
-#include <stdbool.h>
 
+#include "RevClient.h"
 #include "RevLanguageMain.h"
-#include "RbOptions.h"
 #include "Parser.h"
 #include "Workspace.h"
-#include "workspace/FunctionTable.h"
-#include "functions/RlFunction.h"
-//#include "WorkspaceUtils.h"
-#include "CommandLineUtils.h"
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
 
-int main(int argc, const char * argv[]) {
-
+int main(int argc, char* argv[]) {
+    
+#   ifdef RB_MPI
+    int processId = 0;
+    int numProcesses = 0;
+    try
+        {
+        MPI::Init(argc, argv);
+        processId = MPI::COMM_WORLD.Get_rank();
+        numProcesses = MPI::COMM_WORLD.Get_size ();
+        }
+    catch (char* str)
+        {
+        return -1;
+        }
+#   endif
+    
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;
     int argIndex = 1;
-    while (argIndex < argc) {
+    while (argIndex < argc)
+        {
         sourceFiles.push_back(std::string(argv[argIndex++]));
-    }
-        
+        }
+    
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain();
     rl.startRevLanguageEnvironment(sourceFiles);
-
+    
+#   ifdef RB_XCODE
     /* Declare things we need */
     int result = 0;
-    std::string commandLine;
-    std::string line;
-
-    for (;;) {
-
+    std::string commandLine = "";
+    std::string line = "";
+        
+    for (;;)
+    {
+# ifndef RB_MPI
+        int processId = 0;
+# endif
         /* Print prompt based on state after previous iteration */
-        if (result == 0 || result == 2)
-            std::cout << "> ";
-        else
-            std::cout << "+ ";
+        if ( processId == 0 )
+            {
+            if (result == 0 || result == 2)
+                {
+                std::cout << "> ";
+                }
+            else
+                {
+                std::cout << "+ ";
+                }
 
-        /* Get the line */
-        std::istream& retStream = getline(std::cin, line);
+            /* Get the line */
+            std::istream& retStream = std::getline(std::cin, line);
+            if (!retStream)
+                {
+#               ifdef RB_MPI
+                MPI::Finalize();
+#               endif
+                exit(0);
+                }
+            
+            if (result == 0 || result == 2)
+                {
+                commandLine = line;
+                }
+            else if (result == 1)
+                {
+                commandLine += ";" + line;
+                }
+            }
+        
+        size_t bsz = commandLine.size();
+#       ifdef RB_MPI
+        MPI::COMM_WORLD.Bcast(&bsz, 1, MPI_INT, 0);
+#       endif
+        
+        char * buffer = new char[bsz+1];
+        buffer[bsz] = 0;
+        for (int i = 0; i < bsz; i++)
+            buffer[i] = commandLine[i];
+#       ifdef RB_MPI
+        MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
+#       endif
+        
+        std::string tmp = std::string( buffer );
 
-        if (!retStream)
-            exit(0);
-
-        if (result == 0 || result == 2) {
-            commandLine = line;
-        } else if (result == 1) {
-            commandLine += line;
-        }
-
-        result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
+        result = RevLanguage::Parser::getParser().processCommand(tmp, &RevLanguage::Workspace::userWorkspace());
     }
+    
+#   else
+    
+    RevClient c;
+    c.startInterpretor();
+    
+#   endif
 
+#   ifdef RB_MPI
+    MPI::Finalize();
+#   endif
+    
     return 0;
-
 }
+
 

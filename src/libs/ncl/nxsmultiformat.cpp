@@ -458,7 +458,7 @@ void  MultiFormatReader::readPhylipData(
 		NxsDiscreteStateRow & row = *mIt++;
 		for (unsigned j = 0; j < n_char; ++j)
 			{
-			bool readChar = false;
+			bool readDiscreteChar = false;
 			for (;;)
 				{
 				const char c = ftcb.current();
@@ -493,12 +493,12 @@ void  MultiFormatReader::readPhylipData(
 							}
 						else
 							row[j] = stateCode;
-						readChar = true;
+						readDiscreteChar = true;
 						}
 					}
 				if (!ftcb.advance())
 					goto funcExit;
-				if (readChar)
+				if (readDiscreteChar)
 					break;
 				}
 			}

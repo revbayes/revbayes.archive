@@ -1,0 +1,131 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The expected value of the concentration parameter from the mean number of parameter categories for the DPP distribution.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The expected value of the concentration parameter from the mean number of parameter categories for the DPP distribution.</h1>
+
+        <h2>Function fnDPPConcFromMean</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">fnDPPConcFromMean</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This function calculates the approximate expected value for the Dirichlet process prior distribution concentration parameter given a mean number of parameter categories for a specified number of elements.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             fnDPPConcFromMean( RealPos num_cats, RealPos num_elements )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >num_cats</b>
+<div class="indent">
+The mean number of rate categories.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >num_elements</b>
+<div class="indent">
+The number of elements in the DPP distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            This function computes an approximation of the expected value of the concentration parameter (a) for 
+            a given number of elements (N) and a given number of parameter categories (k) based on the formula given
+            in Liu (1996). (See also McAuliffe et al. 2006, Jara et al. 2007, and Heath et al. 2012.)
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+	 ## number of DPP elements
+	 N <- 10
+ 
+	 ## prior mean number of categories
+	 k <- 8
+ 
+	 ## concentration parameter of the DPP
+	 a <- fnDPPConcFromMean(k, N)
+ 
+	 ## G_0 distribution
+	 g_0 = dnExponential(1.0)
+ 
+	 ## DPP distribution constructior
+	 rates ~ dnDPP(a, g_0, N)
+             </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                Liu JS. 1996. Nonparametric hierarchical Bayes via sequential imputa- tions. Ann Stat. 3:911–930.
+            <br />
+<br />
+<br />
+
+                McAuliffe JD, Blei DM, Jordan MI. 2006. Nonparametric empirical Bayes for the Dirichlet process mixture model. Stat Comput. 16: 5–14.
+            <br />
+<br />
+<br />
+
+            	Jara A, Garcia-Zattera MJ, Lesaffre E. 2007. A Dirichlet process mixture model for the analysis of correlated binary responses. Comput Stat Data Anal. 51:5402–5415.
+            <br />
+<br />
+<br />
+
+            	Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
+            <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Tracy A. Heath</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('fnDPPMeanFromConc'); return false;">fnDPPMeanFromConc</a><br />
+<a href="" onClick="navigateHelp('dnDPP'); return false;">dnDPP</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

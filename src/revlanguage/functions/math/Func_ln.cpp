@@ -16,7 +16,8 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_ln::Func_ln( void ) : Function( ) {
+Func_ln::Func_ln( void ) : TypedFunction<Real>( )
+{
     
 }
 
@@ -28,16 +29,13 @@ Func_ln* Func_ln::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_ln::execute() {
+RevBayesCore::TypedFunction<double>* Func_ln::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::LnFunction* f = new RevBayesCore::LnFunction( arg );
     
-    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-    
-    Real* value = new Real( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -72,15 +70,6 @@ const TypeSpec& Func_ln::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_ln::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

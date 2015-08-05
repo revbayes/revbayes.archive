@@ -21,7 +21,7 @@ namespace RevBayesCore
     public:
         WangLandauMcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, bool ca=true, double ch=1.0, size_t ci=0, size_t ns=1e6, double se=10e-5, double sc=0.25, double ub=0.0, double lb=1000.0, size_t np=20);
         
-         virtual unsigned long                              nextCycle(bool advanceCycle);
+         virtual void               nextCycle(bool advanceCycle);
         
     protected:
 

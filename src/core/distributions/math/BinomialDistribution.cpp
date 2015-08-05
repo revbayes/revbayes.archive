@@ -5,13 +5,18 @@
 
 using namespace RevBayesCore;
 
-BinomialDistribution::BinomialDistribution(const TypedDagNode<int> *m, const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ), n( m ), p( q ) {
+BinomialDistribution::BinomialDistribution(const TypedDagNode<int> *m, const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ),
+    n( m ),
+    p( q )
+{
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( n );
+    addParameter( q );
     
     *value = RbStatistics::Binomial::rv(n->getValue(), p->getValue(), *GLOBAL_RNG);
-}
-
-
-BinomialDistribution::BinomialDistribution(const BinomialDistribution &d) : TypedDistribution<int>( d ), n( d.n ), p( d.p ) {
 }
 
 
@@ -28,8 +33,15 @@ BinomialDistribution* BinomialDistribution::clone( void ) const {
 }
 
 
-double BinomialDistribution::computeLnProbability( void ) {
-
+double BinomialDistribution::computeLnProbability( void )
+{
+    
+    // check that the value is inside the boundaries
+    if ( *value > n->getValue() || *value < 0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return RbStatistics::Binomial::lnPdf(n->getValue(), p->getValue(), *value);
 }
 
@@ -41,30 +53,18 @@ void BinomialDistribution::redrawValue( void ) {
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> BinomialDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( p );
-    parameters.insert( n );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void BinomialDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void BinomialDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
 
     if (oldP == p)
-        {
+    {
         p = static_cast<const TypedDagNode<double>* >( newP );
-        }
+    }
     else if (oldP == n)
-        {
+    {
         n = static_cast<const TypedDagNode<int>* >( newP );
-        }
+    }
+
 }
 
 

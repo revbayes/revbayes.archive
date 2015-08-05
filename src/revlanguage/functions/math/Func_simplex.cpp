@@ -15,7 +15,7 @@ using namespace RevLanguage;
 
 /** Default constructor */
 Func_simplex::Func_simplex( void ) :
-    Function()
+    TypedFunction< Simplex >()
 {
 }
 
@@ -27,7 +27,7 @@ Func_simplex* Func_simplex::clone( void ) const
 
 
 /** Execute function: Construct simplex from RealPos values. */
-RevPtr<Variable> Func_simplex::execute( void )
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_simplex::createFunction( void ) const
 {
     std::vector<const RevBayesCore::TypedDagNode<double>* > params;
     for ( size_t i = 0; i < args.size(); i++ )
@@ -38,11 +38,7 @@ RevPtr<Variable> Func_simplex::execute( void )
     
     RevBayesCore::SimplexFunction* func = new RevBayesCore::SimplexFunction( params );
     
-    DeterministicNode< RevBayesCore::RbVector<double> >* detNode = new DeterministicNode< RevBayesCore::RbVector<double> >( "", func, this->clone() );
-    
-    Simplex* theSimplex = new Simplex( detNode );
-        
-    return new Variable( theSimplex );
+    return func;
 }
 
 
@@ -86,12 +82,5 @@ const TypeSpec& Func_simplex::getClassTypeSpec( void )
 const TypeSpec& Func_simplex::getTypeSpec( void ) const
 {
     return getClassTypeSpec();
-}
-
-
-/** Get return type of function */
-const TypeSpec& Func_simplex::getReturnType( void ) const
-{
-    return Simplex::getClassTypeSpec();
 }
 

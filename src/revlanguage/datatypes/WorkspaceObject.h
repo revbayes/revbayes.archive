@@ -35,15 +35,16 @@ namespace RevLanguage {
         static const std::string&           getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                     //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                                //!< Get the type spec of the instance
-        virtual void                        printStructure(std::ostream& o, bool verbose=false) const;  //!< Print structure of language object for user
-        virtual void                        printValue(std::ostream& o) const = 0;                      //!< Print value for user
-
+        
         virtual bool                        isWorkspaceObject(void) const;                                                            //!< Is this a Workspace object (compared with a workspace object)
 
     protected:
 
         WorkspaceObject(void);
-    
+
+        virtual void                        printValue(std::ostream& o) const = 0;                      //!< Print value for user
+        
+
     };
 }
 

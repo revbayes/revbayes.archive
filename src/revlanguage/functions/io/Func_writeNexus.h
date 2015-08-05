@@ -1,7 +1,7 @@
 #ifndef Func_writeNexus_H
 #define Func_writeNexus_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 
 namespace RevLanguage {
@@ -19,7 +19,7 @@ namespace RevLanguage {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-02-15, version 1.0
      */
-    class Func_writeNexus :  public Function {
+    class Func_writeNexus :  public Procedure {
         
     public:
         // Basic utility functions
@@ -29,7 +29,7 @@ namespace RevLanguage {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>            execute(void);                                                          //!< Execute function
+        RevPtr<RevVariable>            execute(void);                                                          //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
         

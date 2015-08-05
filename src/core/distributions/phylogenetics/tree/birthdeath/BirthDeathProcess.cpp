@@ -20,6 +20,7 @@ using namespace RevBayesCore;
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
  * \param[in]    o         Origin or time of the process.
+ * \param[in]    ra        Age or the root (=time of the process).
  * \param[in]    r         Sampling probability of a species at present.
  * \param[in]    ss        The sampling strategy (uniform/diversified).
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
@@ -33,6 +34,8 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedD
         rho( rh ),
         samplingStrategy( ss )
 {
+    
+    addParameter( rho );
         
 }
 
@@ -92,6 +95,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
             lnProbTimes == RbConstants::Double::inf || 
             lnProbTimes == RbConstants::Double::neginf ) 
         {
+            delete times;
             return RbConstants::Double::nan;
         }
          
@@ -115,7 +119,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     delete times;
     
-    return lnProbTimes + logTreeTopologyProb;
+    return lnProbTimes;
     
 }
 
@@ -179,18 +183,6 @@ std::vector<double>* BirthDeathProcess::simSpeciations(size_t n, double origin) 
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> BirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
-    
-    parameters.insert( rho );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /**
  * Swap the parameters held by this distribution.
  *
@@ -198,7 +190,7 @@ std::set<const DagNode*> BirthDeathProcess::getParameters( void ) const
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void BirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void BirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if ( oldP == rho ) 
@@ -208,7 +200,7 @@ void BirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP)
     else
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
 
 }

@@ -1,6 +1,7 @@
 #ifndef BurninEstimatorContinuous_H
 #define BurninEstimatorContinuous_H
 
+#include "Cloneable.h"
 #include "TraceAnalysisContinuous.h"
 
 #include <vector>
@@ -20,17 +21,18 @@ namespace RevBayesCore {
      * @since Version 1.0, 2011-04-12
      *
      */
-    class BurninEstimatorContinuous {
+    class BurninEstimatorContinuous : public Cloneable {
     
     public:
         BurninEstimatorContinuous();
-        virtual                    ~BurninEstimatorContinuous() {}
+        virtual                                ~BurninEstimatorContinuous() {}
     
-        virtual std::size_t              estimateBurnin(const std::vector<double>& values) = 0;
+        virtual BurninEstimatorContinuous*      clone(void) const = 0;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
+        virtual std::size_t                     estimateBurnin(const std::vector<double>& values) = 0;
     
     protected:
     
-        TraceAnalysisContinuous     analysis;
+        TraceAnalysisContinuous                 analysis;
     
     };
     

@@ -243,8 +243,9 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
         selectedAttributedString[i]   = [[NSAttributedString alloc] initWithString:infoStr attributes:selAattrs];
         unselectedAttributedString[i] = [[NSAttributedString alloc] initWithString:infoStr attributes:unselAattrs];
 
-        NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil];
+        NSRect iRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
         NSPoint tempP = iRect.origin;
+        //NSRect glyphRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
         NSRect glyphRect = [selectedAttributedString[i] boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
         iRect.size = glyphRect.size;
         iRect.size.height *= 1.25;
@@ -257,7 +258,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
         iOffset[i].x -= glyphRect.origin.x;
         iOffset[i].y += tempP.y;
         iOffset[i].x += (iRect.size.width  - glyphRect.size.width)  * 0.5 + iRect.size.width * 0.02;
-        iOffset[i].y += (iRect.size.height - glyphRect.size.height) * 0.5 + iRect.size.width * 0.04;
+        iOffset[i].y += (iRect.size.height - glyphRect.size.height) * 0.5 - iRect.size.width * 0.32;
         informationRect[i] = iRect;
         }
 }

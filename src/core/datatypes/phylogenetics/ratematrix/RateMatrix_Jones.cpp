@@ -145,12 +145,6 @@ RateMatrix_Jones::RateMatrix_Jones( void ) : RateMatrix_Empirical( 20 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_Jones::RateMatrix_Jones(const RateMatrix_Jones& m) : RateMatrix_Empirical( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_Jones::~RateMatrix_Jones(void) {
     

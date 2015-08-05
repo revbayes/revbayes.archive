@@ -72,7 +72,7 @@ SyntaxElement* SyntaxForLoop::clone( void ) const
 
 
 /** Get semantic value (not applicable so return NULL) */
-RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxForLoop::evaluateContent( Environment& env, bool dynamic )
 {
     return NULL;
 }
@@ -104,7 +104,7 @@ void SyntaxForLoop::getNextLoopState( void )
     RevObject* elm = stateSpace->getElement( nextIndex-1 )->clone();
 
     // Set the loop variable to the next value using a control variable assignment
-    loopVariable->setRevObject( elm );
+    loopVariable->replaceRevObject( elm );
     loopVariable->setWorkspaceVariableState( true );
 
     // Increment the element index
@@ -124,7 +124,7 @@ void SyntaxForLoop::initializeLoop( Environment& env )
     assert ( nextIndex == 0 );  // Check that we are not running already
 
     // Evaluate expression and check that we get a vector
-    const RevPtr<Variable>&      theVar      = inExpression->evaluateContent(env);
+    const RevPtr<RevVariable>&      theVar      = inExpression->evaluateContent(env);
     const RevObject&             theValue    = theVar->getRevObject();
 
     // Check that it is a container (the first dimension of which we will use)
@@ -136,7 +136,7 @@ void SyntaxForLoop::initializeLoop( Environment& env )
     
     // Add the loop variable to the environment, if it is not already there
     if ( !env.existsVariable( varName ) )
-        env.addVariable( varName, new Variable( NULL) );
+        env.addVariable( varName, new RevVariable( NULL) );
     
     // Set the local smart pointer to the loop variable
     loopVariable = env.getVariable( varName );
@@ -170,16 +170,5 @@ bool SyntaxForLoop::isFunctionSafe( const Environment& env, std::set<std::string
     }
     
     return inExpression->isFunctionSafe( env, localVars );
-}
-
-
-/** Print info about syntax element */
-void SyntaxForLoop::printValue( std::ostream& o ) const
-{
-    o << "SyntaxForLoop:" << std::endl;
-    o << "varName      = " << varName << std::endl;
-    o << "inExpression = ";
-    inExpression->printValue( o );
-    o << std::endl;
 }
 

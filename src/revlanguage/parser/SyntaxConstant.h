@@ -27,10 +27,9 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxConstant*                         clone(void) const;                                      //!< Clone object
-        void                                    printValue(std::ostream& o) const;                      //!< Print info about object
-
+        
         // Regular functions
-        RevPtr<Variable>                        evaluateContent(Environment& env, bool dynamic=false);  //!< Get semantic value
+        RevPtr<RevVariable>                     evaluateContent(Environment& env, bool dynamic=false);  //!< Get semantic value
         bool                                    isConstExpression(void) const;                          //!< Is the expression constant?
 
     protected:

@@ -19,7 +19,7 @@ AbstractRateMatrix::AbstractRateMatrix(size_t n) : RateMatrix(n),
 {
     
     // I cannot call a pure virtual function from the constructor (Sebastian)
-    //    updateMatrix();
+    //    update();
 }
 
 
@@ -46,11 +46,11 @@ AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
     
     if (this != &r)
     {
+        // delegate to parent class
+        RateMatrix::operator=( r );
         
         delete theRateMatrix;
         
-        // delegate to parent class
-        RateMatrix::operator=( r );
         
         theRateMatrix       = new MatrixReal( *r.theRateMatrix );
         needsUpdate         = true;
@@ -60,52 +60,52 @@ AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
     return *this;
 }
 
-/** Index operator (const) */
-const std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) const {
-    
-    if ( i >= numStates )
-    {
-        throw RbException( "Index to RateMatrix[][] out of bounds" );
-    }
-    
-    return (*theRateMatrix)[i];
-}
+///** Index operator (const) */
+//const std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) const {
+//    
+//    if ( i >= numStates )
+//    {
+//        throw RbException( "Index to RateMatrix[][] out of bounds" );
+//    }
+//    
+//    return (*theRateMatrix)[i];
+//}
+//
+//
+///** Index operator */
+//std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) {
+//    
+//    if ( i >= numStates )
+//    {
+//        throw RbException( "Index to RateMatrix[][] out of bounds" );
+//    }
+//    
+//    return (*theRateMatrix)[i];
+//}
 
 
-/** Index operator */
-std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) {
-    
-    if ( i >= numStates )
-    {
-        throw RbException( "Index to RateMatrix[][] out of bounds" );
-    }
-    
-    return (*theRateMatrix)[i];
-}
-
-
-std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::begin( void ) const
-{
-    return theRateMatrix->begin();
-}
-
-
-std::vector<std::vector<double> >::iterator AbstractRateMatrix::begin( void )
-{
-    return theRateMatrix->begin();
-}
-
-
-std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::end( void ) const
-{
-    return theRateMatrix->end();
-}
-
-
-std::vector<std::vector<double> >::iterator AbstractRateMatrix::end( void )
-{
-    return theRateMatrix->end();
-}
+//std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::begin( void ) const
+//{
+//    return theRateMatrix->begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator AbstractRateMatrix::begin( void )
+//{
+//    return theRateMatrix->begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::const_iterator AbstractRateMatrix::end( void ) const
+//{
+//    return theRateMatrix->end();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator AbstractRateMatrix::end( void )
+//{
+//    return theRateMatrix->end();
+//}
 
 
 
@@ -141,9 +141,33 @@ bool AbstractRateMatrix::checkTimeReversibity(double tolerance)
 }
 
 
-size_t AbstractRateMatrix::getNumberOfStates( void ) const
+//size_t AbstractRateMatrix::getNumberOfStates( void ) const
+//{
+//    return numStates;
+//}
+
+
+
+double AbstractRateMatrix::getRate(size_t from, size_t to, double rate) const
 {
-    return numStates;
+    if ( from >= numStates || to > numStates )
+    {
+        throw RbException( "Index to RateMatrix.getRate() out of bounds" );
+    }
+    
+    return (*theRateMatrix)[from][to] * rate;
+}
+
+
+
+double AbstractRateMatrix::getRate(size_t from, size_t to, double age, double rate) const
+{
+    if ( from >= numStates || to > numStates )
+    {
+        throw RbException( "Index to RateMatrix.getRate() out of bounds" );
+    }
+
+    return (*theRateMatrix)[from][to] * rate;
 }
 
 
@@ -155,12 +179,10 @@ void AbstractRateMatrix::rescaleToAverageRate(double r)
     double scaleFactor = r / curAve;
     for (size_t i=0; i<numStates; i++)
     {
-        
         for (size_t j=0; j<numStates; j++)
         {
             (*theRateMatrix)[i][j] *= scaleFactor;
         }
-        
     }
     
     // set flags
@@ -194,8 +216,8 @@ void AbstractRateMatrix::setDiagonal(void)
 
 
 
-size_t AbstractRateMatrix::size( void ) const
-{
-    return numStates;
-}
+//size_t AbstractRateMatrix::size( void ) const
+//{
+//    return numStates;
+//}
 

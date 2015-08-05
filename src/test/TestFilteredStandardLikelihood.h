@@ -17,8 +17,8 @@
  */
 
 
-#ifndef TestGtrGammaLikelihood_H
-#define TestGtrGammaLikelihood_H
+#ifndef TestFilteredStandardLikelihood_H
+#define TestFilteredStandardLikelihood_H
 
 #include "RbFileManager.h"
 

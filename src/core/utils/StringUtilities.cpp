@@ -20,6 +20,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 
@@ -31,10 +32,10 @@
  * Either fill the spaces on the right if left aligned (true)
  * or on the left if right aligned.
  */
-void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
+void StringUtilities::fillWithSpaces(std::string &s, int l, bool left)
 {
     
-    for (size_t i=s.length(); i<l ; ++i)
+    for (int i=int(s.length()); i<l ; ++i)
     {
         // either left algined
         if (left == true)
@@ -48,6 +49,27 @@ void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
         
     }
     
+}
+
+/**
+ * Fill this string with spaces so that it has the required length.
+ * Either fill the spaces on the right if left aligned (true)
+ * or on the left if right aligned.
+ */
+void StringUtilities::formatFixedWidth(std::string &s, int l, bool left)
+{
+    
+    if ( s.length() > l )
+    {
+        if ( l > 2)
+        {
+            s = s.substr(0, l-2);
+        }
+        
+        s += "..";
+    }
+    
+    fillWithSpaces(s, l, left);
 }
 
 
@@ -260,11 +282,29 @@ bool StringUtilities::isFormattingChar(char c)
 
 
 /** Determine if the string s represents a number */
-bool StringUtilities::isNumber(const std::string& s) {
+bool StringUtilities::isIntegerNumber(const std::string& s)
+{
+    
+    if ( isNumber(s) )
+    {
+        std::size_t found = s.find('.');
+        if (found != std::string::npos)
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
+/** Determine if the string s represents a number */
+bool StringUtilities::isNumber(const std::string& s)
+{
 
     for (size_t i=0; i<s.size(); i++)
     {
-        if (!isdigit(s[i]))
+        if (!isdigit(s[i]) && s[i] != '.' && s[i] != '-' && s[i] != '+')
         {
             return false;
         }
@@ -356,6 +396,18 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
 }
 
 
+void StringUtilities::replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr)
+{
+    size_t pos = 0;
+    while((pos = str.find(oldStr, pos)) != std::string::npos)
+    {
+        str.replace(pos, oldStr.length(), newStr);
+        pos += newStr.length();
+    }
+    
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
 {
@@ -394,6 +446,30 @@ void StringUtilities::toLower(std::string& str)
         str[i] = char( tolower(str[i]) );
     }
     
+}
+
+std::string StringUtilities::toString(double x, int digits)
+{
+    
+    std::stringstream o;
+//    o << std::setw(12) << std::setprecision(digits);
+    o << std::setprecision(digits);
+    o << x;
+    return o.str();
+
+}
+
+
+/** Utility function for converting string to all lower case */
+std::string& StringUtilities::firstCharToUpper(std::string& str)
+{
+    
+    if ( str.size() > 0)
+    {
+        str[0] = char( toupper(str[0]) );
+    }
+    
+    return str;
 }
 
 

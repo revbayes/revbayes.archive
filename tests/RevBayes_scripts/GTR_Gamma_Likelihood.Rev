@@ -1,4 +1,4 @@
-D <- readCharacterData("data/Primates.nex")
+D <- readDiscreteCharacterData("data/Primates.nex")
 
 tau <- readTrees("data/primates.tree")[1]
 
@@ -23,5 +23,8 @@ seq ~ dnPhyloCTMC(tree=tau, Q=Q, siteRates=gamma_rates, branchRates=clockRate, t
 seq.clamp(D)
 
 write("BEAST LnL:       -6281.4026")
-write("RevBayes LnL:   ",seq.lnProb)
+write("RevBayes LnL:   ",seq.lnProbability())
 
+write(file="result.txt", append=TRUE, "Finished GTR_Gamma_Likelihood.Rev")
+
+q()

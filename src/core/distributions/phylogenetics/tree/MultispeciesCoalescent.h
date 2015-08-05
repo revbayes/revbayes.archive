@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of the random variable class for constant rate birth-death process.
+ * This file contains the declaration of the random variable class for the multiSpecies coalescent process.
  * This class is derived from the stochastic node and each instance will represent a random variable.
  *
  * @brief Declaration of the constant rate Birth-Death process class.
@@ -32,7 +32,6 @@ namespace RevBayesCore {
         
     public:
         MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::vector<Taxon> &t);
-        MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                                //!< Copy constructor
         virtual                                            ~MultispeciesCoalescent(void);                                                                       //!< Virtual destructor
         
         // public member functions
@@ -42,9 +41,9 @@ namespace RevBayesCore {
         void                                                setNes(TypedDagNode<RbVector<double> >* inputNes);
         void                                                setNe(TypedDagNode<double>* inputNe);
 
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

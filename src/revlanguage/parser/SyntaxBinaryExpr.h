@@ -50,10 +50,9 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxElement*              clone() const;                                                              //!< Clone object
-        void                        printValue(std::ostream& o) const;                                          //!< Print info about object
-
+        
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);                      //!< Get semantic value
+        RevPtr<RevVariable>         evaluateContent(Environment& env, bool dynamic=false);                      //!< Get semantic value
         bool                        isConstExpression(void) const;                                              //!< Is the expression constant?
         bool                        isFunctionSafe(const Environment&       env,
                                                    std::set<std::string>&   localVars) const;                   //!< Is this element safe in a function?

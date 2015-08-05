@@ -18,30 +18,27 @@
 
 using namespace RevLanguage;
 
-Func__or::Func__or() : Function() {
+Func__or::Func__or() : TypedFunction<RlBoolean>() {
     
 }
 
 /* Clone object */
-Func__or* Func__or::clone( void ) const {
+Func__or* Func__or::clone( void ) const
+{
     
     return new Func__or( *this );
 }
 
 
-/** Execute function: We rely on getValue or overloaded push_back to provide functionality */
-RevPtr<Variable> Func__or::execute( void ) {
+RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func__or::createFunction( void ) const
+{
     
-    const RevBayesCore::TypedDagNode<bool>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
-    const RevBayesCore::TypedDagNode<bool>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::LogicalOrFunction *func = new RevBayesCore::LogicalOrFunction( leftVal, rightVal );
 
-    DeterministicNode<bool> *detNode = new DeterministicNode<bool>("", func, this->clone());
-    
-    RlBoolean *theBool = new RlBoolean( detNode );
-    
-    return new Variable( theBool );
+    return func;
 }
 
 
@@ -86,12 +83,5 @@ const TypeSpec& Func__or::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& Func__or::getReturnType( void ) const {
-    
-    return RlBoolean::getClassTypeSpec();
 }
 

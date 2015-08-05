@@ -10,14 +10,11 @@
 
         <name>dnUniformTopology</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Uniform distribution on tree topologies</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Specifies equal probability for each possible tree topology with n taxa.
             </p>
         </description>
     
@@ -26,22 +23,15 @@
 
             <usage>
                 <![CDATA[
-                 dnUniformTopology( Natural nTaxa, String[] names )
+                 dnUniformTopology( String[] names )
                  ]]> 
             </usage>
         
             <argument>
-                <label>nTaxa</label>
-                <argumentPassingMethod>by-value</argumentPassingMethod>
-                <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
-                <valueType>Natural</valueType>
-            </argument>
-            <argument>
                 <label>names</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The taxon names that will be used as the tip names.</description>
                 <valueType>String[]</valueType>
             </argument>
 
@@ -50,32 +40,24 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This simply specifies a uniform probability distribution on all possible tree topologies with n taxa.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                 names <- ["A", "B", "C", "D"]
+                 topology ~ dnUniformTopology( names )
+                 topology
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>treeAssembly</entry>
             </seeAlso>
 
 

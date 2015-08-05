@@ -89,6 +89,7 @@ Parser& parser = Parser::getParser();
     RevLanguage::SyntaxLabeledExpr*                 syntaxLabeledExpr;
     RevLanguage::SyntaxFormal*                      syntaxFormal;
     std::list<RevLanguage::SyntaxElement*>*         syntaxElementList;
+    std::vector<std::string>*                       stringvector;
     std::list<RevLanguage::SyntaxLabeledExpr*>*     argumentList;
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 };
@@ -115,6 +116,7 @@ Parser& parser = Parser::getParser();
 %type <syntaxElement> forCond cond returnStatement
 %type <syntaxElement> nextStatement breakStatement
 %type <syntaxElementList> elementList optElements
+%type <stringvector> namespaceList optNamespaces
 %type <syntaxElementList> stmts stmtList
 %type <syntaxElementList> memberDefs
 %type <argumentList> argumentList optArguments vectorList vector
@@ -500,6 +502,21 @@ variable    :   identifier optElements
                     delete $1;
                     delete $2;
                 }
+            |   identifier '$' identifier optNamespaces
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting variable (NAMED_VAR) in syntax tree\n");
+#endif
+                    std::vector<std::string> names = std::vector<std::string>(1, *$1);
+                    delete $1;
+                    names.push_back(*$3);
+                    delete $3;
+                    names.insert(names.end(),$4->begin(),$4->end());
+                    delete $4;
+                    std::string varName = names.back();
+                    names.pop_back();
+                    $$ = new SyntaxVariable(varName, names);
+                }
             |   fxnCall '[' expression ']' optElements
                 {
 #ifdef DEBUG_BISON_FLEX
@@ -547,6 +564,14 @@ elementList :   '[' expression ']'              { $$ = new std::list<SyntaxEleme
             |   '[' ']'                         { $$ = new std::list<SyntaxElement*>(); }
             |   elementList '[' expression ']'  { $1->push_back($3); $$ = $1; }
             |   elementList '[' ']'             { $1->push_back( NULL ); $$ = $1; }
+            ;
+
+optNamespaces :   /* empty */                     { $$ = new std::vector<std::string>(); }
+            |   namespaceList                     { $$ = $1; }
+            ;
+
+namespaceList :   '$' identifier                { $$ = new std::vector<std::string>(1, *$2); delete $2; }
+            |   namespaceList '$' namespaceList { $1->insert($1->end(),$3->begin(),$3->end()); delete $3; $$ = $1; }
             ;
 
 fxnCall     :   identifier '(' optArguments ')'

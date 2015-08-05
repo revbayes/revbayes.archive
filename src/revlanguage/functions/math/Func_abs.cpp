@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "AbsoluteValueFunction.h"
 #include "Func_abs.h"
 #include "Real.h"
@@ -16,7 +8,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_abs::Func_abs( void ) : Function( ) {
+Func_abs::Func_abs( void ) : TypedFunction<RealPos>( ) {
     
 }
 
@@ -28,16 +20,13 @@ Func_abs* Func_abs::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_abs::execute() {
+RevBayesCore::TypedFunction<double>* Func_abs::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::AbsoluteValueFunction* f = new RevBayesCore::AbsoluteValueFunction( arg );
     
-    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-    
-    RealPos* value = new RealPos( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -72,15 +61,6 @@ const TypeSpec& Func_abs::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_abs::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

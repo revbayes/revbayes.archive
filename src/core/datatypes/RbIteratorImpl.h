@@ -48,7 +48,8 @@ namespace RevBayesCore {
         const valueType&                                    operator*(void) const { return (*it); }
         valueType&                                          operator*(void) { return (*it); }
         const valueType*                                    operator->(void) const { return &(*it); }
-        
+        valueType*                                          operator->(void) { return &(*it); }
+            
     private:
         
         // private members
@@ -73,8 +74,8 @@ namespace RevBayesCore {
         const RbIteratorImpl<valueType,1>&                  operator++(void) const { ++it; return *this; }                                                                  //!< Increment index (prefix)
         RbIteratorImpl<valueType,1>&                        operator--(void) { --it; return *this; }                                                                        //!< Decrement index (prefix)
         const RbIteratorImpl<valueType,1>&                  operator--(void) const { --it; return *this; }                                                                  //!< Decrement index (prefix)
-        bool                                                operator==(const RbIteratorImpl<valueType,1>& x) const { return it == x.it; }                              //!< Equals operator
-        bool                                                operator!=(const RbIteratorImpl<valueType,1>& x) const { return it != x.it; }                              //!< Not-Equals operator
+        bool                                                operator==(const RbIteratorImpl<valueType,1>& x) const { return it == x.it; }                                   //!< Equals operator
+        bool                                                operator!=(const RbIteratorImpl<valueType,1>& x) const { return it != x.it; }                                   //!< Not-Equals operator
         bool                                                operator<(const RbIteratorImpl<valueType,1>& x) const { return it < x.it; }
         const valueType&                                    operator*(void) const { return *(*it); }
         valueType&                                          operator*(void) { return *(*it); }

@@ -30,7 +30,6 @@
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "Function.h"
-#include "UserInterface.h"
 #include "Workspace.h"
 
 #include <cassert>
@@ -40,24 +39,24 @@
 using namespace RevLanguage;
 
 /* Constructor of global workspace */
-Workspace::Workspace() : Environment(), typesInitialized(false) {
+Workspace::Workspace(const std::string &n) : Environment( n ),
+    typesInitialized(false)
+{
 
 }
 
 
 /* Constructor of user workspace */
-Workspace::Workspace(Environment* parentSpace) : Environment(parentSpace), typesInitialized(false) {
+Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environment(parentSpace, n),
+    typesInitialized(false)
+{
     
 }
 
-
 /* Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), typesInitialized(false) {
-
-}
-
-/* Constructor of user workspace */
-Workspace::Workspace(const Workspace& x) : Environment(x), typesInitialized(x.typesInitialized) {
+Workspace::Workspace(const Workspace& x) : Environment(x),
+    typesInitialized(x.typesInitialized)
+{
     
 }
 
@@ -77,7 +76,8 @@ Workspace& Workspace::operator=(const Workspace& x) {
 
 
 /* Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
+bool Workspace::addDistribution(const std::string& name, Distribution *dist)
+{
 
 #ifdef DEBUG_WORKSPACE
     printf("Adding distribution %s to workspace\n", name.c_str());
@@ -227,7 +227,8 @@ RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
 
 
 /** Print the frame content, not the entire environment. */
-void Workspace::printValue(std::ostream& o) const {
+void Workspace::printValue(std::ostream& o) const
+{
 
     if ( variableTable.size() > 0 )
     {
@@ -240,7 +241,7 @@ void Workspace::printValue(std::ostream& o) const {
             std::ostringstream s;
             s << (*it).first << " = ";
             std::ostringstream t;
-            (*it).second->printValue( t );
+            (*it).second->printValue( t, true );
             o << StringUtilities::oneLiner( t.str(), 75 - s.str().length() ) << std::endl;
         }
         o << std::endl;

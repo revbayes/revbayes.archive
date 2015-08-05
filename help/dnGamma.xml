@@ -10,14 +10,11 @@
 
         <name>dnGamma</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Gamma distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Gamma probability distribution for positive real numbers.
             </p>
         </description>
     
@@ -34,14 +31,14 @@
                 <label>shape</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The shape parameter.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>rate</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The rate parameter.</description>
                 <valueType>RealPos</valueType>
             </argument>
 
@@ -50,32 +47,30 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The gamma distribution is the probability of the sum of exponentially distributed variables.
+                Thus, it provides a natural prior distribution for parameters that could be considered as sums of exponential variables.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                    # lets simulate
+                    a <- rgamma(1000,shape=4,rate=4)
+                    # we expect a mean of 1
+                    mean(a)
+                    
+                    # create a random variable
+                    x ~ dnGamma(shape=4,rate=1)
+                    x
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>dnExponential</entry>
             </seeAlso>
 
 

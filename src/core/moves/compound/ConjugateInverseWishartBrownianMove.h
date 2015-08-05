@@ -1,61 +1,53 @@
-/* 
- * File:   ConjugateInverseWishartBrownianMove.h
- * Author: nl
- *
- * Created on 23 juillet 2014, 16:48
- */
-
-
-#ifndef BROWNIANINVERSEWISHARTMIXINGMOVE_H
-#define	BROWNIANINVERSEWISHARTMIXINGMOVE_H
+#ifndef ConjugateInverseWishartBrownianMove_H
+#define ConjugateInverseWishartBrownianMove_H
 
 #include <map>
 #include <ostream>
 #include <set>
 #include <string>
 
+#include "AbstractMove.h"
+#include "MatrixReal.h"
 #include "StochasticNode.h"
-
-#include "MultivariateBrownianPhyloProcess.h"
-#include "InverseWishartDistribution.h"
 #include "TimeTree.h"
-
-#include "CompoundMove.h"
 
 namespace RevBayesCore {
     
-    
-    class ConjugateInverseWishartBrownianMove : public CompoundMove {
+    class ConjugateInverseWishartBrownianMove : public AbstractMove {
         
     public:
-        ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                         //!< Constructor
-//        ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, StochasticNode<TimeTree>* t, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                         //!< Constructor
+        ConjugateInverseWishartBrownianMove(StochasticNode<MatrixReal>* s, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                                                         //!<  constructor
+        ConjugateInverseWishartBrownianMove(const ConjugateInverseWishartBrownianMove &m);                                                                                //!< Copy constructor
+        virtual                                ~ConjugateInverseWishartBrownianMove(void);                                                             //!< Destructor
+        
+        // overloaded operators
+        ConjugateInverseWishartBrownianMove&    operator=(const ConjugateInverseWishartBrownianMove &m);                                               //!< Assignment operator
         
         // Basic utility functions
-        ConjugateInverseWishartBrownianMove*         clone(void) const;                                                                  //!< Clone this object.
-        const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
-        void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
+        ConjugateInverseWishartBrownianMove*    clone(void) const;                                                                  //!< Clone object
+        const std::set<DagNode*>&               getDagNodes(void) const;
+        const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+        void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
+        void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         
     protected:
-        
-        double                                  performCompoundMove(void);                                                            //!< Perform move
-        void                                    printParameterSummary(std::ostream &o) const;
-        void                                    rejectCompoundMove(void);
-        void                                    acceptCompoundMove(void);
+        void                                    performMove(double lHeat, double pHeat);                                 //!< Perform move
+        void                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
+        void                                    tune(void);
         
     private:
+        void                                    reject(void);
         
-        StochasticNode<MatrixRealSymmetric>*            sigma;
-        StochasticNode<MultivariateRealNodeContainer>*   process;
-        // StochasticNode<TimeTree>*                       tau;
-        TypedDagNode<double>*                       kappa;
-        TypedDagNode<int>*                          df;
+        // member variables
+        StochasticNode<MatrixReal>*             sigma;
+        TypedDagNode<double>*                   kappa;
+        TypedDagNode<int>*                      df;
         
-        MatrixRealSymmetric                             bksigma;
+        std::set<DagNode*>                      nodes;
+        size_t                                  numAccepted;
         
     };
     
 }
 
-#endif	/* BROWNIANINVERSEWISHARTMIXINGMOVE_H */
-
+#endif

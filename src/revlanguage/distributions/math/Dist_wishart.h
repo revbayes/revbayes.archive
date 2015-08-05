@@ -1,31 +1,37 @@
-//
-//  RlDist_wishart.h
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-27.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
-#ifndef __revbayes__Dist_wishart__
-#define __revbayes__Dist_wishart__
+#ifndef Dist_wishart_H
+#define Dist_wishart_H
 
 #include <iostream>
 
-
-#include "RealSymmetricMatrix.h"
+#include "RlMatrixRealSymmetric.h"
 #include "RlTypedDistribution.h"
 #include "WishartDistribution.h"
 
 namespace RevLanguage {
     
-    class Dist_wishart :  public  TypedDistribution<RealSymmetricMatrix> {
+    /**
+     * The RevLanguage wrapper of the wishart distribution.
+     *
+     * The RevLanguage wrapper of the wishart distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the WishartDistribution for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Nicolas Lartillot)
+     * @since 2014-03-27, version 1.0
+     *
+     */
+    class Dist_wishart : public TypedDistribution<MatrixRealSymmetric> {
         
     public:
         Dist_wishart( void );
         virtual ~Dist_wishart();
         
         // Basic utility functions
-        Dist_wishart*                            clone(void) const;                                                              //!< Clone the object
+        Dist_wishart*                                   clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -38,14 +44,14 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
- //       RevPtr<const Variable>                          omega;
-        RevPtr<const Variable>                          kappa;
-        RevPtr<const Variable>                          df;
-        RevPtr<const Variable>                          dim;
+ //       RevPtr<const RevVariable>                       omega;
+        RevPtr<const RevVariable>                       kappa;
+        RevPtr<const RevVariable>                       df;
+        RevPtr<const RevVariable>                       dim;
     };
     
 }

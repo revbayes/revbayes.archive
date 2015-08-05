@@ -1,0 +1,11 @@
+This tutorial walks you through: 
+
+  * How to set up a model 
+  * How to attach data to the model 
+  * How to run MCMC on the model 
+
+The simple example that we use here are some observations from a normal distribution. We are interested in estimating the posterior probabilities of the mean and the variance parameters for the normal distribution. 
+    
+    # Test file for mcmc on normal distribution
+    a 
+    

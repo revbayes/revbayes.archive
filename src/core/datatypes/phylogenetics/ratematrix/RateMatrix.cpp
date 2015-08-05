@@ -1,4 +1,5 @@
 #include "RateMatrix.h"
+#include "RbException.h"
 #include "RbMathMatrix.h"
 
 #include <fstream>
@@ -9,8 +10,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix::RateMatrix(size_t n) :
-    numStates( n )
+RateMatrix::RateMatrix(size_t n) : RateGenerator(n)
 {
 
 }
@@ -26,13 +26,33 @@ RateMatrix::~RateMatrix(void)
 }
 
 
-size_t RateMatrix::getNumberOfStates( void ) const {
+RateMatrix& RateMatrix::assign(const Assignable &m)
+{
+    const RateMatrix *rm = dynamic_cast<const RateMatrix*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+}
+
+void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix &P) const
+{
+    calculateTransitionProbabilities(t, 0.0, 1.0, P);
+}
+
+size_t RateMatrix::getNumberOfStates( void ) const
+{
     return numStates;
 }
 
 
 
-size_t RateMatrix::size( void ) const {
+size_t RateMatrix::size( void ) const
+{
     return numStates;
 }
 
@@ -57,7 +77,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix& x) {
         {
             if (j != 0)
                 o << ", ";
-            o << x[i][j];
+            o << x.getRate( i, j);
         }
         o <<  " ]";
         
