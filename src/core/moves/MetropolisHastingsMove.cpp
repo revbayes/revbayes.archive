@@ -27,6 +27,7 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
     proposal( p )
 {
     
+    proposal->setMove( this );
     
 }
 
@@ -42,6 +43,8 @@ MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) 
     numAccepted( m.numAccepted ),
     proposal( m.proposal->clone() )
 {
+    
+    proposal->setMove( this );
     
 }
 
@@ -73,6 +76,8 @@ MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::Me
         
         numAccepted     = m.numAccepted;
         proposal        = m.proposal->clone();
+        
+        proposal->setMove( this );
         
     }
     
@@ -170,17 +175,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             if ( the_node->isClamped() )
             {
                 lnLikelihoodRatio += the_node->getLnProbabilityRatio();
-//                std::cerr << getMoveName() << std::endl;
-//                if ( getMoveName() == "SpeciesNodeTimeSlideUniform" )
-//                {
-//                    if ( the_node->getLnProbabilityRatio() != 0.0 )
-//                    {
-//                        std::cerr << the_node->getLnProbabilityRatio() << std::endl;
-//                        the_node->touch();
-//                        std::cerr << the_node->getLnProbabilityRatio() << std::endl;
-//                    }
-//                    std::cerr << "DAG Node:\t\t" << the_node->getName() << "\t\t" << the_node << std::endl;
-//                }
             }
             else
             {
