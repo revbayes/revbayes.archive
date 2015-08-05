@@ -70,6 +70,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 /* Map calls to member methods */
 RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    
     if (name == "chartype")
     {
         found = true;
