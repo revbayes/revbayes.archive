@@ -133,7 +133,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
     double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
     
     // Sebastian: This is for debugging to test if the proposal's acceptance rate is 1.0 as it should be!
-    my_new_age = my_age; 
+//    my_new_age = my_age; 
     
     int upslideNodes = 0;
     int downslideNodes = 0;
@@ -166,18 +166,6 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
         }
         
         // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
-//        geneTrees[i]->touch( false );
-//        const std::set<DagNode*>& children  = geneTrees[i]->getChildren();
-//        for ( std::set<DagNode*>::const_iterator it = children.begin(); it != children.end(); ++it )
-//        {
-//            DagNode *child = *it;
-//            double test = child->testLnProbabilityRatio();
-//            if ( test != 0.0 )
-//            {
-//                std::cerr << "Problem in probability shortcuts for tree " << geneTrees[i]->getName() << std::endl;
-//            }
-//        }
- 
 //        geneTrees[i]->touch( true );
         
     }

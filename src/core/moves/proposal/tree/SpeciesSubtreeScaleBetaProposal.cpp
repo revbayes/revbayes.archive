@@ -173,7 +173,7 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
         }
         
         // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
-        geneTrees[i]->touch( true );
+//        geneTrees[i]->touch( true );
         
     }
     
