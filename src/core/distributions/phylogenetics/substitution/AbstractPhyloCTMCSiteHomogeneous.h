@@ -722,40 +722,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compu
                 
     }
     
-//    // start by filling the likelihood vector for the children of the root
-//    if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
-//    {
-//        const TopologyNode &left = root.getChild(0);
-//        size_t leftIndex = left.getIndex();
-//        const TopologyNode &right = root.getChild(1);
-//        size_t rightIndex = right.getIndex();
-//        
-//        computeRootLikelihood( rootIndex, leftIndex, rightIndex );
-//        scale(rootIndex, leftIndex, rightIndex);
-//        
-//    }
-//    else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
-//    {
-//        const TopologyNode &left = root.getChild(0);
-//        size_t leftIndex = left.getIndex();
-//        const TopologyNode &right = root.getChild(1);
-//        size_t rightIndex = right.getIndex();
-//        const TopologyNode &middle = root.getChild(2);
-//        size_t middleIndex = middle.getIndex();
-//        
-//        computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
-//        scale(rootIndex, leftIndex, rightIndex, middleIndex);
-//        
-//    }
-//    else
-//    {
-//        throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
-//    }
-//    
-//    // sum the partials up
-//    this->lnProb = sumRootLikelihood();
-    
-    
     // if we are not in MCMC mode, then we need to (temporarily) free memory
     if ( inMcmcMode == false )
     {
