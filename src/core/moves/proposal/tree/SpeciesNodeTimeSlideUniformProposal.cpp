@@ -166,7 +166,19 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
         }
         
         // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
-        geneTrees[i]->touch( true );
+//        geneTrees[i]->touch( false );
+//        const std::set<DagNode*>& children  = geneTrees[i]->getChildren();
+//        for ( std::set<DagNode*>::const_iterator it = children.begin(); it != children.end(); ++it )
+//        {
+//            DagNode *child = *it;
+//            double test = child->testLnProbabilityRatio();
+//            if ( test != 0.0 )
+//            {
+//                std::cerr << "Problem in probability shortcuts for tree " << geneTrees[i]->getName() << std::endl;
+//            }
+//        }
+ 
+//        geneTrees[i]->touch( true );
         
     }
     
