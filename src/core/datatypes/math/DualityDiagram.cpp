@@ -157,9 +157,9 @@ void DualityDiagram::compute_(const MatrixReal& matrix, double tol)
     
     // How many significant axes have to be conserved?
     size_t rank = 0;
-    for (size_t i = eigenValues_.size(); i > 0; i--)
+    for (size_t i = 0; i < eigenValues_.size(); ++i)
     {
-        if ((eigenValues_[i - 1] / eigenValues_[eigenValues_.size() - 1]) > tol)
+        if ((eigenValues_[i] / eigenValues_[0]) > tol)
             rank++;
     }
     
@@ -172,16 +172,16 @@ void DualityDiagram::compute_(const MatrixReal& matrix, double tol)
         nbAxes_ = rank;
     }
     
-    /*The eigen values are initially sorted into ascending order by the 'eigen' function. Here the significant values are sorted
-     in the other way around.*/
-    std::vector<double> tmpEigenValues(nbAxes_);
-    size_t cpt = 0;
-    for (size_t i = eigenValues_.size(); i > (eigenValues_.size() - nbAxes_); i--)
-    {
-        tmpEigenValues[cpt] = eigenValues_[i-1];
-        cpt++;
-    }
-    eigenValues_ = tmpEigenValues;
+//    /*The eigen values are initially sorted into ascending order by the 'eigen' function. Here the significant values are sorted
+//     in the other way around.*/
+//    std::vector<double> tmpEigenValues(nbAxes_);
+//    size_t cpt = 0;
+//    for (size_t i = eigenValues_.size(); i > (eigenValues_.size() - nbAxes_); i--)
+//    {
+//        tmpEigenValues[cpt] = eigenValues_[i-1];
+//        cpt++;
+//    }
+//    eigenValues_ = tmpEigenValues;
     
     for (std::vector<double>::iterator it = rowWeights_.begin(); it != rowWeights_.end(); it++)
     {
