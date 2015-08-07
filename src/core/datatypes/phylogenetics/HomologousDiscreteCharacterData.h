@@ -164,12 +164,14 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
     size_t alphabetSize = tmp.getNumberOfStates();
     size_t numSequences = this->sequenceNames.size();
     MatrixReal m(numSequences,alphabetSize);
+    
+    double MIN_THRESHOLD = 1E-3;
     for (size_t i = 0; i < numSequences; ++i)
     {
         const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
         size_t l = seq.size();
         double nonGapSeqLength = 0.0;
-        std::vector<double> stateCounts(alphabetSize);
+        std::vector<double> stateCounts(alphabetSize, MIN_THRESHOLD);
         for (size_t j = 0; j < l; ++j)
         {
             const charType& c = seq[j];
@@ -215,7 +217,7 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
         std::vector<double> &observedFreqs = m[i];
         for (size_t j = 0; j < alphabetSize; ++j)
         {
-            observedFreqs[j] = stateCounts[j] / nonGapSeqLength;
+            observedFreqs[j] = stateCounts[j] / (nonGapSeqLength+20*MIN_THRESHOLD);
         }
     }
     
