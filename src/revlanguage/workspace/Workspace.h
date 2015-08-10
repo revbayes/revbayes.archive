@@ -1,25 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Workspace, which is
- * used to hold the global workspace, the mother of all frames.
- * It is also used for the user workspace, which is the next
- * descendant frame, containing all variables, types and
- * functions defined by the user.
- *
- * @brief Declaration of Workspace
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @extends Frame
- * @package parser
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #ifndef Workspace_H
 #define Workspace_H
 
