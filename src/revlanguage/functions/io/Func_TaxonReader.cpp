@@ -15,20 +15,22 @@
 using namespace RevLanguage;
 
 /** Clone object */
-Func_TaxonReader* Func_TaxonReader::clone( void ) const {
+Func_TaxonReader* Func_TaxonReader::clone( void ) const
+{
     
     return new Func_TaxonReader( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_TaxonReader::execute( void ) {
+RevPtr<RevVariable> Func_TaxonReader::execute( void )
+{
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     char del = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue()[0];
     
-    RevBayesCore::TaxonReader tr = RevBayesCore::TaxonReader(fn.getValue(),del);
+    RevBayesCore::TaxonReader tr = RevBayesCore::TaxonReader(fn.getValue(), del);
     const std::vector<RevBayesCore::Taxon>& taxa = tr.getTaxa();
     
     return new RevVariable( new ModelVector<Taxon>( taxa ) );

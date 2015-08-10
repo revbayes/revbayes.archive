@@ -14,18 +14,22 @@
 using namespace RevLanguage;
 
 /** Basic constructor, empty table with or without parent */
-FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string, Function*>(), parentTable(parent) {
+FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string, Function*>(),
+    parentTable(parent)
+{
 
 }
 
 
 /** Copy constructor */
-FunctionTable::FunctionTable(const FunctionTable& x) {
+FunctionTable::FunctionTable(const FunctionTable& x)
+{
     
     for (std::multimap<std::string, Function *>::const_iterator it=x.begin(); it!=x.end(); ++it)
     {
         insert(std::pair<std::string, Function *>( it->first, ( it->second->clone() )));
     }
+    
     parentTable = x.parentTable;
 }
 
@@ -39,7 +43,8 @@ FunctionTable::~FunctionTable(void)
 }
 
 /** Assignment operator */
-FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
+FunctionTable& FunctionTable::operator=(const FunctionTable& x)
+{
 
     if (this != &x) 
     {
@@ -86,6 +91,9 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
             func->printValue(msg);
             msg << " : signatures are identical" << std::endl;
             
+            // free memory
+            delete func;
+            
             // throw the error message
             throw RbException(msg.str());
         }
@@ -108,8 +116,10 @@ void FunctionTable::clear(void)
 {
     
     for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
+    {
         delete( i->second );
-
+    }
+    
     std::multimap<std::string, Function*>::clear();
     
 }
@@ -507,6 +517,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
             }
             
         }
+        
     }
     for (size_t i=0; i<y.size(); i++)
     {
@@ -519,9 +530,11 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
                 {
                     return false;
                 }
+                
             }
             
         }
+        
     }
 
     /* Check that types are different for at least one argument without default values */
@@ -529,8 +542,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     for (i=0; i<x.size() && i<y.size(); i++) 
     {
         if ( !(x[i].hasDefault() == true && y[i].hasDefault() == true) &&
-            !x[i].isEllipsis() &&
-            !y[i].isEllipsis() &&
+            !x[i].isEllipsis() && !y[i].isEllipsis() &&
             (x[i].getArgumentTypeSpec() != y[i].getArgumentTypeSpec() || x[i].getArgumentDagNodeType() != y[i].getArgumentDagNodeType() ))
         {
             return true;
@@ -539,8 +551,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     }
     for (size_t j=i; j<x.size(); j++) 
     {
-        if (x[j].hasDefault() == false &&
-            !x[j].isEllipsis())
+        if (x[j].hasDefault() == false && !x[j].isEllipsis())
         {
             return true;
         }
@@ -548,8 +559,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     }
     for (size_t j=i; j<y.size(); j++) 
     {
-        if (y[j].hasDefault() == false &&
-            !y[j].isEllipsis())
+        if (y[j].hasDefault() == false && !y[j].isEllipsis())
         {
             return true;
         }
@@ -584,6 +594,7 @@ bool FunctionTable::isProcedure(const std::string& name) const
     {
         throw RbException( "No function or procedure '" + name + "'" );
     }
+    
 }
 
 
@@ -728,5 +739,10 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
             throw RbException(msg.str());
         }
 #endif
+        
+        
+        // free function memory
+        delete fxn;
     }
+    
 }

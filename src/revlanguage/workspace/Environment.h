@@ -88,7 +88,8 @@ namespace RevLanguage {
         VariableTable                       variableTable;                                                                              //!< Variable table
     
         std::map<std::string, Environment*> children;
-        std::string                         name; //!< e.g. Mikey!!!
+        std::string                         name;
+
     };
 
 }

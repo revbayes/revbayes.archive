@@ -1,23 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Workspace, which is
- * used to hold the global workspace and the user workspace.
- *
- * @brief Implementation of Workspace
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @extends Frame
- * @package parser
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
-// Regular include files
 #include "ConstructorFunction.h"
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
@@ -26,7 +6,6 @@
 #include "RevAbstractType.h"
 #include "RevObject.h"
 #include "RbUtil.h"
-#include "RbOptions.h"         // For debug defines
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "Function.h"
@@ -130,6 +109,9 @@ bool Workspace::addType(RevObject *exampleObj)
 
     if (typeTable.find(name) != typeTable.end())
     {
+        // free memory
+        delete exampleObj;
+        
         throw RbException("There is already a type named '" + name + "' in the workspace");
     }
     
@@ -146,6 +128,9 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ
 
     if (typeTable.find(name) != typeTable.end())
     {
+        // free memory
+        delete templ;
+        
         throw RbException("There is already a type named '" + name + "' in the workspace");
     }
     
