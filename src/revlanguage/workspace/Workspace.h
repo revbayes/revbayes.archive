@@ -74,6 +74,8 @@ namespace RevLanguage {
 
     class Workspace : public Environment {
     public:
+        virtual ~Workspace(void);                                                                                                     //!< Destrcutor
+        
 
         // Environment (frame) functions you have to override
         Workspace*              clone(void) const;                                                          //!< Clone frame
