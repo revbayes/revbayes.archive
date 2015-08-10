@@ -76,7 +76,7 @@ namespace RevBayesCore {
         bool                    isFilePresent(const std::string &fn) const;                                                         //!< Checks for the presence of a file
         bool                    isFilePresent(const std::string &mp, const std::string &mf) const;                                  //!< Checks for the presence of a file
         bool                    makeDirectory(const std::string &dn);
-        bool                    parsePathFileNames(std::string s);                                                                  //!< Divides a string into the file path and file name
+        bool                    parsePathFileNames(const std::string &s);                                                                  //!< Divides a string into the file path and file name
     
         std::string             fileName;                                                                                           //!< string with file name       
         std::string             filePath;                                                                                           //!< string with file path

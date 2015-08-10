@@ -238,10 +238,14 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopu
     // now go through all nodes in the gene
     while ( individualTaxa.empty() == false )
     {
+        // get the first element
         std::set<TopologyNode*>::iterator it = individualTaxa.begin();
-        individualTaxa.erase( it );
         
+        // store the pointer
         TopologyNode *geneNode = *it;
+        
+        // and now remove the element from the list
+        individualTaxa.erase( it );
         
         // add this node to our list of node we need to scale, if:
         // a) this is the root node
