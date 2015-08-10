@@ -51,6 +51,10 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
     if (this != &c) {
         Function::operator=(c);
         
+        // delete the old object
+        delete templateObject;
+        
+        // clone the new object
         templateObject = c.templateObject->clone();
         
         // Hack: we know that we will not own the argRules.
@@ -61,8 +65,16 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
 }
 
 
+ConstructorFunction::~ConstructorFunction( void )
+{
+    
+    delete templateObject;
+}
+
+
 /** Clone the object */
-ConstructorFunction* ConstructorFunction::clone(void) const {
+ConstructorFunction* ConstructorFunction::clone(void) const
+{
     
     return new ConstructorFunction(*this);
 }
