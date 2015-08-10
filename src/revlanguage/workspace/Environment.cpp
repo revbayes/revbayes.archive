@@ -359,7 +359,7 @@ Environment* Environment::getChildEnvironment(const std::string &name)
 
 
 /** Get function. This call will throw an error if the name is missing or present multiple times. */
-const Function& Environment::getFunction(const std::string& name)
+Function* Environment::getFunction(const std::string& name)
 {
     
     return functionTable.getFunction(name);
