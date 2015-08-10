@@ -138,9 +138,9 @@ void RbSettings::initializeUserSettings(void)
         std::ifstream readStream;
         fm.openFile( readStream );
         std::string readLine = "";
-        while (std::getline(readStream,readLine))
+        while ( std::getline(readStream,readLine) )
         {
-            std::vector<std::string> tokens;
+            std::vector<std::string> tokens = std::vector<std::string>();
             StringUtilities::stringSplit(readLine, "=", tokens);
             if (tokens.size() > 1)
             {

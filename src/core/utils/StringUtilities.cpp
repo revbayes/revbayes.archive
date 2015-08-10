@@ -152,7 +152,8 @@ std::string StringUtilities::formatStringForScreen(const std::string &s, const s
     std::string outputString;
 
     std::vector<std::string> lineList;
-    StringUtilities::stringSplit( s, "\n", lineList );
+    std::string del = "\n";
+    StringUtilities::stringSplit( s, del, lineList );
 
     for ( size_t i=0; i<lineList.size(); i++ )
     {
