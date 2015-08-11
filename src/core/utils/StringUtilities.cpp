@@ -147,19 +147,22 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
 
 
 /** Format string for printing to screen, with word wrapping, and various indents */
-std::string StringUtilities::formatStringForScreen(const std::string &s, const std::string &firstLinePad, const std::string &hangingPad, size_t screenWidth) {
+std::string StringUtilities::formatStringForScreen(const std::string &s, const std::string &firstLinePad, const std::string &hangingPad, size_t screenWidth)
+{
 
-    std::string outputString;
+    std::string outputString = "";
 
-    std::vector<std::string> lineList;
+    std::vector<std::string> lineList = std::vector<std::string>();
     std::string del = "\n";
     StringUtilities::stringSplit( s, del, lineList );
 
     for ( size_t i=0; i<lineList.size(); i++ )
     {
     
-        std::vector<std::string> stringList;
-        StringUtilities::stringSplit(lineList[i], " ", stringList);
+        std::vector<std::string> stringList = std::vector<std::string>();
+        std::string space = " ";
+        std::string line = lineList[i];
+        StringUtilities::stringSplit(line, space, stringList);
 
         if ( stringList.size() > 0 )
         {
