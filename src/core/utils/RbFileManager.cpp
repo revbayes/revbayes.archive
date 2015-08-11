@@ -55,7 +55,7 @@ RbFileManager::RbFileManager( void ) :
 
 /** Constructor taking as an argument a string containing a file path and (maybe) a file name */
 RbFileManager::RbFileManager(const std::string &fn) :
-    fileName( "" ),
+    fileName( fn ),
     filePath( "" ),
     fullFileName( "" ),
     pathSeparator( "" )
@@ -91,8 +91,8 @@ RbFileManager::RbFileManager(const std::string &fn) :
 
 /** Constructor taking as an argument a string containing a file path and (maybe) a file name */
 RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
-    fileName( "" ),
-    filePath( "" ),
+    fileName( fn ),
+    filePath( pn ),
     fullFileName( "" ),
     pathSeparator( "" )
 {
@@ -420,10 +420,14 @@ bool RbFileManager::isFile( void ) const
 
 
 /** Checks whether the file name is empty */
-bool RbFileManager::isFileNamePresent(void) const {
+bool RbFileManager::isFileNamePresent(void) const
+{
     
     if ( fileName == "" )
+    {
         return false;
+    }
+    
     return true;
 }
 
@@ -460,6 +464,7 @@ bool RbFileManager::isFilePresent(const std::string &fn) const
         {
             return true;
         }
+        
     }
 
     return false;
@@ -535,7 +540,7 @@ bool RbFileManager::makeDirectory(const std::string &dn)
 #	else
     
     std::string cmd = "mkdir " + dn;
-    return (system( cmd.c_str() ) == 0);
+    return ( system( cmd.c_str() ) == 0 );
     
 #   endif
     
@@ -613,9 +618,8 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     
 	/* Find the location of the last "/". This is where
      we will divide the path/file string into two. */
-	size_t location = name.find_last_of( pathSeparator );
-    std::cerr << name << " -- " << pathSeparator << " -- " << location << std::endl;
-	
+	size_t location = StringUtilities::findLastOf( name, pathSeparator[0] );
+
 	if ( location == std::string::npos )
     {
 		/* There is no path in this string. We 
@@ -643,7 +647,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
 		filePath = name;
         
     }
-    
+
 	return true;
 }
 
@@ -653,7 +657,7 @@ void RbFileManager::setFileName(std::string const &s)
     fileName = s;
     
     fullFileName = filePath;
-    if ( fullFileName == "") 
+    if ( fullFileName == "" )
     {
         fullFileName = ".";
     }
@@ -666,7 +670,7 @@ void RbFileManager::setFilePath(std::string const &s)
     filePath = s;
     
     fullFileName = filePath;
-    if ( fullFileName == "") 
+    if ( fullFileName == "" )
     {
         fullFileName = ".";
     }
