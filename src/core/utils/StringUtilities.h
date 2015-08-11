@@ -22,6 +22,8 @@
 namespace StringUtilities {
     
     void                        fillWithSpaces(std::string &s, int l, bool left);                                   //!< Fill up the string with spaces either left aligned or right aligned
+    size_t                      findFirstOf(const std::string &s, char c);
+    size_t                      findLastOf(const std::string &s, char c);
     std::string&                firstCharToUpper(std::string& str);                                                 //!< Convert string's first character to upper case
     void                        formatFixedWidth(std::string &s, int l, bool left);                                 //!< Format the string so that it fits the width (either truncating or adding spaces)
     std::string                 formatStringForScreen(  const std::string  &s,
