@@ -26,7 +26,10 @@ using namespace RevBayesCore;
 /** Default constructor, creating a file manager object with the file 
     path equal to the current (default) directory and an empty file name */
 RbFileManager::RbFileManager( void ) :
-    pathSeparator("")
+    fileName( "" ),
+    filePath( "" ),
+    fullFileName( "" ),
+    pathSeparator( "" )
 {
     
 #	ifdef WIN32
@@ -52,7 +55,10 @@ RbFileManager::RbFileManager( void ) :
 
 /** Constructor taking as an argument a string containing a file path and (maybe) a file name */
 RbFileManager::RbFileManager(const std::string &fn) :
-    pathSeparator("")
+    fileName( "" ),
+    filePath( "" ),
+    fullFileName( "" ),
+    pathSeparator( "" )
 {
     
 #	ifdef WIN32
@@ -85,7 +91,10 @@ RbFileManager::RbFileManager(const std::string &fn) :
 
 /** Constructor taking as an argument a string containing a file path and (maybe) a file name */
 RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
-    pathSeparator("")
+    fileName( "" ),
+    filePath( "" ),
+    fullFileName( "" ),
+    pathSeparator( "" )
 {
     
 #	ifdef WIN32
@@ -103,7 +112,8 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     //    setCurrentDirectory( findCurrentDirectory() );
     
     // set the path and file for the string
-    parsePathFileNames( pn + pathSeparator + fn);
+    std::string tmp = pn + pathSeparator + fn;
+    parsePathFileNames( tmp );
     
     fullFileName = filePath;
     if ( fullFileName != "")
@@ -175,7 +185,8 @@ std::string RbFileManager::expandUserDir(std::string path)
     {
         char const* home = getenv("HOME");
         
-        if (home or ((home = getenv("USERPROFILE")))) {
+        if (home or ((home = getenv("USERPROFILE"))))
+        {
             path.replace(0, 1, home);
         }
     }
@@ -583,11 +594,11 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     if ( name.length() > 0 && isDPresent == true && isFPresent == false)
     {
         fileName = "";
-//        size_t location = name.find_last_of( pathSeparator );
-//        if ( location != std::string::npos )
-//        {
-//            name.erase( location );
-//        }
+        size_t location = name.find_last_of( pathSeparator );
+        if ( location != std::string::npos )
+        {
+            name.erase( location );
+        }
         filePath = name;
         return true;
     }
@@ -603,6 +614,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
 	/* Find the location of the last "/". This is where
      we will divide the path/file string into two. */
 	size_t location = name.find_last_of( pathSeparator );
+    std::cerr << name << " -- " << pathSeparator << " -- " << location << std::endl;
 	
 	if ( location == std::string::npos )
     {

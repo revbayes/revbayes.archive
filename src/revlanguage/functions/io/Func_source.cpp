@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_source, which is
- * the function used to read commands (source) from a file.
- *
- * @brief Implementation of Func_source
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2009-09-03
- *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_source.h"
@@ -35,20 +16,23 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_source::Func_source( void ) : Procedure() {
+Func_source::Func_source( void ) : Procedure()
+{
     
 }
 
 
 /** Clone object */
-Func_source* Func_source::clone( void ) const {
+Func_source* Func_source::clone( void ) const
+{
     
     return new Func_source( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_source::execute( void ) {
+RevPtr<RevVariable> Func_source::execute( void )
+{
     
     /* Open file */
     std::string fname = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -67,34 +51,47 @@ RevPtr<RevVariable> Func_source::execute( void ) {
     RBOUT("Processing file \"" + fname + "\"");
     
     /* Command-processing loop */
-    while ( inFile.good() ) {
+    while ( inFile.good() )
+    {
         
         // Read a line
         std::string line;
         getline( inFile, line );
         lineNumber++;
         
-        if (echo_on) {
+        if (echo_on)
+        {
             
             if ( result == 1 )
+            {
                 std::cout << "+ " << line;
+            }
             else
+            {
                 std::cout << "> " << line;
+            }
+            
         }
         
         // If previous result was 1 (append to command), we do this
         if ( result == 1 )
+        {
             commandLine += line;
+        }
         else
+        {
             commandLine = line;
-        
+        }
+            
         // Process the line and record result
         result = Parser::getParser().processCommand( commandLine, &Workspace::userWorkspace() );
-        if ( result == 2 ) {
+        if ( result == 2 )
+        {
             std::ostringstream msg;
             msg << "Problem processing line " << lineNumber << " in file \"" << fname << "\"";
             throw RbException( msg.str() );
         }
+        
     }
     
     /* Return control */
