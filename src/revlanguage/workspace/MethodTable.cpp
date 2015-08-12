@@ -10,8 +10,7 @@
 using namespace RevLanguage;
 
 /** Basic constructor, empty table with or without parent */
-MethodTable::MethodTable( MethodTable* parent ) :
-    FunctionTable( parent )
+MethodTable::MethodTable( MethodTable* parent ) : FunctionTable( parent )
 {
 }
 
@@ -19,6 +18,7 @@ MethodTable::MethodTable( MethodTable* parent ) :
 /** Insert inherited methods into method table */
 void MethodTable::insertInheritedMethods( const MethodTable& inheritedMethods )
 {
+    
     for ( MethodTable::const_iterator it = inheritedMethods.begin(); it != inheritedMethods.end(); ++it )
     {
         Function* theFunction = (*it).second->clone();
@@ -29,10 +29,10 @@ void MethodTable::insertInheritedMethods( const MethodTable& inheritedMethods )
         }
         catch ( RbException )
         {
-            // Exception if we cannot overload. We do not worry about that
-            // but need to delete the superfluous function
-            delete theFunction;
+            
         }
+        
     }
+    
 }
 
