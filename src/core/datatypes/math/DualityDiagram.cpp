@@ -220,14 +220,15 @@ void DualityDiagram::compute_(const MatrixReal& matrix, double tol)
         MatrixReal tmpEigenVectors(0,0);
         tmpEigenVectors.resize(eigenVectors_.getNumberOfRows(), nbAxes_);
         size_t cpt2 = 0;
-        for (size_t i = eigenVectors_.getNumberOfColumns(); i > (eigenVectors_.getNumberOfColumns() - nbAxes_); i--)
+        for (size_t i = 0; i < nbAxes_; i++)
         {
             for (unsigned int j = 0; j < eigenVectors_.getNumberOfRows(); j++)
             {
-                tmpEigenVectors[j][cpt2] = eigenVectors_[j][i-1];
+                tmpEigenVectors[j][cpt2] = eigenVectors_[j][i];
             }
             cpt2++;
         }
+
         
         // matrix of principal axes
         RbMath::hadamardMult(tmpEigenVectors, tmpColWeights, ppalAxes_, true);
@@ -254,14 +255,15 @@ void DualityDiagram::compute_(const MatrixReal& matrix, double tol)
         MatrixReal tmpEigenVectors(0,0);
         tmpEigenVectors.resize(eigenVectors_.getNumberOfRows(), nbAxes_);
         size_t cpt2 = 0;
-        for (size_t i = eigenVectors_.getNumberOfColumns(); i > (eigenVectors_.getNumberOfColumns() - nbAxes_); i--)
+        for (size_t i = 0; i < nbAxes_; i++)
         {
-            for (size_t j = 0; j < eigenVectors_.getNumberOfRows(); j++)
+            for (unsigned int j = 0; j < eigenVectors_.getNumberOfRows(); j++)
             {
-                tmpEigenVectors[j][cpt2] = eigenVectors_[j][i-1];
+                tmpEigenVectors[j][cpt2] = eigenVectors_[j][i];
             }
             cpt2++;
         }
+
         
         // matrix of principal components
         RbMath::hadamardMult(tmpEigenVectors, tmpRowWeights, ppalComponents_, true);
