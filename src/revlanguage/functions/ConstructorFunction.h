@@ -31,6 +31,7 @@ class ConstructorFunction : public Procedure {
 public:
     ConstructorFunction(RevObject *obj);                                                                             //!< Object constructor
     ConstructorFunction(const ConstructorFunction& obj);                                                                    //!< Copy constructor
+    virtual ~ConstructorFunction(void);
     
     // overloaded operators
     ConstructorFunction&                    operator=(const ConstructorFunction& c);

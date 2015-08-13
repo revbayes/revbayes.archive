@@ -39,10 +39,12 @@ namespace RevBayesCore {
         virtual void                                            printSummary(std::ostream &o) const = 0;                            //!< Print the move summary
         
         // functions you should not override
+        void                                                    addNode(DagNode* p);                                                //!< add a node to the proposal
         void                                                    autoTune(void);                                                     //!< Automatic tuning of the move.
         double                                                  getUpdateWeight(void) const;                                        //!< Get update weight of InferenceMove
         bool                                                    isActive(unsigned long gen) const;                                  //!< Is the move active at the generation 'gen'?
         void                                                    perform(double lHeat, double pHeat);                                //!< Perform the move.
+        void                                                    removeNode(DagNode* p);                                             //!< remove a node from the proposal
         void                                                    resetCounters(void);                                                //!< Reset the counters such as numTried.
         
     protected:
@@ -53,11 +55,6 @@ namespace RevBayesCore {
         // overloaded operators
         AbstractMove&                                           operator=(const AbstractMove &m);                                   //!< Assignment operator
         
-        // helper methods for this and derived classes
-        void                                                    addNode(DagNode* p);                                                //!< add a node to the proposal
-        void                                                    removeNode(DagNode* p);                                             //!< remove a node from the proposal
-        
-
         // pure virtual protected methods
         virtual void                                            performMove(double lHeat, double pHeat) = 0;                        //!< Perform the move.
         virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN) = 0;                 //!< Swap the pointers to the variable on which the move works on.

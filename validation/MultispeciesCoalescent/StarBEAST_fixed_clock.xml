@@ -2002,7 +2002,7 @@
 		<scaleOperator scaleFactor="0.75" weight="3">
 			<parameter idref="zic3.clock.rate"/>
 		</scaleOperator>
-		<upDownOperator scaleFactor="0.75" weight="30">
+<!--		<upDownOperator scaleFactor="0.75" weight="30">
 			<up>
 				<parameter idref="FGA.clock.rate"/>
 				<parameter idref="GHRmeredith.clock.rate"/>
@@ -2030,7 +2030,7 @@
 				<parameter idref="zfy.treeModel.allInternalNodeHeights"/>
 				<parameter idref="zic3.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
+		</upDownOperator>-->
 		<subtreeSlide size="0.02" gaussian="true" weight="15">
 			<treeModel idref="COIII.treeModel"/>
 		</subtreeSlide>
@@ -2211,85 +2211,85 @@
 		<uniformOperator weight="30">
 			<parameter idref="zic3.treeModel.internalNodeHeights"/>
 		</uniformOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 			</up>
 			<down>
 				<parameter idref="COIII.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="FGA.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="FGA.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="GHRmeredith.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="GHRmeredith.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="lrpprc_169.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="lrpprc_169.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="npas3.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="npas3.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="sim1.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="sim1.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="tex2.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="tex2.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="ttr.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="ttr.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="zfy.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="zfy.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
-		<upDownOperator scaleFactor="0.75" weight="3">
+		</upDownOperator>-->
+<!--		<upDownOperator scaleFactor="0.75" weight="3">
 			<up>
 				<parameter idref="zic3.clock.rate"/>
 			</up>
 			<down>
 				<parameter idref="zic3.treeModel.allInternalNodeHeights"/>
 			</down>
-		</upDownOperator>
+		</upDownOperator>-->
 		<scaleOperator scaleFactor="0.9" weight="5">
 			<parameter idref="species.popMean"/>
 		</scaleOperator>

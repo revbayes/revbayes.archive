@@ -66,7 +66,7 @@ RevBayesCore::MatrixReal* RevBayesCore::TreeUtilities::getDistanceMatrix(const t
 	std::map< std::string, int > namesToId;
 	
 	for(size_t i = 0; i < names.size(); ++i) {
-		namesToId[ names[i] ] = i;
+		namesToId[ names[i] ] = int(i);
 	}
 	
 	std::vector< std::pair<std::string, double> > distsToRoot;

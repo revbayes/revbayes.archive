@@ -154,7 +154,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>* RevBayesCore::Homologou
 /**
  * Compute the state frequencies per site.
  *
- * \return       A matrix of site frequencies where each column is a site a each row the frequency of a character.
+ * \return       A matrix of character frequencies where each column is a character and each row a taxon.
  */
 template<class charType>
 RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>::computeStateFrequencies( void ) const
@@ -164,17 +164,31 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
     size_t alphabetSize = tmp.getNumberOfStates();
     size_t numSequences = this->sequenceNames.size();
     MatrixReal m(numSequences,alphabetSize);
+    
+    double MIN_THRESHOLD = 1E-3;
     for (size_t i = 0; i < numSequences; ++i)
     {
         const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
         size_t l = seq.size();
         double nonGapSeqLength = 0.0;
-        std::vector<double> stateCounts(alphabetSize);
+        std::vector<double> stateCounts(alphabetSize, MIN_THRESHOLD);
         for (size_t j = 0; j < l; ++j)
         {
             const charType& c = seq[j];
             
-            if ( !c.isGapState() )
+            if ( c.isMissingState() == true )
+            {
+                nonGapSeqLength++;
+                
+                size_t num_states = c.getNumberOfStates();
+                
+                for (size_t index = 0; index < num_states; ++index)
+                {
+                    stateCounts[index] += 1.0 / double( num_states );
+                }
+                
+            }
+            else if ( c.isGapState() == false )
             {
                 nonGapSeqLength++;
                 
@@ -193,14 +207,17 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
                     state >>= 1;
                     ++index;
                 } while ( state != 0 );
+                
             }
+            
+            
         } // finished loop over sequence
         
         // set the observed state frequencies for this sequence into the matrix
         std::vector<double> &observedFreqs = m[i];
         for (size_t j = 0; j < alphabetSize; ++j)
         {
-            observedFreqs[j] = stateCounts[j] / nonGapSeqLength;
+            observedFreqs[j] = stateCounts[j] / (nonGapSeqLength+20*MIN_THRESHOLD);
         }
     }
     

@@ -133,6 +133,7 @@ namespace RevBayesCore {
         
         // members
         double                                                              lnProb;
+        double                                                              storedLnProb;
         size_t                                                              numNodes;
         size_t                                                              numSites;
         const size_t                                                        numChars;
@@ -158,7 +159,8 @@ namespace RevBayesCore {
         bool                                                                compressed;
 		std::vector<size_t>                                                 sitePattern;    // an array that keeps track of which pattern is used for each site
         
-        // convenience variables available for derived classes too
+        // flags for likelihood recomputation
+        bool                                                                touched;
         std::vector<bool>                                                   changedNodes;
         std::vector<bool>                                                   dirtyNodes;
 
@@ -202,6 +204,7 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_start;
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
+        
     private:
         
         // private methods
@@ -236,6 +239,8 @@ namespace RevBayesCore {
 template<class charType, class treeType>
 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb) :
     TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
+    lnProb( 0.0 ),
+    storedLnProb( 0.0 ),
     numNodes( t->getValue().getNumberOfNodes() ),
     numSites( nSites ),
     numChars( nChars ),
@@ -248,7 +253,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
 //    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
     marginalLikelihoods( NULL ),
     perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
-    useScaling( false ),
+    useScaling( true ),
     charMatrix(),
     gapMatrix(),
     patternCounts(),
@@ -257,6 +262,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numPatterns( numSites ),
     compressed( c ),
     sitePattern( std::vector<size_t>(numSites, 0) ),
+    touched( false ),
     changedNodes( std::vector<bool>(numNodes, false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
     usingAmbiguousCharacters( amb ),
@@ -329,6 +335,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
 template<class charType, class treeType>
 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n) :
     TypedDistribution< AbstractHomologousDiscreteCharacterData >( n ),
+    lnProb( n.lnProb ),
+    storedLnProb( n.storedLnProb ),
     numNodes( n.numNodes ),
     numSites( n.numSites ),
     numChars( n.numChars ),
@@ -350,6 +358,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     numPatterns( n.numPatterns ),
     compressed( n.compressed ),
     sitePattern( n.sitePattern ),
+    touched( false ),
     changedNodes( n.changedNodes ),
     dirtyNodes( n.dirtyNodes ),
     usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
@@ -712,7 +721,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compu
         this->lnProb = sumRootLikelihood();
                 
     }
-    
     
     // if we are not in MCMC mode, then we need to (temporarily) free memory
     if ( inMcmcMode == false )
@@ -1273,6 +1281,12 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::keepSpecialization( DagNode* affecter )
 {
     
+    // reset flags for likelihood computation
+    touched = false;
+    
+    // reset the ln probability
+    this->storedLnProb = this->lnProb;
+    
     // reset all flags
     for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 
     {
@@ -1491,6 +1505,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeL
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::restoreSpecialization( DagNode* affecter )
 {
+    
+    // reset flags for likelihood computation
+    touched = false;
+    
+    // reset the ln probability
+    this->lnProb = this->storedLnProb;
     
     // reset the flags
     for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it) 
@@ -2243,6 +2263,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapPar
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
 {
+    
+    if ( touched == false )
+    {
+        touched = true;
+        this->storedLnProb = this->lnProb;
+    }
     
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty

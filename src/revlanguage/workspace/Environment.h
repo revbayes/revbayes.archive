@@ -63,7 +63,7 @@ namespace RevLanguage {
         bool                                existsVariableInFrame(const std::string& name) const;                                       //!< Does variable exist in this frame?
         std::string                         generateUniqueVariableName(void);                                                           //!< Automatically generate a unique variable name
         Environment*                        getChildEnvironment(const std::string &name);                                               //!< Get child environment with the name
-        const Function&                     getFunction(const std::string& name);                                                       //!< Get function reference
+        Function*                           getFunction(const std::string& name);                                                       //!< Get function reference
         const Function&                     getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const;   //!< Get function reference
         const FunctionTable&                getFunctionTable(void) const;                                                               //!< Get function table (const)
         FunctionTable&                      getFunctionTable(void);                                                                     //!< Get function table (non-const)
@@ -88,7 +88,8 @@ namespace RevLanguage {
         VariableTable                       variableTable;                                                                              //!< Variable table
     
         std::map<std::string, Environment*> children;
-        std::string                         name; //!< e.g. Mikey!!!
+        std::string                         name;
+
     };
 
 }

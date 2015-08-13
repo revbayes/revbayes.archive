@@ -91,7 +91,9 @@ int main(int argc, char* argv[]) {
         char * buffer = new char[bsz+1];
         buffer[bsz] = 0;
         for (int i = 0; i < bsz; i++)
+        {
             buffer[i] = commandLine[i];
+        }
 #       ifdef RB_MPI
         MPI::COMM_WORLD.Bcast(buffer, (int)bsz, MPI_CHAR, 0);
 #       endif

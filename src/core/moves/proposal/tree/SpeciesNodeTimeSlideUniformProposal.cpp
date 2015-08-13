@@ -48,7 +48,7 @@ void SpeciesNodeTimeSlideUniformProposal::addGeneTree(StochasticNode<TimeTree> *
     }
     
     // only add this variable if it doesn't exist in our list already
-    if ( exists != false )
+    if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
@@ -230,10 +230,14 @@ std::vector<TopologyNode*> SpeciesNodeTimeSlideUniformProposal::getNodesInPopula
     // now go through all nodes in the gene
     while ( individualTaxa_left.empty() == false )
     {
+        // get the first element
         std::set<TopologyNode*>::iterator it = individualTaxa_left.begin();
-        individualTaxa_left.erase( it );
         
+        // store the pointer
         TopologyNode *geneNode = *it;
+        
+        // and now remove the element from the list
+        individualTaxa_left.erase( it );
         
         // add this node to our list of node we need to scale, if:
         // a) this is the root node
@@ -272,10 +276,14 @@ std::vector<TopologyNode*> SpeciesNodeTimeSlideUniformProposal::getNodesInPopula
     // now go through all nodes in the gene
     while ( individualTaxa_right.empty() == false )
     {
+        // get the first element
         std::set<TopologyNode*>::iterator it = individualTaxa_right.begin();
-        individualTaxa_right.erase( it );
         
+        // store the pointer
         TopologyNode *geneNode = *it;
+        
+        // and now remove the element from the list
+        individualTaxa_right.erase( it );
         
         // add this node to our list of node we need to scale, if:
         // a) this is the root node

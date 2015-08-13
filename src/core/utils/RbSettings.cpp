@@ -124,23 +124,26 @@ void RbSettings::initializeUserSettings(void)
 {
     helpDir   = "help";         // the default help directory
     moduleDir = "modules";      // the default module directory
-    lineWidth = 100;            // the default line width
+    lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = true;      // print node indices of tree nodes as comments
     
-    std::string userDir = RevBayesCore::RbFileManager::expandUserDir("~");
+    std::string user_dir = RevBayesCore::RbFileManager::expandUserDir("~");
     
     // read the ini file, override defaults if applicable
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
-	//    bool failed = false; //unused
+    std::string settings_file_name = ".RevBayes.ini";
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(user_dir, settings_file_name);
+
+ 	
+    //    bool failed = false; //unused
     if ( fm.isFile() )
     {
         std::ifstream readStream;
         fm.openFile( readStream );
         std::string readLine = "";
-        while (std::getline(readStream,readLine))
+        while ( std::getline(readStream,readLine) )
         {
-            std::vector<std::string> tokens;
+            std::vector<std::string> tokens = std::vector<std::string>();
             StringUtilities::stringSplit(readLine, "=", tokens);
             if (tokens.size() > 1)
             {
@@ -300,10 +303,11 @@ void RbSettings::setWorkingDirectory(const std::string &wd)
 
 void RbSettings::writeUserSettings( void )
 {
-    std::string userDir = RevBayesCore::RbFileManager::expandUserDir("~");
+    std::string user_dir = RevBayesCore::RbFileManager::expandUserDir("~");
     
     // open the ini file
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
+    std::string settings_file_name = ".RevBayes.ini";
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(user_dir, settings_file_name);
 
     std::ofstream writeStream;
     fm.openFile( writeStream );

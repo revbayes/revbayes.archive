@@ -1,4 +1,5 @@
 #include "DagNode.h"
+#include "Move.h"
 #include "Proposal.h"
 #include "RbException.h"
 
@@ -8,14 +9,16 @@ using namespace RevBayesCore;
 
 
 Proposal::Proposal(void) :
-    nodes()
+    nodes(),
+    move( NULL )
 {
     
 }
 
 
 Proposal::Proposal(const Proposal &p)  :
-    nodes( p.nodes )
+    nodes( p.nodes ),
+    move( NULL )
 {
     
     for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
@@ -61,6 +64,7 @@ Proposal& Proposal::operator=(const Proposal &p)
         nodes.clear();
         
         nodes = p.nodes;
+        move = p.move;
         
         for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
         {
@@ -97,6 +101,12 @@ void Proposal::addNode( DagNode *n )
     
         // increment reference count
         n->incrementReferenceCount();
+    }
+    
+    // delegate to the move
+    if ( move != NULL )
+    {
+        move->addNode( n );
     }
     
 }
@@ -136,6 +146,20 @@ void Proposal::removeNode( RevBayesCore::DagNode *n )
     {
         delete n;
     }
+    
+    // delegate to the move
+    if ( move != NULL )
+    {
+        move->removeNode( n );
+    }
+    
+}
+
+
+void Proposal::setMove(Move *m)
+{
+    
+    move = m;
     
 }
 

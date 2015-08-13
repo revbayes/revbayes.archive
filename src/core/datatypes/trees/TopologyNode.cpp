@@ -963,13 +963,15 @@ Taxon TopologyNode::getTaxon() const
 }
 
 
-double TopologyNode::getTime( void ) const {
+double TopologyNode::getTime( void ) const
+{
     
     return tree->getTime( index );
 }
 
 
-double TopologyNode::getTmrca(const TopologyNode &n) const {
+double TopologyNode::getTmrca(const TopologyNode &n) const
+{
     
     std::vector<std::string> myTaxa;
     std::vector<std::string> yourTaxa;

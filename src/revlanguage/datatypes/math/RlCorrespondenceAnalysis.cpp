@@ -20,15 +20,17 @@ CorrespondenceAnalysis::CorrespondenceAnalysis() : WorkspaceToCoreWrapperObject<
 {
     
     // Add methods
-    ArgumentRules* columnWeightsArgRules = new ArgumentRules();
-    ArgumentRules* principalAxesArgRules = new ArgumentRules();
-    ArgumentRules* rowCoordArgRules      = new ArgumentRules();
-    ArgumentRules* colCoordArgRules      = new ArgumentRules();
+    ArgumentRules* columnWeightsArgRules    = new ArgumentRules();
+    ArgumentRules* principalAxesArgRules    = new ArgumentRules();
+    ArgumentRules* rowCoordArgRules         = new ArgumentRules();
+    ArgumentRules* colCoordArgRules         = new ArgumentRules();
+    ArgumentRules* rankArgRules             = new ArgumentRules();
     
     methods.addFunction("columnWeights",     new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(), columnWeightsArgRules ) );
     methods.addFunction("principalAxes",     new MemberProcedure(MatrixReal::getClassTypeSpec()          , principalAxesArgRules ) );
     methods.addFunction("rowCoordinates",    new MemberProcedure(MatrixReal::getClassTypeSpec()          , rowCoordArgRules ) );
     methods.addFunction("columnCoordinates", new MemberProcedure(MatrixReal::getClassTypeSpec()          , colCoordArgRules ) );
+    methods.addFunction("rank",              new MemberProcedure(Natural::getClassTypeSpec()             , rankArgRules ) );
 
 }
 
@@ -90,6 +92,14 @@ RevPtr<RevVariable> CorrespondenceAnalysis::executeMethod(std::string const &nam
         const RevBayesCore::MatrixReal &m = value->getColCoordinates();
         
         return new RevVariable( new MatrixReal( m ) );
+    }
+    else if ( name == "rank" )
+    {
+        found = true;
+        
+        size_t n = value->getNbOfKeptAxes();
+        
+        return new RevVariable( new Natural( n ) );
     }
     
     return RevObject::executeMethod( name, args, found );

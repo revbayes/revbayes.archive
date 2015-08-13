@@ -368,18 +368,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
 
 #           endif
             
-            
-            int active_index = this->activeLikelihood[nodeIndex];
-            int non_active_index = (active_index == 0) ? 1 : 0;
-            double a0 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 0);
-            double a1 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 1);
-            double a2 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 2);
-            double a3 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 3);
-            double b0 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 0);
-            double b1 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 1);
-            double b2 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 2);
-            double b3 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 3);
-            
             // increment the pointers to the next site
             p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset; p_site_mixture+=this->siteOffset;
 
@@ -668,17 +656,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
                 }
                 
             } // end-if a gap state
-            
-            int active_index = this->activeLikelihood[nodeIndex];
-            int non_active_index = (active_index == 0) ? 1 : 0;
-            double a0 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 0);
-            double a1 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 1);
-            double a2 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 2);
-            double a3 = *(this->partialLikelihoods + active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 3);
-            double b0 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 0);
-            double b1 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 1);
-            double b2 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 2);
-            double b3 = *(this->partialLikelihoods + non_active_index*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset + mixture*this->siteOffset + site + 3);
             
             // increment the pointers to next site
             p_site_mixture+=this->siteOffset; 

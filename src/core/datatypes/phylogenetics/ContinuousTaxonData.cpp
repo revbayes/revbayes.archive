@@ -3,6 +3,7 @@
 #include "RbException.h"
 #include "RbMathLogic.h"
 
+#include<stdio.h>
 
 using namespace RevBayesCore;
 

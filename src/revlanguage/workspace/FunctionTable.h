@@ -50,8 +50,8 @@ namespace RevLanguage {
         bool                                    existsFunctionInFrame(const std::string &name, const ArgumentRules& r) const;               //!< Does this table contain a function with given name?
         void                                    eraseFunction(const std::string& name);                                                     //!< Erase a function (all versions)
         std::vector<Function*>                  findFunctions(const std::string& name) const;                                               //!< Return functions matching name
-        const Function&                         getFirstFunction(const std::string& name) const;                                            //!< Get first function with given name
-        const Function&                         getFunction(const std::string& name) const;                                                 //!< Get function, throw an error if overloaded
+        Function*                               getFirstFunction(const std::string& name) const;                                            //!< Get first function with given name
+        Function*                               getFunction(const std::string& name) const;                                                 //!< Get function, throw an error if overloaded
         const Function&                         getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const;   //!< Get function
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                     //!< Are formals unique?
         bool                                    isProcedure(const std::string& fxnName) const;                                              //!< Is 'fxnName' a procedure?

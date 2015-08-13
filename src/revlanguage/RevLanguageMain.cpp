@@ -82,7 +82,9 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
         {
             result = 0;
         }
+        
     }
+    
 }
 
 
