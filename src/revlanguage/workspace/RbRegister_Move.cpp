@@ -112,6 +112,7 @@
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
+#include "Move_NodeTimeScale.h"
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
@@ -221,6 +222,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvNNI",                             new Move_NNINonclock() );
         addTypeWithConstructor("mvNNIClock",                        new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",                     new Move_NNINonclock() );
+        addTypeWithConstructor("mvNodeTimeScale",               new Move_NodeTimeScale() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",            new Move_NodeTimeSlideUniform() );
         addTypeWithConstructor("mvNodeTimeSlideBeta",               new Move_NodeTimeSlideBeta() );
         addTypeWithConstructor("mvRateAgeBetaShift",                new Move_RateAgeBetaShift() );
