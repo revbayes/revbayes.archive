@@ -44,10 +44,10 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The General Time Reversible (GTR) model is the most general reversible Markov model possible. More complex models are not reversible (for a discussion of reversibility in models of sequence evolution, see e.g. Jayaswal et al., 2010). All other reversible models can be seed as specific cases of the GTR model. It has been first proposed by Lanave et al. (1984), Tavaré et al. (1986), and Rodriguez et al. (1990), and is sometimes called "REV" (Yang, 1994).
+            The General Time Reversible (GTR) model is the most general reversible Markov model possible. More complex models are not reversible (for a discussion of reversibility in models of sequence evolution, see e.g. Jayaswal et al., 2010). All other reversible models can be seen as specific cases of the GTR model. It has been first proposed by Lanave et al. (1984), Tavaré et al. (1986), and Rodriguez et al. (1990), and is sometimes called "REV" (Yang, 1994).
             </p>
             <p>
-            It is usually specified thanks to two sets of parameters, exchangeability rates (a simplex with 6 values for alphabets of size 4 like DNA) and equilibrium frequencies (a simplex with 4 values for alphabets of size 4 like DNA). If sequences are evolved for an infinite amount of time using a GTR matrix, their state frequencies will converge to the equilibrium frequencies of the GTR matrix. In total, a GTR matrix for DNA has 8 free parameters: 5 independent exchangeability rates (the sixth one can be obtained from the other ones, because they sum to 1.0), and 3 independent equilibrium frequencies (the frequencies also sum to one).
+            It is usually specified thanks to two sets of parameters, exchangeability rates (a simplex with 6 values for alphabets of size 4 like DNA) and equilibrium frequencies (a simplex with 4 values for alphabets of size 4 like DNA). If sequences are evolved for an infinite amount of time using a GTR matrix, their state frequencies will converge to the equilibrium frequencies of the GTR matrix. In total, a GTR matrix for DNA has 8 free parameters: 5 independent exchangeability rates (the sixth one can be obtained from the other ones, because they sum to 1.0), and 3 independent equilibrium frequencies (the frequencies also sum to one). In RevBayes, the GTR model can be specified for any number of states.
             </p>
         </details>
 
