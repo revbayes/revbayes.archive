@@ -118,14 +118,14 @@ namespace RevBayesCore
         
         std::vector<double> computeVariancePercentagePerAxis() throw (RbException);
         
-        size_t getNbOfKeptAxes() const throw (RbException) { return nbAxes_; }
-        const std::vector<double> getRowWeights() const throw (RbException) { return rowWeights_; }
-        const	std::vector<double> getColumnWeights() const throw (RbException) { return colWeights_; }	  
-        const std::vector<double>& getEigenValues() const throw (RbException) { return eigenValues_; }
-        const MatrixReal& getRowCoordinates() const throw (RbException) { return rowCoord_; }
-        const MatrixReal& getColCoordinates() const throw (RbException) { return colCoord_; }
-        const MatrixReal& getPrincipalAxes() const throw (RbException) { return ppalAxes_; }
-        const MatrixReal& getPrincipalComponents() const throw (RbException) { return ppalComponents_; }
+        size_t                                  getNbOfKeptAxes() const throw (RbException) { return nbAxes_; }
+        const std::vector<double>               getRowWeights() const throw (RbException) { return rowWeights_; }
+        const	std::vector<double>             getColumnWeights() const throw (RbException) { return colWeights_; }
+        const std::vector<double>&              getEigenValues() const throw (RbException) { return eigenValues_; }
+        const MatrixReal&                       getRowCoordinates() const throw (RbException) { return rowCoord_; }
+        const MatrixReal&                       getColCoordinates() const throw (RbException) { return colCoord_; }
+        const MatrixReal&                       getPrincipalAxes() const throw (RbException) { return ppalAxes_; }
+        const MatrixReal&                       getPrincipalComponents() const throw (RbException) { return ppalComponents_; }
     
         
         

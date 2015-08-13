@@ -55,7 +55,7 @@ void SpeciesSubtreeScaleProposal::addGeneTree(StochasticNode<TimeTree> *gt)
     }
     
     // only add this variable if it doesn't exist in our list already
-    if ( exists != false )
+    if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
@@ -235,10 +235,15 @@ std::vector<TopologyNode*> SpeciesSubtreeScaleProposal::getOldestNodesInPopulati
     // now go through all nodes in the gene
     while ( individualTaxa.empty() == false )
     {
+        // get the first element
         std::set<TopologyNode*>::iterator it = individualTaxa.begin();
+
+        // store the pointer
+        TopologyNode *geneNode = *it;
+        
+        // and now remove the element from the list
         individualTaxa.erase( it );
         
-        TopologyNode *geneNode = *it;
         
         // add this node to our list of node we need to scale, if:
         // a) this is the root node

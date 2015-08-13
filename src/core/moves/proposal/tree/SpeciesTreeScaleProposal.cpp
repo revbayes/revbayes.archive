@@ -58,7 +58,7 @@ void SpeciesTreeScaleProposal::addGeneTree(StochasticNode<TimeTree> *gt)
     }
     
     // only add this variable if it doesn't exist in our list already
-    if ( exists != false )
+    if ( exists == false )
     {
         geneTrees.push_back( gt );
         addNode( gt );
@@ -150,6 +150,9 @@ double SpeciesTreeScaleProposal::doProposal( void )
         TreeUtilities::rescaleTree(&gene_tree, &gene_tree.getRoot(), scaling_factor );
         
         num_nodes += gene_tree.getNumberOfInteriorNodes();
+        
+        // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
+//        geneTrees[i]->touch( true );
         
     }
     

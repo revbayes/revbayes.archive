@@ -203,12 +203,33 @@ void MatrixReal::executeMethod(const std::string &n, const std::vector<const Dag
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = elements[index];
     }
-    
     else
     {
         throw RbException("A matrix object does not have a member method called '" + n + "'.");
     }
     
+}
+
+
+
+RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
+{
+    
+    if ( columnIndex >= nCols )
+    {
+        std::stringstream o;
+        o << "Index out of bounds: The matrix has only " << nCols << " columns and you asked for the " << (columnIndex+1) << "-th column.";
+        throw RbException( o.str() );
+    }
+    
+    RbVector<double> col = RbVector<double>( nRows, 0);
+
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        col[i] = elements[i][columnIndex];
+    }
+    
+    return col;
 }
 
 
@@ -1030,7 +1051,8 @@ MatrixReal& MatrixReal::operator-=(const MatrixReal& B)
  * \param B An (m X p) matrix
  * \return A = A * B, an (n X p) matrix, or unmodified A on failure
  */
-MatrixReal& MatrixReal::operator*=(const MatrixReal& B) {
+MatrixReal& MatrixReal::operator*=(const MatrixReal& B)
+{
     
     size_t bRows = B.getNumberOfRows();
     size_t bCols = B.getNumberOfColumns();
@@ -1097,7 +1119,8 @@ RbVector<double> RevBayesCore::operator*(const RbVector<double> &a, const Matrix
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x)
+{
     
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

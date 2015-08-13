@@ -167,6 +167,8 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 #ifdef RB_MPI
             MPI::Finalize();
 #endif
+            Workspace::userWorkspace().clear();
+            Workspace::globalWorkspace().clear();
             
             exit(0);
         }
@@ -457,6 +459,9 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 #ifdef RB_MPI
                 MPI::Finalize();
 #endif
+                Workspace::userWorkspace().clear();
+                Workspace::globalWorkspace().clear();
+                
                 exit(0);
             }
             // All other uncaught exceptions

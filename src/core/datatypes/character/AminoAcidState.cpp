@@ -1,5 +1,7 @@
 #include "AminoAcidState.h"
-#include <sstream>
+
+#include <stdio.h>
+#include <iostream>
 
 using namespace RevBayesCore;
 
@@ -173,6 +175,7 @@ unsigned int AminoAcidState::computeState(const std::string &symbol) const
             return 0x80000;
             
         default:
+            if ( s != '?') std::cout << s << std::endl;
             return 0x8FFFF;
     }
 }

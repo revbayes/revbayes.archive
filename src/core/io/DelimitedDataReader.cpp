@@ -50,7 +50,7 @@ void DelimitedDataReader::readData( size_t linesToSkipped )
         std::stringstream ss(readLine);
 
         int pos = 0;
-        while (std::getline(ss,field,delimiter))
+        while ( std::getline(ss,field,delimiter) )
         {
             tmpChars.push_back(field);
             pos++;

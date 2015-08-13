@@ -1,23 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Workspace, which is
- * used to hold the global workspace and the user workspace.
- *
- * @brief Implementation of Workspace
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @extends Frame
- * @package parser
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
-// Regular include files
 #include "ConstructorFunction.h"
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
@@ -26,7 +6,6 @@
 #include "RevAbstractType.h"
 #include "RevObject.h"
 #include "RbUtil.h"
-#include "RbOptions.h"         // For debug defines
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "Function.h"
@@ -57,21 +36,53 @@ Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environme
 Workspace::Workspace(const Workspace& x) : Environment(x),
     typesInitialized(x.typesInitialized)
 {
-    
+    // copy all the types
+    for (TypeTable::const_iterator it=x.typeTable.begin(); it!=x.typeTable.end(); ++it)
+    {
+        typeTable.insert(std::pair<std::string, RevObject*>(it->first, it->second->clone()));
+    }
+
 }
 
 
 
 /* Assignment operator */
-Workspace& Workspace::operator=(const Workspace& x) {
+Workspace& Workspace::operator=(const Workspace& x)
+{
 
     if (this != &x) 
     {
         // first we need to delegate to the base class assignment operator
         Environment::operator=(x);
+        
+        // free all the types
+        for (TypeTable::iterator it=typeTable.begin(); it!=typeTable.end(); ++it)
+        {
+            RevObject *the_object = it->second;
+            delete the_object;
+        }
+        
+        // copy all the types
+        for (TypeTable::const_iterator it=x.typeTable.begin(); it!=x.typeTable.end(); ++it)
+        {
+            typeTable.insert(std::pair<std::string, RevObject*>(it->first, it->second->clone()));
+        }
     }
 
     return (*this);
+}
+
+/* Constructor of user workspace */
+Workspace::~Workspace(void)
+{
+    
+    // free all the types
+    for (TypeTable::iterator it=typeTable.begin(); it!=typeTable.end(); ++it)
+    {
+        RevObject *the_object = it->second;
+        delete the_object;
+    }
+    
 }
 
 
@@ -79,19 +90,11 @@ Workspace& Workspace::operator=(const Workspace& x) {
 bool Workspace::addDistribution(const std::string& name, Distribution *dist)
 {
 
-#ifdef DEBUG_WORKSPACE
-    printf("Adding distribution %s to workspace\n", name.c_str());
-#endif
-
     if ( typeTable.find(name) != typeTable.end() )
+    {
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
-
-#ifdef DEBUG_WORKSPACE
-    printf("Adding type %s to workspace\n", dist->getTypeSpec().getType().c_str());
-#endif
-
-//    typeTable.insert(std::pair<std::string, RevObject* >(dist->getTypeSpec(),dist->clone()));
-
+    }
+    
     functionTable.addFunction(name, new ConstructorFunction( dist ) );
 
     return true;
@@ -99,49 +102,38 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist)
 
 
 /** Add type to the workspace */
-bool Workspace::addType(RevObject *exampleObj) {
+bool Workspace::addType(RevObject *exampleObj)
+{
 
     std::string name = exampleObj->getType();
-    
-#ifdef DEBUG_WORKSPACE
-    printf("Adding type %s to workspace\n", name.c_str());
-#endif
 
     if (typeTable.find(name) != typeTable.end())
+    {
+        // free memory
+        delete exampleObj;
+        
         throw RbException("There is already a type named '" + name + "' in the workspace");
-
+    }
+    
     typeTable.insert(std::pair<std::string, RevObject*>(name, exampleObj));
 
     return true;
 }
 
 
-///** Add abstract type to the workspace */
-//bool Workspace::addType(const std::string& name, RevObject *exampleObj) {
-//    
-//#ifdef DEBUG_WORKSPACE
-//    printf("Adding special abstract type %s to workspace\n", name.c_str());
-//#endif
-//
-//    if (typeTable.find(name) != typeTable.end())
-//        throw RbException("There is already a type named '" + name + "' in the workspace");
-//
-//    typeTable.insert(std::pair<std::string, RevObject*>( name, exampleObj));
-//
-//    return true;
-//}
-
-
 /** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ) {
+bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ)
+{
     
-#ifdef DEBUG_WORKSPACE
-    printf("Adding type %s with constructor to workspace\n", name.c_str());
-#endif
 
     if (typeTable.find(name) != typeTable.end())
+    {
+        // free memory
+        delete templ;
+        
         throw RbException("There is already a type named '" + name + "' in the workspace");
-
+    }
+    
     typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
     
     functionTable.addFunction(name, new ConstructorFunction(templ));
@@ -151,39 +143,58 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ
 
 
 /** clone */
-Workspace* Workspace::clone() const {
+Workspace* Workspace::clone() const
+{
     return new Workspace(*this);
 }
 
 
-const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const {
+const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const
+{
     
     std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
     if ( it == typeTable.end() ) 
     {
         if ( parentEnvironment != NULL )
+        {
             return static_cast<Workspace*>( parentEnvironment )->getClassTypeSpecOfType( type );
+        }
         else
+        {
             throw RbException( "Type '" + type + "' does not exist in environment" );;
+        }
+        
     }
     else
+    {
         return it->second->getTypeSpec();
+    }
+    
 }
 
 
 /* Is the type added to the workspace? */
-bool Workspace::existsType( const std::string& name ) const {
+bool Workspace::existsType( const std::string& name ) const
+{
 
     std::map<std::string, RevObject *>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) 
     {
         if ( parentEnvironment != NULL )
+        {
             return static_cast<Workspace*>( parentEnvironment )->existsType( name );
+        }
         else
+        {
             return false;
+        }
+        
     }
     else
+    {
         return true;
+    }
+    
 }
 
 

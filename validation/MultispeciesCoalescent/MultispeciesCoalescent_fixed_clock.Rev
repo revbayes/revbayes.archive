@@ -56,34 +56,25 @@ extinction := speciation * relativeExtinction
 # specify a prior on the root age (our informed guess is about 75-80 mya)
 root ~ dnUniform(0,1000)
 
-# Now comes the most important trick!!!
-# 
-# We need to set a low root age so that in the beginning of the MCMC all lineages
-# evolve in the same "root" population.
-# This enables that we can quickly get good estimates of the gene-trees and then
-# pull up the species tree.
-root.setValue(0.001)
-
 sampling_fraction <- 23 / 450 # we sampled 23 out of the ~ 450 primate species
 
 # create some moves that change the stochastic variables
 # all moves are sliding and scaling proposals
-moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=2)
-moves[++mi] = mvSlide(relativeExtinction,delta=1,tune=true,weight=2)
-moves[++mi] = mvScale(diversification,lambda=1,tune=true,weight=2)
-moves[++mi] = mvScale(relativeExtinction,lambda=1,tune=true,weight=2)
+#moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=2)
+#moves[++mi] = mvSlide(relativeExtinction,delta=1,tune=true,weight=2)
+#moves[++mi] = mvScale(diversification,lambda=1,tune=true,weight=2)
+#moves[++mi] = mvScale(relativeExtinction,lambda=1,tune=true,weight=2)
 moves[++mi] = mvSlide(root,delta=1,tune=true,weight=0.2)
-moves[++mi] = mvScale(root,lambda=1,tune=true,weight=0.2)
 
 
 # construct a variable for the tree drawn from a birth death process
-psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=abs(root), rho=sampling_fraction, nTaxa=n_species, names=names )
+psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=root, rho=sampling_fraction, nTaxa=n_species, names=names )
 
-moves[++mi] = mvNarrow(psi, weight=50.0)
+moves[++mi] = mvNarrow(psi, weight=10.0)
 moves[++mi] = mvNNI(psi, weight=10.0)
 moves[++mi] = mvFNPR(psi, weight=10.0)
-#moves[++mi] = mvGPR(psi, weight=3.0)
-moves[++mi] = mvSubtreeScale(psi, weight=3.0)
+moves[++mi] = mvGPR(psi, weight=10.0)
+#moves[++mi] = mvSubtreeScale(psi, weight=3.0)
 moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 
 
@@ -106,6 +97,7 @@ for (i in (n_species+1):n_branches) {
 #Ne ~ dnGamma(shape=1.0,rate=1.0)
 #moves[++mi] = mvScale(Ne,1,true,1.0)
 
+
 for (i in 1:num_loci) {
 
    # We need to read in files providing the link between gene names and species names
@@ -120,18 +112,40 @@ for (i in 1:num_loci) {
    moves[++mi] = mvNNI(geneTree[i], 5.0)
    moves[++mi] = mvNarrow(geneTree[i], 5.0)
    moves[++mi] = mvFNPR(geneTree[i], 3.0)
-#   moves[++mi] = mvGPR(geneTree[i], 2.0)
-   moves[++mi] = mvSubtreeScale(geneTree[i], 2.0)
-   moves[++mi] = mvTreeScale(geneTree[i], 1.0, true, 3.0)
+   moves[++mi] = mvGPR(geneTree[i], 2.0)
+#   moves[++mi] = mvSubtreeScale(geneTree[i], 2.0)
+#   moves[++mi] = mvTreeScale(geneTree[i], 1.0, true, 3.0)
    moves[++mi] = mvNodeTimeSlideUniform(geneTree[i], 2.0)
 
 }
 
-#moves[++mi] = mvSpeciesNodeTimeSlideUniform(speciesTree=psi, geneTrees=geneTree, weight=20.0)
-#moves[++mi] = mvSpeciesSubtreeScale(speciesTree=psi, geneTrees=geneTree, weight=20.0)
-#moves[++mi] = mvSpeciesSubtreeScaleBeta(speciesTree=psi, geneTrees=geneTree, weight=20.0)
-moves[++mi] = mvSpeciesTreeScale(speciesTree=psi, rootAge=root, geneTrees=geneTree, delta=1.0, weight=20.0)
-  
+   
+
+moves[++mi] = mvSpeciesNodeTimeSlideUniform(speciesTree=psi, weight=20.0)
+for (i in 1:num_loci) {
+   moves[mi].addGeneTreeVariable( geneTree[i] )  
+}
+
+moves[++mi] = mvSpeciesSubtreeScale(speciesTree=psi, weight=5.0)
+for (i in 1:num_loci) {
+   moves[mi].addGeneTreeVariable( geneTree[i] )  
+}
+
+moves[++mi] = mvSpeciesTreeScale(speciesTree=psi, rootAge=root, delta=1.0, weight=1.0)
+for (i in 1:num_loci) {
+   moves[mi].addGeneTreeVariable( geneTree[i] )  
+}
+
+#moves[++mi] = mvSpeciesSubtreeScaleBeta(speciesTree=psi, weight=3.0)
+#for (i in 1:num_loci) {
+#   moves[mi].addGeneTreeVariable( geneTree[i] )  
+#}
+
+#moves[++mi] = mvSpeciesNarrowExchange(speciesTree=psi, weight=200.0)
+#for (i in 1:num_loci) {
+#   moves[mi].addGeneTreeVariable( geneTree[i] )  
+#}
+
 ###############
 # Clock Model #
 ###############
@@ -145,7 +159,9 @@ for ( i in 2:num_loci ) {
     relativeClockRate[i] ~ dnLognormal(0,1)
     clockRate[i] := clockRate[1] * relativeClockRate[i]
     moves[++mi] = mvScale(relativeClockRate[i],lambda=1,tune=true,weight=1)
+#    moves[++mi] = mvUpDownScale(upTree=geneTree[i], downScalar=relativeClockRate[i])
 }
+
 
 ######################
 # Substitution Model #
@@ -192,7 +208,7 @@ for ( i in 1:num_loci ) {
 mymodel = model(psi)
 
 # Monitors to check the progression of the program
-monitors[1] = mnScreen(printgen=100, root)
+monitors[1] = mnScreen(printgen=10, root)
 monitors[2] = mnModel(filename="output/primates_fixed_clock.log",printgen=10, separator = TAB)
 monitors[3] = mnFile(filename="output/primates_fixed_clock.trees",printgen=10, separator = TAB, psi)
 for ( i in 1:num_loci ) { 
@@ -202,13 +218,13 @@ for ( i in 1:num_loci ) {
 
 # Here we use a plain MCMC. You could also set nruns=2 for a replicated analysis
 # or use mcmcmc with heated chains.
-mymcmc = mcmcmc(mymodel, monitors, moves, nchains=4, swapInterval=10)
+mymcmc = mcmc(mymodel, monitors, moves)
 
 # This should be sufficient to obtain enough MCMC samples
-mymcmc.burnin(generations=1000,tuningInterval=200)
-mymcmc.run(generations=2000)
+#mymcmc.burnin(generations=1000,tuningInterval=250)
+#mymcmc.run(generations=3)
 
-mymcmc.operatorSummary()
+#mymcmc.operatorSummary()
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
@@ -216,7 +232,7 @@ treetrace = readTreeTrace("output/primates_fixed_clock.trees", treetype="clock")
 # and get the summary of the tree trace
 #treetrace.summarize()
 
-map_tree = mapTree(treetrace,"output/primates_fixed_clock.tree")
+#map_tree = mapTree(treetrace,"output/primates_fixed_clock.tree")
 
 # you may want to quit RevBayes now
 q()
