@@ -128,7 +128,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
     dagNode->incrementReferenceCount();
     
     // add the DAG node member methods
-    // note that this is a sage case because all DAG nodes are member objects
+    // note that this is safe case because all DAG nodes are member objects
     const MethodTable &dagMethods = dynamic_cast<RevMemberObject*>( dagNode )->getMethods();
     methods.insertInheritedMethods( dagMethods );
 
@@ -141,6 +141,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
     AbstractModelObject( v ),
     dagNode( NULL )
 {
+    
     if ( v.dagNode != NULL )
     {
         
@@ -149,6 +150,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
         // increment the reference count to the value
         dagNode->incrementReferenceCount();
     }
+    
 }
 
 
@@ -164,11 +166,13 @@ RevLanguage::ModelObject<rbType>::~ModelObject()
             delete dagNode;
         }
     }
+    
 }
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(const ModelObject &v) {
+RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(const ModelObject &v)
+{
     
     if ( this != &v ) 
     {
@@ -220,7 +224,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ModelObject<rbType>::
 
 
 template <typename rbType>
-const std::string& RevLanguage::ModelObject<rbType>::getClassType(void) {
+const std::string& RevLanguage::ModelObject<rbType>::getClassType(void)
+{
     
     static std::string revType = "ModelObject";
     
