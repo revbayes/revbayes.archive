@@ -278,4 +278,5 @@ void Model::setNumberOfProcesses(size_t n, size_t offset)
         theNode->setNumberOfProcesses(n,offset);
         
     }
+    
 }

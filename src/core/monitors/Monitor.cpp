@@ -258,6 +258,7 @@ void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 void Monitor::setModel(Model *m)
 {
     model = m;
+    
 }
 
 void Monitor::setMcmc(Mcmc *m)
