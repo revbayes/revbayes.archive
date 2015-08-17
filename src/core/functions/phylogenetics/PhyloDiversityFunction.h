@@ -17,6 +17,7 @@
 
 
 #include "Clade.h"
+#include "RbException.h"
 #include "TypedFunction.h"
 
 
@@ -26,7 +27,7 @@ namespace RevBayesCore {
     class PhyloDiversityFunction : public TypedFunction<double> {
         
     public:
-        PhyloDiversityFunction(const TypedDagNode<treeType> *t, const Clade &c, const bool i);
+        PhyloDiversityFunction(const TypedDagNode<treeType> *t, const Clade &c, const bool i, const TypedDagNode< RbVector< double > > *w);
         virtual                                            ~PhyloDiversityFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -38,13 +39,17 @@ namespace RevBayesCore {
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                    //!< Implementation of swaping parameters
         
     private:
+        double                                              calculateBranchWeights( size_t j );
         double                                              sumPDforNode(size_t j, std::vector<size_t>* nodesVisited, size_t stopIndex);
         
         // members
-        const TypedDagNode<treeType>*                       tau;
-        const Clade                                         sample;
-        size_t                                              numTaxa;
+        std::vector<double>                                 branchWeights;
         bool                                                includeRoot;
+        size_t                                              numTaxa;
+        const Clade                                         sample;
+        const TypedDagNode<treeType>*                       tau;
+        const TypedDagNode< RbVector< double > >*           tipWeights;
+        bool                                                weightedPD;
     };
     
 }
@@ -58,10 +63,11 @@ using namespace RevBayesCore;
 
 
 template <class treeType>
-PhyloDiversityFunction<treeType>::PhyloDiversityFunction(const TypedDagNode<treeType> *t, const Clade &c, const bool i) : TypedFunction<double>( new double(0.0) ),
+PhyloDiversityFunction<treeType>::PhyloDiversityFunction(const TypedDagNode<treeType> *t, const Clade &c, const bool i, const TypedDagNode< RbVector< double > > *w) : TypedFunction<double>( new double(0.0) ),
 tau( t ),
 sample( c ),
-includeRoot( i )
+includeRoot( i ),
+tipWeights( w )
 {
     addParameter( tau );
     this->numTaxa = sample.size();
@@ -85,6 +91,24 @@ PhyloDiversityFunction<treeType>* PhyloDiversityFunction<treeType>::clone( void 
 template <class treeType>
 void PhyloDiversityFunction<treeType>::update( void )
 {
+    if (tipWeights == NULL || tipWeights->getNumberOfElements() == 0)
+    {
+        weightedPD = false;
+    }
+    else
+    {
+        if (tipWeights->getNumberOfElements() == sample.size())
+        {
+            weightedPD = true;
+            branchWeights = std::vector<double>(tau->getValue().getNodes().size(), 0.0);
+            calculateBranchWeights( tau->getValue().getRoot().getIndex() );
+        }
+        else
+        {
+            throw RbException("The sample size must equal the number of weights.");
+        }
+    }
+    
     size_t stopIndex = tau->getValue().getRoot().getIndex();
     
     if (!includeRoot)
@@ -146,7 +170,14 @@ double  PhyloDiversityFunction<treeType>::sumPDforNode(size_t j, std::vector<siz
     if ( std::find(nodesVisited->begin(), nodesVisited->end(), j) == nodesVisited->end() )
     {
         const TopologyNode& n = tau->getValue().getNode( j );
-        pd += n.getBranchLength();
+        if (weightedPD)
+        {
+            pd += n.getBranchLength() * branchWeights[j];
+        }
+        else
+        {
+            pd += n.getBranchLength();
+        }
         nodesVisited->push_back( j );
         if (includeRoot)
         {
@@ -166,6 +197,39 @@ double  PhyloDiversityFunction<treeType>::sumPDforNode(size_t j, std::vector<siz
         }
     }
     return pd;
+}
+
+
+/**
+ * Function that recursively traverses the tree in preorder calculating branch weights.
+ **/
+template <class treeType>
+double  PhyloDiversityFunction<treeType>::calculateBranchWeights(size_t j)
+{
+    double weight = 0.0;
+    const TopologyNode& n = tau->getValue().getNode( j );
+    if (n.isTip())
+    {
+        std::vector<std::string> taxa = sample.getTaxonNames();
+        for (size_t i = 0; i < numTaxa; ++i)
+        {
+            if (n.getName() == taxa[i])
+            {   
+                branchWeights[j] = tipWeights->getValue()[i];
+                weight = branchWeights[j];
+                break;
+            }
+        }
+    }
+    else
+    {
+        std::vector<int> children = n.getChildrenIndices();
+        double weightLeft = calculateBranchWeights( children[0] );
+        double weightRight = calculateBranchWeights( children[1] );
+        branchWeights[j] = weightLeft + weightRight / 2;
+        weight = branchWeights[j];
+    }
+    return weight;
 }
 
 

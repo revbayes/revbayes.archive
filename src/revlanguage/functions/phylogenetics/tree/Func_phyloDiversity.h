@@ -72,11 +72,17 @@ template <class treeType>
 RevBayesCore::TypedFunction<double>* Func_phyloDiversity<treeType>::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>(  this->args[0].getVariable()->getRevObject() ).getDagNode();
-    const RevBayesCore::Clade& sample                             = static_cast<const Clade &>(     this->args[1].getVariable()->getRevObject() ).getValue();
-    bool includeRoot                                              = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>(             this->args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::Clade& sample                             = static_cast<const Clade &>(                this->args[1].getVariable()->getRevObject() ).getValue();
+    bool includeRoot                                              = static_cast<const RlBoolean &>(            this->args[2].getVariable()->getRevObject() ).getValue();
+   
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* w = NULL;
+    if ( this->args[3].getVariable() != NULL && this->args[3].getVariable()->getRevObject() != RevNullObject::getInstance() )
+    {
+        w = static_cast<const ModelVector<RealPos> &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+    }
     
-    RevBayesCore::PhyloDiversityFunction<typename treeType::valueType>* f = new RevBayesCore::PhyloDiversityFunction<typename treeType::valueType>( tau, sample, includeRoot );
+    RevBayesCore::PhyloDiversityFunction<typename treeType::valueType>* f = new RevBayesCore::PhyloDiversityFunction<typename treeType::valueType>( tau, sample, includeRoot, w );
     return f;
 }
 
@@ -89,9 +95,10 @@ const ArgumentRules& Func_phyloDiversity<treeType>::getArgumentRules( void ) con
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "tree",        treeType::getClassTypeSpec(),  ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "sample",      Clade::getClassTypeSpec(),     ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "includeRoot", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "tree",        treeType::getClassTypeSpec(),             ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "sample",      Clade::getClassTypeSpec(),                ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "includeRoot", RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "weights",     ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         
         rulesSet = true;
     }
