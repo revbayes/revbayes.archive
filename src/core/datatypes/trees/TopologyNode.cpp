@@ -23,6 +23,8 @@ TopologyNode::TopologyNode(size_t indx) :
     interiorNode( false ),
     rootNode( true ),
     tipNode( true ),
+    fossil( false ),
+    sampledAncestor( false ),
     newick(""),
     newickNeedsRefreshing( true )
 {
@@ -39,9 +41,12 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
     interiorNode( false ),
     rootNode( true ),
     tipNode( true ),
+    fossil( false ),
+    sampledAncestor( false ),
     newick(""),
     newickNeedsRefreshing( true )
 {
+    
 }
 
 
@@ -54,14 +59,17 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     interiorNode( false ),
     rootNode( true ),
     tipNode( true ),
+    fossil( false ),
+    sampledAncestor( false ),
     newick(""),
     newickNeedsRefreshing( true )
 {
+    
 }
 
 /** Copy constructor. We use a shallow copy. */
 TopologyNode::TopologyNode(const TopologyNode &n) :
-tree( NULL )
+    tree( NULL )
 {
     
     // copy the members
@@ -69,6 +77,8 @@ tree( NULL )
     index                   = n.index;
     interiorNode            = n.interiorNode;
     tipNode                 = n.tipNode;
+    fossil                  = n.fossil;
+    sampledAncestor         = n.sampledAncestor;
     rootNode                = n.rootNode;
     newick                  = n.newick;
     newickNeedsRefreshing   = n.newickNeedsRefreshing;
@@ -119,6 +129,8 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         index                   = n.index;
         interiorNode            = n.interiorNode;
         tipNode                 = n.tipNode;
+        fossil                  = n.fossil;
+        sampledAncestor         = n.sampledAncestor;
         rootNode                = n.rootNode;
         newick                  = n.newick;
         newickNeedsRefreshing   = n.newickNeedsRefreshing;
@@ -1034,6 +1046,13 @@ void TopologyNode::initiateFlaggingForNewickRecomputation( void )
 }
 
 
+bool TopologyNode::isFossil( void ) const
+{
+    
+    return fossil;
+}
+
+
 bool TopologyNode::isInternal( void ) const
 {
     
@@ -1045,6 +1064,13 @@ bool TopologyNode::isRoot( void ) const
 {
     
     return parent == NULL;
+}
+
+
+bool TopologyNode::isSampledAncestor( void ) const
+{
+    
+    return sampledAncestor;
 }
 
 
@@ -1130,6 +1156,14 @@ void TopologyNode::removeTree(Tree *t)
 }
 
 
+void TopologyNode::setFossil(bool tf)
+{
+    
+    fossil = tf;
+    
+}
+
+
 void TopologyNode::setIndex( size_t idx)
 {
     
@@ -1178,7 +1212,8 @@ void TopologyNode::setTaxon(Taxon const &t) {
 }
 
 
-void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
+void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp)
+{
     
     // we only do something if this isn't already our parent
     if (p != parent)
@@ -1202,7 +1237,16 @@ void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
 }
 
 
-void TopologyNode::setTree(Tree *t) {
+void TopologyNode::setSampledAncestor(bool tf)
+{
+    
+    sampledAncestor = tf;
+    
+}
+
+
+void TopologyNode::setTree(Tree *t)
+{
     
     tree = t;
     for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i)

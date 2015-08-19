@@ -110,14 +110,18 @@ namespace RevBayesCore {
         double                                      getTime(void) const;                                                                //!< Get the time of the node
         double                                      getTmrca(const TopologyNode &n) const;
         void                                        initiateFlaggingForNewickRecomputation(void);
+        bool                                        isFossil(void) const;                                                               //!< Is node a fossil?
         bool                                        isInternal(void) const;                                                             //!< Is node internal?
         bool                                        isRoot(void) const;                                                                 //!< Is node root?
+        bool                                        isSampledAncestor(void) const;                                                      //!< Is node a sampled ancestor?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* c, bool enforceNewickRecomp = true);                      //!< Removes a specific child
+        void                                        setFossil(bool tf);                                                                 //!< Set if the node is a fossil node
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
   		void										setNodeType(bool tip, bool root, bool interior); //SK
+        void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
 
@@ -139,6 +143,10 @@ namespace RevBayesCore {
         bool                                        interiorNode;
         bool                                        rootNode;
         bool                                        tipNode;
+        bool                                        fossil;
+        bool                                        sampledAncestor;
+        
+        // information for newick representation
         std::string                                 newick;
         bool                                        newickNeedsRefreshing;
         std::vector<std::string>                    nodeComments;
