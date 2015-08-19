@@ -1,7 +1,8 @@
 #include "Clade.h"
+
 #include <algorithm>
 #include <iostream>
-#include <sstream> //SK: for class stringstream
+#include <sstream>
 
 
 using namespace RevBayesCore;
