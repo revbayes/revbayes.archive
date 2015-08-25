@@ -8,6 +8,7 @@
 #include "RbException.h"
 #include "RlString.h"
 #include "StringUtilities.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlHomologousDiscreteCharacterData.h"
 #include "RlNaturalNumbersState.h"
@@ -89,7 +90,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+//        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+        AbstractHomologousDiscreteCharacterData *rlCoreStates = new AbstractHomologousDiscreteCharacterData( coreStates );
         
         return new RevVariable( rlCoreStates );
         
@@ -130,7 +132,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+//        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+        AbstractHomologousDiscreteCharacterData *rlCoreStates = new AbstractHomologousDiscreteCharacterData( coreStates );
         
         return new RevVariable( rlCoreStates );
         
@@ -168,7 +171,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-        HomologousDiscreteCharacterData<RevLanguage::StandardState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::StandardState>( coreStates );
+//        HomologousDiscreteCharacterData<RevLanguage::StandardState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::StandardState>( coreStates );
+        AbstractHomologousDiscreteCharacterData *rlCoreStates = new AbstractHomologousDiscreteCharacterData( coreStates );
         
         return new RevVariable( rlCoreStates );
         

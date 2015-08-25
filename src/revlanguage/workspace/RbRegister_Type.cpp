@@ -76,7 +76,7 @@
 
 /* Character data types (in folder "datatypes/phylogenetics/datamatrix") */
 #include "RlAbstractCharacterData.h"
-#include "RlHomologousDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"

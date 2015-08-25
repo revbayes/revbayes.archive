@@ -28,6 +28,8 @@ namespace RevBayesCore {
         virtual DiscreteCharacterState&             operator[](size_t i) = 0;                                           //!< Index op allowing change
         virtual const DiscreteCharacterState&       operator[](size_t i) const = 0;                                     //!< Const index op
         
+        virtual AbstractDiscreteTaxonData*          clone(void) const = 0;
+        
         // AbstractTaxonData functions
         virtual void                                addCharacter(const CharacterState &newChar ) = 0;                   //!< Push back a new character
         virtual void                                addCharacter(const DiscreteCharacterState &newChar ) = 0;           //!< Push back a new character
@@ -42,12 +44,16 @@ namespace RevBayesCore {
         virtual const std::string&                  getTaxonName(void) const = 0;                                       //!< Return the name of the character vector
         virtual bool                                isCharacterResolved(size_t idx) const = 0;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual void                                setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
+        virtual size_t                              size(void) const = 0;                                               //!< Get the size of the sequence
         virtual std::string                         getStateLabels(void) = 0;                                           //!< Get the possible state labels
         
     protected:
         AbstractDiscreteTaxonData() {}                                                                                  //!< Default constructor
         
     };
+    
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const AbstractDiscreteTaxonData& x);          //!< Overloaded output operator
     
 }
 

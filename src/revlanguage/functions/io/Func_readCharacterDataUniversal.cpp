@@ -10,8 +10,9 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
-#include "RlBoolean.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlAminoAcidState.h"
+#include "RlBoolean.h"
 #include "RlHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlNonHomologousDiscreteCharacterData.h"
@@ -134,25 +135,30 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
                     if ( dType == "DNA" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-                        HomologousDiscreteCharacterData<DnaState> mDNA = HomologousDiscreteCharacterData<DnaState>( coreM );
+//                        HomologousDiscreteCharacterData<DnaState> mDNA = HomologousDiscreteCharacterData<DnaState>( coreM );
+                        AbstractHomologousDiscreteCharacterData mDNA = AbstractHomologousDiscreteCharacterData( coreM );
+
                         m->push_back( mDNA );
                         }
                     else if ( dType == "RNA" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
-                        HomologousDiscreteCharacterData<RnaState> mRNA = HomologousDiscreteCharacterData<RnaState>( coreM );
+//                        HomologousDiscreteCharacterData<RnaState> mRNA = HomologousDiscreteCharacterData<RnaState>( coreM );
+                        AbstractHomologousDiscreteCharacterData mRNA = AbstractHomologousDiscreteCharacterData( coreM );
                         m->push_back( mRNA );
                         }
                     else if ( dType == "Protein" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
-                        HomologousDiscreteCharacterData<AminoAcidState> mAA = HomologousDiscreteCharacterData<AminoAcidState>( coreM );
+//                        HomologousDiscreteCharacterData<AminoAcidState> mAA = HomologousDiscreteCharacterData<AminoAcidState>( coreM );
+                        AbstractHomologousDiscreteCharacterData mAA = AbstractHomologousDiscreteCharacterData( coreM );
                         m->push_back( mAA );
                         }
                     else if ( dType == "Standard" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
-                        HomologousDiscreteCharacterData<StandardState> mSS = HomologousDiscreteCharacterData<StandardState>( coreM );
+//                        HomologousDiscreteCharacterData<StandardState> mSS = HomologousDiscreteCharacterData<StandardState>( coreM );
+                        AbstractHomologousDiscreteCharacterData mSS = AbstractHomologousDiscreteCharacterData( coreM );
                         m->push_back( mSS );
                         }
                     else if ( dType == "Continuous" )
