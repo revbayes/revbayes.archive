@@ -120,6 +120,7 @@
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
 #include "Move_SpeciesSubtreeScaleBeta.h"
+#include "Move_SpeciesTreeNodeSlide.h"
 #include "Move_SpeciesTreeScale.h"
 #include "Move_SubtreeScale.h"
 #include "Move_SPRNonclock.h"
@@ -222,7 +223,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvNNI",                             new Move_NNINonclock() );
         addTypeWithConstructor("mvNNIClock",                        new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",                     new Move_NNINonclock() );
-        addTypeWithConstructor("mvNodeTimeScale",               new Move_NodeTimeScale() );
+        addTypeWithConstructor("mvNodeTimeScale",                   new Move_NodeTimeScale() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",            new Move_NodeTimeSlideUniform() );
         addTypeWithConstructor("mvNodeTimeSlideBeta",               new Move_NodeTimeSlideBeta() );
         addTypeWithConstructor("mvRateAgeBetaShift",                new Move_RateAgeBetaShift() );
@@ -232,6 +233,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvSpeciesNodeTimeSlideUniform",     new Move_SpeciesNodeTimeSlideUniform() );
         addTypeWithConstructor("mvSpeciesSubtreeScale",             new Move_SpeciesSubtreeScale() );
         addTypeWithConstructor("mvSpeciesSubtreeScaleBeta",         new Move_SpeciesSubtreeScaleBeta() );
+        addTypeWithConstructor("mvSpeciesTreeNodeSlide",            new Move_SpeciesTreeNodeSlide() );
         addTypeWithConstructor("mvSpeciesTreeScale",                new Move_SpeciesTreeScale() );
         addTypeWithConstructor("mvSubtreePruneRegraft",             new Move_SPRNonclock() );
         addTypeWithConstructor("mvTreeScale",                       new Move_TreeScale() );

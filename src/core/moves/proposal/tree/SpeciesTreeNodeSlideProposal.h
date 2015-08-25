@@ -50,11 +50,11 @@ namespace RevBayesCore {
         
         // helper methods
         void                                            mauCanonical(TimeTree &tree, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwapped);
-        int                                             mauCanonicalSub(TimeTree &tree, TopologyNode *node, int loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped);
+        size_t                                          mauCanonicalSub(TimeTree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped);
         void                                            mauReconstruct(TimeTree &tree, std::vector<TopologyNode*> &order, std::vector<bool>&swapped);
-        TopologyNode*                                   mauReconstructSub(TimeTree &tree, int from, int to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped);
-        void                                            fillPreorderIndices(TimeTree &t, std::vector<int> &);
-        int                                             fillPreorderIndices(TopologyNode &n, int loc, std::vector<int> &);
+        TopologyNode*                                   mauReconstructSub(TimeTree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped);
+        void                                            fillPreorderIndices(TimeTree &t, std::vector<size_t> &);
+        size_t                                          fillPreorderIndices(TopologyNode &n, size_t loc, std::vector<size_t> &);
         
         // parameters
         StochasticNode<TimeTree>*                       speciesTree;                                                        //!< The variable the Proposal is working on
@@ -67,9 +67,11 @@ namespace RevBayesCore {
         // stored objects to undo proposal
         double                                          storedAge;
         TopologyNode*                                   storedNode;
+        std::vector<bool>                               swappedNodes;
+        std::vector<TopologyNode*>                      orderedNodes;
         
-        std::vector<int>                                preOrderIndexBefore;
-        std::vector<int>                                preOrderIndexAfter;
+//        std::vector<size_t>                             preOrderIndexBefore;
+//        std::vector<size_t>                             preOrderIndexAfter;
     };
     
 }

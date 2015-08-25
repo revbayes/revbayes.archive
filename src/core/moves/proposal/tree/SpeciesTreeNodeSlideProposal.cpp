@@ -20,9 +20,9 @@ SpeciesTreeNodeSlideProposal::SpeciesTreeNodeSlideProposal( StochasticNode<TimeT
     speciesTree( sp ),
     geneTrees( ),
     rootAge( r ),
-    delta( d ),
-    preOrderIndexBefore(sp->getValue().getNumberOfNodes(),  -1),
-    preOrderIndexAfter(sp->getValue().getNumberOfNodes(),  -1)
+    delta( d )
+//    preOrderIndexBefore(sp->getValue().getNumberOfNodes(),  -1),
+//    preOrderIndexAfter(sp->getValue().getNumberOfNodes(),  -1)
 {
     
     // tell the base class to add the node
@@ -113,7 +113,7 @@ const std::string& SpeciesTreeNodeSlideProposal::getProposalName( void ) const
  */
 double SpeciesTreeNodeSlideProposal::doProposal( void )
 {
-    double factor = 0.0;
+//    double factor = 0.0;
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -150,7 +150,9 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
     // store the values so that we can undo the proposal
     storedAge = node->getAge();
     storedNode = node;
-    fillPreorderIndices(species_tree, preOrderIndexBefore);
+//    fillPreorderIndices(species_tree, preOrderIndexBefore);
+    swappedNodes = swapped;
+    orderedNodes = order;
     
     // now we propose a new age
     double new_height = 0.0;
@@ -162,11 +164,12 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
 //    else
 //    {
 //        double limit = species.speciationUpperBound(left, right);
-//        double limit = node->getParent().getAge();
-//        newHeight = rng->uniform01() * limit;
-        
-        new_height = RbStatistics::Normal::rv(node->getAge(), delta, *rng);
-        
+    
+        double limit = node->getParent().getAge();
+        new_height = rng->uniform01() * limit;
+    
+//        new_height = RbStatistics::Normal::rv(node->getAge(), delta, *rng);
+    
         // reflect
         if ( new_height < 0 )
         {
@@ -187,16 +190,16 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
     return lnHastingsRatio;
 }
 
-void SpeciesTreeNodeSlideProposal::fillPreorderIndices(TimeTree &t, std::vector<int> &indices)
+void SpeciesTreeNodeSlideProposal::fillPreorderIndices(TimeTree &t, std::vector<size_t> &indices)
 {
     fillPreorderIndices(t.getRoot(), 0, indices);
 }
 
-int SpeciesTreeNodeSlideProposal::fillPreorderIndices(TopologyNode &node, int loc, std::vector<int> &indices)
+size_t SpeciesTreeNodeSlideProposal::fillPreorderIndices(TopologyNode &node, size_t loc, std::vector<size_t> &indices)
 {
     if ( node.isInternal() == true )
     {
-        int l = fillPreorderIndices(node.getChild( 0 ), loc, indices);
+        size_t l = fillPreorderIndices(node.getChild( 0 ), loc, indices);
         indices[node.getIndex()] = l;
         loc = fillPreorderIndices(node.getChild( 1 ), l + 1, indices);
     }
@@ -210,7 +213,7 @@ void SpeciesTreeNodeSlideProposal::mauCanonical(TimeTree &tree, std::vector<Topo
     mauCanonicalSub(tree, &tree.getRoot(), 0, order, wasSwapped);
 }
 
-int SpeciesTreeNodeSlideProposal::mauCanonicalSub(TimeTree &tree, TopologyNode *node, int loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped)
+size_t SpeciesTreeNodeSlideProposal::mauCanonicalSub(TimeTree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped)
 {
     if( node->isTip() )
     {
@@ -222,9 +225,8 @@ int SpeciesTreeNodeSlideProposal::mauCanonicalSub(TimeTree &tree, TopologyNode *
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     bool swap = (rng->uniform01() > 0.5);
-    //wasSwaped[(loc-1)/2] = swap;
     
-    int l = mauCanonicalSub(tree, &node->getChild( swap ? 1 : 0), loc, order, wasSwaped);
+    size_t l = mauCanonicalSub(tree, &node->getChild( swap ? 1 : 0), loc, order, wasSwaped);
     
     order[l] = node;
     wasSwaped[(l-1)/2] = swap;
@@ -246,18 +248,18 @@ void SpeciesTreeNodeSlideProposal::mauReconstruct(TimeTree &tree, std::vector<To
     
 }
 
-TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(TimeTree &tree, int from, int to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped)
+TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(TimeTree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped)
 {
     if( from == to )
     {
         return order[2*from];
     }
     
-    int node_index = -1;
+    size_t node_index = -1;
     {
         double h = -1;
         
-        for(int i = from; i < to; ++i)
+        for(size_t i = from; i < to; ++i)
         {
             double v = order[2 * i + 1]->getAge();
             if( h < v )
@@ -285,16 +287,16 @@ TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(TimeTree &tree, in
     
     if( &lchild != lTargetChild )
     {
+        // replace the left child
         node->removeChild( &lchild );
         node->addChild( lTargetChild );
-//        tree.replaceChild(root, lchild, lTargetChild);
     }
     
     if( &rchild != rTargetChild )
     {
+        // replace the right child
         node->removeChild( &rchild );
         node->addChild( rTargetChild );
-//        tree.replaceChild(root, rchild, rTargetChild);
     }
     
     return node;
@@ -361,7 +363,7 @@ void SpeciesTreeNodeSlideProposal::undoProposal( void )
     tau.setAge(storedNode->getIndex(), storedAge);
     
     // reconstruct the new tree
-//    mauReconstruct(tau, preOrderIndexBefore, swapped);
+    mauReconstruct(tau, orderedNodes, swappedNodes);
     
 }
 
