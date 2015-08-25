@@ -1,4 +1,5 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlAbstractDiscreteTaxonData.h"
 #include "ArgumentRule.h"
 #include "RlMatrixReal.h"
 #include "MemberProcedure.h"
@@ -194,6 +195,22 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     if ( found == true )
     {
         return retVal;
+    }
+    else if (name == "[]")
+    {
+        found = true;
+    
+        // get the member with give index
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
+    
+        if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
+        {
+            throw RbException("Index out of bounds in []");
+        }
+    
+        const RevBayesCore::AbstractDiscreteTaxonData& element = dagNode->getValue().getTaxonData(size_t(index.getValue()) - 1);
+    
+        return new RevVariable( new AbstractDiscreteTaxonData( element.clone() ) );
     }
     else if (name == "computeStateFrequencies")
     {
@@ -439,10 +456,12 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     ArgumentRules* setCodonPartitionArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2       = new ArgumentRules();
     ArgumentRules* setNumStatesPartitionArgRules    = new ArgumentRules();
+    ArgumentRules* squareBracketArgRules            = new ArgumentRules();
     
-    setCodonPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule("", ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(  new ArgumentRule("", Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    setNumStatesPartitionArgRules->push_back(   new ArgumentRule("",        Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
+    squareBracketArgRules->push_back(           new ArgumentRule( "index" , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
     
     
     methods.addFunction("chartype",                     new MemberProcedure(RlString::getClassTypeSpec(),   chartypeArgRules                ) );
@@ -453,6 +472,8 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction("isHomologous",                 new MemberProcedure(RlBoolean::getClassTypeSpec(),  ishomologousArgRules            ) );
     methods.addFunction("getEmpiricalBaseFrequencies",  new MemberProcedure(Simplex::getClassTypeSpec(),    empiricalBaseArgRules           ) );
     methods.addFunction("getNumInvariantSites",         new MemberProcedure(Natural::getClassTypeSpec(),    invSitesArgRules                ) );
+    methods.addFunction("[]",                           new MemberProcedure( AbstractDiscreteTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    
 }
 
 
