@@ -271,6 +271,8 @@
 #include "Func_varianceCovarianceMatrix.h"
 #include "Func_decomposedVarianceCovarianceMatrix.h"
 
+#include "RlDiscreteCharacterState.h"
+
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
@@ -356,6 +358,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "_eq",       new Func__eq<       RateGenerator,    RateGenerator >()             );
         addFunction( "_eq",       new Func__eq<            TimeTree,         TimeTree >()             );
         addFunction( "_eq",       new Func__eq<    BranchLengthTree, BranchLengthTree >()             );
+        addFunction( "_eq",       new Func__eq<DiscreteCharacterState, DiscreteCharacterState >()     );
         addFunction( "_ge",       new Func__ge<             Integer,          Integer >()             );
         addFunction( "_ge",       new Func__ge<                Real,             Real >()             );
         addFunction( "_ge",       new Func__ge<             Integer,             Real >()             );
