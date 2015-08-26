@@ -23,26 +23,41 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 //StandardState::StandardState(void) : DiscreteCharacterState(), labels( "01" ), state(0x1) { }
-StandardState::StandardState(void) : DiscreteCharacterState(), labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ), state(0x1) { }
+StandardState::StandardState(void) : DiscreteCharacterState(),
+    labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ),
+    state(0x1)
+{
+
+}
 
 
 /** Default constructor */
-StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), labels( s ), state() {
+StandardState::StandardState(const std::string &s) : DiscreteCharacterState(),
+    labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ),
+    state()
+{
+    setState(s);
     
 }
 
-StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state() {
+StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(),
+    labels( l ),
+    state()
+{
     setState(s);
 }
 
 
 /** Equals comparison */
-bool StandardState::operator==(const CharacterState& x) const {
+bool StandardState::operator==(const CharacterState& x) const
+{
     
     const StandardState* derivedX = dynamic_cast<const StandardState*>( &x );
     
-    if (derivedX != NULL) {
-        return derivedX->labels == labels && derivedX->state == state;
+    if (derivedX != NULL)
+    {
+//        return derivedX->labels == labels && derivedX->state == state;
+        return derivedX->getStringValue() == getStringValue();
     }
     
     return false;
@@ -50,20 +65,24 @@ bool StandardState::operator==(const CharacterState& x) const {
 
 
 /** Not equals comparison */
-bool StandardState::operator!=(const CharacterState& x) const {
+bool StandardState::operator!=(const CharacterState& x) const
+{
     
     return !operator==(x);
 }
 
 
-bool StandardState::operator<(const CharacterState &x) const {
+bool StandardState::operator<(const CharacterState &x) const
+{
     
     const StandardState* derivedX = static_cast<const StandardState*>(&x);
-    if ( derivedX != NULL ) {
+    if ( derivedX != NULL )
+    {
         unsigned long myState = state;
         unsigned long yourState = derivedX->state;
         
-        while ( (myState & 1) == ( yourState & 1 )  ) {
+        while ( (myState & 1) == ( yourState & 1 )  )
+        {
             myState >>= 1;
             yourState >>= 1;
         }
@@ -141,12 +160,13 @@ unsigned long StandardState::computeState(const std::string &symbol) const
 {
     
     size_t pos = computeStateIndex(symbol);
-    std::cout << "pos = " << pos << " " << symbol << " " << labels << std::endl;
     unsigned long n = 1;
     return (n << pos);
 }
     
-size_t StandardState::getNumberOfStates( void ) const {
+size_t StandardState::getNumberOfStates( void ) const
+{
+    
     return labels.size();
 }
 

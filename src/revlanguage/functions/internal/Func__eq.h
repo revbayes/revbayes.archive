@@ -57,13 +57,15 @@ namespace RevLanguage {
 
 
 template <typename leftValType, typename rightValType>
-RevLanguage::Func__eq<leftValType,rightValType>::Func__eq() : TypedFunction<RlBoolean>() {
+RevLanguage::Func__eq<leftValType,rightValType>::Func__eq() : TypedFunction<RlBoolean>()
+{
     
 }
 
 /* Clone object */
 template <typename leftValType, typename rightValType>
-RevLanguage::Func__eq<leftValType,rightValType>* RevLanguage::Func__eq<leftValType,rightValType>::clone( void ) const {
+RevLanguage::Func__eq<leftValType,rightValType>* RevLanguage::Func__eq<leftValType,rightValType>::clone( void ) const
+{
     
     return new Func__eq<leftValType,rightValType>( *this );
 }
@@ -90,7 +92,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__eq<leftValType,rightValType
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
         argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
@@ -103,7 +106,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__eq<leftValType,rightValType
 
 /** Get Rev type of object */
 template <typename leftValType, typename rightValType>
-const std::string& RevLanguage::Func__eq<leftValType,rightValType>::getClassType(void) { 
+const std::string& RevLanguage::Func__eq<leftValType,rightValType>::getClassType(void)
+{
     
     static std::string revType = "Func__eq<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
     
@@ -113,7 +117,8 @@ const std::string& RevLanguage::Func__eq<leftValType,rightValType>::getClassType
 
 /** Get class type spec describing type of object */
 template <typename leftValType, typename rightValType>
-const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -123,7 +128,8 @@ const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::ge
 
 /** Get type spec */
 template <typename leftValType, typename rightValType>
-const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
