@@ -142,6 +142,7 @@
 #include "Func_wag.h"
 
 /* Functions related to evolution (in folder "functions/popgen") */
+#include "Func_PattersonsD.h"
 #include "Func_SegregatingSites.h"
 #include "Func_TajimasD.h"
 #include "Func_TajimasPi.h"
@@ -321,6 +322,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances<TimeTree>() );
 		
         /* Population genetics functions (in folder "functions/popgen") */
+        addFunction( "fnPattersonsD",       new Func_PattersonsD()      );
         addFunction( "fnSegregatingSites",  new Func_SegregatingSites() );
         addFunction( "fnTajimasD",          new Func_TajimasD()         );
         addFunction( "fnTajimasPi",         new Func_TajimasPi()        );
