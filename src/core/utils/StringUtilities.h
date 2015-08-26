@@ -21,6 +21,7 @@
 
 namespace StringUtilities {
     
+    int                         asIntegerNumber(const std::string& s);                                              //!< Checks if a string is an integer number
     void                        fillWithSpaces(std::string &s, int l, bool left);                                   //!< Fill up the string with spaces either left aligned or right aligned
     size_t                      findFirstOf(const std::string &s, char c);
     size_t                      findLastOf(const std::string &s, char c);

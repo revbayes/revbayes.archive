@@ -27,6 +27,14 @@
 
 
 
+
+/** Convert the string s to a number */
+int StringUtilities::asIntegerNumber(const std::string& s)
+{
+    
+    return std::atoi( s.c_str() );
+}
+
 /**
  * Fill this string with spaces so that it has the required length.
  * Either fill the spaces on the right if left aligned (true)
@@ -302,7 +310,8 @@ std::string StringUtilities::getFileContentsAsString(const std::string& s)
 
 
 /** Find the last component of a file path */
-std::string StringUtilities::getLastPathComponent(const std::string& s) {
+std::string StringUtilities::getLastPathComponent(const std::string& s)
+{
 
     std::vector<std::string> sVec;
     stringSplit(s, "/", sVec);
