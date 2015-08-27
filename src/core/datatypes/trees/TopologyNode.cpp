@@ -372,6 +372,12 @@ std::string TopologyNode::buildNewickString( void )
             o << getChild(i).computeNewick() << ",";
         }
         o << getChild(getNumberOfChildren()-1).computeNewick() << ")";
+        
+        if ( fossil == true )
+        {
+            o << taxon.getName();
+        }
+        
     }
     
     if ( nodeComments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
