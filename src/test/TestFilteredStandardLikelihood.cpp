@@ -23,7 +23,7 @@
 #include "VectorFunction.h"
 #include "RbVector.h"
 #include "DiscretizeGammaFunction.h"
-
+#include "AbstractCharacterData.h"
 #include <vector>
 
 //#define USE_GTR_RATE_MAT
