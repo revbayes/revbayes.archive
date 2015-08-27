@@ -1,6 +1,5 @@
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "FilteredPhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "JcRateMatrixFunction.h"
 #include "NclReader.h"
@@ -138,6 +137,10 @@ bool TestFilteredStandardLikelihood::run( void ) {
     const double tol = 0.01;
     if (fabs(lnp - paupLnL) > tol) {
         std::cerr << "    deviates too much from the likelihood from PAUP* of " << paupLnL << std::endl;
+        return false;
+    }
+    if (lnp >= 0.0) {
+        std::cerr << "    lnProb is too high!" << std::endl;
         return false;
     }
 

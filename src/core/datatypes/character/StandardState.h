@@ -18,6 +18,8 @@
 
 #include "DiscreteCharacterState.h"
 #include "FilteredPhyloCTMCSiteHomogeneous.h"
+#include "AscertainmentBiasCorrection.h"
+>>>>>>> 7cf7c95f63f630c214c4b726ea85c5eaa4adc9fa
 #include <ostream>
 #include <set>
 
@@ -27,6 +29,8 @@ namespace RevBayesCore {
     
     public:
                                         StandardState(void);                                        //!< Default constructor
+                                        StandardState(const StandardState& s);                      //!< Copy constructor
+
                                         StandardState(const std::string &s);                        //!< Constructor with nucleotide observation
                                         StandardState(const std::string& s, const std::string& l);
     

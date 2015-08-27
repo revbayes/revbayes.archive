@@ -48,7 +48,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     time (&start);
     int numPassed = 0;
     int numAttempted = 0;
-    
     ////////////////
     // Newer tests
     ////////////////
@@ -110,8 +109,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
 #endif
-    
-    
     time (&end);
     double dif = difftime(end,start);
     std::cout << "The tests ran in " << dif << " seconds." << std::endl;
@@ -121,5 +118,4 @@ bool Test::performTests(int argc, const char * argv[]) {
     }
     std::cout << "Unfortunately, only " << numPassed << " out of " << numAttempted << " tests passed." << std::endl;
     return false;
-
 }
