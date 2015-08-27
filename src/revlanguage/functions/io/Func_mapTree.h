@@ -11,13 +11,13 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_readCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
+ * $Id: Func_readDiscreteCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
  */
 
 #ifndef Func_mapTree_H
 #define Func_mapTree_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 #include "RbFileManager.h"
 
 #include <string>
@@ -26,7 +26,7 @@
 namespace RevLanguage {
     
     template <typename treeType>
-    class Func_mapTree :  public Function {
+    class Func_mapTree : public Procedure {
         
     public:
         // Basic utility functions
@@ -36,12 +36,11 @@ namespace RevLanguage {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RevPtr<Variable>                execute(void);                                                          //!< Execute function
+        RevPtr<RevVariable>             execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
         
     private:
-//        void                            formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
         
     };
     
@@ -63,7 +62,6 @@ namespace RevLanguage {
 #include "StringUtilities.h"
 #include "TreeSummary.h"
 #include "TreeTrace.h"
-#include "UserInterface.h"
 
 #include <map>
 #include <set>
@@ -72,7 +70,8 @@ namespace RevLanguage {
 
 /** Clone object */
 template <typename treeType>
-RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone( void ) const {
+RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone( void ) const
+{
     
     return new Func_mapTree( *this );
 }
@@ -80,15 +79,28 @@ RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone(
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_mapTree<treeType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType>::execute( void )
+{
     
+    // get the x% hpd
+    double x = 0.95;
     
     const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
     const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+	int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
+
     RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
-    typename treeType::valueType* tree = summary.map();
+    typename treeType::valueType* tree = summary.map(burnin);
     
-    if ( filename != "" ) {        
+    // get the tree with x% HPD node ages
+    summary.annotateHPDAges(*tree, x, burnin);
+    
+    // get the tree with x% HPD node ages
+    summary.annotate(*tree, burnin);
+
+    
+    if ( filename != "" )
+    {
         
         RevBayesCore::NexusWriter writer(filename);
         writer.openStream();
@@ -104,7 +116,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_mapTree<treeType>::
         
     }
     
-    return new Variable( new treeType( tree ) );
+    return new RevVariable( new treeType( tree ) );
 }
 
 
@@ -121,6 +133,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
         
         argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace<treeType>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rulesSet = true;
     }
     

@@ -3,6 +3,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "Topology.h"
 #include "UniformTimeTreeDistribution.h"
@@ -20,20 +21,15 @@ UniformTimeTreeDistribution::UniformTimeTreeDistribution(
         originTime( originT ),
         taxonNames( taxaNames )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( originTime );
     
     numTaxa = taxonNames.size();
     
     simulateTree();
     
-}
-
-
-UniformTimeTreeDistribution::UniformTimeTreeDistribution(const UniformTimeTreeDistribution &x)
-    :   TypedDistribution<TimeTree>( x ),
-        originTime( x.originTime ),
-        numTaxa( x.numTaxa ),
-        taxonNames( x.taxonNames )
-{
 }
 
 
@@ -234,24 +230,64 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
     
 }
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> UniformTimeTreeDistribution::getParameters( void ) const
+void UniformTimeTreeDistribution::getAffected(std::set<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
-    std::set<const DagNode*> parameters;
     
-    parameters.insert( originTime );
+    if ( affecter == originTime)
+    {
+        dagNode->getAffectedNodes( affected );
+    }
     
-    parameters.erase( NULL );
-    return parameters;
 }
 
+/**
+ * Keep the current value and reset some internal flags. Nothing to do here.
+ */
+void UniformTimeTreeDistribution::keepSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == originTime )
+    {
+        dagNode->keepAffected();
+    }
+    
+}
+
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void UniformTimeTreeDistribution::restoreSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == originTime )
+    {
+        value->setAge(value->getRoot().getIndex(), originTime->getValue() );
+        dagNode->restoreAffected();
+    }
+    
+}
 
 /** Swap a parameter of the distribution */
-void UniformTimeTreeDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+void UniformTimeTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == originTime)
     {
         originTime = static_cast<const TypedDagNode<double>* >( newP );
     }
+}
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void UniformTimeTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+    
+    if ( affecter == originTime )
+    {
+        value->setAge(value->getRoot().getIndex(), originTime->getValue() );
+        dagNode->touchAffected();
+    }
+    
 }

@@ -22,39 +22,14 @@ using namespace RevBayesCore;
  * \param[in]    w   The weight how often the proposal will be used (per iteration).
  * \param[in]    t   If auto tuning should be used.
  */
-SliceSamplingMove::SliceSamplingMove( StochasticNode<double> *n, double window_, double weight_, bool t ) 
-  : AbstractMove(weight_ ,t),
-    affectedNodes(),
-    nodes(),
+SliceSamplingMove::SliceSamplingMove( StochasticNode<double> *n, double window_, double weight_, bool t ) : AbstractMove( std::vector<DagNode*>(), weight_ ,t),
     variable( n ),
     window( window_ ),
     total_movement( 0.0 )
 {
     assert( not variable->isClamped() );
 
-    nodes.insert( n );
-    
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        (*it)->getAffectedNodes( affectedNodes );
-    }
-}
-
-
-/**
- * Copy constructor.
- *
- * \param[in]   m   The object to copy.
- *
- */
-SliceSamplingMove::SliceSamplingMove(const SliceSamplingMove &m) 
-  : AbstractMove(m),
-    affectedNodes( m.affectedNodes ),
-    nodes( m.nodes ),
-    variable( m.variable ),
-    window ( m.window ),
-    total_movement( 0.0 )
-{
+    addNode( n );
     
 }
 
@@ -67,25 +42,6 @@ SliceSamplingMove::~SliceSamplingMove( void )
 }
 
 
-/** 
- * Overloaded assignment operator.
- * We need a deep copy of the operator.
- */
-SliceSamplingMove& SliceSamplingMove::operator=(const RevBayesCore::SliceSamplingMove &m)
-{
-    if ( this != &m )
-    {
-        affectedNodes = m.affectedNodes;
-        nodes = m.nodes;
-        variable = m.variable;
-	window = m.window;
-	total_movement = m.total_movement;
-    }
-    
-    return *this;
-}
-
-
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
@@ -95,17 +51,6 @@ SliceSamplingMove& SliceSamplingMove::operator=(const RevBayesCore::SliceSamplin
 SliceSamplingMove* SliceSamplingMove::clone( void ) const 
 {
     return new SliceSamplingMove( *this );
-}
-
-
-/**
- * Get the set of nodes on which this move is working on.
- *
- * \return The set of nodes.
- */
-const std::set<DagNode*>& SliceSamplingMove::getDagNodes( void ) const
-{
-    return nodes;
 }
 
 
@@ -151,8 +96,8 @@ struct interval
 class slice_function: public interval
 {
   StochasticNode<double>* variable;
-  double heat;
-  bool raiseLikelihoodOnly;
+  double lHeat;
+  double pHeat;
   std::set<DagNode*> affectedNodes;
   int num_evals;
 
@@ -178,11 +123,7 @@ public:
     }
 
     // 3. exponentiate with the chain heat
-    double lnPosterior;
-    if ( raiseLikelihoodOnly )
-        lnPosterior = heat * lnLikelihood + lnPrior;
-    else
-        lnPosterior = heat * (lnLikelihood + lnPrior);
+    double lnPosterior = pHeat * (lHeat * lnLikelihood + lnPrior);
 
     return lnPosterior;
   }
@@ -212,10 +153,10 @@ public:
     return variable->getValue();
   }
 
-  slice_function(StochasticNode<double> *n, double h, bool r, bool pos_only=false)
+  slice_function(StochasticNode<double> *n, double l, double p, bool pos_only=false)
     :variable(n),
-     heat(h),
-     raiseLikelihoodOnly(r),
+     lHeat(l),
+     pHeat(p),
      num_evals(0)
   {
     variable->getAffectedNodes( affectedNodes );
@@ -336,9 +277,9 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 }
 
 
-void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
+void SliceSamplingMove::performMove( double lHeat, double pHeat )
 {
-  slice_function g(variable, heat, raiseLikelihoodOnly, false);
+  slice_function g(variable, lHeat, pHeat);
 
   double x1 = g.current_value();
 
@@ -353,6 +294,7 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
     double predicted_window = 4.0*total_movement/numTried;
     window = 0.95*window + 0.05*predicted_window;
   }
+    
 }
 
 
@@ -446,26 +388,10 @@ void SliceSamplingMove::resetMoveCounters( void )
  * Swap the current variable for a new one.
  *
  * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new variable.
+ * \param[in]     newN     The new RevVariable.
  */
-void SliceSamplingMove::swapNode(DagNode *oldN, DagNode *newN) 
+void SliceSamplingMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
-    // find the old node
-    std::set<DagNode*>::iterator pos = nodes.find( oldN );
-    // remove it from the set if it was contained
-    if ( pos != nodes.end() )
-    {
-        nodes.erase( pos );
-    }
-    // insert the new node
-    nodes.insert( newN );
-        
-    affectedNodes.clear();
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        (*it)->getAffectedNodes( affectedNodes );
-    }
     
     variable = static_cast<StochasticNode<double>* >(newN) ;
 }

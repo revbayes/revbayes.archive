@@ -10,14 +10,11 @@
 
         <name>mnScreen</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The Screen monitor</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The screen monitor prints the values to the screen.
             </p>
         </description>
     
@@ -34,14 +31,14 @@
                 <label></label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>One or more variables that you want to monitor. This is an ellipsis argument.</description>
                 <valueType>RevObject</valueType>
             </argument>
             <argument>
                 <label>printgen</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The frequency how often to print to the screen (thinning).</description>
                 <valueType>Natural</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -49,7 +46,7 @@
                 <label>posterior</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should we monitor the posterior probability too?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -57,7 +54,7 @@
                 <label>likelihood</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should we monitor the likelihood too?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -65,7 +62,7 @@
                 <label>prior</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should we monitor the prior probability too?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -75,32 +72,40 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The screen monitor prints any variable that you want to the screen.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel = model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] = mnScreen(a)
+                    
+                    # Create an mcmc object
+                    mymcmcObject = mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>mnModel</entry>
+                <entry>mnFile</entry>
+                <entry>mcmc</entry>
             </seeAlso>
 
 

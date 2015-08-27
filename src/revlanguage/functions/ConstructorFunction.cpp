@@ -1,21 +1,3 @@
-
-/**
- * @file
- * This file contains the implementation of ConstructorFunction, which is used
- * for functions that construct member objects.
- *
- * @brief Implementation of ConstructorFunction
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-06-01 14:55:05 +0200 (Fri, 01 Jun 2012) $
- * @author The RevBayes core team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-09-17, version 1.0
- *
- * $Id: ConstructorFunction.cpp 1603 2012-06-01 12:55:05Z hoehna $
- */
-
 #include "ArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "RevObject.h"
@@ -26,7 +8,9 @@
 using namespace RevLanguage;
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction( RevObject *obj ) : Function(), templateObject(obj) {
+ConstructorFunction::ConstructorFunction( RevObject *obj ) : Procedure(),
+    templateObject(obj)
+{
     
     // Hack: we know that we will not own the argRules.
     argRules = &templateObject->getParameterRules();
@@ -34,7 +18,8 @@ ConstructorFunction::ConstructorFunction( RevObject *obj ) : Function(), templat
 
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Function(obj) {
+ConstructorFunction::ConstructorFunction(const ConstructorFunction& obj) : Procedure(obj)
+{
     
     templateObject = obj.templateObject->clone();
     
@@ -48,6 +33,10 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
     if (this != &c) {
         Function::operator=(c);
         
+        // delete the old object
+        delete templateObject;
+        
+        // clone the new object
         templateObject = c.templateObject->clone();
         
         // Hack: we know that we will not own the argRules.
@@ -58,8 +47,16 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
 }
 
 
+ConstructorFunction::~ConstructorFunction( void )
+{
+    
+    delete templateObject;
+}
+
+
 /** Clone the object */
-ConstructorFunction* ConstructorFunction::clone(void) const {
+ConstructorFunction* ConstructorFunction::clone(void) const
+{
     
     return new ConstructorFunction(*this);
 }
@@ -77,7 +74,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
  * @todo This is the old code, which needs to be changed when the member
  *       variable code is revised.
  */
-RevPtr<Variable> ConstructorFunction::execute( void )
+RevPtr<RevVariable> ConstructorFunction::execute( void )
 {
     
     RevObject* copyObject = templateObject->clone();
@@ -87,7 +84,7 @@ RevPtr<Variable> ConstructorFunction::execute( void )
         
         if ( args[i].isConstant() )
         {
-            copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+            copyObject->setConstParameter( args[i].getLabel(), RevPtr<const RevVariable>( (RevVariable*) args[i].getVariable() ) );
         }
         else
         {
@@ -98,7 +95,7 @@ RevPtr<Variable> ConstructorFunction::execute( void )
     // now call the constructor for the internal object
     copyObject->constructInternalObject();
     
-    return new Variable( copyObject );
+    return new RevVariable( copyObject );
 }
 
 

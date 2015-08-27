@@ -15,12 +15,14 @@
  * $Id: Tree.cpp 1651 2012-07-05 14:47:08Z hoehna $
  */
 
-#include "Tree.h"
+#include "DagNode.h"
 #include "RbException.h"
 #include "RbOptions.h"
+#include "Tree.h"
 #include "Taxon.h"
 #include "Topology.h"
 #include "TopologyNode.h"
+#include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 
@@ -71,7 +73,8 @@ Tree::~Tree(void)
 }
 
 
-Tree& Tree::operator=(const Tree &t) {
+Tree& Tree::operator=(const Tree &t)
+{
     
     if (this != &t) 
     {
@@ -106,19 +109,22 @@ Tree& Tree::operator=(const Tree &t) {
 }
 
 
-bool Tree::operator==(const Tree &t) const {
+bool Tree::operator==(const Tree &t) const
+{
     
     return getNewickRepresentation() == t.getNewickRepresentation();
 }
 
 
-bool Tree::operator!=(const Tree &t) const {
+bool Tree::operator!=(const Tree &t) const
+{
     
     return !operator==(t);
 }
 
 
-bool Tree::operator<(const Tree &t) const {
+bool Tree::operator<(const Tree &t) const
+{
     
     return getNewickRepresentation() < t.getNewickRepresentation();
 }
@@ -131,24 +137,50 @@ bool Tree::operator<=(const Tree &t) const
 }
 
 
-void Tree::addBranchParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly) {
+void Tree::addBranchParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly)
+{
     
-    getRoot().addBranchParameter(name,parameters,internalOnly);
-    
-}
-
-
-void Tree::addNodeParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly) {
-    
-    getRoot().addParameter(name,parameters,internalOnly);
+    getRoot().addBranchParameters(name,parameters,internalOnly);
     
 }
 
 
-void Tree::clearBranchParameters() {
+void Tree::addNodeParameter(std::string const &name, const std::vector<double> &parameters, bool internalOnly)
+{
+    
+    getRoot().addNodeParameters(name,parameters,internalOnly);
+    
+}
+
+void Tree::addNodeParameter(std::string const &name, const std::vector<std::string*> &parameters, bool internalOnly)
+{
+    
+    getRoot().addNodeParameters(name,parameters,internalOnly);
+    
+}
+
+
+void Tree::clearParameters( void )
+{
+    
+    clearNodeParameters();
+    clearBranchParameters();
+    
+}
+
+void Tree::clearBranchParameters( void )
+{
     
     getRoot().clearBranchParameters();
 
+}
+
+
+void Tree::clearNodeParameters( void )
+{
+    
+    getRoot().clearNodeParameters();
+	
 }
 
 
@@ -160,6 +192,16 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         rv = getRoot().getAge();
     }
+    else if ( n == "branchLength" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = getBranchLength( index );
+    }
+    else if ( n == "nodeAge" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = getAge( index );
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -167,102 +209,159 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     
 }
 
-std::vector<std::string> Tree::getTipNames() const {
+
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+{
+    
+    if ( n == "parent" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = int( getNode( index ).getParent().getIndex() )+1;
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+size_t Tree::getTipIndex(std::string name) const
+{
+    return topology->getTipIndex( name );
+}
+
+std::vector<std::string> Tree::getTipNames() const
+{
 
     return topology->getTipNames();
 }
 
-std::vector<Taxon> Tree::getTaxa() const {
+std::vector<Taxon> Tree::getTaxa() const
+{
     return topology->getTaxa();
 }
 
-std::vector<std::string> Tree::getSpeciesNames() const {
+std::vector<std::string> Tree::getSpeciesNames() const
+{
     return topology->getSpeciesNames();
 }
 
-TopologyNode& Tree::getNode(size_t idx) {
+TopologyNode& Tree::getNode(size_t idx)
+{
     
     return *topology->getNodes()[ idx ];
 }
 
-const TopologyNode& Tree::getNode(size_t idx) const {
+const TopologyNode& Tree::getNode(size_t idx) const
+{
     
     return topology->getNode( idx );
 }
 
-std::vector<TopologyNode*> Tree::getNodes(void) const {
+std::vector<TopologyNode*> Tree::getNodes(void) const
+{
     
     return topology->getNodes();
 }
 
-size_t Tree::getNumberOfInteriorNodes(void) const {
+size_t Tree::getNumberOfInteriorNodes(void) const
+{
     
     return topology->getNumberOfInteriorNodes();
 }
 
-size_t Tree::getNumberOfNodes(void) const {
+size_t Tree::getNumberOfNodes(void) const
+{
     
     return topology->getNumberOfNodes();
 }
 
-size_t Tree::getNumberOfTips(void) const {
+size_t Tree::getNumberOfTips(void) const
+{
     
     return topology->getNumberOfTips();
 }
 
-const TopologyNode& Tree::getInteriorNode(size_t indx) const {
+const TopologyNode& Tree::getInteriorNode(size_t indx) const
+{
     
     return topology->getInteriorNode( indx );
 }
 
-const std::string& Tree::getNewickRepresentation() const {
+const std::string& Tree::getNewickRepresentation() const
+{
     
     return topology->getNewickRepresentation();
 }
 
-TopologyNode& Tree::getRoot(void) {
-    return *topology->getNodes()[topology->getNumberOfNodes()-1];
-}
-
-const TopologyNode& Tree::getRoot(void) const {
+TopologyNode& Tree::getRoot(void)
+{
     return topology->getRoot();
 }
 
-TopologyNode& Tree::getTipNode(size_t indx) {
+const TopologyNode& Tree::getRoot(void) const
+{
+    return topology->getRoot();
+}
+
+TopologyNode& Tree::getTipNode(size_t indx)
+{
     return *topology->getNodes()[indx];
 }
 
-const TopologyNode& Tree::getTipNode(size_t indx) const {
+const TopologyNode& Tree::getTipNode(size_t indx) const
+{
     
     return topology->getTipNode(indx);
 }
 
+TopologyNode& Tree::getTipNodeWithName( const std::string &n )
+{
+    return topology->getTipNodeWithName( n );
+}
 
-double Tree::getTmrca(const TopologyNode &n) {
+const TopologyNode& Tree::getTipNodeWithName( const std::string &n ) const
+{
+    
+    return topology->getTipNodeWithName( n );
+}
+
+std::vector<TopologyNode*> Tree::getTipNodesWithSpeciesName( const std::string &n )
+{
+    return topology->getTipNodesWithSpeciesName( n );
+}
+
+
+double Tree::getTmrca(const TopologyNode &n)
+{
     
     return topology->getRoot().getTmrca( n );
 }
 
 
-TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const {
+TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
+{
     
     return changeEventHandler;
 }
 
 
-const Topology& Tree::getTopology( void ) const {
+const Topology& Tree::getTopology( void ) const
+{
     
     return *topology;
 }
 
 
-bool Tree::hasSameTopology(const RevBayesCore::Tree &t) const {
+bool Tree::hasSameTopology(const RevBayesCore::Tree &t) const
+{
     
     return hasSameTopology( t.getTopology() );
 }
 
 
-bool Tree::hasSameTopology(const RevBayesCore::Topology &t) const {
+bool Tree::hasSameTopology(const RevBayesCore::Topology &t) const
+{
     
     return topology->getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
 }
@@ -312,7 +411,8 @@ void Tree::setTopology(const Topology *t, bool owns)
 
 }
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x)
+{
     
     o << x.getNewickRepresentation();
         

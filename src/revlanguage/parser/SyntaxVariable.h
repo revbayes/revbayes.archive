@@ -6,7 +6,7 @@
 #include "SyntaxElement.h"
 
 #include <iostream>
-#include <list>
+#include <vector>
 
 namespace RevLanguage {
     
@@ -30,20 +30,16 @@ namespace RevLanguage {
         
     public:
         SyntaxVariable(const std::string &n);                                                                                       //!< Global variable
-        SyntaxVariable(const SyntaxVariable& x);                                                                                    //!< Copy constructor
+        SyntaxVariable(const std::string &n, const std::vector<std::string> &ns);                                                                                       //!< Global variable
         
         virtual                            ~SyntaxVariable(void);                                                                   //!< Destructor deletes variable, identifier and index
         
-        // Assignment operator
-        SyntaxVariable&                     operator=(const SyntaxVariable& x);                                                     //!< Assignment operator
-        
         // Basic utility functions
         SyntaxVariable*                     clone(void) const;                                                                      //!< Clone object
-        void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>                    evaluateContent(Environment& env, bool dynamic=false);                                  //!< Get semantic rhs value
-        RevPtr<Variable>                    evaluateLHSContent(Environment& env, const std::string& varType);                       //!< Get semantic lhs value
+        RevPtr<RevVariable>                 evaluateContent(Environment& env, bool dynamic=false);                                  //!< Get semantic rhs value
+        RevPtr<RevVariable>                 evaluateLHSContent(Environment& env, const std::string& varType);                       //!< Get semantic lhs value
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         bool                                isFunctionSafe(const Environment&       env,
@@ -55,7 +51,7 @@ namespace RevLanguage {
     protected:
 
         std::string                         identifier;                                                                             //!< The name of the variable, if identified by name
-        
+        std::vector<std::string>            namespaces;
     };
     
 }

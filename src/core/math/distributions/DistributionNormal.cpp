@@ -73,7 +73,7 @@ double RbStatistics::Normal::lnPdf(double x) {
  *
  * \brief Natural log of normal probability density.
  * \param mu is the mean parameter of the normal. 
- * \param sigma is the variance parameter of the normal. 
+ * \param sigma is the standard deviation parameter of the normal. 
  * \param x is the normal random variable. 
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.

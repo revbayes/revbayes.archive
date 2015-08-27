@@ -25,25 +25,26 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-PomoState::PomoState(void) : DiscreteCharacterState(), state( 0xFF ), virtualPopulationSize ( 10 ) {
+PomoState::PomoState(void) : DiscreteCharacterState(),
+    state( 0xFF ),
+    virtualPopulationSize ( 10 )
+{
     
 }
 
 /** Constructor with virtual population size */
-PomoState::PomoState(unsigned int vps): DiscreteCharacterState(), state( 0xFF ), virtualPopulationSize ( vps ) {
+PomoState::PomoState(unsigned int vps): DiscreteCharacterState(),
+    state( 0xFF ),
+    virtualPopulationSize ( vps )
+{
     
-    
-}
-
-
-/** Copy constructor */
-PomoState::PomoState(const PomoState& s) : DiscreteCharacterState(), state( s.state ), virtualPopulationSize ( s.virtualPopulationSize ) {
     
 }
 
 
 /** Constructor that sets the observation */
-PomoState::PomoState(std::string s) : DiscreteCharacterState() {
+PomoState::PomoState(const std::string &s) : DiscreteCharacterState()
+{
     
     //assert( s <= 15 );
     
@@ -52,11 +53,13 @@ PomoState::PomoState(std::string s) : DiscreteCharacterState() {
 
 
 /** Equals comparison */
-bool PomoState::operator==(const CharacterState& x) const {
+bool PomoState::operator==(const CharacterState& x) const
+{
     
     const PomoState* derivedX = dynamic_cast<const PomoState*>( &x );
     
-    if (derivedX != NULL) {
+    if (derivedX != NULL)
+    {
         return derivedX->state == state;
     }
     
@@ -65,13 +68,15 @@ bool PomoState::operator==(const CharacterState& x) const {
 
 
 /** Not equals comparison */
-bool PomoState::operator!=(const CharacterState& x) const {
+bool PomoState::operator!=(const CharacterState& x) const
+{
     
     return !operator==(x);
 }
 
 
-bool PomoState::operator<(const CharacterState &x) const {
+bool PomoState::operator<(const CharacterState &x) const
+{
     
     const PomoState* derivedX = static_cast<const PomoState*>(&x);
     if ( derivedX != NULL )
@@ -84,53 +89,68 @@ bool PomoState::operator<(const CharacterState &x) const {
 }
 
 
-void PomoState::operator++( void ) {
+void PomoState::operator++( void )
+{
     
     state += 1;
     
 }
 
 
-void PomoState::operator++( int i ) {
+void PomoState::operator++( int i )
+{
     
     state += 1;
     
 }
 
+void PomoState::operator+=( int i )
+{
+    
+    state += i;
+    
+}
 
-void PomoState::operator--( void ) {
+
+void PomoState::operator--( void )
+{
     
     state -= 1;
     
 }
 
 
-void PomoState::operator--( int i ) {
+void PomoState::operator--( int i )
+{
     
     state -= 1;
     
 }
 
+void PomoState::operator-=( int i )
+{
+    
+    state -= i;
+    
+}
 
-void PomoState::addState(std::string symbol) {
+void PomoState::addState(const std::string &symbol)
+{
     
     state = computeState( symbol );
     
 }
 
-void PomoState::addState(char symbol) {
-    
-    state = computeState( boost::lexical_cast<std::string>( symbol )  );
-}
 
-
-PomoState* PomoState::clone( void ) const {
+PomoState* PomoState::clone( void ) const
+{
     
     return new PomoState( *this );
 }
 
 
-unsigned int PomoState::computeState(std::string symbol) const {
+unsigned int PomoState::computeState(const std::string &symbol) const
+{
     /* Example with only ten states:
      A C G T A10C90 A20C80 A30C70...A90C10 A10G90 A20G80...A10T90...C10G90...C10T90...G10T90 
      */
@@ -201,43 +221,50 @@ unsigned int PomoState::computeState(std::string symbol) const {
 }
 
 
-std::string PomoState::getDatatype( void ) const {
+std::string PomoState::getDatatype( void ) const
+{
     
     return "Pomo";
 }
 
 
-unsigned int PomoState::getNumberObservedStates(void) const  {
+unsigned int PomoState::getNumberObservedStates(void) const
+{
     ///PROBABLY DOES NOT WORK FOR POLYMORPHIC STATES.
-    char v = state;     // count the number of bits set in v
-    char c;             // c accumulates the total bits set in v
+
+//    char v = state;     // count the number of bits set in v
+//    char c;             // c accumulates the total bits set in v
+//    
+//    for (c = 0; v; v >>= 1)
+//    {
+//        c += v & 1;
+//    }
     
-    for (c = 0; v; v >>= 1)
-    {
-        c += v & 1;
-    }
-    
-    return (unsigned int)c;
+    return 1;
 }
 
 
-size_t PomoState::getNumberOfStates( void ) const {
+size_t PomoState::getNumberOfStates( void ) const
+{
     
     return 4 + 6 * (virtualPopulationSize - 1);
 }
 
 
-unsigned long PomoState::getState( void ) const {
+unsigned long PomoState::getState( void ) const
+{
     return (unsigned long)state;
 }
 
 
-size_t  PomoState::getStateIndex(void) const {
+size_t  PomoState::getStateIndex(void) const
+{
     return (size_t)state;
 }
 
 
-const std::string& PomoState::getStateLabels( void ) const {
+const std::string& PomoState::getStateLabels( void ) const
+{
     
     static std::string labels = "A C G T ";
     std::string acgt( "ACGT" );
@@ -258,7 +285,18 @@ const std::string& PomoState::getStateLabels( void ) const {
     return labels;
 }
 
-std::string PomoState::getStringValue(void) const  {
+std::string PomoState::getStringValue(void) const
+{
+    
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
     
     int stepSize = 100 / virtualPopulationSize - 1;
     if (state < 5) {
@@ -301,52 +339,27 @@ std::string PomoState::getStringValue(void) const  {
 
 
 
-bool PomoState::isAmbiguous( void ) const {
+bool PomoState::isAmbiguous( void ) const
+{
     
     return getNumberObservedStates() > 1;
 }
 
 
-bool PomoState::isGapState( void ) const {
-    
-    return state == 0x0;
-}
-
-
-void PomoState::setGapState(bool tf) {
-    
-    if ( tf )
-    {
-        state = 0x0;
-    }
-    else
-    {
-        state = 0xF;
-    }
-}
-
-
-void PomoState::setState(size_t pos, bool val) {
-    
-    throw RbException( "setState(size_t pos, bool val) is not implemented in PomoState" );
-}
-
-void PomoState::setState(std::string symbol)
+void PomoState::setState(const std::string &symbol)
 {
     state = computeState( symbol ) ;
 }
 
 
-void PomoState::setState(char symbol) {
-    state = computeState(  boost::lexical_cast<std::string>(symbol) ) ;
-}
-
-void PomoState::setState(size_t stateIndex) {
+void PomoState::setStateByIndex(size_t stateIndex)
+{
     state = (int)stateIndex ;
 }
 
 
-void PomoState::setToFirstState( void ) {
+void PomoState::setToFirstState( void )
+{
     
     state = 1;
     
@@ -354,10 +367,12 @@ void PomoState::setToFirstState( void ) {
 
 void PomoState::setVirtualPopulationSize(unsigned int populationSize)
 {
-    if (populationSize > 100) {
+    if (populationSize > 100)
+    {
         throw RbException( "The virtual population size should be < 100 and should be a divisor of 100." );
     }
-    if (100 % populationSize != 0) {
+    if (100 % populationSize != 0)
+    {
         throw RbException( "The virtual population size should be a divisor of 100." );
     }
     virtualPopulationSize = populationSize;

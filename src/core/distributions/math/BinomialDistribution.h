@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the binomially distribution class.
- *
- * @brief Declaration of the binomial distribution.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef BinomialDistribution_H
 #define BinomialDistribution_H
 
@@ -25,21 +6,34 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Binomial distribution class.
+     *
+     * The Binomial distribution represents a family of distributions defined
+     * on the natural number. The Binomial distribution has 2 parameters:
+     *   n .. the number of trials
+     *   p .. the probability of success
+     * Instances of this class can be associated to stochastic variables.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2013-04-12, version 1.0
+     *
+     */
     class BinomialDistribution : public TypedDistribution<int> {
         
     public:
         BinomialDistribution(const TypedDagNode<int> *n, const TypedDagNode<double> *p);
-        BinomialDistribution(const BinomialDistribution &n);                                                                      //!< Copy constructor
-        virtual                                            ~BinomialDistribution(void);                                              //!< Virtual destructor
+        virtual                                            ~BinomialDistribution(void);                                             //!< Virtual destructor
         
         // public member functions
-        BinomialDistribution*                               clone(void) const;                                                          //!< Create an independent clone
+        BinomialDistribution*                               clone(void) const;                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        
+
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);        //!< Swap a parameter
         
     private:
         

@@ -10,20 +10,19 @@
     
         <name>v</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Create a vector</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            'v' creates a vector of the elements '...'
             </p>
         </description>
 
         <usage>
             <![CDATA[
-             v( Move , Move  )
+            v( Real, Real, ... )
+            v( Real[], Real[], ... )
+            ...
              ]]> 
         </usage>
     
@@ -32,47 +31,41 @@
             <argumentPassingMethod>by-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
             <description>A description of the argument.</description>
-            <valueType>Move</valueType>
-        </argument>
-        <argument>
-            <label></label>
-            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
-            <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
-            <valueType>Move</valueType>
+            <valueType>Any</valueType>
         </argument>
 
-        <returnValue>Move[], WorkspaceObject, RevObject</returnValue>
+        <returnValue>Any[], WorkspaceObject, RevObject</returnValue>
 
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+                'v' creates a vector of the elements '...', which are objects of a common base type. Vector elements may themselves be vectors.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+            > # create a vector, Natural[]
+            > x <- v(1,2,3)
+            > x <- x + 1
+            > x
+               [ 2, 3, 4 ]
+            > y <- v(2,4,6)
+            > # create a vector of Natural[][]
+            > z <- v(x,y)
+            > z
+               [ [ 2, 3, 4 ], [ 2, 4, 6 ] ]
+            > z[0]
+               [ 2, 3, 4 ]
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Michael Landis</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>simplex</entry>
         </seeAlso>
 
 

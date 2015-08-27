@@ -10,14 +10,11 @@
 
         <name>dnBinomial</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Binomial distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Binomial probability distribution of x successes in n trials.
             </p>
         </description>
     
@@ -34,14 +31,14 @@
                 <label>p</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The probability of success.</description>
                 <valueType>Probability</valueType>
             </argument>
             <argument>
                 <label>n</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The number of trials.</description>
                 <valueType>Natural</valueType>
             </argument>
 
@@ -50,32 +47,28 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The binomial probability distribution defines the number of success in n trials,
+                where each trial has the same success probability p. The probability is given by
+                (n choose x) p^(x) * (1-p)^(n-p)
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                    # we create a variable x from a beta distribution
+                    x ~ dnBeta(1,1)
+                    # this variable could be a parameter from a binomial distribution
+                    y ~ dnBinomial(n=10,p)
+                    # now you could clamp the variable y and run an MCMC on it ...
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>dnBeta</entry>
             </seeAlso>
 
 

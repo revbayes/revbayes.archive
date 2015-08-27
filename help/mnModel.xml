@@ -10,14 +10,11 @@
 
         <name>mnModel</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Entire model monitor.</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Monitor all numeric variables of a model and print them to a file.
             </p>
         </description>
     
@@ -26,7 +23,7 @@
 
             <usage>
                 <![CDATA[
-                 mnModel( String filename, Natural printgen = 1, String separator = 	, Bool posterior = TRUE, Bool likelihood = TRUE, Bool prior = TRUE, Bool append = FALSE, Bool stochasticOnly = FALSE )
+                 mnModel( String filename, Natural printgen = 1, String separator = TAB, Bool posterior = TRUE, Bool likelihood = TRUE, Bool prior = TRUE, Bool append = FALSE, Bool stochasticOnly = FALSE )
                  ]]> 
             </usage>
         
@@ -34,14 +31,14 @@
                 <label>filename</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The file to log to.</description>
                 <valueType>String</valueType>
             </argument>
             <argument>
                 <label>printgen</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The frequency of monitoring (i.e. thinning).</description>
                 <valueType>Natural</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -49,7 +46,7 @@
                 <label>separator</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The separator between variables in the file. The default is a tab.</description>
                 <valueType>String</valueType>
                 <defaultValue>	</defaultValue>
             </argument>
@@ -57,7 +54,7 @@
                 <label>posterior</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should the posterior probability be printed too?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -65,7 +62,7 @@
                 <label>likelihood</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should the likelihood be printed too?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -73,7 +70,7 @@
                 <label>prior</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should the prior probability be printed too?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -81,7 +78,7 @@
                 <label>append</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should we append to an existing file?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>FALSE</defaultValue>
             </argument>
@@ -89,7 +86,7 @@
                 <label>stochasticOnly</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Should we monitor stochastic nodes only or deterministic nodes as well?</description>
                 <valueType>Bool</valueType>
                 <defaultValue>FALSE</defaultValue>
             </argument>
@@ -99,32 +96,40 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The model monitor is very useful to automatically collect all variables in a model and monitors them.
+                The model monitor traverses the model graph and collects all numeric variables (e.g., no trees).
+                Numeric variables can be read in and interpreted easier than other variables.
+                The model monitor prints the current value of the variables every printgen iterations to the specified file.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel = model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] = mnModel("output/out.log")
+                    
+                    # Create an mcmc object
+                    mymcmcObject = mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>mnFile</entry>
+                <entry>mnScreen</entry>
+                <entry>mcmc</entry>
             </seeAlso>
 
 

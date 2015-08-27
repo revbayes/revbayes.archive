@@ -49,10 +49,9 @@ namespace RevLanguage {
         
         // Basic utility functions
         SyntaxElement*              clone() const;                                                  //!< Clone object
-        void                        printValue(std::ostream& o) const;                              //!< Print info about object
-
+        
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);          //!< Get semantic value
+        RevPtr<RevVariable>         evaluateContent(Environment& env, bool dynamic=false);          //!< Get semantic value
         void                        finalizeLoop(void);                                             //!< Finalize loop
         const std::string&          getIndexVarName(void) const;                                    //!< Get the name of the index variable
         void                        getNextLoopState(void);                                         //!< Get next state of loop
@@ -67,7 +66,7 @@ namespace RevLanguage {
         SyntaxElement*              inExpression;                                                   //!< The in expression (a vector of values)
         Container*                  stateSpace;                                                     //!< Vector result of 'in' expression
         size_t                      nextIndex;                                                      //!< Next element in vector
-        RevPtr<Variable>            loopVariable;                                                   //!< Smart pointer to the loop variable in the environment
+        RevPtr<RevVariable>         loopVariable;                                                   //!< Smart pointer to the loop variable in the environment
 
     };
     

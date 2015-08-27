@@ -10,14 +10,13 @@
 
         <name>dnACLN</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The autocorrelated, lognormally distributed relaxed-clock model</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This is the constructor function for the autocorrelated, log-normally distributed node rates
+            on a tree. This model was described in Thorne et al. (1998), Kishino et al. (2001), and Thorne &
+            Kishino (2002).
             </p>
         </description>
     
@@ -34,63 +33,118 @@
                 <label>tree</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The time-tree on which the node rates are mapped.</description>
                 <valueType>TimeTree</valueType>
             </argument>
             <argument>
                 <label>sigma</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The variance parameter controlling the degree of autocorrelation among node rates.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>rootRate</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The rate value at the root.</description>
                 <valueType>Real</valueType>
             </argument>
             <argument>
                 <label>scaleValue</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The base-rate of the process.</description>
                 <valueType>RealPos</valueType>
             </argument>
 
             <returnValue>Dist_autocorrelatedLnBranchRates, Distribution__RealPos[], Distribution, RevObject</returnValue>
 
             <details>
-                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This distribution gives a vector of RealPos values that are mapped to the non-root
+            	nodes of a tree. A separate function (aveRateOnBranch) taking this vector and the other ACLN parameters
+            	is used to compute the branch-rates. 
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+	## read in the tree 
+	T <- readTrees("data/bears_dosReis.tre")[1]
+
+	### Load the sequence alignment
+	D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
+	
+	### get helpful variables from the data
+	n_sites <- D.nchar(1)
+	n_taxa <- D.ntaxa()
+	n_branches <- 2 * n_taxa - 2
+	names <- D.names()
+
+	### initialize an iterator for the moves vector
+	mi = 1
+
+	### Specify Yule (pure birth) tree prior
+	birth_rate <- 0.1
+	root_time ~ dnExponential(0.1, offset=35.0) 
+	timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=1.0, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
+	
+	### set up the base-rate parameter of the ACLN model 
+	base_rate <- 0.01
+
+	### set up the variance parameter of the ACLN model 
+	nu <- 0.1
+	
+	### the clock rate at the root of the tree
+	root_rate ~ dnGamma(2.0, 4.0)
+
+	### a vector of the rates at each node
+	### from the ACLN model, which is conditioned on the tree, nu, the root rate, and base rate
+	node_rates ~ dnACLN(timetree, nu, root_rate, base_rate)
+	
+	### the rate at each branch is the average of the rate at each node separated by that branch
+	### a special core function is used to calculate the rate for branch i
+	for(i in 1:n_branches){
+		branch_rates[i] := aveRateOnBranch(node_rates, timetree, root_rate, base_rate, index=i)
+	}
                  ]]>
 
             </example>
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                    Kishino H, Thorne JL, Bruno W. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution. Mol Biol Evol. 18:352–361.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
+             </reference>
+            <reference>
+                <citation>
+                    Rannala B, Yang Z. 2003. Bayes estimation of species divergence times and ancestral population sizes using DNA sequences from multiple loci. Genetics 164:1645–1656. 
+                </citation>
+             </reference>
+            <reference>
+                <citation>
+                    Thorne J, Kishino H. 2002. Divergence time and evolutionary rate estimation with multilocus data. Syst Biol. 51:689–702.
+                </citation>
+             </reference>
+            <reference>
+                <citation>
+                    Thorne J, Kishino H, Painter IS. 1998. Estimating the rate of evolution of the rate of molecular evolution. Mol Biol Evol. 15:1647–1657.
+                </citation>
+             </reference>
+            <reference>
+                <citation>
+                    Yang Z, Rannala B. 2006. Bayesian estimation of species divergence times under a molecular clock using multiple fossil calibrations with soft bounds. Mol Biol Evol. 23:212–226.
+                </citation>
+             </reference>
 
-            <author>Your name here</author>
+            <author>Tracy A. Heath</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>aveRateOnBranch</entry>
             </seeAlso>
+
 
 
         </constructor-help-entry>

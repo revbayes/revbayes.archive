@@ -10,28 +10,25 @@
     
         <name>clear</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Clear the current workspace.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Clear the current workspace.
             </p>
         </description>
 
         <usage>
             <![CDATA[
-             clear( RevObject  )
+             clear( RevObject x = NULL )
              ]]> 
         </usage>
     
         <argument>
-            <label></label>
+            <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>This argument will be removed.</description>
             <valueType>RevObject</valueType>
         </argument>
 
@@ -40,32 +37,34 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            The clear function removes either a given variable or all variables from the workspace.
+            Clearing the workspace is very useful between analysis if you do not want to have
+            old connections between variables hanging around.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             ls()   # check what is in the workspace
+             a <- 1
+             b := exp(a)
+             ls()   # check what is in the workspace
+             clear()
+             ls()   # check what is in the workspace
+             a <- 1
+             b := exp(a)
+             ls()   # check what is in the workspace
+             clear( b )
+             ls()   # check what is in the workspace
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Sebastian Hoehna</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>ls</entry>
         </seeAlso>
 
 

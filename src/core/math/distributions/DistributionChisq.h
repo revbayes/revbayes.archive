@@ -26,11 +26,11 @@ namespace RevBayesCore {
     
         namespace ChiSquare {
         
-            double                      pdf(double v, double x);                                              /*!< Chi-Square(v) probability density */
-            double                      lnPdf(double v, double x);                                            /*!< Chi-Square(v) log_e probability density */
-            double                      cdf(double v, double x);                                              /*!< Chi-Square(v) cumulative probability */
-            double                      quantile(double prob, double v);                                         /*!< Chi-Square(v) quantile */
-            double                      rv(double v, RandomNumberGenerator& rng);                             /*!< Chi-Square(v) random variable */
+            double                      pdf(double df, double x);                                              /*!< Chi-Square(v) probability density */
+            double                      lnPdf(double df, double x);                                            /*!< Chi-Square(v) log_e probability density */
+            double                      cdf(double df, double x);                                              /*!< Chi-Square(v) cumulative probability */
+            double                      quantile(double prob, double df);                                         /*!< Chi-Square(v) quantile */
+            double                      rv(double df, RandomNumberGenerator& rng);                             /*!< Chi-Square(v) random variable */
         }
     }
 }

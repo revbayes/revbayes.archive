@@ -10,14 +10,13 @@
 
         <name>dnUniform</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
+        <alias>dnUnif</alias>
 
-        <title>Some title you want to give this function</title>
+        <title>Uniform distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Uniform probabability density.
             </p>
         </description>
     
@@ -34,7 +33,7 @@
                 <label>lower</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The lower bound.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>0</defaultValue>
             </argument>
@@ -42,7 +41,7 @@
                 <label>upper</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The upper bound.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -52,32 +51,42 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The uniform probability density is given by
+                f(x) = 1 / (b-a)
+                if x is within a and b and 0 otherwise.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                    # draw some random numbers
+                    a <- runif(10,0,1)
+                    # compute the max
+                    max(a)
+                    
+                    # now let us create a random variable
+                    x ~ dnUniform(-10,10)
+                    # note that the type is a real number
+                    type(x)
+                    
+                    # now let us create another random variable
+                    y ~ dnUniform(0,10)
+                    # note that the type is a positive real number
+                    type(y)
+                    
+                    # now let us create yet another random variable
+                    z ~ dnUniform(0,1)
+                    # note that the type is a probability because it is between 0 and 1
+                    type(z)
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>dnNormal</entry>
             </seeAlso>
 
 

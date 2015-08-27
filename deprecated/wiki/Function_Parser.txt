@@ -1,0 +1,69 @@
+All parser functions in the RevLanguage need to derive from RbFunction. The functions are registered in RbRegister at the workspace with a default instance and a name. You can also register the same function with multiple different names (e.g. 'q()' and 'quit()'). Functions can also have the same name, but then they need to have different arguments (function overloading). Here we will describe the important features when you want to write your own function. The first example is for non-templated functions. For templated functions, please see further below. As a template you might copy most functionality from Func_ls. 
+
+1) Create a new class (header file and cpp usually) which derives from RbFunction. 2) Implement all functions that you have to overwrite (from RbObject and RbFunction). Please read about the function which need overwriting in RbObject above. 
+
+_Functions you have to overwrite:_
+
+**executeFunction()**: Here is were all the action happens. This function is called when the return value of the function needs to be reevaluated. You should either implement all the content in here or call the corresponding function from here. You can obtain the arguments for the function in two ways: 1) from the variable pointers which you have stored as attributes of the class, e.g. `const Real& x = static_cast<const Real&>( argX.getValue() );` or from the vector of arguments, e.g. `const Real& x = static_cast<const Real&>( args[0].getValue() );`. Note, the order (index of the argument) is given by the order you specified the argument rules, i.e. the argument which matches rule 1 will be in `args[0]`, the argument matching rule 2 in `args[1]` etc. Note, We use pass-by-value, so your function cannot change the arguments. 
+
+**getArgumentRules()**: Here you have to specify the argument rules for this function. 
+    
+    const ArgumentRules& MyClass::getArgumentRules( void ) {
+    	static ArgumentRules myRules = ArgumentRules();
+    	static bool rulesSet = false;
+    	if ( !rulesSet) {
+    		myRules.push_back( new ValueRule( "nameOfArgument", ClassOfTheArgument::getTypeSpec() ) );
+    		...
+    		rulesSet = true;
+    	}
+    
+    	return myRules;
+    }
+    
+
+We currently have the following types of argument rules: 
+
+  * ValueRule: This is the standard rule which should work in almost all situations. The rule specifies that you expect an argument of the given type or which possibly can be converted into the type. 
+  * Ellipsis: The ellipsis (`...`) is used when you expect an unknown number of arguments, e.g. the vector constructor `v(1,2,3,4)`. The ellipsis arguments have no name, which you need to remember when you catch the arguments in `setArgumentVariable()`. Furthermore, the ellipsis needs to be always the last rule. If a function is called which has an ellipsis argument, then no default values can be used. That means, you need to pass in an argument for every rule! 
+  * OptionRule: The option rule provides a set of possible (string) values which you expect as arguments, other values are not excepted by the parser then. 
+  * RangeRule: The range rule specifies an upper and lower limit for values you expect. 
+
+If you are unsure whether to expect a single value or a vector of values, you can specify the rule to receive a vector of values. Then, the parser will make sure that you will get a vector of values, even if the user called the function with a single, plain (i.e. non-vector type) element. The parser will simple create a new value of the vector type with only a single element. Note, this might be not type safe in the current implementation for dynamic DAG evaluation. Also note, that we have strong type checking, that means that we only allow the expected type, a derived class of the type, or a constant object which can be converted into the required type. 
+
+**getReturnType()**: Here you specify the return type of the function. The return type is used in the DAG to make sure that value resulting from this function can be used as arguments of other function and that the types match. Hence, here you should return the guaranteed return type. 
+
+**setArgumentVariable()**: Here you have to catch the setting of argument variables. The name of the variable will be the name you specified in the argument rules. Ellipsis arguments come with a blank name (`""`) and they are always the last arguments. Though, they are inserted one by one, which means that you might want to store the variables in a vector. Even though the arguments are stored in the vector of arguments automatically (see `setArgument()` below) you might want to store the arguments internally for faster access in a class attribute. The attribute should be of type RbConstVariablePtr, or const Variable* if you take care of the reference counter increase and decrease manually. You cannot store the arguments in their plain types because argument values change dynamically (yes, we create new object all the time). Using variable pointers will make sure you always have the updated argument value. 
+
+  
+_Functions you can overwrite:_
+
+**throws()**: You should just return whether this function might throw an error (true) or not (false). 
+
+**clearArguments()**: This function is called automatically by the function `clear()`. If you store arguments somewhere, especially in a vector and just keep adding arguments when the get passed in (this is usually the case for the ellipsis [...] argument rules), then you need to clear these arguments now. If you don't have arguments or you just replace the arguments when they come in, then you can refrain from doing anything. The parser should set always all arguments before 'execute()' is called. 
+
+  
+_Functions you probably should not overwrite:_
+
+**checkArguments()**: This functions checks if the arguments match the argument rules. We have implemented a quite sophisticated way of dealing with type checking so that you should not have to overwrite this function. Only the distribution function currently does it (might be changed later). 
+
+**clear()**: This function clears the vector of arguments and then calls the 'clearArguments()' which the derived classes could overwrite. That means, you really should not overwrite this function. 
+
+**execute()**: We have currently a two call paradigm for executing function. The current version makes it redundant, but we might need it in the future. If not, the two call mechanism might disappear. Currently we return a RbLanguageObject in every function, but there might be function, such as member functions, which return DAG nodes. Then, the `executeFunction()` will be the simple implementation which returns an RbLanguageObject. The default implementation of `execute()` wraps the return value of `executeFunction()` into a constant DAG node. 
+
+**getArguments()**: This returns the vector of arguments, which the deterministic nodes needs when it is created to finds its parents. You probably should not overwrite this function, except if you tangled with the function 'setArguments()' or the vector of arguments. 
+
+**processArguments()**: This function is pretty much the same as `checkArguments()` except that it marks the arguments that they are used now in a function which requires the given type, and hence reassignment with invalid types are not allowed anymore. You really shouldn't overwrite this function. 
+
+**setArgument()**: This function add the current argument to the vector of arguments and calls `setArgumentVariable()` so that the derived class stores the variable appropriately. 
+
+  
+3) Register you function in RbRegister, e.g. 
+    
+    void Workspace::initializeGlobalWorkspace(void) {
+    	...
+    	addFunction( "myFunctionName", new MyFunctionClass() );
+    	...
+    }
+    
+
+4) Test your function in RevBayes. 

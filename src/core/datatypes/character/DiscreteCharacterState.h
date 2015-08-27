@@ -18,7 +18,9 @@
 #define DiscreteCharacterState_H
 
 #include "CharacterState.h"
+
 #include <ostream>
+#include <string>
 #include <vector>
 
 namespace RevBayesCore {
@@ -32,28 +34,29 @@ namespace RevBayesCore {
         virtual bool                            operator!=(const CharacterState& x) const = 0;      //!< Inequality
         virtual void                            operator++() = 0;                                   //!< Increment
         virtual void                            operator++(int i) = 0;                              //!< Increment
+        virtual void                            operator+=(int i) = 0;                              //!< Increment
         virtual void                            operator--() = 0;                                   //!< Decrement
         virtual void                            operator--(int i) = 0;                              //!< Decrement
+        virtual void                            operator-=(int i) = 0;                              //!< Decrement
  
         virtual DiscreteCharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
 
         // Discrete character observation functions
-        virtual void                            addState(char symbol) = 0;                          //!< Add a character state to the set of character states
+        virtual void                            addState(const std::string &symbol) = 0;            //!< Add a character state to the set of character states
         virtual unsigned int                    getNumberObservedStates(void) const = 0;            //!< How many states are observed for the character
+        virtual size_t                          getNumberOfStates(void) const = 0;                  //!< Get the number of discrete states for the character
         virtual const std::string&              getStateLabels(void) const = 0;                     //!< Get valid state labels
         virtual std::string                     getStringValue(void) const = 0;                     //!< Get a representation of the character as a string
-        virtual size_t                          getNumberOfStates(void) const = 0;                  //!< Get the number of discrete states for the character
         virtual unsigned long                   getState(void) const = 0;                           //!< Get the discrete observation
         virtual size_t                          getStateIndex(void) const = 0;                      //!< Get the state index
-        virtual bool                            isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
         virtual bool                            isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
-        virtual void                            setGapState(bool tf) = 0;                           //!< Set whether this is a gapped character
         virtual void                            setToFirstState(void) = 0;                          //!< Set this character state to the first (lowest) possible state
-        virtual void                            setState(char symbol) = 0;                          //!< Set the discrete observation
-        virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
+        virtual void                            setStateByIndex(size_t index) = 0;                  //!< Set the discrete observation
+        virtual void                            setState(const std::string &symbol) = 0;            //!< Set the discrete observation
+//      virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
     
     protected:
-                                                DiscreteCharacterState() {}                         //!< Constructor
+                                                DiscreteCharacterState(void) {}                     //!< Constructor
 
     };
     

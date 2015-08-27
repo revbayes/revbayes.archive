@@ -9,8 +9,43 @@
 #include "CharacterState.h"
 
 
+using namespace RevBayesCore;
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const CharacterState& x) {
+
+CharacterState::CharacterState() :
+    isGap( false ),
+    isMissing( false )
+{
+    
+}
+
+
+bool CharacterState::isGapState( void ) const
+{
+    return isGap;
+}
+
+
+bool CharacterState::isMissingState( void ) const
+{
+    return isMissing;
+}
+
+
+void CharacterState::setGapState( bool tf )
+{
+    isGap = tf;
+}
+
+
+void CharacterState::setMissingState( bool tf )
+{
+    isMissing = tf;
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const CharacterState& x)
+{
     o << x.getStringValue();
     
     return o;

@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_setwd, which is
- * the function used to get the type of a variable.
- *
- * @brief Implementation of Func_quit
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2012-09-07
- *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_setwd.h"
@@ -31,7 +12,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_setwd::Func_setwd( void ) : Function()
+Func_setwd::Func_setwd( void ) : Procedure()
 {
     
 }
@@ -46,7 +27,7 @@ Func_setwd* Func_setwd::clone( void ) const
 
 
 /** Execute function */
-RevPtr<Variable> Func_setwd::execute( void )
+RevPtr<RevVariable> Func_setwd::execute( void )
 {
     
     const std::string &wd = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();

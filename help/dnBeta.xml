@@ -10,14 +10,11 @@
 
         <name>dnBeta</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Beta distribution</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The Beta probability distribution.
             </p>
         </description>
     
@@ -34,14 +31,14 @@
                 <label>alpha</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The alpha parameter.</description>
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
                 <label>beta</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The beta parameter.</description>
                 <valueType>RealPos</valueType>
             </argument>
 
@@ -50,32 +47,28 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The Beta distribution is a probability distribution defined on 0 to 1.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                 # we create a variable x from a beta distribution
+                 x ~ dnBeta(1,1)
+                 # this variable could be a parameter from a binomial distribution
+                 y ~ dnBinomial(n=10,p)
+                 # now you could clamp the variable y and run an MCMC on it ...
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>dBeta</entry>
+                <entry>rBeta</entry>
+                <entry>dnDirichlet</entry>
             </seeAlso>
 
 

@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "Func_sqrt.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -16,7 +8,8 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_sqrt::Func_sqrt( void ) : Function( ) {
+Func_sqrt::Func_sqrt( void ) : TypedFunction<RealPos>( )
+{
     
 }
 
@@ -28,16 +21,13 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 }
 
 
-RevPtr<Variable> Func_sqrt::execute() {
+RevBayesCore::TypedFunction<double>* Func_sqrt::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::SqrtFunction* f = new RevBayesCore::SqrtFunction( arg );
     
-    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
-    
-    RealPos* value = new RealPos( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -71,15 +61,6 @@ const TypeSpec& Func_sqrt::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-const TypeSpec& Func_sqrt::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

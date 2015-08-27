@@ -35,8 +35,6 @@ namespace RevLanguage {
         MethodTable(MethodTable* parent = NULL);                                            //!< Constructor of empty table
         virtual         ~MethodTable() {}                                                   //!< Virtual destructor
 
-        // Assignment operator
-        MethodTable&    operator=(const MethodTable& x);                                    //!< Assignment operator
 
         // Basic utility functions
         MethodTable*    clone(void) const { return new MethodTable(*this); }                //!< Clone object

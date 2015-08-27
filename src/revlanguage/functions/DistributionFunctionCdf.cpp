@@ -23,7 +23,10 @@
 using namespace RevLanguage;
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : Function(), templateObject( d ), templateObjectPositive( NULL ) {
+DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : TypedFunction<Probability>(),
+    templateObject( d ),
+    templateObjectPositive( NULL )
+{
     
     argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
@@ -33,7 +36,10 @@ DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : 
 }
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution *d ) : Function(), templateObject( NULL ), templateObjectPositive( d ) {
+DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution *d ) : TypedFunction<Probability>(),
+    templateObject( NULL ),
+    templateObjectPositive( d )
+{
     
     argRules.push_back( new ArgumentRule("x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
@@ -46,7 +52,7 @@ DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution
 
 
 /** Constructor */
-DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& obj) : Function(obj), argRules( obj.argRules )  {
+DistributionFunctionCdf::DistributionFunctionCdf(const DistributionFunctionCdf& obj) : TypedFunction<Probability>(obj), argRules( obj.argRules )  {
     
     if ( obj.templateObject != NULL )
     {
@@ -107,8 +113,7 @@ DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
 }
 
 
-/** Execute function: we reset our template object here and give out a copy */
-RevPtr<Variable> DistributionFunctionCdf::execute( void )
+RevBayesCore::TypedFunction<double>* DistributionFunctionCdf::createFunction( void ) const
 {
     
     RevBayesCore::ContinuousDistribution *d = NULL;
@@ -123,7 +128,7 @@ RevPtr<Variable> DistributionFunctionCdf::execute( void )
         
             if ( args[i].isConstant() )
             {
-                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const RevVariable>( (const RevVariable*) args[i].getVariable() ) );
             }
             else
             {
@@ -145,7 +150,7 @@ RevPtr<Variable> DistributionFunctionCdf::execute( void )
             
             if ( args[i].isConstant() )
             {
-                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+                copyObject->setConstParameter( args[i].getLabel(), RevPtr<const RevVariable>( (const RevVariable*) args[i].getVariable() ) );
             }
             else
             {
@@ -161,11 +166,8 @@ RevPtr<Variable> DistributionFunctionCdf::execute( void )
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::CummulativeDistributionFunction* f = new RevBayesCore::CummulativeDistributionFunction( arg, d );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
-    Probability* value = new Probability( detNode );
-    
-    return new Variable( value );
+    return f;
 }
 
 
@@ -198,11 +200,4 @@ const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& DistributionFunctionCdf::getReturnType(void) const {
-    
-    return Probability::getClassTypeSpec();
 }

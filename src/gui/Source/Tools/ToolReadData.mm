@@ -4,16 +4,21 @@
 #include <string>
 #include "CharacterState.h"
 #include "AbstractCharacterData.h"
+#include "ModelVector.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
-#include "RlAbstractCharacterData.h"
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
+#include "RlStandardState.h"
 #include "Workspace.h"
 #include "WorkspaceVector.h"
+#include "RlAbstractCharacterData.h"
+#include "RlHomologousDiscreteCharacterData.h"
+#include "RlNonHomologousDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
 
 #import "AnalysisView.h"
 #import "InOutlet.h"
@@ -335,7 +340,9 @@
     // formatted string to the parser
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
+    //std::string line = variableName + " = readDiscreteCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
+    std::string line = variableName + " = readCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
+
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -355,51 +362,106 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const RevLanguage::WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
+    const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
 
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const RevLanguage::AbstractCharacterData *rlan = &(*dnc)[i];
+            const RevLanguage::AbstractCharacterData* an = &(*dnc)[i];
             RbData* newMatrix = NULL;
             
-            // DNA
-            if ( NULL == newMatrix )
+            // aligned DNA
+            if ( newMatrix == NULL )
                 {
-                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
-                const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( an );
+                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *>( an );
                 if ( cd != NULL )
                     {
                     std::string type = "DNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
                     }
                 }
             
-            // RNA
-            if ( NULL == newMatrix ) 
+            // aligned RNA
+            if ( newMatrix == NULL )
                 {
-                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
-                const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( an );
+                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *>( an );
                 if ( cd != NULL )
                     {
                     std::string type = "RNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
                     }
                 }
             
-            // Amino-Acid
-            if ( NULL == newMatrix ) 
+            // aligned Amino-Acid
+            if ( newMatrix == NULL )
                 {
-                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
-                const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( an );
+                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *>( an );
                 if ( cd != NULL )
                     {
                     std::string type = "Protein";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
                     }
                 }
+
+            // unaligned DNA
+            if ( newMatrix == NULL )
+                {
+                const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::DnaState> *>( an );
+                if ( cd != NULL )
+                    {
+                    std::string type = "DNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+                    }
+                }
+            
+            // unaligned RNA
+            if ( newMatrix == NULL )
+                {
+                const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::RnaState> *>( an );
+                if ( cd != NULL )
+                    {
+                    std::string type = "RNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+                    }
+                }
+            
+            // unaligned Amino-Acid
+            if ( newMatrix == NULL )
+                {
+                const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *>( an );
+                if ( cd != NULL )
+                    {
+                    std::string type = "Protein";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+                    }
+                }
+
+            // Standard
+            if ( newMatrix == NULL )
+                {
+                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *>( an );
+                if ( cd != NULL )
+                    {
+                    std::string type = "Standard";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+                    }
+                }
+
+            // Continuous
+            if ( newMatrix == NULL )
+                {
+                const RevLanguage::ContinuousCharacterData *cd = dynamic_cast<const RevLanguage::ContinuousCharacterData *>( an );
+                if ( cd != NULL )
+                    {
+                    std::string type = "Continuous";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+                    }
+                }
+
+
+
                 
             if (newMatrix == NULL)
                 {

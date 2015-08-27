@@ -10,14 +10,11 @@
     
         <name>fnDiscretizeGamma</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Compute a discretize gamma distribution</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The discretized gamma distribution gives the quantiles of the gamma distribution.
             </p>
         </description>
 
@@ -31,28 +28,28 @@
             <label>shape</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The shape parameter of the gamma distribution.</description>
             <valueType>RealPos</valueType>
         </argument>
         <argument>
             <label>rate</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The rate parameter of the gamma distribution.</description>
             <valueType>RealPos</valueType>
         </argument>
         <argument>
             <label>num_cats</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>Number of categories in which to break the distribution.</description>
             <valueType>Integer</valueType>
         </argument>
         <argument>
             <label>median</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>Should we use the median or the mean within each quantile.</description>
             <valueType>Bool</valueType>
             <defaultValue>FALSE</defaultValue>
         </argument>
@@ -62,32 +59,31 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            In some cases you want to use the quantiles of a distribution instead of estimating the continuous value of a distribution.
+            You could compute the k quantiles yourself. This function, however, provides you a convenient access to compute the gamma quantiles (discretized gamma)
+            because it is so often used for modeling rate variation among sites.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+                s <- 2
+                r <- 2
+                a := fnDiscretizeGamma(shape=s,rate=r,num_cats=4)
+                a
+                mean(a)
+                s <- 4
+                a
+                mean(a)
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Sebastian Hoehna</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>dnGamma</entry>
         </seeAlso>
 
 

@@ -10,20 +10,17 @@
     
         <name>mapTree</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Maximum a posteriori tree</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            Finds the tree with the highest posterior probability.
             </p>
         </description>
 
         <usage>
             <![CDATA[
-             mapTree( TreeTrace__TimeTree treetrace, String file )
+             mapTree( TreeTrace treetrace, String file )
              ]]> 
         </usage>
     
@@ -31,8 +28,8 @@
             <label>treetrace</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
-            <valueType>TreeTrace__TimeTree</valueType>
+            <description>The tree trace in which we will search for the tree with the highest posterior probability.</description>
+            <valueType>TreeTrace</valueType>
         </argument>
         <argument>
             <label>file</label>
@@ -42,37 +39,29 @@
             <valueType>String</valueType>
         </argument>
 
-        <returnValue>TimeTree, RevObject</returnValue>
+        <returnValue>Tree, RevObject</returnValue>
 
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            This function searches through the tree trace and finds the topology with the most occurrences (highest posterior probability).
+            Then, we use the mean branch lengths or node ages to build the tree.
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             treetrace = readTreeTrace("output/primates.trees", treetype="non-clock")
+             mapTree(treetrace,"output/primates_map.tree")
              ]]>
 
         </example>
 
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+        <author>Sebastian Hoehna</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>readTreeTrace</entry>
         </seeAlso>
 
 

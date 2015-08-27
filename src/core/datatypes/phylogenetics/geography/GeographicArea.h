@@ -28,6 +28,7 @@ namespace RevBayesCore {
         double                                                                  getLatitude(void);
         double                                                                  getLongitude(void);
         double                                                                  getAltitude(void);
+        const std::vector<double>&                                              getLatlon(void);
         double                                                                  getSize(void);
         int                                                                     getState(void);
         const std::vector<double>&                                              getDispersalValues(void);
@@ -46,6 +47,7 @@ namespace RevBayesCore {
         int                         state;
         double                      latitude;
         double                      longitude;
+        std::vector<double>         latlon;
         double                      altitude;
         double                      size;
         std::vector<double>         dispersalValues;

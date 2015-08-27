@@ -3,7 +3,7 @@
 #include "RlFunction.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "Variable.h"
+#include "RevVariable.h"
 
 #include <cstdio>
 
@@ -11,22 +11,26 @@ using namespace RevLanguage;
 
 
 /** Construct environment with NULL parent */
-Environment::Environment(void) :
+Environment::Environment(const std::string &n) :
     functionTable(),
     numUnnamedVariables(0),
     parentEnvironment(NULL),
-    variableTable()
+    variableTable(),
+    children(),
+    name( n )
 {
     
 }
 
 
 /** Construct environment with parent */
-Environment::Environment(Environment* parentEnv) :
+Environment::Environment(Environment* parentEnv, const std::string &n) :
     functionTable(&parentEnv->getFunctionTable()),
     numUnnamedVariables(0),
     parentEnvironment(parentEnv),
-    variableTable()
+    variableTable(),
+    children(),
+    name( n )
 {
     
 }
@@ -37,7 +41,9 @@ Environment::Environment(const Environment &x) :
     functionTable( x.functionTable ),
     numUnnamedVariables( x.numUnnamedVariables ),
     parentEnvironment( x.parentEnvironment ),
-    variableTable( x.variableTable )
+    variableTable( x.variableTable ),
+    children(),
+    name( x.name )
 {
     // Make a deep copy of the variable table by making sure we have clones of the variables
     for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
@@ -54,6 +60,13 @@ Environment::~Environment()
     // Clear the variable table and function table
     clear();
     
+    
+    for (std::map<std::string,Environment*>::iterator it = children.begin(); it != children.end(); ++it)
+    {
+        delete it->second;
+    }
+    
+    children.clear();
 }
 
 
@@ -77,7 +90,7 @@ Environment& Environment::operator=(const Environment &x)
 
 
 /** Add alias to variable to frame. */
-void Environment::addAlias( const std::string& name, const RevPtr<Variable>& theVar )
+void Environment::addAlias( const std::string& name, const RevPtr<RevVariable>& theVar )
 {
     
     /* Throw an error if the name string is empty. */
@@ -95,11 +108,7 @@ void Environment::addAlias( const std::string& name, const RevPtr<Variable>& the
     }
     
     /* Insert new alias to variable in variable table (we do not and should not name it) */
-    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
-    
-#ifdef DEBUG_WORKSPACE
-    printf("Inserted \"%s\" (alias of \"%s\") in frame\n", name.c_str(), theVar->getName() );
-#endif
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
     
 }
 
@@ -110,6 +119,9 @@ bool Environment::addFunction(const std::string& name, Function* func)
 
     if (existsVariable(name))
     {
+        // free memory
+        delete func;
+        
         throw RbException("There is already a variable named '" + name + "' in the workspace");
     }
     
@@ -122,8 +134,8 @@ bool Environment::addFunction(const std::string& name, Function* func)
 /** Add an empty (NULL) variable to frame. */
 void Environment::addNullVariable( const std::string& name )
 {
-    // Create a new variable object
-    RevPtr<Variable> var = RevPtr<Variable>( new Variable( NULL ) );
+    // Create a new RevVariable object
+    RevPtr<RevVariable> var = RevPtr<RevVariable>( new RevVariable( NULL ) );
     
     // Add the variable to the table
     addVariable( name, var );
@@ -131,7 +143,7 @@ void Environment::addNullVariable( const std::string& name )
 
 
 /** Add reference to variable to frame. */
-void Environment::addReference( const std::string& name, const RevPtr<Variable>& theVar )
+void Environment::addReference( const std::string& name, const RevPtr<RevVariable>& theVar )
 {
     
     /* Throw an error if the name string is empty. */
@@ -149,19 +161,15 @@ void Environment::addReference( const std::string& name, const RevPtr<Variable>&
     }
     
     /* Insert new reference variable in variable table */
-    RevPtr<Variable> theRef = new Variable( theVar );
-    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theRef ) );
+    RevPtr<RevVariable> theRef = new RevVariable( theVar );
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theRef ) );
     theRef->setName( name );
-    
-#ifdef DEBUG_WORKSPACE
-    printf("Inserted \"%s\" in frame\n", name.c_str());
-#endif
     
 }
 
 
 /** Add variable to frame. */
-void Environment::addVariable( const std::string& name, const RevPtr<Variable>& theVar )
+void Environment::addVariable( const std::string& name, const RevPtr<RevVariable>& theVar )
 {
     
     /* Throw an error if the name string is empty. */
@@ -178,13 +186,9 @@ void Environment::addVariable( const std::string& name, const RevPtr<Variable>& 
         throw RbException( "Variable " + name + " already exists in frame" );
     }
     
-    /* Insert new variable in variable table */
-    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
+    /* Insert new RevVariable in variable table */
+    variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
     theVar->setName( name );
-
-#ifdef DEBUG_WORKSPACE
-    printf("Inserted \"%s\" in frame\n", name.c_str());
-#endif
 
 }
 
@@ -192,8 +196,8 @@ void Environment::addVariable( const std::string& name, const RevPtr<Variable>& 
 /** Add variable to frame from a "naked" Rev object. */
 void Environment::addVariable(const std::string& name, RevObject* obj)
 {
-    // Create a new variable object
-    RevPtr<Variable> var = new Variable( obj ) ;
+    // Create a new RevVariable object
+    RevPtr<RevVariable> var = new RevVariable( obj ) ;
 
     // Add the variable to the table
     addVariable( name, var );
@@ -214,30 +218,6 @@ Environment* Environment::clone() const
  */
 void Environment::clear(void)
 {
-#if defined ( DEBUG_MEMORY )
-    if ( variableTable.size() > 0 )
-    {
-        std::cerr << std::endl;
-        std::cerr << "Variables to delete:" << std::endl;
-        for ( VariableTable::iterator it = variableTable.begin(); it != variableTable.end(); ++it )
-        {
-            std::cerr << "variable: '" << (it)->second->getName() << "' <" << (it)->second << ">" << std::endl;
-            std::cerr << "refCount: " << (it)->second->getReferenceCount() << std::endl;
-        }
-        std::cerr << std::endl;
-    }
-
-    if ( functionTable.size() > 0 )
-    {
-        std::cerr << std::endl;
-        std::cerr << "Functions to delete:" << std::endl;
-        for ( FunctionTable::iterator it = functionTable.begin(); it != functionTable.end(); ++it )
-        {
-            std::cerr << "function: '" << (it)->second->getName() << "' <" << (it)->second << ">" << std::endl;
-        }
-        std::cerr << std::endl;
-    }
-#endif
 
     // Empty the variable table. It is as easy as this because we use smart pointers...
     variableTable.clear();
@@ -250,7 +230,7 @@ void Environment::clear(void)
 /** Erase a variable by name given to it in the frame. */
 void Environment::eraseVariable(const std::string& name)
 {
-    std::map<std::string, RevPtr<Variable> >::iterator it = variableTable.find(name);
+    std::map<std::string, RevPtr<RevVariable> >::iterator it = variableTable.find(name);
 
     if ( it == variableTable.end() )
     {
@@ -266,44 +246,13 @@ void Environment::eraseVariable(const std::string& name)
 
 
 /**
- * Erase a variable by its address, which is the value and not the key in the variable
- * map. Assuming that the variable maps are not huge and that we are not doing this kind
- * of operation in performance-critical code, we simply use a linear search of the map
- * to find the variable address here.
+ * Erase a variable by its address. We just delegate the call to erase by name.
  */
-void Environment::eraseVariable(const RevPtr<Variable>& var) {
-    
-    VariableTable::iterator it;
-    for ( it=variableTable.begin(); it != variableTable.end(); ++it )
-    {
-        
-        if ( it->second == var )
-        {
-            break;
-        }
-        
-    }
-    
-    if ( it == variableTable.end() )
-    {
-        std::ostringstream msg;
-        msg << "Variable with address '" << var << "' does not exist in frame";
-        throw RbException( msg );
-    }
-    
-    // Delegate call
-    eraseVariable( it->first );
-}
-
-
-/**
- * Execute function to get its value. This will either return a constant value or a deterministic value
- * depending on the return type of the function.
- */
-RevPtr<Variable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
+void Environment::eraseVariable(const RevPtr<RevVariable>& var)
 {
     
-    return functionTable.executeFunction(name, args);
+    // Delegate call
+    eraseVariable( var->getName() );
 }
 
 
@@ -357,23 +306,27 @@ std::string Environment::generateUniqueVariableName(void)
 }
 
 
-/** Return variable table (const) */
-const VariableTable& Environment::getVariableTable(void) const
+
+Environment* Environment::getChildEnvironment(const std::string &name)
 {
     
-    return variableTable;
-}
-
-
-/** Return variable table */
-VariableTable& Environment::getVariableTable(void) {
+    std::map<std::string, Environment*>::iterator it = children.find(name);
+    if ( it == children.end() )
+    {
+        Environment *env = new Environment(this, name);
+        children.insert( std::pair<std::string, Environment*>(name, env) );
+        return env;
+    }
+    else
+    {
+        return it->second;
+    }
     
-    return variableTable;
 }
 
 
 /** Get function. This call will throw an error if the name is missing or present multiple times. */
-const Function& Environment::getFunction(const std::string& name)
+Function* Environment::getFunction(const std::string& name)
 {
     
     return functionTable.getFunction(name);
@@ -381,7 +334,7 @@ const Function& Environment::getFunction(const std::string& name)
 
 
 /* Get function. This call will throw an error if the function is missing. */
-Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once)
+const Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const
 {
     
     return functionTable.getFunction(name, args, once);
@@ -427,9 +380,9 @@ const RevObject& Environment::getRevObject(const std::string& name) const
 
 
 /** Return a specific variable */
-RevPtr<Variable>& Environment::getVariable(const std::string& name)
+RevPtr<RevVariable>& Environment::getVariable(const std::string& name)
 {
-    std::map<std::string, RevPtr<Variable> >::iterator it = variableTable.find( name );
+    std::map<std::string, RevPtr<RevVariable> >::iterator it = variableTable.find( name );
     
     if ( variableTable.find(name) == variableTable.end() )
     {
@@ -454,9 +407,9 @@ RevPtr<Variable>& Environment::getVariable(const std::string& name)
 
 
 /** Return a specific variable (const version) */
-const RevPtr<Variable>& Environment::getVariable(const std::string& name) const
+const RevPtr<RevVariable>& Environment::getVariable(const std::string& name) const
 {
-    std::map<std::string, RevPtr<Variable> >::const_iterator it = variableTable.find(name);
+    std::map<std::string, RevPtr<RevVariable> >::const_iterator it = variableTable.find(name);
     
     if ( variableTable.find(name) == variableTable.end() )
     {
@@ -473,6 +426,32 @@ const RevPtr<Variable>& Environment::getVariable(const std::string& name) const
     }
     
     return it->second;
+}
+
+
+/** Return variable table */
+VariableTable& Environment::getVariableTable(void) {
+    
+    return variableTable;
+}
+
+
+/** Return variable table (const) */
+const VariableTable& Environment::getVariableTable(void) const
+{
+    
+    return variableTable;
+}
+
+
+
+bool Environment::hasChildEnvironment(const std::string &name)
+{
+    
+    std::map<std::string, Environment*>::iterator it = children.find(name);
+
+    return it != children.end();
+    
 }
 
 
@@ -505,7 +484,7 @@ bool Environment::isSameOrParentOf(const Environment& otherEnvironment) const
         return false;
     }
     
-    return isSameOrParentOf( otherEnvironment.parentEnvironment );
+    return isSameOrParentOf( *otherEnvironment.parentEnvironment );
 }
 
 
@@ -518,7 +497,7 @@ void Environment::printValue(std::ostream& o) const
     for ( it = variableTable.begin(); it != variableTable.end(); it++ )
     {
         o << (*it).first << " = ";
-        (*it).second->printValue( o );
+        (*it).second->printValue( o, true );
         o << std::endl;
     }
 

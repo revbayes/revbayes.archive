@@ -31,7 +31,7 @@ SyntaxDeterministicAssignment* SyntaxDeterministicAssignment::clone () const
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-void SyntaxDeterministicAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxDeterministicAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating deterministic assignment\n" );
@@ -43,11 +43,11 @@ void SyntaxDeterministicAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variabl
     // of the variable returned by the rhs expression.
     if ( rhs->getName() != "" )
     {
-        lhs->setRevObject( rhs->getRevObject().makeIndirectReference() );
+        lhs->replaceRevObject( rhs->getRevObject().makeIndirectReference() );
     }
     else
     {    
-        lhs->setRevObject( rhs->getRevObject().clone() );
+        lhs->replaceRevObject( rhs->getRevObject().clone() );
         
         // make sure all the implicitly created variables got a correct name
         RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();
@@ -62,7 +62,7 @@ void SyntaxDeterministicAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variabl
 
 /** Should we execute the rhs dynamically? Yes, because this is a deterministic assingment. */
 bool SyntaxDeterministicAssignment::isDynamic( void )
-{
+{   
     return true;
 }
 

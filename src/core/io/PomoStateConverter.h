@@ -11,8 +11,8 @@
 
 #include <map>
 
-#include "AbstractDiscreteCharacterData.h"
-#include "DiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "PomoState.h"
 
 
@@ -31,7 +31,7 @@ namespace RevBayesCore {
     public:
         PomoStateConverter();
         
-        DiscreteCharacterData<PomoState>*  convertData(const AbstractCharacterData &d, const unsigned int virtualPopulationSize, const std::map<std::string, std::string> sequenceNameToSpeciesName);
+        HomologousDiscreteCharacterData<PomoState>*  convertData(const AbstractHomologousDiscreteCharacterData &d, const unsigned int virtualPopulationSize, const std::map<std::string, std::string> sequenceNameToSpeciesName);
         
     private:
         PomoState* convertCounts(std::vector<double> &counts,

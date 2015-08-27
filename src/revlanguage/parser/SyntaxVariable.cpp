@@ -1,8 +1,3 @@
-#include <iostream>
-#include <list>
-#include <string>
-#include <sstream>
-
 #include "Argument.h"
 #include "Environment.h"
 #include "Integer.h"
@@ -14,26 +9,31 @@
 #include "RbOptions.h"
 #include "RlString.h"
 #include "SyntaxFunctionCall.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
 #include "SyntaxVariable.h"
+
+#include <iostream>
+#include <list>
+#include <set>
+#include <string>
+#include <sstream>
 
 using namespace RevLanguage;
 
 
 /** Construct from identifier and index */
-SyntaxVariable::SyntaxVariable( const std::string &n ) :
-SyntaxElement(),
-identifier( n )
+SyntaxVariable::SyntaxVariable( const std::string &n ) : SyntaxElement(),
+    identifier( n )
 {
     
 }
 
 
-/** Deep copy constructor */
-SyntaxVariable::SyntaxVariable(const SyntaxVariable& x) :
-SyntaxElement( x ),
-identifier( x.identifier )
+/** Construct from identifier and index */
+SyntaxVariable::SyntaxVariable( const std::string &n, const std::vector<std::string> &ns ) : SyntaxElement(),
+    identifier( n ),
+    namespaces( ns )
 {
     
 }
@@ -43,20 +43,6 @@ identifier( x.identifier )
 SyntaxVariable::~SyntaxVariable()
 {
     
-}
-
-
-/** Assignment operator */
-SyntaxVariable& SyntaxVariable::operator=( const SyntaxVariable& x )
-{
-    if (&x != this)
-    {
-        SyntaxElement::operator=( x );
-        
-        identifier   = x.identifier;
-    }
-    
-    return (*this);
 }
 
 
@@ -80,28 +66,42 @@ SyntaxVariable* SyntaxVariable::clone () const
  * clones of themselves (temporary variables) rather than themselves,
  * so that they are not included in the DAG.
  */
-RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic)
+RevPtr<RevVariable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic)
 {
     
-    RevPtr<Variable> theVar;
+    RevPtr<RevVariable> theVar;
+    
+    Environment *curEnv = &env;
+    for ( std::vector<std::string>::iterator it = namespaces.begin(); it != namespaces.end(); ++it )
+    {
+        if ( curEnv->hasChildEnvironment(*it) )
+        {
+            curEnv = curEnv->getChildEnvironment( *it );
+        }
+        else
+        {
+            throw RbException("There is no namespace called '" + *it + "'.");
+        }
+        
+    }
+    
     
     // Get variable from the environment (no dynamic version of identifier)
-    theVar = env.getVariable( identifier );
+    theVar = curEnv->getVariable( identifier );
     
     
     if ( theVar->isVectorVariable() )
     {
-        int min = theVar->getMinIndex();
-        int max = theVar->getMaxIndex();
-        if ( min > max )
+        const std::set<int>& indices = theVar->getElementIndices();
+        if ( indices.empty() )
         {
             throw RbException("Cannot create a vector variable with name '" + identifier + "' because it doesn't have elements.");
         }
         std::vector<Argument> args;
-        for (int i=min; i<=max; ++i)
+        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
         {
-            std::string elementIdentifier = identifier + "[" + i + "]";
-            RevPtr<Variable>& elementVar = env.getVariable( elementIdentifier );
+            std::string elementIdentifier = identifier + "[" + *it + "]";
+            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
             // check that the element is not NULL
             if ( elementVar == NULL || elementVar->getRevObject() == RevNullObject::getInstance() )
             {
@@ -109,16 +109,16 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
             }
             args.push_back( Argument( elementVar ) );
         }
-        Function& func = Workspace::userWorkspace().getFunction("v",args,false);
-        func.processArguments(args,false);
+        Function* func = Workspace::userWorkspace().getFunction("v",args,!dynamic).clone();
+        func->processArguments(args,!dynamic);
         
         // Evaluate the function (call the static evaluation function)
-        RevPtr<Variable> funcReturnValue = func.execute();
+        RevPtr<RevVariable> funcReturnValue = func->execute();
         
-        // Clear arguments from function
-        func.clear();
+        // free the memory of our copy
+        delete func;
         
-        theVar->setRevObject( funcReturnValue->getRevObject().clone() );
+        theVar->replaceRevObject( funcReturnValue->getRevObject().clone() );
         
     }
     
@@ -127,7 +127,8 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
         // Check whether we have a control variable and make a clone in that case
         if ( theVar->isWorkspaceVariable() )
         {
-            theVar = new Variable( theVar->getRevObject().clone() );
+            theVar = new RevVariable( theVar->getRevObject().clone() );
+            theVar->setWorkspaceVariableState( true );
         }
         
     }
@@ -145,9 +146,9 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env, bool dynamic
  * do not throw an error if the variable does not exist in the
  * frame; instead, we create and return a new null variable.
  */
-RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std::string& elemType )
+RevPtr<RevVariable> SyntaxVariable::evaluateLHSContent( Environment& env, const std::string& elemType )
 {
-    RevPtr<Variable> theVar;
+    RevPtr<RevVariable> theVar;
     
     // Find or create the variable
     if ( env.existsVariable( identifier ) )
@@ -156,7 +157,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
     }
     else    // add it
     {
-        theVar = new Variable( NULL, identifier );
+        theVar = new RevVariable( NULL, identifier );
         env.addVariable( identifier, theVar );
     }
     
@@ -176,19 +177,6 @@ std::string SyntaxVariable::getFullName( Environment& env ) const
     
     return theName.str();
 }
-
-
-/** Print info about the syntax element */
-void SyntaxVariable::printValue(std::ostream& o) const
-{
-    o << "<" << this << "> SyntaxVariable:" << std::endl;
-    o << "identifier      = \"" << identifier << "\"" << std::endl;
-    
-    o << std::endl;
-    
-}
-
-
 
 
 /**

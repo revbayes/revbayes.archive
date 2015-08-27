@@ -1,0 +1,44 @@
+## Introduction
+
+RevBayes is a statistical phylogenetics software project. It exploits the graphical models framework in developing flexible inference and simulation software for statistical problems in evolutionary biology, phylogenetics, and comparative genomics. 
+
+RevBayes provides the following: 
+
+  * A C++ library for statistical phylogenetics (the **core**) 
+  * *Rev*, an interpreted language for specifying models and analyses. Rev is inspired by R and BUGS.
+
+The **core** library is intended for rapid development of statistical phylogenetics software. It provides a number of functions and objects for reading common formats of phylogenetic data, constructing complex phylogenetic graphical models, and using these models for simulation or inference. There is also a wide range of utility functions and functions for variable transformation. 
+
+The **computing environment** uses its own language, _Rev_, to allow users to interactively build large and complex models based on graphical models concepts, and then run simulation or inference on those models. The language is similar to R and the BUGS language, but it is more of an object-oriented language than a functional language and it is more strongly typed than R. Nevertheless, it is sufficiently similar to R that most R users will find the language quite familiar. Perhaps the most powerful feature of the language is that it allows users to easily construct novel models by combining known model components, such as data types and distributions, into new configurations that have not been explored previously. 
+
+Additionally, we are currently developing a **GUI** for interacting with RevBayes. It is an app for the Mac that provides a graphical environment for the construction of phylogenetic graphical models and for statistical phylogenetics workflows. By dragging and dropping symbols onto your model or workflow panes, you can easily build phylogenetic graphical models and use them in various types of analyses. The GUI is still under construction and will not be widely released quite yet.
+
+## RevBayes Features
+  * Bayesian inference using MCMC and other methods 
+  * Stochastic models of molecular and morphological evolution 
+  * Extendable to complex and hierarchical models 
+  * Flexible use for any combination of model and inference 
+  * Additional tools for pre- and post-analysis 
+
+
+
+## Quick Guide to the Content
+
+This wiki contains the documentation of RevBayes. Check out the following categories: 
+
+  * If you are looking for a general **introduction** to RevBayes, we will soon have general user documentation on our main website. 
+  * We have developed several **tutorials** each explicitly demonstrating how to perform different analyses in RevBayes. These will be curated on our main website, for now, please refer to our [Workshop](https://www.nescent.org/sites/academy/RevBayes_Workshop_Schedule) page.
+  * If you are interested in **developing** for RevBayes, please read the [[Developers]] page. 
+
+  
+
+
+## Software executables and downloads
+
+As usual there are different options for downloading the software. You can download a pre-compiled  [executable](https://github.com/revbayes/revbayes/releases) for some of the common operating systems, a cmake [compilable source version](https://github.com/revbayes/revbayes), or a [virtual machine] (Virtual machine to run RevBayes) where RevBayes is already installed along with tutorial files. If you are very eager you can also try to compile the latest sources from the [git repository](https://github.com/revbayes/revbayes). 
+
+## Users' Forum
+
+For questions, help, inquiries, or general user support, please join our users' forum on google groups:
+
+[[https://groups.google.com/forum/#!forum/revbayes-users]]

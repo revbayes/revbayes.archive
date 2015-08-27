@@ -12,22 +12,8 @@
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Test.h"
-#include "TestFilteredStandardLikelihood.h"
-#include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
-#include "TestCoala.h"
-#include "TestConstantPopCoalescent.h"
-#include "TestCharacterHistory.h"
 #include "TestDPPRelClock.h"
-#include "TestGtrGammaLikelihood.h"
-#include "TestBranchHeterogeneousGtrModel.h"
-#include "TestBranchHeterogeneousHkyModel.h"
-#include "TestBranchHeterogeneousTamura92Model.h"
-#include "TestMixtureBranchHeterogeneousGtrModel.h"
-#include "TestMultispeciesCoalescent.h"
-#include "TestMultispeciesCoalescentCombinatorics.h"
-#include "TestMultispeciesCoalescentWithSequences.h"
-#include "TestPathSampling.h"
-#include "TestPomoModel.h"
+#include "TestFilteredStandardLikelihood.h"
 #include "Tree.h"
 #include "TreeTrace.h"
 
@@ -66,10 +52,15 @@ bool Test::performTests(int argc, const char * argv[]) {
     ////////////////
     // Newer tests
     ////////////////
-    
     try {
         numAttempted += 1;
-        TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood("data/morpho.nex", "data/morpho.tre");
+        TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood(
+#                                                                               if defined(READ_MORPHO_AS_DNA)
+                                                                                    "data/morpho-as-dna.nex",
+#                                                                               else
+                                                                                    "data/morpho.nex",
+#                                                                               endif
+                                                                                "data/morpho.tre");
         if (testFSL.run()) {
             numPassed += 1;
         } else {
@@ -78,18 +69,21 @@ bool Test::performTests(int argc, const char * argv[]) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-#if 0 // commenting out broken tests
-	   
     
 	// #######
     // TAH: working on relaxed-clock models, setting up consistent test files
 	
     /* A DPP relaxed model test */
     try {
-		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
+        //        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
         TestDPPRelClock testDPPRC = TestDPPRelClock("data/test_data_clock_gtr.nex", "data/true_calib_clk.tre", 100000);
-		
-//		testDPPRC.run();
+
+//      numAttempted += 1;
+        //if (testDPPRC.run()) {
+        //    numPassed += 1;
+        //} else {
+        //    std::cerr << "TestDPPRelClock failed!" << std::endl;
+        //}
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -97,148 +91,6 @@ bool Test::performTests(int argc, const char * argv[]) {
 	// #######
 	
 		    
-    // discrete dependence model
-    try
-    {
-        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-//        testDdm.run();
-    }
-    catch (RbException &e)
-    {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    try
-    {
-        TestPathSampling testPs = TestPathSampling();
-        testPs.run();
-    }
-    catch (RbException &e)
-    {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    ////////////////
-    // Older tests
-    ////////////////
-   
-    
-    
-    /* A coalescent model test */
-    try {
-        TestConstantPopCoalescent testCoal = TestConstantPopCoalescent("trees/cetaceans cytb_final1_mrc.tree");
-//        testCoal.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* A coalescent model test */
-    try {
-        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("../../examples/data/primates.tree");
-//        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
-     //  testCoal.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A coalescent model test complete with simulations and inference from sequences */
-    try {
-        TestMultispeciesCoalescentWithSequences testCoal = TestMultispeciesCoalescentWithSequences("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree");
-//        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
-//       testCoal.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* A coalescent model test */
-    try {
-        TestMultispeciesCoalescentCombinatorics testCoal = TestMultispeciesCoalescentCombinatorics();
-//        testCoal.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* A Pomo model test */
-    try {
-        TestPomoModel testPomo = TestPomoModel("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree", 10, 10000);
-         //  testPomo.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A GTR+Gamma model test */
-    try {
-        TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
-        testGtrGamma.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* A branch-heterogeneous Tamura 1992 model test */
-    try {
-          TestBranchHeterogeneousTamura92Model testHeteroT92 = TestBranchHeterogeneousTamura92Model("data/primates.nex", "trees/primates.tree", 1000);
-        //TestBranchHeterogeneousTamura92Model testHeteroT92 = TestBranchHeterogeneousTamura92Model("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
-        
-//        testHeteroT92.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-
-    /* A branch-heterogeneous GTR model test */
-    try {
-      //  TestBranchHeterogeneousGtrModel testHeteroGtr = TestBranchHeterogeneousGtrModel("data/primates.nex", "trees/primates.tree", 1000);
-        TestBranchHeterogeneousGtrModel testHeteroGtr = TestBranchHeterogeneousGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
-
-       // testHeteroGtr.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-	
-    /* A branch-heterogeneous HKY model test */
-    try {
-        TestBranchHeterogeneousHkyModel testHeteroHky = TestBranchHeterogeneousHkyModel("/Users/boussau/Dropbox/HeterogeneousModelsRevBayes/data/SheffieldBeetles.fasta", 10000);
-		
-		//testHeteroHky.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A autocorrelated branch-heterogeneous GTR model test */
-    try {
-        TestAutocorrelatedBranchHeterogeneousGtrModel testAutocorrHeteroGtr = TestAutocorrelatedBranchHeterogeneousGtrModel("data/primates.nex", "trees/primates.tree", 1000);
-//        TestAutocorrelatedBranchHeterogeneousGtrModel testAutocorrHeteroGtr = TestAutocorrelatedBranchHeterogeneousGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
-        
-//        testAutocorrHeteroGtr.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* A mixture branch-heterogeneous GTR model test */
-    try {
-//        TestMixtureBranchHeterogeneousGtrModel testHeteroGtr = TestMixtureBranchHeterogeneousGtrModel("data/primates.nex", "trees/primates.tree", 1000);
-        TestMixtureBranchHeterogeneousGtrModel testHeteroGtr = TestMixtureBranchHeterogeneousGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
-        
-        //testHeteroGtr.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    
-    /* A COALA model test */
-    try {
-        //        TestDPPRelClock testACLNRC = TestDPPRelClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
-        TestCoala testCoala = TestCoala("data/simLG_4species_1.phy", 1000);
-		
-//		testCoala.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
     
 #ifdef USE_LIB_ARMADILLO
     // Admixture graph
@@ -258,8 +110,8 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
 #endif
-
-#endif // commenting out broken tests
+    
+    
     time (&end);
     double dif = difftime(end,start);
     std::cout << "The tests ran in " << dif << " seconds." << std::endl;

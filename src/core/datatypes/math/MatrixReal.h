@@ -18,16 +18,23 @@
 #ifndef MatrixReal_H
 #define MatrixReal_H
 
+#include "Cloneable.h"
+#include "MemberObject.h"
+#include "RbVector.h"
+
 #include <cstddef>
 #include <iostream>
 #include <vector>
 
 namespace RevBayesCore {
     
-    class MatrixReal {
+    class EigenSystem;
+    
+    class MatrixReal : public Cloneable, public MemberObject<RbVector<double> > {
         
     public:
         MatrixReal(void);                       //!< Default constructor required by revlanguage use of this class
+        MatrixReal(size_t n);
         MatrixReal(size_t n, size_t k);
         MatrixReal(size_t n, size_t k, double v);
         MatrixReal(const MatrixReal& m);
@@ -36,8 +43,8 @@ namespace RevBayesCore {
         
         // overloaded operators
         MatrixReal&                             operator=(const MatrixReal& m);
-        std::vector<double>&                    operator[](size_t index);
-        const std::vector<double>&              operator[](size_t index) const;
+        RbVector<double>&                       operator[](size_t index);
+        const RbVector<double>&                 operator[](size_t index) const;
         
         // global operators
         MatrixReal&                             operator+=(double b);                                               //!< operator += for scalar 
@@ -52,25 +59,48 @@ namespace RevBayesCore {
         MatrixReal                              operator+(const MatrixReal& B) const;                               //!< operator + 
         MatrixReal                              operator-(const MatrixReal& B) const;                               //!< operator - 
         MatrixReal                              operator*(const MatrixReal& B) const;                               //!< operator * (matrix multiplication) 
-        std::vector<double>                     operator*(const std::vector<double> &b) const;                                          //!< operator * for scalar 
+        std::vector<double>                     operator*(const std::vector<double> &b) const;                      //!< operator * for vector
         
 
-        std::vector<std::vector<double> >::const_iterator       begin(void) const;
-        std::vector<std::vector<double> >::iterator             begin(void);
-        std::vector<std::vector<double> >::const_iterator       end(void) const;
-        std::vector<std::vector<double> >::iterator             end(void);
+//        std::vector<std::vector<double> >::const_iterator       begin(void) const;
+//        std::vector<std::vector<double> >::iterator             begin(void);
+//        std::vector<std::vector<double> >::const_iterator       end(void) const;
+//        std::vector<std::vector<double> >::iterator             end(void);
+        
+        
         
         // utility funcions
         void                                    clear(void);
+        MatrixReal*                             clone(void) const;
+        MatrixReal                              computeInverse(void) const;
+        void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;       //!< Map the member methods to internal function calls
+        RbVector<double>                        getColumn(size_t i) const;                                                                                      //!< Get the i-th column
+        size_t                                  getDim() const;
+        EigenSystem&                            getEigenSystem(void);
+        const EigenSystem&                      getEigenSystem(void) const ;
+        double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
+        double                                  getMax(void) const;
+        double                                  getMin(void) const;
         size_t                                  getNumberOfRows(void) const;
+        bool                                    isDiagonal(void) const;
+        bool                                    isPositive() const;
+        bool                                    isSquareMatrix(void) const;
+        bool                                    isSymmetric(void) const;
         size_t                                  size(void) const;
         void                                    resize(size_t r, size_t c);
         
     protected:
-        std::vector<std::vector<double> >       elements;
+        // helper methods
+        void                                    update(void) const;
+        
+        // members
+        RbVector<RbVector<double> >             elements;
         size_t                                  nRows;
         size_t                                  nCols;
+        mutable EigenSystem*                    eigensystem;
+        mutable bool                            eigenNeedsUpdate;
+        
     };
     
     // Global functions using the class
@@ -87,6 +117,8 @@ namespace RevBayesCore {
 //    MatrixReal                            operator*(const MatrixReal& A, double b);                            //!< operator * for matrix * scalar 
 //    MatrixReal                            operator/(const MatrixReal& A, double b);                            //!< operator / for matrix / scalar 
 //    MatrixReal&                           operator/=(MatrixReal& A, double b);                                 //!< operator /= for scalar 
+
+    RbVector<double>                      operator*(const RbVector<double> &a, const MatrixReal& B);                            //!< operator * for scalar * matrix
     
 }
 

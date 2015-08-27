@@ -1,6 +1,7 @@
 #include "AbstractTaxonData.h"
 #include "CharacterState.h"
 #include "NexusWriter.h"
+#include "RbFileManager.h"
 
 using namespace RevBayesCore;
 
@@ -34,6 +35,8 @@ void NexusWriter::closeStream( void )
  */
 void NexusWriter::openStream( void ) 
 {
+    RbFileManager f = RbFileManager(fileName);
+    f.createDirectoryForFile();
     
     // open the stream to the file
     outStream.open( fileName.c_str(), std::fstream::out );
@@ -45,17 +48,16 @@ void NexusWriter::openStream( void )
 
 
 /**
- * This method simply writes a character data object into a file in Nexus format.
+ * This method simply writes a discrete character data object into a file in Nexus format.
  *
- * \param[in]   data        The character data object which is written out.
+ * \param[in]   data        The discrete character data object which is written out.
  */
-void NexusWriter::writeNexusBlock(const AbstractDiscreteCharacterData &data) 
+void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData &data) 
 {
-    
     // write initial lines of the character block
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
-    outStream << "Dimensions ntax=" << data.getNumberOfTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
+    outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
     outStream << "Format datatype=" << data.getDatatype() << " ";
     if ( data.getDatatype() == "Standard" )
     {
@@ -68,21 +70,71 @@ void NexusWriter::writeNexusBlock(const AbstractDiscreteCharacterData &data)
     const std::vector<std::string> &taxonNames = data.getTaxonNames();
     for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it) 
     {
-        outStream << *it << "   " << std::endl;
-        const AbstractTaxonData &taxon = data.getTaxonData( *it );
-        size_t nChars = taxon.getNumberOfCharacters();
-        for (size_t i = 0; i < nChars; ++i) 
+        
+        if ( !data.isTaxonExcluded( *it ) )
         {
-            if ( !data.isCharacterExcluded( i ) )
+            outStream << *it << "   ";
+            const AbstractDiscreteTaxonData &taxon = data.getTaxonData( *it );
+            size_t nChars = taxon.getNumberOfCharacters();
+            for (size_t i = 0; i < nChars; ++i)
             {
-                const CharacterState &c = taxon.getCharacter( i );  
-                outStream << c.getStringValue();
+                if ( !data.isCharacterExcluded( i ) )
+                {
+                    const CharacterState &c = taxon.getCharacter( i );
+                    outStream << c.getStringValue();
+                }
             }
+        
+            outStream << std::endl;
         }
         
-        outStream << std::endl;
     }
     
+    outStream << ";" << std::endl;
+    outStream << "End;" << std::endl;
+    outStream << std::endl;
+    
+}
+
+
+/**
+ * This method simply writes a continuous character data object into a file in Nexus format.
+ *
+ * \param[in]   data        The continuous character data object which is written out.
+ */
+void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
+{
+    
+    // write initial lines of the character block
+    outStream << std::endl;
+    outStream << "Begin data;" << std::endl;
+    outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
+    outStream << "Format datatype=" << data.getDatatype() << " ";
+    outStream << "missing=? gap=-;" << std::endl;
+    outStream << "Matrix" << std::endl;
+    
+    
+    const std::vector<std::string> &taxonNames = data.getTaxonNames();
+    for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it)
+    {
+        if ( !data.isTaxonExcluded( *it ) )
+        {
+            outStream << *it << "   " << std::endl;
+            const ContinuousTaxonData &taxon = data.getTaxonData( *it );
+            size_t nChars = taxon.getNumberOfCharacters();
+            for (size_t i = 0; i < nChars; ++i)
+            {
+                if ( !data.isCharacterExcluded( i ) )
+                {
+                    const double &c = taxon.getCharacter( i );
+                    outStream << c << " ";
+                }
+            }
+        
+            outStream << std::endl;
+        }
+    }
+
     outStream << ";" << std::endl;
     outStream << "End;" << std::endl;
     outStream << std::endl;
@@ -123,7 +175,7 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
     
     outStream << std::endl; 
     outStream << "Begin trees;" << std::endl;
-    outStream << "tree TREE1 = [&R]" << tree << ";" << std::endl;
+    outStream << "tree TREE1 = [&R]" << tree << std::endl;
     outStream << "End;" << std::endl;
     
     

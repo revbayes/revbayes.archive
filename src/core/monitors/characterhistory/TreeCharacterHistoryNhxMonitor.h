@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType> *t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<treeType> *t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor& f);
         
@@ -59,7 +59,7 @@ namespace RevBayesCore {
         std::fstream                            outStream;
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>*  variable;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  variable;
         TypedDagNode<treeType>*                 tree;
         const TimeAtlas*                        timeAtlas;
         std::set<DagNode *>                     nodeVariables;
@@ -96,7 +96,7 @@ namespace RevBayesCore {
 
 /* Constructor */
 template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType>* t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<treeType>* t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
 Monitor(g,t),
 outStream(),
 variable( s ),
@@ -115,7 +115,8 @@ maxGen(mg),
 burn(b) {
     
     nodes.push_back(s);
-    nodes.push_back(t);
+    s->incrementReferenceCount();
+//    nodes.push_back(t);
     
     numHistories = tree->getValue().getNumberOfNodes();
     numCharacters = variable->getValue().getNumberOfCharacters();
@@ -127,7 +128,7 @@ burn(b) {
         parentCharacterCounts[i].resize(numCharacters,0);
         childCharacterCounts[i].resize(numCharacters,0);
     }
-    areas = timeAtlas->getAreas()[0];
+    areas = timeAtlas->getAreas().back();
 }
 
 template<class charType, class treeType>
@@ -390,20 +391,9 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
     
     // write tree string
     std::string treeStr = "";
-    treeStr = buildExtendedNewick(); //buildExtendedNewick(&tree->getValue().getRoot());
-//    std::cout << treeStr << "\n";
-//    std::cout << "nhxStr\n" << treeStr << "\n";
+    treeStr = buildExtendedNewick();
     nhxStrm << "tree TREE1 = " << treeStr << ";\n";
     nhxStrm << "End;\n";
-    
-//    std::cout << "[";
-//    for (size_t i = 0; i < numCharacters; i++)
-//    {
-//        if (i != 0)
-//            std::cout << ",";
-//        std::cout << (double)childCharacterCounts[0][i] / numSamples;
-//    }
-//    std::cout << "]\n";
     
     return nhxStrm.str();
 }
@@ -457,7 +447,7 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::swapNode(
     }
     else if ( oldN == variable )
     {
-        variable = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN);
+        variable = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN);
         found = true;
     }
     

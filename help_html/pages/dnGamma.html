@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Gamma distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Gamma distribution</h1>
+
+        <h2>Type dnGamma</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnGamma</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Gamma probability distribution for positive real numbers.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnGamma( RealPos shape, RealPos rate )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >shape</b>
+<div class="indent">
+The shape parameter.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >rate</b>
+<div class="indent">
+The rate parameter.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                The gamma distribution is the probability of the sum of exponentially distributed variables.
+                Thus, it provides a natural prior distribution for parameters that could be considered as sums of exponential variables.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # lets simulate
+                    a <- rgamma(1000,shape=4,rate=4)
+                    # we expect a mean of 1
+                    mean(a)
+                    
+                    # create a random variable
+                    x ~ dnGamma(shape=4,rate=1)
+                    x
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('dnExponential'); return false;">dnExponential</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

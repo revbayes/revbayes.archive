@@ -39,8 +39,9 @@ namespace RevBayesCore {
         virtual      ~TreeBipartitions(void);                                                         //!< Destructor
         
         // Basic utility functions
-        TreeBipartitions*                        clone(void) const;                                   //!< Clone object
+        TreeBipartitions*                           clone(void) const;                                   //!< Clone object
         void                                        update(void);                                     //!< Clone the function
+        const std::vector<double>&                  getBipartitionAges(void);
         
     protected:
         void swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Implementation of swaping parameters
@@ -48,7 +49,9 @@ namespace RevBayesCore {
     private:
         // members
         const TypedDagNode<TimeTree>*               tree;
-        std::vector<boost::dynamic_bitset<> > bipartitions;
+        std::vector<boost::dynamic_bitset<> >       bipartitions;
+        std::map<boost::dynamic_bitset<>, const TopologyNode*> bipartitionMap;
+        std::vector<double> bipartitionAges;
         
         void computeBipartitions();
         void computeBipartitions(const TopologyNode* node, std::map <const TopologyNode*, unsigned long>& nodeToBitVectorIndex, const std::map<std::string, size_t>& nameToIndex );

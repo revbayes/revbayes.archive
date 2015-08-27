@@ -1,0 +1,77 @@
+# Test file for mcmc on gtr model with primates dataset
+
+# read the data
+# the readDiscreteCharacterData function returns a vector of matrices. We just take the first one
+D <- readDiscreteCharacterData("data/primates_mtDNA.nex")
+
+# get some useful variables from the data
+taxaCount <- D.ntaxa()
+nSites <- D.nchar()[1]
+names <- D.names()
+
+# Birth-Death process priors
+diversification ~ exponential(0.1)
+turnover ~ exponential(0.1)
+
+# moves for the birth-death paramaters
+moves[1] <- mScale(diversification,lambda=1,tune=true,weight=1)
+moves[2] <- mScale(turnover,lambda=1,tune=true,weight=1)
+
+# tree from birth-death process
+tau ~ cBDP(diversification, turnover, nTaxa=taxaCount, names=names)
+
+# moves on the tree
+moves[3] <- mNNI(tau, weight=1.0)
+moves[4] <- mFNPR(tau, weight=1.0)
+moves[5] <- mSubtreeScale(tau, weight=5.0)
+moves[6] <- mTreeScale(tau, lambda=1.0, tune=true, weight=3.0)
+moves[7] <- mNodeTimeSlideUniform(tau, weight=10.0)
+moves[8] <- mRootTimeSlide(tau, delta=1.0, tune=true, weight=3.0)
+
+# substition model priors
+bf <- v(1,1,1,1)
+e <- v(1,1,1,1,1,1)
+pi ~ dirichlet(bf)
+er ~ dirichlet(e)
+
+# moves on the substitution process parameters
+# first some moves only changing one value of the simplex
+moves[9] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=4.0)
+moves[10] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=6.0)
+
+# the rate matrix
+Q := gtr(er,pi)
+
+
+sigma <- exponential(1.0)
+
+wn <- whitenoise(tau,sigma)
+
+# the sequence evolution model
+seq ~ substModel(tree=tau, Q=Q, branchRates=whitenoise, nSites=nSites, type="DNA")
+
+# attach the data
+seq.clamp(D)
+
+mymodel <- model(pi)
+
+monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="gtr_clock.trees",printgen=10, separator = "	", tau)
+monitors[3] <- screenmonitor(printgen=10, separator = "	", pi)
+
+ 
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+# Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
+# If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
+mymcmc.burnin(generations=1000,tuningInterval=100)
+mymcmc.run(generations=2000)
+
+# Now, we will analyze the tree output.
+# Let us start by reading in the tree trace
+ treetrace <- readTreeTrace("./gtr_clock.trees")
+# and get the summary of the tree trace
+ treetrace.summarize()
+
+
+ mapTree(treetrace,"primates_clock_MAP.tre")

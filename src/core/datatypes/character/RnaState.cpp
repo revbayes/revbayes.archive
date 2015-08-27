@@ -19,26 +19,23 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-RnaState::RnaState(void) : DiscreteCharacterState(), state( char(0xFF) ) {
-    
-}
-
-
-/** Copy constructor */
-RnaState::RnaState(const RnaState& s) : DiscreteCharacterState(), state( s.state ) {
+RnaState::RnaState(void) : DiscreteCharacterState(), state( char(0xFF) )
+{
     
 }
 
 
 /** Constructor that sets the observation */
-RnaState::RnaState(char s) : DiscreteCharacterState() {
+RnaState::RnaState(const std::string &s) : DiscreteCharacterState()
+{
     
     setState(s);
 }
 
 
 /** Equals comparison */
-bool RnaState::operator==(const CharacterState& x) const {
+bool RnaState::operator==(const CharacterState& x) const
+{
     
     const RnaState* derivedX = dynamic_cast<const RnaState*>( &x );
     
@@ -51,20 +48,24 @@ bool RnaState::operator==(const CharacterState& x) const {
 
 
 /** Not equals comparison */
-bool RnaState::operator!=(const CharacterState& x) const {
+bool RnaState::operator!=(const CharacterState& x) const
+{
     
     return !operator==(x);
 }
 
 
-bool RnaState::operator<(const CharacterState &x) const {
+bool RnaState::operator<(const CharacterState &x) const
+{
     
     const RnaState* derivedX = static_cast<const RnaState*>(&x);
-    if ( derivedX != NULL ) {
+    if ( derivedX != NULL )
+    {
         char myState = state;
         char yourState = derivedX->state;
         
-        while ( (myState & 1) == ( yourState & 1 )  ) {
+        while ( (myState & 1) == ( yourState & 1 )  )
+        {
             myState >>= 1;
             yourState >>= 1;
         }
@@ -89,6 +90,11 @@ void RnaState::operator++( int i )
     ++stateIndex;
 }
 
+void RnaState::operator+=( int i )
+{
+    state <<= i;
+    stateIndex += i;
+}
 
 void RnaState::operator--( void )
 {
@@ -103,27 +109,46 @@ void RnaState::operator--( int i )
     --stateIndex;
 }
 
+void RnaState::operator-=( int i )
+{
+    state >>= i;
+    stateIndex -= i;
+}
 
-void RnaState::addState(char symbol) {
-    state |= computeState( symbol );
+void RnaState::addState(const std::string &symbol)
+{
+    
+    // check if the state was previously set
+    if ( state == 0x0 ) // it was not set
+    {
+        setState( symbol ); // this will also set the stateIndex
+    }
+    else // it was set
+    {
+        state |= computeState( symbol ); // we cannot have two indices
+    }
+    
 }
 
 
-std::string RnaState::getDatatype( void ) const {
+std::string RnaState::getDatatype( void ) const
+{
     return "RNA";
 }
 
 
 
-RnaState* RnaState::clone( void ) const {
+RnaState* RnaState::clone( void ) const
+{
     return new RnaState( *this );
 }
 
 
-unsigned int RnaState::getNumberObservedStates(void) const  {
+unsigned int RnaState::getNumberObservedStates(void) const
+{
     
     char v = state;     // count the number of bits set in v
-    unsigned int c;             // c accumulates the total bits set in v
+    unsigned int c;     // c accumulates the total bits set in v
     
     for (c = 0; v; v >>= 1)
     {
@@ -134,27 +159,42 @@ unsigned int RnaState::getNumberObservedStates(void) const  {
 }
 
 
-size_t RnaState::getNumberOfStates( void ) const {
+size_t RnaState::getNumberOfStates( void ) const
+{
     return 4;
 }
 
 
-unsigned long RnaState::getState( void ) const {
+unsigned long RnaState::getState( void ) const
+{
     return (unsigned long)state;
 }
 
-size_t RnaState::getStateIndex(void) const {
+size_t RnaState::getStateIndex(void) const
+{
     return stateIndex;
 }
 
-const std::string& RnaState::getStateLabels( void ) const {
+const std::string& RnaState::getStateLabels( void ) const
+{
     
     static std::string labels = "ACGU";
     
     return labels;
 }
 
-std::string RnaState::getStringValue(void) const  {
+std::string RnaState::getStringValue(void) const
+{
+    
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
     
     switch ( state ) {
         case 0x0:
@@ -197,32 +237,27 @@ std::string RnaState::getStringValue(void) const  {
 
 
 
-bool RnaState::isAmbiguous( void ) const {
+bool RnaState::isAmbiguous( void ) const
+{
+    
     return getNumberObservedStates() > 1;
 }
 
 
-bool RnaState::isGapState( void ) const {
-    return state == 0x0;
-}
-
-
-void RnaState::setGapState(bool tf) {
-    if ( tf ) {
-        state = 0x0;
-    }
-    else {
-        state = char(0xFF);
-    }
-}
-
-
-void RnaState::setState(size_t pos, bool val) {
+void RnaState::setStateByIndex(size_t index)
+{
     
-    state &= val << pos;
+    stateIndex = index;
+    
+    // compute the state from the index
+    state = 0x1;
+    state <<= (index-1);
+    
 }
 
-void RnaState::setState(char symbol) {
+void RnaState::setState(const std::string &symbol)
+{
+    
     state = computeState( symbol );
     
     switch ( state )
@@ -233,12 +268,15 @@ void RnaState::setState(char symbol) {
         case 0x8: { stateIndex = 3; break; }
         default: stateIndex = 4;
     }
+    
 }
 
-char RnaState::computeState(char symbol) const {
+char RnaState::computeState(const std::string &symbol) const
+{
 
-    symbol = char( toupper( symbol ) );
-    switch ( symbol ) {
+    char s = char( toupper( symbol[0] ) );
+    
+    switch ( s ) {
         case '-':
             return 0x00;
         case 'A':

@@ -18,30 +18,28 @@
 
 using namespace RevLanguage;
 
-Func__and::Func__and() : Function() {
+Func__and::Func__and() : TypedFunction<RlBoolean>()
+{
     
 }
 
 /* Clone object */
-Func__and* Func__and::clone( void ) const {
+Func__and* Func__and::clone( void ) const
+{
     
     return new Func__and( *this );
 }
 
 
-/** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func__and::execute( void ) {
+RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func__and::createFunction( void ) const
+{
     
-    const RevBayesCore::TypedDagNode<bool>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
-    const RevBayesCore::TypedDagNode<bool>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Boolean>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::LogicalAndFunction *func = new RevBayesCore::LogicalAndFunction( leftVal, rightVal );
-
-    DeterministicNode<bool> *detNode = new DeterministicNode<bool>("", func, this->clone());
     
-    RlBoolean *theBool = new RlBoolean( detNode );
-    
-    return new Variable( theBool );
+    return func;
 }
 
 
@@ -88,12 +86,5 @@ const TypeSpec& Func__and::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
-}
-
-
-/** Get return type */
-const TypeSpec& Func__and::getReturnType( void ) const {
-    
-    return RlBoolean::getClassTypeSpec();
 }
 

@@ -18,40 +18,43 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include <ctime>
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
 
 using namespace RevBayesCore;
 
 /** Default constructor calling time to get the initial seeds */
-RandomNumberGenerator::RandomNumberGenerator(void) {
+RandomNumberGenerator::RandomNumberGenerator(void) :
+        seed((unsigned int)( time(0) ) ),
+        rng(),
+        zeroone(rng)
+{
 
-	unsigned int x  = (unsigned int)( time(0) );
-	unsigned int s1 = x & 0xFFFF;
-	unsigned int s2 = x >> 16;
-    seed.push_back(s1);
-    seed.push_back(s2);
-}
+	unsigned int x  = (unsigned int)( time(0) );    
+    rng.seed( x );
+    zeroone = boost::uniform_01<boost::rand48>(rng);
 
+#ifdef RB_MPI
+    // cycle through pid random numbers
+    int pid = MPI::COMM_WORLD.Get_rank();
+    for (int i = 0; i < pid; i++)
+        zeroone();
+#endif
 
-/** Constructor explicitly setting the seeds */
-RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
-
-    if ( s.size() != 2 )
-        throw RbException("Two integer seeds required");
-	seed = s;
 }
 
 
 /* Get the seed values */
-const std::vector<unsigned int>& RandomNumberGenerator::getSeed( void ) const {
+unsigned int RandomNumberGenerator::getSeed( void ) const
+{
     return seed;
 }
 
 
 /** Set the seed of the random number generator */
-void RandomNumberGenerator::setSeed(std::vector<unsigned int> s) {
+void RandomNumberGenerator::setSeed(unsigned int s) {
 
-    if (s.size() != 2)
-        throw RbException("Two integer seeds required");
     seed = s;
 }
 
@@ -75,7 +78,5 @@ void RandomNumberGenerator::setSeed(std::vector<unsigned int> s) {
 double RandomNumberGenerator::uniform01(void) {
 
 	// Returns a pseudo-random number between 0 and 1.
-	seed[0] = 36969 * (seed[0] & 0177777) + (seed[0] >> 16);
-	seed[1] = 18000 * (seed[1] & 0177777) + (seed[1] >> 16);
-	return (((seed[0] << 16)^(seed[1] & 0177777)) * 2.328306437080797e-10) + 2.328306435996595e-10;
+    return zeroone();
 }

@@ -45,9 +45,10 @@ namespace RevBayesCore {
 		double												getConcentrationParam(void);
 		TypedDistribution<valueType>*						getBaseDistribution(void);
 
+        
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         // helper methods
@@ -70,6 +71,7 @@ namespace RevBayesCore {
     
 }
 
+#include "Cloner.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbMathCombinatorialFunctions.h"
@@ -86,6 +88,18 @@ RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPrio
     denominator( 0.0 ),
     concentrationHasChanged( true )
 {
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( concentration );
+    
+    // add the parameters of the distribution
+    const std::set<const DagNode*>& pars = baseDistribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
     
 	delete this->value;
 
@@ -114,7 +128,7 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeDenomina
         denominator += log( cp + i );
     }
     
-//    concentrationHasChanged = false;
+    concentrationHasChanged = false;
 }
 
 
@@ -128,29 +142,30 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     
     // reset the lnProb and set it to log( alpha^K )
 	
-//	return 0.0;
+	return 0.0;
     
     // we should update the restaurant vector before we do the computations. (Sebastian)
     createRestaurantVectors();
 	
 	int nt = numTables;
-	//int ne = numElements;
+	int ne = numElements;
     double lnProb = log( concentration->getValue() ) * nt;
     
-    if ( concentrationHasChanged == true ){
+    if ( concentrationHasChanged == true )
+    {
         computeDenominator();
     }
 	
-//	int sn = RbMath::stirlingFirst(ne, nt);
 	
-//	lnProb += log(sn);
+	lnProb += RbMath::lnStirlingFirst(ne, nt);
     
-    for (int i = 0; i < nt; ++i){
+    for (int i = 0; i < nt; ++i)
+    {
 		// compute the probability of having n_i customers per at table i
 		lnProb += RbMath::lnFactorial( numCustomerPerTable[i] - 1 );
         
         // we also need to multiply with the probability of the value for this table
-        baseDistribution->setValue( valuePerTable[i] );
+        baseDistribution->setValue( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone(valuePerTable[i]) );
         lnProb += baseDistribution->computeLnProbability();
     }
     
@@ -234,31 +249,9 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::redrawValue( vo
 }
 
 
-
-/** Get the parameters of the distribution */
-template<class valueType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getParameters( void ) const
-{
-    std::set<const RevBayesCore::DagNode*> parameters;
-    
-//    parameters.insert( baseDistribution );
-    parameters.insert( concentration );
-    
-    // add the parameters of the distribution
-    const std::set<const DagNode*>& pars = baseDistribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
-    {
-        parameters.insert( *it );
-    }
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
 template <class valueType>
-void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
 //    if (oldP == baseDistribution){
 //        baseDistribution = static_cast<const TypedDagNode< TypedDistribution<valueType> >* >( newP );

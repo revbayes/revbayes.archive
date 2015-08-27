@@ -66,15 +66,18 @@ RevLanguage::RevPtr<ptrType>::RevPtr(const RevPtr<ptrType>& src) : mPtr( NULL )
 }
 
 template <typename ptrType>
-RevLanguage::RevPtr<ptrType>::~RevPtr(void) {
+RevLanguage::RevPtr<ptrType>::~RevPtr(void)
+{
     
     finalizePointer();
 }
 
 template <typename ptrType>
-RevLanguage::RevPtr<ptrType>& RevLanguage::RevPtr<ptrType>::operator=(const RevPtr<ptrType>& rhs) {
+RevLanguage::RevPtr<ptrType>& RevLanguage::RevPtr<ptrType>::operator=(const RevPtr<ptrType>& rhs)
+{
     
-    if (this == &rhs) {
+    if (this == &rhs)
+    {
         return (*this);
     }
     finalizePointer();
@@ -92,23 +95,29 @@ void RevLanguage::RevPtr<ptrType>::initializePointer(ptrType* inPtr) {
 }
 
 template <typename ptrType>
-void RevLanguage::RevPtr<ptrType>::finalizePointer(void) {
+void RevLanguage::RevPtr<ptrType>::finalizePointer(void)
+{
     
-    if ( decrementCountForAddress(mPtr) ) { 
+    if ( decrementCountForAddress(mPtr) )
+    {
         delete mPtr;
     }
+    
 }
 
 template <typename ptrType>
-ptrType* RevLanguage::RevPtr<ptrType>::operator->(void) const {
+ptrType* RevLanguage::RevPtr<ptrType>::operator->(void) const
+{
     
     return (mPtr);
 }
 
 template <typename ptrType>
-ptrType& RevLanguage::RevPtr<ptrType>::operator*(void) const {
+ptrType& RevLanguage::RevPtr<ptrType>::operator*(void) const
+{
     
-    if ( mPtr == NULL ) {
+    if ( mPtr == NULL )
+    {
         std::cerr << "Major BUG: Dereferencing NULL pointer!!!" << std::endl;
     }
     
@@ -117,17 +126,22 @@ ptrType& RevLanguage::RevPtr<ptrType>::operator*(void) const {
 
 
 template <typename ptrType>
-size_t RevLanguage::RevPtr<ptrType>::countForAddress(const ptrType* qPtr) {
+size_t RevLanguage::RevPtr<ptrType>::countForAddress(const ptrType* qPtr)
+{
     
     // check if we got the NULL pointer
-    if (qPtr == 0) return RbConstants::Size_t::nan;
+    if (qPtr == 0)
+    {
+        return RbConstants::Size_t::nan;
+    }
     
     return qPtr->getReferenceCount();
 }
 
 
 template <typename ptrType>
-void RevLanguage::RevPtr<ptrType>::incrementCountForAddress(ptrType* qPtr) {
+void RevLanguage::RevPtr<ptrType>::incrementCountForAddress(ptrType* qPtr)
+{
     
     // check if we got the NULL pointer
     if (qPtr == 0) return;
@@ -136,7 +150,8 @@ void RevLanguage::RevPtr<ptrType>::incrementCountForAddress(ptrType* qPtr) {
 }
 
 template <typename ptrType>
-bool RevLanguage::RevPtr<ptrType>::decrementCountForAddress(ptrType* qPtr) {
+bool RevLanguage::RevPtr<ptrType>::decrementCountForAddress(ptrType* qPtr)
+{
     
     // check if we got the NULL pointer
     if (qPtr == 0) return false;

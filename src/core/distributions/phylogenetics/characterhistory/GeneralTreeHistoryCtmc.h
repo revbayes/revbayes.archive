@@ -22,12 +22,13 @@
 #include "TypedDistribution.h"
 
 #include "ConstantNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
 #include "RandomNumberFactory.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "PathUniformizationSampleProposal.h"
+#include "PathRejectionSampleProposal.h"
 
 #include <cmath>
 #include <cstring>
@@ -45,7 +46,8 @@ namespace RevBayesCore {
         // public member functions
         
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
-        void                                                initializeValue(void);
+        void                                                initializeTipValues(void);
+        void                                                drawInitValue(void);
         void                                                redrawValue(void);
         virtual void                                        simulate(void);
         
@@ -58,25 +60,24 @@ namespace RevBayesCore {
         void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
-        // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        
     protected:
         
+        // Parameter management functions
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+
         virtual double                                      computeRootLikelihood(const TopologyNode &n);
         virtual double                                      computeInternalNodeLikelihood(const TopologyNode &n);
         virtual double                                      computeTipLikelihood(const TopologyNode &node);
         virtual const std::vector<double>&                  getRootFrequencies(void);
         // (not needed)        void                         keepSpecialization(DagNode* affecter);
         // (not needed)        void                         restoreSpecialization(DagNode *restorer);
-        virtual void                                        touchSpecialization(DagNode *toucher);
+        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         
     private:
         // members
-        const TypedDagNode< RbVector< double > >*        rootFrequencies;
-        const TypedDagNode< RbVector< double > >*        siteRates;
+        const TypedDagNode< RbVector< double > >*           rootFrequencies;
+        const TypedDagNode< RbVector< double > >*           siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         
@@ -101,7 +102,7 @@ template<class charType, class treeType>
 RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
     // initialize with default parameters
-    rootFrequencies             = new ConstantNode< RbVector<double> >("rootFrequencies", new std::vector<double>(nChars, 1.0/nChars));
+    rootFrequencies             = new ConstantNode< RbVector<double> >("rootFrequencies", new RbVector<double>(nChars, 1.0/nChars));
     siteRates                   = NULL;
     homogeneousRateMap          = NULL;
     heterogeneousRateMaps       = NULL;
@@ -110,6 +111,14 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( homogeneousRateMap );
+    this->addParameter( heterogeneousRateMaps );
+    this->addParameter( rootFrequencies );
+    this->addParameter( siteRates );
 }
 
 
@@ -197,7 +206,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeInternal
     double lnL = 0.0;
     double t = 0.0;
     double dt = 0.0;
-    double da = 0.0;
+//    double da = 0.0;
     
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
@@ -251,7 +260,7 @@ const std::vector<double>& RevBayesCore::GeneralTreeHistoryCtmc<charType, treeTy
 }
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeValue( void )
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeTipValues( void )
 {
     //    if (this->dagNode->isClamped())
     {
@@ -283,10 +292,10 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeValue( 
 }
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void )
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::drawInitValue( void )
 {
     if (this->tipsInitialized == false)
-        initializeValue();
+        initializeTipValues();
     
     std::set<size_t> indexSet;
     for (size_t i = 0; i < this->numSites; i++)
@@ -334,7 +343,74 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void
         {
             this->fireTreeChangeEvent(*nodes[i]);
         }
-        redrawValue();
+        drawInitValue();
+    }
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void )
+{
+    if (!true)
+    {
+        if (this->tipsInitialized == false)
+            initializeTipValues();
+        
+        std::set<size_t> indexSet;
+        for (size_t i = 0; i < this->numSites; i++)
+            indexSet.insert(i);
+        
+        // sample node states
+        std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            TopologyNode* nd = nodes[i];
+            
+            int samplePathEndCount = 0;
+            do
+            {
+                samplePathEndCount++;
+            } while (samplePathEnd(*nd,indexSet) == false && samplePathEndCount < 100);
+            
+            int samplePathStartCount = 0;
+            do
+            {
+                samplePathStartCount++;
+            } while (samplePathStart(*nd,indexSet) == false && samplePathStartCount < 100);
+        }
+        
+        // sample paths
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            TopologyNode* nd = nodes[i];
+            
+            int samplePathHistoryCount = 0;
+            do
+            {
+                
+                samplePathHistoryCount++;
+            } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
+            
+            this->histories[i]->print();
+        }
+        
+        double lnL = this->computeLnProbability();
+        
+        if (lnL == RbConstants::Double::neginf)
+        {
+            for (size_t i = 0; i < nodes.size(); i++)
+            {
+                this->fireTreeChangeEvent(*nodes[i]);
+            }
+            redrawValue();
+        }
+    }
+    else
+    {
+//        if (this->dagNode->isClamped())
+//            initializeTipValues();
+        
+        simulate();
     }
 }
 
@@ -379,7 +455,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathEnd(con
             
             double u = GLOBAL_RNG->uniform01() * gSum;
             unsigned int s = 0;
-            for (size_t i = 0; i < this->numChars; i++)
+            for (unsigned i = 0; i < this->numChars; i++)
             {
                 u -= g[i];
                 if (u <= 0.0)
@@ -414,7 +490,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory
 //                                                             1.0);
 
     
-//    ConstantNode<RateMatrix>* q_sample = new ConstantNode<RateMatrix*>("q_sample", new RateMatrix_Blosum62());
+//    ConstantNode<RateGenerator>* q_sample = new ConstantNode<RateMatrix*>("q_sample", new RateMatrix_Blosum62());
 //    PathRejectionSampleProposal<charType,treeType> p(   this->getStochasticNode(),
 //                                                     const_cast<StochasticNode<treeType>* >(  static_cast<const StochasticNode<treeType>* >(this->tau)),
 //                                                     const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
@@ -470,13 +546,22 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMap(const 
     
     // remove the old parameter first
     if ( homogeneousRateMap != NULL )
+    {
+        this->removeParameter( homogeneousRateMap );
         homogeneousRateMap = NULL;
+    }
     else
+    {
+        this->removeParameter( heterogeneousRateMaps );
         heterogeneousRateMaps = NULL;
+    }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = false;
     homogeneousRateMap = rm;
+    
+    // add the new parameter
+    this->addParameter( homogeneousRateMap );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -553,8 +638,10 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
     
     // remove the old parameter first
     if ( siteRates != NULL )
+    {
+        this->removeParameter( siteRates );
         siteRates = NULL;
-    
+    }
     if ( r != NULL )
     {
         // set the value
@@ -572,6 +659,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
         this->resizeLikelihoodVectors();
         
     }
+    
+    // add the new parameter
+    this->addParameter( siteRates );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -618,7 +708,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulateHistory(c
             double u = GLOBAL_RNG->uniform01() * sr;
             
             bool found = false;
-            size_t i, s;
+            unsigned i, s;
             for (i = 0; !found && i < this->numSites; i++)
             {
                 evt->setIndex(i);
@@ -671,13 +761,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
 {
     
     
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the sequence of this node
     size_t nodeIndex = node.getIndex();
     
     // get rate map for branch leading to node
-    const RateMap& rm = homogeneousRateMap->getValue();
+//    const RateMap& rm = homogeneousRateMap->getValue();
     
     // if root, set tail state
     if (node.isRoot())
@@ -709,7 +799,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
     {
         // simulate anagenic changes
         simulateHistory(node, bh);
-        bh->print();
+//        bh->print();
     }
     
     const std::vector<CharacterEvent*>& childState = bh->getChildCharacters();
@@ -717,13 +807,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
     {
         // create the character
         charType c;
-        c.setState(childState[i]->getState(), 1);
+        c.setState( std::string(1, childState[i]->getState() ) );
         taxa[nodeIndex].addCharacter( c );
     }
         
     if ( node.isTip() )
     {
-        std::cout << "adding " << node.getName() << "\n";
+//        std::cout << "adding " << node.getName() << "\n";
         taxa[nodeIndex].setTaxonName( node.getName() );
     }
     else
@@ -748,25 +838,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::simulate(const To
 }
 
 
-/** Get the parameters of the distribution */
-template<class charType, class treeType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractTreeHistoryCtmc<charType, treeType>::getParameters();
-    
-    parameters.insert( homogeneousRateMap );
-    parameters.insert( heterogeneousRateMaps );
-    parameters.insert( rootFrequencies );
-    parameters.insert( siteRates );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == homogeneousRateMap)
     {
@@ -792,7 +866,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameter( co
 }
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
+{
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == rootFrequencies || affecter == rootFrequencies )
@@ -803,7 +878,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecializati
     }
     else
     {
-        AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
+        AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter, touchAll );
     }
     
 }

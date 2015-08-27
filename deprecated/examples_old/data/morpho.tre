@@ -1,0 +1,55 @@
+#NEXUS 
+
+Begin trees;  [Treefile saved Thu Oct 23 11:47:41 2014]
+[!
+>Data file = /home/mholder/Documents/projects/revbayes/examples/data/morpho.nex
+>Heuristic search settings:
+>  Optimality criterion = parsimony
+>    Character-status summary:
+>      Of 82 total characters:
+>        All characters are of type 'unord'
+>        All characters have equal weight
+>        1 character is constant
+>        22 variable characters are parsimony-uninformative
+>        Number of parsimony-informative characters = 59
+>    Gaps are treated as "missing"
+>  Starting tree(s) obtained via stepwise addition
+>  Addition sequence: simple (reference taxon = Canis lupus)
+>  Number of trees held at each step during stepwise addition = 1
+>  Branch-swapping algorithm: tree-bisection-reconnection (TBR)
+>  Steepest descent option not in effect
+>  Initial 'MaxTrees' setting = 100
+>  Branches collapsed (creating polytomies) if maximum branch length is zero
+>  'MulTrees' option in effect
+>  Topological constraints not enforced
+>  Trees are unrooted
+>
+>Heuristic search completed
+>   Total number of rearrangements tried = 3297
+>   Score of best tree(s) found = 157
+>   Number of trees retained = 1
+>   Time used = <1 sec (CPU time = 0.00 sec)
+]
+	Translate
+		1 Canis_lupus,
+		2 Zaragocyon,
+		3 Ballusia_elmensis,
+		4 Ursavus_brevirhinus,
+		5 U_primaevus,
+		6 I_vireti,
+		7 I_arctoides,
+		8 I_punjabiensis,
+		9 Kretzoiarctos,
+		10 Agriarctos,
+		11 Ailurarctos,
+		12 Ailuropoda_melanoleuca,
+		13 Helarctos_malayanus,
+		14 Melursus_ursinus,
+		15 Tremarctos_ornatus,
+		16 Ursus_americanus,
+		17 Ursus_arctos,
+		18 Ursus_maritimus,
+		19 Ursus_thibetanus
+		;
+tree PAUP_1 = [&U] (1:0.02,(2:0.02,(3:0.02,((4:0.02,((((6:0.02,7:0.02):0.02,8:0.02):0.02,(((9:0.02,10:0.02):0.02,11:0.02):0.02,12:0.02):0.02):0.02,(((13:0.02,((16:0.02,(17:0.02,18:0.02):0.02):0.02,19:0.02):0.02):0.02,14:0.02):0.02,15:0.02):0.02):0.02):0.02,5:0.02):0.02):0.02):0.02);
+End;

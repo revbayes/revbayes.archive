@@ -1,147 +1,86 @@
 //
 //  DistanceMatrix.cpp
-//  RbGui
 //
-//  Created by Sebastian Hoehna on 4/12/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
+//  Created by Bastien Boussau on 4/8/15.
+//  Copyright (c) 2015 Bastien Boussau. All rights reserved.
 //
 
 #include "DistanceMatrix.h"
-#include "RbConstants.h"
-#include "RbException.h"
-#include "StringUtilities.h"
-
-#include <cmath>
+#include "DistanceMatrixReader.h"
+#include <sstream>
 #include <string>
 
 using namespace RevBayesCore;
 
-/** Constructor requires character type; passes member rules to base class */
-DistanceMatrix::DistanceMatrix(const size_t nTaxa) : MatrixReal( nTaxa, nTaxa ) {
-    
+DistanceMatrix::DistanceMatrix(DistanceMatrixReader* tadr) : filename(tadr->getFilename())
+{
+    names = tadr->getNames();
+	matrix = tadr->getMatrix();
+	numTips = names.size();
 }
 
-
-/** Add the taxon with given name. */
-void DistanceMatrix::addTaxonWithName(std::string s) {
-    // @John: Not sure how this function should work (Sebastian)
-    // Here is a possibility.
-    
-    // add the name to our names list
-    sequenceNames.push_back( s );
-    
-    // resize the current matrix
-    //elements.resize( elements.size() + 1 );
-    
-    
+DistanceMatrix::DistanceMatrix(const DistanceMatrix& a)
+{
+    *this = a;
 }
 
-
-/** Exclude a taxon */
-void DistanceMatrix::excludeTaxon(size_t i) {
-    
-    if (i >= sequenceNames.size()) 
+DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& a)
+{
+    if (this != &a)
     {
-        std::stringstream o;
-        o << "Only " << sequenceNames.size() << " taxa in matrix";
-        throw RbException( o.str() );
+        names = a.names;
+		matrix = a.matrix;
+		filename = a.filename;
+		numTips = a.numTips;
     }
-    deletedTaxa.insert( i );
-}
-
-
-/** Exclude a taxon */
-void DistanceMatrix::excludeTaxon(std::string& s) {
     
-    for (size_t i = 0; i < elements.size(); i++) 
-    {
-        if (s == sequenceNames[i] ) 
-        {
-            deletedTaxa.insert( i );
-            break;
-        }
-    }
+    return *this;
+}
+
+DistanceMatrix* DistanceMatrix::clone(void) const
+{
+    return new DistanceMatrix(*this);
+}
+
+std::vector<std::string> DistanceMatrix::getNames(void) const
+{
+    return names;
+}
+
+MatrixReal DistanceMatrix::getMatrix(void) const
+{
+    return matrix;
+}
+
+unsigned DistanceMatrix::getSize(void) const
+{
+	return numTips;
 }
 
 
-double DistanceMatrix::getDistance(size_t row, size_t col) const {
+std::string DistanceMatrix::getFilename(void) const
+{
+    return filename;
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x) {
     
-    double d = elements[row][col];
-    return d;
-}
-
-
-size_t DistanceMatrix::getNumberOfTaxa(void) const {
+    std::stringstream s;
     
-    return sequenceNames.size();
-}
-
-
-/** Get taxon with index idx */
-const std::string& DistanceMatrix::getTaxonNameWithIndex( size_t idx ) const {
+    // Generate nice header
+    o << std::endl;
+    s << "DistanceMatrix with " << x.getSize() << " tips. " << std::endl;
+    o << s.str();
+	std::vector<std::string> names = x.getNames();
+	for ( size_t i = 0; i < x.getSize(); ++i ) {
+		o << names[i] ;
+		for ( size_t j = 0; j < x.getSize(); ++j ) {
+        	o << "\t" << x.getMatrix()[i][j] ;
+		}
+		o << std::endl;
+	}
+    o << std::endl;
     
-    return sequenceNames[idx];
+    return o;
 }
-
-
-/** Return the index of the element ( the index of the taxon with name elemName ) */
-size_t DistanceMatrix::indexOfTaxonWithName( const std::string& s ) const {
-    
-    // search through all names
-    for (size_t i=0; i<sequenceNames.size(); i++) 
-    {
-        if (s == sequenceNames[ i ]) 
-        {
-            return i;
-        }
-    }
-    return RbConstants::Size_t::nan;
-}
-
-
-/** Is the taxon excluded */
-bool DistanceMatrix::isTaxonExcluded(size_t i) const {
-    
-	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
-	if ( it != deletedTaxa.end() )
-		return true;
-    return false;
-}
-
-
-/** Is the taxon excluded */
-bool DistanceMatrix::isTaxonExcluded(std::string& s) const {
-    
-    size_t i = indexOfTaxonWithName(s);
-	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
-	if ( it != deletedTaxa.end() )
-		return true;
-    return false;
-}
-
-
-/** Restore a taxon */
-void DistanceMatrix::restoreTaxon(size_t i) {
-    
-    if ( i >= getNumberOfTaxa() )
-        return;
-    deletedTaxa.erase( i );
-}
-
-
-/** Restore a taxon */
-void DistanceMatrix::restoreTaxon(std::string& s) {
-    
-    size_t i = indexOfTaxonWithName( s );
-    deletedTaxa.erase( i );
-}
-
-
-void DistanceMatrix::showData(void) {
-    
-}
-
-
-
-
-

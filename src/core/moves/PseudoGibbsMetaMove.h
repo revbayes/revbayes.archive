@@ -29,7 +29,7 @@
 
 
 #include "Move.h"
-#include "AbstractCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -43,14 +43,14 @@ namespace RevBayesCore {
         PseudoGibbsMetaMove*                            clone(void) const ;
         
     protected:
-        PseudoGibbsMetaMove(const Move* m, AbstractCharacterData* d, const size_t numOfSubsets);                                                                                                                                         //!< Default constructor
+        PseudoGibbsMetaMove(const Move* m, AbstractHomologousDiscreteCharacterData* d, const size_t numOfSubsets);                                                                                                                                         //!< Default constructor
 		PseudoGibbsMetaMove ( const PseudoGibbsMetaMove& p ) ;
 		void buildSubsets();
 		
         // Hidden member variables
         const Move*			                            move;
         size_t 											numberOfSubsets;
-		AbstractCharacterData* 							data;
+		AbstractHomologousDiscreteCharacterData*                  data;
 		std::vector< std::vector<size_t> >				dataSubsets;
     };
     

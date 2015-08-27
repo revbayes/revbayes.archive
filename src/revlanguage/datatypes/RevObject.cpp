@@ -1,21 +1,4 @@
-/**
- * @file
- * This file contains the implementation of some of the functions
- * in the abstract base class for language objects, RevObject.
- *
- * @brief Partial implementation of RevObject
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-09-02, version 1.0
- * @extends RevObject
- *
- * $Id$
- */
-
+#include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "ModelVector.h"
@@ -30,6 +13,23 @@
 #include <stdio.h>
 
 using namespace RevLanguage;
+
+
+/**
+ * Default constructor.
+ */
+RevObject::RevObject( bool includeMemberMethods ) : RevMemberObject()
+{
+    
+    if ( includeMemberMethods == true )
+    {
+        ArgumentRules* getMethodsArgRules = new ArgumentRules();
+    
+        // Add the 'methods()' method
+        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+    }
+    
+}
 
 
 /** 
@@ -58,22 +58,17 @@ RevObject* RevObject::add(const RevObject &rhs) const
 }
 
 
-/** Clone the model DAG connected to this object. */
-RevObject* RevObject::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
-{
-    throw RbException( "Rev object with no DAG node should not be included in model DAG" );
-}
-
-
 /** The default implementation does nothing because we don't have an internal object */
-void RevObject::constructInternalObject( void ) {
+void RevObject::constructInternalObject( void )
+{
     // nothing to do
 }
 
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const {
+RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const
+{
         
     throw RbException("Failed conversion from type '" + getType() + "' to type '" + typeSpec.getType() + "'" );
     
@@ -111,20 +106,23 @@ RevObject* RevObject::divide(const RevObject &rhs) const
 /** 
  * Execute simple method. 
  */
-RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<RevVariable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+{
     
-     if ( name == "methods" )
+    if ( name == "methods" )
     {
+        found = true;
+        
         // just print the method names (including inherited methods)
         const MethodTable &m = getMethods();
         m.printValue(std::cout, true);
         
         return NULL;
     }
-    else 
-    {
-        throw RbException( "No mapping from member method '" + name + "' to internal function call provided" );
-    }
+    
+    found = false;
+    
+    return NULL;
 }
 
 
@@ -162,18 +160,10 @@ const MemberRules& RevObject::getParameterRules(void) const
 
 
 /**
- * Get common member methods. Here we
+ * Get common member methods.
  */
 const MethodTable& RevObject::getMethods( void ) const
 {
-    
-    // initialize the methods if it hasn't happened yet
-    if ( methodsInitialized == false )
-    {
-        initializeMethods();
-        
-        methodsInitialized = true;
-    }
     
     return methods;
 }
@@ -195,7 +185,7 @@ const std::string& RevObject::getType( void ) const
 RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 {
     
-    throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of type '" + getClassType() + "'.");
+    throw RbException("Workspace objects cannot be used inside DAG's! You tried to access the DAG node of type '" + getClassType() + "'.");
     
     return NULL;
 }
@@ -246,16 +236,19 @@ bool RevObject::isConstant( void ) const
 }
 
 
-/** Is convertible to type? */
-bool RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
+/** 
+ * Is convertible to type? 
+ * -1 represent false and any positive number the cost of conversion.
+ */
+double RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
 {
     
-    return false;
+    return -1.0;
 }
 
 
 /* Are we of specified language type? */
-bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const
+bool RevObject::isType(const TypeSpec& typeSpec) const
 {
     
     return getTypeSpec().isDerivedOf( typeSpec );
@@ -285,17 +278,6 @@ void RevObject::makeConstantValue( void )
 
 
 /**
- * Convert a model object to a conversion object, the value of which is determined by a type
- * conversion from a specified variable. By default we throw an error, since we do not have
- * a DAG node and cannot perform the requested action.
- */
-void RevObject::makeConversionValue( RevPtr<Variable> var )
-{
-    throw RbException( "Object without DAG node cannot be made a conversion value" );
-}
-
-
-/**
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
@@ -304,22 +286,6 @@ RevObject* RevObject::makeIndirectReference(void)
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
     throw RbException( msg );
-}
-
-
-/**
- * Make methods common to all member objects.
- * We support one method:
- * 1) methods()
- */
-void RevObject::initializeMethods(void) const
-{
-    
-    ArgumentRules* getMethodsArgRules = new ArgumentRules();
-    
-    // Add the 'methods()' method
-    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
-        
 }
 
 
@@ -351,31 +317,37 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 
 
 /**
- * Replace the variable. This default implementation does nothing.
+ * Print the value. You can specify if the value will be printed to screen or not.
+ * By default we will call the method printValue(o), which will be the same behavior 
+ * regardless of the flag toScreen or not. You may want to overload this method,
+ * as done in RlString.
+ *
  */
-void RevObject::replaceVariable(RevObject *newVar)
+void RevObject::printValue(std::ostream &o, bool toScreen) const
 {
+    // the default behavior is the same for printing to screen and anywhere else.
+    printValue(o);
     
 }
 
 
 /** Set a member variable */
-void RevObject::setConstParameter(const std::string& name, const RevPtr<const Variable> &var)
+void RevObject::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    throw RbException("No constant member with name \"" + name + "\" found to set.");
+    throw RbException("No constant parameter with name \"" + name + "\" found to set.");
 }
 
 
 /* Set a member variable.
  * In this default implementation, we delegate to setConstParameter.
- * Derived classes of MemberObject who need non-const variable should overwrite this function.
+ * Derived classes of MemberObject who need non-const RevVariable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstParameter.
  */
-void RevObject::setParameter(const std::string& name, const RevPtr<Variable> &var)
+void RevObject::setParameter(const std::string& name, const RevPtr<RevVariable> &var)
 {
     
-    setConstParameter(name, RevPtr<const Variable>( var ) );
+    setConstParameter(name, RevPtr<const RevVariable>( var ) );
     
 }
 
@@ -420,16 +392,18 @@ std::string RevObject::toString( void ) const
 }
 
 /** Make sure we can print the value of the object easily */
-std::ostream& operator<<(std::ostream& o, const RevObject& x) {
+std::ostream& operator<<(std::ostream& o, const RevObject& x)
+{
     
-    x.printValue(o);
+    x.printValue(o,false);
     return o;
 }
 
 /** Make sure we can print the value of the object easily */
-std::ostream& RevLanguage::operator<<(std::ostream& o, const RevObject& x) {
+std::ostream& RevLanguage::operator<<(std::ostream& o, const RevObject& x)
+{
     
-    x.printValue(o);
+    x.printValue(o,false);
     return o;
 }
 

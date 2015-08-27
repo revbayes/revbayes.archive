@@ -41,13 +41,12 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxLabeledExpr*          clone(void) const;                                                              //!< Clone object
-        void                        printValue(std::ostream& o) const;                                              //!< Print info about object
-
+        
         // Regular functions
         const SyntaxElement&        getExpression(void) const { return *expression; }                               //!< Return expression
         SyntaxElement&              getExpression(void) { return *expression; }                                     //!< Return expression
         const std::string&          getLabel() const { return label; }                                              //!< Return label
-        RevPtr<Variable>            evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
+        RevPtr<RevVariable>         evaluateContent(Environment& env, bool dynamic=false);                          //!< Get semantic value
         bool                        isConstExpression(void) const;                                                  //!< Is the expression constant?
         bool                        isFunctionSafe(const Environment&       env,
                                                    std::set<std::string>&   localVars) const;                       //!< Is this element safe in a function?

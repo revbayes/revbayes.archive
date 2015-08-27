@@ -33,7 +33,6 @@
 
 #include "Distribution.h"
 #include "Function.h"
-#include "UnivariateFunction.h"
 
 #include <iostream>
 
@@ -50,20 +49,19 @@ namespace RevBayesCore {
         virtual                        ~TypedDistribution(void);
         
         // public methods
-        valueType&                      getValue(void);                                                     //!< Get the current value (non-const)
-        const valueType&                getValue(void) const;                                               //!< Get the current value
-        StochasticNode<valueType>*      getStochasticNode(void);                                            //!< Get the stochastic node holding this distribution
-        void                            setStochasticNode(StochasticNode<valueType> *n);                    //!< Set the stochastic node holding this distribution
+        valueType&                      getValue(void);                                                             //!< Get the current value (non-const)
+        const valueType&                getValue(void) const;                                                       //!< Get the current value
+        StochasticNode<valueType>*      getStochasticNode(void);                                                    //!< Get the stochastic node holding this distribution
+        void                            setStochasticNode(StochasticNode<valueType> *n);                            //!< Set the stochastic node holding this distribution
         
         // virtual methods
-        virtual void                    setValue(valueType *v);                                             //!< Set the current value, e.g. attach an observation (clamp)
-        virtual void                    setValue(const valueType &v);                                       //!< Set the current value, e.g. attach an observation (clamp)
+        virtual void                    setValue(valueType *v, bool f=false);                                       //!< Set the current value, e.g. attach an observation (clamp)
+//        virtual void                    setValue(const valueType &v);                                               //!< Set the current value, e.g. attach an observation (clamp)
         
         // pure virtual public methods
-        virtual TypedDistribution*      clone(void) const = 0;                                              //!< Clone the distribution
-        virtual double                  computeLnProbability(void) = 0;                                     //!< Clone the ln probability density
-        virtual void                    redrawValue(void) = 0;                                              //!< Draw a new random value from the distribution
-        virtual void                    swapParameter(const DagNode *oldP, const DagNode *newP) = 0;        //!< Exchange the parameter
+        virtual TypedDistribution*      clone(void) const = 0;                                                      //!< Clone the distribution
+        virtual double                  computeLnProbability(void) = 0;                                             //!< Clone the ln probability density
+        virtual void                    redrawValue(void) = 0;                                                      //!< Draw a new random value from the distribution
         
     protected:
         TypedDistribution(valueType *v);
@@ -71,9 +69,12 @@ namespace RevBayesCore {
         
         // overloaded operators
         TypedDistribution&              operator=(const TypedDistribution &d); 
+
+        virtual void                    swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;        //!< Exchange the parameter
+
         
         // inheritable attributes
-        StochasticNode<valueType>*      dagNode;                                                            //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
+        StochasticNode<valueType>*      dagNode;                                                                    //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
         valueType*                      value;
         
     };
@@ -85,7 +86,7 @@ namespace RevBayesCore {
 }
 
 
-#include "Cloneable.h"
+#include "Cloner.h"
 #include "Cloneable.h"
 #include "IsDerivedFrom.h"
 
@@ -101,13 +102,14 @@ RevBayesCore::TypedDistribution<valueType>::TypedDistribution(valueType *v) : Di
 template <class valueType>
 RevBayesCore::TypedDistribution<valueType>::TypedDistribution(const TypedDistribution &d) : Distribution(d), 
     dagNode( NULL ), 
-    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *d.value ) ) 
+    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *d.value ) )
 {
     
 }
 
 template <class valueType>
-RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void ) {
+RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void )
+{
     
     delete value;
     
@@ -116,7 +118,8 @@ RevBayesCore::TypedDistribution<valueType>::~TypedDistribution( void ) {
 
 
 template <class valueType>
-RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valueType>::operator=(const TypedDistribution &d) {
+RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valueType>::operator=(const TypedDistribution &d)
+{
     
     if ( this != &d ) 
     {
@@ -133,54 +136,52 @@ RevBayesCore::TypedDistribution<valueType>& RevBayesCore::TypedDistribution<valu
 
 
 template <class valueType>
-valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) {
+valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void)
+{
     
     return *value;
 }
 
 template <class valueType>
-const valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) const {
+const valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) const
+{
     
     return *value;
 }
 
 
 template <class valueType>
-RevBayesCore::StochasticNode<valueType>* RevBayesCore::TypedDistribution<valueType>::getStochasticNode( void ) {
+RevBayesCore::StochasticNode<valueType>* RevBayesCore::TypedDistribution<valueType>::getStochasticNode( void )
+{
     
     return dagNode;
 }
 
 template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setStochasticNode( StochasticNode<valueType> *n ) {
+void RevBayesCore::TypedDistribution<valueType>::setStochasticNode( StochasticNode<valueType> *n )
+{
     
     dagNode = n;
 }
 
 template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v ) {
+void RevBayesCore::TypedDistribution<valueType>::setValue( valueType *v, bool force )
+{
     
     // free memory
     if (value != v)
+    {
         delete value;
+    }
     
     value = v;
     
 }
 
-template <class valueType>
-void RevBayesCore::TypedDistribution<valueType>::setValue( const valueType &v ) {
-    
-    // free memory
-    delete value;
-    
-    value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( v );
-    
-}
-
 
 template <class valueType>
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedDistribution<valueType>& f) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedDistribution<valueType>& f)
+{
     
     o << "Distribution()";
     

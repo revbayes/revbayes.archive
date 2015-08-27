@@ -20,6 +20,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 
@@ -31,10 +32,10 @@
  * Either fill the spaces on the right if left aligned (true)
  * or on the left if right aligned.
  */
-void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
+void StringUtilities::fillWithSpaces(std::string &s, int l, bool left)
 {
     
-    for (size_t i=s.length(); i<l ; ++i)
+    for (int i=int(s.length()); i<l ; ++i)
     {
         // either left algined
         if (left == true)
@@ -48,6 +49,69 @@ void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
         
     }
     
+}
+
+
+/**
+ * Find the first occurence of the given character.
+ * We return string::npos if it wasn't found.
+ */
+size_t StringUtilities::findFirstOf(const std::string &s, char c)
+{
+    size_t pos = std::string::npos;
+    
+    for (size_t i=0; i<s.length(); ++i)
+    {
+        if ( s[i] == c )
+        {
+            pos = i;
+            break;
+        }
+    }
+    
+    return pos;
+}
+
+
+/**
+ * Find the last occurence of the given character.
+ * We return string::npos if it wasn't found.
+ */
+size_t StringUtilities::findLastOf(const std::string &s, char c)
+{
+    size_t pos = std::string::npos;
+    
+    for (size_t i=s.length(); i>0; --i)
+    {
+        if ( s[i-1] == c )
+        {
+            pos = i-1;
+            break;
+        }
+    }
+    
+    return pos;
+}
+
+/**
+ * Fill this string with spaces so that it has the required length.
+ * Either fill the spaces on the right if left aligned (true)
+ * or on the left if right aligned.
+ */
+void StringUtilities::formatFixedWidth(std::string &s, int l, bool left)
+{
+    
+    if ( s.length() > l )
+    {
+        if ( l > 2)
+        {
+            s = s.substr(0, l-2);
+        }
+        
+        s += "..";
+    }
+    
+    fillWithSpaces(s, l, left);
 }
 
 
@@ -109,7 +173,8 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
         {
             // we now have a possible point where to wrap the line.
             // peek ahead and see where next possible wrap point is:
-            size_t next = s.substr(i).find_first_of(" ", 1);
+            std::string sub_str = s.substr(i);
+            size_t next = StringUtilities::findFirstOf(sub_str, ' ');
             
             // if next wrap point is beyond the width, then wrap line now
             if (cc + next >= w)
@@ -125,18 +190,22 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
 
 
 /** Format string for printing to screen, with word wrapping, and various indents */
-std::string StringUtilities::formatStringForScreen(const std::string &s, const std::string &firstLinePad, const std::string &hangingPad, size_t screenWidth) {
+std::string StringUtilities::formatStringForScreen(const std::string &s, const std::string &firstLinePad, const std::string &hangingPad, size_t screenWidth)
+{
 
-    std::string outputString;
+    std::string outputString = "";
 
-    std::vector<std::string> lineList;
-    StringUtilities::stringSplit( s, "\n", lineList );
+    std::vector<std::string> lineList = std::vector<std::string>();
+    std::string del = "\n";
+    StringUtilities::stringSplit( s, del, lineList );
 
     for ( size_t i=0; i<lineList.size(); i++ )
     {
     
-        std::vector<std::string> stringList;
-        StringUtilities::stringSplit(lineList[i], " ", stringList);
+        std::vector<std::string> stringList = std::vector<std::string>();
+        std::string space = " ";
+        std::string line = lineList[i];
+        StringUtilities::stringSplit(line, space, stringList);
 
         if ( stringList.size() > 0 )
         {
@@ -178,7 +247,7 @@ std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::st
 #   endif
     
     std::string tempS = s;
-	size_t location = tempS.find_last_of( pathSeparator );
+	size_t location = StringUtilities::findLastOf(tempS, pathSeparator[0]);
 	if ( location == std::string::npos )
     {
 		/* There is no path in this string. We
@@ -260,11 +329,29 @@ bool StringUtilities::isFormattingChar(char c)
 
 
 /** Determine if the string s represents a number */
-bool StringUtilities::isNumber(const std::string& s) {
+bool StringUtilities::isIntegerNumber(const std::string& s)
+{
+    
+    if ( isNumber(s) )
+    {
+        std::size_t found = s.find('.');
+        if (found != std::string::npos)
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
+/** Determine if the string s represents a number */
+bool StringUtilities::isNumber(const std::string& s)
+{
 
     for (size_t i=0; i<s.size(); i++)
     {
-        if (!isdigit(s[i]))
+        if (!isdigit(s[i]) && s[i] != '.' && s[i] != '-' && s[i] != '+')
         {
             return false;
         }
@@ -356,6 +443,18 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
 }
 
 
+void StringUtilities::replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr)
+{
+    size_t pos = 0;
+    while((pos = str.find(oldStr, pos)) != std::string::npos)
+    {
+        str.replace(pos, oldStr.length(), newStr);
+        pos += newStr.length();
+    }
+    
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
 {
@@ -364,7 +463,7 @@ void StringUtilities::stringSplit(const std::string &s, const std::string &delim
     std::string str = s;
 
     size_t cutAt;
-    while ( (cutAt = str.find_first_of(delim)) != str.npos )
+    while ( (cutAt = StringUtilities::findFirstOf(str, delim[0])) != str.npos )
     {
         if (cutAt > 0)
         {
@@ -394,6 +493,30 @@ void StringUtilities::toLower(std::string& str)
         str[i] = char( tolower(str[i]) );
     }
     
+}
+
+std::string StringUtilities::toString(double x, int digits)
+{
+    
+    std::stringstream o;
+//    o << std::setw(12) << std::setprecision(digits);
+    o << std::setprecision(digits);
+    o << x;
+    return o.str();
+
+}
+
+
+/** Utility function for converting string to all lower case */
+std::string& StringUtilities::firstCharToUpper(std::string& str)
+{
+    
+    if ( str.size() > 0)
+    {
+        str[0] = char( toupper(str[0]) );
+    }
+    
+    return str;
 }
 
 

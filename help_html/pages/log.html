@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Logarithm function.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Logarithm function.</h1>
+
+        <h2>Function log</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">log</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            The "log" function computes the logarithm of a number, given a particular base.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             log( RealPos x, RealPos base )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The number whose logarithm needs to be computed.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >base</b>
+<div class="indent">
+The base for computing the logarithm.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+</div>
+<h2>Example</h2>
+<p class="indent"><pre >
+             # Let's compute the logarithm of a few numbers, changing the base
+             log(1, base=exp(1))
+             log(1, base=2)
+             log(2, base=2)
+             log(4, base=2)
+             log(8, base=2)
+             log(10, base=10)
+             log(100, base=10)
+             log(100, base=10.5)
+             # Let's see what happens when we go beyond the definition range of log
+             log(-1, base=10)
+             </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Bastien Boussau</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('ln'); return false;">ln</a><br />
+<a href="" onClick="navigateHelp('exp'); return false;">exp</a><br />
+<a href="" onClick="navigateHelp('power'); return false;">power</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Exponential value of a number.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Exponential value of a number.</h1>
+
+        <h2>Function exp</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">exp</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            The 'exp' function returns the exponential value of a number.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             exp( Real x )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The number whose exponential needs to be computed.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+</div>
+<h2>Example</h2>
+<p class="indent"><pre >
+             # Let's compute the exponential of a few numbers
+             exp(-1)
+             exp(0)
+             exp(1)
+             exp(10)
+             # ln is the exponential's inverse function
+             ln(exp(10))
+             # Another way of achieving the same thing:
+             log(exp(10),base=exp(1))
+             </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Bastien Boussau</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('ln'); return false;">ln</a><br />
+<a href="" onClick="navigateHelp('log'); return false;">log</a><br />
+<a href="" onClick="navigateHelp('power'); return false;">power</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

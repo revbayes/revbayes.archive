@@ -2,6 +2,7 @@
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "SyntaxAssignment.h"
+#include "SyntaxIndexOperation.h"
 #include "Workspace.h"
 
 #include <iostream>
@@ -64,17 +65,17 @@ SyntaxAssignment& SyntaxAssignment::operator=( const SyntaxAssignment& x )
  * contexts. For instance, it might be used in a chain assignment or in passing a
  * variable to a function.
  */
-RevPtr<Variable> SyntaxAssignment::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating constant assignment\n" );
 #endif
     
     // Get the rhs expression wrapped and executed into a variable.
-    RevPtr<Variable> theVariable = rhsExpression->evaluateContent( env, isDynamic() );
+    RevPtr<RevVariable> theVariable = rhsExpression->evaluateContent( env, isDynamic() );
     
     // Get variable slot from lhs
-    RevPtr<Variable> theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
+    RevPtr<RevVariable> theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
     
     // let us remove all potential indexed variables
     removeElementVariables(env, theSlot);
@@ -83,6 +84,11 @@ RevPtr<Variable> SyntaxAssignment::evaluateContent( Environment& env, bool dynam
     {
         // now we delegate to the derived class
         assign(theSlot, theVariable);
+        
+        if ( theSlot->isElementVariable() )
+        {
+            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, theSlot->getName() );
+        }
     }
     catch (RbException e)
     {
@@ -136,43 +142,28 @@ bool SyntaxAssignment::isFunctionSafe( const Environment& env, std::set<std::str
 }
 
 
-
-/** Print info about the syntax element */
-void SyntaxAssignment::printValue( std::ostream& o ) const
-{
-    o << "SyntaxAssignment:" << std::endl;
-    o << "lhsExpression = ";
-    lhsExpression->printValue( o );
-    o << std::endl;
-    o << "rhsExpression = ";
-    rhsExpression->printValue( o );
-    o << std::endl;
-}
-
-
 /** 
  * Removing all element variables from this variable.
  * First, we need to check if this is a vector variable, 
  * and then we perform the remove element recursively.
  */
-void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<Variable> &theVar)
+void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar)
 {
     // check if the variable is a vector variable
     if ( theVar->isVectorVariable() == true )
     {
-        int min = theVar->getMinIndex();
-        int max = theVar->getMaxIndex();
-        if ( min > max )
+        const std::set<int>& indices = theVar->getElementIndices();
+        if ( indices.empty() )
         {
             throw RbException("Cannot remove a vector variable with name '" + theVar->getName() + "' because it doesn't have elements.");
         }
         // iterate over all elements
-        for (int i=min; i<=max; ++i)
+        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
         {
             std::ostringstream s;
-            s << theVar->getName() << "[" << i << "]";
+            s << theVar->getName() << "[" << *it << "]";
             std::string elementIdentifier = s.str();
-            RevPtr<Variable>& elementVar = env.getVariable( elementIdentifier );
+            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
             
             // recursively remove the element
             removeElementVariables( env, elementVar );

@@ -12,7 +12,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_system::Func_system( void ) : Function()
+Func_system::Func_system( void ) : Procedure()
 {
     
 }
@@ -27,7 +27,7 @@ Func_system* Func_system::clone( void ) const
 
 
 /** Execute function */
-RevPtr<Variable> Func_system::execute( void )
+RevPtr<RevVariable> Func_system::execute( void )
 {
     
     const char *cmd = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue().c_str();

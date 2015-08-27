@@ -2,16 +2,11 @@
 
 using namespace RevBayesCore;
 
-LogicalUnotFunction::LogicalUnotFunction(const TypedDagNode<bool> *l) : TypedFunction<bool>( new bool(false) ), left( l ) {
+LogicalUnotFunction::LogicalUnotFunction(const TypedDagNode<Boolean> *l) : TypedFunction<Boolean>( new Boolean(false) ),
+    left( l )
+{
     // add the parameters as parents
     this->addParameter( left );
-    
-    update();
-}
-
-
-LogicalUnotFunction::LogicalUnotFunction(const LogicalUnotFunction &n) : TypedFunction<bool>( n ), left( n.left ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -42,7 +37,7 @@ void LogicalUnotFunction::update( void )
 void LogicalUnotFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == left ) {
-        left = static_cast<const TypedDagNode<bool>* >( newP );
+        left = static_cast<const TypedDagNode<Boolean>* >( newP );
     }
     
 }

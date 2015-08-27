@@ -22,7 +22,8 @@
 using namespace RevLanguage;
 
 /** Constructor from empty RlString */
-RlString::RlString( void ) : ModelObject<std::string>() {
+RlString::RlString( void ) : ModelObject<std::string>()
+{
 
     setGuiVariableName("String");
     setGuiLatexSymbol("");
@@ -30,41 +31,49 @@ RlString::RlString( void ) : ModelObject<std::string>() {
 
 
 /** Constructor from RlString */
-RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::string(v) ) {
+RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::string(v) )
+{
 
     setGuiVariableName("String");
     setGuiLatexSymbol("");
+    
+    parseValue();
 }
 
 
-/** Constructor from int */
-RlString::RlString(int i) : ModelObject<std::string>() {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
-    std::ostringstream o;
-    o << i;
-    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
-}
-
-
-
-/** Constructor from RlString */
-RlString::RlString(double x) : ModelObject<std::string>() {
-
-    setGuiVariableName("String");
-    setGuiLatexSymbol("");
-    std::ostringstream o;
-    o << x;
-    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
-}
+///** Constructor from int */
+//RlString::RlString(int i) : ModelObject<std::string>()
+//{
+//
+//    setGuiVariableName("String");
+//    setGuiLatexSymbol("");
+//    std::ostringstream o;
+//    o << i;
+//    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
+//}
+//
+//
+//
+///** Constructor from RlString */
+//RlString::RlString(double x) : ModelObject<std::string>()
+//{
+//
+//    setGuiVariableName("String");
+//    setGuiLatexSymbol("");
+//    std::ostringstream o;
+//    o << x;
+//    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
+//}
 
 
 /* Construct from DAG node */
-RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<std::string>( v ) {
+RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<std::string>( v )
+{
 
     setGuiVariableName("String");
     setGuiLatexSymbol("");
+    
+    parseValue();
 }
 
 
@@ -80,7 +89,9 @@ RevObject* RlString::add( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec() == RlString::getClassTypeSpec() )
+    {
         return add( static_cast<const RlString&>( rhs ) );
+    }
     
     return ModelObject<std::string>::add( rhs );
 }
@@ -104,14 +115,16 @@ RlString* RlString::add(const RevLanguage::RlString &rhs) const
 
 
 /** Clone function */
-RlString* RevLanguage::RlString::clone() const {
+RlString* RevLanguage::RlString::clone() const
+{
 
 	return new RlString(*this);
 }
 
 
 /** Get Rev type of object */
-const std::string& RlString::getClassType(void) { 
+const std::string& RlString::getClassType(void)
+{
     
     static std::string revType = "String";
     
@@ -119,7 +132,8 @@ const std::string& RlString::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& RlString::getClassTypeSpec(void) { 
+const TypeSpec& RlString::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -128,7 +142,8 @@ const TypeSpec& RlString::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& RlString::getTypeSpec( void ) const {
+const TypeSpec& RlString::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -136,9 +151,70 @@ const TypeSpec& RlString::getTypeSpec( void ) const {
 }
 
 
-/** Print value */
-void RlString::printValue(std::ostream& o) const {
 
-	dagNode->printValue( o );
+/** Print value */
+void RlString::parseValue(void)
+{
+    
+    const std::string &v = dagNode->getValue();
+    
+    std::string res;
+    std::string::const_iterator it = v.begin();
+    while (it != v.end())
+    {
+        char c = *it++;
+        if (c == '\\' && it != v.end())
+        {
+            switch (*it++)
+            {
+                case '\\': c = '\\'; break;
+                case 'n': c = '\n'; break;
+                case 't': c = '\t'; break;
+                    // all other escapes
+                default:
+                    // invalid escape sequence - skip it. alternatively you can copy it as is, throw an exception...
+                    continue;
+            }
+        }
+        res += c;
+    }
+    
+    this->setValue( new std::string(res) );
+}
+
+
+/**
+ * Print value for user. The DAG node pointer may be NULL, in which
+ * case we print "NA".
+ */
+void RlString::printValue(std::ostream& o) const
+{
+    if ( dagNode == NULL )
+    {
+        o << "NA";
+    }
+    else
+    {
+        dagNode->printValue( o );
+    }
+    
+}
+
+
+
+/** Print value */
+void RlString::printValue(std::ostream& o, bool toScreen) const
+{
+
+    if ( toScreen == true )
+    {
+        o << "\"";
+        printValue( o );
+        o << "\"";
+    }
+    else
+    {
+        printValue( o );
+    }
 }
 

@@ -10,14 +10,11 @@
     
         <name>floor</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Floor value of a number.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The 'floor' function maps the value of a number to the largest preceding integer.
             </p>
         </description>
 
@@ -31,41 +28,27 @@
             <label>x</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The number whose floor value needs to be obtained.</description>
             <valueType>RealPos</valueType>
         </argument>
 
         <returnValue>Natural, Integer, RevObject</returnValue>
 
-        <details>
-            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-            <p>
-            The implementation of this fancy function ... 
-            </p>
-        </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+             # compute the floor value of a real number
+             number <- 3.4 
+             floor(number)         
              ]]>
-
-        </example>
-
-        <reference>
-            <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-            </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
-        </reference>
-
-        <author>Your name here</author>
+		</example>
+		
+        <author>Bastien Boussau</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>ceil</entry>
+            <entry>abs</entry>
         </seeAlso>
 
 

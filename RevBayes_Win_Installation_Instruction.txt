@@ -1,0 +1,25 @@
+RevBayes compilation under Windows
+
+I. First you need to get some necessary software:
+(1) Download and install cygwin. Make sure that you include gcc!!!
+(2) Add the path to cygwin64\bin to the 'path' variable. This needs to be before the other windows variables!!!
+---(2) Download and install mingw/LLVM(clang).
+((3) Download and install cmake.)
+((4) Download and install git.)
+
+
+II. Second, retrieve the RevBayes sources.
+(1) Clone the git repository:
+git clone https://github.com/revbayes/revbayes.git revbayes-master
+
+III. Compile RevBayes.
+(1) Open a terminal window and go to the RevBayes source directory if you haven't already done so, e.g., 
+cd revbayes-master
+(2) Next, go into the projects and then the cmake subdirectory: 
+cd projects/cmake
+(3) Now you can either build the standard version
+bash build-win.sh
+
+
+
+set(Boost_USE_STATIC_LIBS ON)

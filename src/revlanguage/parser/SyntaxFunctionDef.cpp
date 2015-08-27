@@ -99,7 +99,7 @@ SyntaxFunctionDef* SyntaxFunctionDef::clone( void ) const
  * @todo Deal with local variables hiding external variables. Ask if user wants to replace
  *       an existing function or procedure.
  */
-RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool dynamic )
 {
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();
@@ -180,18 +180,6 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env, bool dyna
 
     // No return value 
     return NULL;
-}
-
-
-/** Print info about the syntax element */
-void SyntaxFunctionDef::printValue( std::ostream& o ) const
-{
-    o << "SyntaxFunctionDef:" << std::endl;
-
-    o << "returnType   = " << returnType.getType() << std::endl;
-    o << "functionName = " << functionName << std::endl;
-    o << "formalArgs   = <" << formalArgs->size() << " formals (argument rules)>" << std::endl;
-    o << "code         = <" << code->size() << " code statements>" << std::endl;
 }
 
 
